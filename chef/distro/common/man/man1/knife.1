@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "KNIFE" "1" "October 2011" "Chef 0.10.6.beta.1" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\fR \- Chef Server API client utility
@@ -80,20 +80,20 @@ API Client Key, corresponds to \fBChef::Config\fR \fBclient_key\fR\.
 The configuration file to use
 .
 .TP
+\fB\-E\fR, \fB\-\-environment ENVIRONMENT\fR
+Set the Chef environment
+.
+.TP
 \fB\-e\fR, \fB\-\-editor\fR EDITOR
 Set the editor to use for interactive commands
 .
 .TP
 \fB\-F\fR, \fB\-\-format\fR FORMAT
-Which format to use for output
+Which format to use for output\. See FORMATS for details\.
 .
 .TP
-\fB\-l\fR, \fB\-\-log_level\fR LEVEL
-Set the log level (debug, info, warn, error, fatal), corresponds to \fBChef::Config\fR \fBlog_level\fR\.
-.
-.TP
-\fB\-L\fR, \fB\-\-logfile\fR LOGLOCATION
-Set the log file location, defaults to STDOUT, corresponds to \fBChef::Config\fR \fBlog_location\fR\.
+\fB\-V\fR, \fB\-\-verbose\fR
+More verbose output\. Use twice for max verbosity
 .
 .TP
 \fB\-n\fR, \fB\-\-no\-editor\fR
@@ -114,6 +114,18 @@ Show chef version
 .TP
 \fB\-y\fR, \fB\-\-yes\fR
 Say yes to all prompts for confirmation
+.
+.TP
+\fB\-\-defaults\fR
+Accept default values for all questions
+.
+.TP
+\fB\-\-color\fR
+Use colored output
+.
+.TP
+\fB\-\-no\-color\fR
+Don\'t use colors in the output
 .
 .TP
 \fB\-h\fR, \fB\-\-help\fR
@@ -167,7 +179,7 @@ If the config file exists, knife uses these settings for \fBGENERAL OPTIONS\fR d
 \fBvalidation_key\fR: Specifies the private key file to use when bootstrapping new hosts\. See knife\-client(1) for more information about the validation client\.
 .
 .IP "\(bu" 4
-\fBcookbook_copyright\fR, \fBcookbook_email\fR, \fBcookbook_license\fR, \fBreadme_format\fR Used by \fBknife cookbook create\fR sub\-command to specify the copyright holder, maintainer email, license and readme format (respectively) for new cookbooks\. The copyright holder is listed as the maintainer in the cookbook\'s metadata and as the Copyright in the comments of the default recipe\. The maintainer email is used in the cookbook metadata\. The license determines what preamble to put in the comment of the default recipe, and is listed as the license in the cookbook metadata\. Currently supported licenses are "apachev2" and "none"\. Any other values will result in an empty license in the metadata (needs to be filled in by the author), and no comment preamble in the default recipe\. Currently supported readme formats are "md", "mkd", "txt", and "rdoc"\.  Any other value will result in an unformatted README\.
+\fBcookbook_copyright\fR, \fBcookbook_email\fR, \fBcookbook_license\fR, \fBreadme_format\fR Used by \fBknife cookbook create\fR sub\-command to specify the copyright holder, maintainer email, license and readme format (respectively) for new cookbooks\. The copyright holder is listed as the maintainer in the cookbook\'s metadata and as the Copyright in the comments of the default recipe\. The maintainer email is used in the cookbook metadata\. The license determines what preamble to put in the comment of the default recipe, and is listed as the license in the cookbook metadata\. Currently supported licenses are "apachev2" and "none"\. Any other values will result in an empty license in the metadata (needs to be filled in by the author), and no comment preamble in the default recipe\. Currently supported readme formats are "md", "mkd", "txt", and "rdoc"\. Any other value will result in an unformatted README\.
 .
 .IP "" 0
 .
@@ -176,6 +188,35 @@ If the config file exists, knife uses these settings for \fBGENERAL OPTIONS\fR d
 .
 .P
 Ruby DSL configuration file for knife\. See \fBCONFIGURATION\fR\.
+.
+.SH "FORMATS"
+The amount of content displayed and the output format are modified by the \fB\-\-format\fR option\. If no alternate format is selected, the default is summary\.
+.
+.P
+Valid formats are:
+.
+.TP
+\fBsummary\fR
+displays the node in a custom, summarized format (default)
+.
+.TP
+\fBtext\fR
+displays the node data in its entirety using the colorized tree display
+.
+.TP
+\fBjson\fR
+displays the node in JSON format
+.
+.TP
+\fByaml\fR
+displays the node in YAML format
+.
+.TP
+\fBpp\fR
+displays the node using Ruby\'s pretty printer\.
+.
+.P
+For brevity, only the first character of the format is required, for example, \-Fj will produce JSON format output\.
 .
 .SH "CHEF WORKFLOW"
 When working with Chef and Knife in the local repository, the recommended workflow outline looks like:

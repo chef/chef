@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "CHEF\-SOLR" "8" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "CHEF\-SOLR" "8" "October 2011" "Chef 0.10.6.beta.1" "Chef Manual"
 .
 .SH "NAME"
 \fBchef\-solr\fR \- Runs as Chef\'s search server
@@ -30,6 +30,10 @@ Set the log level (debug, info, warn, error, fatal)
 Set the log file location, defaults to STDOUT \- recommended for daemonizing
 .
 .TP
+\fB\-P\fR, \fB\-\-pid PIDFILE\fR
+Set the PID file location, defaults to /tmp/chef\-solr\.pid
+.
+.TP
 \fB\-D\fR, \fB\-\-solr\-data\-dir PATH\fR
 Where the Solr data lives
 .
@@ -44,6 +48,10 @@ Solr home directory
 .TP
 \fB\-j\fR, \fB\-\-java\-opts OPTS\fR
 Raw options passed to Java
+.
+.TP
+\fB\-x\fR, \fB\-\-solor\-heap\-size\fR
+Set the size of the Java Heap
 .
 .TP
 \fB\-W\fR, \fB\-\-solr\-jetty\-dir PATH\fR

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-COOKBOOK" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "KNIFE\-COOKBOOK" "1" "October 2011" "Chef 0.10.6.beta.1" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-cookbook\fR \- upload and manage chef cookbooks
@@ -40,6 +40,10 @@ the platform to see the file for
 .TP
 \fB\-v\fR, \fB\-\-platform\-version version\fR
 the platform version to see the file for
+.
+.TP
+\fB\-w\fR, \fB\-\-with\-uri\fR
+Show corresponding URIs
 .
 .P
 show a particular part of a \fIcookbook\fR for the specified \fIversion\fR\. \fIpart\fR can be one of:
@@ -167,7 +171,7 @@ the directory where the cookbook will be created
 .
 .TP
 \fB\-r\fR, \fB\-\-readme\-format format\fR
-format of the readme file md, mkd, txt, or rdoc
+format of the readme file md, mkd, txt, rdoc
 .
 .TP
 \fB\-c\fR, \fB\-\-copyright copyright\fR
@@ -229,7 +233,7 @@ specify \fB\-i\fR or \fB\-\-license\fR with the license that the cookbook is dis
 specify \fB\-e\fR or \fB\-\-email\fR with the email address of the cookbook\'s maintainer\. if this value is not specified, an all\-caps string \fByour_email\fR is used which can easily be changed with find/replace\.
 .
 .P
-the cookbook copyright, license, email, and readme format settings can be filled in the \fBknife\.rb\fR, for example with default values:
+the cookbook copyright, license, email and readme_format settings can be filled in the \fBknife\.rb\fR, for example with default values:
 .
 .IP "" 4
 .

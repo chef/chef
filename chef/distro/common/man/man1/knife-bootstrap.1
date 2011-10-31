@@ -1,10 +1,10 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-BOOTRAP" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "KNIFE\-BOOTSTRAP" "1" "October 2011" "Chef 0.10.6.beta.1" "Chef Manual"
 .
 .SH "NAME"
-\fBknife\-bootrap\fR \- Install Chef Client on a remote host
+\fBknife\-bootstrap\fR \- Install Chef Client on a remote host
 .
 .SH "SYNOPSIS"
 \fBknife\fR \fBbootstrap\fR \fI(options)\fR
@@ -26,20 +26,24 @@ The ssh password
 The ssh username
 .
 .TP
+\fB\-p\fR, \fB\-\-ssh\-port PORT\fR
+The ssh port
+.
+.TP
+\fB\-\-bootstrap\-version VERSION\fR
+The version of Chef to install
+.
+.TP
+\fB\-\-bootstrap\-proxy PROXY_URL\fR
+\fBThe proxy server for the node being bootstrapped\fR
+.
+.TP
 \fB\-\-prerelease\fR
 Install pre\-release Chef gems
 .
 .TP
 \fB\-r\fR, \fB\-\-run\-list RUN_LIST\fR
 Comma separated list of roles/recipes to apply
-.
-.TP
-\fB\-P\fR, \fB\-\-ssh\-password PASSWORD\fR
-The ssh password
-.
-.TP
-\fB\-x\fR, \fB\-\-ssh\-user USERNAME\fR
-The ssh username
 .
 .TP
 \fB\-\-template\-file TEMPLATE\fR
@@ -52,6 +56,10 @@ Execute the bootstrap via sudo
 .TP
 \fB\-d\fR, \fB\-\-distro DISTRO\fR
 Bootstrap a distro using a template
+.
+.TP
+\fB\-\-no\-host\-key\-verify\fR
+Disable host key verification
 .
 .SH "DESCRIPTION"
 Performs a Chef Bootstrap on the target node\. The goal of the bootstrap is to get Chef installed on the target system so it can run Chef Client with a Chef Server\. The main assumption is a baseline OS installation exists\. This sub\-command is used internally by some cloud computing plugins\.
