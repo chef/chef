@@ -1,0 +1,70 @@
+   187.8: flog total
+    31.3: flog/method average
+
+    83.7: Chef::Application::Solo#reconfigure lib/chef/application/solo.rb:121
+    26.5:   []
+    25.4:   assignment
+    16.5:   branch
+     8.0:   fatal!
+     6.7:   open
+     4.7:   join
+     3.8:   read
+     3.8:   message
+     2.6:   lit_fixnum
+     2.1:   get_rest
+     1.9:   new
+     1.8:   close
+     1.8:   +
+     1.7:   write
+     1.7:   Array
+     1.7:   closed?
+     1.7:   from_json
+     1.5:   run_command
+     1.5:   detect
+     1.5:   mkdir_p
+     1.5:   expand_path
+     1.5:   debug
+
+    58.8: Chef::Application::Solo#run_application lib/chef/application/solo.rb:178
+    15.8:   []
+     8.7:   branch
+     8.0:   assignment
+     5.7:   class
+     5.3:   sleep
+     5.3:   debug
+     2.1:   backtrace
+     1.9:   message
+     1.9:   join
+     1.8:   rand
+     1.7:   fatal
+     1.7:   fatal!
+     1.7:   error
+     1.7:   debug_stacktrace
+     1.7:   exit!
+     1.6:   run
+     1.6:   new
+     1.5:   raise
+     1.4:   start
+     1.4:   daemonize
+     1.3:   loop
+     0.5:   lit_fixnum
+
+    31.5: Chef::Application::Solo#none
+    15.6:   option
+     7.5:   assignment
+     7.0:   lambda
+     7.0:   branch
+     3.0:   to_i
+     1.5:   to_sym
+     1.5:   puts
+     1.2:   attr_reader
+
+     9.9: main#none
+     9.9:   require
+
+     2.6: Chef::Application::Solo#initialize lib/chef/application/solo.rb:115
+     2.6:   assignment
+
+     1.3: Chef::Application::Solo#setup_application lib/chef/application/solo.rb:174
+     1.3:   change_privilege
+

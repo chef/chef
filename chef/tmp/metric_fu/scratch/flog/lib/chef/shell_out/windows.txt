@@ -1,0 +1,35 @@
+    53.8: flog total
+    13.5: flog/method average
+
+    35.9: Chef::ShellOut::Windows#run_command lib/chef/shell_out/windows.rb:33
+    18.5:   assignment
+    16.7:   branch
+     4.0:   loop
+     3.8:   join
+     3.8:   new
+     3.6:   timeout
+     2.2:   read_stderr
+     2.2:   read_stdout
+     1.7:   close
+     1.6:   format_for_exception
+     1.5:   popen3
+     1.4:   raise
+
+     7.2: Chef::ShellOut::Windows#read_stdout lib/chef/shell_out/windows.rb:72
+     4.5:   assignment
+     4.3:   branch
+     1.6:   <<
+     1.5:   sysread
+     0.4:   lit_fixnum
+
+     7.2: Chef::ShellOut::Windows#read_stderr lib/chef/shell_out/windows.rb:84
+     4.5:   assignment
+     4.3:   branch
+     1.6:   <<
+     1.5:   sysread
+     0.4:   lit_fixnum
+
+     3.7: main#none
+     3.5:   require
+     1.1:   branch
+

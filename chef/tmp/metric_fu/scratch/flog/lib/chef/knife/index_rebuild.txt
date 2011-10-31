@@ -1,0 +1,26 @@
+    18.1: flog total
+     4.5: flog/method average
+
+     8.8: Chef::Knife::IndexRebuild#nag    lib/chef/knife/index_rebuild.rb:37
+     2.8:   branch
+     1.7:   exit
+     1.7:   puts
+     1.5:   ask_question
+     1.5:   assignment
+     1.5:   config
+     1.3:   []
+     0.5:   lit_fixnum
+
+     5.8: Chef::Knife::IndexRebuild#run    lib/chef/knife/index_rebuild.rb:32
+     1.7:   rest
+     1.5:   post_rest
+     1.3:   output
+     1.3:   nag
+
+     2.4: Chef::Knife::IndexRebuild#none
+     1.2:   option
+     1.2:   banner
+
+     1.1: main#none
+     1.1:   require
+

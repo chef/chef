@@ -1,0 +1,93 @@
+   195.7: flog total
+    19.6: flog/method average
+
+    53.7: Chef::Daemon#daemonize           lib/chef/daemon.rb:33
+    10.4:   branch
+     6.6:   reopen
+     5.7:   assignment
+     4.6:   exit
+     4.4:   fork
+     4.3:   remove_pid_file
+     4.2:   info
+     4.0:   fatal!
+     2.4:   []
+     2.4:   egid
+     2.4:   pid
+     2.4:   euid
+     2.3:   message
+     2.2:   save_pid_file
+     2.2:   setsid
+     2.2:   umask
+     2.2:   at_exit
+     1.8:   running?
+     1.8:   pid_from_file
+
+    42.2: Chef::Daemon#_change_privilege   lib/chef/daemon.rb:144
+    18.1:   assignment
+     9.8:   branch
+     6.9:   message
+     6.3:   fatal!
+     4.4:   change_privilege
+     4.2:   ==
+     2.3:   getpwnam
+     2.3:   getgrnam
+     2.2:   initgroups
+     2.1:   uid
+     2.1:   gid
+     2.0:   egid
+     2.0:   euid
+
+    29.6: Chef::Daemon#change_privilege    lib/chef/daemon.rb:123
+    19.1:   []
+     5.5:   branch
+     4.1:   info
+     4.1:   _change_privilege
+     1.8:   chdir
+
+    26.1: Chef::Daemon#save_pid_file       lib/chef/daemon.rb:101
+     7.6:   assignment
+     5.5:   branch
+     4.2:   message
+     4.2:   dirname
+     3.8:   fatal!
+     2.4:   pid
+     2.2:   to_s
+     2.0:   write
+     1.9:   mkdir_p
+     1.9:   open
+     1.8:   pid_file
+
+    15.1: Chef::Daemon#running?            lib/chef/daemon.rb:64
+     4.4:   pid_from_file
+     3.7:   branch
+     2.1:   message
+     2.1:   pid_file
+     2.1:   kill
+     1.9:   fatal!
+     1.9:   nil?
+     1.9:   assignment
+
+     9.0: Chef::Daemon#pid_from_file       lib/chef/daemon.rb:92
+     2.5:   pid_file
+     2.3:   read
+     2.1:   chomp
+     1.9:   to_i
+     1.8:   branch
+
+     8.0: Chef::Daemon#remove_pid_file     lib/chef/daemon.rb:117
+     4.1:   pid_file
+     1.9:   rm
+     1.8:   exists?
+     1.8:   branch
+
+     7.2: Chef::Daemon#none
+     5.5:   sclass
+     1.7:   attr_accessor
+
+     2.6: Chef::Daemon#pid_file            lib/chef/daemon.rb:81
+     1.9:   []
+     1.8:   branch
+
+     2.2: main#none
+     2.2:   require
+

@@ -1,0 +1,42 @@
+<html>
+<head>
+	<title>Reek Results</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+
+<body>
+	<h1>Reek Results</h1>
+  <a href="index.html">back to menu</a>
+	<p><a href="http://reek.rubyforge.org/">Reek</a> detects common code smells in ruby code.</p>
+	<table>
+		<tr>
+		  <th>File Path</th>
+      <th>Method</th>
+      <th>Description</th>
+      <th>Type</th>
+    </tr>
+    <% count = 0 %>
+    <% @reek[:matches].each do |match| %>
+      <% match[:code_smells].each do |smell| %>
+  		  <tr class='<%= cycle("light", "dark", count) %>'>
+  		    <td><%= match[:file_path] %></td>
+          <td>
+            <%= smell[:method] %>
+          </td>
+          <td>
+            <%= smell[:message] %>
+    		  </td>
+    		  <td>
+            <%= smell[:type] %>
+    		  </td>
+        </tr>
+        <% count += 1 %>
+      <% end %>
+    <% end %>
+
+	</table>
+	<p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>

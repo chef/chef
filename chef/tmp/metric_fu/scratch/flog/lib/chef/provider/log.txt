@@ -1,0 +1,9 @@
+     7.6: flog total
+     7.6: flog/method average
+
+     7.6: Chef::Provider::Log::ChefLog#action_write lib/chef/provider/log.rb:40
+     3.6:   send
+     1.4:   level
+     1.4:   name
+     1.2:   updated_by_last_action
+

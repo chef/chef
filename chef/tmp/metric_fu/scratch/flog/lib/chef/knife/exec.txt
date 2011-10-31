@@ -1,0 +1,28 @@
+    50.2: flog total
+    16.7: flog/method average
+
+    44.0: Chef::Knife::Exec#run            lib/chef/knife/exec.rb:34
+    23.5:   instance_eval
+     7.5:   assignment
+     4.2:   branch
+     3.5:   read
+     3.3:   config
+     2.9:   []
+     1.7:   expand_path
+     1.5:   each
+     1.5:   name_args
+     1.4:   empty?
+     1.3:   extend_context_object
+     1.3:   Array
+     1.3:   new
+
+     5.0: Chef::Knife::Exec#none
+     1.3:   require
+     1.2:   banner
+     1.2:   deps
+     1.2:   option
+     1.2:   branch
+
+     1.1: main#none
+     1.1:   require
+

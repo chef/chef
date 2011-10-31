@@ -1,0 +1,85 @@
+   122.2: flog total
+    11.1: flog/method average
+
+    29.9: Chef::Provider::RemoteFile#action_create lib/chef/provider/remote_file.rb:34
+     4.3:   debug
+     4.2:   branch
+     3.8:   path
+     3.4:   source
+     1.7:   cp
+     1.7:   info
+     1.7:   updated_by_last_action
+     1.7:   backup_new_resource
+     1.6:   checksum
+     1.6:   new
+     1.5:   assignment
+     1.5:   matches_current_checksum?
+     1.4:   fetch
+     1.3:   enforce_ownership_and_permissions
+     1.3:   updated_by_last_action?
+     1.3:   assert_enclosing_directory_exists!
+     1.3:   current_resource_matches_target_checksum?
+
+    28.4: Chef::Provider::RemoteFile#matches_current_checksum? lib/chef/provider/remote_file.rb:76
+    10.0:   checksum
+     8.3:   path
+     7.3:   debug
+     1.5:   ==
+     1.3:   branch
+     1.3:   exists?
+
+    12.4: Chef::Provider::RemoteFile#source_file lib/chef/provider/remote_file.rb:98
+     5.0:   block_pass
+     2.7:   branch
+     1.5:   fetch_from_chef_server
+     1.5:   fetch_from_local_cookbook
+     1.4:   fetch_from_uri
+     1.4:   []
+     1.3:   absolute_uri?
+
+    11.0: Chef::Provider::RemoteFile#backup_new_resource lib/chef/provider/remote_file.rb:91
+     3.4:   checksum
+     3.2:   path
+     1.5:   debug
+     1.5:   backup
+     1.3:   branch
+     1.3:   exists?
+
+     9.0: Chef::Provider::RemoteFile#enforce_ownership_and_permissions lib/chef/provider/remote_file.rb:66
+     3.9:   branch
+     1.4:   set_group
+     1.4:   set_owner
+     1.4:   set_mode
+     1.3:   group
+     1.3:   owner
+     1.3:   mode
+
+     8.1: Chef::Provider::RemoteFile#current_resource_matches_target_checksum? lib/chef/provider/remote_file.rb:72
+     6.1:   checksum
+     2.7:   branch
+     1.5:   escape
+
+     7.7: Chef::Provider::RemoteFile#load_current_resource lib/chef/provider/remote_file.rb:29
+     3.3:   path
+     3.0:   checksum
+     1.3:   branch
+     1.3:   exist?
+
+     5.7: Chef::Provider::RemoteFile#action_create_if_missing lib/chef/provider/remote_file.rb:58
+     1.5:   path
+     1.4:   debug
+     1.4:   action_create
+     1.3:   branch
+     1.3:   exists?
+
+     5.5: main#none
+     5.5:   require
+
+     3.3: Chef::Provider::RemoteFile#absolute_uri? lib/chef/provider/remote_file.rb:110
+     1.6:   parse
+     1.4:   absolute?
+     1.3:   branch
+
+     1.2: Chef::Provider::RemoteFile#none
+     1.2:   private
+

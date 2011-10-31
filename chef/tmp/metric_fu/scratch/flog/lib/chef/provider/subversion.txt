@@ -1,0 +1,191 @@
+   239.6: flog total
+    12.0: flog/method average
+
+    30.0: Chef::Provider::Subversion#export_command lib/chef/provider/subversion.rb:96
+    10.8:   <<
+     3.2:   repository
+     3.0:   destination
+     2.6:   assignment
+     2.5:   svn_arguments
+     2.3:   verbose
+     2.1:   authentication
+     1.9:   revision_int
+     1.5:   revision
+     1.3:   scm
+     1.3:   info
+
+    26.2: Chef::Provider::Subversion#action_sync lib/chef/provider/subversion.rb:67
+     3.6:   revision_int
+     3.2:   updated_by_last_action
+     2.8:   branch
+     2.1:   sync_command
+     1.9:   run_options
+     1.7:   info
+     1.7:   run_command
+     1.7:   destination
+     1.5:   action_checkout
+     1.5:   assignment
+     1.5:   debug
+     1.5:   current_revision_matches_target_revision?
+     1.5:   find_current_revision
+     1.5:   join
+     1.3:   assert_target_directory_valid!
+     1.3:   exist?
+
+    19.4: Chef::Provider::Subversion#revision_int lib/chef/provider/subversion.rb:108
+     8.8:   assignment
+     4.4:   revision
+     1.7:   repository
+     1.7:   authentication
+     1.7:   svn_info_args
+     1.7:   run_options
+     1.5:   output_of_command
+     1.5:   extract_revision_info
+     1.5:   handle_command_failures
+     1.5:   scm
+     1.3:   branch
+
+    17.6: Chef::Provider::Subversion#find_current_revision lib/chef/provider/subversion.rb:123
+     6.5:   assignment
+     2.6:   branch
+     1.7:   cwd
+     1.7:   destination
+     1.5:   run_options
+     1.5:   join
+     1.5:   exitstatus
+     1.4:   handle_command_failures
+     1.3:   include?
+     1.3:   output_of_command
+     1.3:   scm
+     1.3:   extract_revision_info
+     1.3:   exist?
+     0.4:   lit_fixnum
+
+    16.2: Chef::Provider::Subversion#checkout_command lib/chef/provider/subversion.rb:89
+     3.0:   destination
+     3.0:   repository
+     1.5:   revision_int
+     1.5:   authentication
+     1.5:   verbose
+     1.5:   revision
+     1.5:   svn_arguments
+     1.3:   assignment
+     1.3:   scm
+     1.3:   info
+
+    15.3: Chef::Provider::Subversion#current_revision_matches_target_revision? lib/chef/provider/subversion.rb:134
+     3.6:   strip
+     3.6:   revision
+     3.2:   to_i
+     2.0:   revision_int
+     1.4:   ==
+     1.4:   nil?
+     1.3:   branch
+
+    13.2: Chef::Provider::Subversion#sync_command lib/chef/provider/subversion.rb:83
+     3.0:   destination
+     1.5:   authentication
+     1.5:   verbose
+     1.5:   revision_int
+     1.5:   revision
+     1.5:   svn_arguments
+     1.3:   assignment
+     1.3:   scm
+     1.3:   debug
+
+    12.7: Chef::Provider::Subversion#load_current_resource lib/chef/provider/subversion.rb:31
+     2.7:   assignment
+     2.7:   branch
+     1.9:   action
+     1.7:   Array
+     1.5:   revision
+     1.5:   name
+     1.5:   first
+     1.4:   find_current_revision
+     1.3:   include?
+     1.3:   new
+
+    12.4: Chef::Provider::Subversion#extract_revision_info lib/chef/provider/subversion.rb:154
+     4.1:   branch
+     3.2:   []
+     2.7:   assignment
+     1.5:   revision
+     1.4:   raise
+     1.4:   load
+     1.3:   to_s
+     1.3:   kind_of?
+     1.3:   debug
+
+    12.3: Chef::Provider::Subversion#action_export lib/chef/provider/subversion.rb:51
+     1.9:   export_command
+     1.7:   run_options
+     1.6:   destination
+     1.5:   updated_by_last_action
+     1.5:   run_command
+     1.4:   debug
+     1.3:   target_dir_non_existant_or_empty?
+     1.3:   assert_target_directory_valid!
+     1.3:   branch
+
+    12.3: Chef::Provider::Subversion#action_checkout lib/chef/provider/subversion.rb:41
+     1.9:   checkout_command
+     1.7:   run_options
+     1.6:   destination
+     1.5:   run_command
+     1.5:   updated_by_last_action
+     1.4:   debug
+     1.3:   assert_target_directory_valid!
+     1.3:   target_dir_non_existant_or_empty?
+     1.3:   branch
+
+     9.9: Chef::Provider::Subversion#target_dir_non_existant_or_empty? lib/chef/provider/subversion.rb:192
+     3.6:   destination
+     1.8:   entries
+     1.6:   sort
+     1.4:   ==
+     1.4:   exist?
+     1.3:   branch
+
+     7.7: Chef::Provider::Subversion#assert_target_directory_valid! lib/chef/provider/subversion.rb:184
+     3.0:   destination
+     2.8:   assignment
+     1.5:   raise
+     1.3:   dirname
+     1.3:   directory?
+     1.3:   branch
+
+     7.3: Chef::Provider::Subversion#run_options lib/chef/provider/subversion.rb:138
+     4.1:   assignment
+     2.7:   group
+     2.7:   user
+     2.6:   branch
+
+     7.1: Chef::Provider::Subversion#action_force_export lib/chef/provider/subversion.rb:61
+     1.7:   export_command
+     1.5:   run_options
+     1.3:   run_command
+     1.3:   assert_target_directory_valid!
+     1.3:   updated_by_last_action
+
+     6.0: Chef::Provider::Subversion#none
+     2.4:   alias
+     2.4:   include
+     1.2:   private
+
+     5.7: Chef::Provider::Subversion#authentication lib/chef/provider/subversion.rb:171
+     2.6:   svn_username
+     1.5:   svn_password
+     1.3:   <<
+     1.3:   assignment
+     1.3:   branch
+
+     4.4: main#none
+     4.4:   require
+
+     2.8: Chef::Provider::Subversion#scm   lib/chef/provider/subversion.rb:178
+     1.5:   compact
+     1.3:   join
+
+     1.3: Chef::Provider::Subversion#cwd   lib/chef/provider/subversion.rb:146
+     1.3:   destination
+

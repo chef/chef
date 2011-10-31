@@ -1,0 +1,10 @@
+     5.0: flog total
+     2.5: flog/method average
+
+     3.3: main#none
+     3.3:   require
+
+     1.7: Chef::Provider::Service::Invokercd#initialize lib/chef/provider/service/invokercd.rb:28
+     1.2:   assignment
+     1.2:   service_name
+

@@ -1,0 +1,35 @@
+    53.3: flog total
+    17.8: flog/method average
+
+    44.5: Chef::Knife::ClientCreate#run    lib/chef/knife/client_create.rb:43
+    12.7:   []
+     6.9:   assignment
+     5.7:   branch
+     5.4:   config
+     5.0:   ui
+     1.7:   print
+     1.6:   open
+     1.6:   puts
+     1.5:   fatal
+     1.5:   info
+     1.5:   show_usage
+     1.5:   exit
+     1.4:   error
+     1.3:   new
+     1.3:   admin
+     1.3:   name
+     1.3:   edit_data
+     1.3:   save
+     1.3:   nil?
+     0.4:   lit_fixnum
+
+     7.7: Chef::Knife::ClientCreate#none
+     2.8:   require
+     2.4:   option
+     1.2:   banner
+     1.2:   deps
+     1.2:   branch
+
+     1.1: main#none
+     1.1:   require
+

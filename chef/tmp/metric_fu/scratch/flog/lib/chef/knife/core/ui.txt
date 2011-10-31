@@ -1,0 +1,145 @@
+   174.2: flog total
+     8.3: flog/method average
+
+    39.7: Chef::Knife::UI#edit_data        lib/chef/knife/core/ui.rb:146
+    13.2:   assignment
+     5.6:   branch
+     3.4:   config
+     3.0:   open
+     3.0:   []
+     3.0:   close
+     2.0:   rand
+     1.8:   to_s
+     1.7:   path
+     1.7:   tmpdir
+     1.6:   raise
+     1.6:   +
+     1.5:   unlink
+     1.5:   gets
+     1.5:   system
+     1.5:   join
+     1.5:   puts
+     1.5:   <<
+     1.5:   upto
+     1.4:   from_json
+     1.3:   to_json_pretty
+     1.0:   lit_fixnum
+
+    24.6: Chef::Knife::UI#ask_question     lib/chef/knife/core/ui.rb:125
+    10.3:   []
+     7.0:   branch
+     4.2:   assignment
+     1.9:   stdin
+     1.7:   readline
+     1.7:   stdout
+     1.6:   empty?
+     1.6:   config
+     1.5:   strip
+     1.5:   print
+     1.4:   +
+
+    22.1: Chef::Knife::UI#confirm          lib/chef/knife/core/ui.rb:194
+     6.7:   branch
+     4.6:   msg
+     3.1:   stdout
+     2.7:   print
+     2.6:   assignment
+     1.6:   exit
+     1.5:   confirm
+     1.5:   config
+     1.5:   stdin
+     1.3:   readline
+     1.3:   []
+     1.3:   chomp!
+     0.5:   lit_fixnum
+
+    20.5: Chef::Knife::UI#edit_object      lib/chef/knife/core/ui.rb:168
+     5.2:   assignment
+     3.0:   to_json
+     2.9:   msg
+     2.6:   from_json
+     2.6:   branch
+     1.6:   format_for_display
+     1.5:   save
+     1.5:   config
+     1.4:   output
+     1.3:   load
+     1.3:   []
+     1.3:   ==
+     1.3:   edit_data
+
+    13.2: Chef::Knife::UI#none
+     4.8:   attr_reader
+     3.6:   def_delegator
+     2.4:   alias
+     2.4:   extend
+
+     7.9: Chef::Knife::UI#initialize       lib/chef/knife/core/ui.rb:42
+     7.8:   assignment
+     1.3:   new
+
+     5.3: Chef::Knife::UI#color?           lib/chef/knife/core/ui.rb:100
+     2.7:   branch
+     1.7:   stdout
+     1.5:   tty?
+     1.4:   []
+
+     4.5: Chef::Knife::UI#color            lib/chef/knife/core/ui.rb:89
+     1.6:   highline
+     1.4:   color
+     1.3:   branch
+     1.3:   color?
+
+     4.3: Chef::Knife::UI#ask              lib/chef/knife/core/ui.rb:104
+     1.5:   highline
+     1.5:   block_pass
+     1.3:   ask
+
+     3.1: Chef::Knife::UI#highline         lib/chef/knife/core/ui.rb:54
+     1.4:   new
+     1.4:   require
+     1.3:   assignment
+
+     3.1: Chef::Knife::UI#use_presenter    lib/chef/knife/core/ui.rb:50
+     1.5:   config
+     1.3:   assignment
+     1.3:   new
+
+     2.8: Chef::Knife::UI#output           lib/chef/knife/core/ui.rb:115
+     1.5:   format
+     1.3:   msg
+
+     2.8: Chef::Knife::UI#fatal            lib/chef/knife/core/ui.rb:85
+     1.5:   color
+     1.3:   err
+
+     2.8: Chef::Knife::UI#warn             lib/chef/knife/core/ui.rb:75
+     1.5:   color
+     1.3:   err
+
+     2.8: Chef::Knife::UI#err              lib/chef/knife/core/ui.rb:70
+     1.5:   stderr
+     1.3:   puts
+
+     2.8: Chef::Knife::UI#msg              lib/chef/knife/core/ui.rb:63
+     1.5:   stdout
+     1.3:   puts
+
+     2.8: Chef::Knife::UI#list             lib/chef/knife/core/ui.rb:108
+     1.5:   highline
+     1.3:   list
+
+     2.8: Chef::Knife::UI#error            lib/chef/knife/core/ui.rb:80
+     1.5:   color
+     1.3:   err
+
+     2.8: Chef::Knife::UI#pretty_print     lib/chef/knife/core/ui.rb:142
+     1.5:   stdout
+     1.3:   puts
+
+     2.2: main#none
+     2.2:   require
+
+     1.3: Chef::Knife::UI#interchange?     lib/chef/knife/core/ui.rb:121
+     1.3:   interchange?
+

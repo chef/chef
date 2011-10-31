@@ -1,0 +1,166 @@
+   120.9: flog total
+     3.1: flog/method average
+
+    27.4: Chef::Resource::Deploy#initialize lib/chef/resource/deploy.rb:55
+    27.3:   assignment
+     1.3:   []
+     1.3:   push
+
+    10.8: Chef::Resource::Deploy#none
+     9.6:   alias
+     1.2:   provider_base
+
+     6.6: Chef::Resource::Deploy#scm_provider lib/chef/resource/deploy.rb:264
+     2.8:   kind_of?
+     2.6:   assignment
+     2.6:   branch
+     1.4:   lookup_provider_constant
+     1.3:   set_or_return
+
+     6.4: Chef::Resource::Deploy#environment lib/chef/resource/deploy.rb:285
+     2.8:   assignment
+     1.5:   debug
+     1.5:   warn
+     1.3:   is_a?
+     1.3:   set_or_return
+     1.3:   branch
+
+     3.1: Chef::Resource::Deploy#destination lib/chef/resource/deploy.rb:81
+     1.5:   shared_path
+     1.3:   assignment
+     1.3:   +
+
+     2.9: Chef::Resource::Deploy#before_migrate lib/chef/resource/deploy.rb:356
+     2.6:   assignment
+     1.3:   set_or_return
+
+     2.9: Chef::Resource::Deploy#after_restart lib/chef/resource/deploy.rb:374
+     2.6:   assignment
+     1.3:   set_or_return
+
+     2.9: Chef::Resource::Deploy#before_symlink lib/chef/resource/deploy.rb:362
+     2.6:   assignment
+     1.3:   set_or_return
+
+     2.9: Chef::Resource::Deploy#restart_command lib/chef/resource/deploy.rb:133
+     2.6:   assignment
+     1.3:   set_or_return
+
+     2.9: Chef::Resource::Deploy#before_restart lib/chef/resource/deploy.rb:368
+     2.6:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#git_ssh_wrapper lib/chef/resource/deploy.rb:224
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#remote    lib/chef/resource/deploy.rb:117
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#svn_arguments lib/chef/resource/deploy.rb:249
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#current_path lib/chef/resource/deploy.rb:91
+     1.3:   +
+     1.3:   assignment
+
+     1.8: Chef::Resource::Deploy#shared_path lib/chef/resource/deploy.rb:86
+     1.3:   +
+     1.3:   assignment
+
+     1.8: Chef::Resource::Deploy#symlinks  lib/chef/resource/deploy.rb:332
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#svn_force_export lib/chef/resource/deploy.rb:277
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#copy_exclude lib/chef/resource/deploy.rb:207
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#svn_username lib/chef/resource/deploy.rb:233
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#migrate   lib/chef/resource/deploy.rb:143
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#revision  lib/chef/resource/deploy.rb:215
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#rollback_on_error lib/chef/resource/deploy.rb:159
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#deploy_to lib/chef/resource/deploy.rb:100
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#role      lib/chef/resource/deploy.rb:125
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#symlink_before_migrate lib/chef/resource/deploy.rb:347
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#user      lib/chef/resource/deploy.rb:167
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#shallow_clone lib/chef/resource/deploy.rb:191
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#additional_remotes lib/chef/resource/deploy.rb:379
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#svn_password lib/chef/resource/deploy.rb:241
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#purge_before_symlink lib/chef/resource/deploy.rb:302
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#create_dirs_before_symlink lib/chef/resource/deploy.rb:318
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#svn_info_args lib/chef/resource/deploy.rb:257
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#enable_submodules lib/chef/resource/deploy.rb:183
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#migration_command lib/chef/resource/deploy.rb:151
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#repository_cache lib/chef/resource/deploy.rb:199
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#group     lib/chef/resource/deploy.rb:175
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Deploy#repo      lib/chef/resource/deploy.rb:108
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.3: Chef::Resource::Deploy#depth     lib/chef/resource/deploy.rb:95
+     1.3:   branch
+
+     1.1: main#none
+     1.1:   require
+

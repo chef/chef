@@ -1,0 +1,228 @@
+   358.3: flog total
+    11.6: flog/method average
+
+    49.5: Chef::Expander::Configuration::CLI#none
+    28.0:   assignment
+    15.8:   branch
+    11.2:   on
+     7.2:   puts
+     4.0:   version
+     3.6:   exit
+     3.4:   to_i
+     3.2:   on_tail
+     2.8:   new
+     1.7:   expand_path
+     0.5:   lit_fixnum
+
+    32.8: Chef::Expander::Configuration::Base::configurable#config_file lib/chef/expander/configuration.rb:122
+    10.7:   branch
+     7.2:   log
+     6.8:   config_file
+     6.4:   warn
+     3.4:   *
+     1.7:   euid
+     1.6:   readable?
+     1.6:   exist?
+     1.4:   configurable
+     1.0:   lit_fixnum
+
+    25.6: Chef::Expander::Configuration::Base#none
+    18.2:   configurable
+     2.8:   alias
+     2.8:   include
+     1.4:   new
+     0.4:   lit_fixnum
+
+    21.7: Chef::Expander::init_config      lib/chef/expander/configuration.rb:36
+    10.7:   config
+     2.8:   config_file
+     2.6:   assignment
+     2.6:   merge_config
+     1.5:   from_chef_compat_config
+     1.3:   apply_defaults
+     1.3:   parse_options
+     1.3:   branch
+     1.3:   validate!
+
+    21.0: Chef::Expander::Configuration::Base#vnode_numbers lib/chef/expander/configuration.rb:236
+     6.1:   assignment
+     3.6:   index
+     3.4:   node_count
+     3.1:   +
+     1.8:   %
+     1.7:   -
+     1.5:   to_a
+     1.5:   *
+     1.5:   /
+     1.5:   branch
+     1.5:   ==
+     0.5:   lit_fixnum
+
+    20.9: Chef::Expander::Configuration::Base::configurable#index lib/chef/expander/configuration.rb:131
+     5.4:   index
+     4.6:   branch
+     3.6:   to_i
+     3.4:   invalid
+     2.0:   node_count
+     1.6:   kind_of?
+     1.6:   <=
+     1.4:   configurable
+     1.4:   nil?
+
+    20.7: Chef::Expander::Configuration::Base::configurable#node_count lib/chef/expander/configuration.rb:138
+     5.1:   node_count
+     4.8:   invalid
+     4.5:   branch
+     3.0:   >=
+     1.9:   index
+     1.7:   to_i
+     1.5:   kind_of?
+     1.4:   configurable
+     0.8:   lit_fixnum
+
+    18.2: Chef::Expander::Configuration::Base#merge_config lib/chef/expander/configuration.rb:212
+    10.5:   send
+     3.3:   assignment
+     3.2:   branch
+     2.0:   to_sym
+     1.9:   class
+     1.7:   configurables
+     1.5:   each
+
+    15.1: Chef::Expander::Configuration::Base#validate! lib/chef/expander/configuration.rb:230
+     8.0:   instance_eval
+     1.9:   class
+     1.8:   block_pass
+     1.7:   validations
+     1.6:   assignment
+     1.5:   each
+     1.5:   branch
+
+    14.6: Chef::Expander::Configuration::Base::from_hash lib/chef/expander/configuration.rb:90
+     8.0:   assignment
+     5.4:   send
+     3.2:   branch
+     1.7:   to_sym
+     1.7:   respond_to?
+     1.5:   each
+     1.5:   new
+
+    12.9: Chef::Expander::Configuration::Base#reset! lib/chef/expander/configuration.rb:199
+     4.8:   send
+     4.6:   assignment
+     3.0:   branch
+     1.9:   class
+     1.8:   to_sym
+     1.7:   configurables
+     1.5:   each
+
+    12.7: Chef::Expander::Configuration::Base#apply_defaults lib/chef/expander/configuration.rb:206
+     4.8:   send
+     4.8:   assignment
+     1.9:   class
+     1.8:   to_sym
+     1.7:   defaults
+     1.5:   each
+     1.5:   branch
+
+    12.6: Chef::Expander::ChefCompatibleConfig#load lib/chef/expander/configuration.rb:56
+     7.5:   instance_eval
+     1.7:   read
+     1.4:   assignment
+     1.4:   expand_path
+     1.4:   branch
+     1.4:   readable?
+     0.4:   lit_fixnum
+
+    11.6: Chef::Expander::Configuration::Base::configurable lib/chef/expander/configuration.rb:113
+     3.1:   <<
+     3.0:   assignment
+     1.8:   validations
+     1.7:   configurables
+     1.5:   block_given?
+     1.5:   attr_accessor
+     1.5:   branch
+     1.5:   defaults
+
+     9.4: Chef::Expander::ChefCompatibleConfig#method_missing lib/chef/expander/configuration.rb:61
+     4.5:   branch
+     1.7:   []
+     1.6:   size
+     1.5:   first
+     1.5:   empty?
+     1.5:   assignment
+     1.4:   ==
+     0.4:   lit_fixnum
+
+     7.7: Chef::Expander::Configuration::Base#fail_if_invalid lib/chef/expander/configuration.rb:219
+     1.9:   message
+     1.7:   exit
+     1.7:   puts
+     1.6:   assignment
+     1.6:   validate!
+     1.5:   branch
+     0.5:   lit_fixnum
+
+     7.5: Chef::Expander::Configuration::Base#amqp_config lib/chef/expander/configuration.rb:244
+     1.5:   amqp_vhost
+     1.5:   amqp_host
+     1.5:   amqp_port
+     1.5:   amqp_user
+     1.5:   amqp_pass
+
+     6.6: main#none
+     6.6:   require
+
+     6.4: Chef::Expander::Configuration::Base::from_chef_compat_config lib/chef/expander/configuration.rb:84
+     1.7:   config_hash
+     1.5:   from_hash
+     1.5:   load
+     1.5:   assignment
+     1.5:   new
+
+     6.3: Chef::Expander::Configuration::Base#log_level= lib/chef/expander/configuration.rb:179
+     5.1:   assignment
+     1.7:   to_sym
+     1.7:   log_level
+     1.5:   branch
+
+     5.8: Chef::Expander::Configuration::Base#pidfile lib/chef/expander/configuration.rb:168
+     3.1:   branch
+     1.8:   euid
+     1.6:   ==
+     1.5:   equal?
+
+     3.4: Chef::Expander::Configuration::Base#log_location= lib/chef/expander/configuration.rb:191
+     1.6:   init
+     1.5:   branch
+     1.5:   nil?
+
+     3.2: Chef::Expander::Configuration::CLI::parse_options lib/chef/expander/configuration.rb:298
+     1.7:   dup
+     1.5:   parse!
+
+     1.8: Chef::Expander::config           lib/chef/expander/configuration.rb:32
+     1.3:   assignment
+     1.3:   new
+
+     1.5: Chef::Expander::Configuration::Base#invalid lib/chef/expander/configuration.rb:226
+     1.5:   raise
+
+     1.5: Chef::Expander::Configuration::Base#initialize lib/chef/expander/configuration.rb:195
+     1.5:   reset!
+
+     1.5: Chef::Expander::Configuration::Base::validations lib/chef/expander/configuration.rb:105
+     1.5:   assignment
+
+     1.5: Chef::Expander::Configuration::Base::configurables lib/chef/expander/configuration.rb:101
+     1.5:   assignment
+
+     1.5: Chef::Expander::Configuration::Base::defaults lib/chef/expander/configuration.rb:109
+     1.5:   assignment
+
+     1.4: Chef::Expander::ChefCompatibleConfig#initialize lib/chef/expander/configuration.rb:52
+     1.4:   assignment
+
+     1.3: Chef::Expander::ChefCompatibleConfig#none
+     1.3:   attr_reader
+

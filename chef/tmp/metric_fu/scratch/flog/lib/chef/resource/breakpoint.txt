@@ -1,0 +1,13 @@
+     8.0: flog total
+     4.0: flog/method average
+
+     6.9: Chef::Resource::Breakpoint#initialize lib/chef/resource/breakpoint.rb:26
+     4.8:   assignment
+     1.4:   caller
+     1.2:   super
+     1.2:   first
+     1.2:   <<
+
+     1.1: main#none
+     1.1:   require
+

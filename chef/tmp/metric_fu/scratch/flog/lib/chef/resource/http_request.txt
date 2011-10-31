@@ -1,0 +1,22 @@
+    14.5: flog total
+     2.9: flog/method average
+
+     7.9: Chef::Resource::HttpRequest#initialize lib/chef/resource/http_request.rb:25
+     7.8:   assignment
+     1.3:   push
+
+     1.8: Chef::Resource::HttpRequest#message lib/chef/resource/http_request.rb:43
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::HttpRequest#headers lib/chef/resource/http_request.rb:51
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::HttpRequest#url  lib/chef/resource/http_request.rb:35
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

@@ -19,6 +19,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 require 'tiny_server'
+require 'rspec'
 
 describe Chef::Knife::CookbookDelete do
   before(:all) do

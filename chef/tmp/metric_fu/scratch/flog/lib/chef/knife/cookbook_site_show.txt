@@ -1,0 +1,36 @@
+    44.4: flog total
+    11.1: flog/method average
+
+    21.5: Chef::Knife::CookbookSiteShow#run lib/chef/knife/cookbook_site_show.rb:27
+     5.3:   []
+     4.1:   branch
+     3.4:   noauth_rest
+     3.0:   get_rest
+     3.0:   assignment
+     2.1:   name_args
+     1.7:   gsub
+     1.5:   format_for_display
+     1.3:   output
+     1.3:   length
+     1.3:   lit_fixnum
+
+    19.4: Chef::Knife::CookbookSiteShow#get_cookbook_list lib/chef/knife/cookbook_site_show.rb:37
+    10.6:   assignment
+     6.1:   []
+     2.6:   branch
+     1.5:   length
+     1.5:   noauth_rest
+     1.4:   get_cookbook_list
+     1.3:   each
+     1.3:   get_rest
+     1.3:   <
+     1.3:   +
+     0.3:   lit_fixnum
+
+     2.4: Chef::Knife::CookbookSiteShow#none
+     1.2:   banner
+     1.2:   category
+
+     1.1: main#none
+     1.1:   require
+

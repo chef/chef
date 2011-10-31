@@ -1,0 +1,79 @@
+    70.2: flog total
+     5.9: flog/method average
+
+    17.4: Chef::IndexQueue::AmqpClient#queue_for_object lib/chef/index_queue/amqp_client.rb:68
+     4.0:   assignment
+     2.6:   branch
+     1.6:   raise
+     1.6:   fatal
+     1.6:   info
+     1.6:   +
+     1.5:   amqp_client
+     1.4:   <
+     1.4:   disconnected!
+     1.4:   obj_id_to_int
+     1.3:   queue
+     1.3:   yield
+     1.2:   %
+     0.9:   lit_fixnum
+
+    16.6: Chef::IndexQueue::AmqpClient#amqp_client lib/chef/index_queue/amqp_client.rb:40
+     4.3:   assignment
+     3.0:   fatal
+     3.0:   raise
+     2.5:   branch
+     1.7:   inspect
+     1.7:   amqp_opts
+     1.5:   new
+     1.5:   start
+     1.5:   qos
+     1.5:   debug
+     0.4:   lit_fixnum
+
+     6.9: Chef::IndexQueue::AmqpClient#reset! lib/chef/index_queue/amqp_client.rb:30
+     3.2:   amqp_client
+     2.5:   branch
+     2.4:   assignment
+     1.4:   stop
+     1.4:   connected?
+
+     6.0: Chef::IndexQueue::AmqpClient#amqp_opts lib/chef/index_queue/amqp_client.rb:104
+     6.0:   []
+
+     5.7: Chef::IndexQueue::AmqpClient#obj_id_to_int lib/chef/index_queue/amqp_client.rb:90
+     2.6:   to_i
+     1.5:   parse_hexdigest
+     1.5:   parse
+     1.2:   branch
+
+     4.3: Chef::IndexQueue::AmqpClient#consumer_id lib/chef/index_queue/amqp_client.rb:100
+     1.5:   random_create
+     1.3:   to_s
+     1.3:   []
+     1.2:   branch
+
+     3.6: Chef::IndexQueue::AmqpClient#none
+     2.2:   include
+     1.1:   private
+     0.3:   lit_fixnum
+
+     2.9: Chef::IndexQueue::AmqpClient#exchange lib/chef/index_queue/amqp_client.rb:58
+     1.4:   amqp_client
+     1.2:   assignment
+     1.2:   exchange
+
+     2.7: Chef::IndexQueue::AmqpClient#disconnected! lib/chef/index_queue/amqp_client.rb:62
+     1.2:   error
+     1.2:   assignment
+     1.2:   reset!
+
+     1.8: Chef::IndexQueue::AmqpClient#stop lib/chef/index_queue/amqp_client.rb:36
+     1.3:   stop
+     1.2:   branch
+
+     1.2: Chef::IndexQueue::AmqpClient#durable_queue? lib/chef/index_queue/amqp_client.rb:96
+     1.2:   []
+
+     1.2: Chef::IndexQueue::AmqpClient#initialize lib/chef/index_queue/amqp_client.rb:26
+     1.2:   reset!
+

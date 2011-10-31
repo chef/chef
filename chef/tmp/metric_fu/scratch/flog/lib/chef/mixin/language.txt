@@ -1,0 +1,95 @@
+   127.8: flog total
+    10.7: flog/method average
+
+    27.0: Chef::Mixin::Language::PlatformDependentValue#value_for_node lib/chef/mixin/language.rb:52
+    15.0:   []
+     7.8:   key?
+     7.4:   branch
+     4.2:   assignment
+     2.8:   to_s
+
+    16.5: Chef::Mixin::Language#search     lib/chef/mixin/language.rb:128
+     4.8:   new
+     4.1:   branch
+     3.1:   assignment
+     2.9:   search
+     1.6:   <<
+     1.6:   length
+     1.6:   block_pass
+     1.4:   block_given?
+     1.4:   >=
+     0.4:   lit_fixnum
+
+    15.3: Chef::Mixin::Language::PlatformDependentValue#normalize_keys lib/chef/mixin/language.rb:77
+    12.7:   assignment
+     3.0:   branch
+     2.8:   inject
+     1.8:   Array
+     1.7:   to_s
+     1.6:   each
+
+    12.8: Chef::Mixin::Language::PlatformDependentValue#set lib/chef/mixin/language.rb:67
+     4.9:   assignment
+     3.3:   to_s
+     3.0:   branch
+     1.8:   Array
+     1.7:   normalize_keys
+     1.6:   each
+     1.6:   assert_valid_platform_values!
+     1.4:   ==
+
+    12.7: Chef::Mixin::Language#data_bag_item lib/chef/mixin/language.rb:152
+     3.4:   inspect
+     1.7:   to_s
+     1.5:   load
+     1.5:   raise
+     1.5:   error
+     1.5:   validate_name!
+     1.5:   validate_id!
+     1.3:   branch
+
+    11.1: Chef::Mixin::Language#data_bag   lib/chef/mixin/language.rb:143
+     1.7:   inspect
+     1.7:   to_s
+     1.5:   raise
+     1.5:   assignment
+     1.5:   error
+     1.5:   load
+     1.5:   validate_name!
+     1.5:   keys
+     1.3:   branch
+
+     9.1: Chef::Mixin::Language#platform?  lib/chef/mixin/language.rb:118
+     4.2:   assignment
+     2.7:   branch
+     1.8:   node
+     1.6:   []
+     1.5:   flatten
+     1.4:   ==
+     1.3:   each
+
+     6.7: Chef::Mixin::Language::PlatformDependentValue#assert_valid_platform_values! lib/chef/mixin/language.rb:87
+     1.8:   inspect
+     1.6:   <<
+     1.6:   assignment
+     1.6:   raise
+     1.4:   kind_of?
+     1.4:   branch
+
+     6.7: Chef::Mixin::Language::PlatformDependentValue#initialize lib/chef/mixin/language.rb:47
+     5.9:   assignment
+     1.5:   set
+     1.4:   each
+     1.4:   branch
+
+     4.4: main#none
+     4.4:   require
+
+     4.3: Chef::Mixin::Language#value_for_platform lib/chef/mixin/language.rb:105
+     1.5:   new
+     1.5:   node
+     1.3:   value_for_node
+
+     1.3: Chef::Mixin::Language::PlatformDependentValue#none
+     1.3:   private
+

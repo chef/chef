@@ -1,0 +1,11 @@
+     4.4: flog total
+     2.2: flog/method average
+
+     2.8: Numeric#fdiv                     lib/chef/monkey_patches/numeric.rb:3
+     1.5:   to_f
+     1.3:   /
+
+     1.6: main#none
+     1.1:   respond_to?
+     1.1:   branch
+

@@ -1,0 +1,9 @@
+     2.0: flog total
+     1.0: flog/method average
+
+     1.0: namespace#slices                 lib/chef-server-webui/slicetasks.rb:1
+     1.0:   namespace
+
+     1.0: namespace::namespace#chefserverslice lib/chef-server-webui/slicetasks.rb:2
+     1.0:   namespace
+

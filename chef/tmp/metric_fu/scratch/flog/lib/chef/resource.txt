@@ -1,0 +1,377 @@
+   716.2: flog total
+    17.1: flog/method average
+
+    99.1: Chef::Resource#build_from_file   lib/chef/resource.rb:492
+    34.6:   assignment
+    24.0:   define_method
+    10.5:   sclass
+     8.6:   branch
+     5.7:   actions_to_create
+     5.4:   include
+     5.3:   push
+     4.2:   instance_method
+     3.8:   convert_to_class_name
+     2.9:   class
+     2.7:   allowed_actions
+     2.7:   attr_accessor
+     2.5:   bind
+     2.3:   call
+     2.3:   shift
+     2.3:   flatten!
+     2.3:   to_sym
+     2.1:   class_from_file
+     2.0:   info
+     1.9:   debug
+     1.9:   filename_to_qualified_string
+     1.9:   const_set
+     1.9:   new
+     1.9:   const_defined?
+
+    61.9: Chef::Resource::Notification#resolve_resource_reference lib/chef/resource.rb:43
+    13.2:   notifying_resource
+    12.7:   resource
+    11.2:   assignment
+     5.4:   source_line
+     5.0:   raise
+     4.6:   branch
+     3.6:   action
+     3.6:   backtrace
+     3.2:   new
+     3.2:   set_backtrace
+     2.0:   Array
+     1.8:   inspect
+     1.8:   size
+     1.6:   kind_of?
+     1.6:   >
+     1.6:   find
+     0.5:   lit_fixnum
+
+    54.5: Chef::Resource#run_action        lib/chef/resource.rb:405
+    11.5:   branch
+     6.9:   defined_at
+     4.9:   not_if
+     4.9:   only_if
+     4.5:   send
+     4.5:   assignment
+     3.6:   debug
+     3.5:   message
+     3.1:   error
+     1.8:   backtrace
+     1.8:   not_if_args
+     1.8:   only_if_args
+     1.6:   exception
+     1.6:   set_backtrace
+     1.6:   raise
+     1.6:   level
+     1.5:   load_current_resource
+     1.5:   provider_for_resource
+     1.4:   ignore_failure
+     1.4:   []
+     1.4:   ==
+     1.4:   info
+     1.3:   updated_by_last_action
+
+    42.6: Chef::Resource#notifies          lib/chef/resource.rb:249
+    15.2:   assignment
+     9.3:   branch
+     7.9:   inspect
+     5.3:   size
+     4.0:   []
+     3.6:   add_notification
+     3.5:   each
+     3.1:   >
+     3.1:   raise
+     2.0:   debug
+     1.7:   flatten
+     1.6:   <
+     1.5:   fatal
+     1.4:   lit_fixnum
+
+    42.0: Chef::Resource#none
+    15.6:   include
+    12.0:   attr_accessor
+     7.2:   attr_reader
+     6.0:   sclass
+     1.2:   private
+
+    32.0: Chef::Resource#to_text           lib/chef/resource.rb:329
+     7.1:   assignment
+     7.1:   branch
+     4.1:   <<
+     3.6:   name
+     2.1:   class
+     1.9:   to_s
+     1.7:   sub
+     1.7:   inspect
+     1.7:   convert_to_snake_case
+     1.7:   instance_variables
+     1.6:   empty?
+     1.6:   respond_to?
+     1.6:   to_sym
+     1.5:   instance_variable_get
+     1.5:   +
+     1.5:   map
+     1.3:   each
+     1.3:   -
+
+    31.4: Chef::Resource#initialize        lib/chef/resource.rb:505
+    29.9:   assignment
+     3.9:   new
+     2.2:   super
+     1.6:   node
+     1.4:   deprecated_ivar
+     1.3:   branch
+     0.3:   lit_fixnum
+
+    28.3: Chef::Resource#attribute         lib/chef/resource.rb:476
+     9.5:   define_method
+     9.5:   class_eval
+     5.8:   assignment
+     4.3:   to_sym
+     2.3:   to_s
+     2.0:   set_or_return
+     1.9:   branch
+
+    26.8: Chef::Resource#load_prior_resource lib/chef/resource.rb:151
+     6.0:   branch
+     5.1:   to_s
+     4.5:   assignment
+     3.8:   to_sym
+     3.4:   ==
+     1.9:   instance_variable_get
+     1.9:   run_context
+     1.7:   instance_variable_set
+     1.7:   instance_variables
+     1.7:   resource_collection
+     1.5:   lookup
+     1.5:   each
+     1.5:   debug
+
+    19.6: Chef::Resource#lookup_provider_constant lib/chef/resource.rb:571
+     4.8:   to_s
+     3.8:   class
+     3.4:   provider_base
+     3.0:   raise
+     2.7:   branch
+     1.6:   convert_to_class_name
+     1.4:   assignment
+     1.4:   escape
+     1.4:   const_get
+
+    19.4: Chef::Resource#inspect           lib/chef/resource.rb:341
+     7.7:   assignment
+     3.0:   branch
+     3.0:   inject
+     2.9:   <<
+     2.0:   instance_variable_get
+     1.8:   inspect
+     1.7:   to_s
+     1.7:   instance_variables
+     1.6:   to_sym
+     1.5:   map
+     1.3:   -
+
+    19.3: Chef::Resource#to_json           lib/chef/resource.rb:349
+     8.3:   assignment
+     2.8:   branch
+     1.7:   instance_variables
+     1.6:   to_s
+     1.6:   to_sym
+     1.5:   map
+     1.5:   class
+     1.4:   sub
+     1.4:   instance_variable_get
+     1.3:   -
+     1.3:   name
+     1.3:   each
+     1.3:   to_json
+     1.3:   new
+
+    18.7: Chef::Resource#defined_at        lib/chef/resource.rb:394
+     6.5:   source_line
+     5.4:   branch
+     4.8:   assignment
+     3.2:   split
+     2.9:   recipe_name
+     2.8:   cookbook_name
+     1.4:   []
+     0.4:   lit_fixnum
+
+    18.4: Chef::Resource#method_missing    lib/chef/resource.rb:143
+     4.6:   enclosing_provider
+     4.2:   send
+     3.2:   to_s
+     2.6:   branch
+     1.8:   class
+     1.6:   block_pass
+     1.4:   raise
+     1.4:   respond_to?
+
+    17.8: Chef::Resource#to_hash           lib/chef/resource.rb:362
+     8.6:   assignment
+     3.1:   to_sym
+     2.8:   branch
+     1.9:   to_s
+     1.7:   sub
+     1.7:   instance_variables
+     1.5:   instance_variable_get
+     1.5:   map
+     1.3:   -
+     1.3:   each
+     1.3:   new
+
+    16.6: Chef::Resource#json_create       lib/chef/resource.rb:466
+     7.9:   assignment
+     6.5:   []
+     2.2:   to_sym
+     2.0:   instance_variable_set
+     1.9:   each
+     1.9:   branch
+     1.9:   new
+
+    16.6: Chef::Resource::Notification#duplicates? lib/chef/resource.rb:34
+     4.2:   branch
+     3.4:   resource
+     3.4:   action
+     3.0:   respond_to?
+     3.0:   ==
+     1.6:   raise
+     1.6:   assignment
+     1.6:   inspect
+
+    13.2: Chef::Resource#action            lib/chef/resource.rb:187
+     9.0:   assignment
+     5.8:   branch
+     1.6:   validate
+     1.6:   to_sym
+     1.5:   collect
+     1.5:   each
+     1.5:   kind_of?
+
+    12.8: Chef::Resource#resolve_notification_references lib/chef/resource.rb:292
+     3.6:   run_context
+     3.2:   resource_collection
+     2.8:   resolve_resource_reference
+     2.8:   assignment
+     2.6:   each
+     2.6:   branch
+
+    12.5: Chef::Resource#add_notification  lib/chef/resource.rb:272
+     5.7:   branch
+     4.0:   assignment
+     1.7:   inspect
+     1.6:   notifies_immediately
+     1.6:   notifies_delayed
+     1.5:   raise
+     1.4:   to_s
+     1.3:   flatten
+     1.3:   each
+
+    10.3: Chef::Resource#node              lib/chef/resource.rb:516
+     6.0:   run_context
+     4.2:   node
+     1.3:   branch
+
+    10.2: Chef::Resource#updated=          lib/chef/resource.rb:128
+     4.0:   warn
+     2.7:   assignment
+     1.7:   caller
+     1.5:   []
+     1.3:   each
+     1.3:   updated_by_last_action
+     1.3:   branch
+
+     9.9: Chef::Resource#only_if           lib/chef/resource.rb:372
+     8.8:   assignment
+     4.3:   branch
+     1.3:   block_given?
+
+     9.9: Chef::Resource#not_if            lib/chef/resource.rb:383
+     8.8:   assignment
+     4.3:   branch
+     1.3:   block_given?
+
+     8.8: main#none
+     8.8:   require
+
+     8.0: Chef::Resource#noop              lib/chef/resource.rb:214
+     4.3:   branch
+     3.2:   ==
+     2.8:   assignment
+     1.6:   raise
+     1.3:   set_if_args
+
+     6.6: Chef::Resource#provider          lib/chef/resource.rb:174
+     2.8:   kind_of?
+     2.6:   assignment
+     2.6:   branch
+     1.4:   lookup_provider_constant
+     1.3:   set_or_return
+
+     5.9: Chef::Resource#name              lib/chef/resource.rb:207
+     2.8:   assignment
+     2.8:   branch
+     1.6:   raise
+     1.5:   kind_of?
+     1.3:   set_if_args
+
+     5.8: Chef::Resource#subscribes        lib/chef/resource.rb:309
+     4.0:   assignment
+     1.4:   notifies
+     1.3:   each
+     1.3:   flatten
+     1.3:   branch
+
+     5.7: Chef::Resource#provider_base     lib/chef/resource.rb:562
+     5.7:   assignment
+
+     4.8: Chef::Resource#is                lib/chef/resource.rb:317
+     1.5:   size
+     1.4:   first
+     1.3:   branch
+     1.3:   ==
+     0.4:   lit_fixnum
+
+     4.5: Chef::Resource#resources         lib/chef/resource.rb:305
+     1.7:   run_context
+     1.5:   resource_collection
+     1.3:   find
+
+     3.3: Chef::Resource#supports          lib/chef/resource.rb:166
+     2.7:   assignment
+     1.3:   branch
+     1.3:   any?
+
+     2.8: Chef::Resource#notifies_delayed  lib/chef/resource.rb:301
+     1.5:   new
+     1.3:   <<
+
+     2.8: Chef::Resource#notifies_immediately lib/chef/resource.rb:297
+     1.5:   new
+     1.3:   <<
+
+     2.6: Chef::Resource#updated_by_last_action lib/chef/resource.rb:451
+     2.6:   assignment
+
+     2.2: Chef::Resource::Notification#none
+     2.2:   new
+
+     1.8: Chef::Resource#epic_fail         lib/chef/resource.rb:245
+     1.3:   ignore_failure
+     1.3:   assignment
+
+     1.8: Chef::Resource#retry_delay       lib/chef/resource.rb:237
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource#retries           lib/chef/resource.rb:229
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource#ignore_failure    lib/chef/resource.rb:221
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.3: Chef::Resource#updated?          lib/chef/resource.rb:460
+     1.3:   updated
+

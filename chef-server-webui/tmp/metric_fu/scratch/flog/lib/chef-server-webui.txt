@@ -1,0 +1,9 @@
+     5.0: flog total
+     5.0: flog/method average
+
+     5.0: main#none
+     1.5:   dirname
+     1.3:   +
+     1.1:   expand_path
+     1.1:   require
+

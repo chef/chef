@@ -1,0 +1,250 @@
+   459.0: flog total
+    18.4: flog/method average
+
+    97.8: Chef::REST#retriable_rest_request lib/chef/rest.rb:278
+    12.0:   http_retry_count
+    10.2:   +
+    10.1:   assignment
+     8.7:   path
+     8.7:   port
+     8.7:   host
+     6.0:   raise
+     5.8:   branch
+     5.7:   -
+     5.1:   error
+     5.1:   sleep
+     4.5:   >
+     4.2:   **
+     3.8:   http_retry_delay
+     3.5:   lit_fixnum
+     3.4:   message
+     1.9:   rand
+     1.5:   replace
+     1.5:   yield
+     1.3:   debug
+     1.3:   new
+
+    72.6: Chef::REST#run_request           lib/chef/rest.rb:168
+    23.1:   branch
+    21.3:   assignment
+    13.4:   []
+     6.6:   kind_of?
+     6.2:   body
+     3.9:   from_json
+     2.4:   to_s
+     2.4:   join
+     2.3:   respond_to?
+     2.1:   <<
+     2.1:   message
+     2.1:   code
+     2.1:   warn
+     2.0:   create_url
+     1.9:   error!
+     1.8:   run_request
+     1.8:   chomp
+     1.7:   follow_redirect
+     1.7:   read_body
+     1.7:   ==
+     1.7:   stream_to_tempfile
+     1.5:   call
+     1.4:   to_json
+     1.3:   retriable_rest_request
+     1.3:   build_headers
+
+    62.3: Chef::REST#api_request           lib/chef/rest.rb:214
+    15.3:   assignment
+    14.5:   branch
+    12.8:   []
+     6.1:   body
+     3.7:   from_json
+     2.3:   to_s
+     2.3:   join
+     2.2:   respond_to?
+     2.0:   info
+     2.0:   <<
+     2.0:   message
+     2.0:   create_url
+     2.0:   code
+     1.9:   chomp
+     1.8:   warn
+     1.8:   error!
+     1.8:   api_request
+     1.7:   follow_redirect
+     1.6:   redirected_to
+     1.6:   read_body
+     1.5:   kind_of?
+     1.5:   call
+     1.4:   to_json
+     1.3:   retriable_rest_request
+     1.3:   build_headers
+
+    53.0: Chef::REST#register              lib/chef/rest.rb:70
+    13.9:   branch
+    12.4:   assignment
+     6.9:   raise
+     6.4:   []
+     2.2:   response
+     2.0:   +
+     2.0:   code
+     2.0:   inspect
+     2.0:   print
+     2.0:   chmod
+     1.8:   debug
+     1.8:   save
+     1.8:   ==
+     1.8:   open
+     1.8:   has_key?
+     1.8:   throw
+     1.8:   warn
+     1.8:   config
+     1.5:   lit_fixnum
+     1.5:   upto
+     1.4:   writable?
+     1.4:   exists?
+     1.3:   name
+     1.3:   catch
+     1.3:   new
+
+    38.2: Chef::REST#streaming_request     lib/chef/rest.rb:249
+    14.5:   branch
+    12.4:   assignment
+     5.5:   close!
+     4.1:   block_pass
+     3.5:   stream_to_tempfile
+     3.2:   kind_of?
+     2.1:   create_url
+     1.9:   streaming_request
+     1.8:   follow_redirect
+     1.8:   yield
+     1.8:   error!
+     1.7:   block_given?
+     1.6:   redirected_to
+     1.5:   call
+     1.3:   retriable_rest_request
+     1.3:   build_headers
+
+    26.5: Chef::REST#stream_to_tempfile    lib/chef/rest.rb:371
+     9.3:   assignment
+     4.3:   branch
+     1.9:   size
+     1.9:   header
+     1.7:   +
+     1.7:   write
+     1.7:   []
+     1.7:   path
+     1.7:   to_s
+     1.6:   binmode
+     1.5:   close!
+     1.5:   raise
+     1.5:   close
+     1.5:   to_i
+     1.5:   read_body
+     1.5:   open
+     1.5:   debug
+
+    17.2: Chef::REST#build_headers         lib/chef/rest.rb:361
+     9.4:   assignment
+     6.5:   branch
+     2.9:   []
+     2.8:   merge!
+     1.6:   bytesize
+     1.6:   authentication_headers
+     1.4:   to_s
+     1.3:   sign_requests?
+     1.3:   merge
+
+    17.1: Chef::REST#initialize            lib/chef/rest.rb:43
+    15.6:   assignment
+     4.0:   []
+     1.3:   branch
+     1.3:   new
+     1.3:   instance
+     0.3:   lit_fixnum
+
+    14.0: Chef::REST#follow_redirect       lib/chef/rest.rb:336
+     5.8:   assignment
+     3.2:   redirect_limit
+     3.1:   yield
+     2.8:   branch
+     1.5:   raise
+     1.4:   debug
+     1.4:   +
+     1.4:   >=
+     0.4:   lit_fixnum
+
+     7.7: main#none
+     7.7:   require
+
+     7.2: Chef::REST#authentication_headers lib/chef/rest.rb:318
+     2.6:   assignment
+     1.5:   auth_credentials
+     1.3:   port
+     1.3:   signature_headers
+     1.3:   host
+     1.3:   path
+
+     6.7: Chef::REST#get_rest              lib/chef/rest.rb:110
+     3.2:   create_url
+     2.6:   assignment
+     1.4:   streaming_request
+     1.4:   api_request
+     1.3:   branch
+
+     5.2: Chef::REST#fetch                 lib/chef/rest.rb:138
+     2.7:   assignment
+     1.5:   create_url
+     1.4:   yield
+     1.3:   streaming_request
+     1.3:   branch
+
+     4.9: Chef::REST#redirected_to         lib/chef/rest.rb:353
+     2.8:   kind_of?
+     2.6:   branch
+     1.4:   []
+
+     3.6: Chef::REST#none
+     1.2:   private
+     1.2:   attr_reader
+     1.2:   attr_accessor
+
+     3.3: Chef::REST#sign_requests?        lib/chef/rest.rb:150
+     1.6:   auth_credentials
+     1.4:   sign_requests?
+     1.3:   branch
+
+     3.1: Chef::REST#create_url            lib/chef/rest.rb:142
+     2.8:   parse
+     1.3:   branch
+
+     3.1: Chef::REST#post_rest             lib/chef/rest.rb:124
+     1.5:   create_url
+     1.3:   api_request
+     1.3:   assignment
+
+     3.1: Chef::REST#delete_rest           lib/chef/rest.rb:119
+     1.5:   create_url
+     1.3:   api_request
+     1.3:   assignment
+
+     3.1: Chef::REST#put_rest              lib/chef/rest.rb:129
+     1.5:   create_url
+     1.3:   api_request
+     1.3:   assignment
+
+     2.8: Chef::REST#http_retry_delay      lib/chef/rest.rb:324
+     1.5:   config
+     1.3:   []
+
+     2.8: Chef::REST#http_retry_count      lib/chef/rest.rb:328
+     1.5:   config
+     1.3:   []
+
+     1.3: Chef::REST#signing_key_filename  lib/chef/rest.rb:53
+     1.3:   key_file
+
+     1.3: Chef::REST#signing_key           lib/chef/rest.rb:61
+     1.3:   raw_key
+
+     1.3: Chef::REST#client_name           lib/chef/rest.rb:57
+     1.3:   client_name
+

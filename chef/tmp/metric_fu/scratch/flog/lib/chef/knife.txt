@@ -1,0 +1,379 @@
+   711.0: flog total
+    17.8: flog/method average
+
+   112.3: Chef::Knife#configure_chef       lib/chef/knife.rb:289
+    41.8:   []
+    36.0:   config
+    27.9:   branch
+    20.6:   assignment
+     3.8:   class
+     3.5:   join
+     3.4:   exist?
+     3.4:   chef_config_dir
+     3.1:   expand_path
+     1.7:   ui
+     1.6:   dirname
+     1.5:   warn
+     1.4:   read_config_file
+     1.3:   debug
+     1.3:   init
+     1.3:   nil?
+     1.3:   level
+     0.4:   lit_fixnum
+
+    81.1: Chef::Knife#humanize_http_exception lib/chef/knife.rb:420
+    28.6:   ui
+    14.3:   format_rest_error
+    12.7:   info
+    12.7:   error
+    11.1:   branch
+     3.6:   username
+     3.6:   server_url
+     1.8:   api_key
+     1.7:   message
+     1.3:   response
+     1.3:   assignment
+
+    67.6: Chef::Knife#read_config_file     lib/chef/knife.rb:344
+    12.7:   ui
+    10.8:   assignment
+     5.8:   branch
+     5.3:   message
+     5.3:   escape
+     5.1:   []
+     3.7:   color
+     3.6:   to_i
+     3.4:   highlight_config_error
+     3.0:   exit
+     3.0:   error
+     3.0:   info
+     1.9:   first
+     1.9:   class
+     1.9:   lit_fixnum
+     1.8:   +
+     1.7:   name
+     1.7:   backtrace
+     1.6:   msg
+     1.5:   empty?
+     1.5:   grep
+     1.5:   each
+     1.4:   from_file
+
+    51.9: Chef::Knife#humanize_exception   lib/chef/knife.rb:398
+    16.0:   ui
+     8.3:   branch
+     8.0:   info
+     6.2:   error
+     5.8:   class
+     5.2:   message
+     3.4:   name
+     1.8:   api_key
+     1.8:   common_name
+     1.5:   raise
+     1.5:   humanize_http_exception
+
+    49.4: Chef::Knife#highlight_config_error lib/chef/knife.rb:367
+    12.9:   assignment
+    11.2:   ui
+     6.4:   []
+     5.3:   msg
+     4.5:   color
+     3.9:   branch
+     2.8:   lit_fixnum
+     2.0:   +
+     1.9:   -
+     1.8:   to_s
+     1.7:   new
+     1.6:   chomp
+     1.6:   rjust
+     1.5:   readlines
+     1.4:   <<
+     1.3:   ==
+     1.3:   each
+     1.3:   each_with_index
+
+    35.1: Chef::Knife::list_commands       lib/chef/knife.rb:131
+    11.2:   assignment
+     9.8:   branch
+     6.0:   msg
+     5.1:   []
+     4.6:   subcommands_by_category
+     4.1:   subcommands
+     2.8:   each
+     1.9:   banner
+     1.7:   upcase
+     1.5:   sort
+     1.4:   +
+     1.4:   key?
+     1.3:   load_commands
+
+    29.1: Chef::Knife#initialize           lib/chef/knife.rb:259
+     9.3:   assignment
+     3.9:   branch
+     3.0:   config
+     2.8:   join
+     2.7:   delete
+     2.6:   reject!
+     1.7:   opt_parser
+     1.7:   class
+     1.5:   exit
+     1.5:   msg
+     1.5:   snake_case_name
+     1.4:   ==
+     1.3:   split
+     1.3:   []
+     1.3:   parse_options
+     1.3:   super
+     1.3:   new
+     0.4:   lit_fixnum
+
+    27.6: Chef::Knife#none
+    15.6:   def_delegator
+     4.8:   extend
+     2.4:   attr_accessor
+     2.4:   include
+     1.2:   public
+     1.2:   private
+     1.2:   assignment
+
+    24.2: Chef::Knife::subcommand_not_found! lib/chef/knife.rb:212
+     5.4:   branch
+     5.2:   ui
+     4.2:   assignment
+     3.2:   info
+     2.9:   list_commands
+     1.7:   []
+     1.6:   join
+     1.5:   ==
+     1.4:   fatal
+     1.4:   find
+     1.3:   want_help?
+     1.3:   exit
+     1.3:   guess_category
+     0.4:   lit_fixnum
+
+    20.9: Chef::Knife::chef_config_dir     lib/chef/knife.rb:239
+     6.2:   branch
+     4.8:   assignment
+     2.1:   []
+     1.9:   +
+     1.9:   length
+     1.8:   directory?
+     1.8:   exist?
+     1.7:   join
+     1.7:   -
+     1.7:   pwd
+     1.5:   downto
+     1.5:   split
+     1.3:   nil?
+     0.5:   lit_fixnum
+
+    19.7: Chef::Knife::subcommand_class_from lib/chef/knife.rb:181
+     8.3:   assignment
+     6.8:   branch
+     3.2:   subcommands
+     2.8:   []
+     1.7:   first
+     1.6:   pop
+     1.5:   empty?
+     1.5:   join
+     1.5:   gsub
+     1.4:   subcommand_not_found!
+     1.3:   select
+
+    18.2: Chef::Knife::guess_category      lib/chef/knife.rb:169
+     8.7:   assignment
+     8.5:   branch
+     1.7:   subcommands_by_category
+     1.6:   pop
+     1.6:   split
+     1.5:   empty?
+     1.5:   join
+     1.5:   key?
+     1.5:   map!
+     1.3:   flatten!
+     1.3:   select
+
+    17.5: Chef::Knife#run_with_pretty_exceptions lib/chef/knife.rb:387
+     4.3:   branch
+     1.9:   config
+     1.8:   ui
+     1.7:   []
+     1.6:   raise
+     1.6:   error
+     1.5:   ==
+     1.5:   exit
+     1.5:   humanize_exception
+     1.5:   respond_to?
+     1.5:   run
+     1.4:   assignment
+     0.9:   lit_fixnum
+
+    16.8: Chef::Knife::subcommands_by_category lib/chef/knife.rb:119
+    12.7:   assignment
+     4.3:   branch
+     2.0:   subcommand_category
+     1.8:   []
+     1.7:   subcommands
+     1.6:   <<
+     1.5:   each
+     1.5:   new
+
+    15.6: Chef::Knife#delete_object        lib/chef/knife.rb:484
+     5.5:   assignment
+     3.9:   branch
+     1.6:   format_for_display
+     1.5:   load
+     1.5:   destroy
+     1.5:   config
+     1.4:   call
+     1.4:   output
+     1.3:   []
+     1.3:   confirm
+     1.3:   msg
+     1.3:   block_given?
+
+    13.1: Chef::Knife::run                 lib/chef/knife.rb:159
+     5.2:   assignment
+     1.5:   options
+     1.4:   load_deps
+     1.3:   merge!
+     1.3:   load_commands
+     1.3:   configure_chef
+     1.3:   run_with_pretty_exceptions
+     1.3:   want_help?
+     1.3:   branch
+     1.3:   subcommand_class_from
+     1.3:   new
+
+    12.4: Chef::Knife#create_object        lib/chef/knife.rb:468
+     5.3:   assignment
+     2.6:   branch
+     1.5:   config
+     1.4:   output
+     1.4:   call
+     1.4:   save
+     1.3:   []
+     1.3:   block_given?
+     1.3:   edit_data
+     1.3:   msg
+
+    10.5: Chef::Knife#format_rest_error    lib/chef/knife.rb:462
+     3.6:   body
+     2.0:   from_json
+     1.8:   []
+     1.6:   Array
+     1.4:   join
+     1.3:   branch
+
+     8.8: main#none
+     8.8:   require
+
+     8.7: Chef::Knife#parse_options        lib/chef/knife.rb:281
+     1.9:   to_s
+     1.7:   +
+     1.5:   exit
+     1.5:   puts
+     1.5:   show_usage
+     1.4:   assignment
+     1.3:   branch
+     0.4:   lit_fixnum
+
+     8.2: Chef::Knife::snake_case_name     lib/chef/knife.rb:94
+     2.0:   name
+     1.8:   split
+     1.6:   last
+     1.4:   convert_to_snake_case
+     1.3:   unnamed?
+     1.3:   branch
+
+     7.9: Chef::Knife#show_usage           lib/chef/knife.rb:383
+     1.9:   opt_parser
+     1.7:   to_s
+     1.5:   +
+     1.5:   stdout
+     1.3:   puts
+
+     6.9: Chef::Knife::subcommand_category lib/chef/knife.rb:90
+     2.7:   branch
+     1.9:   snake_case_name
+     1.7:   split
+     1.5:   first
+     1.3:   unnamed?
+
+     6.1: Chef::Knife::unnamed?            lib/chef/knife.rb:103
+     3.2:   name
+     1.4:   empty?
+     1.4:   nil?
+     1.3:   branch
+
+     4.6: Chef::Knife#noauth_rest          lib/chef/knife.rb:507
+     1.6:   []
+     1.4:   new
+     1.4:   require
+     1.3:   assignment
+
+     4.6: Chef::Knife#rest                 lib/chef/knife.rb:500
+     1.6:   []
+     1.4:   new
+     1.4:   require
+     1.3:   assignment
+
+     4.5: Chef::Knife::inherited           lib/chef/knife.rb:71
+     1.4:   subcommands
+     1.4:   snake_case_name
+     1.4:   assignment
+     1.3:   unnamed?
+     1.3:   branch
+
+     4.5: Chef::Knife::common_name         lib/chef/knife.rb:98
+     1.7:   snake_case_name
+     1.5:   split
+     1.3:   join
+
+     3.1: Chef::Knife::load_commands       lib/chef/knife.rb:111
+     1.5:   subcommand_loader
+     1.3:   load_commands
+     1.3:   assignment
+
+     3.1: Chef::Knife::msg                 lib/chef/knife.rb:62
+     1.5:   ui
+     1.3:   assignment
+     1.3:   msg
+
+     3.1: Chef::Knife::subcommand_loader   lib/chef/knife.rb:107
+     1.5:   chef_config_dir
+     1.3:   assignment
+     1.3:   new
+
+     2.3: Chef::Knife::want_help?          lib/chef/knife.rb:232
+     1.4:   assignment
+     1.3:   any?
+     1.3:   branch
+
+     1.9: Chef::Knife::load_deps           lib/chef/knife.rb:201
+     1.4:   call
+     1.3:   branch
+
+     1.8: Chef::Knife::ui                  lib/chef/knife.rb:58
+     1.3:   assignment
+     1.3:   new
+
+     1.3: Chef::Knife#server_url           lib/chef/knife.rb:514
+     1.3:   []
+
+     1.3: Chef::Knife#api_key              lib/chef/knife.rb:454
+     1.3:   []
+
+     1.3: Chef::Knife#username             lib/chef/knife.rb:450
+     1.3:   []
+
+     1.3: Chef::Knife::deps                lib/chef/knife.rb:197
+     1.3:   assignment
+
+     1.3: Chef::Knife::category            lib/chef/knife.rb:86
+     1.3:   assignment
+
+     1.3: Chef::Knife::reset_subcommands!  lib/chef/knife.rb:66
+     1.3:   assignment
+

@@ -1,0 +1,46 @@
+    36.8: flog total
+     3.7: flog/method average
+
+    18.5: Chef::Resource::RemoteDirectory#initialize lib/chef/resource/remote_directory.rb:25
+    18.2:   assignment
+     1.3:   basename
+     1.3:   push
+     0.7:   lit_fixnum
+
+     3.1: Chef::Resource::RemoteDirectory#files_group lib/chef/resource/remote_directory.rb:67
+     1.5:   []
+     1.3:   set_or_return
+     1.3:   assignment
+
+     3.1: Chef::Resource::RemoteDirectory#files_owner lib/chef/resource/remote_directory.rb:83
+     1.5:   []
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::RemoteDirectory#files_mode lib/chef/resource/remote_directory.rb:75
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::RemoteDirectory#cookbook lib/chef/resource/remote_directory.rb:99
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::RemoteDirectory#source lib/chef/resource/remote_directory.rb:43
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::RemoteDirectory#purge lib/chef/resource/remote_directory.rb:59
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::RemoteDirectory#overwrite lib/chef/resource/remote_directory.rb:91
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::RemoteDirectory#files_backup lib/chef/resource/remote_directory.rb:51
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,6 @@
+     1.0: flog total
+     1.0: flog/method average
+
+     1.0: Chef#none
+     1.0:   new
+

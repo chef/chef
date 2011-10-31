@@ -1,0 +1,9 @@
+     3.6: flog total
+     1.8: flog/method average
+
+     2.4: Chef::Resource::DeployRevision#initialize lib/chef/resource/deploy_revision.rb:25
+     2.4:   assignment
+
+     1.2: Chef::Resource::DeployBranch#initialize lib/chef/resource/deploy_revision.rb:33
+     1.2:   assignment
+

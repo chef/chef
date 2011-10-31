@@ -1,0 +1,9 @@
+     4.7: flog total
+     2.4: flog/method average
+
+     3.6: Chef::Resource::Ruby#initialize  lib/chef/resource/ruby.rb:25
+     3.6:   assignment
+
+     1.1: main#none
+     1.1:   require
+

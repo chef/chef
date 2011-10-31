@@ -1,0 +1,76 @@
+   109.3: flog total
+    10.9: flog/method average
+
+    50.9: Chef::Provider::User::Pw#set_options lib/chef/provider/user/pw.rb:69
+    27.0:   send
+    13.1:   assignment
+     7.2:   branch
+     4.9:   []
+     3.3:   <<
+     3.3:   debug
+     1.6:   <=>
+     1.5:   to_sym
+     1.5:   ==
+     1.5:   supports
+     1.5:   sort
+     1.3:   each
+     1.3:   username
+
+    26.3: Chef::Provider::User::Pw#modify_password lib/chef/provider/user/pw.rb:95
+    11.0:   assignment
+     4.8:   password
+     4.3:   branch
+     3.3:   new_resource
+     2.9:   debug
+     2.8:   ==
+     1.8:   inspect
+     1.7:   exitstatus
+     1.6:   raise
+     1.6:   puts
+     1.5:   popen4
+     1.5:   username
+
+     7.0: Chef::Provider::User::Pw#remove_user lib/chef/provider/user/pw.rb:45
+     1.5:   supports
+     1.4:   <<
+     1.3:   []
+     1.3:   username
+     1.3:   assignment
+     1.3:   branch
+     1.3:   run_command
+
+     5.6: Chef::Provider::User::Pw#create_user lib/chef/provider/user/pw.rb:31
+     1.5:   set_options
+     1.3:   assignment
+     1.3:   <<
+     1.3:   modify_password
+     1.3:   run_command
+
+     5.6: Chef::Provider::User::Pw#manage_user lib/chef/provider/user/pw.rb:38
+     1.5:   set_options
+     1.3:   assignment
+     1.3:   <<
+     1.3:   modify_password
+     1.3:   run_command
+
+     4.2: Chef::Provider::User::Pw#check_lock lib/chef/provider/user/pw.rb:51
+     2.9:   assignment
+     2.7:   branch
+     1.3:   password
+
+     3.0: Chef::Provider::User::Pw#load_current_resource lib/chef/provider/user/pw.rb:26
+     1.4:   raise
+     1.3:   exists?
+     1.3:   branch
+
+     2.8: Chef::Provider::User::Pw#unlock_user lib/chef/provider/user/pw.rb:65
+     1.5:   username
+     1.3:   run_command
+
+     2.8: Chef::Provider::User::Pw#lock_user lib/chef/provider/user/pw.rb:61
+     1.5:   username
+     1.3:   run_command
+
+     1.1: main#none
+     1.1:   require
+

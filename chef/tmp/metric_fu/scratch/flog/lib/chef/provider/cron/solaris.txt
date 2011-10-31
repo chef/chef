@@ -1,0 +1,104 @@
+   227.0: flog total
+    28.4: flog/method average
+
+    77.8: Chef::Provider::Cron::Solaris#action_create lib/chef/provider/cron/solaris.rb:115
+    35.7:   assignment
+    22.9:   branch
+    11.4:   <<
+     9.3:   send
+     5.4:   name
+     3.5:   user
+     3.1:   popen4
+     3.0:   write_crontab
+     3.0:   info
+     3.0:   each
+     2.6:   new
+     1.9:   to_s
+     1.8:   chomp
+     1.7:   debug
+     1.7:   upcase
+     1.7:   new_resource
+     1.6:   each_line
+     1.5:   compare_cron
+     1.5:   weekday
+     1.5:   day
+     1.5:   month
+     1.5:   command
+     1.5:   hour
+     1.5:   minute
+
+    75.5: Chef::Provider::Cron::Solaris#load_current_resource lib/chef/provider/cron/solaris.rb:40
+    32.6:   branch
+    23.6:   assignment
+     9.1:   name
+     6.4:   exitstatus
+     6.2:   user
+     5.4:   debug
+     2.9:   ==
+     2.2:   weekday
+     2.2:   command
+     2.2:   hour
+     2.2:   day
+     2.2:   month
+     2.2:   minute
+     2.1:   home
+     2.1:   shell
+     2.1:   path
+     2.1:   mailto
+     1.7:   chomp
+     1.6:   each
+     1.5:   <<
+     1.4:   each_line
+     1.4:   raise
+     1.3:   new
+     1.3:   >
+     1.3:   popen4
+     0.8:   lit_fixnum
+
+    28.6: Chef::Provider::Cron::Solaris#action_delete lib/chef/provider/cron/solaris.rb:165
+    20.0:   assignment
+    13.9:   branch
+     2.0:   name
+     1.8:   <<
+     1.8:   chomp
+     1.7:   user
+     1.6:   each_line
+     1.5:   popen4
+     1.5:   info
+     1.5:   write_crontab
+     1.5:   new
+
+    19.8: Chef::Provider::Cron::Solaris#compare_cron lib/chef/provider/cron/solaris.rb:94
+    15.3:   send
+     2.7:   branch
+     1.5:   nil?
+     1.5:   ==
+     1.4:   assignment
+     1.3:   any?
+
+    15.5: Chef::Provider::Cron::Solaris#write_crontab lib/chef/provider/cron/solaris.rb:100
+     2.8:   updated_by_last_action
+     2.6:   assignment
+     1.5:   path
+     1.5:   user
+     1.3:   branch
+     1.3:   <<
+     1.3:   chmod
+     1.3:   close!
+     1.3:   new
+     1.3:   flush
+     1.3:   run_command
+     1.3:   ==
+     0.4:   lit_fixnum
+
+     3.6: Chef::Provider::Cron::Solaris#none
+     2.4:   include
+     1.2:   attr_accessor
+
+     3.3: main#none
+     3.3:   require
+
+     2.9: Chef::Provider::Cron::Solaris#initialize lib/chef/provider/cron/solaris.rb:33
+     2.6:   assignment
+     1.3:   super
+

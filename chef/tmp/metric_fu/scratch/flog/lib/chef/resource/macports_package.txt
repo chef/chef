@@ -1,0 +1,6 @@
+     3.3: flog total
+     3.3: flog/method average
+
+     3.3: Chef::Resource::MacportsPackage#initialize lib/chef/resource/macports_package.rb:22
+     3.3:   assignment
+

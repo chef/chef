@@ -1,0 +1,19 @@
+    11.7: flog total
+     3.9: flog/method average
+
+     9.4: Chef::Knife::RecipeList#run      lib/chef/knife/recipe_list.rb:24
+     4.0:   assignment
+     1.6:   new
+     1.5:   rest
+     1.4:   grep
+     1.3:   first
+     1.3:   output
+     1.3:   branch
+     1.3:   get_rest
+
+     1.2: Chef::Knife::RecipeList#none
+     1.2:   banner
+
+     1.1: main#none
+     1.1:   require
+

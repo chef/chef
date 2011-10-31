@@ -1,0 +1,35 @@
+    23.8: flog total
+     3.4: flog/method average
+
+     7.9: Chef::Resource::Link#initialize  lib/chef/resource/link.rb:25
+     7.8:   assignment
+     1.3:   push
+
+     4.9: Chef::Resource::Link#link_type   lib/chef/resource/link.rb:51
+     2.6:   assignment
+     1.4:   to_sym
+     1.3:   set_or_return
+     1.3:   kind_of?
+     1.3:   branch
+
+     3.1: Chef::Resource::Link#group       lib/chef/resource/link.rb:60
+     1.5:   []
+     1.3:   assignment
+     1.3:   set_or_return
+
+     3.1: Chef::Resource::Link#owner       lib/chef/resource/link.rb:68
+     1.5:   []
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Link#target_file lib/chef/resource/link.rb:43
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::Link#to          lib/chef/resource/link.rb:35
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,29 @@
+See http://metric-fu.rubyforge.org/ for documentation, or the HISTORY file for a change log.
+
+How to contribute:
+
+1. Fork metric_fu on github.
+2. 'gem install metric_fu'  #to get gem dependencies
+3. Install the gems RSpec 1.3.0, test-construct, and googlecharts
+4. Run the tests ('rake')
+5. Run metric_fu on itself ('rake metrics:all')
+6. Make the changes you want and back them up with tests.
+7. Make sure two important rake tests still run ('rake' and 'rake metrics:all')
+8. Commit and send me a pull request with details as to what has been changed.
+
+Extra Credit:
+1. Make sure your changes work in 1.8.7, Ruby Enterprise Edition, and 1.9.1 (Hint use 'rvm' to help install multiple rubies)
+2. Post to the Google group explaining what you did and why you did it (I don't merge things in immediately so others might want to use what you've done).
+3. Update the documentation (web page inside the 'home_page' folder)
+4. Update the History and give yourself credit.
+
+
+The more of the above steps you do the easier it will be for me to merge in which will greatly increase you chances of getting your changes accepted.
+If you want to do something really radical (which will touch over %30 of all the files) you might what to ask the Google group first to see if anyone is interested in your change before you spend a lot of time on it.
+
+Resources:
+Homepage: http://metric-fu.rubyforge.org/
+Github: http://github.com/jscruggs/metric_fu
+Google Group: http://groups.google.com/group/metric_fu
+Issue Tracker: http://github.com/jscruggs/metric_fu/issues
+My Blog: http://jakescruggs.blogspot.com/

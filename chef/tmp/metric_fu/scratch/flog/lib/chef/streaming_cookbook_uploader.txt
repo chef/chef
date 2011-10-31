@@ -1,0 +1,98 @@
+   303.7: flog total
+    21.7: flog/method average
+
+   232.2: Chef::StreamingCookbookUploader#make_request lib/chef/streaming_cookbook_uploader.rb:29
+    72.1:   assignment
+    60.0:   +
+    31.9:   branch
+    25.2:   new
+    14.9:   to_s
+    14.1:   <<
+    11.0:   path
+     9.5:   sclass
+     7.1:   size
+     5.0:   alias
+     4.6:   now
+     4.3:   read
+     4.2:   utc
+     4.0:   rewind
+     3.9:   empty?
+     3.8:   iso8601
+     3.8:   inject
+     2.5:   rand
+     2.5:   map
+     2.4:   basename
+     2.3:   signing_object
+     2.3:   flatten
+     2.2:   kind_of?
+     2.1:   each
+     2.1:   logger
+     2.1:   host
+     2.1:   scheme
+     2.1:   []
+     2.1:   port
+     2.1:   sign
+     2.0:   nil?
+     1.9:   merge!
+     1.9:   merge
+     1.9:   debug
+     1.9:   request
+     1.9:   ==
+     1.9:   parse
+     0.7:   lit_fixnum
+
+    25.6: Chef::StreamingCookbookUploader::MultipartStream#read lib/chef/streaming_cookbook_uploader.rb:166
+    12.0:   assignment
+     6.0:   branch
+     4.8:   +
+     3.4:   []
+     3.2:   size
+     3.0:   read
+     2.8:   >
+     2.8:   -
+     1.4:   >=
+     0.5:   lit_fixnum
+
+     7.6: Chef::StreamingCookbookUploader::MultipartStream#size lib/chef/streaming_cookbook_uploader.rb:162
+     4.5:   assignment
+     2.8:   inject
+     1.7:   size
+     1.5:   +
+     1.4:   branch
+
+     6.0: Chef::StreamingCookbookUploader#none
+     6.0:   sclass
+
+     5.4: Chef::StreamingCookbookUploader#status lib/chef/streaming_cookbook_uploader.rb:116
+     2.8:   code
+     2.6:   to_i
+
+     4.4: main#none
+     4.4:   require
+
+     4.2: Chef::StreamingCookbookUploader#post lib/chef/streaming_cookbook_uploader.rb:21
+     3.8:   assignment
+     1.9:   make_request
+
+     4.2: Chef::StreamingCookbookUploader#put lib/chef/streaming_cookbook_uploader.rb:25
+     3.8:   assignment
+     1.9:   make_request
+
+     4.2: Chef::StreamingCookbookUploader::StreamPart#initialize lib/chef/streaming_cookbook_uploader.rb:126
+     4.2:   assignment
+
+     4.2: Chef::StreamingCookbookUploader::MultipartStream#initialize lib/chef/streaming_cookbook_uploader.rb:156
+     4.2:   assignment
+
+     1.4: Chef::StreamingCookbookUploader::StringPart#size lib/chef/streaming_cookbook_uploader.rb:145
+     1.4:   length
+
+     1.4: Chef::StreamingCookbookUploader::StreamPart#read lib/chef/streaming_cookbook_uploader.rb:135
+     1.4:   read
+
+     1.4: Chef::StreamingCookbookUploader::StringPart#initialize lib/chef/streaming_cookbook_uploader.rb:141
+     1.4:   assignment
+
+     1.4: Chef::StreamingCookbookUploader::StringPart#read lib/chef/streaming_cookbook_uploader.rb:150
+     1.4:   []
+

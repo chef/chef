@@ -1,0 +1,13 @@
+================================================================================
+lib/chef-server-api.rb
+================================================================================
+   require 'chef-server-api/version'
+   
+   CHEF_SERVER_VERSION = ChefServerApi::VERSION
+   CHEF_SERVER_API_ROOT = File.expand_path(File.dirname(__FILE__) + '/../')
+================================================================================
+lib/chef-server-api/version.rb
+================================================================================
+   module ChefServerApi
+     VERSION = '0.10.5'
+   end

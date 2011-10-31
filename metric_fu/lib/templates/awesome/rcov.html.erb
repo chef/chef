@@ -1,0 +1,42 @@
+<h3>Rcov Code Coverage Results</h3>
+
+<p>C0 code coverage information.</p>
+
+<% graph_name = 'rcov' %>
+<% if MetricFu.configuration.graph_engine == :gchart %>
+<img src="<%= graph_name %>.png?<%= Time.now.to_i %>" />
+<% else %>
+<canvas id="graph"></canvas>
+<script language="javascript" src="<%= graph_name %>.js?<%= Time.now.to_i %>" type="text/javascript"></script>
+<% end %>
+
+<p>Total Coverage: <%= @rcov.delete(:global_percent_run) %>% </p>
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Percent run</th>
+  </tr>
+  <% count = 0 %>
+  <% @rcov.sort_by{ |k,v| v[:percent_run] }.each do |fname, file| %>
+    <tr>
+      <td><a href="#<%= fname.gsub(/[^a-z]+/, '_') %>"><%= fname %></a></td>
+      <td><%= file[:percent_run] %></td>
+    </tr>
+    <% count += 1 %>
+  <% end %>
+</table>
+
+<% @rcov.sort_by{ |k,v| v[:percent_run] }.each do |fname, file| %>
+  <h2 id="<%= fname.gsub(/[^a-z]+/, '_') %>"> <%= fname %></h2>
+  <div class="rcov_overflow">
+    <table class="rcov_code">
+    <% file[:lines].each_with_index do |line, index| %>
+      <tr>
+        <% css_class = line[:was_run] ? "rcov_run" : "rcov_not_run" %>
+        <td class="<%= css_class %>"><%= link_to_filename(fname, index + 1, "<pre>#{line[:content]}</pre>") %></td>
+      </tr>
+    <% end %>
+    </table>
+  </div>
+<% end %>
+<p>Generated on <%= Time.now.localtime %></p>

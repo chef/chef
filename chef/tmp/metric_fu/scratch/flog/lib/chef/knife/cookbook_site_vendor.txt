@@ -1,0 +1,23 @@
+    15.0: flog total
+     3.0: flog/method average
+
+     5.4: Chef::Knife::CookbookSiteVendor#none
+     2.6:   banner
+     1.6:   superclass
+     1.2:   category
+
+     2.8: Chef::Knife::CookbookSiteVendor::options lib/chef/knife/cookbook_site_vendor.rb:32
+     1.5:   superclass
+     1.3:   options
+
+     2.8: Chef::Knife::CookbookSiteVendor::load_deps lib/chef/knife/cookbook_site_vendor.rb:24
+     1.5:   superclass
+     1.3:   load_deps
+
+     2.2: main#none
+     2.2:   require
+
+     1.8: Chef::Knife::CookbookSiteVendor::options= lib/chef/knife/cookbook_site_vendor.rb:28
+     1.3:   assignment
+     1.3:   superclass
+

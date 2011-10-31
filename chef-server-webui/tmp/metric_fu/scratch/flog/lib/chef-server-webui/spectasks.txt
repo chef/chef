@@ -1,0 +1,28 @@
+    57.0: flog total
+    14.3: flog/method average
+
+    45.6: namespace::namespace::namespace#spec lib/chef-server-webui/spectasks.rb:7
+    22.2:   assignment
+    16.6:   []
+     8.8:   sort
+     7.6:   branch
+     4.8:   new
+     3.6:   desc
+     1.6:   dirname
+     1.4:   join
+     1.2:   expand_path
+     1.1:   namespace
+
+     7.2: namespace::namespace::namespace::task#explain lib/chef-server-webui/spectasks.rb:11
+     4.8:   +
+     1.2:   task
+     1.2:   puts
+
+     3.2: namespace::namespace#chefserverslice lib/chef-server-webui/spectasks.rb:2
+     1.1:   task
+     1.1:   desc
+     1.0:   namespace
+
+     1.0: namespace#slices                 lib/chef-server-webui/spectasks.rb:1
+     1.0:   namespace
+

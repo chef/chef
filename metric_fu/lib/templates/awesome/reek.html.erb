@@ -1,0 +1,40 @@
+<h3>Reek Results</h3>
+
+<p><a href="http://reek.rubyforge.org/">Reek</a> detects common code smells in ruby code.</p>
+
+<% graph_name = 'reek' %>
+<% if MetricFu.configuration.graph_engine == :gchart %>
+<img src="<%= graph_name %>.png?<%= Time.now.to_i %>" />
+<% else %>
+<canvas id="graph"></canvas>
+<script language="javascript" src="<%= graph_name %>.js?<%= Time.now.to_i %>" type="text/javascript"></script>
+<% end %>
+
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Method</th>
+    <th>Description</th>
+    <th>Type</th>
+  </tr>
+  <% count = 0 %>
+  <% @reek[:matches].each do |match| %>
+    <% match[:code_smells].each do |smell| %>
+      <tr class='<%= cycle("light", "dark", count) %>'>
+        <td><%= link_to_filename(match[:file_path]) %></td>
+        <td>
+          <%= smell[:method] %>
+        </td>
+        <td>
+          <%= smell[:message] %>
+        </td>
+        <td>
+          <%= smell[:type] %>
+        </td>
+      </tr>
+      <% count += 1 %>
+    <% end %>
+  <% end %>
+
+</table>
+<p>Generated on <%= Time.now.localtime %></p>

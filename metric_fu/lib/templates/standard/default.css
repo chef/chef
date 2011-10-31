@@ -1,0 +1,64 @@
+body {
+	background-color: #efefef;
+	margin: 20px;
+	padding: 0;
+	font: 12px verdana, arial, helvetica;
+}
+
+table {
+	border-collapse: collapse;
+	border: 1px solid #666;
+	background: #fff;
+	margin-bottom: 20px;
+}
+
+	table tr.light {
+	 	background: #fff;
+	}
+
+	table tr.dark {
+		background: #f9f9f9;
+	}
+
+	table td, table th {
+		padding: 4px 10px;
+		font-size: 13px;
+	}
+	table th {
+		text-align: center;
+		color: #fc0;
+		background: #336;
+		font-weight: bold;
+		border: #d0d0d0 1px solid;
+	}
+
+	table td {
+		border: #d0d0d0 1px solid;
+	}
+
+		table td.score {
+			text-align: right;
+		}
+
+.warning {
+	background: yellow;
+}
+.rcov_code td {
+  border-bottom: 1px solid #ddd ;
+  padding: 0;
+  margin: 0;
+}
+.rcov_code tr {
+  border: 0px;
+  padding:0px;
+  margin: 0px;
+}
+.rcov_code pre {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+.rcov_run {}
+.rcov_not_run {
+  background-color: #d88;
+}

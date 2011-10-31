@@ -1,0 +1,11 @@
+     7.6: flog total
+     3.8: flog/method average
+
+     6.5: Chef::Resource::Subversion#initialize lib/chef/resource/subversion.rb:25
+     6.0:   assignment
+     1.4:   allowed_actions
+     1.2:   <<
+
+     1.1: main#none
+     1.1:   require
+

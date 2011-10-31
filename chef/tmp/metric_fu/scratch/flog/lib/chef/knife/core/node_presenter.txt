@@ -1,0 +1,57 @@
+   130.3: flog total
+    21.7: flog/method average
+
+    85.8: Chef::Knife::Core::NodePresenter#summarize lib/chef/knife/core/node_presenter.rb:90
+    21.1:   []
+    18.8:   key
+     9.5:   branch
+     8.2:   assignment
+     7.6:   text_format
+     5.6:   config
+     3.6:   Array
+     3.6:   ui
+     3.4:   +
+     3.2:   color
+     3.2:   join
+     2.1:   automatic_attrs
+     2.1:   override_attrs
+     2.1:   normal_attrs
+     2.1:   default_attrs
+     1.8:   name
+     1.6:   run_list
+     1.6:   chef_environment
+     1.4:   kind_of?
+
+    24.9: Chef::Knife::Core::NodePresenter#summarize_json lib/chef/knife/core/node_presenter.rb:64
+    15.0:   assignment
+     3.1:   to_json_pretty
+     3.0:   branch
+     1.8:   default_attrs
+     1.8:   automatic_attrs
+     1.8:   override_attrs
+     1.8:   config
+     1.6:   []
+     1.6:   name
+     1.6:   run_list
+     1.6:   chef_environment
+     1.6:   normal_attrs
+     1.4:   kind_of?
+
+     9.6: Chef::Knife::Core::NodeFormattingOptions::included lib/chef/knife/core/node_presenter.rb:32
+     6.5:   class_eval
+     3.0:   option
+     1.3:   branch
+
+     4.7: Chef::Knife::Core::NodePresenter#format lib/chef/knife/core/node_presenter.rb:56
+     1.6:   parse_format_option
+     1.5:   summarize_json
+     1.4:   ==
+     1.4:   branch
+
+     3.0: Chef::Knife::Core::NodePresenter#key lib/chef/knife/core/node_presenter.rb:125
+     1.6:   ui
+     1.4:   color
+
+     2.2: main#none
+     2.2:   require
+

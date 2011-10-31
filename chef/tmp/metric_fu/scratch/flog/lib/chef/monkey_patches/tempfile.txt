@@ -1,0 +1,16 @@
+    19.1: flog total
+     9.6: flog/method average
+
+    13.7: Tempfile#unlink                  lib/chef/monkey_patches/tempfile.rb:48
+     7.2:   branch
+     6.3:   assignment
+     3.3:   unlink
+     3.1:   exist?
+     1.5:   undefine_finalizer
+     1.5:   delete
+     0.4:   lit_fixnum
+
+     5.4: Tempfile#none
+     5.0:   alias
+     2.1:   branch
+

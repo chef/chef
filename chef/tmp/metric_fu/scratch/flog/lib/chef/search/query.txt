@@ -1,0 +1,43 @@
+    61.9: flog total
+    10.3: flog/method average
+
+    42.6: Chef::Search::Query#search       lib/chef/search/query.rb:39
+    13.5:   []
+     9.8:   assignment
+     8.5:   branch
+     6.0:   escape
+     3.4:   +
+     2.8:   kind_of?
+     1.9:   block_pass
+     1.9:   length
+     1.7:   search
+     1.7:   call
+     1.6:   nil?
+     1.5:   >=
+     1.5:   each
+     1.4:   raise
+     1.3:   get_rest
+     0.3:   lit_fixnum
+
+     7.7: main#none
+     7.7:   require
+
+     4.2: Chef::Search::Query#initialize   lib/chef/search/query.rb:33
+     2.6:   assignment
+     1.6:   []
+     1.5:   branch
+     1.3:   new
+
+     3.3: Chef::Search::Query#escape       lib/chef/search/query.rb:60
+     1.6:   to_s
+     1.4:   escape
+     1.3:   branch
+
+     2.4: Chef::Search::Query#none
+     1.2:   private
+     1.2:   attr_accessor
+
+     1.8: Chef::Search::Query#list_indexes lib/chef/search/query.rb:55
+     1.3:   assignment
+     1.3:   get_rest
+

@@ -1,0 +1,251 @@
+   356.2: flog total
+    11.9: flog/method average
+
+    63.5: Chef::Provider::User::Dscl#modify_password lib/chef/provider/user/dscl.rb:116
+    21.4:   assignment
+    11.0:   password
+     9.4:   branch
+     5.3:   upcase
+     4.2:   +
+     2.6:   lit_fixnum
+     2.4:   to_i
+     2.2:   to_s
+     2.1:   random_bytes
+     2.0:   <<
+     1.9:   hexdigest
+     1.9:   slice
+     1.9:   pack
+     1.9:   *
+     1.9:   each_byte
+     1.8:   username
+     1.7:   new
+     1.7:   guid
+     1.7:   osx_salted_sha1?
+     1.7:   new_resource
+     1.6:   safe_dscl
+     1.6:   puts
+     1.5:   shadow_hash_set?
+     1.5:   open
+     1.5:   debug
+     1.5:   osx_shadow_hash?
+
+    36.6: Chef::Provider::User::Dscl#modify_home lib/chef/provider/user/dscl.rb:79
+    11.8:   branch
+     8.3:   home
+     3.4:   current_home_exists?
+     3.3:   new_home_exists?
+     3.3:   ditto_home
+     3.1:   username
+     2.7:   safe_dscl
+     1.8:   move_home
+     1.6:   ==
+     1.5:   validate_home_dir_specification!
+     1.5:   supports
+     1.4:   nil?
+     1.4:   empty?
+     1.3:   []
+
+    29.7: Chef::Provider::User::Dscl#remove_user lib/chef/provider/user/dscl.rb:193
+     8.8:   assignment
+     6.8:   branch
+     6.4:   username
+     4.2:   safe_dscl
+     3.0:   []
+     1.7:   rm_rf
+     1.7:   name
+     1.6:   mem
+     1.5:   <<
+     1.5:   match
+     1.5:   supports
+     1.4:   include?
+     1.3:   group
+     1.3:   each
+     0.5:   lit_fixnum
+
+    22.9: Chef::Provider::User::Dscl#move_home lib/chef/provider/user/dscl.rb:259
+     8.8:   home
+     2.6:   assignment
+     1.7:   gid
+     1.5:   glob
+     1.5:   username
+     1.5:   to_s
+     1.3:   mv
+     1.3:   rmdir
+     1.3:   debug
+     1.3:   -
+     1.3:   chown_R
+     1.3:   mkdir_p
+
+    21.0: Chef::Provider::User::Dscl#manage_user lib/chef/provider/user/dscl.rb:163
+     9.1:   diverged?
+     9.1:   branch
+     1.4:   modify_home
+     1.4:   dscl_create_user
+     1.4:   modify_password
+     1.4:   dscl_create_comment
+     1.4:   dscl_set_shell
+     1.4:   dscl_set_gid
+     1.4:   set_uid
+
+    19.5: Chef::Provider::User::Dscl#set_uid lib/chef/provider/user/dscl.rb:71
+     9.2:   uid
+     3.9:   branch
+     1.6:   get_free_uid
+     1.5:   username
+     1.4:   nil?
+     1.4:   raise
+     1.4:   ==
+     1.3:   safe_dscl
+     1.3:   uid_used?
+
+    18.1: Chef::Provider::User::Dscl#get_free_uid lib/chef/provider/user/dscl.rb:51
+     8.3:   assignment
+     4.0:   branch
+     3.1:   +
+     2.0:   to_s
+     1.8:   escape
+     1.6:   new
+     1.5:   lit_fixnum
+     1.4:   =~
+     1.4:   raise
+     1.4:   <
+     1.3:   safe_dscl
+
+    17.9: Chef::Provider::User::Dscl#safe_dscl lib/chef/provider/user/dscl.rb:36
+     5.2:   branch
+     3.2:   inspect
+     3.1:   exitstatus
+     2.8:   raise
+     2.7:   ==
+     2.6:   stdout
+     1.4:   first
+     1.3:   assignment
+     1.3:   dscl
+
+    13.1: Chef::Provider::User::Dscl#ditto_home lib/chef/provider/user/dscl.rb:252
+     3.0:   home
+     1.7:   gid
+     1.5:   to_s
+     1.5:   username
+     1.4:   raise
+     1.3:   assignment
+     1.3:   exists?
+     1.3:   chown_R
+     1.3:   shell_out!
+     1.3:   branch
+
+    12.3: Chef::Provider::User::Dscl#dscl_set_shell lib/chef/provider/user/dscl.rb:185
+     3.2:   shell
+     3.2:   username
+     2.8:   safe_dscl
+     2.6:   branch
+     1.4:   password
+     1.4:   exists?
+
+    10.4: Chef::Provider::User::Dscl#unlock_user lib/chef/provider/user/dscl.rb:232
+     3.2:   gsub
+     3.0:   username
+     2.6:   safe_dscl
+     2.6:   assignment
+     1.3:   strip
+
+    10.3: Chef::Provider::User::Dscl#parameter_updated? lib/chef/provider/user/dscl.rb:274
+     9.0:   send
+     1.3:   ==
+
+     9.1: Chef::Provider::User::Dscl#create_user lib/chef/provider/user/dscl.rb:153
+     1.3:   dscl_set_shell
+     1.3:   modify_password
+     1.3:   dscl_create_user
+     1.3:   modify_home
+     1.3:   dscl_create_comment
+     1.3:   dscl_set_gid
+     1.3:   set_uid
+
+     7.9: Chef::Provider::User::Dscl#uid_used? lib/chef/provider/user/dscl.rb:65
+     1.9:   to_s
+     1.7:   escape
+     1.5:   new
+     1.3:   =~
+     1.3:   assignment
+     1.3:   branch
+     1.3:   safe_dscl
+
+     7.7: Chef::Provider::User::Dscl#diverged? lib/chef/provider/user/dscl.rb:270
+     4.8:   send
+     1.4:   parameter_updated?
+     1.4:   nil?
+     1.3:   branch
+
+     6.6: Chef::Provider::User::Dscl#locked? lib/chef/provider/user/dscl.rb:215
+     2.6:   assignment
+     1.5:   username
+     1.4:   []
+     1.3:   safe_dscl
+     1.3:   match
+     1.3:   branch
+     0.4:   lit_fixnum
+
+     6.4: Chef::Provider::User::Dscl#guid  lib/chef/provider/user/dscl.rb:103
+     1.9:   username
+     1.7:   safe_dscl
+     1.5:   gsub
+     1.3:   strip
+
+     6.0: Chef::Provider::User::Dscl#validate_home_dir_specification! lib/chef/provider/user/dscl.rb:238
+     2.9:   home
+     1.6:   username
+     1.4:   raise
+     1.3:   branch
+
+     4.3: Chef::Provider::User::Dscl#dscl_create_comment lib/chef/provider/user/dscl.rb:177
+     1.5:   comment
+     1.5:   username
+     1.3:   safe_dscl
+
+     4.3: Chef::Provider::User::Dscl#dscl_set_gid lib/chef/provider/user/dscl.rb:181
+     1.5:   username
+     1.5:   gid
+     1.3:   safe_dscl
+
+     4.0: Chef::Provider::User::Dscl#shadow_hash_set? lib/chef/provider/user/dscl.rb:107
+     2.6:   branch
+     1.5:   username
+     1.3:   assignment
+     1.3:   safe_dscl
+
+     3.3: main#none
+     3.3:   require
+
+     3.0: Chef::Provider::User::Dscl#load_current_resource lib/chef/provider/user/dscl.rb:148
+     1.4:   raise
+     1.3:   exists?
+     1.3:   branch
+
+     2.8: Chef::Provider::User::Dscl#lock_user lib/chef/provider/user/dscl.rb:228
+     1.5:   username
+     1.3:   safe_dscl
+
+     2.8: Chef::Provider::User::Dscl#dscl_create_user lib/chef/provider/user/dscl.rb:173
+     1.5:   username
+     1.3:   safe_dscl
+
+     2.8: Chef::Provider::User::Dscl#current_home_exists? lib/chef/provider/user/dscl.rb:244
+     1.5:   home
+     1.3:   exist?
+
+     2.8: Chef::Provider::User::Dscl#new_home_exists? lib/chef/provider/user/dscl.rb:248
+     1.5:   home
+     1.3:   exist?
+
+     2.8: Chef::Provider::User::Dscl#dscl  lib/chef/provider/user/dscl.rb:32
+     1.5:   join
+     1.3:   shell_out
+
+     2.4: Chef::Provider::User::Dscl#none
+     2.4:   include
+
+     1.8: Chef::Provider::User::Dscl#check_lock lib/chef/provider/user/dscl.rb:224
+     1.3:   locked?
+     1.3:   assignment
+

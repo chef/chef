@@ -1,0 +1,4147 @@
+--- 
+:rcov: 
+  :global_percent_run: 100.0
+  lib/chef/expander.rb: 
+    :lines: 
+    - :was_run: true
+      :content: "   #"
+    - :was_run: true
+      :content: "   # Author:: Daniel DeLeo (<dan@opscode.com>)"
+    - :was_run: true
+      :content: "   # Author:: Seth Falcon (<seth@opscode.com>)"
+    - :was_run: true
+      :content: "   # Author:: Chris Walters (<cw@opscode.com>)"
+    - :was_run: true
+      :content: "   # Copyright:: Copyright (c) 2010-2011 Opscode, Inc."
+    - :was_run: true
+      :content: "   # License:: Apache License, Version 2.0"
+    - :was_run: true
+      :content: "   #"
+    - :was_run: true
+      :content: "   # Licensed under the Apache License, Version 2.0 (the \"License\");"
+    - :was_run: true
+      :content: "   # you may not use this file except in compliance with the License."
+    - :was_run: true
+      :content: "   # You may obtain a copy of the License at"
+    - :was_run: true
+      :content: "   #"
+    - :was_run: true
+      :content: "   #     http://www.apache.org/licenses/LICENSE-2.0"
+    - :was_run: true
+      :content: "   #"
+    - :was_run: true
+      :content: "   # Unless required by applicable law or agreed to in writing, software"
+    - :was_run: true
+      :content: "   # distributed under the License is distributed on an \"AS IS\" BASIS,"
+    - :was_run: true
+      :content: "   # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied."
+    - :was_run: true
+      :content: "   # See the License for the specific language governing permissions and"
+    - :was_run: true
+      :content: "   # limitations under the License."
+    - :was_run: true
+      :content: "   #"
+    - :was_run: true
+      :content: "   "
+    - :was_run: true
+      :content: "   module Chef"
+    - :was_run: true
+      :content: "     module Expander"
+    - :was_run: true
+      :content: "   "
+    - :was_run: true
+      :content: "       # VNODES is the number of queues in rabbit that are available for subscribing."
+    - :was_run: true
+      :content: "       # The name comes from riak, where the data ring (160bits) is chunked into"
+    - :was_run: true
+      :content: "       # many vnodes; vnodes outnumber physical nodes, so one node hosts several"
+    - :was_run: true
+      :content: "       # vnodes. That is the same design we use here."
+    - :was_run: true
+      :content: "       #"
+    - :was_run: true
+      :content: "       # See the notes on topic queue benchmarking before adjusting this value."
+    - :was_run: true
+      :content: "       VNODES = 1024"
+    - :was_run: true
+      :content: "   "
+    - :was_run: true
+      :content: "       SHARED_CONTROL_QUEUE_NAME = \"chef-search-control--shared\""
+    - :was_run: true
+      :content: "       BROADCAST_CONTROL_EXCHANGE_NAME = 'chef-search-control--broadcast'"
+    - :was_run: true
+      :content: "   "
+    - :was_run: true
+      :content: "     end"
+    - :was_run: true
+      :content: "   end"
+    :percent_run: 100
+:reek: 
+  :matches: 
+  - :file_path: lib/chef/expander.rb
+    :code_smells: []
+
+:flog: 
+  :average: 148.5
+  :pages: 
+  - :highest_score: 67.4
+    :average_score: 22.1
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  assignment"
+        :score: 16.2
+      - :operator: "  []"
+        :score: 11.1
+      - :operator: "  <<"
+        :score: 8.4
+      - :operator: "  branch"
+        :score: 7.3
+      - :operator: "  color"
+        :score: 5.2
+      - :operator: "  stop"
+        :score: 3.4
+      - :operator: "  puts"
+        :score: 2.8
+      - :operator: "  new"
+        :score: 2.6
+      - :operator: "  to_s"
+        :score: 2.4
+      - :operator: "  exclusive_control_queue_name"
+        :score: 1.9
+      - :operator: "  parse"
+        :score: 1.7
+      - :operator: "  synchronize"
+        :score: 1.7
+      - :operator: "  exclusive_control_queue"
+        :score: 1.7
+      - :operator: "  join"
+        :score: 1.7
+      - :operator: "  encode"
+        :score: 1.7
+      - :operator: "  config"
+        :score: 1.7
+      - :operator: "  exit"
+        :score: 1.5
+      - :operator: "  add_timer"
+        :score: 1.5
+      - :operator: "  local_node"
+        :score: 1.5
+      - :operator: "  subscribe"
+        :score: 1.5
+      - :operator: "  broadcast_message"
+        :score: 1.5
+      - :operator: "  amqp_config"
+        :score: 1.5
+      - :operator: "  list"
+        :score: 1.5
+      - :operator: "  include?"
+        :score: 1.3
+      - :operator: "  start"
+        :score: 1.3
+      - :operator: "  shift"
+        :score: 1.3
+      - :operator: "  first"
+        :score: 1.3
+      - :operator: "  lit_fixnum"
+        :score: 1.3
+      :name: Chef::Expander::Control#log_level lib/chef/expander/control.rb:174
+      :score: 67.4
+    :path: /lib/chef/expander/control.rb
+    :score: 287.1
+  - :highest_score: 51.7
+    :average_score: 11.4
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  branch"
+        :score: 18.6
+      - :operator: "  []"
+        :score: 12.9
+      - :operator: "  log"
+        :score: 5.2
+      - :operator: "  error"
+        :score: 4.6
+      - :operator: "  assignment"
+        :score: 2.9
+      - :operator: "  class"
+        :score: 1.8
+      - :operator: "  raise"
+        :score: 1.8
+      - :operator: "  release_vnode"
+        :score: 1.8
+      - :operator: "  backtrace"
+        :score: 1.8
+      - :operator: "  set_log_level"
+        :score: 1.7
+      - :operator: "  publish_vnode_table"
+        :score: 1.7
+      - :operator: "  inspect"
+        :score: 1.7
+      - :operator: "  publish_status_to"
+        :score: 1.7
+      - :operator: "  update_table"
+        :score: 1.7
+      - :operator: "  recover_vnode"
+        :score: 1.7
+      - :operator: "  spawn_vnode"
+        :score: 1.7
+      - :operator: "  join"
+        :score: 1.6
+      - :operator: "  name"
+        :score: 1.6
+      - :operator: "  message"
+        :score: 1.6
+      - :operator: "  parse_symbolic"
+        :score: 1.5
+      :name: Chef::Expander::VNodeSupervisor#process_control_message lib/chef/expander/vnode_supervisor.rb:199
+      :score: 51.7
+    :path: /lib/chef/expander/vnode_supervisor.rb
+    :score: 284.6
+  - :highest_score: 49.5
+    :average_score: 11.6
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  assignment"
+        :score: 28.0
+      - :operator: "  branch"
+        :score: 15.8
+      - :operator: "  on"
+        :score: 11.2
+      - :operator: "  puts"
+        :score: 7.2
+      - :operator: "  version"
+        :score: 4.0
+      - :operator: "  exit"
+        :score: 3.6
+      - :operator: "  to_i"
+        :score: 3.4
+      - :operator: "  on_tail"
+        :score: 3.2
+      - :operator: "  new"
+        :score: 2.8
+      - :operator: "  expand_path"
+        :score: 1.7
+      - :operator: "  lit_fixnum"
+        :score: 0.5
+      :name: Chef::Expander::Configuration::CLI#none
+      :score: 49.5
+    :path: /lib/chef/expander/configuration.rb
+    :score: 358.3
+  - :highest_score: 42.1
+    :average_score: 14.7
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  assignment"
+        :score: 22.9
+      - :operator: "  branch"
+        :score: 13.7
+      - :operator: "  []"
+        :score: 7.6
+      - :operator: "  each"
+        :score: 5.6
+      - :operator: "  log"
+        :score: 3.7
+      - :operator: "  waitpid2"
+        :score: 3.0
+      - :operator: "  exitstatus"
+        :score: 2.0
+      - :operator: "  error"
+        :score: 1.8
+      - :operator: "  start_worker"
+        :score: 1.7
+      - :operator: "  delete"
+        :score: 1.7
+      - :operator: "  info"
+        :score: 1.5
+      - :operator: "  kill"
+        :score: 1.5
+      - :operator: "  sleep"
+        :score: 1.5
+      - :operator: "  lit_fixnum"
+        :score: 1.0
+      :name: Chef::Expander::ClusterSupervisor#maintain_workers lib/chef/expander/cluster_supervisor.rb:102
+      :score: 42.1
+    :path: /lib/chef/expander/cluster_supervisor.rb
+    :score: 117.9
+  - :highest_score: 37.2
+    :average_score: 12.2
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  config"
+        :score: 10.8
+      - :operator: "  branch"
+        :score: 10.1
+      - :operator: "  user"
+        :score: 6.4
+      - :operator: "  log"
+        :score: 5.1
+      - :operator: "  group"
+        :score: 3.2
+      - :operator: "  info"
+        :score: 3.0
+      - :operator: "  nil?"
+        :score: 2.8
+      - :operator: "  error"
+        :score: 1.5
+      - :operator: "  set_group"
+        :score: 1.5
+      - :operator: "  set_user"
+        :score: 1.5
+      :name: Chef::Expander::Daemonizable#set_user_and_group lib/chef/expander/daemonizable.rb:70
+      :score: 37.2
+    :path: /lib/chef/expander/daemonizable.rb
+    :score: 158.5
+  - :highest_score: 36.1
+    :average_score: 10.8
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  <<"
+        :score: 14.8
+      - :operator: "  assignment"
+        :score: 9.6
+      - :operator: "  %"
+        :score: 7.8
+      - :operator: "  branch"
+        :score: 4.0
+      - :operator: "  fast_xs"
+        :score: 3.3
+      - :operator: "  each"
+        :score: 2.7
+      - :operator: "  now"
+        :score: 1.7
+      - :operator: "  flattened_object"
+        :score: 1.5
+      - :operator: "  to_f"
+        :score: 1.5
+      - :operator: "  -"
+        :score: 1.3
+      :name: Chef::Expander::Solrizer#pointyize_add lib/chef/expander/solrizer.rb:189
+      :score: 36.1
+    :path: /lib/chef/expander/solrizer.rb
+    :score: 227.4
+  - :highest_score: 33.8
+    :average_score: 10.4
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  assignment"
+        :score: 9.4
+      - :operator: "  branch"
+        :score: 9.1
+      - :operator: "  log"
+        :score: 3.5
+      - :operator: "  queue_name"
+        :score: 3.3
+      - :operator: "  new"
+        :score: 3.2
+      - :operator: "  size"
+        :score: 1.8
+      - :operator: "  ack"
+        :score: 1.8
+      - :operator: "  run"
+        :score: 1.7
+      - :operator: "  abort_on_multiple_subscribe"
+        :score: 1.7
+      - :operator: "  supervise_consumer_count"
+        :score: 1.7
+      - :operator: "  debug"
+        :score: 1.7
+      - :operator: "  class"
+        :score: 1.7
+      - :operator: "  queue"
+        :score: 1.7
+      - :operator: "  name"
+        :score: 1.5
+      - :operator: "  message"
+        :score: 1.5
+      - :operator: "  vnode_added"
+        :score: 1.5
+      - :operator: "  subscribe"
+        :score: 1.5
+      - :operator: "  error"
+        :score: 1.4
+      :name: Chef::Expander::VNode#start      lib/chef/expander/vnode.rb:45
+      :score: 33.8
+    :path: /lib/chef/expander/vnode.rb
+    :score: 93.5
+  - :highest_score: 28.8
+    :average_score: 8.0
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  []"
+        :score: 8.3
+      - :operator: "  assignment"
+        :score: 7.8
+      - :operator: "  branch"
+        :score: 5.1
+      - :operator: "  min"
+        :score: 4.2
+      - :operator: "  empty?"
+        :score: 3.4
+      - :operator: "  Array"
+        :score: 2.2
+      - :operator: "  reject"
+        :score: 2.0
+      - :operator: "  <=>"
+        :score: 1.9
+      - :operator: "  lit_fixnum"
+        :score: 1.9
+      - :operator: "  sort"
+        :score: 1.8
+      - :operator: "  first"
+        :score: 1.6
+      :name: Chef::Expander::VNodeTable#leader_node lib/chef/expander/vnode_table.rb:69
+      :score: 28.8
+    :path: /lib/chef/expander/vnode_table.rb
+    :score: 72.3
+  - :highest_score: 22.9
+    :average_score: 7.7
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  branch"
+        :score: 7.5
+      - :operator: "  =="
+        :score: 5.3
+      - :operator: "  respond_to?"
+        :score: 4.5
+      - :operator: "  pid"
+        :score: 4.0
+      - :operator: "  hostname_f"
+        :score: 4.0
+      - :operator: "  guid"
+        :score: 3.8
+      :name: Chef::Expander::Node#==          lib/chef/expander/node.rb:158
+      :score: 22.9
+    :path: /lib/chef/expander/node.rb
+    :score: 176.8
+  - :highest_score: 22.4
+    :average_score: 9.2
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  branch"
+        :score: 7.2
+      - :operator: "  assignment"
+        :score: 6.3
+      - :operator: "  alias"
+        :score: 2.6
+      - :operator: "  to_s"
+        :score: 1.8
+      - :operator: "  close"
+        :score: 1.6
+      - :operator: "  closed?"
+        :score: 1.6
+      - :operator: "  respond_to?"
+        :score: 1.6
+      - :operator: "  upcase"
+        :score: 1.6
+      - :operator: "  map"
+        :score: 1.5
+      - :operator: "  each"
+        :score: 1.4
+      - :operator: "  private"
+        :score: 1.3
+      - :operator: "  attr_reader"
+        :score: 1.3
+      - :operator: "  at_exit"
+        :score: 1.3
+      - :operator: "  []"
+        :score: 1.3
+      - :operator: "  invert"
+        :score: 1.3
+      :name: Chef::Expander::Logger#none
+      :score: 22.4
+    :path: /lib/chef/expander/logger.rb
+    :score: 101.6
+  - :highest_score: 16.5
+    :average_score: 7.8
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  branch"
+        :score: 7.1
+      - :operator: "  assignment"
+        :score: 6.4
+      - :operator: "  flatten_each"
+        :score: 3.3
+      - :operator: "  add_field_value"
+        :score: 3.1
+      - :operator: "  each"
+        :score: 3.0
+      - :operator: "  to_s"
+        :score: 2.1
+      - :operator: "  +"
+        :score: 1.9
+      :name: Chef::Expander::Flattener#flatten_each lib/chef/expander/flattener.rb:58
+      :score: 16.5
+    :path: /lib/chef/expander/flattener.rb
+    :score: 46.7
+  - :highest_score: 2.7
+    :average_score: 2.4
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  assignment"
+        :score: 2.4
+      - :operator: "  new"
+        :score: 1.2
+      :name: Chef::Expander::Loggable#none
+      :score: 2.7
+    :path: /lib/chef/expander/loggable.rb
+    :score: 4.9
+  - :highest_score: 0.3
+    :average_score: 0.3
+    :scanned_methods: 
+    - :operators: 
+      - :operator: "  lit_fixnum"
+        :score: 0.3
+      :name: Chef::Expander#none
+      :score: 0.3
+    :path: /lib/chef/expander.rb
+    :score: 0.3
+  :total: 1929.9
+:roodi: 
+  :problems: 
+  - :file: lib/chef/expander/vnode_supervisor.rb
+    :line: "199"
+    :problem: Method name "process_control_message" cyclomatic complexity is 10.  It should be 8 or less.
+  - :file: lib/chef/expander/cluster_supervisor.rb
+    :line: "107"
+    :problem: Found = in conditional.  It should probably be an ==
+  - :file: lib/chef/expander/daemonizable.rb
+    :line: "101"
+    :problem: Found = in conditional.  It should probably be an ==
+  - :file: lib/chef/expander/daemonizable.rb
+    :line: "119"
+    :problem: Found = in conditional.  It should probably be an ==
+  - :file: lib/chef/expander/solrizer.rb
+    :line: "88"
+    :problem: Found = in conditional.  It should probably be an ==
+  - :file: lib/chef/expander/vnode_supervisor.rb
+    :line: "199"
+    :problem: Method "process_control_message" has 23 lines.  It should have 20 or less.
+  - :file: lib/chef/expander/control.rb
+    :line: "93"
+    :problem: Method "queue_depth" has 22 lines.  It should have 20 or less.
+  - :file: lib/chef/expander/control.rb
+    :line: "143"
+    :problem: Method "node_status" has 27 lines.  It should have 20 or less.
+  - :file: lib/chef/expander/control.rb
+    :line: "174"
+    :problem: Method "log_level" has 25 lines.  It should have 20 or less.
+  - :file: lib/chef/expander/cluster_supervisor.rb
+    :line: "102"
+    :problem: Method "maintain_workers" has 23 lines.  It should have 20 or less.
+  :total: 
+  - Found 10 errors.
+:churn: 
+  :changes: 
+  - :file_path: chef/lib/chef/client.rb
+    :times_changed: 120
+  - :file_path: chef/Rakefile
+    :times_changed: 114
+  - :file_path: chef/lib/chef/node.rb
+    :times_changed: 109
+  - :file_path: chef/lib/chef/config.rb
+    :times_changed: 87
+  - :file_path: chef/lib/chef/rest.rb
+    :times_changed: 84
+  - :file_path: Rakefile
+    :times_changed: 82
+  - :file_path: chef/lib/chef/knife.rb
+    :times_changed: 79
+  - :file_path: chef/lib/chef.rb
+    :times_changed: 74
+  - :file_path: chef/lib/chef/platform.rb
+    :times_changed: 69
+  - :file_path: chef-server/Rakefile
+    :times_changed: 66
+  - :file_path: chef/lib/chef/version.rb
+    :times_changed: 65
+  - :file_path: features/support/env.rb
+    :times_changed: 62
+  - :file_path: chef/lib/chef/role.rb
+    :times_changed: 61
+  - :file_path: chef-solr/lib/chef/solr/version.rb
+    :times_changed: 60
+  - :file_path: chef-server-webui/lib/chef-server-webui/version.rb
+    :times_changed: 59
+  - :file_path: chef-server-api/lib/chef-server-api/version.rb
+    :times_changed: 59
+  - :file_path: chef/lib/chef/provider/package/yum.rb
+    :times_changed: 59
+  - :file_path: chef/lib/chef/knife/cookbook_upload.rb
+    :times_changed: 58
+  - :file_path: chef/lib/chef/resource.rb
+    :times_changed: 57
+  - :file_path: chef/lib/chef/mixin/command.rb
+    :times_changed: 56
+  - :file_path: chef-server/lib/chef-server/version.rb
+    :times_changed: 54
+  - :file_path: chef/spec/unit/node_spec.rb
+    :times_changed: 51
+  - :file_path: chef/lib/chef/cookbook.rb
+    :times_changed: 50
+  - :file_path: chef/lib/chef/run_list.rb
+    :times_changed: 50
+  - :file_path: chef/spec/unit/client_spec.rb
+    :times_changed: 49
+  - :file_path: chef/lib/chef/exceptions.rb
+    :times_changed: 48
+  - :file_path: features/steps/fixture_steps.rb
+    :times_changed: 48
+  - :file_path: chef/lib/chef/knife/ssh.rb
+    :times_changed: 46
+  - :file_path: chef-server-api/app/controllers/nodes.rb
+    :times_changed: 45
+  - :file_path: chef/lib/chef/provider/remote_file.rb
+    :times_changed: 45
+  - :file_path: chef-server-webui/Rakefile
+    :times_changed: 43
+  - :file_path: chef-server-api/app/controllers/cookbooks.rb
+    :times_changed: 43
+  - :file_path: chef-server-api/Rakefile
+    :times_changed: 42
+  - :file_path: chef/lib/chef/cookbook_version.rb
+    :times_changed: 42
+  - :file_path: chef/lib/chef/knife/bootstrap.rb
+    :times_changed: 42
+  - :file_path: chef/spec/unit/rest_spec.rb
+    :times_changed: 42
+  - :file_path: chef/lib/chef/provider/deploy.rb
+    :times_changed: 42
+  - :file_path: chef-server-api/lib/chef-server-api.rb
+    :times_changed: 41
+  - :file_path: chef-solr/lib/chef/solr.rb
+    :times_changed: 41
+  - :file_path: chef/lib/chef/couchdb.rb
+    :times_changed: 40
+  - :file_path: chef/lib/chef/recipe.rb
+    :times_changed: 40
+  - :file_path: chef/lib/chef/application/client.rb
+    :times_changed: 39
+  - :file_path: chef/lib/chef/provider/file.rb
+    :times_changed: 39
+  - :file_path: chef/lib/chef/cookbook_loader.rb
+    :times_changed: 38
+  - :file_path: chef/lib/chef/runner.rb
+    :times_changed: 36
+  - :file_path: cucumber.yml
+    :times_changed: 36
+  - :file_path: chef/spec/unit/provider/deploy_spec.rb
+    :times_changed: 36
+  - :file_path: chef/lib/chef/provider/package.rb
+    :times_changed: 36
+  - :file_path: chef/bin/chef-client
+    :times_changed: 35
+  - :file_path: chef/spec/unit/provider/package/yum_spec.rb
+    :times_changed: 34
+  - :file_path: chef/lib/chef/provider/template.rb
+    :times_changed: 34
+  - :file_path: chef/lib/chef/node/attribute.rb
+    :times_changed: 34
+  - :file_path: chef-server-api/app/controllers/application.rb
+    :times_changed: 34
+  - :file_path: chef/lib/chef/tasks/chef_repo.rake
+    :times_changed: 34
+  - :file_path: chef/lib/chef/cookbook/metadata.rb
+    :times_changed: 33
+  - :file_path: .gitignore
+    :times_changed: 33
+  - :file_path: chef/lib/chef/data_bag_item.rb
+    :times_changed: 33
+  - :file_path: chef/lib/chef/application.rb
+    :times_changed: 32
+  - :file_path: features/steps/response_steps.rb
+    :times_changed: 32
+  - :file_path: chef/lib/chef/provider/package/apt.rb
+    :times_changed: 31
+  - :file_path: chef/spec/unit/provider/package/apt_spec.rb
+    :times_changed: 31
+  - :file_path: chef/spec/unit/provider/file_spec.rb
+    :times_changed: 31
+  - :file_path: chef/lib/chef/provider/mount/mount.rb
+    :times_changed: 31
+  - :file_path: chef/lib/chef/shell_out.rb
+    :times_changed: 31
+  - :file_path: chef/spec/unit/provider/service/debian_service_spec.rb
+    :times_changed: 30
+  - :file_path: chef/lib/chef/provider/package/freebsd.rb
+    :times_changed: 30
+  - :file_path: chef-server-slice/Rakefile
+    :times_changed: 30
+  - :file_path: chef-server-webui/app/controllers/nodes.rb
+    :times_changed: 30
+  - :file_path: chef/lib/chef/environment.rb
+    :times_changed: 29
+  - :file_path: chef/spec/unit/provider/mount/mount_spec.rb
+    :times_changed: 29
+  - :file_path: chef-server-webui/app/controllers/cookbooks.rb
+    :times_changed: 29
+  - :file_path: features/steps/cookbook_steps.rb
+    :times_changed: 29
+  - :file_path: chef/spec/unit/run_list_spec.rb
+    :times_changed: 29
+  - :file_path: chef/lib/chef/application/solo.rb
+    :times_changed: 28
+  - :file_path: chef/lib/chef/shef/shef_session.rb
+    :times_changed: 28
+  - :file_path: chef/lib/chef/provider/remote_directory.rb
+    :times_changed: 28
+  - :file_path: chef/lib/chef/provider/cron.rb
+    :times_changed: 28
+  - :file_path: chef/spec/unit/node/attribute_spec.rb
+    :times_changed: 28
+  - :file_path: chef-server/bin/chef-server
+    :times_changed: 28
+  - :file_path: chef-server-webui/app/controllers/application.rb
+    :times_changed: 28
+  - :file_path: chef/spec/spec_helper.rb
+    :times_changed: 27
+  - :file_path: chef/spec/unit/provider/template_spec.rb
+    :times_changed: 27
+  - :file_path: chef/lib/chef/compile.rb
+    :times_changed: 27
+  - :file_path: chef/lib/chef/provider/package/rubygems.rb
+    :times_changed: 27
+  - :file_path: chef-server-webui/app/controllers/roles.rb
+    :times_changed: 27
+  - :file_path: chef-server-api/Gemfile.lock
+    :times_changed: 27
+  - :file_path: examples/config/cookbooks/fakefile/recipes/default.rb
+    :times_changed: 26
+  - :file_path: chef/lib/chef/application/knife.rb
+    :times_changed: 26
+  - :file_path: chef/lib/chef/api_client.rb
+    :times_changed: 26
+  - :file_path: chef/lib/chef/provider/package/portage.rb
+    :times_changed: 26
+  - :file_path: chef-expander/lib/chef/expander/version.rb
+    :times_changed: 26
+  - :file_path: chef-server-api/config/router.rb
+    :times_changed: 25
+  - :file_path: chef-server-api/app/controllers/environments.rb
+    :times_changed: 25
+  - :file_path: chef/spec/unit/provider/remote_file_spec.rb
+    :times_changed: 24
+  - :file_path: chef/lib/chef/data_bag.rb
+    :times_changed: 24
+  - :file_path: chef/lib/chef/provider/service/init.rb
+    :times_changed: 24
+  - :file_path: features/steps/run_client_steps.rb
+    :times_changed: 23
+  - :file_path: chef/spec/unit/couchdb_spec.rb
+    :times_changed: 23
+  - :file_path: features/steps/node_steps.rb
+    :times_changed: 23
+  - :file_path: chef/spec/unit/provider/package/freebsd_spec.rb
+    :times_changed: 22
+  - :file_path: chef/spec/unit/cookbook_loader_spec.rb
+    :times_changed: 22
+  - :file_path: chef/lib/chef/log.rb
+    :times_changed: 22
+  - :file_path: chef/spec/unit/knife_spec.rb
+    :times_changed: 22
+  - :file_path: chef/lib/chef/knife/ec2_server_create.rb
+    :times_changed: 22
+  - :file_path: chef/lib/chef/provider/erl_call.rb
+    :times_changed: 22
+  - :file_path: chef/lib/chef/provider/service/debian.rb
+    :times_changed: 22
+  - :file_path: chef/lib/chef/provider/service.rb
+    :times_changed: 22
+  - :file_path: chef/lib/chef/resource/deploy.rb
+    :times_changed: 21
+  - :file_path: chef-solr/VERSION
+    :times_changed: 21
+  - :file_path: chef-server-webui/app/helpers/application_helper.rb
+    :times_changed: 21
+  - :file_path: chef/spec/unit/resource_spec.rb
+    :times_changed: 21
+  - :file_path: chef/bin/chef-solo
+    :times_changed: 21
+  - :file_path: chef/spec/unit/application/client_spec.rb
+    :times_changed: 21
+  - :file_path: chef-solr/lib/chef/solr/application/solr.rb
+    :times_changed: 21
+  - :file_path: chef-server/lib/tasks/package.rake
+    :times_changed: 21
+  - :file_path: chef-server-webui/public/javascripts/chef.js
+    :times_changed: 21
+  - :file_path: chef-server-slice/app/controllers/nodes.rb
+    :times_changed: 20
+  - :file_path: chef-server-api/app/controllers/search.rb
+    :times_changed: 20
+  - :file_path: chef/spec/unit/provider/package_spec.rb
+    :times_changed: 20
+  - :file_path: chef/lib/chef/knife/cookbook_site_vendor.rb
+    :times_changed: 20
+  - :file_path: lib/chef/provider/service/debian.rb
+    :times_changed: 20
+  - :file_path: chef/lib/chef/provider/git.rb
+    :times_changed: 20
+  - :file_path: chef-server-webui/lib/chef-server-webui.rb
+    :times_changed: 20
+  - :file_path: chef/spec/unit/application_spec.rb
+    :times_changed: 20
+  - :file_path: chef/lib/chef/knife/cookbook_show.rb
+    :times_changed: 20
+  - :file_path: chef/spec/unit/provider/package/rubygems_spec.rb
+    :times_changed: 20
+  - :file_path: chef/spec/unit/provider/git_spec.rb
+    :times_changed: 20
+  - :file_path: lib/chef_server/init.rb
+    :times_changed: 20
+  - :file_path: chef/lib/chef/provider/package/yum-dump.py
+    :times_changed: 19
+  - :file_path: README.txt
+    :times_changed: 19
+  - :file_path: chef/lib/chef/provider/user.rb
+    :times_changed: 19
+  - :file_path: chef/lib/chef/shef/ext.rb
+    :times_changed: 19
+  - :file_path: chef/lib/chef/shef.rb
+    :times_changed: 19
+  - :file_path: chef/spec/unit/environment_spec.rb
+    :times_changed: 19
+  - :file_path: lib/chef/platform.rb
+    :times_changed: 19
+  - :file_path: chef/spec/unit/provider/link_spec.rb
+    :times_changed: 19
+  - :file_path: chef/spec/unit/provider/subversion_spec.rb
+    :times_changed: 19
+  - :file_path: chef-server/lib/init.rb
+    :times_changed: 19
+  - :file_path: chef/lib/chef/knife/cookbook_list.rb
+    :times_changed: 18
+  - :file_path: chef/chef.gemspec
+    :times_changed: 18
+  - :file_path: chef/spec/unit/application/solo_spec.rb
+    :times_changed: 18
+  - :file_path: chef/lib/chef/mixin/recipe_definition_dsl_core.rb
+    :times_changed: 18
+  - :file_path: chef/distro/common/man/man8/knife.8
+    :times_changed: 18
+  - :file_path: chef/lib/chef/mixin/language.rb
+    :times_changed: 18
+  - :file_path: features/data/config/server.rb
+    :times_changed: 18
+  - :file_path: chef/spec/unit/provider/user/useradd_spec.rb
+    :times_changed: 18
+  - :file_path: chef/lib/chef/provider.rb
+    :times_changed: 18
+  - :file_path: chef/spec/unit/provider/service/init_service_spec.rb
+    :times_changed: 18
+  - :file_path: chef/spec/unit/lwrp_spec.rb
+    :times_changed: 17
+  - :file_path: chef/lib/chef/provider/link.rb
+    :times_changed: 17
+  - :file_path: chef/lib/chef/knife/cookbook_metadata.rb
+    :times_changed: 17
+  - :file_path: chef/lib/chef/openid_registration.rb
+    :times_changed: 17
+  - :file_path: chef-server-webui/app/controllers/users.rb
+    :times_changed: 17
+  - :file_path: chef/spec/unit/recipe_spec.rb
+    :times_changed: 17
+  - :file_path: chef/spec/unit/daemon_spec.rb
+    :times_changed: 17
+  - :file_path: chef-server-webui/public/stylesheets/chef.css
+    :times_changed: 17
+  - :file_path: chef/distro/common/markdown/knife.mkd
+    :times_changed: 17
+  - :file_path: chef/lib/chef/knife/cookbook_delete.rb
+    :times_changed: 17
+  - :file_path: chef/lib/chef/provider/service/upstart.rb
+    :times_changed: 17
+  - :file_path: chef-server/bin/chef-indexer
+    :times_changed: 17
+  - :file_path: chef/lib/chef/provider/package/dpkg.rb
+    :times_changed: 17
+  - :file_path: lib/chef/node.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/knife/cookbook_bulk_delete.rb
+    :times_changed: 16
+  - :file_path: chef/spec/unit/provider/cron_spec.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/provider/subversion.rb
+    :times_changed: 16
+  - :file_path: chef/spec/unit/shell_out_spec.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/provider/package/easy_install.rb
+    :times_changed: 16
+  - :file_path: chef/spec/unit/runner_spec.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/cookbook_uploader.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/provider/user/useradd.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/knife/cookbook_site_share.rb
+    :times_changed: 16
+  - :file_path: chef/lib/chef/util/FileEdit.rb
+    :times_changed: 16
+  - :file_path: chef/spec/unit/provider/service_spec.rb
+    :times_changed: 16
+  - :file_path: lib/chef/client.rb
+    :times_changed: 16
+  - :file_path: NOTICE
+    :times_changed: 16
+  - :file_path: chef/spec/unit/cookbook/metadata_spec.rb
+    :times_changed: 16
+  - :file_path: lib/chef/rest.rb
+    :times_changed: 16
+  - :file_path: chef-server-slice/app/views/layout/chef_server_slice.html.haml
+    :times_changed: 16
+  - :file_path: chef/bin/knife
+    :times_changed: 16
+  - :file_path: lib/chef/resource.rb
+    :times_changed: 16
+  - :file_path: chef-server-api/config/init.rb
+    :times_changed: 16
+  - :file_path: CHANGELOG
+    :times_changed: 16
+  - :file_path: chef/spec/unit/provider/erl_call_spec.rb
+    :times_changed: 16
+  - :file_path: chef/spec/unit/config_spec.rb
+    :times_changed: 16
+  - :file_path: chef-server/config/init.rb
+    :times_changed: 16
+  - :file_path: chef/spec/unit/index_queue_spec.rb
+    :times_changed: 15
+  - :file_path: chef/lib/chef/knife/cookbook_create.rb
+    :times_changed: 15
+  - :file_path: chef/spec/unit/provider/user_spec.rb
+    :times_changed: 15
+  - :file_path: chef-server-slice/lib/chef-server-slice.rb
+    :times_changed: 15
+  - :file_path: features/chef-client/cookbook_sync.feature
+    :times_changed: 15
+  - :file_path: chef/lib/chef/certificate.rb
+    :times_changed: 15
+  - :file_path: chef-server-slice/app/controllers/openid_consumer.rb
+    :times_changed: 15
+  - :file_path: chef/lib/chef/provider/service/freebsd.rb
+    :times_changed: 15
+  - :file_path: chef/lib/chef/index_queue/indexable.rb
+    :times_changed: 15
+  - :file_path: chef-server-webui/app/views/nodes/show.html.haml
+    :times_changed: 15
+  - :file_path: chef-solr/Rakefile
+    :times_changed: 15
+  - :file_path: chef/lib/chef/resource/service.rb
+    :times_changed: 15
+  - :file_path: chef/lib/chef/file_cache.rb
+    :times_changed: 15
+  - :file_path: chef/spec/unit/mixin/command_spec.rb
+    :times_changed: 15
+  - :file_path: chef/lib/chef/providers.rb
+    :times_changed: 15
+  - :file_path: chef/spec/unit/resource/deploy_spec.rb
+    :times_changed: 15
+  - :file_path: chef-server/config/dependencies.rb
+    :times_changed: 15
+  - :file_path: chef-server-slice/app/views/status/index.html.haml
+    :times_changed: 14
+  - :file_path: chef-server-api/app/controllers/clients.rb
+    :times_changed: 14
+  - :file_path: chef/lib/chef/run_list/run_list_expansion.rb
+    :times_changed: 14
+  - :file_path: chef/lib/chef/knife/cookbook_download.rb
+    :times_changed: 14
+  - :file_path: chef/spec/unit/knife/cookbook_test_spec.rb
+    :times_changed: 14
+  - :file_path: chef/distro/common/man/man1/knife-cookbook.1
+    :times_changed: 14
+  - :file_path: chef/lib/chef/provider/execute.rb
+    :times_changed: 14
+  - :file_path: chef/spec/unit/role_spec.rb
+    :times_changed: 14
+  - :file_path: chef/spec/unit/cookbook_spec.rb
+    :times_changed: 14
+  - :file_path: chef-server-webui/app/views/layout/application.html.haml
+    :times_changed: 14
+  - :file_path: chef/lib/chef/resource/execute.rb
+    :times_changed: 14
+  - :file_path: features/api/nodes/create_node_api.feature
+    :times_changed: 14
+  - :file_path: chef/lib/chef/knife/bootstrap/centos5-gems.erb
+    :times_changed: 14
+  - :file_path: lib/chef/provider/service.rb
+    :times_changed: 14
+  - :file_path: chef/lib/chef/knife/data_bag_create.rb
+    :times_changed: 14
+  - :file_path: chef-server-api/app/controllers/roles.rb
+    :times_changed: 14
+  - :file_path: chef/distro/common/html/knife-cookbook.1.html
+    :times_changed: 14
+  - :file_path: chef/lib/chef/provider/route.rb
+    :times_changed: 14
+  - :file_path: chef/lib/chef/webui_user.rb
+    :times_changed: 14
+  - :file_path: chef/lib/chef/index_queue/amqp_client.rb
+    :times_changed: 13
+  - :file_path: chef/distro/common/html/knife.1.html
+    :times_changed: 13
+  - :file_path: chef/distro/common/html/knife-bootstrap.1.html
+    :times_changed: 13
+  - :file_path: chef/lib/chef/rest/rest_request.rb
+    :times_changed: 13
+  - :file_path: chef/spec/unit/provider/package/portage_spec.rb
+    :times_changed: 13
+  - :file_path: chef-server-slice/config/init.rb
+    :times_changed: 13
+  - :file_path: chef/distro/common/html/knife-cookbook-site.1.html
+    :times_changed: 13
+  - :file_path: chef/lib/chef/knife/status.rb
+    :times_changed: 13
+  - :file_path: README.rdoc
+    :times_changed: 13
+  - :file_path: chef-server-webui/config/router.rb
+    :times_changed: 13
+  - :file_path: chef/distro/common/man/man1/knife-bootstrap.1
+    :times_changed: 13
+  - :file_path: chef-server-slice/public/javascripts/chef.js
+    :times_changed: 13
+  - :file_path: chef/lib/chef/provider/service/simple.rb
+    :times_changed: 13
+  - :file_path: chef/lib/chef/application/indexer.rb
+    :times_changed: 13
+  - :file_path: chef/spec/unit/platform_spec.rb
+    :times_changed: 13
+  - :file_path: chef/lib/chef/knife/cookbook_test.rb
+    :times_changed: 13
+  - :file_path: chef-server/chef-server.gemspec
+    :times_changed: 13
+  - :file_path: chef/spec/unit/provider/group/groupadd_spec.rb
+    :times_changed: 13
+  - :file_path: chef/lib/chef/knife/bluebox_server_create.rb
+    :times_changed: 13
+  - :file_path: chef/distro/common/man/man1/knife-environment.1
+    :times_changed: 13
+  - :file_path: chef-server-webui/app/views/cookbooks/show.html.haml
+    :times_changed: 13
+  - :file_path: chef/lib/chef/knife/configure.rb
+    :times_changed: 13
+  - :file_path: chef-server-webui/app/controllers/search.rb
+    :times_changed: 13
+  - :file_path: chef/lib/chef/resource/remote_directory.rb
+    :times_changed: 13
+  - :file_path: lib/chef/config.rb
+    :times_changed: 13
+  - :file_path: chef/distro/common/man/man1/knife-cookbook-site.1
+    :times_changed: 13
+  - :file_path: chef/lib/chef/knife/search.rb
+    :times_changed: 13
+  - :file_path: chef/lib/chef/run_context.rb
+    :times_changed: 13
+  - :file_path: chef-server-api/app/controllers/sandboxes.rb
+    :times_changed: 13
+  - :file_path: chef/distro/common/man/man1/knife.1
+    :times_changed: 13
+  - :file_path: chef/distro/common/html/knife-environment.1.html
+    :times_changed: 13
+  - :file_path: chef/distro/common/man/man1/knife-node.1
+    :times_changed: 12
+  - :file_path: chef-server-slice/app/controllers/application.rb
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-role.1
+    :times_changed: 12
+  - :file_path: chef/spec/unit/knife/bootstrap_spec.rb
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-role.1.html
+    :times_changed: 12
+  - :file_path: features/steps/request_steps.rb
+    :times_changed: 12
+  - :file_path: chef/lib/chef/knife/bootstrap/ubuntu10.04-gems.erb
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-tag.1
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-exec.1.html
+    :times_changed: 12
+  - :file_path: features/api/roles/create_role_api.feature
+    :times_changed: 12
+  - :file_path: chef/spec/unit/compile_spec.rb
+    :times_changed: 12
+  - :file_path: features/api/nodes/update_node_api.feature
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-client.1
+    :times_changed: 12
+  - :file_path: features/api/roles/list_roles_api.feature
+    :times_changed: 12
+  - :file_path: chef/spec/unit/shef_spec.rb
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-status.1.html
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-search.1
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-ssh.1.html
+    :times_changed: 12
+  - :file_path: features/steps/packages.rb
+    :times_changed: 12
+  - :file_path: chef/lib/chef/solr_query.rb
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-tag.1.html
+    :times_changed: 12
+  - :file_path: chef/spec/unit/provider/cookbook_file_spec.rb
+    :times_changed: 12
+  - :file_path: chef/spec/unit/provider/service/redhat_spec.rb
+    :times_changed: 12
+  - :file_path: chef/lib/chef/resource/remote_file.rb
+    :times_changed: 12
+  - :file_path: chef/spec/unit/provider/package/dpkg_spec.rb
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-client.1.html
+    :times_changed: 12
+  - :file_path: chef/spec/unit/cookbook_version_spec.rb
+    :times_changed: 12
+  - :file_path: chef-server-webui/app/controllers/status.rb
+    :times_changed: 12
+  - :file_path: lib/chef/provider/service/init.rb
+    :times_changed: 12
+  - :file_path: chef/lib/chef/resource/file.rb
+    :times_changed: 12
+  - :file_path: chef/spec/unit/application/knife_spec.rb
+    :times_changed: 12
+  - :file_path: chef/lib/chef/daemon.rb
+    :times_changed: 12
+  - :file_path: chef-server-webui/app/controllers/databag_items.rb
+    :times_changed: 12
+  - :file_path: chef/lib/chef/resource/erl_call.rb
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-exec.1
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-ssh.1
+    :times_changed: 12
+  - :file_path: chef/distro/common/man/man1/knife-status.1
+    :times_changed: 12
+  - :file_path: chef/lib/chef/knife/node_show.rb
+    :times_changed: 12
+  - :file_path: features/api/roles/update_roles_api.feature
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-node.1.html
+    :times_changed: 12
+  - :file_path: features/api/nodes/cookbook_sync_api.feature
+    :times_changed: 12
+  - :file_path: chef/distro/common/html/knife-search.1.html
+    :times_changed: 12
+  - :file_path: chef-solr/lib/chef/solr/query.rb
+    :times_changed: 11
+  - :file_path: chef/spec/unit/resource_collection_spec.rb
+    :times_changed: 11
+  - :file_path: chef/distro/common/html/shef.1.html
+    :times_changed: 11
+  - :file_path: chef/tasks/rspec.rb
+    :times_changed: 11
+  - :file_path: chef/distro/common/man/man1/knife-index.1
+    :times_changed: 11
+  - :file_path: chef/spec/unit/provider/service/upstart_service_spec.rb
+    :times_changed: 11
+  - :file_path: chef/distro/common/man/man1/knife-configure.1
+    :times_changed: 11
+  - :file_path: lib/chef/resource/service.rb
+    :times_changed: 11
+  - :file_path: chef/lib/chef/mixin/deep_merge.rb
+    :times_changed: 11
+  - :file_path: chef/distro/common/man/man1/knife-data-bag.1
+    :times_changed: 11
+  - :file_path: chef/lib/chef/knife/data_bag_from_file.rb
+    :times_changed: 11
+  - :file_path: lib/chef/recipe.rb
+    :times_changed: 11
+  - :file_path: chef/distro/common/man/man8/chef-client.8
+    :times_changed: 11
+  - :file_path: chef/lib/chef/mixin/generate_url.rb
+    :times_changed: 11
+  - :file_path: chef-server/lib/controllers/nodes.rb
+    :times_changed: 11
+  - :file_path: features/api/search/show_search.feature
+    :times_changed: 11
+  - :file_path: chef-server-webui/app/views/nodes/_form.html.haml
+    :times_changed: 11
+  - :file_path: features/steps/run_client.rb
+    :times_changed: 11
+  - :file_path: chef-server-webui/app/views/status/index.html.haml
+    :times_changed: 11
+  - :file_path: chef/lib/chef/streaming_cookbook_uploader.rb
+    :times_changed: 11
+  - :file_path: chef-server-api/app/controllers/data_item.rb
+    :times_changed: 11
+  - :file_path: lib/chef/runner.rb
+    :times_changed: 11
+  - :file_path: chef/distro/common/man/man1/shef.1
+    :times_changed: 11
+  - :file_path: chef/lib/chef/queue.rb
+    :times_changed: 11
+  - :file_path: chef/spec/unit/provider/mount_spec.rb
+    :times_changed: 11
+  - :file_path: chef-server-webui/app/controllers/clients.rb
+    :times_changed: 11
+  - :file_path: chef/lib/chef/knife/role_from_file.rb
+    :times_changed: 11
+  - :file_path: chef/lib/chef/resource_collection.rb
+    :times_changed: 11
+  - :file_path: features/api/roles/show_roles_api.feature
+    :times_changed: 11
+  - :file_path: chef-server-slice/public/stylesheets/chef.css
+    :times_changed: 11
+  - :file_path: chef-solr/lib/chef/solr/application/indexer.rb
+    :times_changed: 11
+  - :file_path: chef/spec/unit/solr_query_spec.rb
+    :times_changed: 11
+  - :file_path: chef/lib/chef/file_access_control.rb
+    :times_changed: 11
+  - :file_path: chef/spec/unit/knife/cookbook_site_share_spec.rb
+    :times_changed: 11
+  - :file_path: chef/lib/chef/cookbook/cookbook_collection.rb
+    :times_changed: 11
+  - :file_path: chef-server-webui/app/views/nodes/index.html.haml
+    :times_changed: 11
+  - :file_path: chef/distro/common/man/man8/chef-solo.8
+    :times_changed: 11
+  - :file_path: chef-server-webui/app/views/cookbooks/index.html.haml
+    :times_changed: 11
+  - :file_path: chef/distro/common/html/knife-configure.1.html
+    :times_changed: 10
+  - :file_path: chef/spec/unit/run_context_spec.rb
+    :times_changed: 10
+  - :file_path: chef/distro/redhat/etc/init.d/chef-client
+    :times_changed: 10
+  - :file_path: chef/spec/unit/provider_spec.rb
+    :times_changed: 10
+  - :file_path: chef-server-api/app/controllers/data.rb
+    :times_changed: 10
+  - :file_path: chef/distro/common/html/knife-index.1.html
+    :times_changed: 10
+  - :file_path: chef/lib/chef/provider/mount.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/handler.rb
+    :times_changed: 10
+  - :file_path: chef-server/lib/controllers/openid_register.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/provider/cookbook_file.rb
+    :times_changed: 10
+  - :file_path: lib/chef/exceptions.rb
+    :times_changed: 10
+  - :file_path: chef/distro/common/html/chef-client.8.html
+    :times_changed: 10
+  - :file_path: chef/lib/chef/provider/service/redhat.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/knife/node_bulk_delete.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/knife/node_edit.rb
+    :times_changed: 10
+  - :file_path: chef-server/bin/chef-server-webui
+    :times_changed: 10
+  - :file_path: chef/distro/common/html/knife-data-bag.1.html
+    :times_changed: 10
+  - :file_path: chef/distro/common/man/man8/chef-solr.8
+    :times_changed: 10
+  - :file_path: chef/distro/redhat/etc/init.d/chef-server
+    :times_changed: 10
+  - :file_path: chef-solr/spec/chef/solr_spec.rb
+    :times_changed: 10
+  - :file_path: spec/unit/resource/file_spec.rb
+    :times_changed: 10
+  - :file_path: examples/config/cookbooks/tempfile/recipes/default.rb
+    :times_changed: 10
+  - :file_path: features/chef-client/attribute_settings.feature
+    :times_changed: 10
+  - :file_path: chef/lib/chef/mixin/checksum.rb
+    :times_changed: 10
+  - :file_path: chef-solr/chef-solr.gemspec
+    :times_changed: 10
+  - :file_path: chef/spec/unit/provider/remote_directory_spec.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/knife/role_show.rb
+    :times_changed: 10
+  - :file_path: chef/spec/unit/provider/package/rpm_spec.rb
+    :times_changed: 10
+  - :file_path: chef-server-slice/app/helpers/nodes_helper.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/resource/package.rb
+    :times_changed: 10
+  - :file_path: features/data/Rakefile
+    :times_changed: 10
+  - :file_path: chef/lib/chef/provider/service/gentoo.rb
+    :times_changed: 10
+  - :file_path: chef-server-webui/public/javascripts/cookbook_constraint_ctrl.js
+    :times_changed: 10
+  - :file_path: chef/lib/chef/provider/group/groupadd.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/resource/group.rb
+    :times_changed: 10
+  - :file_path: spec/unit/resource_spec.rb
+    :times_changed: 10
+  - :file_path: features/provider/deploy/deploy.feature
+    :times_changed: 10
+  - :file_path: chef-server-webui/app/controllers/environments.rb
+    :times_changed: 10
+  - :file_path: spec/unit/node_spec.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/knife/client_create.rb
+    :times_changed: 10
+  - :file_path: chef-solr/lib/chef/solr/application/rebuild.rb
+    :times_changed: 10
+  - :file_path: chef-server/lib/chef/search.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/knife/client_bulk_delete.rb
+    :times_changed: 10
+  - :file_path: chef/spec/unit/data_bag_item_spec.rb
+    :times_changed: 10
+  - :file_path: chef-server-webui/app/controllers/databags.rb
+    :times_changed: 10
+  - :file_path: chef-server-slice/app/controllers/roles.rb
+    :times_changed: 10
+  - :file_path: chef/spec/unit/knife/data_bag_show_spec.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/search/query.rb
+    :times_changed: 10
+  - :file_path: spec/unit/compile_spec.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/knife/client_show.rb
+    :times_changed: 10
+  - :file_path: chef/lib/chef/resource/template.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/provider/script.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/resource/user.rb
+    :times_changed: 9
+  - :file_path: chef-server-slice/app/views/nodes/show.html.haml
+    :times_changed: 9
+  - :file_path: chef-server-webui/app/views/roles/_form.html.erb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/knife/role_bulk_delete.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/knife/data_bag_show.rb
+    :times_changed: 9
+  - :file_path: chef-server-webui/app/views/layout/login.html.haml
+    :times_changed: 9
+  - :file_path: features/steps/deploy_steps.rb
+    :times_changed: 9
+  - :file_path: features/steps/files.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/mixin/find_preferred_file.rb
+    :times_changed: 9
+  - :file_path: chef-server-webui/app/views/roles/show.html.haml
+    :times_changed: 9
+  - :file_path: chef/spec/unit/resource/file_spec.rb
+    :times_changed: 9
+  - :file_path: chef/spec/unit/provider/package/easy_install_spec.rb
+    :times_changed: 9
+  - :file_path: chef/distro/common/html/chef-solr.8.html
+    :times_changed: 9
+  - :file_path: chef/lib/chef/knife/node_list.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/cookbook/syntax_check.rb
+    :times_changed: 9
+  - :file_path: features/steps/sandbox_steps.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/knife/node_from_file.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/provider/service/windows.rb
+    :times_changed: 9
+  - :file_path: chef/spec/unit/provider/directory_spec.rb
+    :times_changed: 9
+  - :file_path: features/api/cookbooks/upload_cookbooks.feature
+    :times_changed: 9
+  - :file_path: chef/lib/chef/resource/gem_package.rb
+    :times_changed: 9
+  - :file_path: chef/spec/unit/knife/cookbook_bulk_delete_spec.rb
+    :times_changed: 9
+  - :file_path: chef/spec/unit/handler_spec.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/provider/package/rpm.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/knife/client_reregister.rb
+    :times_changed: 9
+  - :file_path: chef/distro/common/man/man8/chef-server-webui.8
+    :times_changed: 9
+  - :file_path: chefserverslice/lib/chefserverslice.rb
+    :times_changed: 9
+  - :file_path: lib/chef/cookbook.rb
+    :times_changed: 9
+  - :file_path: chef/spec/unit/provider/http_request_spec.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/provider/http_request.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/provider/directory.rb
+    :times_changed: 9
+  - :file_path: spec/unit/recipe_spec.rb
+    :times_changed: 9
+  - :file_path: chef-server-webui/app/controllers/openid_consumer.rb
+    :times_changed: 9
+  - :file_path: chef/distro/common/html/chef-server.8.html
+    :times_changed: 9
+  - :file_path: chef-server-webui/app/views/roles/_form.html.haml
+    :times_changed: 9
+  - :file_path: chef/spec/unit/run_list/run_list_expansion_spec.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/resource/link.rb
+    :times_changed: 9
+  - :file_path: example-repository/Rakefile
+    :times_changed: 9
+  - :file_path: chef/spec/unit/provider/user/dscl_spec.rb
+    :times_changed: 9
+  - :file_path: chef/distro/common/man/man8/chef-server.8
+    :times_changed: 9
+  - :file_path: features/chef-client/roles.feature
+    :times_changed: 9
+  - :file_path: chef/lib/chef/mixin/params_validate.rb
+    :times_changed: 9
+  - :file_path: chef-server-slice/app/views/openid_consumer/index.html.haml
+    :times_changed: 9
+  - :file_path: chef/lib/chef/provider/group.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/resource/mount.rb
+    :times_changed: 9
+  - :file_path: chef/lib/chef/knife/rackspace_server_create.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/client_edit.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/mixin/template.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/cache/checksum.rb
+    :times_changed: 8
+  - :file_path: chef-server-slice/app/views/nodes/index.html.haml
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/cookbook_site_install.rb
+    :times_changed: 8
+  - :file_path: chef/distro/common/html/chef-server-webui.8.html
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/cookbook_site_unshare.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/bootstrap/fedora13-gems.erb
+    :times_changed: 8
+  - :file_path: features/api/roles/delete_role_api.feature
+    :times_changed: 8
+  - :file_path: chef/distro/common/html/chef-expanderctl.8.html
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/data_bag_edit.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/resource/group_spec.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/role_create.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/provider/service/freebsd_service_spec.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/provider/deploy/revision_spec.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/cache/checksum_spec.rb
+    :times_changed: 8
+  - :file_path: spec/unit/provider/file_spec.rb
+    :times_changed: 8
+  - :file_path: features/api/data/create_data_bag_item_api.feature
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/role_edit.rb
+    :times_changed: 8
+  - :file_path: chef/distro/common/html/chef-solo.8.html
+    :times_changed: 8
+  - :file_path: chef-server-webui/app/views/roles/index.html.haml
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/ec2_server_list.rb
+    :times_changed: 8
+  - :file_path: chef-server/lib/public/javascript/chef.js
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/node_run_list_add.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/resource_definition_spec.rb
+    :times_changed: 8
+  - :file_path: chef/README.rdoc
+    :times_changed: 8
+  - :file_path: chef/spec/unit/mixin/template_spec.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/knife/configure_spec.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/knife/cookbook_show_spec.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/provider/service/gentoo_service_spec.rb
+    :times_changed: 8
+  - :file_path: features/api/nodes/list_nodes_api.feature
+    :times_changed: 8
+  - :file_path: lib/chef/resource/file.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/mixin/params_validate_spec.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/ui.rb
+    :times_changed: 8
+  - :file_path: chef-server-api/bin/chef-server
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/client_delete.rb
+    :times_changed: 8
+  - :file_path: chef/config/server.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/ec2_server_delete.rb
+    :times_changed: 8
+  - :file_path: chef/distro/common/html/knife-recipe.1.html
+    :times_changed: 8
+  - :file_path: chef/spec/unit/knife/node_bulk_delete_spec.rb
+    :times_changed: 8
+  - :file_path: features/api/cookbooks/list_cookbooks.feature
+    :times_changed: 8
+  - :file_path: chef/spec/unit/provider/group/dscl_spec.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/knife/node_delete.rb
+    :times_changed: 8
+  - :file_path: chef/spec/lib/chef/resource/zen_master.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/provider/deploy/revision.rb
+    :times_changed: 8
+  - :file_path: chef/lib/chef/mixin/xml_escape.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/handler/json_file_spec.rb
+    :times_changed: 8
+  - :file_path: example-repository/cookbooks/fakefile/recipes/default.rb
+    :times_changed: 8
+  - :file_path: chef-server-webui/app/views/environments/_form.html.erb
+    :times_changed: 8
+  - :file_path: chef/distro/common/markdown/man1/knife-search.mkd
+    :times_changed: 8
+  - :file_path: chef-solr/lib/chef/solr/index_queue_consumer.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/provider/route_spec.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/provider/group_spec.rb
+    :times_changed: 8
+  - :file_path: chef/distro/common/man/man8/chef-expanderctl.8
+    :times_changed: 8
+  - :file_path: chef-server/lib/views/nodes/_node.html.haml
+    :times_changed: 8
+  - :file_path: features/api/nodes/delete_node_api.feature
+    :times_changed: 8
+  - :file_path: chef/lib/chef/cookbook_version_selector.rb
+    :times_changed: 8
+  - :file_path: chef/spec/unit/resource/remote_file_spec.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/provider/group/dscl.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/bluebox_server_delete.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/cookbook_site_download.rb
+    :times_changed: 7
+  - :file_path: lib/chef/provider.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/client_list.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/directory.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/provider/package/zypper.rb
+    :times_changed: 7
+  - :file_path: chef-server-webui/config/init.rb
+    :times_changed: 7
+  - :file_path: lib/chef/compile.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/node_create.rb
+    :times_changed: 7
+  - :file_path: chef-server/lib/chef/search_index.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/resource/link_spec.rb
+    :times_changed: 7
+  - :file_path: features/api/cookbooks/delete_cookbooks.feature
+    :times_changed: 7
+  - :file_path: chef-server/lib/controllers/search.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/help.rb
+    :times_changed: 7
+  - :file_path: chef-server/lib/views/cookbooks/show.html.haml
+    :times_changed: 7
+  - :file_path: features/api/data/show_data_bag_api.feature
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/cookbook_site_list.rb
+    :times_changed: 7
+  - :file_path: features/steps/run_solo.rb
+    :times_changed: 7
+  - :file_path: examples/config/chef-solo.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource_definition.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/bootstrap/archlinux-gems.erb
+    :times_changed: 7
+  - :file_path: Manifest.txt
+    :times_changed: 7
+  - :file_path: features/api/data/delete_data_bag_api.feature
+    :times_changed: 7
+  - :file_path: chef/lib/chef/run_list/run_list_item.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/ruby.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/yum_package.rb
+    :times_changed: 7
+  - :file_path: features/data/roles/role_test.json
+    :times_changed: 7
+  - :file_path: examples/config/cookbooks/servicetest/recipes/default.rb
+    :times_changed: 7
+  - :file_path: chef-server-slice/app/controllers/openid_server.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/role_delete.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/http_request.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/bluebox_server_list.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/checksum_cache.rb
+    :times_changed: 7
+  - :file_path: History.txt
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/portage_package.rb
+    :times_changed: 7
+  - :file_path: chef-server-api/app/helpers/tarball_helper.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/provider/user/pw_spec.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/index_queue/consumer.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/provider/ifconfig.rb
+    :times_changed: 7
+  - :file_path: chef/distro/common/markdown/man1/knife-cookbook.mkd
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/core/text_formatter.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/monkey_patches/string.rb
+    :times_changed: 7
+  - :file_path: lib/chef/mixin/command.rb
+    :times_changed: 7
+  - :file_path: chef-server/config/router.rb
+    :times_changed: 7
+  - :file_path: examples/sample_recipe.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/data_bag_delete.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/version_constraint.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/provider/user/dscl.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/resource/service_spec.rb
+    :times_changed: 7
+  - :file_path: lib/chef/resource_collection.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/shell_out/windows.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/search_index.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/provider/package/macports_spec.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/queue_spec.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/mixin/checksum_spec.rb
+    :times_changed: 7
+  - :file_path: chef-server-slice/app/helpers/application_helper.rb
+    :times_changed: 7
+  - :file_path: chef-server-api/spec/unit/environments_controller_spec.rb
+    :times_changed: 7
+  - :file_path: spec/unit/rest_spec.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/mixin/language_include_attribute.rb
+    :times_changed: 7
+  - :file_path: chef-server-webui/app/views/clients/index.html.haml
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/cron.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/script.rb
+    :times_changed: 7
+  - :file_path: chef-server/lib/controllers/cookbook_files.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/file_cache_spec.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/search.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/run_list/versioned_recipe_list.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/data_bag_spec.rb
+    :times_changed: 7
+  - :file_path: chef-server-api/app/models/sandbox_file.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/provider/service/windows_spec.rb
+    :times_changed: 7
+  - :file_path: chef-server-api/app/controllers/main.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/knife/data_bag_create_spec.rb
+    :times_changed: 7
+  - :file_path: chef-server-slice/app/views/cookbooks/show.html.haml
+    :times_changed: 7
+  - :file_path: chef/spec/unit/knife/cookbook_metadata_from_file_spec.rb
+    :times_changed: 7
+  - :file_path: features/support/couchdb_replicate.rb
+    :times_changed: 7
+  - :file_path: lib/chef/provider/file.rb
+    :times_changed: 7
+  - :file_path: chef-server-api/app/helpers/application_helper.rb
+    :times_changed: 7
+  - :file_path: chef/lib/chef/knife/core/ui.rb
+    :times_changed: 7
+  - :file_path: lib/chef/mixin/params_validate.rb
+    :times_changed: 7
+  - :file_path: lib/chef_server/controllers/cookbooks.rb
+    :times_changed: 7
+  - :file_path: chef-expander/chef-expander.gemspec
+    :times_changed: 7
+  - :file_path: features/api/search/list_search.feature
+    :times_changed: 7
+  - :file_path: chef/spec/unit/knife/cookbook_create_spec.rb
+    :times_changed: 7
+  - :file_path: lib/chef/cookbook_loader.rb
+    :times_changed: 7
+  - :file_path: features/api/data/create_data_bag_api.feature
+    :times_changed: 7
+  - :file_path: chef-server-slice/app/views/nodes/_node.html.haml
+    :times_changed: 7
+  - :file_path: chef/lib/chef/resource/scm.rb
+    :times_changed: 7
+  - :file_path: chef/spec/unit/knife/index_rebuild_spec.rb
+    :times_changed: 7
+  - :file_path: features/api/clients/create_client_api.feature
+    :times_changed: 7
+  - :file_path: features/data/config/client.rb
+    :times_changed: 7
+  - :file_path: chef-server/lib/controllers/cookbook_templates.rb
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/roles/edit.html.haml
+    :times_changed: 6
+  - :file_path: spec/unit/log/formatter_spec.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/python.rb
+    :times_changed: 6
+  - :file_path: chef/spec/unit/knife/role_from_file_spec.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/cookbook/metadata/version.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/util/spec/FileEdit/FileEdit_spec.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/environment_create.rb
+    :times_changed: 6
+  - :file_path: chef-solr/spec/chef/solr/index_spec.rb
+    :times_changed: 6
+  - :file_path: chef/spec/unit/knife/node_list_spec.rb
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/helpers/global_helpers.rb
+    :times_changed: 6
+  - :file_path: lib/chef/provider/apt.rb
+    :times_changed: 6
+  - :file_path: lib/chef/provider/template.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/rackspace_server_list.rb
+    :times_changed: 6
+  - :file_path: chef-server-slice/app/helpers/status_helper.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/role_list.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/apt_package.rb
+    :times_changed: 6
+  - :file_path: features/transfer_remote_files.feature
+    :times_changed: 6
+  - :file_path: chef/spec/unit/provider/script_spec.rb
+    :times_changed: 6
+  - :file_path: chef-server-api/spec/unit/nodes_controller_environments_spec.rb
+    :times_changed: 6
+  - :file_path: features/api/data/list_data_bags.feature
+    :times_changed: 6
+  - :file_path: features/cookbooks/lightweight_resources_and_providers.feature
+    :times_changed: 6
+  - :file_path: spec/unit/resource_collection_spec.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/bootstrap/ubuntu10.04-apt.erb
+    :times_changed: 6
+  - :file_path: chef-server-slice/app/controllers/status.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/environment_edit.rb
+    :times_changed: 6
+  - :file_path: features/chef-client/run_interval.feature
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/layout/chef_server_webui.html.haml
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/nodes/edit.html.haml
+    :times_changed: 6
+  - :file_path: spec/spec_helper.rb
+    :times_changed: 6
+  - :file_path: examples/config/nodes/junglist.gen.nz.rb
+    :times_changed: 6
+  - :file_path: chef-server-slice/app/views/openid_register/index.html.haml
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/databags/show.html.haml
+    :times_changed: 6
+  - :file_path: features/api/cookbooks/list_cookbooks_api.feature
+    :times_changed: 6
+  - :file_path: features/api/nodes/show_node_api.feature
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/node_run_list_remove.rb
+    :times_changed: 6
+  - :file_path: chef-server/config/environments/production.rb
+    :times_changed: 6
+  - :file_path: chef-solr/solr/solr-home.tar.gz
+    :times_changed: 6
+  - :file_path: lib/chef/file_store.rb
+    :times_changed: 6
+  - :file_path: chef/spec/unit/cookbook/syntax_check_spec.rb
+    :times_changed: 6
+  - :file_path: chef-expander/lib/chef/expander/configuration.rb
+    :times_changed: 6
+  - :file_path: chef/spec/lib/chef/provider/snakeoil.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/terremark_server_create.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/perl.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/core/generic_presenter.rb
+    :times_changed: 6
+  - :file_path: chef/spec/unit/fileedit_spec.rb
+    :times_changed: 6
+  - :file_path: chef-server/lib/controllers/openid_server.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/bbg_server_create.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/configure_client.rb
+    :times_changed: 6
+  - :file_path: features/api/clients/show_client_api.feature
+    :times_changed: 6
+  - :file_path: chef/lib/chef/provider/ruby_block.rb
+    :times_changed: 6
+  - :file_path: lib/chef/couchdb.rb
+    :times_changed: 6
+  - :file_path: lib/chef/provider/service/base.rb
+    :times_changed: 6
+  - :file_path: chef/spec/lib/chef/resource/cat.rb
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/search/index.html.haml
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/recipe_list.rb
+    :times_changed: 6
+  - :file_path: features/api/clients/list_clients_api.feature
+    :times_changed: 6
+  - :file_path: chef/distro/common/markdown/man1/knife.mkd
+    :times_changed: 6
+  - :file_path: chef-server-slice/app/controllers/exceptions.rb
+    :times_changed: 6
+  - :file_path: chef/spec/unit/knife/node_edit_spec.rb
+    :times_changed: 6
+  - :file_path: features/api/cookbooks/show_cookbook_attributes_api.feature
+    :times_changed: 6
+  - :file_path: spec/unit/config_spec.rb
+    :times_changed: 6
+  - :file_path: example-repository/cookbooks/tempfile/metadata.json
+    :times_changed: 6
+  - :file_path: chef/spec/unit/search/query_spec.rb
+    :times_changed: 6
+  - :file_path: example-repository/cookbooks/fakefile/metadata.json
+    :times_changed: 6
+  - :file_path: chef-server/README.txt
+    :times_changed: 6
+  - :file_path: chef/distro/common/markdown/man1/knife-cookbook-site.mkd
+    :times_changed: 6
+  - :file_path: chef-server/lib/controllers/application.rb
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/databags/index.html.haml
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/slicehost_server_list.rb
+    :times_changed: 6
+  - :file_path: chef/distro/redhat/etc/init.d/chef-indexer
+    :times_changed: 6
+  - :file_path: chef/spec/unit/resource/template_spec.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resources.rb
+    :times_changed: 6
+  - :file_path: features/search/search_data.feature
+    :times_changed: 6
+  - :file_path: chef/lib/chef/cookbook/file_system_file_vendor.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/csh.rb
+    :times_changed: 6
+  - :file_path: spec/unit/search_index_spec.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/ec2_instance_data.rb
+    :times_changed: 6
+  - :file_path: chef-server-webui/bin/chef-server-webui
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/bluebox_images_list.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/nanite.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/mixin/shell_out.rb
+    :times_changed: 6
+  - :file_path: features/api/cookbooks/show_cookbook_api.feature
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/git.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/rackspace_server_delete.rb
+    :times_changed: 6
+  - :file_path: chef-server/lib/controllers/cookbook_libraries.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/easy_install_package.rb
+    :times_changed: 6
+  - :file_path: chef/distro/common/markdown/man1/knife-node.mkd
+    :times_changed: 6
+  - :file_path: features/api/data/delete_data_bag_item.feature
+    :times_changed: 6
+  - :file_path: chef/lib/chef/checksum.rb
+    :times_changed: 6
+  - :file_path: chef-server-slice/public/stylesheets/base.css
+    :times_changed: 6
+  - :file_path: bin/chef-solo
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/slicehost_server_delete.rb
+    :times_changed: 6
+  - :file_path: chef/spec/unit/file_access_control_spec.rb
+    :times_changed: 6
+  - :file_path: chef-server-webui/app/views/nodes/_form.html.erb
+    :times_changed: 6
+  - :file_path: chef-server-webui/public/stylesheets/themes/djime-cerulean/style.css
+    :times_changed: 6
+  - :file_path: lib/chef/resource/directory.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/environment_show.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/resource/bash.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/slicehost_server_create.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/environment_delete.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/provider/ohai.rb
+    :times_changed: 6
+  - :file_path: chef-server-slice/app/controllers/cookbooks.rb
+    :times_changed: 6
+  - :file_path: chef/bin/shef
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/slicehost_images_list.rb
+    :times_changed: 6
+  - :file_path: chef-expander/Rakefile
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/windows_bootstrap.rb
+    :times_changed: 6
+  - :file_path: chef-server/lib/controllers/openid_consumer.rb
+    :times_changed: 6
+  - :file_path: chef/lib/chef/knife/tag_create.rb
+    :times_changed: 5
+  - :file_path: spec/unit/chef_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/cookbook_templates/index.html.haml
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/helpers/cookbooks_helper.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/application/server.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/kathleene/style.css
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/exec.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/cookbook_definitions.rb
+    :times_changed: 5
+  - :file_path: bin/chef-client
+    :times_changed: 5
+  - :file_path: chef-server-webui/public/stylesheets/base.css
+    :times_changed: 5
+  - :file_path: chef/spec/unit/provider/ruby_block_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/cookbook_attributes.rb
+    :times_changed: 5
+  - :file_path: chef/distro/redhat/etc/init.d/chef-solr-indexer
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/roles/new.html.haml
+    :times_changed: 5
+  - :file_path: chef/distro/arch/etc/rc.d/chef-solr-indexer
+    :times_changed: 5
+  - :file_path: chef/distro/debian/etc/init.d/chef-client
+    :times_changed: 5
+  - :file_path: example-repository/cookbooks/CHEF-56/recipes/default.rb
+    :times_changed: 5
+  - :file_path: lib/chef_server/views/layout/application.html.haml
+    :times_changed: 5
+  - :file_path: chef/lib/chef/cookbook/remote_file_vendor.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/knife/client_create_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server/config.ru
+    :times_changed: 5
+  - :file_path: chef/lib/chef/handler/json_file.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/api_client_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server/lib/controllers/cookbooks.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/data_bag_list.rb
+    :times_changed: 5
+  - :file_path: chef/distro/common/markdown/man1/knife-ssh.mkd
+    :times_changed: 5
+  - :file_path: chef/spec/unit/knife/node_from_file_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server/lib/controllers/cookbook_attributes.rb
+    :times_changed: 5
+  - :file_path: chef-server/config/rack.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/terremark_server_delete.rb
+    :times_changed: 5
+  - :file_path: chef-solr/spec/spec_helper.rb
+    :times_changed: 5
+  - :file_path: features/api/environments/update_environment_api.feature
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/bec-green/style.css
+    :times_changed: 5
+  - :file_path: chef/spec/tiny_server.rb
+    :times_changed: 5
+  - :file_path: chef-server-webui/app/helpers/nodes_helper.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/mixin/convert_to_class_name.rb
+    :times_changed: 5
+  - :file_path: spec/unit/provider/template_spec.rb
+    :times_changed: 5
+  - :file_path: examples/config/cookbooks/fakefile/attributes/first.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/layout/login.html.haml
+    :times_changed: 5
+  - :file_path: spec/unit/mixin/params_validate_spec.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/shef/model_wrapper.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/roles/_form.html.haml
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/cookbook_site_search.rb
+    :times_changed: 5
+  - :file_path: chef-server/pkg/chef-server-0.0.1.gem
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/javascripts/JSONeditor.js
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/nodes/_form.html.haml
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/roles/edit.html.haml
+    :times_changed: 5
+  - :file_path: chef/distro/common/man/man8/chef-expander.8
+    :times_changed: 5
+  - :file_path: chef/lib/chef/mixin/create_path.rb
+    :times_changed: 5
+  - :file_path: chef-server/lib/views/nodes/show.html.haml
+    :times_changed: 5
+  - :file_path: chef/spec/unit/knife/role_edit_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/provider/group/pw_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/log_spec.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/environment_list.rb
+    :times_changed: 5
+  - :file_path: chef/distro/redhat/etc/init.d/chef-solr
+    :times_changed: 5
+  - :file_path: chef-server-webui/app/helpers/search_helper.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/blue/style.css
+    :times_changed: 5
+  - :file_path: spec/unit/provider_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/default/style.css
+    :times_changed: 5
+  - :file_path: chef/spec/unit/knife/client_bulk_delete_spec.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/resource/ifconfig.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/openid_registration_spec.rb
+    :times_changed: 5
+  - :file_path: lib/chef/resource_definition.rb
+    :times_changed: 5
+  - :file_path: spec/lib/chef/resource/cat.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/provider/package/macports.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/cookbook_libraries.rb
+    :times_changed: 5
+  - :file_path: spec/unit/cookbook_spec.rb
+    :times_changed: 5
+  - :file_path: spec/data/cookbooks/openldap/attributes/default.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/provider/package/zypper_spec.rb
+    :times_changed: 5
+  - :file_path: chef/pkg/chef-0.0.1.gem
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/helpers/global_helpers.rb
+    :times_changed: 5
+  - :file_path: chef-server/LICENSE
+    :times_changed: 5
+  - :file_path: features/steps/couchdb_steps.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/resource/subversion.rb
+    :times_changed: 5
+  - :file_path: chef-server-webui/app/views/users/_form.html.haml
+    :times_changed: 5
+  - :file_path: chef-server/lib/controllers/cookbook_recipes.rb
+    :times_changed: 5
+  - :file_path: chef-expander/spec/unit/configuration_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/knife/cookbook_download_spec.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/encrypted_data_bag_item.rb
+    :times_changed: 5
+  - :file_path: features/data/cookbooks/deploy/recipes/embedded_recipe_callbacks.rb
+    :times_changed: 5
+  - :file_path: chef/distro/redhat/etc/sysconfig/chef-server
+    :times_changed: 5
+  - :file_path: features/data/roles/role_env_test.json
+    :times_changed: 5
+  - :file_path: bin/chef-indexer
+    :times_changed: 5
+  - :file_path: lib/chef/provider/directory.rb
+    :times_changed: 5
+  - :file_path: chef-solr/bin/chef-solr-indexer
+    :times_changed: 5
+  - :file_path: chef/lib/chef/version_class.rb
+    :times_changed: 5
+  - :file_path: chef-solr/lib/chef/solr/index.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/openid_register.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/roles/show.html.haml
+    :times_changed: 5
+  - :file_path: chef/distro/common/html/chef-expander-cluster.8.html
+    :times_changed: 5
+  - :file_path: chef-server/lib/controllers/cookbook_definitions.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/search/index.html.haml
+    :times_changed: 5
+  - :file_path: scripts/mac-dev-start
+    :times_changed: 5
+  - :file_path: chef/spec/unit/knife/environment_edit_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/application/indexer_spec.rb
+    :times_changed: 5
+  - :file_path: features/manage_files.feature
+    :times_changed: 5
+  - :file_path: lib/chef_server/controllers/application.rb
+    :times_changed: 5
+  - :file_path: chef-server/lib/views/search/show.html.haml
+    :times_changed: 5
+  - :file_path: chef/distro/common/man/man8/chef-expander-cluster.8
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/cookbook_files.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/openid_login/index.html.haml
+    :times_changed: 5
+  - :file_path: chef/README.txt
+    :times_changed: 5
+  - :file_path: chef-server-api/spec/unit/sandbox_file_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/mixin/language_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/resource/execute_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/run_list/versioned_recipe_list_spec.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/provider/mdadm.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/mixin/language_include_recipe.rb
+    :times_changed: 5
+  - :file_path: features/api/data/show_data_bag_item_api.feature
+    :times_changed: 5
+  - :file_path: features/provider/file/manage_files.feature
+    :times_changed: 5
+  - :file_path: features/api/environments/list_environment_cookbooks_api.feature
+    :times_changed: 5
+  - :file_path: lib/chef.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/terremark_server_list.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/resource/route.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/run_list/run_list_item_spec.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/provider/group/pw.rb
+    :times_changed: 5
+  - :file_path: config/chef-server.rb
+    :times_changed: 5
+  - :file_path: features/api/sandboxes/sandboxes_api.feature
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/cookbook_recipes.rb
+    :times_changed: 5
+  - :file_path: features/api/clients/update_client_api.feature
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/controllers/search_entries.rb
+    :times_changed: 5
+  - :file_path: spec/unit/file_store_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server/lib/views/layout/application.html.haml
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/bec/style.css
+    :times_changed: 5
+  - :file_path: chef-server-webui/app/helpers/openid_server_helpers.rb
+    :times_changed: 5
+  - :file_path: chef/lib/chef/knife/cookbook_site_show.rb
+    :times_changed: 5
+  - :file_path: chef-server-webui/app/views/environments/show.html.haml
+    :times_changed: 5
+  - :file_path: chef/distro/common/markdown/man1/knife-bootstrap.mkd
+    :times_changed: 5
+  - :file_path: chef-server-slice/app/views/search/show.html.haml
+    :times_changed: 5
+  - :file_path: chef-server-webui/app/views/search/show.html.haml
+    :times_changed: 5
+  - :file_path: chef/distro/common/html/chef-expander.8.html
+    :times_changed: 5
+  - :file_path: chef/spec/unit/resource/directory_spec.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/cookbook_manifest_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/orange/style.css
+    :times_changed: 5
+  - :file_path: chef-solr/solr/solr-jetty.tar.gz
+    :times_changed: 5
+  - :file_path: chef-server-slice/public/stylesheets/themes/reidb-greenish/style.css
+    :times_changed: 5
+  - :file_path: spec/unit/cookbook_loader_spec.rb
+    :times_changed: 5
+  - :file_path: examples/sample_definition.rb
+    :times_changed: 5
+  - :file_path: lib/chef/provider/package.rb
+    :times_changed: 5
+  - :file_path: chef/spec/unit/mixin/find_preferred_file_spec.rb
+    :times_changed: 5
+  - :file_path: chef-server/lib/controllers/search_entries.rb
+    :times_changed: 5
+:flay: 
+  :matches: []
+
+  :total_score: "0"
+:saikuro: 
+  :files: 
+  - :filename: vnode_supervisor.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: 
+      - :lines: 5
+        :name: AMQP#self.hard_reset!
+        :complexity: 3
+      :lines: 7
+      :complexity: 3
+      :class_name: AMQP
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 24
+        :name: Chef::Expander::VNodeSupervisor#process_control_message
+        :complexity: 12
+      - :lines: 25
+        :name: Chef::Expander::VNodeSupervisor#self.start
+        :complexity: 6
+      - :lines: 11
+        :name: Chef::Expander::VNodeSupervisor#self.wait_for_http_requests_to_complete
+        :complexity: 5
+      - :lines: 7
+        :name: Chef::Expander::VNodeSupervisor#recover_vnode
+        :complexity: 4
+      - :lines: 12
+        :name: Chef::Expander::VNodeSupervisor#stop
+        :complexity: 4
+      - :lines: 8
+        :name: Chef::Expander::VNodeSupervisor#start
+        :complexity: 3
+      - :lines: 7
+        :name: Chef::Expander::VNodeSupervisor#self.await_parent_death
+        :complexity: 3
+      - :lines: 7
+        :name: Chef::Expander::VNodeSupervisor#self.stop_immediately
+        :complexity: 3
+      - :lines: 3
+        :name: Chef::Expander::VNodeSupervisor#self.trap_signals
+        :complexity: 3
+      - :lines: 7
+        :name: Chef::Expander::VNodeSupervisor#self.start_consumers
+        :complexity: 2
+      - :lines: 3
+        :name: Chef::Expander::VNodeSupervisor#vnode_removed
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::VNodeSupervisor#start_vnode_table_publisher
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::VNodeSupervisor#set_log_level
+        :complexity: 2
+      - :lines: 13
+        :name: Chef::Expander::VNodeSupervisor#self.start_cluster_worker
+        :complexity: 2
+      - :lines: 4
+        :name: Chef::Expander::VNodeSupervisor#self.stop_gracefully
+        :complexity: 2
+      - :lines: 3
+        :name: Chef::Expander::VNodeSupervisor#vnode_added
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::VNodeSupervisor#initialize
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNodeSupervisor#vnodes
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNodeSupervisor#spawn_vnode
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNodeSupervisor#release_vnode
+        :complexity: 1
+      - :lines: 5
+        :name: Chef::Expander::VNodeSupervisor#publish_vnode_table
+        :complexity: 1
+      - :lines: 4
+        :name: Chef::Expander::VNodeSupervisor#publish_status_to
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNodeSupervisor#parse_symbolic
+        :complexity: 1
+      :lines: 220
+      :complexity: 64
+      :class_name: Chef::Expander::VNodeSupervisor
+  - :filename: solrizer.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 13
+        :name: Chef::Expander::Solrizer#run
+        :complexity: 6
+      - :lines: 17
+        :name: Chef::Expander::Solrizer#post_to_solr
+        :complexity: 6
+      - :lines: 19
+        :name: Chef::Expander::Solrizer#pointyize_add
+        :complexity: 4
+      - :lines: 10
+        :name: Chef::Expander::Solrizer#add
+        :complexity: 4
+      - :lines: 4
+        :name: Chef::Expander::Solrizer#delete
+        :complexity: 4
+      - :lines: 4
+        :name: Chef::Expander::Solrizer#parse
+        :complexity: 3
+      - :lines: 11
+        :name: Chef::Expander::Solrizer#initialize
+        :complexity: 3
+      - :lines: 7
+        :name: Chef::Expander::Solrizer#extract_object_fields
+        :complexity: 2
+      - :lines: 10
+        :name: Chef::Expander::Solrizer#flattened_object
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#hash
+        :complexity: 1
+      - :lines: 9
+        :name: Chef::Expander::Solrizer#pointyize_delete
+        :complexity: 1
+      - :lines: 4
+        :name: Chef::Expander::Solrizer#completed
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#transit_time
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#solr_url
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#indexed_object
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#http_request_started
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#eql?
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#self.clear_http_requests
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#self.http_requests_active?
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#self.http_request_completed
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Solrizer#self.http_request_started
+        :complexity: 1
+      :lines: 243
+      :complexity: 46
+      :class_name: Chef::Expander::Solrizer
+  - :filename: configuration.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: 
+      - :lines: 10
+        :name: Chef::Expander#self.init_config
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander#self.config
+        :complexity: 1
+      :lines: 22
+      :complexity: 2
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 8
+        :name: Chef::Expander::ChefCompatibleConfig#method_missing
+        :complexity: 3
+      - :lines: 3
+        :name: Chef::Expander::ChefCompatibleConfig#load
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::ChefCompatibleConfig#initialize
+        :complexity: 1
+      :lines: 23
+      :complexity: 6
+      :class_name: Chef::Expander::ChefCompatibleConfig
+    - :methods: []
+
+      :lines: 8
+      :complexity: 0
+      :class_name: Chef::Expander::Configuration
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: Chef::Expander::Configuration::InvalidConfiguration
+    - :methods: 
+      - :lines: 9
+        :name: Chef::Expander::Configuration::Base#self.from_hash
+        :complexity: 3
+      - :lines: 6
+        :name: Chef::Expander::Configuration::Base#pidfile
+        :complexity: 3
+      - :lines: 5
+        :name: Chef::Expander::Configuration::Base#merge_config
+        :complexity: 3
+      - :lines: 7
+        :name: Chef::Expander::Configuration::Base#self.configurable
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::Configuration::Base#fail_if_invalid
+        :complexity: 2
+      - :lines: 4
+        :name: Chef::Expander::Configuration::Base#validate!
+        :complexity: 2
+      - :lines: 4
+        :name: Chef::Expander::Configuration::Base#apply_defaults
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::Configuration::Base#reset!
+        :complexity: 2
+      - :lines: 6
+        :name: Chef::Expander::Configuration::Base#vnode_numbers
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#log_location=
+        :complexity: 2
+      - :lines: 7
+        :name: Chef::Expander::Configuration::Base#log_level=
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#initialize
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#invalid
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#self.defaults
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#self.validations
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#self.configurables
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Configuration::Base#amqp_config
+        :complexity: 1
+      - :lines: 4
+        :name: Chef::Expander::Configuration::Base#self.from_chef_compat_config
+        :complexity: 1
+      :lines: 170
+      :complexity: 46
+      :class_name: Chef::Expander::Configuration::Base
+    - :methods: 
+      - :lines: 2
+        :name: Chef::Expander::Configuration::CLI#self.config
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Configuration::CLI#self.parse_options
+        :complexity: 1
+      :lines: 56
+      :complexity: 12
+      :class_name: Chef::Expander::Configuration::CLI
+  - :filename: node.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 9
+        :name: Chef::Expander::Node#stop
+        :complexity: 4
+      - :lines: 8
+        :name: Chef::Expander::Node#broadcast_control_queue
+        :complexity: 3
+      - :lines: 6
+        :name: Chef::Expander::Node#attach_to_queue
+        :complexity: 3
+      - :lines: 3
+        :name: Chef::Expander::Node#direct_message
+        :complexity: 2
+      - :lines: 3
+        :name: Chef::Expander::Node#self.guid
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Node#self.hostname_f
+        :complexity: 2
+      - :lines: 3
+        :name: Chef::Expander::Node#shared_message
+        :complexity: 2
+      - :lines: 3
+        :name: Chef::Expander::Node#broadcast_message
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::Node#exclusive_control_queue
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::Node#broadcast_control_exchange
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::Node#shared_control_queue
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Node#to_hash
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#shared_control_queue_name
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#broadcast_control_queue_name
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#broadcast_control_exchange_name
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#exclusive_control_queue_name
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#identifier
+        :complexity: 1
+      - :lines: 3
+        :name: Chef::Expander::Node#==
+        :complexity: 1
+      - :lines: 4
+        :name: Chef::Expander::Node#start
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#initialize
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#eql?
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#hash
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#self.local_node
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Node#self.from_hash
+        :complexity: 1
+      :lines: 145
+      :complexity: 39
+      :class_name: Chef::Expander::Node
+  - :filename: daemonizable.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 9
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: Chef::Expander::AlreadyRunning
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: Chef::Expander::NoSuchUser
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: Chef::Expander::NoSuchGroup
+    - :methods: 
+      - :lines: 12
+        :name: Chef::Expander::Daemonizable#set_user_and_group
+        :complexity: 7
+      - :lines: 9
+        :name: Chef::Expander::Daemonizable#target_gid
+        :complexity: 5
+      - :lines: 6
+        :name: Chef::Expander::Daemonizable#target_uid
+        :complexity: 4
+      - :lines: 10
+        :name: Chef::Expander::Daemonizable#acquire_locks
+        :complexity: 4
+      - :lines: 8
+        :name: Chef::Expander::Daemonizable#set_group
+        :complexity: 4
+      - :lines: 10
+        :name: Chef::Expander::Daemonizable#daemonize
+        :complexity: 3
+      - :lines: 3
+        :name: Chef::Expander::Daemonizable#release_locks
+        :complexity: 3
+      - :lines: 6
+        :name: Chef::Expander::Daemonizable#set_user
+        :complexity: 3
+      - :lines: 3
+        :name: Chef::Expander::Daemonizable#configure_process
+        :complexity: 2
+      - :lines: 3
+        :name: Chef::Expander::Daemonizable#ensure_exclusive
+        :complexity: 1
+      - :lines: 4
+        :name: Chef::Expander::Daemonizable#write_pid
+        :complexity: 1
+      :lines: 113
+      :complexity: 37
+      :class_name: Chef::Expander::Daemonizable
+  - :filename: control.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 26
+        :name: Chef::Expander::Control#log_level
+        :complexity: 6
+      - :lines: 28
+        :name: Chef::Expander::Control#node_status
+        :complexity: 5
+      - :lines: 23
+        :name: Chef::Expander::Control#queue_depth
+        :complexity: 4
+      - :lines: 21
+        :name: Chef::Expander::Control#queue_status
+        :complexity: 3
+      - :lines: 7
+        :name: Chef::Expander::Control#self.compile
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::Control#self.method_added
+        :complexity: 2
+      - :lines: 8
+        :name: Chef::Expander::Control#help
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Control#self.descriptions
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Control#initialize
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Control#self.arg
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Control#self.option
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Control#self.desc
+        :complexity: 1
+      - :lines: 3
+        :name: Chef::Expander::Control#self.run
+        :complexity: 1
+      :lines: 169
+      :complexity: 30
+      :class_name: Chef::Expander::Control
+  - :filename: cluster_supervisor.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 23
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 24
+        :name: Chef::Expander::ClusterSupervisor#maintain_workers
+        :complexity: 9
+      - :lines: 18
+        :name: Chef::Expander::ClusterSupervisor#start
+        :complexity: 8
+      - :lines: 8
+        :name: Chef::Expander::ClusterSupervisor#start_worker
+        :complexity: 3
+      - :lines: 4
+        :name: Chef::Expander::ClusterSupervisor#start_workers
+        :complexity: 2
+      - :lines: 4
+        :name: Chef::Expander::ClusterSupervisor#stop
+        :complexity: 2
+      - :lines: 4
+        :name: Chef::Expander::ClusterSupervisor#initialize
+        :complexity: 1
+      :lines: 78
+      :complexity: 25
+      :class_name: Chef::Expander::ClusterSupervisor
+  - :filename: logger.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 15
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: Chef::Expander::InvalidLogDevice
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: Chef::Expander::InvalidLogLevel
+    - :methods: 
+      - :lines: 12
+        :name: Chef::Expander::Logger#assert_valid_path!
+        :complexity: 5
+      - :lines: 11
+        :name: Chef::Expander::Logger#add
+        :complexity: 3
+      - :lines: 8
+        :name: Chef::Expander::Logger#level=
+        :complexity: 3
+      - :lines: 10
+        :name: Chef::Expander::Logger#msg2str
+        :complexity: 3
+      - :lines: 9
+        :name: Chef::Expander::Logger#initialize_log_device
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::Logger#<<
+        :complexity: 1
+      - :lines: 1
+        :name: Chef::Expander::Logger#logging_at_severity?
+        :complexity: 1
+      - :lines: 3
+        :name: Chef::Expander::Logger#initialize
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Logger#init
+        :complexity: 1
+      :lines: 95
+      :complexity: 24
+      :class_name: Chef::Expander::Logger
+  - :filename: vnode.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 16
+        :name: Chef::Expander::VNode#start
+        :complexity: 7
+      - :lines: 7
+        :name: Chef::Expander::VNode#abort_on_multiple_subscribe
+        :complexity: 4
+      - :lines: 5
+        :name: Chef::Expander::VNode#stop
+        :complexity: 3
+      - :lines: 4
+        :name: Chef::Expander::VNode#supervise_consumer_count
+        :complexity: 2
+      - :lines: 5
+        :name: Chef::Expander::VNode#queue
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::VNode#control_queue_name
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNode#stopped?
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNode#queue_name
+        :complexity: 1
+      - :lines: 6
+        :name: Chef::Expander::VNode#initialize
+        :complexity: 1
+      :lines: 74
+      :complexity: 22
+      :class_name: Chef::Expander::VNode
+  - :filename: vnode_table.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 10
+        :name: Chef::Expander::VNodeTable#update_table
+        :complexity: 4
+      - :lines: 6
+        :name: Chef::Expander::VNodeTable#leader_node
+        :complexity: 4
+      - :lines: 4
+        :name: Chef::Expander::VNodeTable#remove_node
+        :complexity: 2
+      - :lines: 4
+        :name: Chef::Expander::VNodeTable#update_node
+        :complexity: 2
+      - :lines: 2
+        :name: Chef::Expander::VNodeTable#local_node_is_leader?
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::VNodeTable#nodes
+        :complexity: 1
+      - :lines: 4
+        :name: Chef::Expander::VNodeTable#initialize
+        :complexity: 1
+      :lines: 54
+      :complexity: 15
+      :class_name: Chef::Expander::VNodeTable
+    - :methods: []
+
+      :lines: 0
+      :complexity: 0
+      :class_name: Chef::Expander::VNodeTable::InvalidVNodeTableUpdate
+  - :filename: flattener.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 8
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 12
+        :name: Chef::Expander::Flattener#flatten_each
+        :complexity: 5
+      - :lines: 9
+        :name: Chef::Expander::Flattener#flatten_and_expand
+        :complexity: 4
+      - :lines: 4
+        :name: Chef::Expander::Flattener#add_field_value
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Flattener#flattened_item
+        :complexity: 1
+      - :lines: 2
+        :name: Chef::Expander::Flattener#initialize
+        :complexity: 1
+      :lines: 46
+      :complexity: 12
+      :class_name: Chef::Expander::Flattener
+  - :filename: version.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: 
+      - :lines: 10
+        :name: Chef::Expander#self.version
+        :complexity: 4
+      :lines: 16
+      :complexity: 4
+      :class_name: Chef::Expander
+  - :filename: loggable.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef::Expander
+    - :methods: 
+      - :lines: 2
+        :name: Chef::Expander::Loggable#log
+        :complexity: 1
+      :lines: 11
+      :complexity: 1
+      :class_name: Chef::Expander::Loggable
+  - :filename: expander.rb
+    :classes: 
+    - :methods: []
+
+      :lines: 1
+      :complexity: 0
+      :class_name: ""
+    - :methods: []
+
+      :lines: 2
+      :complexity: 0
+      :class_name: Chef
+    - :methods: []
+
+      :lines: 13
+      :complexity: 0
+      :class_name: Chef::Expander
+  :methods: 
+  - :lines: 24
+    :name: Chef::Expander::VNodeSupervisor#process_control_message
+    :complexity: 12
+  - :lines: 24
+    :name: Chef::Expander::ClusterSupervisor#maintain_workers
+    :complexity: 9
+  - :lines: 18
+    :name: Chef::Expander::ClusterSupervisor#start
+    :complexity: 8
+  - :lines: 16
+    :name: Chef::Expander::VNode#start
+    :complexity: 7
+  - :lines: 12
+    :name: Chef::Expander::Daemonizable#set_user_and_group
+    :complexity: 7
+  - :lines: 26
+    :name: Chef::Expander::Control#log_level
+    :complexity: 6
+  - :lines: 25
+    :name: Chef::Expander::VNodeSupervisor#self.start
+    :complexity: 6
+  - :lines: 13
+    :name: Chef::Expander::Solrizer#run
+    :complexity: 6
+  - :lines: 17
+    :name: Chef::Expander::Solrizer#post_to_solr
+    :complexity: 6
+  - :lines: 12
+    :name: Chef::Expander::Flattener#flatten_each
+    :complexity: 5
+  - :lines: 12
+    :name: Chef::Expander::Logger#assert_valid_path!
+    :complexity: 5
+  - :lines: 9
+    :name: Chef::Expander::Daemonizable#target_gid
+    :complexity: 5
+  - :lines: 28
+    :name: Chef::Expander::Control#node_status
+    :complexity: 5
+  - :lines: 11
+    :name: Chef::Expander::VNodeSupervisor#self.wait_for_http_requests_to_complete
+    :complexity: 5
+  - :lines: 10
+    :name: Chef::Expander::Daemonizable#acquire_locks
+    :complexity: 4
+  - :lines: 6
+    :name: Chef::Expander::VNodeTable#leader_node
+    :complexity: 4
+  - :lines: 10
+    :name: Chef::Expander#self.version
+    :complexity: 4
+  - :lines: 12
+    :name: Chef::Expander::VNodeSupervisor#stop
+    :complexity: 4
+  - :lines: 6
+    :name: Chef::Expander::Daemonizable#target_uid
+    :complexity: 4
+  - :lines: 7
+    :name: Chef::Expander::VNode#abort_on_multiple_subscribe
+    :complexity: 4
+  - :lines: 10
+    :name: Chef::Expander::Solrizer#add
+    :complexity: 4
+  - :lines: 10
+    :name: Chef::Expander::VNodeTable#update_table
+    :complexity: 4
+  - :lines: 4
+    :name: Chef::Expander::Solrizer#delete
+    :complexity: 4
+  - :lines: 8
+    :name: Chef::Expander::Daemonizable#set_group
+    :complexity: 4
+  - :lines: 19
+    :name: Chef::Expander::Solrizer#pointyize_add
+    :complexity: 4
+  - :lines: 7
+    :name: Chef::Expander::VNodeSupervisor#recover_vnode
+    :complexity: 4
+  - :lines: 23
+    :name: Chef::Expander::Control#queue_depth
+    :complexity: 4
+  - :lines: 9
+    :name: Chef::Expander::Flattener#flatten_and_expand
+    :complexity: 4
+  - :lines: 9
+    :name: Chef::Expander::Node#stop
+    :complexity: 4
+  - :lines: 11
+    :name: Chef::Expander::Solrizer#initialize
+    :complexity: 3
+  - :lines: 9
+    :name: Chef::Expander::Configuration::Base#self.from_hash
+    :complexity: 3
+  - :lines: 6
+    :name: Chef::Expander::Configuration::Base#pidfile
+    :complexity: 3
+  - :lines: 8
+    :name: Chef::Expander::Logger#level=
+    :complexity: 3
+  - :lines: 5
+    :name: Chef::Expander::Configuration::Base#merge_config
+    :complexity: 3
+  - :lines: 8
+    :name: Chef::Expander::ClusterSupervisor#start_worker
+    :complexity: 3
+  - :lines: 6
+    :name: Chef::Expander::Node#attach_to_queue
+    :complexity: 3
+  - :lines: 7
+    :name: Chef::Expander::VNodeSupervisor#self.stop_immediately
+    :complexity: 3
+  - :lines: 8
+    :name: Chef::Expander::ChefCompatibleConfig#method_missing
+    :complexity: 3
+  - :lines: 3
+    :name: Chef::Expander::VNodeSupervisor#self.trap_signals
+    :complexity: 3
+  - :lines: 11
+    :name: Chef::Expander::Logger#add
+    :complexity: 3
+  - :lines: 21
+    :name: Chef::Expander::Control#queue_status
+    :complexity: 3
+  - :lines: 10
+    :name: Chef::Expander::Logger#msg2str
+    :complexity: 3
+  - :lines: 8
+    :name: Chef::Expander::Node#broadcast_control_queue
+    :complexity: 3
+  - :lines: 10
+    :name: Chef::Expander::Daemonizable#daemonize
+    :complexity: 3
+  - :lines: 7
+    :name: Chef::Expander::VNodeSupervisor#self.await_parent_death
+    :complexity: 3
+  - :lines: 3
+    :name: Chef::Expander::Daemonizable#release_locks
+    :complexity: 3
+  - :lines: 6
+    :name: Chef::Expander::Daemonizable#set_user
+    :complexity: 3
+  - :lines: 8
+    :name: Chef::Expander::VNodeSupervisor#start
+    :complexity: 3
+  - :lines: 5
+    :name: Chef::Expander::VNode#stop
+    :complexity: 3
+  - :lines: 4
+    :name: Chef::Expander::Solrizer#parse
+    :complexity: 3
+  - :lines: 5
+    :name: AMQP#self.hard_reset!
+    :complexity: 3
+  - :lines: 3
+    :name: Chef::Expander::Node#direct_message
+    :complexity: 2
+  - :lines: 13
+    :name: Chef::Expander::VNodeSupervisor#self.start_cluster_worker
+    :complexity: 2
+  - :lines: 7
+    :name: Chef::Expander::VNodeSupervisor#self.start_consumers
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::VNodeSupervisor#self.stop_gracefully
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::VNodeTable#remove_node
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::VNodeTable#update_node
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::Control#self.method_added
+    :complexity: 2
+  - :lines: 7
+    :name: Chef::Expander::Control#self.compile
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::VNodeSupervisor#vnode_added
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::VNodeSupervisor#vnode_removed
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::Daemonizable#configure_process
+    :complexity: 2
+  - :lines: 2
+    :name: Chef::Expander::VNodeSupervisor#start_vnode_table_publisher
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::VNodeSupervisor#set_log_level
+    :complexity: 2
+  - :lines: 7
+    :name: Chef::Expander::Solrizer#extract_object_fields
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::VNode#queue
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::VNode#supervise_consumer_count
+    :complexity: 2
+  - :lines: 10
+    :name: Chef::Expander::Solrizer#flattened_object
+    :complexity: 2
+  - :lines: 9
+    :name: Chef::Expander::Logger#initialize_log_device
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::ChefCompatibleConfig#load
+    :complexity: 2
+  - :lines: 7
+    :name: Chef::Expander::Configuration::Base#self.configurable
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::Node#broadcast_control_exchange
+    :complexity: 2
+  - :lines: 8
+    :name: Chef::Expander::Control#help
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::Node#shared_control_queue
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::Node#exclusive_control_queue
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::Node#broadcast_message
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::Node#shared_message
+    :complexity: 2
+  - :lines: 7
+    :name: Chef::Expander::Configuration::Base#log_level=
+    :complexity: 2
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#log_location=
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::ClusterSupervisor#start_workers
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::Configuration::Base#reset!
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::Configuration::Base#apply_defaults
+    :complexity: 2
+  - :lines: 2
+    :name: Chef::Expander::Node#self.hostname_f
+    :complexity: 2
+  - :lines: 3
+    :name: Chef::Expander::Node#self.guid
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::ClusterSupervisor#stop
+    :complexity: 2
+  - :lines: 5
+    :name: Chef::Expander::Configuration::Base#fail_if_invalid
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::Configuration::Base#validate!
+    :complexity: 2
+  - :lines: 6
+    :name: Chef::Expander::Configuration::Base#vnode_numbers
+    :complexity: 2
+  - :lines: 4
+    :name: Chef::Expander::Daemonizable#write_pid
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::CLI#self.parse_options
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::CLI#self.config
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#invalid
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#self.from_hash
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#self.local_node
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#initialize
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::Node#start
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#initialize
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::ClusterSupervisor#initialize
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#amqp_config
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Logger#init
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#shared_control_queue_name
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#self.defaults
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#self.validations
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Configuration::Base#self.configurables
+    :complexity: 1
+  - :lines: 3
+    :name: Chef::Expander::Logger#initialize
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::Configuration::Base#self.from_chef_compat_config
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Logger#<<
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#broadcast_control_queue_name
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::ChefCompatibleConfig#initialize
+    :complexity: 1
+  - :lines: 10
+    :name: Chef::Expander#self.init_config
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander#self.config
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#hash
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#eql?
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#http_request_started
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#indexed_object
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#solr_url
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#transit_time
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::Solrizer#completed
+    :complexity: 1
+  - :lines: 1
+    :name: Chef::Expander::Logger#logging_at_severity?
+    :complexity: 1
+  - :lines: 9
+    :name: Chef::Expander::Solrizer#pointyize_delete
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#broadcast_control_exchange_name
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#exclusive_control_queue_name
+    :complexity: 1
+  - :lines: 6
+    :name: Chef::Expander::VNode#initialize
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#identifier
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNode#stopped?
+    :complexity: 1
+  - :lines: 3
+    :name: Chef::Expander::Node#==
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#eql?
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNode#queue_name
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#self.clear_http_requests
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#self.http_requests_active?
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#self.http_request_completed
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Solrizer#self.http_request_started
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNodeSupervisor#parse_symbolic
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNode#control_queue_name
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#hash
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::VNodeSupervisor#publish_status_to
+    :complexity: 1
+  - :lines: 5
+    :name: Chef::Expander::VNodeSupervisor#publish_vnode_table
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Node#to_hash
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::VNodeTable#initialize
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNodeSupervisor#release_vnode
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNodeSupervisor#spawn_vnode
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNodeSupervisor#vnodes
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Control#initialize
+    :complexity: 1
+  - :lines: 3
+    :name: Chef::Expander::Daemonizable#ensure_exclusive
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNodeTable#nodes
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Control#self.descriptions
+    :complexity: 1
+  - :lines: 5
+    :name: Chef::Expander::VNodeSupervisor#initialize
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Control#self.arg
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Control#self.option
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::VNodeTable#local_node_is_leader?
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Flattener#initialize
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Control#self.desc
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Flattener#flattened_item
+    :complexity: 1
+  - :lines: 4
+    :name: Chef::Expander::Flattener#add_field_value
+    :complexity: 1
+  - :lines: 3
+    :name: Chef::Expander::Control#self.run
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander::Loggable#log
+    :complexity: 1
+  :classes: 
+  - :lines: 220
+    :defs: 
+    - :lines: 13
+      :name: Chef::Expander::VNodeSupervisor#self.start_cluster_worker
+      :complexity: 2
+    - :lines: 7
+      :name: Chef::Expander::VNodeSupervisor#self.await_parent_death
+      :complexity: 3
+    - :lines: 25
+      :name: Chef::Expander::VNodeSupervisor#self.start
+      :complexity: 6
+    - :lines: 7
+      :name: Chef::Expander::VNodeSupervisor#self.start_consumers
+      :complexity: 2
+    - :lines: 3
+      :name: Chef::Expander::VNodeSupervisor#self.trap_signals
+      :complexity: 3
+    - :lines: 7
+      :name: Chef::Expander::VNodeSupervisor#self.stop_immediately
+      :complexity: 3
+    - :lines: 4
+      :name: Chef::Expander::VNodeSupervisor#self.stop_gracefully
+      :complexity: 2
+    - :lines: 11
+      :name: Chef::Expander::VNodeSupervisor#self.wait_for_http_requests_to_complete
+      :complexity: 5
+    - :lines: 5
+      :name: Chef::Expander::VNodeSupervisor#initialize
+      :complexity: 1
+    - :lines: 8
+      :name: Chef::Expander::VNodeSupervisor#start
+      :complexity: 3
+    - :lines: 12
+      :name: Chef::Expander::VNodeSupervisor#stop
+      :complexity: 4
+    - :lines: 3
+      :name: Chef::Expander::VNodeSupervisor#vnode_added
+      :complexity: 2
+    - :lines: 3
+      :name: Chef::Expander::VNodeSupervisor#vnode_removed
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::VNodeSupervisor#vnodes
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::VNodeSupervisor#spawn_vnode
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::VNodeSupervisor#release_vnode
+      :complexity: 1
+    - :lines: 24
+      :name: Chef::Expander::VNodeSupervisor#process_control_message
+      :complexity: 12
+    - :lines: 2
+      :name: Chef::Expander::VNodeSupervisor#start_vnode_table_publisher
+      :complexity: 2
+    - :lines: 5
+      :name: Chef::Expander::VNodeSupervisor#publish_vnode_table
+      :complexity: 1
+    - :lines: 4
+      :name: Chef::Expander::VNodeSupervisor#publish_status_to
+      :complexity: 1
+    - :lines: 5
+      :name: Chef::Expander::VNodeSupervisor#set_log_level
+      :complexity: 2
+    - :lines: 7
+      :name: Chef::Expander::VNodeSupervisor#recover_vnode
+      :complexity: 4
+    - :lines: 2
+      :name: Chef::Expander::VNodeSupervisor#parse_symbolic
+      :complexity: 1
+    :name: Chef::Expander::VNodeSupervisor
+    :complexity: 64
+  - :lines: 170
+    :defs: 
+    - :lines: 4
+      :name: Chef::Expander::Configuration::Base#self.from_chef_compat_config
+      :complexity: 1
+    - :lines: 9
+      :name: Chef::Expander::Configuration::Base#self.from_hash
+      :complexity: 3
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#self.configurables
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#self.validations
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#self.defaults
+      :complexity: 1
+    - :lines: 7
+      :name: Chef::Expander::Configuration::Base#self.configurable
+      :complexity: 2
+    - :lines: 6
+      :name: Chef::Expander::Configuration::Base#pidfile
+      :complexity: 3
+    - :lines: 7
+      :name: Chef::Expander::Configuration::Base#log_level=
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#log_location=
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#initialize
+      :complexity: 1
+    - :lines: 5
+      :name: Chef::Expander::Configuration::Base#reset!
+      :complexity: 2
+    - :lines: 4
+      :name: Chef::Expander::Configuration::Base#apply_defaults
+      :complexity: 2
+    - :lines: 5
+      :name: Chef::Expander::Configuration::Base#merge_config
+      :complexity: 3
+    - :lines: 5
+      :name: Chef::Expander::Configuration::Base#fail_if_invalid
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#invalid
+      :complexity: 1
+    - :lines: 4
+      :name: Chef::Expander::Configuration::Base#validate!
+      :complexity: 2
+    - :lines: 6
+      :name: Chef::Expander::Configuration::Base#vnode_numbers
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Configuration::Base#amqp_config
+      :complexity: 1
+    :name: Chef::Expander::Configuration::Base
+    :complexity: 46
+  - :lines: 243
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#self.http_request_started
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#self.http_request_completed
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#self.http_requests_active?
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#self.clear_http_requests
+      :complexity: 1
+    - :lines: 11
+      :name: Chef::Expander::Solrizer#initialize
+      :complexity: 3
+    - :lines: 7
+      :name: Chef::Expander::Solrizer#extract_object_fields
+      :complexity: 2
+    - :lines: 4
+      :name: Chef::Expander::Solrizer#parse
+      :complexity: 3
+    - :lines: 13
+      :name: Chef::Expander::Solrizer#run
+      :complexity: 6
+    - :lines: 10
+      :name: Chef::Expander::Solrizer#add
+      :complexity: 4
+    - :lines: 4
+      :name: Chef::Expander::Solrizer#delete
+      :complexity: 4
+    - :lines: 10
+      :name: Chef::Expander::Solrizer#flattened_object
+      :complexity: 2
+    - :lines: 19
+      :name: Chef::Expander::Solrizer#pointyize_add
+      :complexity: 4
+    - :lines: 9
+      :name: Chef::Expander::Solrizer#pointyize_delete
+      :complexity: 1
+    - :lines: 17
+      :name: Chef::Expander::Solrizer#post_to_solr
+      :complexity: 6
+    - :lines: 4
+      :name: Chef::Expander::Solrizer#completed
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#transit_time
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#solr_url
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#indexed_object
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#http_request_started
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#eql?
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Solrizer#hash
+      :complexity: 1
+    :name: Chef::Expander::Solrizer
+    :complexity: 46
+  - :lines: 145
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::Node#self.from_hash
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#self.local_node
+      :complexity: 1
+    - :lines: 3
+      :name: Chef::Expander::Node#self.guid
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Node#self.hostname_f
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Node#initialize
+      :complexity: 1
+    - :lines: 4
+      :name: Chef::Expander::Node#start
+      :complexity: 1
+    - :lines: 6
+      :name: Chef::Expander::Node#attach_to_queue
+      :complexity: 3
+    - :lines: 9
+      :name: Chef::Expander::Node#stop
+      :complexity: 4
+    - :lines: 3
+      :name: Chef::Expander::Node#direct_message
+      :complexity: 2
+    - :lines: 3
+      :name: Chef::Expander::Node#shared_message
+      :complexity: 2
+    - :lines: 3
+      :name: Chef::Expander::Node#broadcast_message
+      :complexity: 2
+    - :lines: 5
+      :name: Chef::Expander::Node#exclusive_control_queue
+      :complexity: 2
+    - :lines: 5
+      :name: Chef::Expander::Node#shared_control_queue
+      :complexity: 2
+    - :lines: 8
+      :name: Chef::Expander::Node#broadcast_control_queue
+      :complexity: 3
+    - :lines: 5
+      :name: Chef::Expander::Node#broadcast_control_exchange
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Node#shared_control_queue_name
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#broadcast_control_queue_name
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#broadcast_control_exchange_name
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#exclusive_control_queue_name
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#identifier
+      :complexity: 1
+    - :lines: 3
+      :name: Chef::Expander::Node#==
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#eql?
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#hash
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Node#to_hash
+      :complexity: 1
+    :name: Chef::Expander::Node
+    :complexity: 39
+  - :lines: 113
+    :defs: 
+    - :lines: 3
+      :name: Chef::Expander::Daemonizable#configure_process
+      :complexity: 2
+    - :lines: 10
+      :name: Chef::Expander::Daemonizable#daemonize
+      :complexity: 3
+    - :lines: 3
+      :name: Chef::Expander::Daemonizable#ensure_exclusive
+      :complexity: 1
+    - :lines: 12
+      :name: Chef::Expander::Daemonizable#set_user_and_group
+      :complexity: 7
+    - :lines: 3
+      :name: Chef::Expander::Daemonizable#release_locks
+      :complexity: 3
+    - :lines: 6
+      :name: Chef::Expander::Daemonizable#set_user
+      :complexity: 3
+    - :lines: 8
+      :name: Chef::Expander::Daemonizable#set_group
+      :complexity: 4
+    - :lines: 6
+      :name: Chef::Expander::Daemonizable#target_uid
+      :complexity: 4
+    - :lines: 9
+      :name: Chef::Expander::Daemonizable#target_gid
+      :complexity: 5
+    - :lines: 10
+      :name: Chef::Expander::Daemonizable#acquire_locks
+      :complexity: 4
+    - :lines: 4
+      :name: Chef::Expander::Daemonizable#write_pid
+      :complexity: 1
+    :name: Chef::Expander::Daemonizable
+    :complexity: 37
+  - :lines: 169
+    :defs: 
+    - :lines: 3
+      :name: Chef::Expander::Control#self.run
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Control#self.desc
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Control#self.option
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Control#self.arg
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Control#self.descriptions
+      :complexity: 1
+    - :lines: 5
+      :name: Chef::Expander::Control#self.method_added
+      :complexity: 2
+    - :lines: 7
+      :name: Chef::Expander::Control#self.compile
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::Control#initialize
+      :complexity: 1
+    - :lines: 8
+      :name: Chef::Expander::Control#help
+      :complexity: 2
+    - :lines: 23
+      :name: Chef::Expander::Control#queue_depth
+      :complexity: 4
+    - :lines: 21
+      :name: Chef::Expander::Control#queue_status
+      :complexity: 3
+    - :lines: 28
+      :name: Chef::Expander::Control#node_status
+      :complexity: 5
+    - :lines: 26
+      :name: Chef::Expander::Control#log_level
+      :complexity: 6
+    :name: Chef::Expander::Control
+    :complexity: 30
+  - :lines: 78
+    :defs: 
+    - :lines: 4
+      :name: Chef::Expander::ClusterSupervisor#initialize
+      :complexity: 1
+    - :lines: 18
+      :name: Chef::Expander::ClusterSupervisor#start
+      :complexity: 8
+    - :lines: 4
+      :name: Chef::Expander::ClusterSupervisor#start_workers
+      :complexity: 2
+    - :lines: 8
+      :name: Chef::Expander::ClusterSupervisor#start_worker
+      :complexity: 3
+    - :lines: 4
+      :name: Chef::Expander::ClusterSupervisor#stop
+      :complexity: 2
+    - :lines: 24
+      :name: Chef::Expander::ClusterSupervisor#maintain_workers
+      :complexity: 9
+    :name: Chef::Expander::ClusterSupervisor
+    :complexity: 25
+  - :lines: 95
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::Logger#init
+      :complexity: 1
+    - :lines: 3
+      :name: Chef::Expander::Logger#initialize
+      :complexity: 1
+    - :lines: 8
+      :name: Chef::Expander::Logger#level=
+      :complexity: 3
+    - :lines: 2
+      :name: Chef::Expander::Logger#<<
+      :complexity: 1
+    - :lines: 11
+      :name: Chef::Expander::Logger#add
+      :complexity: 3
+    - :lines: 10
+      :name: Chef::Expander::Logger#msg2str
+      :complexity: 3
+    - :lines: 1
+      :name: Chef::Expander::Logger#logging_at_severity?
+      :complexity: 1
+    - :lines: 9
+      :name: Chef::Expander::Logger#initialize_log_device
+      :complexity: 2
+    - :lines: 12
+      :name: Chef::Expander::Logger#assert_valid_path!
+      :complexity: 5
+    :name: Chef::Expander::Logger
+    :complexity: 24
+  - :lines: 74
+    :defs: 
+    - :lines: 6
+      :name: Chef::Expander::VNode#initialize
+      :complexity: 1
+    - :lines: 16
+      :name: Chef::Expander::VNode#start
+      :complexity: 7
+    - :lines: 4
+      :name: Chef::Expander::VNode#supervise_consumer_count
+      :complexity: 2
+    - :lines: 7
+      :name: Chef::Expander::VNode#abort_on_multiple_subscribe
+      :complexity: 4
+    - :lines: 5
+      :name: Chef::Expander::VNode#stop
+      :complexity: 3
+    - :lines: 2
+      :name: Chef::Expander::VNode#stopped?
+      :complexity: 1
+    - :lines: 5
+      :name: Chef::Expander::VNode#queue
+      :complexity: 2
+    - :lines: 2
+      :name: Chef::Expander::VNode#queue_name
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::VNode#control_queue_name
+      :complexity: 1
+    :name: Chef::Expander::VNode
+    :complexity: 22
+  - :lines: 54
+    :defs: 
+    - :lines: 4
+      :name: Chef::Expander::VNodeTable#initialize
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::VNodeTable#nodes
+      :complexity: 1
+    - :lines: 10
+      :name: Chef::Expander::VNodeTable#update_table
+      :complexity: 4
+    - :lines: 4
+      :name: Chef::Expander::VNodeTable#update_node
+      :complexity: 2
+    - :lines: 4
+      :name: Chef::Expander::VNodeTable#remove_node
+      :complexity: 2
+    - :lines: 6
+      :name: Chef::Expander::VNodeTable#leader_node
+      :complexity: 4
+    - :lines: 2
+      :name: Chef::Expander::VNodeTable#local_node_is_leader?
+      :complexity: 1
+    :name: Chef::Expander::VNodeTable
+    :complexity: 15
+  - :lines: 56
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::Configuration::CLI#self.parse_options
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Configuration::CLI#self.config
+      :complexity: 1
+    :name: Chef::Expander::Configuration::CLI
+    :complexity: 12
+  - :lines: 46
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::Flattener#initialize
+      :complexity: 1
+    - :lines: 2
+      :name: Chef::Expander::Flattener#flattened_item
+      :complexity: 1
+    - :lines: 9
+      :name: Chef::Expander::Flattener#flatten_and_expand
+      :complexity: 4
+    - :lines: 12
+      :name: Chef::Expander::Flattener#flatten_each
+      :complexity: 5
+    - :lines: 4
+      :name: Chef::Expander::Flattener#add_field_value
+      :complexity: 1
+    :name: Chef::Expander::Flattener
+    :complexity: 12
+  - :lines: 23
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::ChefCompatibleConfig#initialize
+      :complexity: 1
+    - :lines: 3
+      :name: Chef::Expander::ChefCompatibleConfig#load
+      :complexity: 2
+    - :lines: 8
+      :name: Chef::Expander::ChefCompatibleConfig#method_missing
+      :complexity: 3
+    :name: Chef::Expander::ChefCompatibleConfig
+    :complexity: 6
+  - :lines: 16
+    :defs: 
+    - :lines: 10
+      :name: Chef::Expander#self.version
+      :complexity: 4
+    :name: Chef::Expander
+    :complexity: 4
+  - :lines: 7
+    :defs: 
+    - :lines: 5
+      :name: AMQP#self.hard_reset!
+      :complexity: 3
+    :name: AMQP
+    :complexity: 3
+  - :lines: 22
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander#self.config
+      :complexity: 1
+    - :lines: 10
+      :name: Chef::Expander#self.init_config
+      :complexity: 1
+    :name: Chef::Expander
+    :complexity: 2
+  - :lines: 11
+    :defs: 
+    - :lines: 2
+      :name: Chef::Expander::Loggable#log
+      :complexity: 1
+    :name: Chef::Expander::Loggable
+    :complexity: 1
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 0
+    :name: Chef::Expander::VNodeTable::InvalidVNodeTableUpdate
+    :complexity: 0
+  - :lines: 1
+    :name: Chef::Expander::InvalidLogLevel
+    :complexity: 0
+  - :lines: 1
+    :name: Chef::Expander::InvalidLogDevice
+    :complexity: 0
+  - :lines: 15
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 23
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 8
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 1
+    :name: Chef::Expander::NoSuchGroup
+    :complexity: 0
+  - :lines: 1
+    :name: Chef::Expander::NoSuchUser
+    :complexity: 0
+  - :lines: 1
+    :name: Chef::Expander::AlreadyRunning
+    :complexity: 0
+  - :lines: 9
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 1
+    :name: Chef::Expander::Configuration::InvalidConfiguration
+    :complexity: 0
+  - :lines: 8
+    :name: Chef::Expander::Configuration
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 2
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 2
+    :name: Chef
+    :complexity: 0
+  - :lines: 13
+    :name: Chef::Expander
+    :complexity: 0
+  - :lines: 1
+    :name: ""
+    :complexity: 0

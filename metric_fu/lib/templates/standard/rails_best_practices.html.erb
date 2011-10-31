@@ -1,0 +1,29 @@
+<html>
+<head>
+	<title>Rails Best Practices Results</title>
+	<style>
+	<%= inline_css("default.css") %>
+	</style>
+</head>
+
+<body>
+	<h1>Rails Best Practices Results</h1>
+  <a href="index.html">back to menu</a>
+  <p><a href="http://github.com/flyerhzm/rails_best_practices">rails_best_practices</a> checks quality of rails app files according to ihower’s presentation from Kungfu RailsConf in Shanghai China.</p>
+	<table>
+		<tr>
+		  <th>File Path</th>
+		  <th>Warning</th>
+    </tr>
+    <% count = 0 %>
+    <% @rails_best_practices[:problems].each do |problem| %>
+      <tr class='<%= cycle("light", "dark", count) %>'>
+        <td><%= problem[:file] %>:<%= problem[:line] %></td>
+        <td><%= problem[:problem] %></td>
+      </tr>
+      <% count += 1 %>
+  	<% end %>
+	</table>
+	<p>Generated on <%= Time.now.localtime %></p>
+</body>
+</html>

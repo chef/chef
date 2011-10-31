@@ -21,6 +21,7 @@ require File.dirname(__FILE__) + '/lib/chef/solr/version'
 require 'rubygems'
 require 'rake'
 require 'rake/gempackagetask'
+require 'metric_fu'
 
 GEM_NAME = "chef-solr"
 

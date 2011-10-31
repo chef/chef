@@ -1,0 +1,60 @@
+   221.1: flog total
+    44.2: flog/method average
+
+   174.9: Chef::Mixin::DeepMerge::deep_merge! lib/chef/mixin/deep_merge.rb:93
+    66.5:   branch
+    48.6:   inspect
+    42.6:   assignment
+    22.5:   puts
+    13.9:   []
+     7.2:   kind_of?
+     6.3:   delete
+     5.1:   overwrite_unmergeables
+     4.6:   +
+     4.4:   print
+     4.2:   merge
+     3.9:   join
+     3.8:   deep_merge!
+     3.5:   split
+     3.4:   class
+     3.3:   ==
+     2.6:   raise
+     2.5:   nil?
+     2.2:   gsub
+     2.1:   respond_to?
+     2.0:   dup
+     1.9:   delete_if
+     1.8:   sort!
+     1.7:   clear_or_nil
+     1.7:   |
+     1.5:   index
+     1.4:   each
+
+    34.8: Chef::Mixin::DeepMerge::overwrite_unmergeables lib/chef/mixin/deep_merge.rb:185
+    18.1:   branch
+    15.8:   assignment
+     5.7:   inspect
+     5.1:   []
+     4.7:   kind_of?
+     3.4:   puts
+     1.8:   match
+     1.6:   delete_if
+     1.5:   gsub
+     1.4:   ==
+
+     7.1: Chef::Mixin::DeepMerge::merge    lib/chef/mixin/deep_merge.rb:29
+     2.6:   new
+     2.6:   assignment
+     2.4:   branch
+     2.4:   kind_of?
+     1.2:   deep_merge!
+
+     3.1: Chef::Mixin::DeepMerge::clear_or_nil lib/chef/mixin/deep_merge.rb:211
+     1.3:   clear
+     1.3:   assignment
+     1.2:   respond_to?
+     1.2:   branch
+
+     1.1: Chef::Mixin::DeepMerge#none
+     1.1:   branch
+

@@ -1,0 +1,121 @@
+   151.8: flog total
+    12.7: flog/method average
+
+    28.5: Chef::Provider::RemoteDirectory#action_create lib/chef/provider/remote_directory.rb:33
+     6.1:   path
+     5.5:   join
+     4.3:   assignment
+     3.0:   delete
+     2.8:   branch
+     1.7:   dirname
+     1.7:   glob
+     1.6:   escape
+     1.5:   create_cookbook_file
+     1.5:   select
+     1.5:   files_to_transfer
+     1.3:   purge_unmanaged_files
+     1.3:   each
+     1.3:   new
+
+    28.2: Chef::Provider::RemoteDirectory#cookbook_file_resource lib/chef/provider/remote_directory.rb:105
+     6.5:   branch
+     3.0:   source
+     2.9:   files_group
+     2.9:   files_mode
+     2.9:   files_owner
+     2.9:   files_backup
+     2.6:   assignment
+     1.5:   join
+     1.5:   run_context
+     1.4:   group
+     1.4:   cookbook_name
+     1.4:   cookbook
+     1.4:   mode
+     1.4:   backup
+     1.4:   owner
+     1.3:   new
+
+    15.6: Chef::Provider::RemoteDirectory#resource_for_directory lib/chef/provider/remote_directory.rb:125
+     2.8:   owner
+     2.8:   mode
+     2.8:   group
+     2.6:   assignment
+     1.5:   run_context
+     1.4:   cookbook_name
+     1.4:   cookbook
+     1.3:   branch
+     1.3:   recursive
+     1.3:   new
+
+    15.1: Chef::Provider::RemoteDirectory#purge_unmanaged_files lib/chef/provider/remote_directory.rb:57
+     4.2:   branch
+     3.4:   debug
+     1.8:   sort
+     1.7:   delete
+     1.7:   rmdir
+     1.6:   reverse
+     1.5:   directory?
+     1.5:   assignment
+     1.4:   each
+     1.3:   purge
+
+    14.2: Chef::Provider::RemoteDirectory#create_cookbook_file lib/chef/provider/remote_directory.rb:91
+     2.8:   run_action
+     2.6:   assignment
+     2.6:   branch
+     1.5:   path
+     1.5:   dirname
+     1.4:   updated_by_last_action
+     1.3:   updated?
+     1.3:   join
+     1.3:   overwrite
+     1.3:   ensure_directory_exists
+     1.3:   cookbook_file_resource
+
+    13.4: Chef::Provider::RemoteDirectory#files_to_transfer lib/chef/provider/remote_directory.rb:71
+     2.6:   assignment
+     1.7:   run_context
+     1.5:   cookbook_collection
+     1.5:   source
+     1.5:   resource_cookbook
+     1.5:   sort
+     1.5:   node
+     1.3:   relative_filenames_in_preferred_directory
+     1.3:   reverse
+     1.3:   []
+
+    12.9: Chef::Provider::RemoteDirectory#directory_root_in_cookbook_cache lib/chef/provider/remote_directory.rb:77
+     2.7:   assignment
+     1.8:   run_context
+     1.6:   source
+     1.6:   path
+     1.6:   node
+     1.6:   resource_cookbook
+     1.6:   cookbook_collection
+     1.4:   preferred_filename_on_disk_location
+     1.4:   []
+
+     9.9: main#none
+     9.9:   require
+
+     8.1: Chef::Provider::RemoteDirectory#ensure_directory_exists lib/chef/provider/remote_directory.rb:117
+     2.8:   branch
+     1.6:   updated_by_last_action
+     1.5:   run_action
+     1.5:   assignment
+     1.5:   resource_for_directory
+     1.5:   updated?
+     1.3:   directory?
+
+     3.1: Chef::Provider::RemoteDirectory#resource_cookbook lib/chef/provider/remote_directory.rb:87
+     1.4:   cookbook_name
+     1.4:   cookbook
+     1.3:   branch
+
+     1.8: Chef::Provider::RemoteDirectory#action_create_if_missing lib/chef/provider/remote_directory.rb:49
+     1.3:   assignment
+     1.3:   action_create
+
+     1.2: Chef::Provider::RemoteDirectory#none
+     1.2:   protected
+

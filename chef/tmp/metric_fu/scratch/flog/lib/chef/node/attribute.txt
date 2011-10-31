@@ -1,0 +1,324 @@
+   581.7: flog total
+    15.3: flog/method average
+
+    52.9: Chef::Node::Attribute#value_or_descend lib/chef/node/attribute.rb:382
+    16.3:   assignment
+    11.6:   branch
+    10.8:   []
+     7.9:   new
+     6.0:   nil?
+     3.5:   current_automatic
+     3.5:   current_default
+     3.5:   current_override
+     3.5:   current_normal
+     1.5:   auto_vivifiy_on_read
+     1.5:   auto_vivifiy
+     1.5:   ==
+     1.5:   has_key?
+     1.5:   set_type
+     1.5:   set_unless_value_present
+     1.3:   respond_to?
+
+    47.6: Chef::Node::Attribute#determine_value lib/chef/node/attribute.rb:289
+    22.4:   branch
+    19.6:   assignment
+    15.2:   hash_and_not_cna?
+    14.8:   merge
+     7.2:   nil?
+
+    46.4: Chef::Node::Attribute#[]         lib/chef/node/attribute.rb:89
+    13.3:   assignment
+    12.4:   value_or_descend
+     7.3:   branch
+     7.2:   auto_vivifiy_on_read
+     6.0:   ==
+     3.5:   current_default
+     3.5:   current_normal
+     3.5:   current_automatic
+     3.5:   current_override
+     3.0:   determine_value
+     1.3:   <<
+
+    45.5: Chef::Node::Attribute#get_value  lib/chef/node/attribute.rb:258
+    17.9:   []
+    11.7:   branch
+     7.5:   assignment
+     4.7:   length
+     4.3:   -
+     4.2:   ==
+     3.3:   has_key?
+     3.3:   nil?
+     3.1:   auto_vivifiy
+     1.3:   upto
+     1.2:   lit_fixnum
+
+    33.8: Chef::Node::Attribute#inspect    lib/chef/node/attribute.rb:436
+     4.2:   +
+     4.1:   branch
+     2.8:   <<
+     2.5:   instance_variable_get
+     2.4:   to_sym
+     2.4:   to_s
+     2.3:   inspect
+     2.2:   include?
+     2.1:   instance_variables
+     2.0:   assignment
+     1.9:   map
+     1.7:   class
+     1.7:   join
+     1.5:   current_override
+     1.5:   current_automatic
+     1.5:   current_normal
+     1.5:   current_default
+     1.3:   determine_value
+
+    31.2: Chef::Node::Attribute#set_value  lib/chef/node/attribute.rb:342
+    10.7:   []
+     8.9:   assignment
+     5.5:   branch
+     4.7:   length
+     4.2:   ==
+     4.2:   -
+     3.1:   auto_vivifiy
+     1.3:   upto
+     1.2:   lit_fixnum
+
+    30.8: Chef::Node::Attribute#method_missing lib/chef/node/attribute.rb:418
+    10.5:   branch
+     8.1:   []
+     5.3:   to_s
+     4.8:   assignment
+     2.9:   key?
+     1.8:   new
+     1.8:   raise
+     1.7:   length
+     1.7:   auto_vivifiy_on_read
+     1.6:   auto_vivifiy_on_read?
+     1.5:   ==
+     1.3:   empty?
+     0.9:   lit_fixnum
+
+    22.9: Chef::Node::Attribute#fetch      lib/chef/node/attribute.rb:186
+     6.4:   get_value
+     4.2:   branch
+     1.8:   automatic
+     1.8:   default
+     1.8:   override
+     1.8:   normal
+     1.6:   raise
+     1.6:   call
+     1.5:   block_given?
+     1.5:   get_keys
+     1.4:   determine_value
+     1.3:   assignment
+     1.3:   include?
+
+    20.4: Chef::Node::Attribute#each       lib/chef/node/attribute.rb:128
+     6.8:   get_value
+     2.9:   assignment
+     1.9:   default
+     1.9:   automatic
+     1.9:   override
+     1.9:   normal
+     1.5:   call
+     1.5:   determine_value
+     1.5:   get_keys
+     1.3:   branch
+     1.3:   each
+
+    20.4: Chef::Node::Attribute#each_pair  lib/chef/node/attribute.rb:140
+     6.8:   get_value
+     2.9:   assignment
+     1.9:   default
+     1.9:   automatic
+     1.9:   override
+     1.9:   normal
+     1.5:   call
+     1.5:   determine_value
+     1.5:   get_keys
+     1.3:   branch
+     1.3:   each
+
+    20.4: Chef::Node::Attribute#each_attribute lib/chef/node/attribute.rb:152
+     6.8:   get_value
+     2.9:   assignment
+     1.9:   default
+     1.9:   automatic
+     1.9:   override
+     1.9:   normal
+     1.5:   call
+     1.5:   determine_value
+     1.5:   get_keys
+     1.3:   branch
+     1.3:   each
+
+    20.4: Chef::Node::Attribute#each_value lib/chef/node/attribute.rb:170
+     6.8:   get_value
+     2.9:   assignment
+     1.9:   default
+     1.9:   automatic
+     1.9:   override
+     1.9:   normal
+     1.5:   call
+     1.5:   determine_value
+     1.5:   get_keys
+     1.3:   branch
+     1.3:   each
+
+    19.3: Chef::Node::Attribute#[]=        lib/chef/node/attribute.rb:319
+     5.3:   branch
+     3.3:   set_type_hash
+     2.8:   ==
+     1.8:   inspect
+     1.8:   join
+     1.6:   debug
+     1.6:   last
+     1.6:   get_value
+     1.4:   pop
+     1.3:   set_value
+     1.3:   set_unless_value_present
+     1.3:   assignment
+
+    18.6: Chef::Node::Attribute#keys       lib/chef/node/attribute.rb:246
+     7.1:   branch
+     4.3:   assignment
+     3.1:   keys
+     2.9:   current_automatic
+     2.8:   each
+     1.7:   <<
+     1.6:   include?
+     1.5:   current_override
+     1.5:   current_default
+     1.5:   current_normal
+
+    18.2: Chef::Node::Attribute#initialize lib/chef/node/attribute.rb:42
+    18.2:   assignment
+
+    18.0: Chef::Node::Attribute#none
+    14.4:   alias
+     2.4:   include
+     1.2:   attr_accessor
+
+    11.6: Chef::Node::Attribute#to_hash    lib/chef/node/attribute.rb:444
+     1.5:   current_override
+     1.5:   current_normal
+     1.5:   class
+     1.5:   current_automatic
+     1.5:   current_default
+     1.4:   to_hash
+     1.3:   determine_value
+     1.3:   assignment
+     1.3:   ==
+     1.3:   branch
+
+    11.5: Chef::Node::Attribute#auto_vivifiy lib/chef/node/attribute.rb:371
+     4.2:   branch
+     1.8:   join
+     1.6:   raise
+     1.6:   []
+     1.5:   auto_vivifiy_on_read
+     1.4:   respond_to?
+     1.4:   assignment
+     1.4:   new
+     1.3:   has_key?
+
+     8.9: Chef::Node::Attribute#index      lib/chef/node/attribute.rb:225
+     4.1:   branch
+     2.7:   assignment
+     1.6:   []
+     1.4:   ==
+     1.4:   first
+     1.3:   find
+     1.3:   is_a?
+     0.5:   lit_fixnum
+
+     8.3: Chef::Node::Attribute#value_at_current_nesting lib/chef/node/attribute.rb:477
+     4.2:   branch
+     4.2:   assignment
+     2.6:   inject
+     1.6:   []
+     1.6:   respond_to?
+
+     7.8: Chef::Node::Attribute#reset      lib/chef/node/attribute.rb:80
+     7.8:   assignment
+
+     7.6: Chef::Node::Attribute#delete     lib/chef/node/attribute.rb:453
+     5.7:   assignment
+     2.8:   branch
+     2.6:   inject
+     1.5:   delete_from_component
+
+     7.4: Chef::Node::Attribute#has_key?   lib/chef/node/attribute.rb:115
+     5.2:   branch
+     5.2:   component_has_key?
+
+     6.9: Chef::Node::Attribute#set_type_hash lib/chef/node/attribute.rb:66
+     6.9:   branch
+
+     5.9: Chef::Node::Attribute#kind_of?   lib/chef/node/attribute.rb:209
+     4.4:   ==
+     4.0:   branch
+
+     5.2: Chef::Node::Attribute#has_value? lib/chef/node/attribute.rb:217
+     4.2:   assignment
+     1.4:   ==
+     1.3:   any?
+     1.3:   branch
+
+     4.6: Chef::Node::Attribute#each_key   lib/chef/node/attribute.rb:164
+     1.5:   get_keys
+     1.4:   assignment
+     1.4:   call
+     1.3:   each
+     1.3:   branch
+
+     4.5: Chef::Node::Attribute#component_has_key? lib/chef/node/attribute.rb:471
+     1.4:   respond_to?
+     1.4:   key?
+     1.3:   assignment
+     1.3:   value_at_current_nesting
+     1.3:   branch
+
+     4.4: Chef::Node::Attribute#delete_from_component lib/chef/node/attribute.rb:460
+     1.4:   delete
+     1.3:   value_at_current_nesting
+     1.3:   assignment
+     1.3:   respond_to?
+     1.3:   branch
+
+     3.6: Chef::Node::Attribute#values     lib/chef/node/attribute.rb:232
+     1.4:   []
+     1.4:   assignment
+     1.3:   branch
+     1.3:   collect
+     0.4:   lit_fixnum
+
+     3.2: Chef::Node::Attribute#size       lib/chef/node/attribute.rb:236
+     1.5:   branch
+     1.5:   collect
+     1.3:   length
+
+     3.1: Chef::Node::Attribute#hash_and_not_cna? lib/chef/node/attribute.rb:285
+     1.4:   respond_to?
+     1.4:   kind_of?
+     1.3:   branch
+
+     2.8: Chef::Node::Attribute#empty?     lib/chef/node/attribute.rb:182
+     1.5:   get_keys
+     1.3:   empty?
+
+     2.2: main#none
+     2.2:   require
+
+     1.3: Chef::Node::Attribute#auto_vivifiy_on_read? lib/chef/node/attribute.rb:367
+     1.3:   auto_vivifiy_on_read
+
+     1.3: Chef::Node::Attribute#get_keys   lib/chef/node/attribute.rb:242
+     1.3:   keys
+
+     1.3: Chef::Node::Attribute#attribute  lib/chef/node/attribute.rb:58
+     1.3:   normal
+
+     1.3: Chef::Node::Attribute#attribute= lib/chef/node/attribute.rb:62
+     1.3:   assignment
+

@@ -1,0 +1,119 @@
+   365.3: flog total
+    24.4: flog/method average
+
+   232.2: Chef::CookbookSiteStreamingUploader#make_request lib/chef/cookbook_site_streaming_uploader.rb:74
+    72.1:   assignment
+    60.0:   +
+    31.9:   branch
+    25.2:   new
+    14.9:   to_s
+    14.1:   <<
+    11.0:   path
+     9.5:   sclass
+     7.1:   size
+     5.0:   alias
+     4.6:   now
+     4.3:   read
+     4.2:   utc
+     4.0:   rewind
+     3.9:   empty?
+     3.8:   iso8601
+     3.8:   inject
+     2.5:   rand
+     2.5:   map
+     2.4:   basename
+     2.3:   signing_object
+     2.3:   flatten
+     2.2:   kind_of?
+     2.1:   each
+     2.1:   logger
+     2.1:   port
+     2.1:   host
+     2.1:   sign
+     2.1:   []
+     2.1:   scheme
+     2.0:   nil?
+     1.9:   merge
+     1.9:   request
+     1.9:   ==
+     1.9:   merge!
+     1.9:   parse
+     1.9:   debug
+     0.7:   lit_fixnum
+
+    62.7: Chef::CookbookSiteStreamingUploader#create_build_dir lib/chef/cookbook_site_streaming_uploader.rb:37
+    22.1:   assignment
+     9.0:   []
+     6.8:   name
+     6.0:   debug
+     4.3:   to_s
+     4.1:   mkdir_p
+     3.9:   each
+     3.9:   branch
+     3.8:   new
+     2.4:   dirname
+     2.4:   manifest
+     2.2:   cp
+     2.2:   join
+     1.9:   close
+     1.9:   unlink
+     1.9:   config
+     1.9:   checksums
+     1.9:   path
+     1.9:   run
+
+    25.6: Chef::CookbookSiteStreamingUploader::MultipartStream#read lib/chef/cookbook_site_streaming_uploader.rb:211
+    12.0:   assignment
+     6.0:   branch
+     4.8:   +
+     3.4:   []
+     3.2:   size
+     3.0:   read
+     2.8:   >
+     2.8:   -
+     1.4:   >=
+     0.5:   lit_fixnum
+
+     7.6: Chef::CookbookSiteStreamingUploader::MultipartStream#size lib/chef/cookbook_site_streaming_uploader.rb:207
+     4.5:   assignment
+     2.8:   inject
+     1.7:   size
+     1.5:   +
+     1.4:   branch
+
+     6.0: Chef::CookbookSiteStreamingUploader#none
+     6.0:   sclass
+
+     5.4: Chef::CookbookSiteStreamingUploader#status lib/chef/cookbook_site_streaming_uploader.rb:161
+     2.8:   code
+     2.6:   to_i
+
+     4.2: Chef::CookbookSiteStreamingUploader#put lib/chef/cookbook_site_streaming_uploader.rb:70
+     3.8:   assignment
+     1.9:   make_request
+
+     4.2: Chef::CookbookSiteStreamingUploader#post lib/chef/cookbook_site_streaming_uploader.rb:66
+     3.8:   assignment
+     1.9:   make_request
+
+     4.2: Chef::CookbookSiteStreamingUploader::StreamPart#initialize lib/chef/cookbook_site_streaming_uploader.rb:171
+     4.2:   assignment
+
+     4.2: Chef::CookbookSiteStreamingUploader::MultipartStream#initialize lib/chef/cookbook_site_streaming_uploader.rb:201
+     4.2:   assignment
+
+     3.3: main#none
+     3.3:   require
+
+     1.4: Chef::CookbookSiteStreamingUploader::StringPart#size lib/chef/cookbook_site_streaming_uploader.rb:190
+     1.4:   length
+
+     1.4: Chef::CookbookSiteStreamingUploader::StringPart#read lib/chef/cookbook_site_streaming_uploader.rb:195
+     1.4:   []
+
+     1.4: Chef::CookbookSiteStreamingUploader::StringPart#initialize lib/chef/cookbook_site_streaming_uploader.rb:186
+     1.4:   assignment
+
+     1.4: Chef::CookbookSiteStreamingUploader::StreamPart#read lib/chef/cookbook_site_streaming_uploader.rb:180
+     1.4:   read
+

@@ -1,0 +1,9 @@
+     3.3: flog total
+     1.7: flog/method average
+
+     2.2: Chef::REST::CookieJar#none
+     2.2:   include
+
+     1.1: main#none
+     1.1:   require
+

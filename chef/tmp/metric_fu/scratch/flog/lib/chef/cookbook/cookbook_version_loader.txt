@@ -1,0 +1,124 @@
+   189.3: flog total
+    12.6: flog/method average
+
+    56.7: Chef::Cookbook::CookbookVersionLoader#cookbook_version lib/chef/cookbook/cookbook_version_loader.rb:71
+    19.4:   assignment
+    17.1:   cookbook_settings
+    15.3:   []
+    13.5:   values
+     2.6:   branch
+     1.7:   to_sym
+     1.5:   metadata
+     1.5:   new
+     1.3:   empty?
+     1.3:   tap
+
+    29.6: Chef::Cookbook::CookbookVersionLoader#load_cookbooks lib/chef/cookbook/cookbook_version_loader.rb:46
+     6.4:   join
+     5.2:   load_as
+     5.2:   load_recursively_as
+     4.0:   branch
+     2.9:   <<
+     2.7:   exists?
+     1.6:   cookbook_name
+     1.4:   warn
+     1.3:   remove_ignored_files
+     1.3:   empty?
+     1.3:   load_root_files
+
+    11.6: Chef::Cookbook::CookbookVersionLoader#initialize lib/chef/cookbook/cookbook_version_loader.rb:25
+    10.4:   assignment
+     1.3:   expand_path
+     1.3:   basename
+     1.3:   escape
+     1.3:   new
+
+    10.3: Chef::Cookbook::CookbookVersionLoader#load_recursively_as lib/chef/cookbook/cookbook_version_loader.rb:131
+     4.2:   assignment
+     3.0:   []
+     2.8:   branch
+     1.5:   directory?
+     1.5:   glob
+     1.3:   each
+     1.3:   join
+     0.4:   lit_fixnum
+
+    10.3: Chef::Cookbook::CookbookVersionLoader#load_root_files lib/chef/cookbook/cookbook_version_loader.rb:124
+     3.0:   []
+     2.9:   assignment
+     2.8:   branch
+     1.7:   join
+     1.5:   directory?
+     1.5:   glob
+     1.3:   each
+     0.4:   lit_fixnum
+
+    10.1: Chef::Cookbook::CookbookVersionLoader#merge! lib/chef/cookbook/cookbook_version_loader.rb:112
+     5.5:   assignment
+     1.6:   []
+     1.5:   metadata_filenames
+     1.4:   merge!
+     1.3:   cookbook_settings
+     1.3:   concat
+     1.3:   each
+     1.3:   branch
+
+     9.6: Chef::Cookbook::CookbookVersionLoader#metadata lib/chef/cookbook/cookbook_version_loader.rb:91
+     5.7:   branch
+     2.7:   assignment
+     1.6:   apply_ruby_metadata
+     1.6:   apply_json_metadata
+     1.5:   raise
+     1.3:   each
+     1.3:   new
+
+     8.8: Chef::Cookbook::CookbookVersionLoader#empty? lib/chef/cookbook/cookbook_version_loader.rb:106
+     4.2:   assignment
+     2.7:   branch
+     2.6:   inject
+     1.7:   last
+     1.5:   empty?
+     1.5:   cookbook_settings
+
+     8.8: Chef::Cookbook::CookbookVersionLoader#remove_ignored_files lib/chef/cookbook/cookbook_version_loader.rb:145
+     5.9:   assignment
+     2.7:   branch
+     1.7:   chefignore
+     1.5:   ignored?
+     1.4:   reject!
+     1.3:   each_value
+
+     8.3: Chef::Cookbook::CookbookVersionLoader#load_as lib/chef/cookbook/cookbook_version_loader.rb:139
+     4.3:   []
+     2.8:   assignment
+     1.7:   join
+     1.3:   branch
+     1.3:   each
+     0.4:   lit_fixnum
+
+     7.8: Chef::Cookbook::CookbookVersionLoader#apply_json_metadata lib/chef/cookbook/cookbook_version_loader.rb:162
+     1.7:   +
+     1.6:   read
+     1.5:   raise
+     1.5:   error
+     1.4:   from_json
+     1.3:   branch
+
+     6.2: Chef::Cookbook::CookbookVersionLoader#apply_ruby_metadata lib/chef/cookbook/cookbook_version_loader.rb:153
+     1.7:   +
+     1.5:   raise
+     1.5:   error
+     1.4:   from_file
+     1.3:   branch
+
+     4.4: main#none
+     4.4:   require
+
+     3.6: Chef::Cookbook::CookbookVersionLoader#none
+     3.6:   attr_reader
+
+     3.1: Chef::Cookbook::CookbookVersionLoader#chefignore lib/chef/cookbook/cookbook_version_loader.rb:120
+     1.5:   basename
+     1.3:   assignment
+     1.3:   new
+

@@ -1,0 +1,50 @@
+   112.6: flog total
+    22.5: flog/method average
+
+    85.9: Chef::Knife::Status#run          lib/chef/knife/status.rb:41
+    42.7:   assignment
+    25.9:   []
+    25.8:   branch
+    12.9:   <<
+     3.0:   ==
+     2.8:   new
+     1.9:   join
+     1.7:   lit_fixnum
+     1.7:   highline
+     1.7:   +
+     1.7:   config
+     1.7:   name
+     1.6:   >=
+     1.6:   run_list
+     1.6:   <=>
+     1.5:   say
+     1.5:   time_difference_in_hms
+     1.5:   >
+     1.5:   has_key?
+     1.5:   sort
+     1.3:   each
+     1.3:   search
+
+    17.3: Chef::Knife::Status#time_difference_in_hms lib/chef/knife/status.rb:92
+     7.8:   assignment
+     5.4:   to_i
+     3.0:   /
+     2.6:   %
+     1.6:   lit_fixnum
+     1.5:   now
+     1.3:   -
+
+     6.5: Chef::Knife::Status#none
+     2.8:   require
+     1.2:   banner
+     1.2:   deps
+     1.2:   option
+     1.2:   branch
+
+     1.8: Chef::Knife::Status#highline     lib/chef/knife/status.rb:37
+     1.3:   assignment
+     1.3:   new
+
+     1.1: main#none
+     1.1:   require
+

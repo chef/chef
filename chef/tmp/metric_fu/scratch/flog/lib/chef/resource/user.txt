@@ -1,0 +1,53 @@
+    40.1: flog total
+     3.1: flog/method average
+
+    18.2: Chef::Resource::User#initialize  lib/chef/resource/user.rb:25
+    18.2:   assignment
+     1.3:   push
+
+     2.4: Chef::Resource::User#none
+     2.4:   alias_method
+
+     1.8: Chef::Resource::User#username    lib/chef/resource/user.rb:46
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#uid         lib/chef/resource/user.rb:62
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#gid         lib/chef/resource/user.rb:70
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#home        lib/chef/resource/user.rb:80
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#shell       lib/chef/resource/user.rb:88
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#comment     lib/chef/resource/user.rb:54
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#manage_home lib/chef/resource/user.rb:112
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#password    lib/chef/resource/user.rb:96
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#non_unique  lib/chef/resource/user.rb:120
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::User#system      lib/chef/resource/user.rb:104
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

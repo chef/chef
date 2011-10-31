@@ -1,0 +1,9 @@
+     3.4: flog total
+     1.7: flog/method average
+
+     2.2: main#none
+     2.2:   require
+
+     1.2: Chef::Mixin::Checksum#checksum   lib/chef/mixin/checksum.rb:26
+     1.2:   checksum_for_file
+

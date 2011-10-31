@@ -1,0 +1,180 @@
+   345.2: flog total
+    26.6: flog/method average
+
+   100.5: Chef::Knife::CookbookUpload#run  lib/chef/knife/cookbook_upload.rb:70
+    29.4:   assignment
+    20.1:   branch
+    11.0:   []
+    10.2:   config
+     6.2:   cookbook_repo
+     5.4:   ui
+     4.9:   each
+     4.4:   size
+     4.2:   map
+     3.8:   max
+     3.7:   freeze_version
+     3.5:   error
+     3.5:   version
+     3.5:   upload
+     3.4:   to_i
+     3.0:   +
+     2.3:   metadata
+     2.3:   cookbook_names
+     2.1:   dependencies
+     2.0:   push
+     1.8:   debug
+     1.7:   exit
+     1.7:   show_usage
+     1.5:   empty?
+     1.4:   update_version_constraints
+     1.3:   lit_fixnum
+     1.3:   info
+     1.3:   list
+     1.3:   assert_environment_valid!
+     1.3:   warn_about_cookbook_shadowing
+
+    41.8: Chef::Knife::CookbookUpload#warn_about_cookbook_shadowing lib/chef/knife/cookbook_upload.rb:135
+    12.3:   ui
+     6.0:   warn
+     5.9:   cookbook_repo
+     3.4:   merged_cookbooks
+     3.4:   *
+     1.9:   merged_cookbook_paths
+     1.7:   join
+     1.7:   format_for_display
+     1.7:   color
+     1.5:   output
+     1.3:   empty?
+     1.3:   branch
+     1.0:   lit_fixnum
+
+    41.1: Chef::Knife::CookbookUpload#upload lib/chef/knife/cookbook_upload.rb:164
+     4.2:   branch
+     4.2:   config
+     4.0:   name
+     3.8:   []
+     3.6:   version
+     3.6:   ui
+     1.9:   to_s
+     1.9:   +
+     1.7:   debug
+     1.7:   error
+     1.7:   ljust
+     1.7:   new
+     1.6:   response
+     1.5:   raise
+     1.5:   check_for_broken_links
+     1.5:   check_dependencies
+     1.5:   info
+     1.5:   upload_cookbook
+     1.4:   assignment
+     1.4:   code
+     0.5:   lit_fixnum
+
+    33.0: Chef::Knife::CookbookUpload#check_for_broken_links lib/chef/knife/cookbook_upload.rb:182
+    11.8:   assignment
+     5.5:   branch
+     5.1:   ui
+     3.4:   []
+     3.0:   info
+     1.7:   Array
+     1.7:   join
+     1.7:   name
+     1.7:   dup
+     1.5:   nil?
+     1.5:   =~
+     1.5:   error
+     1.5:   exit
+     1.5:   map
+     1.5:   manifest_records_by_path
+     1.3:   select
+     1.3:   empty?
+     0.4:   lit_fixnum
+
+    27.1: Chef::Knife::CookbookUpload#check_uploading_cookbooks lib/chef/knife/cookbook_upload.rb:222
+     6.7:   []
+     6.0:   cookbook_repo
+     4.4:   include?
+     4.1:   branch
+     3.4:   new
+     3.4:   version
+     1.5:   config
+     1.4:   nil?
+
+    20.8: Chef::Knife::CookbookUpload#assert_environment_valid! lib/chef/knife/cookbook_upload.rb:152
+     2.7:   branch
+     2.0:   config
+     2.0:   response
+     1.8:   []
+     1.8:   ui
+     1.8:   code
+     1.6:   exit
+     1.6:   error
+     1.6:   debug
+     1.6:   to_s
+     1.5:   raise
+     1.4:   environment
+     1.4:   ==
+     1.4:   assignment
+     0.5:   lit_fixnum
+
+    19.1: Chef::Knife::CookbookUpload#check_dependencies lib/chef/knife/cookbook_upload.rb:198
+     4.2:   assignment
+     4.1:   branch
+     3.6:   ui
+     3.2:   error
+     1.8:   name
+     1.7:   metadata
+     1.6:   exit
+     1.5:   check_uploading_cookbooks
+     1.5:   check_server_side_cookbooks
+     1.5:   dependencies
+     1.3:   each
+     0.5:   lit_fixnum
+
+    18.1: Chef::Knife::CookbookUpload#none
+     7.2:   option
+     4.2:   require
+     2.6:   branch
+     1.5:   assignment
+     1.5:   split
+     1.4:   lambda
+     1.2:   private
+     1.2:   deps
+     1.2:   banner
+
+    13.9: Chef::Knife::CookbookUpload#check_server_side_cookbooks lib/chef/knife/cookbook_upload.rb:211
+     6.9:   []
+     4.4:   branch
+     1.8:   new
+     1.6:   include?
+     1.6:   assignment
+     1.5:   each
+     1.3:   nil?
+
+    11.7: Chef::Knife::CookbookUpload#cookbook_repo lib/chef/knife/cookbook_upload.rb:116
+     3.7:   config
+     3.3:   []
+     2.9:   new
+     2.8:   assignment
+     1.4:   branch
+     1.4:   on_create
+
+     9.1: Chef::Knife::CookbookUpload#update_version_constraints lib/chef/knife/cookbook_upload.rb:123
+     5.6:   assignment
+     3.1:   environment
+     1.4:   cookbook_versions
+     1.3:   each
+     1.3:   save
+     1.3:   branch
+
+     7.8: Chef::Knife::CookbookUpload#environment lib/chef/knife/cookbook_upload.rb:131
+     3.3:   config
+     2.9:   []
+     1.4:   load
+     1.3:   assignment
+     1.3:   branch
+
+     1.1: main#none
+     1.1:   require
+

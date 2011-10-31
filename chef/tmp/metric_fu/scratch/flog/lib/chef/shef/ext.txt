@@ -1,0 +1,267 @@
+   454.1: flog total
+     9.9: flog/method average
+
+    74.8: Shef::Extensions#none
+    32.2:   desc
+    16.8:   alias
+     8.4:   explain
+     8.4:   subcommands
+     6.0:   new
+     4.8:   branch
+     2.8:   extend
+
+    46.0: Shef::Extensions::ObjectCoreExtensions#help_banner lib/chef/shef/ext.rb:67
+    14.1:   <<
+    11.1:   +
+     9.3:   ljust
+     2.9:   assignment
+     2.6:   lit_fixnum
+     2.5:   cmd
+     1.9:   desc
+     1.6:   all_help_descriptions
+     1.4:   each
+     1.4:   join
+     1.4:   branch
+
+    35.9: Shef::Extensions#edit            lib/chef/shef/ext.rb:314
+     9.6:   assignment
+     6.1:   branch
+     3.6:   editor
+     3.4:   puts
+     3.3:   +
+     3.3:   name
+     3.1:   respond_to?
+     1.9:   path
+     1.9:   id
+     1.9:   to_s
+     1.9:   to_json
+     1.7:   system
+     1.7:   read
+     1.7:   rewind
+     1.7:   class
+     1.5:   open
+     1.5:   from_json
+
+    33.1: Shef::Extensions::ObjectCoreExtensions#explain_command lib/chef/shef/ext.rb:85
+    14.4:   puts
+     4.6:   branch
+     3.6:   ljust
+     3.4:   to_s
+     2.9:   assignment
+     1.9:   explanation
+     1.9:   desc
+     1.9:   cmd
+     1.6:   all_help_descriptions
+     1.5:   ==
+     1.4:   find
+     1.0:   lit_fixnum
+
+    29.2: Shef::Extensions::extend_context_object lib/chef/shef/ext.rb:528
+    19.5:   instance_eval
+     5.2:   extend
+     4.5:   block_pass
+
+    21.4: Shef::Extensions::ObjectCoreExtensions#singleton_method_added lib/chef/shef/ext.rb:131
+    11.0:   assignment
+     6.0:   to_s
+     4.3:   branch
+     3.6:   help_descriptions
+     3.6:   new
+     3.2:   <<
+     1.5:   each
+
+    16.2: Shef::Extensions::ObjectCoreExtensions::select_shef_session lib/chef/shef/ext.rb:47
+     5.2:   assignment
+     5.0:   branch
+     3.4:   kind_of?
+     3.4:   select_session_by_context
+     2.0:   first
+     1.8:   Array
+     1.8:   equal?
+     1.6:   []
+     0.5:   lit_fixnum
+
+    16.0: Shef::Extensions::extend_context_recipe lib/chef/shef/ext.rb:540
+    13.0:   instance_eval
+     3.0:   block_pass
+
+    15.3: Shef::Extensions#resources       lib/chef/shef/ext.rb:518
+     3.3:   pp
+     2.4:   run_context
+     2.2:   resource_collection
+     2.0:   instance_variable_get
+     1.9:   original_resources
+     1.9:   assignment
+     1.8:   keys
+     1.5:   empty?
+     1.5:   branch
+
+    11.5: Shef::Extensions#ohai            lib/chef/shef/ext.rb:295
+     4.2:   node
+     3.8:   attribute
+     1.8:   []
+     1.7:   branch
+     1.5:   pp
+     1.5:   assignment
+
+    10.5: Shef::Extensions::ObjectCoreExtensions::select_session_by_context lib/chef/shef/ext.rb:41
+     2.3:   []
+     2.1:   context
+     1.9:   main
+     1.7:   call
+     1.7:   assignment
+     1.6:   select
+     1.6:   branch
+     0.6:   lit_fixnum
+
+     9.4: Shef::Extensions::ObjectCoreExtensions#ensure_session_select_defined lib/chef/shef/ext.rb:37
+     6.2:   jobs
+     2.8:   respond_to?
+     2.8:   branch
+
+     9.3: Shef::Extensions::ObjectCoreExtensions#find_or_create_session_for lib/chef/shef/ext.rb:58
+     3.3:   jobs
+     1.5:   irb
+     1.5:   switch
+     1.4:   ensure_session_select_defined
+     1.4:   select_shef_session
+     1.4:   assignment
+     1.4:   branch
+
+     8.9: Shef::Extensions#run_chef        lib/chef/shef/ext.rb:230
+     6.0:   assignment
+     1.9:   run_context
+     1.7:   new
+     1.5:   session
+     1.5:   converge
+
+     8.8: main#none
+     8.8:   require
+
+     8.0: Shef::Extensions::extend_context_node lib/chef/shef/ext.rb:536
+     6.5:   instance_eval
+     1.5:   block_pass
+
+     7.2: Shef::Extensions#tracing?        lib/chef/shef/ext.rb:277
+     2.1:   conf
+     1.9:   use_tracer
+     1.7:   to_on_off_str
+     1.5:   puts
+
+     7.2: Shef::Extensions#echo?           lib/chef/shef/ext.rb:265
+     2.1:   conf
+     1.9:   echo
+     1.7:   to_on_off_str
+     1.5:   puts
+
+     7.2: Shef::Extensions#version         lib/chef/shef/ext.rb:208
+     5.7:   +
+     1.5:   puts
+
+     5.4: Shef::Extensions#help            lib/chef/shef/ext.rb:197
+     1.8:   help_banner
+     1.6:   puts
+     1.6:   explain_command
+     1.5:   branch
+     1.5:   assignment
+
+     5.1: Shef::Extensions#attributes      lib/chef/shef/ext.rb:224
+     1.9:   session
+     1.7:   node
+     1.5:   find_or_create_session_for
+
+     5.1: Shef::Extensions#recipe          lib/chef/shef/ext.rb:218
+     1.9:   session
+     1.7:   recipe
+     1.5:   find_or_create_session_for
+
+     5.1: Shef::Extensions#chef_run        lib/chef/shef/ext.rb:243
+     1.9:   session
+     1.7:   resource_collection
+     1.5:   iterator
+
+     4.7: Shef::Extensions#tracing         lib/chef/shef/ext.rb:270
+     1.5:   tracing?
+     1.5:   assignment
+     1.5:   on_off_to_bool
+     1.5:   conf
+
+     4.1: Shef::Extensions::String#on_off_to_bool lib/chef/shef/ext.rb:147
+     4.1:   branch
+
+     3.5: Shef::Extensions#api             lib/chef/shef/ext.rb:508
+     1.7:   []
+     1.5:   assignment
+     1.5:   new
+
+     3.4: Shef::Extensions#echo            lib/chef/shef/ext.rb:260
+     1.5:   assignment
+     1.5:   on_off_to_bool
+     1.5:   conf
+
+     3.2: Shef::Extensions#reset           lib/chef/shef/ext.rb:248
+     1.7:   session
+     1.5:   reset!
+
+     3.2: Shef::Extensions#become_node     lib/chef/shef/ext.rb:253
+     1.7:   instance
+     1.5:   assume_identity
+
+     3.2: Shef::Extensions#node            lib/chef/shef/ext.rb:290
+     1.7:   session
+     1.5:   node
+
+     2.8: Shef::Extensions::ObjectCoreExtensions#subcommands lib/chef/shef/ext.rb:127
+     2.8:   assignment
+
+     2.8: Shef::Extensions::Symbol#on_off_to_bool lib/chef/shef/ext.rb:160
+     1.5:   to_s
+     1.3:   on_off_to_bool
+
+     2.2: String#none
+     2.2:   include
+
+     2.2: FalseClass#none
+     2.2:   include
+
+     2.2: TrueClass#none
+     2.2:   include
+
+     2.2: Symbol#none
+     2.2:   include
+
+     2.1: Shef::Extensions#roles           lib/chef/shef/ext.rb:477
+     1.5:   assignment
+     1.5:   new
+
+     2.1: Shef::Extensions#clients         lib/chef/shef/ext.rb:395
+     1.5:   assignment
+     1.5:   new
+
+     2.1: Shef::Extensions#cookbooks       lib/chef/shef/ext.rb:403
+     1.5:   assignment
+     1.5:   new
+
+     2.1: Shef::Extensions#nodes           lib/chef/shef/ext.rb:456
+     1.5:   assignment
+     1.5:   new
+
+     2.1: Shef::Extensions#databags        lib/chef/shef/ext.rb:502
+     1.5:   assignment
+     1.5:   new
+
+     1.5: Shef::Extensions#ls              lib/chef/shef/ext.rb:283
+     1.5:   entries
+
+     1.4: Shef::Extensions::ObjectCoreExtensions#help_descriptions lib/chef/shef/ext.rb:111
+     1.4:   assignment
+
+     1.4: Shef::Extensions::ObjectCoreExtensions#explain lib/chef/shef/ext.rb:123
+     1.4:   assignment
+
+     1.4: Shef::Extensions::ObjectCoreExtensions#desc lib/chef/shef/ext.rb:119
+     1.4:   assignment
+
+     1.4: Shef::Extensions::ObjectCoreExtensions#all_help_descriptions lib/chef/shef/ext.rb:115
+     1.4:   help_descriptions
+

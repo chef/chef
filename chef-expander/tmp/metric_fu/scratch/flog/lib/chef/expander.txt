@@ -1,0 +1,6 @@
+     0.3: flog total
+     0.3: flog/method average
+
+     0.3: Chef::Expander#none
+     0.3:   lit_fixnum
+

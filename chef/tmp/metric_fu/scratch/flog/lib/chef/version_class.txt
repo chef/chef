@@ -1,0 +1,37 @@
+    45.2: flog total
+     7.5: flog/method average
+
+    15.1: Chef::Version#parse              lib/chef/version_class.rb:56
+     7.4:   assignment
+     7.0:   to_i
+     3.8:   branch
+     2.6:   to_s
+     1.6:   new
+     1.4:   raise
+
+    14.1: Chef::Version#<=>                lib/chef/version_class.rb:35
+     9.6:   send
+     2.7:   assignment
+     2.6:   branch
+     1.4:   <=>
+     1.4:   ==
+     1.2:   each
+
+     6.1: Chef::Version#initialize         lib/chef/version_class.rb:23
+     6.0:   assignment
+     1.2:   parse
+
+     4.4: Chef::Version#none
+     2.2:   include
+     1.1:   attr_reader
+     1.1:   private
+
+     2.9: Chef::Version#eql?               lib/chef/version_class.rb:50
+     1.3:   is_a?
+     1.3:   ==
+     1.2:   branch
+
+     2.6: Chef::Version#hash               lib/chef/version_class.rb:43
+     1.4:   to_s
+     1.2:   hash
+

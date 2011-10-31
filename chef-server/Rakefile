@@ -18,6 +18,7 @@
 
 require File.dirname(__FILE__) + '/lib/chef-server/version'
 require 'rake/gempackagetask'
+require 'metric_fu'
 
 GEM_NAME = "chef-server"
 

@@ -1,0 +1,55 @@
+    96.7: flog total
+    24.2: flog/method average
+
+    30.8: Chef::Provider::Directory#action_create lib/chef/provider/directory.rb:41
+     6.8:   path
+     6.7:   branch
+     5.4:   ==
+     1.7:   recursive
+     1.6:   mkdir_p
+     1.6:   mkdir
+     1.5:   info
+     1.5:   updated_by_last_action
+     1.5:   owner
+     1.5:   group
+     1.5:   mode
+     1.4:   set_owner
+     1.4:   set_mode
+     1.4:   set_group
+     1.3:   exists?
+
+    30.1: Chef::Provider::Directory#action_delete lib/chef/provider/directory.rb:56
+    12.4:   path
+     5.5:   branch
+     3.4:   info
+     1.7:   rm_rf
+     1.7:   delete
+     1.7:   recursive
+     1.5:   raise
+     1.5:   updated_by_last_action
+     1.5:   ==
+     1.4:   writable?
+     1.4:   directory?
+     1.4:   exists?
+
+    29.2: Chef::Provider::Directory#load_current_resource lib/chef/provider/directory.rb:29
+     7.7:   path
+     3.6:   mode
+     2.8:   assignment
+     2.6:   branch
+     1.9:   &
+     1.7:   %
+     1.7:   gid
+     1.7:   uid
+     1.5:   stat
+     1.5:   group
+     1.5:   owner
+     1.5:   name
+     1.4:   exist?
+     1.4:   directory?
+     1.3:   new
+     0.5:   lit_fixnum
+
+     6.6: main#none
+     6.6:   require
+

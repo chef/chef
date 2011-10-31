@@ -1,0 +1,108 @@
+   123.0: flog total
+     9.5: flog/method average
+
+    26.6: Chef::SolrQuery::SolrHTTPRequest#run lib/chef/solr_query/solr_http_request.rb:91
+     4.2:   assignment
+     4.2:   branch
+     3.6:   solr_url
+     3.2:   debug
+     3.1:   raise
+     2.0:   backtrace
+     1.8:   join
+     1.7:   http_client
+     1.6:   fatal
+     1.6:   request_failed!
+     1.5:   kind_of?
+     1.5:   body
+     1.5:   request
+     1.4:   to_s
+     1.4:   escape
+
+    20.2: Chef::SolrQuery::SolrHTTPRequest#request_failed! lib/chef/solr_query/solr_http_request.rb:108
+     3.6:   class
+     2.7:   assignment
+     1.9:   backtrace
+     1.7:   to_s
+     1.7:   join
+     1.7:   name
+     1.7:   message
+     1.7:   code
+     1.5:   raise
+     1.5:   debug
+     1.5:   fatal
+     1.5:   error!
+     1.3:   branch
+
+    17.2: Chef::SolrQuery::SolrHTTPRequest::escape lib/chef/solr_query/solr_http_request.rb:71
+     2.6:   size
+     2.4:   *
+     2.2:   unpack
+     2.0:   join
+     1.8:   upcase
+     1.7:   to_s
+     1.6:   +
+     1.5:   gsub
+     1.5:   branch
+     1.3:   tr
+
+    12.8: Chef::SolrQuery::SolrHTTPRequest::url_join lib/chef/solr_query/solr_http_request.rb:63
+     6.8:   assignment
+     3.4:   []
+     2.6:   inject
+     1.6:   escape
+     1.4:   <<
+     1.3:   chop!
+     1.3:   branch
+     0.5:   lit_fixnum
+
+     9.5: Chef::SolrQuery::SolrHTTPRequest::select lib/chef/solr_query/solr_http_request.rb:49
+     5.2:   assignment
+     1.5:   solr_url
+     1.3:   from_json
+     1.3:   run
+     1.3:   url_join
+     1.3:   debug
+     1.3:   new
+
+     8.1: Chef::SolrQuery::SolrHTTPRequest::http_client lib/chef/solr_query/solr_http_request.rb:42
+     2.7:   assignment
+     1.6:   port
+     1.6:   host
+     1.6:   solr_url
+     1.4:   parse
+     1.4:   new
+
+     7.2: Chef::SolrQuery::SolrHTTPRequest#initialize lib/chef/solr_query/solr_http_request.rb:77
+     3.9:   assignment
+     2.6:   branch
+     1.5:   []
+     1.4:   yield
+     1.3:   block_given?
+     1.3:   new
+
+     6.8: Chef::SolrQuery::SolrHTTPRequest::update lib/chef/solr_query/solr_http_request.rb:57
+     4.1:   assignment
+     1.4:   to_s
+     1.3:   run
+     1.3:   debug
+     1.3:   branch
+     1.3:   new
+
+     4.4: main#none
+     4.4:   require
+
+     2.8: Chef::SolrQuery::SolrHTTPRequest#http_client lib/chef/solr_query/solr_http_request.rb:83
+     1.5:   class
+     1.3:   http_client
+
+     2.8: Chef::SolrQuery::SolrHTTPRequest#solr_url lib/chef/solr_query/solr_http_request.rb:87
+     1.5:   class
+     1.3:   solr_url
+
+     2.6: Chef::SolrQuery::SolrHTTPRequest::solr_url= lib/chef/solr_query/solr_http_request.rb:33
+     2.6:   assignment
+
+     1.9: Chef::SolrQuery::SolrHTTPRequest::solr_url lib/chef/solr_query/solr_http_request.rb:38
+     1.4:   []
+     1.3:   branch
+

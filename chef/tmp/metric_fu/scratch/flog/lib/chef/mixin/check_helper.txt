@@ -1,0 +1,10 @@
+     5.1: flog total
+     5.1: flog/method average
+
+     5.1: Chef::Mixin::CheckHelper#set_if_args lib/chef/mixin/check_helper.rb:21
+     2.2:   branch
+     1.2:   raise
+     1.2:   yield
+     1.1:   ==
+     1.1:   block_given?
+

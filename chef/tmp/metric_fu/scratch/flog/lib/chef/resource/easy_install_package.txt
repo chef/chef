@@ -1,0 +1,21 @@
+    10.5: flog total
+     2.1: flog/method average
+
+     3.9: Chef::Resource::EasyInstallPackage#initialize lib/chef/resource/easy_install_package.rb:25
+     3.9:   assignment
+
+     1.8: Chef::Resource::EasyInstallPackage#python_binary lib/chef/resource/easy_install_package.rb:39
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::EasyInstallPackage#module_name lib/chef/resource/easy_install_package.rb:47
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.8: Chef::Resource::EasyInstallPackage#easy_install_binary lib/chef/resource/easy_install_package.rb:31
+     1.3:   set_or_return
+     1.3:   assignment
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,93 @@
+   136.0: flog total
+    13.6: flog/method average
+
+    56.0: Chef::Provider::Service::Upstart#load_current_resource lib/chef/provider/service/upstart.rb:56
+    17.0:   branch
+     9.4:   service_name
+     8.5:   debug
+     8.2:   running
+     5.5:   enabled
+     4.6:   assignment
+     4.4:   chomp
+     3.3:   status_command
+     3.1:   ==
+     1.8:   run_command_with_systems_locale
+     1.7:   gets
+     1.7:   upstart_state
+     1.5:   open
+     1.5:   name
+     1.3:   exists?
+     1.3:   new
+
+    15.9: Chef::Provider::Service::Upstart#upstart_state lib/chef/provider/service/upstart.rb:179
+    12.7:   assignment
+     2.7:   branch
+     1.6:   =~
+     1.6:   []
+     1.6:   last_match
+     1.4:   each_line
+     1.3:   service_name
+     1.3:   popen4
+     0.5:   lit_fixnum
+
+    14.5: Chef::Provider::Service::Upstart#initialize lib/chef/provider/service/upstart.rb:39
+     9.9:   assignment
+     3.9:   branch
+     2.8:   node
+     1.6:   to_f
+     1.4:   raise
+     1.4:   include?
+     1.4:   ==
+     1.3:   find_platform_and_version
+
+    11.4: Chef::Provider::Service::Upstart#restart_service lib/chef/provider/service/upstart.rb:140
+     2.8:   branch
+     1.8:   service_name
+     1.7:   supports
+     1.6:   start_service
+     1.6:   run_command_with_systems_locale
+     1.5:   []
+     1.5:   running
+     1.3:   restart_command
+
+     7.8: Chef::Provider::Service::Upstart#stop_service lib/chef/provider/service/upstart.rb:126
+     2.7:   branch
+     1.7:   service_name
+     1.5:   run_command_with_systems_locale
+     1.4:   stop_command
+     1.4:   debug
+     1.3:   running
+
+     7.8: Chef::Provider::Service::Upstart#start_service lib/chef/provider/service/upstart.rb:112
+     2.7:   branch
+     1.7:   service_name
+     1.5:   run_command_with_systems_locale
+     1.4:   debug
+     1.4:   start_command
+     1.3:   running
+
+     6.8: Chef::Provider::Service::Upstart#enable_service lib/chef/provider/service/upstart.rb:165
+     1.5:   service_name
+     1.3:   debug
+     1.3:   assignment
+     1.3:   write_file
+     1.3:   search_file_replace
+     1.3:   new
+
+     6.8: Chef::Provider::Service::Upstart#disable_service lib/chef/provider/service/upstart.rb:172
+     1.5:   service_name
+     1.3:   debug
+     1.3:   assignment
+     1.3:   write_file
+     1.3:   search_file_replace
+     1.3:   new
+
+     4.5: Chef::Provider::Service::Upstart#reload_service lib/chef/provider/service/upstart.rb:154
+     1.6:   service_name
+     1.4:   run_command_with_systems_locale
+     1.3:   reload_command
+     1.3:   branch
+
+     4.4: main#none
+     4.4:   require
+

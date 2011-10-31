@@ -1,0 +1,81 @@
+    88.6: flog total
+     8.1: flog/method average
+
+    17.6: Chef::Sandbox::json_create       lib/chef/sandbox.rb:104
+     8.4:   []
+     8.2:   assignment
+     3.0:   delete
+     2.6:   has_key?
+     2.6:   branch
+     1.3:   new
+
+    13.5: Chef::Sandbox#initialize         lib/chef/sandbox.rb:77
+     7.8:   assignment
+     2.0:   random_create
+     1.8:   to_s
+     1.6:   gsub
+     1.5:   now
+     1.4:   downcase
+     1.3:   new
+     1.3:   iso8601
+     1.3:   branch
+
+    12.3: Chef::Sandbox#none
+     4.8:   alias
+     3.6:   attr_accessor
+     2.4:   alias_method
+     1.2:   attr_reader
+     0.3:   lit_fixnum
+
+    11.0: Chef::Sandbox#to_json            lib/chef/sandbox.rb:90
+     2.7:   assignment
+     2.6:   name
+     1.5:   class
+     1.3:   to_json
+     1.3:   is_completed
+     1.3:   guid
+     1.3:   branch
+     1.3:   create_time
+     1.3:   checksums
+
+    10.5: Chef::Sandbox::cdb_list          lib/chef/sandbox.rb:129
+     6.6:   assignment
+     4.1:   branch
+     2.9:   []
+     1.6:   new
+     1.3:   collect
+     1.3:   list
+
+     7.0: Chef::Sandbox#cdb_save           lib/chef/sandbox.rb:144
+     2.6:   assignment
+     1.8:   new
+     1.7:   branch
+     1.7:   guid
+     1.5:   store
+     1.3:   []
+
+     6.2: Chef::Sandbox#cdb_destroy        lib/chef/sandbox.rb:140
+     1.6:   new
+     1.6:   couchdb
+     1.5:   branch
+     1.5:   guid
+     1.3:   delete
+
+     3.5: Chef::Sandbox::create_design_document lib/chef/sandbox.rb:125
+     1.6:   new
+     1.5:   branch
+     1.3:   assignment
+     1.3:   create_design_document
+
+     3.5: Chef::Sandbox::cdb_load          lib/chef/sandbox.rb:135
+     1.6:   new
+     1.5:   branch
+     1.3:   load
+     1.3:   assignment
+
+     2.2: main#none
+     2.2:   require
+
+     1.3: Chef::Sandbox#include?           lib/chef/sandbox.rb:84
+     1.3:   include?
+

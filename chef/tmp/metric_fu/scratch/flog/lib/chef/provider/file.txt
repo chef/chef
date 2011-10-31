@@ -1,0 +1,208 @@
+   298.9: flog total
+    14.9: flog/method average
+
+    55.9: Chef::Provider::File#backup      lib/chef/provider/file.rb:182
+    22.9:   assignment
+    10.2:   branch
+     6.5:   backup
+     4.9:   []
+     4.9:   path
+     3.4:   info
+     3.4:   join
+     1.9:   rm
+     1.8:   dirname
+     1.7:   each
+     1.7:   slice
+     1.7:   length
+     1.6:   <=>
+     1.6:   mkdir_p
+     1.5:   >=
+     1.5:   sort
+     1.5:   >
+     1.5:   to_s
+     1.5:   sub
+     1.5:   strftime
+     1.5:   cp
+     1.5:   now
+     1.5:   exist?
+     1.4:   ==
+
+    33.5: Chef::Provider::File#action_create lib/chef/provider/file.rb:139
+     8.1:   branch
+     5.3:   nil?
+     4.9:   path
+     3.4:   content
+     1.6:   write
+     1.6:   assignment
+     1.5:   info
+     1.5:   updated_by_last_action
+     1.5:   open
+     1.5:   set_content
+     1.5:   group
+     1.5:   mode
+     1.5:   owner
+     1.4:   set_group
+     1.4:   set_mode
+     1.4:   set_owner
+     1.3:   assert_enclosing_directory_exists!
+     1.3:   exists?
+
+    29.3: Chef::Provider::File#load_current_resource lib/chef/provider/file.rb:45
+     9.2:   path
+     3.4:   mode
+     2.8:   assignment
+     2.6:   branch
+     1.7:   octal_mode
+     1.7:   gid
+     1.7:   uid
+     1.5:   group
+     1.5:   stat
+     1.5:   owner
+     1.5:   name
+     1.4:   exist?
+     1.4:   readable?
+     1.3:   gsub!
+     1.3:   new
+
+    22.4: Chef::Provider::File#set_mode    lib/chef/provider/file.rb:130
+     5.8:   mode
+     3.8:   octal_mode
+     2.6:   branch
+     1.9:   %
+     1.7:   path
+     1.7:   sprintf
+     1.5:   chmod
+     1.5:   updated_by_last_action
+     1.5:   info
+     1.4:   compare_mode
+     1.4:   ==
+
+    21.2: Chef::Provider::File#action_delete lib/chef/provider/file.rb:161
+     8.5:   path
+     4.3:   branch
+     1.7:   backup
+     1.6:   info
+     1.6:   updated_by_last_action
+     1.6:   symlink?
+     1.6:   delete
+     1.5:   raise
+     1.4:   writable?
+     1.3:   exists?
+
+    18.1: Chef::Provider::File#set_content lib/chef/provider/file.rb:64
+     5.2:   path
+     4.3:   branch
+     1.8:   content
+     1.6:   write
+     1.6:   backup
+     1.6:   assignment
+     1.5:   open
+     1.5:   updated_by_last_action
+     1.5:   info
+     1.5:   exists?
+     1.3:   compare_content
+
+    15.5: Chef::Provider::File#compare_group lib/chef/provider/file.rb:99
+     7.8:   group
+     4.0:   branch
+     1.6:   getgrnam
+     1.5:   to_i
+     1.4:   gid
+     1.3:   assignment
+     1.3:   ==
+     1.3:   nil?
+
+    15.5: Chef::Provider::File#compare_owner lib/chef/provider/file.rb:74
+     7.8:   owner
+     4.0:   branch
+     1.6:   getpwnam
+     1.5:   to_i
+     1.4:   uid
+     1.3:   ==
+     1.3:   assignment
+     1.3:   nil?
+
+    10.4: Chef::Provider::File#compare_mode lib/chef/provider/file.rb:121
+     5.1:   mode
+     3.4:   octal_mode
+     2.7:   branch
+     1.5:   ==
+
+     9.2: Chef::Provider::File#set_group   lib/chef/provider/file.rb:112
+     1.7:   path
+     1.5:   info
+     1.5:   negative_complement
+     1.5:   assignment
+     1.5:   chown
+     1.5:   updated_by_last_action
+     1.3:   compare_group
+     1.3:   branch
+
+     9.2: Chef::Provider::File#set_owner   lib/chef/provider/file.rb:89
+     1.7:   path
+     1.5:   assignment
+     1.5:   info
+     1.5:   updated_by_last_action
+     1.5:   negative_complement
+     1.5:   chown
+     1.3:   compare_owner
+     1.3:   branch
+
+     8.1: Chef::Provider::File#action_touch lib/chef/provider/file.rb:174
+     1.5:   path
+     1.3:   info
+     1.3:   action_create
+     1.3:   now
+     1.3:   assignment
+     1.3:   updated_by_last_action
+     1.3:   utime
+
+     7.7: Chef::Provider::File#assert_enclosing_directory_exists! lib/chef/provider/file.rb:213
+     3.0:   path
+     2.8:   assignment
+     1.5:   raise
+     1.3:   branch
+     1.3:   dirname
+     1.3:   directory?
+
+     7.7: main#none
+     7.7:   require
+
+     7.3: Chef::Provider::File#action_create_if_missing lib/chef/provider/file.rb:153
+     3.1:   path
+     1.4:   action_create
+     1.4:   debug
+     1.3:   exists?
+     1.3:   branch
+
+     6.5: Chef::Provider::File#octal_mode  lib/chef/provider/file.rb:39
+     1.6:   to_i
+     1.6:   oct
+     1.5:   respond_to?
+     1.5:   branch
+     1.3:   &
+     0.4:   lit_fixnum
+
+     6.0: Chef::Provider::File#compare_content lib/chef/provider/file.rb:59
+     1.7:   path
+     1.5:   new_resource_content_checksum
+     1.5:   checksum
+     1.3:   ==
+
+     5.9: Chef::Provider::File#negative_complement lib/chef/provider/file.rb:32
+     1.6:   **
+     1.4:   assignment
+     1.4:   -
+     1.3:   >
+     1.3:   branch
+     1.3:   lit_fixnum
+
+     4.8: Chef::Provider::File#none
+     2.4:   private
+     2.4:   include
+
+     4.6: Chef::Provider::File#new_resource_content_checksum lib/chef/provider/file.rb:221
+     3.0:   content
+     1.4:   hexdigest
+     1.3:   branch
+

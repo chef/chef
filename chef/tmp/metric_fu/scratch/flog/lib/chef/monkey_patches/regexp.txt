@@ -1,0 +1,17 @@
+    20.6: flog total
+    10.3: flog/method average
+
+    10.4: Regexp#none
+     5.0:   sclass
+     3.4:   alias
+     3.0:   branch
+     1.6:   union
+
+    10.2: Regexp#union                     lib/chef/monkey_patches/regexp.rb:28
+     3.7:   union_without_array_argument
+     2.0:   size
+     2.0:   first
+     1.8:   ==
+     1.8:   branch
+     0.5:   lit_fixnum
+

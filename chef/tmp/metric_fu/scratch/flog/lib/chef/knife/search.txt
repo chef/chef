@@ -1,0 +1,51 @@
+   141.4: flog total
+    47.1: flog/method average
+
+   113.7: Chef::Knife::Search#run          lib/chef/knife/search.rb:77
+    20.0:   assignment
+    19.5:   branch
+    18.6:   ui
+    17.9:   []
+     8.0:   config
+     7.7:   msg
+     6.0:   error
+     6.0:   exit
+     3.4:   has_key?
+     3.4:   opt_parser
+     3.4:   name_args
+     3.1:   output
+     3.0:   lit_fixnum
+     2.8:   new
+     2.3:   response
+     2.1:   body
+     1.9:   from_json
+     1.8:   name
+     1.7:   respond_to?
+     1.6:   <<
+     1.6:   format_for_display
+     1.6:   +
+     1.5:   first
+     1.5:   each
+     1.4:   search
+     1.4:   use_presenter
+     1.4:   empty?
+     1.3:   interchange?
+     1.3:   escape
+     1.3:   nil?
+     1.3:   ==
+
+    25.4: Chef::Knife::Search#none
+     8.4:   option
+     5.6:   require
+     4.0:   branch
+     3.0:   assignment
+     3.0:   to_i
+     2.8:   lambda
+     2.4:   include
+     1.2:   deps
+     1.2:   banner
+     0.4:   lit_fixnum
+
+     2.2: main#none
+     2.2:   require
+

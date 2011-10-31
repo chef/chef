@@ -1,0 +1,180 @@
+   311.2: flog total
+    14.1: flog/method average
+
+    37.0: Shef::parse_json                 lib/chef/shef.rb:151
+    14.1:   []
+    11.2:   assignment
+     8.0:   fatal!
+     4.3:   branch
+     3.8:   message
+     2.3:   lit_fixnum
+     1.8:   read
+     1.8:   +
+     1.6:   open
+     1.6:   from_json
+
+    36.5: Shef::Options#parse_opts         lib/chef/shef.rb:287
+    12.5:   config
+     8.5:   []
+     5.7:   branch
+     5.6:   assignment
+     1.6:   exists?
+     1.6:   readable?
+     1.5:   from_file
+     1.5:   nil?
+     1.4:   merge!
+     1.4:   puts
+     1.4:   first
+     1.4:   clear
+     1.4:   parse_options
+     1.4:   config_file_for_shef_mode
+
+    36.2: Shef::Options#config_file_for_shef_mode lib/chef/shef.rb:302
+    14.0:   []
+    11.3:   branch
+     7.2:   config
+     5.3:   join
+     3.4:   exist?
+     3.4:   assignment
+     1.9:   exit
+     1.9:   puts
+     0.5:   lit_fixnum
+
+    30.3: Shef::Options#none
+    11.7:   option
+     6.4:   assignment
+     6.0:   branch
+     4.5:   proc
+     2.6:   include
+     1.6:   puts
+     1.6:   to_sym
+     1.6:   print_help
+     1.5:   lambda
+     1.3:   private
+     1.3:   footer
+     1.3:   banner
+
+    30.2: Shef::start                      lib/chef/shef.rb:48
+     4.6:   irb_conf
+     4.6:   context
+     3.9:   branch
+     3.9:   assignment
+     2.9:   []
+     1.5:   main
+     1.5:   instance_variable_get
+     1.4:   eval_input
+     1.4:   signal_handle
+     1.4:   call
+     1.3:   parse_opts
+     1.3:   trap
+     1.3:   catch
+     1.3:   delete
+     1.3:   setup_logger
+     1.3:   setup
+     1.3:   init
+     1.3:   new
+
+    19.4: Shef::configure_irb              lib/chef/shef.rb:99
+    14.3:   assignment
+     6.0:   leader
+     3.9:   irb_conf
+     1.5:   main
+     1.3:   lambda
+     1.3:   branch
+     0.3:   lit_fixnum
+
+    17.7: Shef::init                       lib/chef/shef.rb:127
+     5.2:   puts
+     3.0:   session
+     1.5:   greeting
+     1.5:   node
+     1.3:   consume_attributes
+     1.3:   version
+     1.3:   parse_json
+     1.3:   extend_context_object
+     1.3:   configure_irb
+
+    17.5: Shef::session                    lib/chef/shef.rb:119
+     7.0:   client_type
+     4.5:   instance
+     1.7:   session_type
+     1.5:   reset!
+     1.5:   puts
+     1.3:   branch
+     1.3:   node_built?
+
+    14.6: Shef#none
+     6.0:   sclass
+     5.4:   attr_accessor
+     2.4:   assignment
+     1.8:   attr_writer
+     1.2:   new
+
+    13.5: Shef::Options::print_help        lib/chef/shef.rb:273
+     5.6:   puts
+     1.6:   opt_parser
+     1.6:   footer
+     1.4:   parse_options
+     1.4:   exit
+     1.4:   new
+     1.4:   assignment
+     0.4:   lit_fixnum
+
+    12.1: main#none
+    12.1:   require
+
+     7.8: Shef::client_type                lib/chef/shef.rb:180
+     5.5:   assignment
+     3.9:   []
+     3.9:   branch
+
+     7.4: Shef::leader                     lib/chef/shef.rb:114
+     2.7:   env
+     1.7:   class
+     1.5:   []
+     1.3:   +
+     1.3:   assignment
+     1.3:   branch
+
+     6.3: Shef::greeting                   lib/chef/shef.rb:145
+     1.8:   session
+     1.6:   node
+     1.4:   fqdn
+     1.4:   getlogin
+     1.3:   branch
+
+     5.7: Shef::setup_logger               lib/chef/shef.rb:77
+     3.9:   assignment
+     1.4:   []
+     1.3:   logger
+     1.3:   init
+     1.3:   branch
+
+     4.0: Shef::editor                     lib/chef/shef.rb:193
+     3.0:   []
+     2.7:   branch
+
+     3.2: Shef::Options::footer            lib/chef/shef.rb:200
+     2.9:   assignment
+     1.4:   branch
+
+     3.0: Shef::Options::setup!            lib/chef/shef.rb:283
+     1.6:   new
+     1.4:   parse_opts
+
+     2.9: Shef::parse_opts                 lib/chef/shef.rb:188
+     1.3:   parse_opts
+     1.3:   assignment
+     1.3:   new
+
+     2.6: Shef::fatal!                     lib/chef/shef.rb:175
+     1.3:   exit
+     1.3:   fatal
+
+     1.9: Shef::irb_conf                   lib/chef/shef.rb:95
+     1.4:   conf
+     1.3:   branch
+
+     1.3: Shef::irb_conf=                  lib/chef/shef.rb:91
+     1.3:   assignment
+

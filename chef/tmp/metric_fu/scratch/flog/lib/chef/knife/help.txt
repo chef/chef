@@ -1,0 +1,61 @@
+    86.2: flog total
+    17.2: flog/method average
+
+    38.0: Chef::Knife::Help#run            lib/chef/knife/help.rb:25
+     9.6:   ui
+     6.6:   assignment
+     5.0:   branch
+     4.2:   msg
+     4.2:   info
+     3.2:   opt_parser
+     2.9:   exit
+     2.9:   name_args
+     1.6:   to_s
+     1.5:   print_help_topics
+     1.3:   find_manpages_for_query
+     1.3:   join
+     1.2:   exec
+     1.2:   find_manpage_path
+     1.2:   empty?
+     0.8:   lit_fixnum
+
+    29.2: Chef::Knife::Help#find_manpages_for_query lib/chef/knife/help.rb:74
+     6.8:   ui
+     5.0:   branch
+     2.8:   fnmatch
+     2.5:   assignment
+     1.7:   highline
+     1.5:   choose
+     1.5:   info
+     1.5:   size
+     1.4:   msg
+     1.4:   print_help_topics
+     1.4:   exit
+     1.4:   first
+     1.4:   error
+     1.4:   help_topics
+     1.3:   ==
+     1.2:   select
+     1.2:   empty?
+     0.8:   lit_fixnum
+
+    13.7: Chef::Knife::Help#print_help_topics lib/chef/knife/help.rb:67
+     3.0:   assignment
+     2.9:   ui
+     2.8:   branch
+     1.8:   help_topics
+     1.7:   gsub
+     1.6:   collect
+     1.4:   sort
+     1.3:   msg
+     1.2:   each
+     1.2:   info
+
+     4.1: Chef::Knife::Help#find_manpage_path lib/chef/knife/help.rb:91
+     2.7:   expand_path
+     1.2:   exists?
+     1.2:   branch
+
+     1.1: Chef::Knife::Help#none
+     1.1:   banner
+

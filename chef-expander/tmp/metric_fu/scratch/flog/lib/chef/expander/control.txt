@@ -1,0 +1,158 @@
+   287.1: flog total
+    22.1: flog/method average
+
+    67.4: Chef::Expander::Control#log_level lib/chef/expander/control.rb:174
+    16.2:   assignment
+    11.1:   []
+     8.4:   <<
+     7.3:   branch
+     5.2:   color
+     3.4:   stop
+     2.8:   puts
+     2.6:   new
+     2.4:   to_s
+     1.9:   exclusive_control_queue_name
+     1.7:   parse
+     1.7:   synchronize
+     1.7:   exclusive_control_queue
+     1.7:   join
+     1.7:   encode
+     1.7:   config
+     1.5:   exit
+     1.5:   add_timer
+     1.5:   local_node
+     1.5:   subscribe
+     1.5:   broadcast_message
+     1.5:   amqp_config
+     1.5:   list
+     1.3:   include?
+     1.3:   start
+     1.3:   shift
+     1.3:   first
+     1.3:   lit_fixnum
+
+    65.6: Chef::Expander::Control#node_status lib/chef/expander/control.rb:143
+    11.9:   assignment
+    11.1:   []
+     7.6:   <<
+     6.0:   branch
+     5.2:   puts
+     5.2:   color
+     3.4:   stop
+     2.6:   new
+     2.1:   to_s
+     2.1:   max
+     2.1:   min
+     1.9:   exclusive_control_queue_name
+     1.7:   encode
+     1.7:   synchronize
+     1.7:   parse
+     1.7:   exclusive_control_queue
+     1.7:   config
+     1.5:   add_timer
+     1.5:   broadcast_message
+     1.5:   list
+     1.5:   local_node
+     1.5:   subscribe
+     1.5:   amqp_config
+     1.3:   print
+     1.3:   start
+     0.9:   lit_fixnum
+
+    46.8: Chef::Expander::Control#queue_status lib/chef/expander/control.rb:119
+    11.9:   assignment
+     6.0:   []
+     6.0:   to_s
+     5.4:   <<
+     4.2:   puts
+     4.2:   color
+     4.0:   branch
+     2.8:   new
+     1.8:   config
+     1.6:   +
+     1.6:   list
+     1.6:   status
+     1.6:   queue
+     1.6:   amqp_config
+     1.6:   -
+     1.4:   stop
+     1.4:   upto
+     1.4:   start
+     0.9:   lit_fixnum
+
+    42.6: Chef::Expander::Control#queue_depth lib/chef/expander/control.rb:93
+    17.4:   assignment
+     5.6:   puts
+     5.4:   branch
+     3.2:   to_f
+     2.8:   inject
+     2.8:   new
+     2.0:   status
+     1.8:   size
+     1.8:   []
+     1.8:   config
+     1.6:   <<
+     1.6:   queue
+     1.6:   -
+     1.6:   amqp_config
+     1.5:   +
+     1.4:   stop
+     1.4:   /
+     1.4:   min
+     1.4:   max
+     1.4:   start
+     1.4:   upto
+     0.5:   lit_fixnum
+
+    17.5: Chef::Expander::Control#help     lib/chef/expander/control.rb:82
+     6.6:   puts
+     5.6:   assignment
+     1.8:   ljust
+     1.7:   class
+     1.6:   +
+     1.5:   version
+     1.5:   descriptions
+     1.3:   branch
+     1.3:   each
+     0.5:   lit_fixnum
+
+    14.2: Chef::Expander::Control::compile lib/chef/expander/control.rb:68
+     6.9:   assignment
+     6.5:   class_eval
+     2.7:   <<
+     1.5:   descriptions
+     1.3:   each
+     1.3:   branch
+     0.4:   lit_fixnum
+
+     9.9: main#none
+     9.9:   require
+
+     7.2: Chef::Expander::Control#none
+     6.0:   desc
+     1.2:   compile
+
+     7.1: Chef::Expander::Control::method_added lib/chef/expander/control.rb:58
+     1.9:   to_s
+     1.7:   gsub
+     1.7:   descriptions
+     1.5:   <<
+     1.5:   assignment
+     1.3:   branch
+
+     4.3: Chef::Expander::Control::run     lib/chef/expander/control.rb:37
+     1.5:   new
+     1.3:   assignment
+     1.3:   init_config
+     1.3:   run
+
+     1.8: Chef::Expander::Control#initialize lib/chef/expander/control.rb:77
+     1.3:   dup
+     1.3:   assignment
+
+     1.3: Chef::Expander::Control::descriptions lib/chef/expander/control.rb:54
+     1.3:   assignment
+
+     1.3: Chef::Expander::Control::desc    lib/chef/expander/control.rb:42
+     1.3:   assignment
+

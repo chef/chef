@@ -1,0 +1,145 @@
+   153.3: flog total
+     9.6: flog/method average
+
+    27.4: Chef::Util::Windows::NetUser#none
+     5.6:   branch
+     5.4:   assignment
+     3.8:   []
+     3.6:   lit_fixnum
+     3.4:   class
+     3.0:   ==
+     2.6:   |
+     2.4:   inject
+     1.4:   collect
+     1.3:   +
+     1.2:   public
+     1.2:   private
+     1.2:   join
+     1.2:   new
+
+    20.5: Chef::Util::Windows::NetUser#get_info lib/chef/util/windows/net_user.rb:131
+     5.2:   assignment
+     3.0:   chr
+     2.6:   *
+     1.6:   get_last_error
+     1.5:   size
+     1.5:   unpack
+     1.4:   raise
+     1.3:   call
+     1.3:   memcpy
+     1.3:   user_info_3_unpack
+     1.3:   NetApiBufferFree
+     1.3:   branch
+     1.3:   ==
+     1.3:   []
+     0.4:   lit_fixnum
+
+    14.4: Chef::Util::Windows::NetUser#user_info_3_unpack lib/chef/util/windows/net_user.rb:92
+     6.9:   assignment
+     3.2:   []
+     2.7:   branch
+     1.6:   class
+     1.5:   dword_to_i
+     1.5:   lpwstr_to_s
+     1.4:   ==
+     1.3:   each_with_index
+     1.3:   new
+     0.5:   lit_fixnum
+
+    14.2: Chef::Util::Windows::NetUser#add lib/chef/util/windows/net_user.rb:146
+     3.9:   assignment
+     1.6:   get_last_error
+     1.5:   []
+     1.5:   multi_to_wide
+     1.4:   raise
+     1.3:   call
+     1.3:   user_info_3_pack
+     1.3:   user_info_3
+     1.3:   NetLocalGroupAddMembers
+     1.3:   ==
+     1.3:   branch
+     1.1:   lit_fixnum
+
+    10.4: Chef::Util::Windows::NetUser#user_info_3_pack lib/chef/util/windows/net_user.rb:86
+     3.1:   branch
+     1.9:   multi_to_wide
+     1.8:   class
+     1.7:   str_to_ptr
+     1.6:   ==
+     1.6:   assignment
+     1.5:   collect
+     1.3:   pack
+
+    10.3: Chef::Util::Windows::NetUser#validate_credentials lib/chef/util/windows/net_user.rb:120
+     2.6:   call
+     2.6:   assignment
+     1.7:   unpack
+     1.5:   chr
+     1.5:   []
+     1.3:   *
+     1.3:   ==
+     1.3:   branch
+
+     9.9: Chef::Util::Windows::NetUser#user_info_3 lib/chef/util/windows/net_user.rb:80
+     6.3:   []
+     2.7:   branch
+     1.4:   include?
+     1.4:   assignment
+     1.3:   collect
+     0.4:   lit_fixnum
+
+     9.5: Chef::Util::Windows::NetUser#set_info lib/chef/util/windows/net_user.rb:101
+     3.9:   assignment
+     1.6:   get_last_error
+     1.4:   raise
+     1.3:   user_info_3
+     1.3:   ==
+     1.3:   branch
+     1.3:   call
+     1.3:   user_info_3_pack
+     0.4:   lit_fixnum
+
+     8.3: Chef::Util::Windows::NetUser#update lib/chef/util/windows/net_user.rb:168
+     7.4:   assignment
+     2.7:   branch
+     1.4:   each
+     1.3:   user_modify
+
+     6.5: Chef::Util::Windows::NetUser#user_modify lib/chef/util/windows/net_user.rb:160
+     5.2:   assignment
+     1.3:   call
+     1.3:   get_info
+     1.3:   set_info
+
+     6.4: Chef::Util::Windows::NetUser#check_enabled lib/chef/util/windows/net_user.rb:195
+     1.9:   get_info
+     1.7:   []
+     1.5:   &
+     1.3:   ==
+
+     5.9: Chef::Util::Windows::NetUser#delete lib/chef/util/windows/net_user.rb:176
+     1.6:   get_last_error
+     1.4:   raise
+     1.3:   call
+     1.3:   assignment
+     1.3:   ==
+     1.3:   branch
+
+     3.3: Chef::Util::Windows::NetUser#enable_account lib/chef/util/windows/net_user.rb:189
+     1.4:   ~
+     1.4:   assignment
+     1.3:   user_modify
+     1.3:   branch
+
+     2.9: Chef::Util::Windows::NetUser#initialize lib/chef/util/windows/net_user.rb:112
+     2.6:   assignment
+     1.3:   multi_to_wide
+
+     2.3: Chef::Util::Windows::NetUser#disable_account lib/chef/util/windows/net_user.rb:183
+     1.4:   assignment
+     1.3:   user_modify
+     1.3:   branch
+
+     1.1: main#none
+     1.1:   require
+

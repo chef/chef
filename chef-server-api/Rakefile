@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/lib/chef-server-api/version'
 
 require 'rubygems'
 require 'rake/gempackagetask'
-
+require 'metric_fu'
 begin
   require 'merb-core'
   require 'merb-core/tasks/merb'

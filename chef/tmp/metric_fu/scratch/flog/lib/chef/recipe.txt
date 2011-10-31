@@ -1,0 +1,64 @@
+    91.6: flog total
+    10.2: flog/method average
+
+    32.8: Chef::Recipe#tag                 lib/chef/recipe.rb:88
+     8.4:   run_context
+     7.6:   node
+     6.8:   []
+     4.5:   branch
+     3.3:   assignment
+     1.8:   <<
+     1.7:   to_s
+     1.7:   include?
+     1.5:   each
+     1.5:   length
+     1.3:   >
+
+    13.2: Chef::Recipe#none
+    12.0:   include
+     1.2:   attr_accessor
+
+     8.7: Chef::Recipe#tagged?             lib/chef/recipe.rb:108
+     2.7:   branch
+     2.0:   run_context
+     1.8:   node
+     1.6:   []
+     1.4:   assignment
+     1.4:   include?
+     1.3:   each
+
+     8.3: Chef::Recipe#untag               lib/chef/recipe.rb:122
+     2.0:   run_context
+     1.8:   node
+     1.6:   []
+     1.4:   assignment
+     1.4:   delete
+     1.3:   each
+     1.3:   branch
+
+     8.2: Chef::Recipe::parse_recipe_name  lib/chef/recipe.rb:49
+     3.0:   []
+     2.8:   to_sym
+     1.3:   match
+     1.3:   assignment
+     1.3:   branch
+     0.9:   lit_fixnum
+
+     7.7: Chef::Recipe#initialize          lib/chef/recipe.rb:58
+     6.5:   assignment
+     1.5:   node
+     1.3:   deprecated_ivar
+     1.3:   new
+
+     5.5: main#none
+     5.5:   require
+
+     4.5: Chef::Recipe#resources           lib/chef/recipe.rb:74
+     1.7:   run_context
+     1.5:   resource_collection
+     1.3:   find
+
+     2.8: Chef::Recipe#node                lib/chef/recipe.rb:68
+     1.5:   run_context
+     1.3:   node
+

@@ -1,0 +1,159 @@
+   227.9: flog total
+    12.0: flog/method average
+
+    47.7: Chef::ShellOut::Unix#run_command lib/chef/shell_out/unix.rb:16
+    18.9:   branch
+    11.2:   assignment
+     3.8:   first
+     3.4:   include?
+     3.3:   raise
+     3.2:   waitpid2
+     2.1:   timeout
+     2.1:   format_for_exception
+     1.9:   last
+     1.9:   >=
+     1.9:   child_stderr
+     1.9:   child_stdout
+     1.8:   +
+     1.8:   open_pipes
+     1.7:   read_stdout_to_buffer
+     1.7:   read_stderr_to_buffer
+     1.6:   select
+     1.4:   propagate_pre_exec_failure
+     1.4:   disable
+     1.4:   fork_subprocess
+     1.4:   configure_parent_process_file_descriptors
+     1.3:   close_all_pipes
+     1.3:   enable
+
+    45.5: Chef::ShellOut::Unix#fork_subprocess lib/chef/shell_out/unix.rb:182
+     7.7:   process_status_pipe
+     6.9:   last
+     5.6:   command
+     5.6:   branch
+     3.4:   exec
+     1.6:   dump
+     1.6:   kind_of?
+     1.6:   flush
+     1.6:   raise
+     1.5:   close
+     1.5:   assignment
+     1.4:   exit!
+     1.4:   closed?
+     1.4:   set_group
+     1.4:   set_cwd
+     1.4:   configure_subprocess_file_descriptors
+     1.4:   set_environment
+     1.4:   set_umask
+     1.4:   set_user
+     1.2:   fork
+     1.2:   initialize_ipc
+
+    34.7: Chef::ShellOut::Unix#configure_subprocess_file_descriptors lib/chef/shell_out/unix.rb:124
+     8.4:   close
+     6.0:   assignment
+     5.6:   last
+     4.8:   stdout_pipe
+     4.8:   stderr_pipe
+     4.2:   first
+     3.6:   reopen
+     1.6:   process_status_pipe
+     1.2:   pipe
+
+    16.6: Chef::ShellOut::Unix#close_all_pipes lib/chef/shell_out/unix.rb:115
+     3.9:   close
+     3.6:   branch
+     3.6:   closed?
+     2.9:   child_process_status
+     2.9:   child_stdout
+     2.9:   child_stderr
+
+    15.2: Chef::ShellOut::Unix#configure_parent_process_file_descriptors lib/chef/shell_out/unix.rb:145
+     4.2:   last
+     3.6:   close
+     2.4:   assignment
+     1.6:   process_status_pipe
+     1.6:   stderr_pipe
+     1.6:   stdout_pipe
+     1.2:   child_stderr
+     1.2:   child_stdout
+
+    10.8: Chef::ShellOut::Unix#propagate_pre_exec_failure lib/chef/shell_out/unix.rb:210
+     3.0:   child_process_status
+     2.8:   branch
+     1.7:   inspect
+     1.6:   ===
+     1.4:   assignment
+     1.4:   raise
+     1.4:   load
+     1.2:   close
+
+     9.9: Chef::ShellOut::Unix#read_stdout_to_buffer lib/chef/shell_out/unix.rb:163
+     4.0:   branch
+     3.1:   <<
+     1.6:   child_stdout
+     1.5:   open_pipes
+     1.4:   assignment
+     1.4:   read_nonblock
+     1.3:   delete_at
+
+     8.1: Chef::ShellOut::Unix#read_stderr_to_buffer lib/chef/shell_out/unix.rb:173
+     2.5:   branch
+     1.6:   child_stderr
+     1.5:   open_pipes
+     1.4:   assignment
+     1.4:   <<
+     1.4:   read_nonblock
+     1.3:   delete_at
+     0.4:   lit_fixnum
+
+     7.8: Chef::ShellOut::Unix#initialize_ipc lib/chef/shell_out/unix.rb:98
+     4.8:   assignment
+     3.6:   pipe
+     1.4:   last
+     1.2:   fcntl
+
+     5.9: Chef::ShellOut::Unix#set_environment lib/chef/shell_out/unix.rb:84
+     5.2:   assignment
+     1.4:   environment
+     1.2:   each
+     1.2:   branch
+
+     5.0: Chef::ShellOut::Unix#set_group   lib/chef/shell_out/unix.rb:77
+     2.8:   assignment
+     2.8:   gid
+     1.2:   group
+     1.2:   branch
+
+     5.0: Chef::ShellOut::Unix#set_user    lib/chef/shell_out/unix.rb:70
+     2.8:   uid
+     2.8:   assignment
+     1.2:   user
+     1.2:   branch
+
+     4.2: Chef::ShellOut::Unix#set_umask   lib/chef/shell_out/unix.rb:90
+     4.0:   umask
+     1.2:   branch
+
+     4.2: Chef::ShellOut::Unix#set_cwd     lib/chef/shell_out/unix.rb:94
+     2.7:   cwd
+     1.3:   chdir
+     1.2:   branch
+
+     2.7: Chef::ShellOut::Unix#open_pipes  lib/chef/shell_out/unix.rb:159
+     1.2:   assignment
+     1.2:   child_stdout
+     1.2:   child_stderr
+
+     1.2: Chef::ShellOut::Unix#child_process_status lib/chef/shell_out/unix.rb:111
+     1.2:   []
+
+     1.2: Chef::ShellOut::Unix#child_stderr lib/chef/shell_out/unix.rb:107
+     1.2:   []
+
+     1.2: Chef::ShellOut::Unix#child_stdout lib/chef/shell_out/unix.rb:103
+     1.2:   []
+
+     1.1: Chef::ShellOut::Unix#none
+     1.1:   private
+

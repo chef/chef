@@ -1,0 +1,32 @@
+    19.4: flog total
+     2.8: flog/method average
+
+     6.6: Chef::Resource::Directory#initialize lib/chef/resource/directory.rb:25
+     6.5:   assignment
+     1.3:   push
+
+     3.1: Chef::Resource::Directory#owner  lib/chef/resource/directory.rb:58
+     1.5:   []
+     1.3:   assignment
+     1.3:   set_or_return
+
+     3.1: Chef::Resource::Directory#group  lib/chef/resource/directory.rb:42
+     1.5:   []
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Directory#path   lib/chef/resource/directory.rb:66
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Directory#mode   lib/chef/resource/directory.rb:50
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.8: Chef::Resource::Directory#recursive lib/chef/resource/directory.rb:34
+     1.3:   assignment
+     1.3:   set_or_return
+
+     1.1: main#none
+     1.1:   require
+

@@ -1,0 +1,101 @@
+   354.5: flog total
+    27.3: flog/method average
+
+   149.9: Chef::Platform#set               lib/chef/platform.rb:333
+    86.0:   []
+    29.7:   platforms
+    17.0:   assignment
+    17.0:   to_sym
+    13.8:   has_key?
+    13.8:   branch
+     1.8:   validate
+
+    73.7: Chef::Platform#find              lib/chef/platform.rb:266
+    23.2:   []
+    19.6:   platforms
+     9.6:   branch
+     7.8:   has_key?
+     6.4:   merge!
+     5.6:   assignment
+     4.0:   debug
+     2.3:   to_s
+     2.0:   downcase!
+     2.0:   gsub!
+     2.0:   to_sym
+     1.8:   kind_of?
+     1.8:   clone
+
+    29.7: Chef::Platform#find_platform_and_version lib/chef/platform.rb:292
+    17.4:   []
+    13.5:   assignment
+    13.0:   branch
+     3.8:   raise
+     1.9:   attribute?
+
+    14.3: Chef::Platform#resource_matching_provider lib/chef/platform.rb:419
+     3.7:   branch
+     2.8:   class
+     2.6:   to_s
+     2.4:   split
+     2.2:   last
+     2.0:   const_get
+     1.8:   kind_of?
+
+    14.2: Chef::Platform#provider_for_resource lib/chef/platform.rb:317
+     6.0:   run_context
+     3.6:   branch
+     2.0:   find_provider_for_node
+     1.9:   node
+     1.9:   raise
+     1.8:   assignment
+     1.8:   new
+
+    13.2: Chef::Platform#find_provider     lib/chef/platform.rb:396
+     5.5:   branch
+     3.6:   assignment
+     2.0:   resource_matching_provider
+     2.0:   platform_provider
+     1.9:   raise
+     1.9:   explicit_provider
+     1.8:   nil?
+     1.8:   find
+
+    12.4: Chef::Platform#platform_provider lib/chef/platform.rb:413
+     3.6:   branch
+     3.6:   assignment
+     2.1:   resource_name
+     1.9:   to_sym
+     1.9:   []
+     1.8:   has_key?
+     1.8:   find
+     1.8:   kind_of?
+
+    12.3: Chef::Platform#none
+     5.5:   sclass
+     3.4:   include
+     1.7:   private
+     1.7:   attr_writer
+
+    11.0: main#none
+    11.0:   require
+
+     9.8: Chef::Platform#provider_for_node lib/chef/platform.rb:323
+     2.2:   class
+     2.0:   find_provider_for_node
+     2.0:   name
+     1.8:   raise
+     1.8:   new
+
+     8.0: Chef::Platform#find_provider_for_node lib/chef/platform.rb:328
+     7.2:   assignment
+     1.8:   find_provider
+     1.8:   find_platform_and_version
+
+     4.1: Chef::Platform#explicit_provider lib/chef/platform.rb:409
+     1.9:   provider
+     1.8:   branch
+     1.8:   kind_of?
+
+     1.8: Chef::Platform#platforms         lib/chef/platform.rb:41
+     1.8:   assignment
+

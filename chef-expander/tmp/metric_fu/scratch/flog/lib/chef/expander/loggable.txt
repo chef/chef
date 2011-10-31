@@ -1,0 +1,10 @@
+     4.9: flog total
+     2.4: flog/method average
+
+     2.7: Chef::Expander::Loggable#none
+     2.4:   assignment
+     1.2:   new
+
+     2.2: main#none
+     2.2:   require
+

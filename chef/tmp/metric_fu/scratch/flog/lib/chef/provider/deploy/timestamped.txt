@@ -1,0 +1,11 @@
+     5.3: flog total
+     2.7: flog/method average
+
+     4.2: Chef::Provider::Deploy::Timestamped#release_slug lib/chef/provider/deploy/timestamped.rb:26
+     1.6:   now
+     1.4:   utc
+     1.2:   strftime
+
+     1.1: Chef::Provider::Deploy::Timestamped#none
+     1.1:   protected
+

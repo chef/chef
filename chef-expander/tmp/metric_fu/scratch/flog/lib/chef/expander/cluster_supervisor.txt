@@ -1,0 +1,76 @@
+   117.9: flog total
+    14.7: flog/method average
+
+    42.1: Chef::Expander::ClusterSupervisor#maintain_workers lib/chef/expander/cluster_supervisor.rb:102
+    22.9:   assignment
+    13.7:   branch
+     7.6:   []
+     5.6:   each
+     3.7:   log
+     3.0:   waitpid2
+     2.0:   exitstatus
+     1.8:   error
+     1.7:   start_worker
+     1.7:   delete
+     1.5:   info
+     1.5:   kill
+     1.5:   sleep
+     1.0:   lit_fixnum
+
+    40.0: Chef::Expander::ClusterSupervisor#start lib/chef/expander/cluster_supervisor.rb:60
+     8.8:   branch
+     5.1:   log
+     3.2:   stop
+     3.0:   fatal
+     3.0:   exit
+     3.0:   trap
+     2.8:   assignment
+     1.9:   config
+     1.8:   message
+     1.7:   node_count
+     1.7:   version
+     1.6:   +
+     1.6:   raise
+     1.5:   ===
+     1.5:   info
+     1.5:   configure_process
+     1.5:   maintain_workers
+     1.5:   release_locks
+     1.5:   start_workers
+     1.5:   init_config
+     0.9:   lit_fixnum
+
+     9.3: Chef::Expander::ClusterSupervisor#start_worker lib/chef/expander/cluster_supervisor.rb:86
+     5.4:   assignment
+     2.6:   branch
+     1.5:   start_cluster_worker
+     1.5:   config
+     1.5:   log
+     1.3:   fork
+     1.3:   info
+
+     8.2: Chef::Expander::ClusterSupervisor#start_workers lib/chef/expander/cluster_supervisor.rb:80
+     1.7:   config
+     1.6:   +
+     1.5:   node_count
+     1.4:   assignment
+     1.4:   start_worker
+     1.3:   branch
+     1.3:   times
+     0.5:   lit_fixnum
+
+     5.5: main#none
+     5.5:   require
+
+     4.8: Chef::Expander::ClusterSupervisor#none
+     4.8:   include
+
+     4.0: Chef::Expander::ClusterSupervisor#stop lib/chef/expander/cluster_supervisor.rb:96
+     2.6:   assignment
+     1.5:   log
+     1.3:   branch
+     1.3:   info
+
+     3.9: Chef::Expander::ClusterSupervisor#initialize lib/chef/expander/cluster_supervisor.rb:54
+     3.9:   assignment
+

@@ -1,0 +1,27 @@
+<h3>Roodi Results</h3>
+
+<p><a href="http://roodi.rubyforge.org/">Roodi</a> parses your Ruby code and warns you about design issues you have based on the checks that is has configured.</p>
+
+<% graph_name = 'roodi' %>
+<% if MetricFu.configuration.graph_engine == :gchart %>
+<img src="<%= graph_name %>.png?<%= Time.now.to_i %>" />
+<% else %>
+<canvas id="graph"></canvas>
+<script language="javascript" src="<%= graph_name %>.js?<%= Time.now.to_i %>" type="text/javascript"></script>
+<% end %>
+
+<table>
+  <tr>
+    <th>File Path</th>
+    <th>Warning</th>
+  </tr>
+  <% count = 0 %>
+  <% @roodi[:problems].each do |problem| %>
+    <tr class='<%= cycle("light", "dark", count) %>'>
+      <td><%= link_to_filename(problem[:file], problem[:line]) %></td>
+      <td><%= problem[:problem] %></td>
+    </tr>
+    <% count += 1 %>
+  <% end %>
+</table>
+<p>Generated on <%= Time.now.localtime %></p>

@@ -1,0 +1,10 @@
+     6.5: flog total
+     3.2: flog/method average
+
+     4.8: Chef::Resource::Log#initialize   lib/chef/resource/log.rb:42
+     4.8:   assignment
+
+     1.7: Chef::Resource::Log#level        lib/chef/resource/log.rb:50
+     1.2:   set_or_return
+     1.2:   assignment
+
