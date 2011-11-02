@@ -21,7 +21,7 @@ class Chef
     attr_reader :major, :minor, :patch
 
     def initialize(str="")
-      @major, @minor, @patch = parse(str)
+      parse(str)
     end
 
     def inspect
