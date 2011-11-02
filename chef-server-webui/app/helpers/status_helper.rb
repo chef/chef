@@ -29,5 +29,34 @@ module Merb
       return [hours, minutes, seconds]
     end
     
+    def tr_class(node,index)
+      index % 2 == 1 ? odd_even = 'odd' : odd_even = 'even'
+      node["last_run"].nil? || node["last_run"]["success"] == true ? row_css = odd_even : row_css = "#{odd_even}-fail"
+      return row_css
+    end
+    
+    def last_run_summary(node)
+
+      last_run = node['last_run']
+      summary = Array.new
+
+      unless last_run.nil?
+        if last_run['success'] == false
+          summary << 'Last run failed, with exception:'
+          summary << last_run['exception']
+        else
+          if last_run['updated_resources'].nil? || last_run['updated_resources'].empty?
+            summary << 'Last run passed, with no changes made.'
+          else
+            summary << 'Last run passed, updating:'
+            last_run['updated_resources'].each {|r| summary << r}
+          end
+        end
+      end
+
+      return summary
+
+    end
+
   end
 end

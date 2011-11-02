@@ -18,7 +18,7 @@
               %td{:colspan => 7}= "You appear to have no nodes #{session[:environment].nil? ? '' : "in the #{session[:environment]} environment"} - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
           - else
             - @status.sort.each_with_index do |node, index|
-              %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
+              %tr{:class => "#{tr_class(node[1],index)}"}
                 %td= link_to(node[1].name, url(:node, node[1].name))
                 %td= "#{node[1]["platform"]} #{node[1]["platform_version"]}"
                 %td= node[1]["fqdn"]
@@ -67,6 +67,11 @@
                                     = "#{minutes_text} ago" 
                                   - else
                                     = "#{hours_text}, #{minutes_text} ago"
+                              - unless node[1]['last_run'].nil?
+                                %tr
+                                  %td
+                                    = last_run_summary(node[1]).join("\n<br />\n")
+
                 - else
                   %td Not Checked In
                 - unless node[1].run_list.nil?

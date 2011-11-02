@@ -33,6 +33,7 @@ require 'chef/openid_registration'
 require 'chef/run_status'
 require 'chef/handler'
 require 'chef/handler/json_file'
+require 'chef/handler/result_to_server'
 
 require 'chef/monkey_patches/tempfile'
 require 'chef/monkey_patches/dir'

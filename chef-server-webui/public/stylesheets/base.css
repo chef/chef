@@ -215,6 +215,16 @@ body {
   text-align: right;
 }
 
+.table tr.even-fail {
+  background-color: #ffbbaa;
+  color: #ff1100;
+}
+
+.table tr.odd-fail {
+  background-color: #ffbbaa;
+  color: #ff1100;
+}
+
 /* forms */
 
 input.checkbox {
