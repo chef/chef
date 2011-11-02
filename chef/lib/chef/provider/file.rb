@@ -21,6 +21,7 @@ require 'chef/log'
 require 'chef/resource/file'
 require 'chef/mixin/checksum'
 require 'chef/provider'
+require 'chef/util/selinux.rb'
 require 'etc'
 require 'fileutils'
 
@@ -51,6 +52,7 @@ class Chef
           @current_resource.owner(cstats.uid)
           @current_resource.group(cstats.gid)
           @current_resource.mode(octal_mode(cstats.mode))
+          @current_resource.selinux_label(selinux_get_context(@current_resource.path)) if selinux_support?
         end
         @current_resource
       end
@@ -58,6 +60,26 @@ class Chef
       # Compare the content of a file.  Returns true if they are the same, false if they are not.
       def compare_content
         checksum(@current_resource.path) == new_resource_content_checksum
+      end
+
+      # Compare the selinux label of a file. Returns true if they are the same, false if they are not.
+      def compare_selinux_label
+        @current_resource.selinux_label == @new_resource.selinux_label ||
+        @current_resource.selinux_label == selinux_get_default_context(@new_resource.path)
+      end
+
+      # Set selinux label in an idempotent fashion
+      def set_selinux_label
+        # do nothing if label in recipe is the same as the one on the filesystem
+        unless compare_selinux_label
+          # if label is set in the recipe, set the value.
+          if @new_resource.selinux_label != nil
+            selinux_set_context(@new_resource.path,@new_resource.selinux_label)
+          else
+            # otherwise, use default context
+            selinux_set_context(@new_resource.path,selinux_get_default_context(@new_resource.path))
+          end
+        end
       end
 
       # Set the content of the file, assuming it is not set correctly already.
@@ -148,6 +170,7 @@ class Chef
         set_owner unless @new_resource.owner.nil?
         set_group unless @new_resource.group.nil?
         set_mode unless @new_resource.mode.nil?
+        set_selinux_label if selinux_support?
       end
 
       def action_create_if_missing

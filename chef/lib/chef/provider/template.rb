@@ -33,6 +33,7 @@ class Chef
       def load_current_resource
         super
         @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
+        @current_resource.selinux_label(selinux_get_context(@current_resource.path)) if selinux_support?
       end
 
       def action_create
@@ -87,6 +88,7 @@ class Chef
       def set_all_access_controls(file)
         access_controls = Chef::FileAccessControl.new(@new_resource, file)
         access_controls.set_all
+        set_selinux_label if selinux_support?
         @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
