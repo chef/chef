@@ -161,7 +161,16 @@ class Chef
         end
       end
 
+      def print_all(lines_hash)
+        lines_hash.each do |host, lines|
+          ui.msg(ui.color(host, :cyan) + "\n")
+          ui.msg(lines)
+          ui.msg(ui.color("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", :yellow) + "\n")
+        end
+      end
+
       def ssh_command(command, subsession=nil)
+        mylines = Hash.new()
         subsession ||= session
         command = fixup_sudo(command)
         subsession.open_channel do |ch|
@@ -169,14 +178,20 @@ class Chef
           ch.exec command do |ch, success|
             raise ArgumentError, "Cannot execute #{command}" unless success
             ch.on_data do |ichannel, data|
-              print_data(ichannel[:host], data)
               if data =~ /^knife sudo password: /
                 ichannel.send_data("#{get_password}\n")
+              end
+
+              if mylines.has_key?(ichannel[:host])
+                mylines[ichannel[:host]] += data
+              else
+                mylines[ichannel[:host]] = data
               end
             end
           end
         end
         session.loop
+        print_all(mylines)
       end
 
       def get_password
