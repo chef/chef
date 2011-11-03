@@ -435,6 +435,8 @@ F
           end
         end
 
+        # TODO: 2011-11-02 schisamo - make this work with
+        # new platform => short_name => resource
         provider = Chef::Platform.provider_for_resource(self)
         provider.load_current_resource
         provider.send("action_#{action}")
@@ -465,6 +467,16 @@ F
 
     class << self
 
+      include Chef::Mixin::ParamsValidate
+
+      unless defined? @@platforms
+        @@platforms = Hash.new
+      end
+
+      def platforms
+        @@platforms
+      end
+
       def json_create(o)
         resource = self.new(o["instance_vars"]["@name"])
         o["instance_vars"].each do |k,v|
@@ -491,7 +503,7 @@ F
           set_or_return(attr_name.to_sym, arg, validation_opts)
         end
       end
-      
+
       def build_from_file(cookbook_name, filename, run_context)
         rname = filename_to_qualified_string(cookbook_name, filename)
 
@@ -513,7 +525,7 @@ F
 
           class << cls
             include Chef::Mixin::FromFile
-            
+
             attr_accessor :run_context
 
             def node
@@ -531,7 +543,7 @@ F
 
           # set the run context in the class instance variable
           cls.run_context = run_context
-          
+
           # load resource definition from file
           cls.class_from_file(filename)
 
@@ -565,6 +577,164 @@ F
       def provider_base(arg=nil)
         @provider_base ||= arg
         @provider_base ||= Chef::Provider
+      end
+
+      # Maps a platform (and opitonally a platform_version) to a
+      # Chef::Resource.  This allows finer grained per platform
+      # resource attributes and the end of overloaded resource
+      # definitions (I'm looking at you Chef::Resource::Package)
+      # Ex:
+      #   class WindowsFile < Chef::Resource
+      #     provides :file, :on_platforms => ["windows"]
+      #     # ...other stuff
+      #   end
+      # TODO: 2011-11-02 schisamo - platform_version support
+      def provides(macro, platforms={})
+        platforms[:on_platforms].each do |p|
+          set_platform(
+            :platform => p.to_sym,
+            :short_name => macro.to_sym,
+            :resource => self
+          )
+        end
+      end
+
+      def find(name, version)
+        #resource_map = platforms[:default].clone
+        resource_map = {}
+        name_sym = name
+        if name.kind_of?(String)
+          name.downcase!
+          name.gsub!(/\s/, "_")
+          name_sym = name.to_sym
+        end
+
+        if platforms.has_key?(name_sym)
+          if platforms[name_sym].has_key?(version)
+            Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+            if platforms[name_sym].has_key?(:default)
+              resource_map.merge!(platforms[name_sym][:default])
+            end
+            resource_map.merge!(platforms[name_sym][version])
+          elsif platforms[name_sym].has_key?(:default)
+            resource_map.merge!(platforms[name_sym][:default])
+          end
+        else
+          Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")
+        end
+        resource_map
+      end
+
+      # Returns a resource based on a nodes platform, version and
+      # a short_name.
+      #
+      # ==== Parameters
+      # node<Chef::Node>:: Node object to look up platform and version in
+      # short_name<Symbol>:: short_name of the resource (ie :directory)
+      #
+      # === Returns
+      # rest<Chef::Resource>:: returns the proper Chef::Resource class
+      def find_resource_for_node(node, short_name)
+        begin
+          platform, version = Chef::Platform.find_platform_and_version(node)
+        rescue ArgumentError
+        end
+        resource = find_resource(platform, version, short_name)
+        resource
+      end
+
+      def set_platform(args)
+        validate(
+          args,
+          {
+            :platform => {
+              :kind_of => Symbol,
+              :required => false,
+            },
+            :version => {
+              :kind_of => String,
+              :required => false,
+            },
+            :short_name => {
+              :kind_of => Symbol,
+            },
+            :resource => {
+              :kind_of => [ String, Symbol, Class ],
+            }
+          }
+        )
+        if args.has_key?(:platform)
+          if args.has_key?(:version)
+            if platforms.has_key?(args[:platform])
+              if platforms[args[:platform]].has_key?(args[:version])
+                platforms[args[:platform]][args[:version]][args[:short_name].to_sym] = args[:resource]
+              else
+                platforms[args[:platform]][args[:version]] = {
+                  args[:short_name].to_sym => args[:resource]
+                }
+              end
+            else
+              platforms[args[:platform]] = {
+                args[:version] => {
+                  args[:short_name].to_sym => args[:resource]
+                }
+              }
+            end
+          else
+            if platforms.has_key?(args[:platform])
+              if platforms[args[:platform]].has_key?(:default)
+                platforms[args[:platform]][:default][args[:short_name].to_sym] = args[:resource]
+              else
+                platforms[args[:platform]] = { :default => { args[:short_name].to_sym => args[:resource] } }
+              end
+            else
+              platforms[args[:platform]] = {
+                :default => {
+                  args[:short_name].to_sym => args[:resource]
+                }
+              }
+            end
+          end
+        else
+          if platforms.has_key?(:default)
+            platforms[:default][args[:short_name].to_sym] = args[:resource]
+          else
+            platforms[:default] = {
+              args[:short_name].to_sym => args[:resource]
+            }
+          end
+        end
+      end
+
+      def find_resource(platform, version, short_name)
+        resource_klass = explicit_resource(platform, version, short_name) ||
+                         platform_resource(platform, version, short_name) ||
+                         resource_matching_short_name(short_name)
+
+        raise NameError, "Cannot find a resource for #{short_name} on #{platform} version #{version}" if resource_klass.nil?
+
+        resource_klass
+      end
+
+      private
+
+      def explicit_resource(platform, version, short_name)
+        short_name.kind_of?(Chef::Resource) ? short_name : nil
+      end
+
+      def platform_resource(platform, version, short_name)
+        pmap = Chef::Resource.find(platform, version)
+        rtkey = short_name.kind_of?(Chef::Resource) ? short_name.resource_name.to_sym : short_name
+        pmap.has_key?(rtkey) ? pmap[rtkey] : nil
+      end
+
+      def resource_matching_short_name(short_name)
+        begin
+          rname = convert_to_class_name(short_name.to_s)
+          Chef::Resource.const_get(rname)
+        rescue NameError
+          nil
+        end
       end
 
     end
