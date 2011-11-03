@@ -45,7 +45,8 @@ class Chef
         :short => "-a ATTR",
         :long => "--attribute ATTR",
         :description => "The attribute to use for opening the connection - default is fqdn",
-        :default => "fqdn"
+        :default => "fqdn",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key }
 
       option :manual,
         :short => "-m",
@@ -309,9 +310,8 @@ class Chef
       end
 
       def configure_attribute
-        config[:attribute] = (config[:attribute] ||
-                              Chef::Config[:knife][:ssh_attribute] ||
-                              "fqdn").strip
+        config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
+                              config[:attribute]).strip
       end
 
       def csshx
