@@ -97,9 +97,13 @@ class Chef
         location.sync = true
         location
       elsif location.respond_to? :to_str
-        f = File.new(location.to_str, "a")
-        f.sync = true
-        f
+        begin
+          f = File.new(location.to_str, "a")
+          f.sync = true
+        rescue Errno::ENOENT => error
+          raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
+        end
+          f
       end
     end
 
