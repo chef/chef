@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,6 +101,28 @@ describe Chef::Recipe do
         end
         res.resource_name.should eql(:zen_master)
         res.name.should eql("makoto")
+      end
+
+      describe "with arbritrary short_name mapped resources" do
+
+        it "resolves for a particular platform" do
+          class ShaunTheSheep < Chef::Resource
+            provides :laughter, :on_platforms => ["television"]
+          end
+          @node.stub!(:[]).with(:platform).and_return("television")
+          @node.stub!(:[]).with(:platform_version).and_return("123")
+          res = @recipe.laughter "timmy"
+          res.name.should eql("timmy")
+          res.kind_of?(ShaunTheSheep)
+        end
+
+        it "resolves for all platforms" do
+          Object.const_set("YourMom", Class.new(Chef::Resource){ provides :love_and_caring })
+          res = @recipe.love_and_caring "mommy"
+          res.name.should eql("mommy")
+          res.kind_of?(YourMom)
+        end
+
       end
     end
 

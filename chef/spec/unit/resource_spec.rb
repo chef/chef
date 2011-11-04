@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -355,6 +356,49 @@ describe Chef::Resource do
 
   end
 
+  describe "when mapped to a short_name" do
+
+    before(:each) do
+      @original_platform_map = Chef::Resource::PlatformMap.platforms
+    end
+
+    after(:each) do
+      Chef::Resource::PlatformMap.platforms = @original_platform_map
+    end
+
+    describe "when a resource is mapped to all platforms" do
+      before(:each) do
+        class OptimusPrime < Chef::Resource
+          provides :leader
+        end
+      end
+
+      after(:each) do
+        Object.send(:remove_const, :OptimusPrime)
+      end
+
+      it "it uses the resource on all platforms" do
+        Chef::Resource::PlatformMap.platforms[:default][:leader].should eql(OptimusPrime)
+      end
+    end
+
+    describe "when a resource is mapped by short_name" do
+      before(:each) do
+        class Megatron < Chef::Resource
+          provides :leader, :on_platforms => ["decepticons"]
+        end
+      end
+
+      after(:each) do
+        Object.send(:remove_const, :Megatron)
+      end
+
+      it "it uses the resource for that platform" do
+        Chef::Resource::PlatformMap.platforms[:decepticons][:default][:leader].should eql(Megatron)
+      end
+    end
+
+  end
 end
 
 describe Chef::Resource::Notification do
