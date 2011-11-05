@@ -20,16 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Resource::PlatformMap do
 
-  before :all do
-    @original_platform_map = Chef::Resource::PlatformMap.platforms
-  end
-
-  after :all do ||
-    Chef::Resource::PlatformMap.platforms = @original_platform_map
-  end
-
   before(:each) do
-    Chef::Resource::PlatformMap.platforms = {
+    @platform_map = Chef::Resource::PlatformMap.new({
       :windows => {
         "6.1" => {
           :file => "softiefile",
@@ -44,135 +36,129 @@ describe Chef::Resource::PlatformMap do
       :pop_tron => {
       },
       :default => {
-        :soundwave => "laszerbeak",
+        :soundwave => "lazerbeak",
         :directory => Chef::Resource::Directory,
       }
-    }
+    })
   end
 
-  describe 'search the platform map' do
-    it "allows lookup for a platform by name and version, returning the resource map for it" do
-      pmap = Chef::Resource::PlatformMap.find("Windows", "6.1")
+  describe 'filtering the map' do
+    it "returns resources for platform and version" do
+      pmap = @platform_map.filter("Windows", "6.1")
       pmap.should be_a_kind_of(Hash)
       pmap[:file].should eql("softiefile")
     end
 
-    it "returns the default resources for an os if the specific version does not exist" do
-      pmap = Chef::Resource::PlatformMap.find("windows", "1")
+    it "returns platform default resources if version does not exist" do
+      pmap = @platform_map.filter("windows", "1")
       pmap.should be_a_kind_of(Hash)
       pmap[:file].should eql(Chef::Resource::File)
     end
 
-    it "returns the default resources if the os doesn't give me a default, but does exist" do
-      pmap = Chef::Resource::PlatformMap.find("pop_tron", "1")
+    it "returns global default resources if none exist for plaform" do
+      pmap = @platform_map.filter("pop_tron", "1")
       pmap.should be_a_kind_of(Hash)
       pmap[:directory].should eql(Chef::Resource::Directory)
     end
 
-    it "returns the default resource if the os does not exist" do
-      pmap = Chef::Resource::PlatformMap.find("BeOS", "1")
+    it "returns global default resources if platform does not exist" do
+      pmap = @platform_map.filter("BeOS", "1")
       pmap.should be_a_kind_of(Hash)
-      pmap[:soundwave].should eql("laszerbeak")
+      pmap[:soundwave].should eql("lazerbeak")
     end
 
-    it "merges the defaults for an os with the specific version" do
-      pmap = Chef::Resource::PlatformMap.find("Windows", "6.1")
+    it "returns a merged map of platform version and plaform default resources" do
+      pmap = @platform_map.filter("Windows", "6.1")
       pmap[:file].should eql("softiefile")
       pmap[:ping].should eql("pong")
     end
+
+    it "returns a merged map of platform specific version and global defaults" do
+      pmap = @platform_map.filter("Windows", "6.1")
+      pmap[:file].should eql("softiefile")
+      pmap[:soundwave].should eql("lazerbeak")
+    end
   end
 
-  describe 'locate a resource' do
+  describe 'finding a resource' do
     it "returns a resource for a platform directly by short name" do
-      Chef::Resource::PlatformMap.find_resource("windows", "6.1", :file).should eql("softiefile")
+      @platform_map.get(:file, "windows", "6.1").should eql("softiefile")
     end
 
-    it "match short_name to a resource class if a platform and version dont' exist" do
-      Chef::Resource::PlatformMap.find_resource(nil, nil, :remote_file).should eql(Chef::Resource::RemoteFile)
+    it "returns a default resource if platform and version don't exist" do
+      @platform_map.get(:remote_file).should eql(Chef::Resource::RemoteFile)
     end
 
-    it "raises an exception if a resource cannot be found for a short name" do
-      lambda { Chef::Resource::PlatformMap.find_resource("windows", "6.1", :coffee)}.should raise_error(NameError)
+    it "raises an exception if a resource cannot be found" do
+      lambda { @platform_map.get(:coffee, "windows", "6.1")}.should raise_error(NameError)
     end
 
     it "returns a resource with a Chef::Resource object" do
       kitty = Chef::Resource::Cat.new("loulou")
-      Chef::Resource::PlatformMap.find_resource("windows", "6.1", kitty).should eql("nice")
+      @platform_map.get(kitty, "windows", "6.1").should eql("nice")
     end
   end
 
-  describe "lookup by node" do
-
-    before(:each) do
-      @node = Chef::Node.new
-      @node.name("Intel")
-      @node.platform("windows")
-      @node.platform_version("6.1")
+  describe 'building the map' do
+    it "allows passing of a resource map at creation time" do
+      @new_map = Chef::Resource::PlatformMap.new({:the_dude => {:default => 'abides'}})
+      @new_map.map[:the_dude][:default].should eql("abides")
     end
 
-    it "returns a resource with a node and a short_name" do
-      Chef::Resource::PlatformMap.find_resource_for_node(@node, :cat).should eql("nice")
+    it "defaults to a resource map with :default key" do
+      @new_map = Chef::Resource::PlatformMap.new
+      @new_map.map.has_key?(:default)
     end
 
-    it "returns a resource based on short_name if nothing else matches" do
-      Chef::Resource::Cat.new("loulou")
-      Chef::Resource::PlatformMap.platforms[:windows][:default].delete(:cat)
-      Chef::Resource::PlatformMap.find_resource_for_node(@node, :cat).should eql(Chef::Resource::Cat)
+    it "updates the resource map with a map" do
+      @platform_map.set(
+       :platform => :darwin,
+       :version => "9.2.2",
+       :short_name => :file,
+       :resource => "masterful"
+      )
+      @platform_map.map[:darwin]["9.2.2"][:file].should eql("masterful")
+
+      @platform_map.set(
+       :platform => :darwin,
+       :short_name => :file,
+       :resource => "masterful"
+      )
+      @platform_map.map[:darwin][:default][:file].should eql("masterful")
+
+      @platform_map.set(
+       :short_name => :file,
+       :resource => "masterful"
+      )
+      @platform_map.map[:default][:file].should eql("masterful")
+
+      @platform_map.set(
+       :platform => :hero,
+       :version => "9.2.2",
+       :short_name => :file,
+       :resource => "masterful"
+      )
+      @platform_map.map[:hero]["9.2.2"][:file].should eql("masterful")
+
+      @platform_map.set(
+        :short_name => :file,
+        :resource => "masterful"
+      )
+      @platform_map.map[:default][:file].should eql("masterful")
+
+      @platform_map.set(
+       :short_name => :file,
+       :resource => "masterful"
+      )
+      @platform_map.map[:default][:file].should eql("masterful")
+
+      @platform_map.set(
+        :platform => :neurosis,
+        :short_name => :package,
+        :resource => "masterful"
+      )
+      @platform_map.map[:neurosis][:default][:package].should eql("masterful")
     end
-
-  end
-
-  it "should update the provider map with map" do
-    Chef::Resource::PlatformMap.set(
-     :platform => :darwin,
-     :version => "9.2.2",
-     :short_name => :file,
-     :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:darwin]["9.2.2"][:file].should eql("masterful")
-
-    Chef::Resource::PlatformMap.set(
-     :platform => :darwin,
-     :short_name => :file,
-     :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:darwin][:default][:file].should eql("masterful")
-
-    Chef::Resource::PlatformMap.set(
-     :short_name => :file,
-     :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:default][:file].should eql("masterful")
-
-    Chef::Resource::PlatformMap.set(
-     :platform => :hero,
-     :version => "9.2.2",
-     :short_name => :file,
-     :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:hero]["9.2.2"][:file].should eql("masterful")
-
-    Chef::Resource::PlatformMap.set(
-      :short_name => :file,
-      :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:default][:file].should eql("masterful")
-
-    Chef::Resource::PlatformMap.platforms = {}
-
-    Chef::Resource::PlatformMap.set(
-     :short_name => :file,
-     :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:default][:file].should eql("masterful")
-
-    Chef::Resource::PlatformMap.platforms = { :neurosis => {} }
-    Chef::Resource::PlatformMap.set(
-      :platform => :neurosis,
-      :short_name => :package,
-      :resource => "masterful"
-    )
-    Chef::Resource::PlatformMap.platforms[:neurosis][:default][:package].should eql("masterful")
   end
 
 end

@@ -55,7 +55,7 @@ class Chef
           # Checks the new platform => short_name => resource mapping initially
           # then fall back to the older approach (Chef::Resource.const_get) for
           # backward compatibility
-          resource_class = Chef::Resource::PlatformMap.find_resource_for_node(run_context.node, method_symbol)
+          resource_class = Chef::Resource.resource_for_node(method_symbol, run_context.node)
 
           super unless resource_class
           raise ArgumentError, "You must supply a name when declaring a #{method_symbol} resource" unless args.size > 0

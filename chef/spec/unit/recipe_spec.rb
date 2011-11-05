@@ -103,20 +103,18 @@ describe Chef::Recipe do
         res.name.should eql("makoto")
       end
 
-      describe "with arbritrary short_name mapped resources" do
+      describe "should locate platform mapped resources" do
 
-        it "resolves for a particular platform" do
-          class ShaunTheSheep < Chef::Resource
-            provides :laughter, :on_platforms => ["television"]
-          end
-          @node.stub!(:[]).with(:platform).and_return("television")
-          @node.stub!(:[]).with(:platform_version).and_return("123")
+        it "locate resource for particular platform" do
+          Object.const_set('ShaunTheSheep', Class.new(Chef::Resource){ provides :laughter, :on_platforms => ["television"] })
+          @node.platform("television")
+          @node.platform_version("123")
           res = @recipe.laughter "timmy"
           res.name.should eql("timmy")
           res.kind_of?(ShaunTheSheep)
         end
 
-        it "resolves for all platforms" do
+        it "locate a resource for all platforms" do
           Object.const_set("YourMom", Class.new(Chef::Resource){ provides :love_and_caring })
           res = @recipe.love_and_caring "mommy"
           res.name.should eql("mommy")
