@@ -36,15 +36,13 @@ require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/version'
 require 'ohai'
+require 'rbconfig'
 
 class Chef
   # == Chef::Client
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
-
-    SANE_PATHS = %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
-
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
     def self.clear_notifications
@@ -314,12 +312,20 @@ class Chef
     end
 
     def enforce_path_sanity(env=ENV)
-      if Chef::Config[:enforce_path_sanity] && RUBY_PLATFORM !~ /mswin|mingw32|windows/
-        existing_paths = env["PATH"].split(':')
-        SANE_PATHS.each do |sane_path|
+      if Chef::Config[:enforce_path_sanity]
+        path_separator = RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/ ? ';' : ':'
+        existing_paths = env["PATH"].split(path_separator)
+        # ensure the Ruby and Gem bindirs are included
+        # mainly for 'full-stack' Chef installs
+        paths_to_add = []
+        paths_to_add << ruby_bindir unless sane_paths.include?(ruby_bindir)
+        paths_to_add << gem_bindir unless sane_paths.include?(gem_bindir)
+        paths_to_add << sane_paths if sane_paths
+        paths_to_add.flatten!.compact!
+        paths_to_add.each do |sane_path|
           unless existing_paths.include?(sane_path)
             env_path = env["PATH"].dup
-            env_path << ':' unless env["PATH"].empty?
+            env_path << path_separator unless env["PATH"].empty?
             env_path << sane_path
             env["PATH"] = env_path
           end
@@ -328,6 +334,24 @@ class Chef
     end
 
     private
+
+    def sane_paths
+      @sane_paths ||= begin
+        if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+          %w[]
+        else
+          %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+        end
+      end
+    end
+
+    def ruby_bindir
+      RbConfig::CONFIG['bindir']
+    end
+
+    def gem_bindir
+      Gem.bindir
+    end
 
     def directory_not_empty?(path)
       File.exists?(path) && (Dir.entries(path).size > 2)
