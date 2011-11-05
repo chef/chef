@@ -39,12 +39,12 @@ end
 
 desc "Install the gem"
 task :install => :package do
-  sh %{gem install pkg/#{chef-solr}-#{Chef::Solr::VERSION} --no-rdoc --no-ri}
+  sh %{gem install pkg/chef-solr-#{Chef::Solr::VERSION} --no-rdoc --no-ri}
 end
 
 desc "Uninstall the gem"
 task :uninstall do
-  sh %{gem uninstall #{chef-solr} -x -v #{Chef::Solr::VERSION} }
+  sh %{gem uninstall chef-solr -x -v #{Chef::Solr::VERSION} }
 end
 
 require 'rdoc/task'
