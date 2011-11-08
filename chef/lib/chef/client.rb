@@ -20,6 +20,7 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
+require 'chef/mixin/path_sanity'
 require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
@@ -43,6 +44,8 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+    include Chef::Mixin::PathSanity
+
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
     def self.clear_notifications
@@ -311,47 +314,7 @@ class Chef
       true
     end
 
-    def enforce_path_sanity(env=ENV)
-      if Chef::Config[:enforce_path_sanity]
-        path_separator = RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/ ? ';' : ':'
-        existing_paths = env["PATH"].split(path_separator)
-        # ensure the Ruby and Gem bindirs are included
-        # mainly for 'full-stack' Chef installs
-        paths_to_add = []
-        paths_to_add << ruby_bindir unless sane_paths.include?(ruby_bindir)
-        paths_to_add << gem_bindir unless sane_paths.include?(gem_bindir)
-        paths_to_add << sane_paths if sane_paths
-        paths_to_add.flatten!.compact!
-        paths_to_add.each do |sane_path|
-          unless existing_paths.include?(sane_path)
-            env_path = env["PATH"].dup
-            env_path << path_separator unless env["PATH"].empty?
-            env_path << sane_path
-            env["PATH"] = env_path
-          end
-        end
-      end
-    end
-
     private
-
-    def sane_paths
-      @sane_paths ||= begin
-        if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
-          %w[]
-        else
-          %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
-        end
-      end
-    end
-
-    def ruby_bindir
-      RbConfig::CONFIG['bindir']
-    end
-
-    def gem_bindir
-      Gem.bindir
-    end
 
     def directory_not_empty?(path)
       File.exists?(path) && (Dir.entries(path).size > 2)
