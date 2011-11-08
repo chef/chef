@@ -64,15 +64,20 @@ class Chef
       end
 
       def action_upgrade
-        if @current_resource.version != candidate_version
+        # Can't upgrade what we don't have
+        if @current_resource.version.nil? && candidate_version.nil?
+          raise(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
+        elsif candidate_version.nil?
+          Chef::Log.debug("#{@new_resource} no candidate version - nothing to do")
+        elsif @current_resource.version == candidate_version
+          Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
+        else
           orig_version = @current_resource.version || "uninstalled"
           status = upgrade_package(@new_resource.package_name, candidate_version)
           if status
             @new_resource.updated_by_last_action(true)
           end
           Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
-        else
-          Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         end
       end
 

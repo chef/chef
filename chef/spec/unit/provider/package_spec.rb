@@ -162,6 +162,19 @@ describe Chef::Provider::Package do
       Chef::Log.should_receive(:info).with("package[emacs] upgraded from uninstalled to 1.0")
       @provider.action_upgrade
     end
+
+    it "should raise a Chef::Exceptions::Package if current version and candidate are nil" do
+      @current_resource.stub!(:version).and_return(nil)
+      @provider.candidate_version = nil
+      lambda { @provider.action_upgrade }.should raise_error(Chef::Exceptions::Package)
+    end
+
+    it "should not install the package if candidate version is nil" do
+      @current_resource.version "1.0"
+      @provider.candidate_version = nil
+      @provider.should_not_receive(:upgrade_package)
+      @provider.action_upgrade
+    end
   end
 
   describe "When removing the package" do
