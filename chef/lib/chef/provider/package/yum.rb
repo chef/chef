@@ -1052,6 +1052,7 @@ class Chef
                                                "and release? (version-release, e.g. 1.84-10.fc6)"
             end
           end
+
           if flush_cache[:after]
             @yum.reload
           else
@@ -1067,10 +1068,12 @@ class Chef
         #
         # Hacky - better overall solution? Custom compare in Package provider?
         def action_upgrade
-          # Ensure the candidate is newer
-          if RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)
+          # Could be uninstalled or have no candidate
+          if @current_resource.version.nil? || candidate_version.nil? 
             super
-          # Candidate is older
+          # Ensure the candidate is newer
+          elsif RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)
+            super
           else
             Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
           end
@@ -1086,6 +1089,7 @@ class Chef
           else
             yum_command("yum -d0 -e0 -y#{expand_options(@new_resource.options)} remove #{name}#{yum_arch}")
           end
+
           if flush_cache[:after]
             @yum.reload
           else

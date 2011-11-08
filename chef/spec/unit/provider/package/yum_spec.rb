@@ -488,6 +488,47 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       lambda { @provider.upgrade_package("cups", "1.2.4-11.15.el5") }.should raise_error(Chef::Exceptions::Package, %r{is newer than candidate package})
     end
+
+    # Test our little workaround, some crossover into Chef::Provider::Package territory
+    it "should call action_upgrade in the parent if the current resource version is nil" do
+      @yum_cache.stub!(:installed_version).and_return(nil)
+      @provider.load_current_resource
+      @current_resource = Chef::Resource::Package.new('cups')
+      @provider.candidate_version = '11'
+      @provider.should_receive(:upgrade_package).with(
+        "cups",
+        "11"
+      )
+      @provider.action_upgrade
+    end
+
+    it "should call action_upgrade in the parent if the candidate version is nil" do
+      @provider.load_current_resource
+      @current_resource = Chef::Resource::Package.new('cups')
+      @provider.candidate_version = nil 
+      @provider.should_not_receive(:upgrade_package)
+      @provider.action_upgrade
+    end
+
+    it "should call action_upgrade in the parent if the candidate is newer" do
+      @provider.load_current_resource
+      @current_resource = Chef::Resource::Package.new('cups')
+      @provider.candidate_version = '11'
+      @provider.should_receive(:upgrade_package).with(
+        "cups",
+        "11"
+      )
+      @provider.action_upgrade
+    end
+
+    it "should not call action_upgrade in the parent if the candidate is older" do
+      @yum_cache.stub!(:installed_version).and_return("12")
+      @provider.load_current_resource
+      @current_resource = Chef::Resource::Package.new('cups')
+      @provider.candidate_version = '11'
+      @provider.should_not_receive(:upgrade_package)
+      @provider.action_upgrade
+    end
   end
 
   describe "when removing a package" do
