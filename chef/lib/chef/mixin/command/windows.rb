@@ -18,7 +18,11 @@
 # limitations under the License.
 #
 
-require 'win32/open3'
+if RUBY_VERSION =~ /^1\.8/
+  require 'win32/open3'
+else
+  require 'open3'
+end
 
 class Chef
   module Mixin
@@ -31,7 +35,7 @@ class Chef
 
           #XXX :user, :group, :environment support?
 
-          Open4.popen4(cmd) do |stdin,stdout,stderr,cid|
+          Open3.popen3(cmd) do |stdin,stdout,stderr,cid|
             if b
               if args[:waitlast]
                 b[cid, stdin, stdout, stderr]

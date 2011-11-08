@@ -26,7 +26,7 @@ class Chef
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl
     UINT = (1 << 32)
-    UID_MAX = (1 << 31)
+    UID_MAX = (1 << 32) - 10
   
     attr_reader :resource
   
@@ -60,7 +60,7 @@ class Chef
     # Workaround the fact that Ruby's Etc module doesn't believe in negative
     # uids, so negative uids show up as the diminished radix complement of
     # a uint. For example, a uid of -2 is reported as 4294967294
-    def dimished_radix_complement(int)
+    def diminished_radix_complement(int)
       if int > UID_MAX
         int - UINT
       else
@@ -71,7 +71,7 @@ class Chef
     def target_uid
       return nil if resource.owner.nil?
       if resource.owner.kind_of?(String)
-        dimished_radix_complement( Etc.getpwnam(resource.owner).uid )
+        diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
       elsif resource.owner.kind_of?(Integer)
         resource.owner
       else
@@ -84,8 +84,8 @@ class Chef
   
     def set_owner
       if (uid = target_uid) && (uid != stat.uid)
-        Chef::Log.debug("setting owner on #{file} to #{uid}")
         File.chown(uid, nil, file)
+        Chef::Log.info("#{log_string} owner changed to #{uid}")
         modified
       end
     end
@@ -93,7 +93,7 @@ class Chef
     def target_gid
       return nil if resource.group.nil?
       if resource.group.kind_of?(String)
-        dimished_radix_complement( Etc.getgrnam(resource.group).gid )
+        diminished_radix_complement( Etc.getgrnam(resource.group).gid )
       elsif resource.group.kind_of?(Integer)
         resource.group
       else
@@ -106,8 +106,8 @@ class Chef
   
     def set_group
       if (gid = target_gid) && (gid != stat.gid)
-        Chef::Log.debug("setting group on #{file} to #{gid}")
         File.chown(nil, gid, file)
+        Chef::Log.info("#{log_string} group changed to #{gid}")
         modified
       end
     end
@@ -119,8 +119,8 @@ class Chef
 
     def set_mode
       if (mode = target_mode) && (mode != (stat.mode & 007777))
-        Chef::Log.debug("setting mode on #{file} to #{mode.to_s(8)}")
         File.chmod(target_mode, file)
+        Chef::Log.info("#{log_string} mode changed to #{mode.to_s(8)}")
         modified
       end
     end
@@ -134,6 +134,10 @@ class Chef
   
     def modified
       @modified = true
+    end
+
+    def log_string
+      @resource || @file
     end
   
   end

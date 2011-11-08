@@ -1,0 +1,85 @@
+knife-role(1) -- Group common configuration settings
+========================================
+
+## SYNOPSIS
+
+__knife__ __role__ _sub-command_ _(options)_
+
+## ROLE SUB-COMMANDS
+The following `role` subcommands are available:
+
+## LIST
+__knife role list__ _(options)_
+
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+List roles.
+
+## SHOW
+__knife role show ROLE__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+
+Show a specific role.
+
+## CREATE
+__knife role create ROLE__ _(options)_
+
+  * `-d`, `--description`:
+    The role description
+
+Create a new role.
+
+## EDIT
+__knife role edit ROLE__ _(options)_
+
+Edit a role.
+
+## FROM FILE
+__knife role from file FILE__ _(options)_
+
+Create or update a role from a role Ruby DSL (`.rb`) or JSON file.
+
+## DELETE
+__knife role delete ROLE__ _(options)_
+
+Delete a role.
+
+## BULK DELETE
+__knife role bulk delete REGEX__ _(options)_
+
+Delete roles on the Chef Server based on a regular expression. The regular expression (_REGEX_) should be in quotes, not in //'s.
+
+## DESCRIPTION
+Roles provide a mechanism to group repeated configuration settings.
+Roles are data structures that contain __default\_attributes__, and
+__override_attributes__, which are nested hashes of configuration
+settings, and a __run_list__, which is an ordered list of recipes and
+roles that should be applied to a host by chef-client.
+
+__default_attributes__ will be overridden if they conflict with a value
+on a node that includes the role. Conversely, __override_attributes__
+will override any values set on nodes that apply them.
+
+When __chef-client__(8) configures a host, it will "expand" the
+__run_list__ included in that host's node data. The expansion process
+will recursively replace any roles in the run\_list with that role's
+run\_list.
+
+## SEE ALSO
+   __knife-node(1)__ __knife-environment(1)__
+   <http://wiki.opscode.com/display/chef/Roles>
+   <http://wiki.opscode.com/display/chef/Attributes>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

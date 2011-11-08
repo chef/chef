@@ -57,7 +57,7 @@ class Chef
       def untested_ruby_files
         ruby_files.reject do |file|
           if validated?(file)
-            Chef::Log.debug("ruby file #{file} is unchanged, skipping syntax check")
+            Chef::Log.debug("Ruby file #{file} is unchanged, skipping syntax check")
             true
           else
             false
@@ -72,7 +72,7 @@ class Chef
       def untested_template_files
         template_files.reject do |file| 
           if validated?(file)
-            Chef::Log.debug("template #{file} is unchanged, skipping syntax check")
+            Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
             true
           else
             false
@@ -109,7 +109,7 @@ class Chef
 
       def validate_template(erb_file)
         Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-        result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
+        result = shell_out("erubis -x #{erb_file} | ruby -c")
         result.error!
         true
       rescue Chef::Exceptions::ShellCommandFailed

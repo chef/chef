@@ -34,16 +34,18 @@ class Chef
 
           begin
             # first check to see if we can import it
-            output = shell_out!("#{python_binary_path} -c \"import #{name}\"").stderr
-            unless output.include? "ImportError"
+            output = shell_out!("#{python_binary_path} -c \"import #{name}\"", :returns=>[0,1]).stderr
+            if output.include? "ImportError"
+              # then check to see if its on the path
+              output = shell_out!("#{python_binary_path} -c \"import sys; print sys.path\"", :returns=>[0,1]).stdout
+              if output.downcase.include? "#{name.downcase}"
+                check = true
+              end
+            else
               check = true
             end
           rescue
-            # then check to see if its on the path
-            output = shell_out!("#{python_binary_path} -c \"import sys; print sys.path\"").stdout
-            if output.downcase.include? "#{name.downcase}"
-              check = true
-            end
+            # it's probably not installed
           end
 
           check
@@ -76,17 +78,27 @@ class Chef
               output = shell_out!("#{python_binary_path} -c \"import #{module_name}; print #{module_name}.__version__\"").stdout
               package_version = output.strip
             rescue
-              output = shell_out!("#{python_binary_path} -c \"import #{module_name}; print #{module_name}.__file__\"").stdout
-              output[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
+              output = shell_out!("#{python_binary_path} -c \"import sys; print sys.path\"", :returns=>[0,1]).stdout
+
+              output_array = output.gsub(/[\[\]]/,'').split(/\s*,\s*/)
+              package_path = ""
+
+              output_array.each do |entry|
+                if entry.downcase.include?(@new_resource.package_name)
+                  package_path = entry
+                end
+              end
+
+              package_path[/\S\S(.*)\/(.*)-(.*)-py(.*).egg\S/]
               package_version = $3
             end
           end
 
           if package_version == @new_resource.version
-            Chef::Log.debug("#{@new_resource.package_name} at version #{@new_resource.version}")
+            Chef::Log.debug("#{@new_resource} at version #{@new_resource.version}")
             @current_resource.version(@new_resource.version)
           else
-            Chef::Log.debug("#{@new_resource.package_name} at version #{package_version}")
+            Chef::Log.debug("#{@new_resource} at version #{package_version}")
             @current_resource.version(package_version)
           end
 
@@ -103,7 +115,7 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command(:command => "#{easy_install_binary_path} \"#{name}==#{version}\"")
+          run_command(:command => "#{easy_install_binary_path}#{expand_options(@new_resource.options)} \"#{name}==#{version}\"")
         end
 
         def upgrade_package(name, version)
@@ -111,7 +123,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_command(:command => "#{easy_install_binary_path} -m #{name}")
+          run_command(:command => "#{easy_install_binary_path }#{expand_options(@new_resource.options)} -m #{name}")
         end
 
         def purge_package(name, version)

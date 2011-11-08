@@ -7,8 +7,8 @@
 
 ### BEGIN INIT INFO
 # Provides: chef-server
-# Required-Start: $local_fs $network $remote_fs chef-solr chef-solr-indexer
-# Required-Stop: $local_fs $network $remote_fs chef-solr chef-solr-indexer
+# Required-Start: $local_fs $network $remote_fs chef-solr chef-expander
+# Required-Stop: $local_fs $network $remote_fs chef-solr chef-expander
 # Should-Start: $named $time
 # Should-Stop: $named $time
 # Short-Description: Startup script for chef-server 

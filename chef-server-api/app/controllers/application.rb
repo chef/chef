@@ -22,6 +22,7 @@
 require "chef/mixin/checksum"
 require "chef/cookbook_loader"
 require "mixlib/authentication/signatureverification"
+require 'chef/json_compat'
 
 class Application < Merb::Controller
 
@@ -44,7 +45,7 @@ class Application < Merb::Controller
       authenticator.authenticate_request(user_key)
     rescue Mixlib::Authentication::MissingAuthenticationHeader => e
       Chef::Log.debug "Authentication failed: #{e.class.name}: #{e.message}\n#{e.backtrace.join("\n")}"
-      raise Unauthorized, "#{e.class.name}: #{e.message}"
+      raise BadRequest, "#{e.class.name}: #{e.message}"
     rescue StandardError => se
       Chef::Log.debug "Authentication failed: #{se}, #{se.backtrace.join("\n")}"
       raise Unauthorized, "Failed to authenticate. Ensure that your client key is valid."
@@ -102,11 +103,11 @@ class Application < Merb::Controller
   def access_denied
     raise Unauthorized, "You must authenticate first!"
   end
-  
+
   def get_available_recipes
     all_cookbooks_list = Chef::CookbookVersion.cdb_list(true)
     available_recipes = all_cookbooks_list.sort{ |a,b| a.name.to_s <=> b.name.to_s }.inject([]) do |result, element|
-      element.recipes.sort.each do |r| 
+      element.recipes.sort.each do |r|
         if r =~ /^(.+)::default$/
           result << $1
         else
@@ -116,6 +117,20 @@ class Application < Merb::Controller
       result
     end
     available_recipes
+  end
+
+  # Fix CHEF-1292/PL-538; cause Merb to pass the max nesting constant into
+  # obj.to_json, which it calls by default based on the original request's 
+  # accept headers and the type passed into Merb::Controller.display
+  #--
+  # TODO: tim, 2010-11-24: would be nice to instead have Merb call 
+  # Chef::JSONCompat.to_json, instead of obj.to_json, but changing that
+  # behavior is convoluted in Merb. This override is assuming that
+  # Merb is eventually calling obj.to_json, which takes the :max_nesting
+  # option.
+  override! :display
+  def display(obj)
+    super(obj, nil, {:max_nesting => Chef::JSONCompat::JSON_MAX_NESTING})
   end
 
 end

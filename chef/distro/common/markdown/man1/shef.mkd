@@ -1,0 +1,189 @@
+shef(1) -- Interactive Chef Console
+========================================
+
+## SYNOPSIS
+
+__shef__ [_named configuration_] _(options)_
+
+  * `-S`, `--server CHEF_SERVER_URL`:
+    The chef server URL
+  * `-z`, `--client`:
+    chef-client mode
+  * `-c`, `--config CONFIG`:
+    The configuration file to use
+  * `-j`, `--json-attributes JSON_ATTRIBS`:
+    Load attributes from a JSON file or URL
+  * `-l`, `--log-level LOG_LEVEL`:
+    Set the logging level
+  * `-s`, `--solo`:
+    chef-solo shef session
+  * `-a`, `--standalone`:
+    standalone shef session
+  * `-v`, `--version`:
+    Show chef version
+  * `-h`, `--help`:
+    Show command options
+
+When no --config option is specified, shef attempts to load a default configuration file:
+
+* If a _named configuration_ is given, shef will load ~/.chef/_named
+  configuration_/shef.rb
+* If no _named configuration_ is given shef will load ~/.chef/shef.rb if it exists
+* Shef falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
+  -s options are given and no shef.rb can be found.
+* The --config option takes precedence over implicit configuration
+  paths.
+
+## DESCRIPTION
+
+`shef` is an irb(1) (interactive ruby) session customized for Chef.
+`shef` serves two primary functions: it provides a means to
+interact with a Chef Server interactively using a convenient DSL; it
+allows you to define and run Chef recipes interactively.
+
+## SYNTAX
+Shef uses irb's subsession feature to provide multiple modes of
+interaction. In addition to the primary mode which is entered on start,
+`recipe` and `attributes` modes are available.
+
+## PRIMARY MODE
+The following commands are available in the primary
+session:
+
+  * `help`:
+    Prints a list of available commands
+  * `version`:
+    Prints the Chef version
+  * `recipe`:
+    Switches to `recipe` mode
+  * `attributes`:
+    Switches to `attributes` mode
+  * `run_chef`:
+    Initiates a chef run
+  * `reset`:
+    reinitializes shef
+  * `echo :on|:off`:
+    Turns irb's echo function on or off. Echo is _on_ by default.
+  * `tracing :on|:off`:
+    Turns irb's function tracing feature on or off. Tracing is extremely
+    verbose and expected to be of interest primarily to developers.
+  * `node`:
+    Returns the _node_ object for the current host. See knife-node(1)
+    for more information about nodes.
+  * `ohai`:
+    Prints the attributes of _node_
+
+In addition to these commands, shef provides a DSL for accessing data on
+the Chef Server. When working with remote data in shef, you chain method
+calls in the form _object type_._operation_, where _object type_ is in
+plural form. The following object types are available:
+
+  * `nodes`
+  * `roles`
+  * `data_bags`
+  * `clients`
+  * `cookbooks`
+
+For each _object type_ the following operations are available:
+
+  * _object type_.all(_&block_):
+    Loads all items from the server. If the optional code _block_ is
+    given, each item will be passed to the block and the results
+    returned, similar to ruby's `Enumerable#map` method.
+  * _object type_.show(_object name_):
+    Aliased as _object type_.load
+
+    Loads the singular item identified by _object name_.
+  * _object type_.search(_query_, _&block_):
+    Aliased as _object type_.find
+
+    Runs a search against the server and returns the matching items. If
+    the optional code _block_ is given each item will be passed to the
+    block and the results returned.
+
+    The _query_ may be a Solr/Lucene format query given as a String, or
+    a Hash of conditions. If a Hash is given, the options will be ANDed
+    together. To join conditions with OR, use negative queries, or any
+    advanced search syntax, you must provide give the query in String
+    form.
+  * _object type_.transform(:all|_query_, _&block_):
+    Aliased as _object type_.bulk_edit
+
+    Bulk edit objects by processing them with the (required) code _block_.
+    You can edit all objects of the given type by passing the Symbol
+    `:all` as the argument, or only a subset by passing a _query_ as the
+    argument. The _query_ is evaluated in the same way as with
+    __search__.
+
+    The return value of the code _block_ is used to alter the behavior
+    of `transform`. If the value returned from the block is `nil` or
+    `false`, the object will not be saved. Otherwise, the object is
+    saved after being passed to the block. This behavior can be
+    exploited to create a dry run to test a data transformation.
+
+## RECIPE MODE
+Recipe mode implements Chef's recipe DSL. Exhaustively documenting this
+DSL is outside the scope of this document. See the following pages in
+the Chef documentation for more information:
+
+  * <http://wiki.opscode.com/display/chef/Resources>
+  * <http://wiki.opscode.com/display/chef/Recipes>
+
+Once you have defined resources in the recipe, you can trigger a
+convergence run via `run_chef`
+
+## EXAMPLES
+
+* A "Hello World" interactive recipe
+
+  chef > recipe  
+  chef:recipe > echo :off  
+  chef:recipe > file "/tmp/hello\_world"  
+  chef:recipe > run\_chef  
+  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello\_world] action create ((irb#1) line 2)  
+  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello\_world] created file /tmp/hello\_world  
+  chef:recipe > pp ls '/tmp'  
+  [".",  
+  "..",  
+  "hello\_world"]  
+
+* Search for _nodes_ by role, and print their IP addresses
+
+  chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }  
+  => ["10.254.199.5"]  
+
+* Remove the role _obsolete_ from every node in the system
+
+  chef > nodes.transform(:all) {|n| n.run\_list.delete('role[obsolete]') }  
+   => [node[chef098b2.opschef.com], node[ree-woot], node[graphite-dev], node[fluke.localdomain], node[ghost.local], node[kallistec]]  
+
+
+## BUGS
+The name `shef` is clever in print but is confusing when spoken aloud.
+Pronouncing `shef` as `chef console` is an imperfect workaround.
+
+`shef` often does not perfectly replicate the context in which
+chef-client(8) configures a host, which may lead to discrepancies in
+observed behavior.
+
+`shef` has to duplicate much code from chef-client's internal libraries
+and may become out of sync with the behavior of those libraries.
+
+## SEE ALSO
+  chef-client(8) knife(1)
+  <http://wiki.opscode.com/display/chef/Shef>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many
+   contributions from the community. Shef was written by Daniel DeLeo.
+
+## DOCUMENTATION
+   This manual page was written by Daniel DeLeo <dan@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this
+   document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Shef is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+
+
+

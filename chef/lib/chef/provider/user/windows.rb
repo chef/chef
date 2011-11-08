@@ -39,7 +39,7 @@ class Chef
             user_info = @net_user.get_info
           rescue
             @user_exists = false
-            Chef::Log.debug("User #{@new_resource.username} does not exist")
+            Chef::Log.debug("#{@new_resource} does not exist")
           end
 
           if user_info
@@ -60,7 +60,7 @@ class Chef
         # <false>:: If the users are identical
         def compare_user
           unless @net_user.validate_credentials(@new_resource.password)
-            Chef::Log.debug("User #{@new_resource.username} password has changed")
+            Chef::Log.debug("#{@new_resource} password has changed")
             return true
           end
           [ :uid, :gid, :comment, :home, :shell ].any? do |user_attrib|
@@ -109,7 +109,7 @@ class Chef
             if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
               if @new_resource.send(field_symbol)
                 unless field_symbol == :password
-                  Chef::Log.debug("Setting #{@new_resource} #{field} to #{@new_resource.send(field_symbol)}")
+                  Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field_symbol)}")
                 end
                 opts[option.to_sym] = @new_resource.send(field_symbol)
               end

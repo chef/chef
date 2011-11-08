@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# Copyright (c) 2009-2010 Opscode, Inc <legal@opscode.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+daemon_bin="/usr/bin/chef-server-webui"
+daemon_name=$(basename $daemon_bin)
+PIDF="/var/run/$daemon_name.pid"
+
+. /etc/rc.conf
+. /etc/rc.d/functions
+. /etc/conf.d/$daemon_name.conf
+
+get_pid() {
+  pidof -o %PPID $daemon_name
+}
+
+case "$1" in
+  start)
+    stat_busy "Starting $daemon_name"
+    PID=$(get_pid)
+    if [ -z "$PID" ]; then
+      [ -f $PIDF ] && rm -f $PIDF
+      $daemon_bin -P $PIDF $CHEF_SERVER_WEBUI_ARGS
+      [ -n "$STARTTIME" ] && sleep $STARTTIME
+      if [ $? -gt 0 ]; then
+        stat_fail
+        exit 1
+      else
+        echo $(get_pid) > $PIDF
+        add_daemon $daemon_name
+        stat_done
+      fi
+    else
+      stat_fail
+      exit 1
+    fi
+    ;;
+
+  stop)
+    stat_busy "Stopping $daemon_name daemon"
+    PID=$(get_pid)
+    [ ! -z "$PID" ] && kill $PID &> /dev/null
+    if [ $? -gt 0 ]; then
+      stat_fail
+      exit 1
+    else
+      rm -f $PIDF &>/dev/null
+      rm_daemon $daemon_name
+      stat_done
+    fi
+    ;;
+
+  restart)
+    $0 stop
+    [ -n "$DIETIME" ] && sleep $DIETIME
+    $0 start
+    [ -n "$STARTTIME" ] && sleep $STARTTIME
+    ;;
+  status)
+    stat_busy "Checking $daemon_name status";
+    ck_status $daemon_name
+    ;;
+  *)
+    echo "usage: $) {start|stop|restart|status}"
+esac

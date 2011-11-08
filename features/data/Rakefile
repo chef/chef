@@ -22,7 +22,7 @@ $: << File.join(File.dirname(__FILE__), "..", "..", "chef", "lib")
 
 require 'rubygems'
 require 'chef'
-require 'json'
+require 'chef/json_compat'
 
 # Make sure you have loaded constants first
 require File.join(File.dirname(__FILE__), 'config', 'rake')

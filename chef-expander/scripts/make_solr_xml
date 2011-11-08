@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+#
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Chris Walters (<cw@opscode.com>)
+# Copyright:: Copyright (c) 2010-2011 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "rubygems"
+$:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
+
+require 'yajl'
+require 'chef/expander/solrizer'
+
+USAGE = <<-EOH
+#{$0} [file ...]
+
+Convert Chef object JSON files into XML documents of the same name but
+with a ".xml" extension containing the XML used for Solr indexing.
+EOH
+
+if ARGV.size == 0
+  abort USAGE
+end
+
+ARGV.each do |obj_file|
+  raw_json = open(obj_file, "r").read
+  item_json = Yajl::Parser.parse(raw_json)
+  payload = {
+    :item => item_json,
+    :type => item_json["chef_type"].to_s,
+    :database => "riak_search_test",
+    :id => item_json["name"],
+    :enqueued_at => Time.now.to_i
+  }
+  update_obj = {:action => "add", :payload => payload}
+  update_json = Yajl::Encoder.encode(update_obj)
+  solrizer = Chef::Expander::Solrizer.new(update_json) { :no_op }
+  solrizer.log.init(StringIO.new)
+
+  out = File.basename(obj_file).sub(/\.json$/, "") + ".xml"
+  open(out, "w") do |f|
+    f.write(solrizer.pointyize_add)
+  end
+end

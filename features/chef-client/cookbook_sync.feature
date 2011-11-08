@@ -16,7 +16,7 @@ Feature: Synchronize cookbooks from the server
       And it includes the recipe 'synchronize_deps'
      When I run the chef-client with '-l info'
      Then the run should exit '0'
-      And 'stdout' should have 'INFO: Storing updated cookbooks/synchronize_deps/recipes/default.rb in the cache.'
+      And 'stdout' should have 'INFO: Storing updated cookbooks/synchronize/recipes/default.rb in the cache.'
       And 'stdout' should have 'INFO: Storing updated cookbooks/synchronize_deps/recipes/default.rb in the cache.'
 
   Scenario: Removes files from the cache that are no longer needed 
@@ -41,6 +41,7 @@ Feature: Synchronize cookbooks from the server
      Then the run should exit '0'
       And 'stdout' should have 'INFO: Removing cookbooks/synchronize_deps/recipes/default.rb from the cache; its cookbook is no longer needed on this client.'
 
+  @cookbook_dependencies
   Scenario: Try to download a cookbook that depends on a non-existent cookbook
     Given I am an administrator
       And I fully upload a sandboxed cookbook named 'testcookbook_wrong_metadata' versioned '0.1.0' with 'testcookbook_wrong_metadata'
@@ -48,10 +49,9 @@ Feature: Synchronize cookbooks from the server
       And it includes the recipe 'testcookbook_wrong_metadata'
      When I run the chef-client with '-l debug'
      Then the run should exit '1'
-      And 'stdout' should have '412 Precondition Failed.*no_such_cookbook'
+      And 'stdout' should have '412 Precondition Failed.*Unable to satisfy constraints on cookbook no_such_cookbook, which does not exist, due to run list item \(testcookbook_wrong_metadata >= 0.0.0\)'
 
   Scenario: Utilise versioned dependencies
-    Given this test is not pending
     Given I am an administrator
       And I fully upload a sandboxed cookbook named 'versions' versioned '0.2.0' with 'versions'
       And a validated node

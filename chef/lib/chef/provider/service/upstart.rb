@@ -86,23 +86,23 @@ class Chef
 
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            Chef::Log.debug("#{@new_resource}: found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
               while line = file.gets
                 case line
                 when /^start on/
-                  Chef::Log.debug("#{@new_resource}: enabled: #{line.chomp}")
+                  Chef::Log.debug("#{@new_resource} enabled: #{line.chomp}")
                   @current_resource.enabled true
                   break
                 when /^#start on/
-                  Chef::Log.debug("#{@new_resource}: disabled: #{line.chomp}")
+                  Chef::Log.debug("#{@new_resource} disabled: #{line.chomp}")
                   @current_resource.enabled false
                   break
                 end
               end
             end
           else
-            Chef::Log.debug("#{@new_resource}: did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            Chef::Log.debug("#{@new_resource} did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             @current_resource.enabled false
           end
 
@@ -113,7 +113,7 @@ class Chef
           # Calling start on a service that is already started will return 1
           # Our 'goal' when we call start is to ensure the service is started
           if @current_resource.running
-            Chef::Log.debug("#{@new_resource}: Already running, not starting")
+            Chef::Log.debug("#{@new_resource} already running, not starting")
           else
             if @new_resource.start_command
               super
@@ -127,7 +127,7 @@ class Chef
           # Calling stop on a service that is already stopped will return 1
           # Our 'goal' when we call stop is to ensure the service is stopped
           unless @current_resource.running
-            Chef::Log.debug("#{@new_resource}: Not running, not stopping")
+            Chef::Log.debug("#{@new_resource} not running, not stopping")
           else
             if @new_resource.stop_command
               super
@@ -140,8 +140,14 @@ class Chef
         def restart_service
           if @new_resource.restart_command
             super
-          else
-            run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
+          # Upstart always provides restart functionality so we don't need to mimic it with stop/sleep/start.
+          # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
+          else @new_resource.supports[:restart]
+            if @current_resource.running
+              run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
+            else
+              start_service
+            end
           end
         end
 
@@ -157,14 +163,14 @@ class Chef
         # https://bugs.launchpad.net/upstart/+bug/94065
 
         def enable_service
-          Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for enabling services, editing job config file")
+          Chef::Log.debug("#{@new_resource} upstart lacks inherent support for enabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
           conf.search_file_replace(/^#start on/, "start on")
           conf.write_file
         end
 
         def disable_service
-          Chef::Log.warn("#{@new_resource}: upstart lacks inherent support for disabling services, editing job config file")
+          Chef::Log.debug("#{@new_resource} upstart lacks inherent support for disabling services, editing job config file")
           conf = Chef::Util::FileEdit.new("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
           conf.search_file_replace(/^start on/, "#start on")
           conf.write_file

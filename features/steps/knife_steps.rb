@@ -11,7 +11,7 @@ When "I run knife '$knife_subcommand'" do |knife_subcommand|
   @knife_command_result = shell_out("#{KNIFE_CMD} #{knife_subcommand} -c #{KNIFE_CONFIG}")
 end
 
-Spec::Matchers.define :be_successful do
+RSpec::Matchers.define :be_successful do
   match do |shell_out_result|
     shell_out_result.status.success?
   end

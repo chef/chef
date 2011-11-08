@@ -1,0 +1,13 @@
+.bundle
+.autotest
+coverage
+doc
+.DS_Store
+*.swp
+*.swo
+erl_crash.dump
+*.rake_tasks~
+.idea
+*.rbc
+conf/chef-expander.rb
+Gemfile.lock

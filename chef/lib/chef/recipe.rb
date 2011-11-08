@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,13 +29,13 @@ class Chef
   # == Chef::Recipe
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
-    
+
     include Chef::Mixin::FromFile
     include Chef::Mixin::Language
     include Chef::Mixin::LanguageIncludeRecipe
     include Chef::Mixin::RecipeDefinitionDSLCore
     include Chef::Mixin::Deprecation
-    
+
     attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
 
     # Parses a potentially fully-qualified recipe name into its
@@ -63,20 +63,18 @@ class Chef
       @params = Hash.new
       @node = deprecated_ivar(run_context.node, :node, :warn)
     end
-    
+
     # Used in DSL mixins
     def node
       run_context.node
     end
-    
+
     # Used by the DSL to look up resources when executing in the context of a
     # recipe.
-    #--
-    # what does this do? and what is args? TODO 5-14-2010.
     def resources(*args)
       run_context.resource_collection.find(*args)
     end
-    
+
     # Sets a tag, or list of tags, for this node.  Syntactic sugar for
     # run_context.node[:tags].
     #
@@ -90,6 +88,7 @@ class Chef
     def tag(*tags)
       if tags.length > 0
         tags.each do |tag|
+          tag = tag.to_s
           run_context.node[:tags] << tag unless run_context.node[:tags].include?(tag)
         end
         run_context.node[:tags]
@@ -97,7 +96,7 @@ class Chef
         run_context.node[:tags]
       end
     end
-    
+
     # Returns true if the node is tagged with *all* of the supplied +tags+.
     #
     # === Parameters
@@ -112,7 +111,7 @@ class Chef
       end
       true
     end
-    
+
     # Removes the list of tags from the node.
     #
     # === Parameters
@@ -125,6 +124,6 @@ class Chef
         run_context.node[:tags].delete(tag)
       end
     end
-    
+
   end
 end

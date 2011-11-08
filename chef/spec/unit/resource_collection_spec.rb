@@ -222,7 +222,7 @@ describe Chef::ResourceCollection do
     it "should deserialize itself from json" do
       @rc << @resource
       json = @rc.to_json
-      s_rc = JSON.parse(json)
+      s_rc = Chef::JSONCompat.from_json(json)
       s_rc.should be_a_kind_of(Chef::ResourceCollection)
       s_rc[0].name.should eql(@resource.name)
     end

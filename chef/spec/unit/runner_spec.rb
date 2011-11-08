@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,7 +53,8 @@ class SnitchyProvider < Chef::Provider
 end
 
 describe Chef::Runner do
-  def new_runner
+
+  before(:each) do
     @node = Chef::Node.new
     @node.name "latte"
     @node.platform "mac_os_x"
@@ -67,32 +68,24 @@ describe Chef::Runner do
     )
     @runner = Chef::Runner.new(@run_context)
   end
-  
-  before(:each) do
-    @mock_node = mock("Node", :null_object => true)
-    @mock_collection = mock("Resource Collection", :null_object => true)
-    @mock_provider = mock("Provider", :null_object => true)
-    @mock_resource = mock("Resource", :null_object => true)
-    new_runner
-  end
-  
+
   it "should pass each resource in the collection to a provider" do
     @run_context.resource_collection.should_receive(:execute_each_resource).once
     @runner.converge
   end
-  
+
   it "should use the provider specified by the resource (if it has one)" do
     provider = Chef::Provider::Easy.new(@run_context.resource_collection[0], @run_context)
     @run_context.resource_collection[0].should_receive(:provider).once.and_return(Chef::Provider::Easy)
     Chef::Provider::Easy.should_receive(:new).once.and_return(provider)
     @runner.converge
   end
-  
+
   it "should use the platform provider if it has one" do
     Chef::Platform.should_receive(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
     @runner.converge
   end
-  
+
   it "should run the action for each resource" do
     Chef::Platform.should_receive(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
@@ -107,7 +100,7 @@ describe Chef::Runner do
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should raise_error(ArgumentError)
   end
-  
+
   it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
     @run_context.resource_collection[0].stub!(:ignore_failure).and_return(true)
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
@@ -115,7 +108,16 @@ describe Chef::Runner do
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should_not raise_error(ArgumentError)
   end
-  
+
+  it "should retry with the specified delay if retries are specified" do
+    @first_resource.retries 3
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
+    provider.stub!(:action_sell).and_raise(ArgumentError)
+    @runner.should_receive(:sleep).with(2).exactly(3).times
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+
   it "should execute immediate actions on changed resources" do
     notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
     notifying_resource.action = :purr # only action that will set updated on the resource
@@ -149,10 +151,9 @@ describe Chef::Runner do
     middle_resource.should be_updated # by notification from last_resource
     @first_resource.should be_updated # by notification from middle_resource
   end
-  
+
   it "should execute delayed actions on changed resources" do
     @first_resource.action = :nothing
-
     second_resource = Chef::Resource::Cat.new("peanut", @run_context)
     second_resource.action = :purr
 
@@ -163,7 +164,7 @@ describe Chef::Runner do
 
     @first_resource.should be_updated
   end
-  
+
   it "does not duplicate delayed notifications" do
     SnitchyProvider.clear_action_record
 
@@ -279,3 +280,4 @@ describe Chef::Runner do
   end
 
 end
+

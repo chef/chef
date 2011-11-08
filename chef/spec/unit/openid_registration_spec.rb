@@ -56,7 +56,7 @@ describe Chef::OpenIDRegistration, "from_json" do
     oreg.name = "foobar"
     oreg.set_password("monkey")
     oreg_json = oreg.to_json
-    nreg = JSON.parse(oreg_json)
+    nreg = Chef::JSONCompat.from_json(oreg_json)
     nreg.should be_a_kind_of(Chef::OpenIDRegistration)
     %w{name salt password validated}.each do |verify|
       nreg.send(verify.to_sym).should eql(oreg.send(verify.to_sym))

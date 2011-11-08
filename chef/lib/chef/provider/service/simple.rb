@@ -32,6 +32,7 @@ class Chef
             begin
               if run_command(:command => @new_resource.status_command) == 0
                 @current_resource.running true
+                Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Chef::Exceptions::Exec
               @current_resource.running false
@@ -44,19 +45,20 @@ class Chef
             begin
               if run_command(:command => "#{@init_command} status") == 0
                 @current_resource.running true
+                Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Chef::Exceptions::Exec
               @current_resource.running false
               nil
             end
           elsif
-            Chef::Log.debug "#{@new_resource}: falling back to process table inspection"
+            Chef::Log.debug "#{@new_resource} falling back to process table inspection"
             if ps_cmd.nil? or ps_cmd.empty?
-              raise Chef::Exceptions::Service, "#{@new_resource}: could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
+              raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
             end
             status = popen4(ps_cmd) do |pid, stdin, stdout, stderr|
               r = Regexp.new(@new_resource.pattern)
-              Chef::Log.debug "#{@new_resource}: attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
+              Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
               stdout.each_line do |line|
                 if r.match(line)
                   @current_resource.running true
@@ -68,7 +70,7 @@ class Chef
             unless status.exitstatus == 0
               raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
             else
-              Chef::Log.debug "#{@new_resource}: running: #{@current_resource.running}"
+              Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
             end
           end
 
@@ -108,7 +110,7 @@ class Chef
             raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
           end
         end
-        
+
         def ps_cmd
           @run_context.node[:command] && @run_context.node[:command][:ps]
         end

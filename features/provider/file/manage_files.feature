@@ -46,10 +46,13 @@ Feature: Manage Files
       And it includes the recipe 'manage_files::set_the_accessibility_of_a_created_file'
      When I run the chef-client
      Then the run should exit '0'
+      And the file named 'octal0111.txt' should have octal mode '0111'
       And the file named 'octal0644.txt' should have octal mode '0644'
       And the file named 'octal2644.txt' should have octal mode '2644'
+      And the file named 'decimal73.txt' should have decimal mode '73'
       And the file named 'decimal644.txt' should have decimal mode '644'
       And the file named 'decimal2644.txt' should have decimal mode '2644'
+      And the file named 'string111.txt' should have octal mode '111'
       And the file named 'string644.txt' should have octal mode '644'
       And the file named 'string0644.txt' should have octal mode '0644'
       And the file named 'string2644.txt' should have octal mode '2644'

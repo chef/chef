@@ -74,8 +74,7 @@ class Chef
       
       def options(arg=nil)
         if arg.is_a?(String)
-          arg.gsub!(/,/, ' ')
-          converted_arg = arg.split(/ /)
+          converted_arg = arg.gsub(/,/, ' ').split(/ /)
         else
           converted_arg = arg
         end

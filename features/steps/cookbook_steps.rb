@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,18 @@
 #
 
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/cookbook_uploader'
+require 'chef/cookbook_loader'
 
 def compare_manifests(manifest1, manifest2)
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless manifest1[segment]
     manifest2.should have_key(segment)
-    
+
     manifest2_records_by_path = manifest2[segment].inject({}) {|memo,manifest2_record| memo[manifest2_record[:path]] = manifest2_record; memo}
     manifest1[segment].each do |manifest1_record|
       path = manifest1_record[:path]
-      
+
       manifest2_records_by_path.should have_key(path)
       manifest1_record.should == manifest2_records_by_path[path]
     end
@@ -36,15 +38,13 @@ def compare_manifests(manifest1, manifest2)
 end
 
 Before do
-  save_cookbook_path = Chef::Config[:cookbook_path]
   FileUtils.mkdir "#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty" unless File.exist?("#{datadir}/cookbooks_not_uploaded_at_feature_start/testcookbook_invalid_empty")
-  Chef::Config[:cookbook_path] = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
-  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
-  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new
-  Chef::Config[:cookbook_path] = save_cookbook_path
+  extra_cookbook_repo = File.join(datadir, "cookbooks_not_uploaded_at_feature_start")
+  Chef::Cookbook::FileVendor.on_create {|manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, extra_cookbook_repo) }
+  @cookbook_loader_not_uploaded_at_feature_start = Chef::CookbookLoader.new(extra_cookbook_repo)
 end
 
-Given /^a local cookbook repository$/ do 
+Given /^a local cookbook repository$/ do
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir'))
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir', 'cookbooks'))
   Dir.mkdir(File.join(tmpdir, 'cookbooks_dir', 'config'))
@@ -69,6 +69,10 @@ Given "I upload the cookbook" do
   shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -a -o #{INTEGRATION_COOKBOOKS}")
 end
 
+Given "I have uploaded a frozen cookbook named '$cookbook_name' at version '$cookbook_version'" do |name, version|
+  shell_out!("#{KNIFE_CMD} cookbook upload #{name} -c #{KNIFE_CONFIG} -o #{EXTRA_COOKBOOKS} --freeze --force")
+end
+
 Given /^I delete the cookbook's on disk checksum files$/ do
   #pp :checksums => @last_uploaded_cookbook.checksums.keys
   #pending # express the regexp above with the code you wish you had
@@ -80,6 +84,16 @@ Given /^I delete the cookbook's on disk checksum files$/ do
   end
 end
 
+Given /^I have restored the original 'sync_library' cookbook$/ do
+  # Copy the original cookbook
+  source = File.join(datadir, 'cookbooks', 'sync_library_original')
+  dest   = File.join(datadir, 'cookbooks', 'sync_library')
+  FileUtils.mkdir_p(dest)
+
+  system("cp -r #{source}/. #{dest}/.")
+  shell_out!("#{KNIFE_CMD} cookbook upload -c #{KNIFE_CONFIG} -o #{INTEGRATION_COOKBOOKS} sync_library")
+end
+
 When /^I run the task to generate cookbook metadata for '(.+)'$/ do |cb|
   self.cookbook = cb
   When('I run the task to generate cookbook metadata')
@@ -88,7 +102,7 @@ end
 When /^I run the task to generate cookbook metadata$/ do
   to_run = "#{KNIFE_CMD} cookbook metadata"
   if cookbook
-    to_run += " #{cookbook}" 
+    to_run += " #{cookbook}"
   else
     to_run += " -a"
   end
@@ -105,10 +119,24 @@ end
 # Cookbook upload/download-specific steps
 #####
 
+When "I upload a cookbook named '$name' at version '$version'" do |name, version|
+
+
+  call_as_admin do
+    cookbook = @cookbook_loader_not_uploaded_at_feature_start[name]
+    uploader = Chef::CookbookUploader.new(cookbook, [EXTRA_COOKBOOKS], :rest => rest)
+    begin
+      uploader.upload_cookbook
+    rescue Exception => e
+      @exception = e
+    end
+  end
+end
+
 When /^I create a versioned cookbook(?: named '(.*?)')?(?: versioned '(.*?)')? with '(.*?)'$/ do |request_name, request_version, cookbook_name|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
-  
+
   begin
     self.api_response = rest.put_rest("/cookbooks/#{request_name}/#{request_version}", cookbook)
     self.inflated_response = api_response
@@ -135,7 +163,7 @@ end
 When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(.+)')?$/ do |sandbox_name, cookbook_name, filenames_to_exclude|
   cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless cookbook
-  
+
   if filenames_to_exclude
     filenames_to_exclude = filenames_to_exclude.split(",").inject({}) { |memo, filename| memo[filename] = 1; memo }
   else
@@ -151,18 +179,18 @@ When /^I create a sandbox named '(.+)' for cookbook '([^\']+)'(?: minus files '(
       checksums[manifest_record[:checksum]] = nil unless filenames_to_exclude.has_key?(manifest_record[:path])
     end
   end
-  
+
   sandbox = {
     :checksums => checksums
   }
-    
+
   begin
     self.api_response = self.inflated_response = nil
     self.exception = nil
-    
+
     self.inflated_response = rest.post_rest('/sandboxes', sandbox)
     self.sandbox_url = self.inflated_response['uri']
-    
+
     @stash['sandbox_response'] = self.inflated_response
   rescue
     Chef::Log.debug("Caught exception in sandbox create (POST) request: #{$!.message}: #{$!.backtrace.join("\n")}")
@@ -186,7 +214,7 @@ Then /^I upload a file named '(.+)' from cookbook '(.+)' to the sandbox/ do |pat
   raise ArgumentError, "no such file in cookbooks_not_uploaded_at_feature_start/#{cookbook_name}: #{path}" unless manifest_record
 
   full_path = File.join(datadir, "cookbooks_not_uploaded_at_feature_start", cookbook_name, path)
-    
+
   begin
     url = @stash['sandbox_response']['checksums'][manifest_record[:checksum]]['url']
     upload_to_sandbox(full_path, manifest_record[:checksum], url)
@@ -220,10 +248,10 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
     cookbook.manifest[:cookbook_name] = request_name
     cookbook.manifest[:name] = "#{cookbook.manifest[:cookbook_name]}-#{cookbook.manifest[:version]}"
   end
-  
+
   When "I create a sandbox named 'sandbox1' for cookbook '#{cookbook_name}'"
   Then "the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'"
-  
+
   Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
     next unless cookbook.manifest[segment]
     cookbook.manifest[segment].each do |manifest_record|
@@ -241,7 +269,7 @@ Then /I fully upload a sandboxed cookbook (force-)?named '([^\']+)' versioned '(
       Then "the response code should be '200'"
     end
   end
-  
+
   When "I commit the sandbox"
   Then "I should not get an exception"
   When "I create a versioned cookbook named '#{request_name}' versioned '#{request_version}' with '#{cookbook_name}'"
@@ -258,7 +286,7 @@ end
 Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbook_name|
   expected_cookbook = @cookbook_loader_not_uploaded_at_feature_start[cookbook_name]
   raise ArgumentError, "no such cookbook in cookbooks_not_uploaded_at_feature_start: #{cookbook_name}" unless expected_cookbook
-  
+
   downloaded_cookbook_manifest = Mash.new(@downloaded_cookbook.manifest)
   downloaded_cookbook_manifest.delete("uri")
 
@@ -269,7 +297,7 @@ Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbo
       downloaded_manifest_record.delete("url")
     end
   end
-  
+
   # ensure that each file expected (from the cookbook on disk) was downloaded,
   # and then do the opposite.
   begin
@@ -278,7 +306,7 @@ Then /the downloaded cookbook manifest contents should match '(.+)'$/ do |cookbo
   rescue
     pp({:expected_cookbook_manifest => expected_cookbook.manifest})
     pp({:downloaded_cookbook_manifest => downloaded_cookbook_manifest})
-    
+
     raise
   end
 end
@@ -298,13 +326,13 @@ When /I download the file '([^\']+)' from the downloaded cookbook manifest/ do |
   raise "no such file #{path}" unless @downloaded_cookbook.manifest[segment]
   found_manifest_record = @downloaded_cookbook.manifest[segment].find {|manifest_record| manifest_record[:path] == path}
   raise "no such file #{path}" unless found_manifest_record
-  
+
   begin
     cookbook_name = @downloaded_cookbook.name
     cookbook_version = @downloaded_cookbook.version
 
     checksum = found_manifest_record[:checksum]
-    
+
     self.api_response = nil
     self.inflated_response = nil
     self.exception = nil
@@ -319,7 +347,7 @@ end
 
 Then /^the downloaded cookbook file contents should match the pattern '(.+)'$/ do |pattern|
   raise "no @downloaded_cookbook_file_contents" unless @downloaded_cookbook_file_contents
-  
+
   @downloaded_cookbook_file_contents.should =~ /#{pattern}/
 end
 
@@ -331,7 +359,11 @@ Then /^the metadata should include a dependency on '(.+)'$/ do |key|
   inflated_response.metadata.dependencies.should have_key(key)
 end
 
-Spec::Matchers.define :have_been_deleted do
+Then "the cookbook version document should be frozen" do
+  inflated_response.should be_frozen_version
+end
+
+RSpec::Matchers.define :have_been_deleted do
   match do |file_name|
     ! File.exist?(file_name)
   end
@@ -355,7 +387,7 @@ Then /^the cookbook's files should have been deleted$/ do
   end
 end
 
-Spec::Matchers.define :have_checksum_document do |checksum|
+RSpec::Matchers.define :have_checksum_document do |checksum|
   match do |checksum_list|
     checksum_list.include?(checksum)
   end
@@ -390,4 +422,17 @@ Given "I upload multiple versions of the 'version_test' cookbook that do not lex
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.9.0' with 'version_test_0.9.0'"
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.10.0' with 'version_test_0.10.0'"
   When "I fully upload a sandboxed cookbook force-named 'version_test' versioned '0.9.7' with 'version_test_0.9.7'"
+end
+
+Given "I upload the set of 'dep_test_*' cookbooks" do
+  %w{a b c}.each do |letter|
+    %w{1 2 3}.each do |number|
+      When "I fully upload a sandboxed cookbook force-named 'dep_test_#{letter}' versioned '#{number}.0.0' with 'dep_test_#{letter}_#{number}.0.0'"
+    end
+  end
+end
+
+Then /^cookbook '(.+)' should have version '(.+)'$/ do |cookbook, version|
+  Then "the inflated responses key '#{cookbook}' should exist"
+  Then "the inflated responses key 'dep_test_a' should match '\"version\":\"#{version}\"' as json"
 end

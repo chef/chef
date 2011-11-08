@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,16 +17,18 @@
 #
 
 require 'chef/knife'
-require 'chef/data_bag_item'
-
-begin
-  gem "net-ssh", ">= 2.0.23"
-rescue LoadError
-end
 
 class Chef
   class Knife
     class Ssh < Knife
+
+      deps do
+        require 'net/ssh'
+        require 'net/ssh/multi'
+        require 'readline'
+        require 'chef/search/query'
+        require 'chef/mixin/command'
+      end
 
       attr_writer :password
 
@@ -43,7 +45,7 @@ class Chef
         :short => "-a ATTR",
         :long => "--attribute ATTR",
         :description => "The attribute to use for opening the connection - default is fqdn",
-        :default => "fqdn" 
+        :default => "fqdn"
 
       option :manual,
         :short => "-m",
@@ -62,12 +64,26 @@ class Chef
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
 
+      option :ssh_port,
+        :short => "-p PORT",
+        :long => "--ssh-port PORT",
+        :description => "The ssh port",
+        :default => "22",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+      option :no_host_key_verify,
+        :long => "--no-host-key-verify",
+        :description => "Disable host key verification",
+        :boolean => true,
+        :default => false
+
       def session
+        config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
           if config[:manual]
             node_name = server.host
@@ -76,15 +92,17 @@ class Chef
               node_name = n if format_for_display(n)[config[:attribute]] == server.host
             end
           end
-          Chef::Log.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
-          $!.backtrace.each { |l| Chef::Log.debug(l) }
+          case config[:on_error]
+          when :skip
+            ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+            $!.backtrace.each { |l| Chef::Log.debug(l) }
+          when :raise
+            #Net::SSH::Multi magic to force exception to be re-raised.
+            throw :go, :raise
+          end
         end
 
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
-      end
-
-      def h
-        @highline ||= HighLine.new
       end
 
       def configure_session
@@ -101,7 +119,7 @@ class Chef
                  end
                  r
                end
-        (Chef::Log.fatal("No nodes returned from search!"); exit 10) if list.length == 0
+        (ui.fatal("No nodes returned from search!"); exit 10) if list.length == 0
         session_from_list(list)
       end
 
@@ -113,12 +131,19 @@ class Chef
           session_opts = {}
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
+          session_opts[:port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
+
+          if config[:no_host_key_verify]
+            session_opts[:paranoid] = false
+            session_opts[:user_known_hosts_file] = "/dev/null"
+          end
 
           session.use(hostspec, session_opts)
 
           @longest = item.length if item.length > @longest
         end
+
         session
       end
 
@@ -131,9 +156,8 @@ class Chef
           data.split(/\n/).each { |d| print_data(host, d) }
         else
           padding = @longest - host.length
-          print h.color(host, :cyan)
-          padding.downto(0) { print " " }
-          puts data
+          str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
+          ui.msg(str)
         end
       end
 
@@ -156,7 +180,7 @@ class Chef
       end
 
       def get_password
-        @password ||= h.ask("Enter your password: ") { |q| q.echo = false }
+        @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
       end
 
       # Present the prompt and read a single line from the console. It also
@@ -165,7 +189,7 @@ class Chef
       # line is input.
       def read_line
         loop do
-          command = reader.readline("#{h.color('knife-ssh>', :bold)} ", true)
+          command = reader.readline("#{ui.color('knife-ssh>', :bold)} ", true)
 
           if command.nil?
             command = "exit"
@@ -185,7 +209,7 @@ class Chef
       end
 
       def interactive
-        puts "Connected to #{h.list(session.servers_for.collect { |s| h.color(s.host, :cyan) }, :inline, " and ")}"
+        puts "Connected to #{ui.list(session.servers_for.collect { |s| ui.color(s.host, :cyan) }, :inline, " and ")}"
         puts
         puts "To run a command on a list of servers, do:"
         puts "  on SERVER1 SERVER2 SERVER3; COMMAND"
@@ -203,7 +227,7 @@ class Chef
             raw_list = $1.split(" ")
             server_list = Array.new
             session.servers.each do |session_server|
-              server_list << session_server if raw_list.include?(session_server.host) 
+              server_list << session_server if raw_list.include?(session_server.host)
             end
             command = $2
             ssh_command(command, session.on(*server_list))
@@ -223,6 +247,7 @@ class Chef
         window = 0
         session.servers_for.each do |server|
           tf.print("screen -t \"#{server.host}\" #{window} ssh ")
+          tf.print("-i #{config[:identity_file]} ") if config[:identity_file]
           server.user ? tf.puts("#{server.user}@#{server.host}") : tf.puts(server.host)
           window += 1
         end
@@ -231,81 +256,109 @@ class Chef
       end
 
       def tmux
+        ssh_dest = lambda do |server|
+          identity = "-i #{config[:identity_file]} " if config[:identity_file]
+          prefix = server.user ? "#{server.user}@" : ""
+          "'ssh #{identity}#{prefix}#{server.host}'"
+        end
+
+        new_window_cmds = lambda do
+          if session.servers_for.size > 1
+            [""] + session.servers_for[1..-1].map do |server|
+              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+            end
+          else
+            []
+          end.join(" \\; ")
+        end
+
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
         begin
-          Chef::Mixin::Command.run_command(:command => "tmux new-session -d -s 'knife'")
+          server = session.servers_for.first
+          cmd = ["tmux new-session -d -s #{tmux_name}",
+                 "-n '#{server.host}'", ssh_dest.call(server),
+                 new_window_cmds.call].join(" ")
+          Chef::Mixin::Command.run_command(:command => cmd)
+          exec("tmux attach-session -t #{tmux_name}")
         rescue Chef::Exceptions::Exec
         end
-        session.servers_for.each do |server|
-          begin
-            Chef::Mixin::Command.run_command(:command => "tmux new-window -d -n '#{server.host}' -t 'knife' 'ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}'")
-          rescue Chef::Exceptions::Exec
-          end
-        end
-        exec("tmux attach-session -t knife")
       end
 
       def macterm
-        require 'appscript'
-        Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate  
+        begin
+          require 'appscript'
+        rescue LoadError
+          STDERR.puts "you need the rb-appscript gem to use knife ssh macterm. `(sudo) gem install rb-appscript` to install"
+          raise
+        end
+
+        Appscript.app("/Applications/Utilities/Terminal.app").windows.first.activate
         Appscript.app("System Events").application_processes["Terminal.app"].keystroke("n", :using=>:command_down)
-        term = Appscript.app('Terminal')  
+        term = Appscript.app('Terminal')
         window = term.windows.first.get
-        session.servers_for.each do |server|
+
+        (session.servers_for.size - 1).times do |i|
+          window.activate
           Appscript.app("System Events").application_processes["Terminal.app"].keystroke("t", :using=>:command_down)
+        end
+
+        session.servers_for.each_with_index do |server, tab_number|
           cmd = "unset PROMPT_COMMAND; echo -e \"\\033]0;#{server.host}\\007\"; ssh #{server.user ? "#{server.user}@#{server.host}" : server.host}"
-          Appscript.app('Terminal').do_script(cmd, :in => window.tabs.last.get)
-          sleep 1
+          Appscript.app('Terminal').do_script(cmd, :in => window.tabs[tab_number + 1].get)
         end
       end
 
-      def run 
+      def configure_attribute
+        config[:attribute] = (config[:attribute] ||
+                              Chef::Config[:knife][:ssh_attribute] ||
+                              "fqdn").strip
+      end
+
+      def csshx
+        csshx_cmd = "csshX"
+        session.servers_for.each do |server|
+          csshx_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+        end
+        exec(csshx_cmd)
+      end
+
+      def configure_user
+        config[:ssh_user] = (config[:ssh_user] ||
+                             Chef::Config[:knife][:ssh_user])
+        config[:ssh_user].strip! unless config[:ssh_user].nil?
+      end
+
+      def configure_identity_file
+        config[:identity_file] = (config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
+        config[:identity_file].strip! unless config[:identity_file].nil?
+      end
+
+      def run
+        extend Chef::Mixin::Command
+
         @longest = 0
 
-        load_late_dependencies
-
+        configure_attribute
+        configure_user
+        configure_identity_file
         configure_session
 
         case @name_args[1]
         when "interactive"
-          interactive 
+          interactive
         when "screen"
           screen
         when "tmux"
           tmux
         when "macterm"
           macterm
+        when "csshx"
+          csshx
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
 
         session.close
-      end
-
-      def load_late_dependencies
-        require 'readline'
-        %w[net/ssh/multi highline].each do |dep|
-          load_late_dependency dep
-        end
-        assert_net_ssh_version_acceptable!
-      end
-
-      # :nodoc:
-      # TODO: remove this stuff entirely and package knife ssh as a knife plugin. (Dan - 08 Jul 2010)
-      #
-      # The correct way to specify version deps is in the gemspec or other packaging.
-      # However, we don't want to have a gem dep on net-ssh, because it's a hassle
-      # when you only need the chef-client (e.g., on a managed node). So we have to
-      # check here that you have a decent version of Net::SSH.
-      #
-      # net-ssh of lower versions has a bug that causes 'knife ssh (searchterm) (commandname)" 
-      # to loop infinitely and consume all the CPU of one core.
-      def assert_net_ssh_version_acceptable!
-        netssh_version = Net::SSH::Version
-        # we want version 2.0.23 and higher:
-        unless (netssh_version::MAJOR == 2) && (netssh_version::TINY >= 23 || netssh_version::MINOR >= 1)
-          STDERR.puts "ERROR: Please install net-ssh version 2.0.23 or higher, as lower versions cause issues."
-          exit 1
-        end
       end
 
     end

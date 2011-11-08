@@ -31,7 +31,7 @@ describe Chef::Provider::Script, "action_run" do
     @script_file = StringIO.new
     @script_file.stub!(:path).and_return('/tmp/the_script_file')
 
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
   end
 
   it "creates a temporary file to store the script" do

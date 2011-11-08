@@ -1,7 +1,8 @@
 #
 # Author:: Stephen Delano (<stephen@opscode.com>)
-# Author:: Seth Falcon (<sseth@opscode.com>)
-# Copyright:: Copyright 2010 Opscode, Inc.
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: John Keiser (<jkeiser@ospcode.com>)
+# Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,18 +19,23 @@
 #
 
 require 'chef/config'
+require 'chef/mash'
 require 'chef/mixin/params_validate'
+require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/index_queue'
-
+require 'chef/version_constraint'
 
 class Chef
   class Environment
+
+    DEFAULT = "default"
 
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
     include Chef::IndexQueue::Indexable
 
+    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
     attr_accessor :couchdb, :couchdb_rev
     attr_reader :couchdb_id
@@ -62,7 +68,8 @@ class Chef
     def initialize(couchdb=nil)
       @name = ''
       @description = ''
-      @attributes = Mash.new
+      @default_attributes = Mash.new
+      @override_attributes = Mash.new
       @cookbook_versions = Hash.new
       @couchdb_rev = nil
       @couchdb_id = nil
@@ -98,14 +105,22 @@ class Chef
       )
     end
 
-    def attributes(arg=nil)
+    def default_attributes(arg=nil)
       set_or_return(
-        :attributes,
+        :default_attributes,
         arg,
         :kind_of => Hash
       )
     end
-    
+
+    def override_attributes(arg=nil)
+      set_or_return(
+        :override_attributes,
+        arg,
+        :kind_of => Hash
+      )
+    end
+
     def cookbook_versions(arg=nil)
       set_or_return(
         :cookbook_versions,
@@ -137,7 +152,8 @@ class Chef
         "cookbook_versions" =>  @cookbook_versions,
         "json_class" => self.class.name,
         "chef_type" => "environment",
-        "attributes" => @attributes
+        "default_attributes" => @default_attributes,
+        "override_attributes" => @override_attributes
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result
@@ -150,16 +166,92 @@ class Chef
     def update_from!(o)
       description(o.description)
       cookbook_versions(o.cookbook_versions)
-      attributes(o.attributes)
+      default_attributes(o.default_attributes)
+      override_attributes(o.override_attributes)
       self
     end
+
+
+    def update_attributes_from_params(params)
+      unless params[:default_attributes].nil? || params[:default_attributes].size == 0
+        default_attributes(Chef::JSONCompat.from_json(params[:default_attributes]))
+      end
+      unless params[:override_attributes].nil? || params[:override_attributes].size == 0
+        override_attributes(Chef::JSONCompat.from_json(params[:override_attributes]))
+      end
+    end
+
+    def update_from_params(params)
+      # reset because everything we need will be in the params, this is necessary because certain constraints
+      # may have been removed in the params and need to be removed from cookbook_versions as well.
+      bkup_cb_versions = cookbook_versions
+      cookbook_versions(Hash.new)
+      valid = true
+
+      begin
+        name(params[:name])
+      rescue Chef::Exceptions::ValidationFailed => e
+        invalid_fields[:name] = e.message
+        valid = false
+      end
+      description(params[:description])
+
+      unless params[:cookbook_version].nil?
+        params[:cookbook_version].each do |index, cookbook_constraint_spec|
+          unless (cookbook_constraint_spec.nil? || cookbook_constraint_spec.size == 0)
+            valid = valid && update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+          end
+        end
+      end
+
+      update_attributes_from_params(params)
+
+      valid = validate_required_attrs_present && valid
+      cookbook_versions(bkup_cb_versions) unless valid # restore the old cookbook_versions if valid is false
+      valid
+    end
+
+    def update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+      valid = true
+      md = cookbook_constraint_spec.match(COMBINED_COOKBOOK_CONSTRAINT)
+      if md.nil? || md[2].nil?
+        valid = false
+        add_cookbook_constraint_error(index, cookbook_constraint_spec)
+      elsif self.class.validate_cookbook_version(md[2])
+        cookbook_versions[md[1]] = md[2]
+      else
+        valid = false
+        add_cookbook_constraint_error(index, cookbook_constraint_spec)
+      end
+      valid
+    end
+
+    def add_cookbook_constraint_error(index, cookbook_constraint_spec)
+      invalid_fields[:cookbook_version] ||= {}
+      invalid_fields[:cookbook_version][index] = "#{cookbook_constraint_spec} is not a valid cookbook constraint"
+    end
+
+    def invalid_fields
+      @invalid_fields ||= {}
+    end
+
+    def validate_required_attrs_present
+      if name.nil? || name.size == 0
+        invalid_fields[:name] ||= "name cannot be empty"
+        false
+      else
+        true
+      end
+    end
+
 
     def self.json_create(o)
       environment = new
       environment.name(o["name"])
       environment.description(o["description"])
       environment.cookbook_versions(o["cookbook_versions"])
-      environment.attributes(o["attributes"])
+      environment.default_attributes(o["default_attributes"])
+      environment.override_attributes(o["override_attributes"])
       environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment
@@ -233,26 +325,98 @@ class Chef
     # Hash
     # i.e.
     # {
-    #   "coobook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted lowest to highest
+    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
     # }
+    #
+    # There will be a key for every cookbook.  If no CookbookVersions
+    # are available for the specified environment the value will be an
+    # empty list.
+    #
     def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
-      cvs = begin
-              Chef::Environment.cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
-            rescue Chef::Exceptions::CouchDBNotFound => e
-              raise e
-            end
+      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
 
       # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
-      Chef::CookbookVersion.cdb_list(true, couchdb).inject({}) {|res, cookbook|
+      cookbook_list = Chef::CookbookVersion.cdb_list(true, couchdb)
+
+      filtered_list = cookbook_list.inject({}) do |res, cookbook|
         # FIXME: should cookbook.version return a Chef::Version?
         version               = Chef::Version.new(cookbook.version)
-        requirement_satisfied = cvs.has_key?(cookbook.name) ? cvs[cookbook.name].include?(version) : true
-        res[cookbook.name]    = (res[cookbook.name] || []) << cookbook if requirement_satisfied
+        requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
+        # we want a key for every cookbook, even if no versions are available
+        res[cookbook.name] ||= []
+        res[cookbook.name] << cookbook if requirement_satisfied
         res
-      }.inject({}) {|res, (cookbook_name, versions)|
-        res[cookbook_name] = versions.sort
+      end
+
+      sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
+        res[cookbook_name] = versions.sort.reverse
         res
-      }
+      end
+
+      sorted_list
+    end
+
+    # Like +cdb_load_filtered_cookbook_versions+, loads the set of
+    # cookbooks available in a given environment. The difference is that
+    # this method will load Chef::MinimalCookbookVersion objects that
+    # contain only the information necessary for solving a cookbook
+    # collection for a given run list. The user of this method must call
+    # Chef::MinimalCookbookVersion.load_full_versions_of() after solving
+    # the cookbook collection to get the full objects.
+    # === Returns
+    # Hash
+    # i.e.
+    # {
+    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
+    # }
+    #
+    # There will be a key for every cookbook.  If no CookbookVersions
+    # are available for the specified environment the value will be an
+    # empty list.
+    def self.cdb_minimal_filtered_versions(name, couchdb=nil)
+      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
+
+      # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
+      cookbook_list = Chef::MinimalCookbookVersion.load_all(couchdb)
+
+      filtered_list = cookbook_list.inject({}) do |res, cookbook|
+        # FIXME: should cookbook.version return a Chef::Version?
+        version               = Chef::Version.new(cookbook.version)
+        requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
+        # we want a key for every cookbook, even if no versions are available
+        res[cookbook.name] ||= []
+        res[cookbook.name] << cookbook if requirement_satisfied
+        res
+      end
+
+      sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
+        res[cookbook_name] = versions.sort.reverse
+        res
+      end
+
+      sorted_list
+    end
+
+    def self.cdb_load_filtered_recipe_list(name, couchdb=nil)
+      cdb_load_filtered_cookbook_versions(name, couchdb).map do |cb_name, cb|
+        if cb.empty?            # no available versions
+          []                    # empty list elided with flatten
+        else
+          latest_version = cb.first
+          latest_version.recipe_filenames_by_name.keys.map do |recipe|
+            case recipe
+            when DEFAULT
+              cb_name
+            else
+              "#{cb_name}::#{recipe}"
+            end
+          end
+        end
+      end.flatten
+    end
+
+    def self.load_filtered_recipe_list(environment)
+      chef_server_rest.get_rest("environments/#{environment}/recipes")
     end
 
     def to_s

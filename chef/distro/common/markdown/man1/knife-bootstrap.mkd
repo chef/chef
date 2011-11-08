@@ -1,0 +1,142 @@
+knife-bootstrap(1) -- Install Chef Client on a remote host
+========================================
+
+## SYNOPSIS
+
+__knife__ __bootstrap__ _(options)_
+
+  * `-i`, `--identity-file IDENTITY_FILE`:
+    The SSH identity file used for authentication
+  * `-N`, `--node-name NAME`:
+    The Chef node name for your new node
+  * `-P`, `--ssh-password PASSWORD`:
+    The ssh password
+  * `-x`, `--ssh-user USERNAME`:
+    The ssh username
+  * `-p`, `--ssh-port PORT`:
+    The ssh port
+  * `--bootstrap-version VERSION`:
+    The version of Chef to install
+  * `--bootstrap-proxy PROXY_URL`:
+    `The proxy server for the node being bootstrapped`
+  * `--prerelease`:
+    Install pre-release Chef gems
+  * `-r`, `--run-list RUN_LIST`:
+    Comma separated list of roles/recipes to apply
+  * `--template-file TEMPLATE`:
+    Full path to location of template to use
+  * `--sudo`:
+    Execute the bootstrap via sudo
+  * `-d`, `--distro DISTRO`:
+    Bootstrap a distro using a template
+  * `--no-host-key-verify`:
+    Disable host key verification
+
+## DESCRIPTION
+
+Performs a Chef Bootstrap on the target node. The goal of the bootstrap
+is to get Chef installed on the target system so it can run Chef Client
+with a Chef Server. The main assumption is a baseline OS installation
+exists. This sub-command is used internally by some cloud computing
+plugins.
+
+The bootstrap sub-command supports supplying a template to perform the
+bootstrap steps. If the distro is not specified (via `-d` or `--distro`
+option), an Ubuntu 10.04 host bootstrapped with RubyGems is assumed. The
+__DISTRO__ value corresponds to the base filename of the template, in
+other words `DISTRO`.erb. A template file can be specified with the
+`--template-file` option in which case the __DISTRO__ is not used. The
+sub-command looks in the following locations for the template to use:
+
+* `bootstrap` directory in the installed Chef Knife library.
+* `bootstrap` directory in the `$PWD/.chef`.
+* `bootstrap` directory in the users `$HOME/.chef`.
+
+The default bootstrap templates are scripts that get copied to the
+target node (FQDN). The following distros are supported:
+
+* centos5-gems
+* fedora13-gems
+* ubuntu10.04-gems
+* ubuntu10.04-apt
+
+The gems installations will use RubyGems 1.3.6 and Chef installed as a
+gem. The apt installation will use the Opscode APT repository. The
+RubyGems installation requires installing gems with native extensions,
+so development related packages (ruby-dev, build-essential) are
+installed. These are not installed with the apt installation, as native
+extensions are already compiled in the required packages.
+
+In addition to handling the software installation, these bootstrap
+templates do the following:
+
+  - Write the validation.pem per the local knife configuration.
+  - Write a default config file for Chef (`/etc/chef/client.rb`) using values from the `knife.rb`.
+  - Create a JSON attributes file containing the specified run list and run Chef.
+
+In the case of the RubyGems, the `client.rb` will be written from
+scratch with a minimal set of values; see __EXAMPLES__. In the case of
+APT Package installation, `client.rb` will have the
+`validation_client_name` appended if it is not set to `chef-validator`
+(default config value), and the `node_name` will be added if
+`chef_node_name` option is specified.
+
+When this is complete, the bootstrapped node will have:
+
+  - Latest Chef version installed from RubyGems or APT Packages from Opscode. This may be a later version than the local system.
+  - Be validated with the configured Chef Server.
+  - Have run Chef with its default run list if one is specfied.
+
+Additional custom bootstrap templates can be created and stored in
+`.chef/bootstrap/DISTRO.erb`, replacing __DISTRO__ with the value passed
+with the `-d` or `--distro` option. See __EXAMPLES__ for more
+information.
+
+## EXAMPLES
+Setting up a custom bootstrap is fairly straightforward. Create a
+`.chef/bootstrap` directory in your Chef Repository or in
+`$HOME/.chef/bootstrap`. Then create the ERB template file.
+
+    mkdir ~/.chef/bootstrap
+    vi ~/.chef/bootstrap/debian5.0-apt.erb
+
+For example, to create a new bootstrap template that should be used when
+setting up a new Debian node. Edit the template to run the commands, set
+up the validation certificate and the client configuration file, and
+finally to run chef-client on completion. The bootstrap template can be
+called with:
+
+    knife bootstrap mynode.example.com --template-file ~/.chef/bootstrap/debian5.0-apt.erb
+
+Or,
+
+    knife bootstrap mynode.example.com --distro debian5.0-apt
+
+The `--distro` parameter will automatically look in the
+`~/.chef/bootstrap` directory for a file named `debian5.0-apt.erb`.
+
+Templates provided by the Chef installation are located in
+`BASEDIR/lib/chef/knife/bootstrap/*.erb`, where _BASEDIR_ is the
+location where the package or Gem installed the Chef client libraries.
+
+## BUGS
+`knife bootstrap` is not capable of bootstrapping multiple hosts in
+parallel.
+
+The bootstrap script is passed as an argument to sh(1) on the remote
+system, so sensitive information contained in the script will be visible
+to other users via the process list using tools such as ps(1).
+
+## SEE ALSO
+   __knife-ssh__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>

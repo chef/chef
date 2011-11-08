@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,18 +17,21 @@
 #
 
 require 'chef/knife'
-require 'chef/api_client'
-require 'json'
 
 class Chef
   class Knife
     class ClientCreate < Knife
 
+      deps do
+        require 'chef/api_client'
+        require 'chef/json_compat'
+      end
+
       option :file,
         :short => "-f FILE",
         :long  => "--file FILE",
         :description => "Write the key to a file"
-      
+
       option :admin,
         :short => "-a",
         :long  => "--admin",
@@ -42,26 +45,32 @@ class Chef
 
         if @client_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a client name")
+          ui.fatal("You must specify a client name")
           exit 1
         end
-        
+
         client = Chef::ApiClient.new
         client.name(@client_name)
         client.admin(config[:admin])
-        
+
         output = edit_data(client)
 
-        key = output.save
+        # Chef::ApiClient.save will try to create a client and if it exists will update it instead silently
+        client = output.save
 
-        Chef::Log.info("Created (or updated) #{output}")
-        
-        if config[:file]
-          File.open(config[:file], "w") do |f|
-            f.print(key['private_key'])
+        # We only get a private_key on client creation, not on client update.
+        if client['private_key']
+          ui.info("Created #{output}")
+  
+          if config[:file]
+            File.open(config[:file], "w") do |f|
+              f.print(client['private_key'])
+            end
+          else
+            puts client['private_key']
           end
         else
-          puts key['private_key']
+          ui.error "Client '#{client['name']}' already exists"
         end
       end
     end

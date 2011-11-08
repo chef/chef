@@ -82,6 +82,7 @@ class Chef
     #
     config_attr_writer :log_location do |location|
       if location.respond_to? :sync=
+        location.sync = true
         location
       elsif location.respond_to? :to_str
         f = File.new(location.to_str, "a")
@@ -99,6 +100,9 @@ class Chef
       configure { |c| c[:authorized_openid_providers] = providers }
       providers
     end
+
+    # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
+    enforce_path_sanity(true)
 
     # Used when OpenID authentication is enabled in the Web UI
     authorized_openid_identifiers nil
@@ -143,7 +147,8 @@ class Chef
     json_attribs nil
     log_level :info
     log_location STDOUT
-    verbose_logging nil
+    # toggle info level log items that can create a lot of output
+    verbose_logging true 
     node_name nil
     node_path "/var/chef/node"
 
@@ -179,7 +184,7 @@ class Chef
     # Where should chef-solo download recipes from?
     recipe_url nil
 
-    solr_url "http://localhost:8983"
+    solr_url "http://localhost:8983/solr"
     solr_jetty_path "/var/chef/solr-jetty"
     solr_data_path "/var/chef/solr/data"
     solr_home_path "/var/chef/solr"
@@ -224,6 +229,9 @@ class Chef
     # Exception Handlers
     exception_handlers []
 
+    # Start handlers
+    start_handlers []
+
     # Checksum Cache
     # Uses Moneta on the back-end
     cache_type "BasicFile"
@@ -235,6 +243,6 @@ class Chef
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
     user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-    group_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+    group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
   end
 end

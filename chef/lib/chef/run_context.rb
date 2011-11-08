@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,56 +47,72 @@ class Chef
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
       @definitions = Hash.new
-      
+
       # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
       # cookbook_collection attr_accessor
       node.cookbook_collection = cookbook_collection
-
-      load
     end
 
-    def load
+    def load(run_list_expansion)
+      load_libraries
+      load_lwrp_providers
+      load_lwrp_resources
+      load_attributes
+      load_resource_definitions
+
+      # Precendence rules state that roles' attributes come after
+      # cookbooks. Now we've loaded attributes from cookbooks with
+      # load_attributes, apply the expansion attributes (loaded from
+      # roles) to the node.
+      @node.apply_expansion_attributes(run_list_expansion)
+
+      run_list_expansion.recipes.each do |recipe|
+        # TODO: timh/cw, 5-14-2010: It's distasteful to be including
+        # the DSL in a class outside the context of the DSL
+        include_recipe(recipe)
+      end
+    end
+
+
+    private
+
+    def load_libraries
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
-        require filename
+        Kernel.load(filename)
       end
-      
+    end
+
+    def load_lwrp_providers
       foreach_cookbook_load_segment(:providers) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
-        Chef::Provider.build_from_file(cookbook_name, filename)
+        Chef::Provider.build_from_file(cookbook_name, filename, self)
       end
-      
+    end
+
+    def load_lwrp_resources
       foreach_cookbook_load_segment(:resources) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
-        Chef::Resource.build_from_file(cookbook_name, filename)
+        Chef::Resource.build_from_file(cookbook_name, filename, self)
       end
+    end
 
+    def load_attributes
       node.load_attributes
+    end
 
+    def load_resource_definitions
       foreach_cookbook_load_segment(:definitions) do |cookbook_name, filename|
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
         resourcelist = Chef::ResourceDefinitionList.new
         resourcelist.from_file(filename)
         definitions.merge!(resourcelist.defines) do |key, oldval, newval|
-          Chef::Log.info("Overriding duplicate definition #{key}, new found in #{filename}")
+          Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
           newval
         end
       end
-
-      # Retrieve the fully expanded list of recipes for the node by
-      # resolving roles; this step also merges attributes into the
-      # node from the roles/recipes included.
-      recipe_names = node.expand!
-
-      recipe_names.each do |recipe_name|
-        # TODO: timh/cw, 5-14-2010: It's distasteful to be including
-        # the DSL in a class outside the context of the DSL
-        include_recipe(recipe_name)
-      end
     end
 
-    private
-    
     def foreach_cookbook_load_segment(segment, &block)
       cookbook_collection.each do |cookbook_name, cookbook|
         segment_filenames = cookbook.segment_filenames(segment)
@@ -105,6 +121,6 @@ class Chef
         end
       end
     end
-    
+
   end
 end

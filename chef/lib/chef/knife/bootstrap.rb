@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,26 +17,41 @@
 #
 
 require 'chef/knife'
-require 'json'
-require 'tempfile'
 require 'erubis'
 
 class Chef
   class Knife
     class Bootstrap < Knife
 
-      banner "knife bootstrap FQDN [RUN LIST...] (options)"
+      deps do
+        require 'chef/knife/core/bootstrap_context'
+        require 'chef/json_compat'
+        require 'tempfile'
+        require 'highline'
+        require 'net/ssh'
+        require 'net/ssh/multi'
+        Chef::Knife::Ssh.load_deps
+      end
+
+      banner "knife bootstrap FQDN (options)"
 
       option :ssh_user,
         :short => "-x USERNAME",
         :long => "--ssh-user USERNAME",
         :description => "The ssh username",
-        :default => "root" 
+        :default => "root"
 
       option :ssh_password,
         :short => "-P PASSWORD",
         :long => "--ssh-password PASSWORD",
         :description => "The ssh password"
+
+      option :ssh_port,
+        :short => "-p PORT",
+        :long => "--ssh-port PORT",
+        :description => "The ssh port",
+        :default => "22",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
@@ -47,10 +62,20 @@ class Chef
         :short => "-N NAME",
         :long => "--node-name NAME",
         :description => "The Chef node name for your new node"
-      
+
       option :prerelease,
         :long => "--prerelease",
         :description => "Install the pre-release chef gems"
+
+      option :bootstrap_version,
+        :long => "--bootstrap-version VERSION",
+        :description => "The version of Chef to install",
+        :proc => lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
+
+      option :bootstrap_proxy,
+        :long => "--bootstrap-proxy PROXY_URL",
+        :description => "The proxy server for the node being bootstrapped",
+        :proc => Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
 
       option :distro,
         :short => "-d DISTRO",
@@ -72,12 +97,14 @@ class Chef
         :short => "-r RUN_LIST",
         :long => "--run-list RUN_LIST",
         :description => "Comma separated list of roles/recipes to apply",
-        :proc => lambda { |o| o.split(",") },
+        :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
-      def h
-        @highline ||= HighLine.new
-      end
+      option :no_host_key_verify,
+        :long => "--no-host-key-verify",
+        :description => "Disable host key verification",
+        :boolean => true,
+        :default => false
 
       def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -86,8 +113,10 @@ class Chef
         else
           bootstrap_files = []
           bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
+          bootstrap_files << File.join(@@chef_config_dir, "bootstrap", "#{config[:distro]}.erb")
           bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
+          bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
+          bootstrap_files.flatten!
         end
 
         template = Array(bootstrap_files).find do |bootstrap_template|
@@ -96,30 +125,30 @@ class Chef
         end
 
         unless template
-          Chef::Log.info("Can not find bootstrap definition for #{config[:distro]}")
+          ui.info("Can not find bootstrap definition for #{config[:distro]}")
           raise Errno::ENOENT
         end
 
         Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
-        
+
         IO.read(template).chomp
       end
 
       def render_template(template=nil)
-        context = {}
-        context[:run_list] = config[:run_list]
-        context[:config] = config
+        context = Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config)
         Erubis::Eruby.new(template).evaluate(context)
       end
 
-      def run 
-        require 'highline'
+      def run
 
         validate_name_args!
+        @node_name = Array(@name_args).first
+        # back compat--templates may use this setting:
+        config[:server_name] = @node_name
 
         $stdout.sync = true
 
-        Chef::Log.info("Bootstrapping Chef on #{h.color(config[:server_name], :bold)}")
+        ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
 
         begin
           knife_ssh.run
@@ -133,7 +162,7 @@ class Chef
 
       def validate_name_args!
         if Array(@name_args).first.nil?
-          Chef::Log.error("Must pass an FQDN or ip to bootstrap")
+          ui.error("Must pass an FQDN or ip to bootstrap")
           exit 1
         end
       end
@@ -144,11 +173,15 @@ class Chef
 
       def knife_ssh
         ssh = Chef::Knife::Ssh.new
+        ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
-        ssh.config[:ssh_user] = config[:ssh_user] 
+        ssh.config[:ssh_user] = config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
+        ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
+        ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
+        ssh.config[:on_error] = :raise
         ssh
       end
 
@@ -172,4 +205,3 @@ class Chef
     end
   end
 end
-

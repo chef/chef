@@ -9,9 +9,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,11 +19,15 @@
 # limitations under the License.
 #
 require 'chef/knife'
-require 'chef/checksum_cache'
 
 class Chef
   class Knife
     class CookbookTest < Knife
+
+      deps do
+        require 'chef/checksum_cache'
+        require 'chef/cookbook/syntax_check'
+      end
 
       banner "knife cookbook test [COOKBOOKS...] (options)"
 
@@ -38,27 +42,30 @@ class Chef
         :long => "--all",
         :description => "Test all cookbooks, rather than just a single cookbook"
 
-      def run 
-        if config[:cookbook_path]
-          Chef::Config[:cookbook_path] = config[:cookbook_path]
-        else
-          config[:cookbook_path] = Chef::Config[:cookbook_path]
-        end
+      def run
+        config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
+        checked_a_cookbook = false
         if config[:all]
-          cl = Chef::CookbookLoader.new
-          cl.each do |key, cookbook|
+          cookbook_loader.each do |key, cookbook|
+            checked_a_cookbook = true
             test_cookbook(key)
           end
         else
           @name_args.each do |cb|
+            ui.info "checking #{cb}"
+            next unless cookbook_loader.cookbook_exists?(cb)
+            checked_a_cookbook = true
             test_cookbook(cb)
           end
+        end
+        unless checked_a_cookbook
+          ui.warn("No cookbooks to test in #{Array(config[:cookbook_path]).join(',')} - is your cookbook path misconfigured?")
         end
       end
 
       def test_cookbook(cookbook)
-        Chef::Log.info("Running syntax check on #{cookbook}")
+        ui.info("Running syntax check on #{cookbook}")
         Array(config[:cookbook_path]).reverse.each do |path|
           syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook, path)
           test_ruby(syntax_checker)
@@ -68,13 +75,17 @@ class Chef
 
 
       def test_ruby(syntax_checker)
-        Chef::Log.info("Validating ruby files")
+        ui.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
       end
-      
+
       def test_templates(syntax_checker)
-        Chef::Log.info("Validating templates")
+        ui.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
+      end
+
+      def cookbook_loader
+        @cookbook_loader ||= Chef::CookbookLoader.new(config[:cookbook_path])
       end
 
     end

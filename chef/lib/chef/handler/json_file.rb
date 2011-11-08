@@ -41,7 +41,7 @@ class Chef
         build_report_dir
         savetime = Time.now.strftime("%Y%m%d%H%M%S")
         File.open(File.join(config[:path], "chef-run-report-#{savetime}.json"), "w") do |file|
-          file.puts JSON.pretty_generate(data)
+          file.puts Chef::JSONCompat.to_json_pretty(data)
         end
       end
 

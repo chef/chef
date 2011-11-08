@@ -35,8 +35,9 @@ class Chef
         
         if file_path.kind_of?(String)
           file_path = File.expand_path(file_path).split(File::SEPARATOR)
-          file_path.shift if file_path[0] = ''
-          unless file_path[0].match("^#{File::SEPARATOR}")
+          file_path.shift if file_path[0] == ''
+          # Check if path starts with a separator or drive letter (Windows)
+          unless file_path[0].match("^#{File::SEPARATOR}|^[a-zA-Z]:")
             file_path[0] = "#{File::SEPARATOR}#{file_path[0]}"
           end
         end

@@ -1,0 +1,39 @@
+knife-tag(1) -- Apply tags to nodes on a Chef Server
+========================================
+
+## SYNOPSIS
+
+__knife__ __tag__ _subcommand_ _(options)_
+
+## TAG SUBCOMMANDS
+The following `tag` subcommands are available:
+
+## CREATE
+__knife tag create__ _node_ _tag_ [_..._]
+
+Adds one or more tags to _node_
+
+## DELETE
+__knife tag delete__ _node_ _tag_ [_..._]
+
+Removes one or more tags from _node_
+
+## LIST
+__knife tag list__ _node_
+
+Lists the tags applied to _node_
+
+
+## SEE ALSO
+   __knife-node(1)__
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Daniel DeLeo <dan@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

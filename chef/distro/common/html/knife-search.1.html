@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>knife-search(1) - Find objects on a Chef Server by query</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+  <style type='text/css' media='all'>
+  /* style: toc */
+  .man-navigation {display:block !important;position:fixed;top:0;left:113ex;height:100%;width:100%;padding:48px 0 0 0;border-left:1px solid #dbdbdb;background:#eee}
+  .man-navigation a,.man-navigation a:hover,.man-navigation a:link,.man-navigation a:visited {display:block;margin:0;padding:5px 2px 5px 30px;color:#999;text-decoration:none}
+  .man-navigation a:hover {color:#111;text-decoration:underline}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#INDEXES">INDEXES</a>
+    <a href="#QUERY-SYNTAX">QUERY SYNTAX</a>
+    <a href="#EXAMPLES">EXAMPLES</a>
+    <a href="#KNOWN-BUGS">KNOWN BUGS</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+    <a href="#AUTHOR">AUTHOR</a>
+    <a href="#DOCUMENTATION">DOCUMENTATION</a>
+    <a href="#CHEF">CHEF</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>knife-search(1)</li>
+    <li class='tc'>Chef Manual</li>
+    <li class='tr'>knife-search(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>knife-search</code> - <span class="man-whatis">Find objects on a Chef Server by query</span>
+</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><strong>knife</strong> <strong>search INDEX QUERY</strong> <em>(options)</em></p>
+
+<dl>
+<dt><code>-a</code>, <code>--attribute ATTR</code></dt><dd>Show only one attribute</dd>
+<dt><code>-i</code>, <code>--id-only</code></dt><dd>Show only the ID of matching objects</dd>
+<dt><code>-q</code>, <code>--query QUERY</code></dt><dd>The search query; useful to protect queries starting with -</dd>
+<dt><code>-R</code>, <code>--rows INT</code></dt><dd>The number of rows to return</dd>
+<dt><code>-r</code>, <code>--run-list</code></dt><dd>Show only the run list</dd>
+<dt><code>-o</code>, <code>--sort SORT</code></dt><dd>The order to sort the results in</dd>
+<dt><code>-b</code>, <code>--start ROW</code></dt><dd>The row to start returning results at</dd>
+<dt><code>-m</code>, <code>--medium</code></dt><dd>Display medium sized output when searching nodes using the default
+summary format</dd>
+<dt><code>-l</code>, <code>--long</code></dt><dd>Display long output when searching nodes using the default summary
+format</dd>
+</dl>
+
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>Search is a feature of the Chef Server that allows you to use a
+full-text search engine to query information about your infrastructure
+and applications. You can utilize this service via search calls in a
+recipe or the knife search command.  The search syntax is based on
+Lucene.</p>
+
+<h2 id="INDEXES">INDEXES</h2>
+
+<p>Search indexes are a feature of the Chef Server and the search
+sub-command allows querying any of the available indexes using SOLR
+query syntax. The following data types are indexed for search:</p>
+
+<ul>
+<li><em>node</em></li>
+<li><em>role</em></li>
+<li><em>environment</em></li>
+<li><em>clients</em></li>
+<li><em>data bag</em></li>
+</ul>
+
+
+<p>Data bags are indexed by the data bag's name. For example, to search a
+data bag named "admins":</p>
+
+<pre><code>knife search admins "field:search_pattern"
+</code></pre>
+
+<h2 id="QUERY-SYNTAX">QUERY SYNTAX</h2>
+
+<p>Queries have the form <code>field:search_pattern</code> where <code>field</code> is a key in
+the JSON description of the relevant objects (nodes, roles,
+environments, or data bags).  Both <code>field</code> and <code>search_pattern</code> are
+case-sensitive.  <code>search_pattern</code> can be an exact, wildcard,
+range, or fuzzy match (see below).  The <code>field</code> supports exact
+matching and limited wildcard matching.</p>
+
+<p>Searches will return the relevant objects (nodes, roles, environments,
+or data bags) where the <code>search_pattern</code> matches the object's value of
+<code>field</code>.</p>
+
+<h3 id="FIELD-NAMES">FIELD NAMES</h3>
+
+<p>Field names are the keys within the JSON description of the object
+being searched.  Nested Keys can be searched by placing an underscore
+("_") between key names.</p>
+
+<h3 id="WILDCARD-MATCHING-FOR-FIELD-NAMES">WILDCARD MATCHING FOR FIELD NAMES</h3>
+
+<p>The field name also has limited support for wildcard matching. Both
+the "*" and "?" wildcards (see below) can be used within a field name;
+however, they cannot be the first character of the field name.</p>
+
+<h3 id="EXACT-MATCHES">EXACT MATCHES</h3>
+
+<p>Without any search modifiers, a search returns those fields for which
+the <code>search_pattern</code> exactly matches the value of <code>field</code> in the JSON
+description of the object.</p>
+
+<h3 id="WILDCARD-MATCHES">WILDCARD MATCHES</h3>
+
+<p>Search support both single- and multi-character wildcard searches
+within a search pattern.</p>
+
+<p>'?' matches exactly one character.</p>
+
+<p>'*' matches zero or more characters.</p>
+
+<h3 id="RANGE-MATCHES">RANGE MATCHES</h3>
+
+<p>Range searches allows one to match values between two given values.  To
+match values between X and Y, inclusively, use square brackets:</p>
+
+<pre><code>knife search INDEX 'field:[X TO Y]
+</code></pre>
+
+<p>To match values between X and Y, exclusively, use curly brackets:</p>
+
+<pre><code>knife search INDEX 'field:{X TO Y}'
+</code></pre>
+
+<p>Values are sorted in lexicographic order.</p>
+
+<h3 id="FUZZY-MATCHES">FUZZY MATCHES</h3>
+
+<p>Fuzzy searches allows one to match values based on the Levenshtein
+Distance algorithm.  To perform a fuzzy match, append a tilda (~) to
+the search term:</p>
+
+<pre><code>knife search INDEX 'field:term~'
+</code></pre>
+
+<p>This search would return nodes whose <code>field</code> was 'perm' or 'germ'.</p>
+
+<h3 id="BOOLEAN-OPERATORS">BOOLEAN OPERATORS</h3>
+
+<p>The boolean operators NOT, AND, and OR are supported.  To find values
+of <code>field</code> that are not X:</p>
+
+<pre><code>knife search INDEX 'field:(NOT X)'
+</code></pre>
+
+<p>To find records where <code>field1</code> is X and <code>field2</code> is Y:</p>
+
+<pre><code>knife search INDEX 'field1:X AND field2:Y'
+</code></pre>
+
+<p>To find records where <code>field</code> is X or Y:</p>
+
+<pre><code>knife search INDEX 'field:X OR field:Y'
+</code></pre>
+
+<h3 id="QUOTING-AND-SPECIAL-CHARACTERS">QUOTING AND SPECIAL CHARACTERS</h3>
+
+<p>In order to avoid having special characters and escape sequences
+within your search term interpreted by either Ruby or the shell,
+enclose them in single quotes.</p>
+
+<p>Search terms that include spaces should be enclosed in double-quotes:</p>
+
+<pre><code>knife search INDEX 'field:"term with spaces"'
+</code></pre>
+
+<p>The following characters must be escaped:</p>
+
+<pre><code>+ - &amp;&amp; || ! ( ) { } [ ] ^ " ~ * ? : \
+</code></pre>
+
+<h2 id="EXAMPLES">EXAMPLES</h2>
+
+<p>Find the nodes with the fully-qualified domain name (FQDN)
+www.example.com:</p>
+
+<pre><code>knife search node 'fqdn:www.example.com'
+</code></pre>
+
+<p>Find the nodes running a version of Ubuntu:</p>
+
+<pre><code>knife search node 'platform:ubuntu*'
+</code></pre>
+
+<p>Find all nodes running CentOS in the production environment:</p>
+
+<pre><code>knife search node 'chef_environment:production AND platform:centos'
+</code></pre>
+
+<h2 id="KNOWN-BUGS">KNOWN BUGS</h2>
+
+<ul>
+<li>Searches against the client index return no results in most cases. (CHEF-2477)</li>
+<li>Searches using the fuzzy match operator (~) produce an error. (CHEF-2478)</li>
+</ul>
+
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<p>   <strong>knife-ssh</strong>(1)
+   <a href="http://wiki.opscode.com/display/chef/Attributes" data-bare-link="true">http://wiki.opscode.com/display/chef/Attributes</a>
+   <a href="http://lucene.apache.org/java/2_3_2/queryparsersyntax.html">Lucene Query Parser Syntax</a></p>
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#x6c;&#x74;&#x6f;&#58;&#x61;&#x64;&#x61;&#109;&#x40;&#x6f;&#x70;&#x73;&#x63;&#111;&#x64;&#101;&#46;&#99;&#111;&#x6d;" data-bare-link="true">&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#112;&#115;&#x63;&#111;&#x64;&#101;&#46;&#99;&#111;&#x6d;</a> with many contributions from the community.</p>
+
+<h2 id="DOCUMENTATION">DOCUMENTATION</h2>
+
+<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#111;&#58;&#x6a;&#111;&#x73;&#104;&#x75;&#x61;&#64;&#111;&#x70;&#x73;&#x63;&#111;&#100;&#101;&#46;&#x63;&#x6f;&#109;" data-bare-link="true">&#106;&#x6f;&#115;&#104;&#x75;&#97;&#x40;&#111;&#x70;&#115;&#99;&#111;&#100;&#101;&#46;&#x63;&#111;&#x6d;</a>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+
+<h2 id="CHEF">CHEF</h2>
+
+<p>   Knife is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'>Chef 0.10.6.beta.2</li>
+    <li class='tc'>October 2011</li>
+    <li class='tr'>knife-search(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

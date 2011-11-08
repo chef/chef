@@ -39,6 +39,8 @@ require 'chef/cookbook_version'
 require 'chef/sandbox'
 require 'chef/checksum'
 require 'chef/environment'
+require 'chef/monkey_patches/regexp'
+
 
 require 'mixlib/authentication'
 
@@ -63,6 +65,7 @@ end
 
 unless Merb::Config.environment == "test"
   # create the couch design docs for nodes, roles, and databags
+  Chef::CouchDB.new.create_db
   Chef::CouchDB.new.create_id_map
   Chef::Node.create_design_document
   Chef::Role.create_design_document

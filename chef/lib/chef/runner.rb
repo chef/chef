@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ class Chef
   # == Chef::Runner
   # This class is responsible for executing the steps in a Chef run.
   class Runner
-    
+
     attr_reader :run_context
 
     attr_reader :delayed_actions
@@ -38,15 +38,7 @@ class Chef
       @run_context      = run_context
       @delayed_actions  = []
     end
-    
-    def build_provider(resource)
-      provider_class = Chef::Platform.find_provider_for_node(run_context.node, resource)
-      Chef::Log.debug("#{resource} using #{provider_class.to_s}")
-      provider = provider_class.new(resource, run_context)
-      provider.load_current_resource
-      provider
-    end
-    
+
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action)
@@ -71,7 +63,7 @@ class Chef
         end
       end
     end
-    
+
     # Iterates over the +resource_collection+ in the +run_context+ calling
     # +run_action+ for each resource in turn.
     def converge
@@ -84,15 +76,21 @@ class Chef
       run_context.resource_collection.execute_each_resource do |resource|
         begin
           Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
-          
+
           # Execute each of this resource's actions.
           Array(resource.action).each {|action| run_action(resource, action)}
         rescue => e
           Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
+          if resource.retries > 0
+            resource.retries -= 1
+            Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
+            sleep resource.retry_delay
+            retry
+          end
           raise e unless resource.ignore_failure
         end
       end
-      
+
       # Run all our :delayed actions
       delayed_actions.each do |notification|
         Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\

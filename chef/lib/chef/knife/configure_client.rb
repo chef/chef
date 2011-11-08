@@ -25,21 +25,21 @@ class Chef
 
       def run
         unless @config_dir = @name_args[0]
-          Chef::Log.fatal "You must provide the directory to put the files in"
+          ui.fatal "You must provide the directory to put the files in"
           show_usage
           exit(1)
         end
 
-        Chef::Log.info("Creating client configuration")
+        ui.info("Creating client configuration")
         FileUtils.mkdir_p(@config_dir)
-        Chef::Log.info("Writing client.rb")
+        ui.info("Writing client.rb")
         File.open(File.join(@config_dir, "client.rb"), "w") do |file|
           file.puts('log_level        :info')
           file.puts('log_location     STDOUT')
           file.puts("chef_server_url  '#{Chef::Config[:chef_server_url]}'")
           file.puts("validation_client_name '#{Chef::Config[:validation_client_name]}'")
         end
-        Chef::Log.info("Writing validation.pem")
+        ui.info("Writing validation.pem")
         File.open(File.join(@config_dir, 'validation.pem'), "w") do |validation|
           validation.puts(IO.read(Chef::Config[:validation_key]))
         end
@@ -48,5 +48,3 @@ class Chef
     end
   end
 end
-
-

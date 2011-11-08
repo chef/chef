@@ -29,7 +29,7 @@ Before do
       end
     },
     'sandbox' => {
-      # The filename part of these 'checksums' hashes isn't used by the API (the 
+      # The filename part of these 'checksums' hashes isn't used by the API (the
       # value side of that hash is ignored), and is here for documentation's sake.
       'sandbox1' => {
         :checksums => {
@@ -49,10 +49,10 @@ Before do
       "sandbox2_file1" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr1.rb"),
       "sandbox2_file2" => File.join(datadir, "cookbooks_not_uploaded_at_feature_start", "test_cookbook", "attributes", "attr2.rb"),
     },
-    'signing_caller' =>{ 
+    'signing_caller' =>{
       :user_id=>'bobo', :secret_key => "/tmp/poop.pem"
     },
-    'registration' => { 
+    'registration' => {
       'bobo' => Proc.new do
         OpenStruct.new({ :save => true })
       end,
@@ -97,11 +97,11 @@ Before do
         r = Chef::Role.new
         r.name "webserver"
         r.description "monkey"
-        r.env_run_lists({"cucumber" => ["role[db]"]})
+        r.env_run_lists({"cucumber" => ["role[db]"], "_default" => []})
         r.run_list("role[webserver]", "role[base]")
         r.default_attributes({ 'a' => 'b' })
         r.override_attributes({ 'c' => 'd' })
-        r 
+        r
       end,
       'db' => Proc.new do
         r = Chef::Role.new
@@ -110,7 +110,7 @@ Before do
         r.recipes("role::db", "role::base")
         r.default_attributes({ 'a' => 'bake' })
         r.override_attributes({ 'c' => 'down' })
-        r 
+        r
       end,
       'role_not_exist' => Proc.new do
         r = Chef::Role.new
@@ -124,15 +124,15 @@ Before do
         r.name "attribute_settings_default"
         r.description "sets a default value"
         r.run_list("recipe[attribute_settings]")
-        r.default_attributes({ 'attribute_priority_was' => 2 })
-        r 
+        r.default_attributes({ 'attribute_priority_was' => "came from role[attribute_settings_default] default attributes" })
+        r
       end,
       'attribute_settings_override' => Proc.new do
         r = Chef::Role.new
         r.name "attribute_settings_override"
         r.description "sets a default value"
         r.run_list("recipe[attribute_settings_override]")
-        r.override_attributes({ 'attribute_priority_was' => 7 })
+        r.override_attributes({ 'attribute_priority_was' => "came from role[attribute_settings_override] override attributes" })
         r
       end,
       'role1_includes_role2' => Proc.new do
@@ -147,6 +147,39 @@ Before do
         r.name "role2_included_by_role1"
         r.description "role2 is included by role1"
         r.run_list("recipe[attribute_settings_override]")
+        r
+      end,
+      'role_test' => Proc.new do
+        r = Chef::Role.new
+        r.name "role_test"
+        r.description "A simple test role"
+        r.run_list("recipe[roles]")
+        r.default_attributes({
+           "reason" => "unbalancing",
+           "ossing" => "this time around"
+        })
+        r.override_attributes({
+          "ossining" => "whatever",
+          "snakes" => "on a plane"
+        })
+        r
+      end,
+      'role_env_test' => Proc.new do
+        r = Chef::Role.new
+        r.name "role_env_test"
+        r.description "A simple test role with environment specific run list"
+        r.env_run_lists({
+          "_default" => [],
+          "cucumber" => ['recipe[roles::env_test]']
+        })
+        r.default_attributes({
+           "reason" => "unbalancing",
+           "ossining" => "this time around"
+        })
+        r.override_attributes({
+          "ossining" => "whatever",
+          "snakes" => "on a plane"
+        })
         r
       end
     },
@@ -188,7 +221,7 @@ Before do
         n.name 'sync'
         n.run_list << "node_cookbook_sync"
         n
-      end, 
+      end,
       'role_not_exist' => Proc.new do
         n = Chef::Node.new
         n.name 'role_not_exist'
@@ -207,6 +240,29 @@ Before do
         n.chef_environment 'cookbooks_test'
         n.run_list << "version_test"
         n
+      end,
+      'really_deep_node' => Proc.new do
+        array = []
+        hash = {}
+        max_levels = 50
+
+        max_levels.times do |num_level|
+          array = [num_level, "really_deep_string_in_array", array]
+          hash = {"really_deep_string_in_hash_#{num_level}" => hash}
+          num_level += 1
+        end
+
+        n = Chef::Node.new
+        n.name 'really_deep_node'
+        n.run_list << "deep_node_recipe"
+        n.deep_array = array
+        n.deep_hash = hash
+        n
+      end,
+      'empty' => Proc.new do
+        n = Chef::Node.new
+        n.name 'empty'
+        n
       end
     },
     'hash' => {
@@ -214,17 +270,39 @@ Before do
       'name only' => { :name => 'test_cookbook' }
     },
     'environment' => {
+      'default_attr_test' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'default_attr_test'
+        e.description 'Test default attrs for environments'
+        e.default_attributes({"attribute_priority_was" => "came from environment default_attr_test default attributes"})
+        e
+      end,
       'cucumber' => Proc.new do
         e = Chef::Environment.new
         e.name 'cucumber'
         e.description 'I like to run tests'
-        e.attributes({"attribute_priority_was" => 8})
+        e.default_attributes({"attribute_priority_was" => "came from environment cucumber default attributes"})
+        e.override_attributes({"attribute_priority_was" => "came from environment cucumber override attributes"})
         e
       end,
       'production' => Proc.new do
         e = Chef::Environment.new
         e.name 'production'
         e.description 'The real deal'
+        e
+      end,
+      'skynet' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'skynet'
+        e.description 'test cookbook version constraints'
+        e.cookbook 'version_test', '> 0.1.0'
+        e
+      end,
+      'chef-1607' => Proc.new do
+        e = Chef::Environment.new
+        e.name 'chef-1607'
+        e.description 'test cookbook version constraints'
+        e.cookbook 'version_test', '> 0.0.0'
         e
       end,
       'cookbooks-0.1.0' => Proc.new do
@@ -302,7 +380,7 @@ Given "I am a non-admin" do
   make_non_admin
 end
 
-Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|  
+Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
   call_as_admin do
     @stash[stash_name] = get_fixture(stash_name, stash_key)
 
@@ -316,14 +394,14 @@ Given /^an? '(.+)' named '(.+)' exists$/ do |stash_name, stash_key|
         :method => "POST",
         "HTTP_ACCEPT" => 'application/json',
         "CONTENT_TYPE" => 'application/json',
-        :input => @stash[stash_name].to_json
+        :input => Chef::JSONCompat.to_json(@stash[stash_name])
       }.merge(sign_request("POST", request_path, OpenSSL::PKey::RSA.new(IO.read("#{tmpdir}/client.pem")), "bobo")))
     end
   end
 end
 
 Given /^sending the method '(.+)' to the '(.+)' with '(.+)'/ do |method, stash_name, update_value|
-  update_value = JSON.parse(update_value) if update_value =~ /^\[|\{/
+  update_value = Chef::JSONCompat.from_json(update_value) if update_value =~ /^\[|\{/
   @stash[stash_name].send(method.to_sym, update_value)
 end
 

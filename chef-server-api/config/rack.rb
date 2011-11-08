@@ -19,5 +19,8 @@
 # Correctly set a content length.
 use Rack::ContentLength
 
+# Serve assets for the html page from /public
+use Merb::Rack::Static, Merb.dir_for(:public)
+
 # this is our main merb application
 run Merb::Rack::Application.new

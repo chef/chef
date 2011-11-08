@@ -8,7 +8,7 @@ Feature: List data bags via the REST API
     Given I am an administrator
       And there are no data bags
      When I authenticate as 'bobo'
-      And I 'GET' the path '/data' 
+      And I 'GET' the path '/data'
      Then the inflated response should be an empty hash
 
   Scenario: List data bags when one has been created
@@ -28,7 +28,13 @@ Feature: List data bags via the REST API
       And the inflated responses key 'users' should match '^http://.+/data/users$'
       And the inflated responses key 'rubies' should match '^http://.+/data/rubies$'
 
-  Scenario: List data bags when you are not authenticated 
-     When I 'GET' the path '/data' 
+  Scenario: List data bags when you are not authenticated
+     When I 'GET' the path '/data'
+     Then I should get a '400 "Bad Request"' exception
+
+  Scenario: List data bags with the wrong key
+    Given a 'registration' named 'bobo' exists
+     When I 'GET' the path '/data' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
+
 

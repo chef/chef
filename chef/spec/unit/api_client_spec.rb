@@ -157,7 +157,7 @@ describe Chef::ApiClient do
       @client.public_key("crowes")
       @client.private_key("monkeypants")
       @client.admin(true)
-      @deserial = JSON.parse(@client.to_json)
+      @deserial = Chef::JSONCompat.from_json(@client.to_json)
     end
 
     it "should deserialize to a Chef::ApiClient object" do

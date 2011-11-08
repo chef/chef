@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,26 +19,26 @@
 require 'chef' / 'data_bag_item'
 
 class DatabagItems < Application
-  
+
   provides :html, :json
-  before :login_required 
-  
+  before :login_required
+
   def edit
     begin
       @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
-      @default_data = @databag_item
+      @default_data = @databag_item.raw_data
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not load the databag item" }   
-    end 
+      @_message = { :error => "Could not load the databag item" }
+    end
     render
-  end 
-  
+  end
+
   def update
     begin
       @databag_item = Chef::DataBagItem.new
-      @databag_item.data_bag params[:databag_id] 
-      @databag_item.raw_data = JSON.parse(params[:json_data])
+      @databag_item.data_bag params[:databag_id]
+      @databag_item.raw_data = Chef::JSONCompat.from_json(params[:json_data])
       raise ArgumentError, "Updating id is not allowed" unless @databag_item.raw_data['id'] == params[:id] #to be consistent with other objects, changing id is not allowed.
       @databag_item.save
       redirect(url(:databag_databag_items, :databag_id => params[:databag_id], :id => @databag_item.name), :message => { :notice => "Updated Databag Item #{@databag_item.name}" })
@@ -47,30 +47,30 @@ class DatabagItems < Application
       @_message = { :error => "Could not update the databag item" }
       @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
       @default_data = @databag_item
-      render :edit 
-    end         
-  end 
-  
+      render :edit
+    end
+  end
+
   def new
     @default_data = {'id'=>''}
     render
-  end 
-  
+  end
+
   def create
-    begin   
-      @databag_name = params[:databag_id] 
+    begin
+      @databag_name = params[:databag_id]
       @databag_item = Chef::DataBagItem.new
       @databag_item.data_bag @databag_name
-      @databag_item.raw_data = JSON.parse(params[:json_data])
+      @databag_item.raw_data = Chef::JSONCompat.from_json(params[:json_data])
       @databag_item.create
       redirect(url(:databag_databag_items, :databag_id => @databag_name), :message => { :notice => "Databag item created successfully" })
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not create databag item" } 
+      @_message = { :error => "Could not create databag item" }
       render :new
     end
   end
-  
+
   def index
     render
   end
@@ -85,9 +85,9 @@ class DatabagItems < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       redirect(url(:databag_databag_items), {:message => { :error => "Could not show the databag item" }, :permanent => true})
-    end 
+    end
   end
-  
+
   def destroy(databag_id=params[:databag_id], item_id=params[:id])
     begin
       @databag_item = Chef::DataBagItem.new
@@ -96,7 +96,7 @@ class DatabagItems < Application
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       redirect(url(:databag_databag_items), {:message => { :error => "Could not delete databag item" }, :permanent => true})
-    end 
-  end 
-  
+    end
+  end
+
 end

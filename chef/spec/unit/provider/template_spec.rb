@@ -20,18 +20,18 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Template do
   before(:each) do
-    Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks")))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest) }
+    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new)
+    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
-    
+
     @rendered_file_location = Dir.tmpdir + '/openldap_stuff.conf'
-    
+
     @resource = Chef::Resource::Template.new(@rendered_file_location)
     @resource.cookbook_name = 'openldap'
-    
+
     @provider = Chef::Provider::Template.new(@resource, @run_context)
     @current_resource = @resource.dup
     @provider.current_resource = @current_resource
@@ -46,7 +46,7 @@ describe Chef::Provider::Template do
     it "finds the template file in the coobook cache if it isn't local" do
       @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/openldap_stuff.conf.erb'
     end
-    
+
     it "finds the template file locally if it is local" do
       @resource.local(true)
       @resource.source('/tmp/its_on_disk.erb')
@@ -88,14 +88,14 @@ describe Chef::Provider::Template do
       before do
         File.open(@rendered_file_location, "w+") { |f| f.print "blargh" }
       end
-      
+
       it "overwrites the file with the updated content when the create action is run" do
         @node[:slappiness] = "a warm gun"
         @provider.should_receive(:backup)
         @provider.action_create
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
       end
-      
+
       it "should set the file access control as specified in the resource" do
         @resource.owner("adam")
         @resource.group("wheel")
@@ -118,7 +118,7 @@ describe Chef::Provider::Template do
         File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
       end
-      
+
       it "does not backup the original or overwrite it" do
         @node[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)

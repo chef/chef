@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,17 +25,17 @@ describe Chef::Provider::Directory do
     @new_resource = Chef::Resource::Directory.new('/tmp')
     @new_resource.owner(500)
     @new_resource.group(500)
-    @new_resource.mode(0644)    
+    @new_resource.mode(0644)
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
   end
-  
+
   it "should load the current resource based on the new resource" do
     File.stub!(:exist?).and_return(true)
     File.should_receive(:directory?).once.and_return(true)
-    cstats = mock("stats", :null_object => true)
+    cstats = mock("stats")
     cstats.stub!(:uid).and_return(500)
     cstats.stub!(:gid).and_return(500)
     cstats.stub!(:mode).and_return(0755)
@@ -46,7 +46,7 @@ describe Chef::Provider::Directory do
     @directory.current_resource.group.should eql(500)
     @directory.current_resource.mode.should eql("755")
   end
-  
+
   it "should create a new directory on create, setting updated to true" do
     load_mock_provider
     File.should_receive(:exists?).once.and_return(false)
@@ -57,7 +57,7 @@ describe Chef::Provider::Directory do
     @directory.action_create
     @directory.new_resource.should be_updated
   end
-  
+
   it "should not create the directory if it already exists" do
     load_mock_provider
     File.should_receive(:exists?).once.and_return(true)
@@ -65,9 +65,9 @@ describe Chef::Provider::Directory do
     @directory.stub!(:set_owner).and_return(true)
     @directory.stub!(:set_group).and_return(true)
     @directory.stub!(:set_mode).and_return(true)
-    @directory.action_create  
+    @directory.action_create
   end
-  
+
   it "should delete the directory if it exists, and is writable with action_delete" do
     load_mock_provider
     File.should_receive(:directory?).once.and_return(true)
@@ -75,18 +75,18 @@ describe Chef::Provider::Directory do
     Dir.should_receive(:delete).with(@new_resource.path).once.and_return(true)
     @directory.action_delete
   end
-  
+
   it "should raise an exception if it cannot delete the file due to bad permissions" do
     load_mock_provider
     File.stub!(:exists?).and_return(true)
     File.stub!(:writable?).and_return(false)
     lambda { @directory.action_delete }.should raise_error(RuntimeError)
   end
-  
+
   def load_mock_provider
     File.stub!(:exist?).and_return(true)
     File.stub!(:directory?).and_return(true)
-    cstats = mock("stats", :null_object => true)
+    cstats = mock("stats")
     cstats.stub!(:uid).and_return(500)
     cstats.stub!(:gid).and_return(500)
     cstats.stub!(:mode).and_return(0755)

@@ -25,7 +25,7 @@ describe Chef::Provider::File do
     @node = Chef::Node.new
     @node.name "latte"
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
     @provider = Chef::Provider::File.new(@resource, @run_context)
@@ -339,13 +339,28 @@ describe Chef::Provider::File do
     @provider.backup
   end
 
-  describe "when creating a file if it's missing" do
-    before(:each) do
-      @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
-      @provider = Chef::Provider::File.new(@resource, @run_context)
+  describe "when the enclosing directory does not exist" do
+    before do
+      @resource.path("/tmp/no-such-path/file.txt")
     end
 
-    it "should call action create, since File can only touch" do
+    it "raises a specific error describing the problem" do
+      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    end
+  end
+
+  describe "when creating a file which may be missing" do
+    it "should not call action create if the file exists" do
+      @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
+      @provider = Chef::Provider::File.new(@resource, @run_context)
+      @provider.should_not_receive(:action_create).and_return(true)
+      @provider.action_create_if_missing
+    end
+
+    it "should call action create if the does not file exist" do
+      @resource.path("/tmp/non_existant_file")
+      @provider = Chef::Provider::File.new(@resource, @run_context)
+      ::File.stub!(:exists?).with(@resource.path).and_return(false)
       @provider.should_receive(:action_create).and_return(true)
       @provider.action_create_if_missing
     end

@@ -33,76 +33,115 @@ describe Chef::Application::Knife do
     Chef::Knife.stub!(:list_commands)
   end
 
-  describe "run" do
-    it "should exit 1 and print the options if no arguments are given at all" do
-      with_argv([]) do
-        lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+  it "should exit 1 and print the options if no arguments are given at all" do
+    with_argv([]) do
+      lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 1 }
+    end
+  end
+
+  it "should exit 2 if run without a sub command" do
+    with_argv("--user", "adam") do
+      Chef::Log.should_receive(:error).with(/you need to pass a sub\-command/i)
+      lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 2 }
+    end
+  end
+
+  it "should run a sub command with the applications command line option prototype" do
+    with_argv(*%w{noop knife command with some args}) do
+      knife = mock(Chef::Knife)
+      Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
+      @knife.should_receive(:exit).with(0)
+      @knife.run
+    end
+  end
+
+  describe "when given a path to the client key" do
+    it "expands a relative path relative to the CWD" do
+      relative_path = '.chef/client.pem'
+      Dir.stub!(:pwd).and_return(CHEF_SPEC_DATA)
+      with_argv(*%W{noop knife command -k #{relative_path}}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
       end
+      Chef::Config[:client_key].should == File.join(CHEF_SPEC_DATA, relative_path)
     end
 
-    it "should exit 2 if run without a sub command" do
-      with_argv("--user", "adam") do
-        Chef::Log.should_receive(:error).with(/you need to pass a sub\-command/i)
-        lambda { @knife.run }.should raise_error(SystemExit) { |e| e.status.should == 2 }
+    it "expands a ~/home/path to the correct full path" do
+      home_path = '~/.chef/client.pem'
+      with_argv(*%W{noop knife command -k #{home_path}}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
       end
+      Chef::Config[:client_key].should == File.join(ENV['HOME'], '.chef/client.pem')
+    end
+
+    it "does not expand a full path" do
+      full_path = '/etc/chef/client.pem'
+      with_argv(*%W{noop knife command -k #{full_path}}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+      Chef::Config[:client_key].should == '/etc/chef/client.pem'
+    end
+
+  end
+
+  describe "with environment configuration" do
+    before do
+      Chef::Config[:environment] = nil
+    end
+
+    it "should default to no environment" do
+      with_argv(*%w{noop knife command}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+      Chef::Config[:environment].should == nil
+    end
+
+    it "should load the environment from the config file" do
+      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      with_argv(*%W{noop knife command -c #{config_file}}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+      Chef::Config[:environment].should == 'production'
+    end
+
+    it "should load the environment from the CLI options" do
+      with_argv(*%W{noop knife command -E development}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+      Chef::Config[:environment].should == 'development'
+    end
+
+    it "should override the config file environment with the CLI environment" do
+      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      with_argv(*%W{noop knife command -c #{config_file} -E override}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+      Chef::Config[:environment].should == 'override'
+    end
+
+    it "should override the config file environment with the CLI environment regardless of order" do
+      config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
+      with_argv(*%W{noop knife command -E override -c #{config_file}}) do
+        @knife.should_receive(:exit).with(0)
+        @knife.run
+      end
+      Chef::Config[:environment].should == 'override'
     end
 
     it "should run a sub command with the applications command line option prototype" do
       with_argv(*%w{noop knife command with some args}) do
-        knife = mock(Chef::Knife, :null_object => true)
+        knife = mock(Chef::Knife)
         Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
         @knife.should_receive(:exit).with(0)
         @knife.run
       end
     end
 
-    describe "with environment configuration" do
-      before do
-        Chef::Config[:environment] = nil
-      end
-
-      it "should default to no environment" do
-        with_argv(*%w{noop knife command}) do
-          @knife.should_receive(:exit).with(0)
-          @knife.run
-        end
-        Chef::Config[:environment].should == nil
-      end
-
-      it "should load the environment from the config file" do
-        config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
-        with_argv(*%W{noop knife command -c #{config_file}}) do
-          @knife.should_receive(:exit).with(0)
-          @knife.run
-        end
-        Chef::Config[:environment].should == 'production'
-      end
-
-      it "should load the environment from the CLI options" do
-        with_argv(*%W{noop knife command -E development}) do
-          @knife.should_receive(:exit).with(0)
-          @knife.run
-        end
-        Chef::Config[:environment].should == 'development'
-      end
-
-      it "should override the config file environment with the CLI environment" do
-        config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
-        with_argv(*%W{noop knife command -c #{config_file} -E override}) do
-          @knife.should_receive(:exit).with(0)
-          @knife.run
-        end
-        Chef::Config[:environment].should == 'override'
-      end
-
-      it "should override the config file environment with the CLI environment regardless of order" do
-        config_file = File.join(CHEF_SPEC_DATA,"environment-config.rb")
-        with_argv(*%W{noop knife command -E override -c #{config_file}}) do
-          @knife.should_receive(:exit).with(0)
-          @knife.run
-        end
-        Chef::Config[:environment].should == 'override'
-      end
-    end
   end
 end

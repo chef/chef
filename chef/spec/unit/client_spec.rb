@@ -50,25 +50,37 @@ describe Chef::Client do
     @client.node = @node
   end
 
+  describe "when enforcing path sanity" do
+    before do
+      Chef::Config[:enforce_path_sanity] = true
+    end
+
+    it "adds all useful PATHs that are not yet in PATH to PATH" do
+      env = {"PATH" => ""}
+      @client.enforce_path_sanity(env)
+      env["PATH"].should == "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    end
+
+    it "does not re-add paths that already exist in PATH" do
+      env = {"PATH" => "/usr/bin:/sbin:/bin"}
+      @client.enforce_path_sanity(env)
+      env["PATH"].should == "/usr/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin"
+    end
+  end
+
   describe "run" do
     it "should identify the node and run ohai, then register the client" do
-
-      mock_chef_rest_for_node = OpenStruct.new({ })
-      mock_chef_rest_for_client = OpenStruct.new({ })
-      mock_couchdb = OpenStruct.new({ })
-
-      Chef::CouchDB.stub(:new).and_return(mock_couchdb)
+      mock_chef_rest_for_node = mock("Chef::REST (node)")
+      mock_chef_rest_for_client = mock("Chef::REST (client)")
+      mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
+      mock_chef_runner = mock("Chef::Runner")
 
       # --Client.register
-      #   Use a filename we're sure doesn't exist, so that the registration
-      #   code creates a new client.
-      temp_client_key_file = Tempfile.new("chef_client_spec__client_key")
-      temp_client_key_file.close
-      FileUtils.rm(temp_client_key_file.path)
-      Chef::Config[:client_key] = temp_client_key_file.path
+      #   Make sure Client#register thinks the client key doesn't
+      #   exist, so it tries to register and create one.
+      File.should_receive(:exists?).with(Chef::Config[:client_key]).exactly(1).times.and_return(false)
 
       #   Client.register will register with the validation client name.
-      Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).at_least(1).times.and_return(mock_chef_rest_for_node)
       Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).and_return(mock_chef_rest_for_client)
       mock_chef_rest_for_client.should_receive(:register).with(@fqdn, Chef::Config[:client_key]).and_return(true)
       #   Client.register will then turn around create another
@@ -78,28 +90,34 @@ describe Chef::Client do
 
       # --Client.build_node
       #   looks up the node, which we will return, then later saves it.
-      mock_chef_rest_for_node.should_receive(:get_rest).with("nodes/#{@fqdn}").and_return(@node)
-      mock_chef_rest_for_node.should_receive(:put_rest).with("nodes/#{@fqdn}", @node).exactly(2).times.and_return(@node)
+      Chef::Node.should_receive(:find_or_create).with(@fqdn).and_return(@node)
 
-      ## Node expansion w/ environments
-      environment = mock("default Chef::Environment with empty attributes", :attributes => {})
-      Chef::Environment.stub!(:load).and_return(environment)
-
-      # --Client.sync_cookbooks -- downloads the list of cookbooks to sync
+      # --Client.setup_run_context
+      # ---Client.sync_cookbooks -- downloads the list of cookbooks to sync
       #
+      # FIXME: Ideally, we might prefer to mock at a lower level, but
+      #        this at least avoids the spec test from trying to
+      #        delete files out of Chef::Config[:file_cache_path] (/var/chef/cache)
+      Chef::CookbookVersion.should_receive(:clear_obsoleted_cookbooks).with({}).and_return(true)
+      mock_chef_rest_for_node.should_receive(:post_rest).with("environments/_default/cookbook_versions", {:run_list => []}).and_return({})
 
-      # after run, check proper mutation of node
-      # e.g., node.automatic_attrs[:platform], node.automatic_attrs[:platform_version]
-      Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
-      Chef::Config.cookbook_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")))
+      # --Client.converge
+      Chef::Runner.should_receive(:new).and_return(mock_chef_runner)
+      mock_chef_runner.should_receive(:converge).and_return(true)
 
-      @client.stub!(:sync_cookbooks).and_return({})
+      # --Client.save_updated_node
+      Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(mock_chef_rest_for_node_save)
+      mock_chef_rest_for_node_save.should_receive(:put_rest).with("nodes/#{@fqdn}", @node).and_return(true)
+
       @client.should_receive(:run_started)
       @client.should_receive(:run_completed_successfully)
+
+
+      # This is what we're testing.
       @client.run
 
 
-      # check that node has been filled in correctly
+      # Post conditions: check that node has been filled in correctly
       @node.automatic_attrs[:platform].should == "example-platform"
       @node.automatic_attrs[:platform_version].should == "example-platform-1.0"
     end
@@ -149,14 +167,33 @@ describe Chef::Client do
 
   describe "build_node" do
     it "should expand the roles and recipes for the node" do
-      Chef::Node.should_receive(:find_or_create).and_return(@node)
-      @node.should_receive(:save).and_return(true)
+      @node.run_list << "role[role_containing_cookbook1]"
+      role_containing_cookbook1 = Chef::Role.new
+      role_containing_cookbook1.name("role_containing_cookbook1")
+      role_containing_cookbook1.run_list << "cookbook1"
 
+      Chef::Node.should_receive(:find_or_create).and_return(@node)
+      #@node.should_receive(:expand!).with('server').and_return(RunListExpansionFromDisk.new(RunListItem.new("cookbook1")))
+
+      # build_node will call Node#expand! with server, which will
+      # eventually hit the server to expand the included role.
+      mock_chef_rest = mock("Chef::REST")
+      mock_chef_rest.should_receive(:get_rest).with("roles/role_containing_cookbook1").and_return(role_containing_cookbook1)
+      Chef::REST.should_receive(:new).and_return(mock_chef_rest)
+
+      # check pre-conditions.
       @node[:roles].should be_nil
       @node[:recipes].should be_nil
+
       @client.build_node
+
+      # check post-conditions.
       @node[:roles].should_not be_nil
+      @node[:roles].length.should == 1
+      @node[:roles].should include("role_containing_cookbook1")
       @node[:recipes].should_not be_nil
+      @node[:recipes].length.should == 1
+      @node[:recipes].should include("cookbook1")
     end
   end
 end

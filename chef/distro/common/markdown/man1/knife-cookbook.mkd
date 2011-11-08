@@ -1,0 +1,263 @@
+knife-cookbook(1) -- upload and manage chef cookbooks
+========================================
+
+## SYNOPSIS
+
+__knife__ __cookbook__ _sub-command_ _(options)_
+
+## SUB-COMMANDS
+`knife cookbook` supports the following sub commands:
+
+## LIST
+__knife cookbook list__ _(options)_
+
+  * `-a`, `--all`:
+    show all versions of a cookbook instead of just the most recent
+  * `-w`, `--with-uri`:
+    show corresponding uris
+
+Lists the cookbooks available on the Chef server.
+
+## SHOW
+__knife cookbook show cookbook [version] [part] [filename]__ _(options)_
+
+  * `-f`, `--fqdn fqdn               `:
+    the fqdn of the host to see the file for
+  * `-p`, `--platform platform       `:
+    the platform to see the file for
+  * `-v`, `--platform-version version`:
+    the platform version to see the file for
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
+
+show a particular part of a _cookbook_ for the specified _version_. _part_ can be one of:
+
+  * _attributes_
+  * _definitions_
+  * _files_
+  * _libraries_
+  * _providers_
+  * _recipes_
+  * _resources_
+  * _templates_
+
+## UPLOAD
+__knife cookbook upload [cookbooks...]__ _(options)_
+
+  * `-a`, `--all`:
+    upload all cookbooks, rather than just a single cookbook
+  * `-o`, `--cookbook-path path:path`:
+    a colon-separated path to look for cookbooks in
+  * `-d`, `--upload-dependencies`:
+    Uploads additional cookbooks that this cookbook lists in as
+    dependencies in its metadata.
+  * `-E`, `--environment ENVIRONMENT`:
+    An _ENVIRONMENT_ to apply the uploaded cookbooks to. Specifying this
+    option will cause knife to edit the _ENVIRONMENT_ to place a strict
+    version constraint on the cookbook version(s) uploaded.
+  * `--freeze`:
+    Sets the frozen flag on the uploaded cookbook(s) Any future attempt
+    to modify the cookbook without changing the version number will
+    return an error unless --force is specified.
+  * `--force`:
+    Overrides the frozen flag on a cookbook, allowing you to overwrite a
+    cookbook version that has previously been uploaded with the --freeze
+    option.
+
+Uploads one or more cookbooks from your local cookbook repository(ies)
+to the Chef Server. Only files that don't yet exist on the server will
+be uploaded.
+
+As the command parses the name args as 1..n cookbook names:
+    `knife cookbook upload COOKBOOK COOKBOOK ...`
+works for one to many cookbooks.
+
+## DOWNLOAD
+__knife cookbook download cookbook [version]__ _(options)_
+
+  * `-d`, `--dir download_directory`:
+    the directory to download the cookbook into
+  * `-f`, `--force`:
+    overwrite an existing directory with the download
+  * `-n`, `--latest`:
+    download the latest version of the cookbook
+
+download a cookbook from the chef server. if no version is specified and
+only one version exists on the server, that version will be downloaded.
+if no version is specified and multiple versions are available on the
+server, you will be prompted for a version to download.
+
+## DELETE
+__knife cookbook delete cookbook [version]__ _(options)_
+
+  * `-a`, `--all`:
+    delete all versions
+  * `-p`, `--purge`:
+    purge files from backing store. this will disable any cookbook that contains any of the same files as the cookbook being purged.
+
+delete the specified _version_ of the named _cookbook_. if no version is
+specified, and only one version exists on the server, that version will
+be deleted. if multiple versions are available on the server, you will
+be prompted for a version to delete.
+
+## BULK DELETE
+__knife cookbook bulk delete regex__ _(options)_
+
+  * `-p`, `--purge`:
+    purge files from backing store. this will disable any cookbook that
+    contains any of the same files as the cookbook being purged.
+
+delete cookbooks on the chef server based on a regular expression. the
+regular expression (_regex_) should be in quotes, not in //'s.
+
+## COOKBOOK CREATE
+__knife cookbook create cookbook__ _(options)_
+
+  * `-o`, `--cookbook-path path`:
+    the directory where the cookbook will be created
+  * `-r`, `--readme-format format`:
+    format of the readme file md, mkd, txt, rdoc
+  * `-c`, `--copyright copyright`:
+    name of copyright holder
+  * `-i`, `--license license`:
+    license for cookbook, apachev2 or none
+  * `-e`, `--email email`:
+    email address of cookbook maintainer
+
+this is a helper command that creates a new cookbook directory in the
+`cookbook_path`. the following directories and files are created for the
+named cookbook.
+
+* cookbook/attributes
+* cookbook/definitions
+* cookbook/files/default
+* cookbook/libraries
+* cookbook/metadata.rb
+* cookbook/providers
+* cookbook/readme.md
+* cookbook/recipes/default.rb
+* cookbook/resources
+* cookbook/templates/default
+
+supported readme formats are 'md' (default), 'mkd', 'txt', 'rdoc'. the
+readme file will be written with the specified extension and a set of
+helpful starting headers.
+
+specify `-c` or `--copyright` with the name of the copyright holder as
+your name or your company/organization name in a quoted string. if this
+value is not specified an all-caps string `your_company_name` is used
+which can be easily changed with find/replace.
+
+specify `-i` or `--license` with the license that the cookbook is
+distributed under for sharing with other people or posting to the
+opscode cookbooks site. be aware of the licenses of files you put inside
+the cookbook and follow any restrictions they describe. when using
+`none` (default) or `apachev2`, comment header text and metadata file
+are pre-filled. the `none` license will be treated as
+non-redistributable.
+
+specify `-e` or `--email` with the email address of the cookbook's
+maintainer. if this value is not specified, an all-caps string
+`your_email` is used which can easily be changed with find/replace.
+
+the cookbook copyright, license, email and readme_format settings can be filled in the
+`knife.rb`, for example with default values:
+
+    cookbook_copyright "your_company_name"
+    cookbook_license "none"
+    cookbook_email "your_email"
+    readme_format "md"
+
+
+## METADATA
+__knife cookbook metadata cookbook__ _(options)_
+
+  * `-a`, `--all`:
+    generate metadata for all cookbooks, rather than just a single cookbook
+  * `-o`, `--cookbook-path path:path`:
+    a colon-separated path to look for cookbooks in
+
+generate cookbook metadata for the named _cookbook_. the _path_ used here specifies where the cookbooks directory is located and corresponds to the `cookbook_path` configuration option.
+
+## METADATA FROM FILE
+__knife cookbook metadata from file__ _(options)_
+
+load the cookbook metadata from a specified file.
+
+## TEST
+__knife cookbook test [cookbooks...]__ _(options)_
+
+  * `-a`, `--all`:
+    test all cookbooks, rather than just a single cookbook
+  * `-o`, `--cookbook-path path:path`:
+    a colon-separated path to look for cookbooks in
+
+test the specified cookbooks for syntax errors. this uses the built-in
+ruby syntax checking option for files in the cookbook ending in `.rb`,
+and the erb syntax check for files ending in `.erb` (templates).
+
+## RECIPE LIST
+__knife recipe list [PATTERN]__
+
+List available recipes from the server. Specify _PATTERN_ as a regular
+expression to limit the results.
+
+## DESCRIPTION
+Cookbooks are the fundamental unit of distribution in Chef. They
+encapsulate all recipes of resources and assets used to configure a
+particular aspect of the infrastructure. The following sub-commands can
+be used to manipulate the cookbooks stored on the Chef Server.
+
+On disk, cookbooks are directories with a defined structure. The
+following directories may appear within a cookbook:
+
+  * COOKBOOK/attributes/:
+    Ruby files that define default parameters to be used in recipes
+  * COOKBOOK/definitions/:
+    Ruby files that contain _resource definitions_
+  * COOKBOOK/files/SPECIFICITY:
+    Files of arbitrary type. These files may be downloaded by
+    chef-client(8) when configuring a host.
+  * COOKBOOK/libraries/:
+    Ruby files that contain library code needed for recipes
+  * COOKBOOK/providers/:
+    Ruby files that contain Lightweight Provider definitions
+  * COOKBOOK/recipes/:
+    Ruby files that use Chef's recipe DSL to describe the desired
+    configuration of a system
+  * COOKBOOK/resources/:
+    Ruby files that contain Lightweight Resource definitions
+  * COOKBOOK/templates/SPECIFICITY:
+    ERuby (ERb) template files. These are referenced by _recipes_ and
+    evaluated to dynamically generate configuration files.
+
+__SPECIFICITY__ is a feature of _files_ and _templates_ that allow you
+to specify alternate files to be used on a specific OS platform or host.
+The default specificity setting is _default_, that is files in
+`COOKBOOK/files/default` will be used when a more specific copy is not
+available. Further documentation for this feature is available on the
+Chef wiki: <http://wiki.opscode.com/display/chef/File+Distribution#FileDistribution-FileSpecificity>
+
+Cookbooks also contain a metadata file that defines various properties
+of the cookbook. The most important of these are the _version_ and the
+_dependencies_. The _version_ is used in combination with environments
+to select which copy of a given cookbook is distributed to a node. The
+_dependencies_ are used by the server to determine which additional
+cookbooks must be distributed to a given host when it requires a
+cookbook.
+
+## SEE ALSO
+   __knife-environment(1)__ __knife-cookbook-site(1)__
+   <http://wiki.opscode.com/display/chef/Cookbooks>
+   <http://wiki.opscode.com/display/chef/Metadata>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>

@@ -23,7 +23,7 @@ require 'tempfile'
 class Chef
   class Provider
     class CookbookFile < Chef::Provider::File
-      
+
       def load_current_resource
         @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
@@ -31,46 +31,47 @@ class Chef
         @current_resource
       end
 
-
       def action_create
-         if file_cache_location && content_stale?
-           Chef::Log.debug("content of file #{@new_resource.path} requires update")
-           backup_new_resource
-           Tempfile.open(::File.basename(@new_resource.name)) do |staging_file|
-             Chef::Log.debug("staging #{file_cache_location} to #{staging_file.path}")
-             staging_file.close
-             stage_file_to_tmpdir(staging_file.path)
-             FileUtils.mv(staging_file.path, @new_resource.path)
-           end
-           @new_resource.updated_by_last_action(true)
-         else
-           set_all_access_controls(@new_resource.path)
-         end
-         @new_resource.updated_by_last_action?
-       end
+        assert_enclosing_directory_exists!
+        if file_cache_location && content_stale?
+          Chef::Log.debug("#{@new_resource} has new contents")
+          backup_new_resource
+          Tempfile.open(::File.basename(@new_resource.name)) do |staging_file|
+            Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{staging_file.path}")
+            staging_file.close
+            stage_file_to_tmpdir(staging_file.path)
+            FileUtils.mv(staging_file.path, @new_resource.path)
+          end
+          Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+          @new_resource.updated_by_last_action(true)
+        else
+          set_all_access_controls(@new_resource.path)
+        end
+        @new_resource.updated_by_last_action?
+      end
 
       def action_create_if_missing
         if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
+          Chef::Log.debug("#{@new_resource} exists at #{@new_resource.path} taking no action.")
         else
           action_create
         end
       end
-      
+
       def file_cache_location
         @file_cache_location ||= begin
           cookbook = run_context.cookbook_collection[resource_cookbook]
           cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
         end
       end
-      
-      # Determine the cookbook to get the file from. If new resource sets an 
+
+      # Determine the cookbook to get the file from. If new resource sets an
       # explicit cookbook, use it, otherwise fall back to the implicit cookbook
       # i.e., the cookbook the resource was declared in.
       def resource_cookbook
         @new_resource.cookbook || @new_resource.cookbook_name
       end
-      
+
       # Copy the file from the cookbook cache to a temporary location and then
       # set its file access control settings.
       def stage_file_to_tmpdir(staging_file_location)
@@ -86,7 +87,6 @@ class Chef
 
       def backup_new_resource
         if ::File.exists?(@new_resource.path)
-          Chef::Log.info "Backing up current file at #{@new_resource.path}"
           backup @new_resource.path
         end
       end

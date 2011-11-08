@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,23 +17,38 @@
 #
 
 require 'chef/knife'
-require 'chef/role'
-require 'json'
 
 class Chef
   class Knife
     class RoleFromFile < Knife
 
-      banner "knife role from file FILE (options)"
+      deps do
+        require 'chef/role'
+        require 'chef/knife/core/object_loader'
+        require 'chef/json_compat'
+      end
 
-      def run 
-        updated = load_from_file(Chef::Role, @name_args[0])
+      banner "knife role from file FILE [FILE..] (options)"
 
-        updated.save
-        
-        output(format_for_display(updated)) if config[:print_after]
+      def loader
+        @loader ||= Knife::Core::ObjectLoader.new(Chef::Role, ui)
+      end
 
-        Chef::Log.warn("Updated Role #{updated.name}!")
+      option :all,
+        :short => "-a",
+        :long => "--all",
+        :description => "Upload all roles, rather than just a single role"
+
+      def run
+        @name_args.each do |arg|
+          updated = loader.load_from("roles", arg)
+
+          updated.save
+
+          output(format_for_display(updated)) if config[:print_after]
+
+          ui.info("Updated Role #{updated.name}!")
+        end
       end
 
     end

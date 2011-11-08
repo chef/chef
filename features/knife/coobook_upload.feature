@@ -9,5 +9,4 @@ Feature: Upload Cookbooks with Knife
     Given I am an administrator
      When I upload the 'version_updated' cookbook with knife
      When I 'GET' to the path '/cookbooks/version_updated'
-     Then the inflated responses key 'version_updated' item '0' should be '2.0.0'
-  
+     Then the inflated response should equal '{"version_updated"=>{"url"=>"http://127.0.0.1:4000/cookbooks/version_updated", "versions"=>[{"url"=>"http://127.0.0.1:4000/cookbooks/version_updated/2.0.0", "version"=>"2.0.0"}]}}'

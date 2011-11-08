@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # chef-client Startup script for the Chef client
 #
 # chkconfig: - 98 02
@@ -35,7 +35,7 @@ start() {
     [ -x $exec ] || exit 5
     [ -f $config ] || exit 6
     echo -n $"Starting $prog: "
-    daemon chef-client -d -c "$config" -L "$logfile" -p "$pidfile" -i "$interval" -s "$splay" "$options"
+    daemon chef-client -d -c "$config" -L "$logfile" -P "$pidfile" -i "$interval" -s "$splay" "$options"
     retval=$?
     echo
     [ $retval -eq 0 ] && touch $lockfile
@@ -57,7 +57,11 @@ restart () {
 }
 
 reload() {
-    restart
+    echo -n $"Reloading $prog: "
+    killproc -p $pidfile chef-client -HUP
+    retval=$?
+    echo
+    return $retval 
 }
 
 force_reload() {

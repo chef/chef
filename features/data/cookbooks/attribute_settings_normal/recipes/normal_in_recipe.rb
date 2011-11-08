@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-node.normal[:attribute_priority_was] = 5 
+node.normal[:attribute_priority_was] = "came from recipe[attribute_settings_normal::normal_in_recipe]"
 
 execute "echo #{node[:attribute_priority_was]} > #{node[:tmpdir]}/attribute_setting.txt"
 

@@ -1,0 +1,150 @@
+#
+# Author:: Seth Falcon (<seth@opscode.com>)
+# Copyright:: Copyright (c) 2010-2011 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+grammar Lucene
+
+  rule body
+    (expression / space)* <Body>
+  end
+
+  rule expression
+    operation / group / field / field_range / term / string
+  end
+
+  rule term
+    keyword valid_letter+ <Term> / !keyword !"?" valid_letter <Term>
+  end
+
+  rule field
+    field_name ":" (term/string/group) <Field>
+  end
+
+  rule field_range
+    field_name ":" "[" range_value " TO " range_value "]" <InclFieldRange>
+    /
+    field_name ":" "{" range_value " TO " range_value "}" <ExclFieldRange>
+  end
+
+  rule field_name
+    !keyword valid_letter+ <FieldName>
+  end
+
+  rule range_value
+    valid_letter+ <RangeValue> / "*" <RangeValue>
+  end
+
+  rule group
+    space? '(' body ')' space? <Group>
+  end
+
+  rule operation
+    binary_op / unary_op / fuzzy_op / boost_op
+  end
+
+  rule unary_op
+    not_op / required_op / prohibited_op
+  end
+
+  rule binary_op
+    (group / field / field_range / term) space? boolean_operator space+ body <BinaryOp>
+  end
+
+  rule boolean_operator
+    and_operator / or_operator
+  end
+
+  rule and_operator
+    'AND' <AndOperator> / '&&' <AndOperator>
+  end
+
+  rule or_operator
+    'OR' <OrOperator> / '||' <OrOperator>
+  end
+
+  rule not_op
+    not_operator space (group / field / field_range / term / string) <UnaryOp>
+    /
+    bang_operator space? (group / field / field_range / term / string) <UnaryOp>
+  end
+
+  rule not_operator
+    'NOT' <NotOperator>
+  end
+
+  rule bang_operator
+    '!' <NotOperator>
+  end
+
+  rule required_op
+    !valid_letter required_operator (term/string) <UnaryOp>
+    /
+    required_operator (term/string) <UnaryOp>
+  end
+  
+  rule required_operator
+    '+' <RequiredOperator>
+  end
+
+  rule prohibited_op
+    !valid_letter prohibited_operator (field/field_range/term/string) <UnaryOp>
+  end
+
+  rule prohibited_operator
+    '-' <ProhibitedOperator>
+  end
+
+  rule boost_op
+    (term/string) '^' fuzzy_param <BoostOp>
+  end
+
+  rule fuzzy_op
+    (term/string) '~' fuzzy_param? (space / !valid_letter) <FuzzyOp>
+  end
+
+  rule fuzzy_param
+    [0-9] '.'? [0-9] <FuzzyParam> / [0-9]+ <FuzzyParam>
+  end
+
+  rule string
+    '"' term (space term)* '"' <Phrase>
+  end
+
+  rule keyword
+    'AND' / 'OR' / 'NOT'
+  end
+
+  rule valid_letter
+    start_letter+ ([a-zA-Z0-9*?_.-] / '\\' special_char)*
+  end
+
+  rule start_letter
+    [a-zA-Z0-9._*] / '\\' special_char
+  end
+
+  rule end_letter
+    [a-zA-Z0-9*?_.] / '\\' special_char
+  end
+
+  rule special_char
+    [-+&|!(){}\[\]^"~*?:\\]
+  end
+
+  rule space
+    [\s]+
+  end
+end

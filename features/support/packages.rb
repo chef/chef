@@ -4,8 +4,7 @@ def package_system_available?(name)
   case name
   when 'MacPorts'
     uname = `uname`
-    port = `which port`
-    (uname =~ /Darwin/ && !port.match(/not found/) && File.exist?('/opt'))
+    (uname =~ /Darwin/ && File.exist?('/opt') && shell_out("which port").status.success?)
   else
     false
   end

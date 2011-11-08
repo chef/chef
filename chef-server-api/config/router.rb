@@ -35,8 +35,11 @@ Merb::Router.prepare do
   # Environments
   resources :environments do |e|
     e.match("/cookbooks", :method => "get").to(:controller=>"environments", :action=>"list_cookbooks")
+    e.match("/cookbooks/:cookbook_id", :method => "get").to(:controller=>"environments", :action=>"cookbook")
+    e.match("/recipes", :method => "get").to(:controller=>"environments", :action=>"list_recipes")
     e.match("/nodes", :method => "get").to(:controller=>"environments", :action=>"list_nodes")
     e.match("/roles/:role_id", :method => "get").to(:controller=>"environments", :action => "role")
+    e.match("/cookbook_versions", :method => "post").to(:controller=>"environments", :action=>"cookbook_versions_for_run_list")
   end
 
   # Status
@@ -50,7 +53,9 @@ Merb::Router.prepare do
   match("/clients/:id", :id => /[\w\.-]+/, :method=>"delete").to(:controller=>'clients', :action=>'destroy')
 
   # Search
-  resources :search
+  #resources :search
+  match('/search', :method => 'get').to(:controller => 'search', :action => 'index').name(:search)
+  match('/search/:id', :method => 'get').to(:controller => 'search', :action => 'show').name(:search_show)
   match('/search/reindex', :method => 'post').to(:controller => "search", :action => "reindex")
 
   # Cookbooks
@@ -58,9 +63,7 @@ Merb::Router.prepare do
 
   match("/cookbooks",
         :method => 'get'
-        ).to(:controller => "cookbooks", :action => "index")
-
-  match("/cookbooks/_latest", :method=>'get').to(:controller=>'cookbooks',:action=>'index_latest')
+        ).to(:controller => "cookbooks", :action => "index").name(:cookbooks)
 
   match("/cookbooks/_recipes", :method=>'get').to(:controller=>'cookbooks',:action=>'index_recipes')
 
@@ -111,5 +114,38 @@ Merb::Router.prepare do
   resources :data, :controller => "data_bags"
 
   match('/').to(:controller => 'main', :action =>'index').name(:top)
+
+  # Need to monkey patch Merb so that it inflates JSON input with a higher
+  # recursion depth allowed (the default is 19). See CHEF-1292/PL-538.
+  module Merb
+    class Request
+      # ==== Returns
+      # Hash:: Parameters from body if this is a JSON request.
+      #
+      # ==== Notes
+      # If the JSON object parses as a Hash, it will be merged with the
+      # parameters hash.  If it parses to anything else (such as an Array, or
+      # if it inflates to an Object) it will be accessible via the inflated_object
+      # parameter.
+      #
+      # :api: private
+      def json_params
+        @json_params ||= begin
+          if Merb::Const::JSON_MIME_TYPE_REGEXP.match(content_type)
+            begin
+              # Call Chef's JSON utility instead of the default in Merb,
+              # JSON.parse.
+              jobj = Chef::JSONCompat.from_json(raw_post)
+              jobj = Mash.from_hash(jobj) if jobj.is_a?(Hash)
+            rescue JSON::ParserError
+              jobj = Mash.new
+            end
+            jobj.is_a?(Hash) ? jobj : { :inflated_object => jobj }
+          end
+        end
+      end
+
+    end
+  end
 
 end

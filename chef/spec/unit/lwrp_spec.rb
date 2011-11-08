@@ -19,29 +19,32 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe "override logging" do
-  
+  before :each do
+    $stderr.stub!(:write)
+  end
+
   it "should log if attempting to load resource of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-      Chef::Resource.build_from_file("lwrp", file)
+      Chef::Resource.build_from_file("lwrp", file, nil)
     end
 
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Resource.build_from_file("lwrp", file)
+      Chef::Resource.build_from_file("lwrp", file, nil)
     end
   end
 
   it "should log if attempting to load provider of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-      Chef::Provider.build_from_file("lwrp", file)
+      Chef::Provider.build_from_file("lwrp", file, nil)
     end
-    
+
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Provider.build_from_file("lwrp", file)
+      Chef::Provider.build_from_file("lwrp", file, nil)
     end
   end
-  
+
 end
 
 describe "LWRP" do
@@ -54,18 +57,16 @@ describe "LWRP" do
     $VERBOSE = @original_VERBOSE
   end
 
-  describe "Light-weight Chef::Resource" do
+  describe "Lightweight Chef::Resource" do
 
     before do
-
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file)
+        Chef::Resource.build_from_file("lwrp", file, nil)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file)
+        Chef::Resource.build_from_file("lwrp", file, nil)
       end
-
     end
 
     it "should load the resource into a properly-named class" do
@@ -88,35 +89,60 @@ describe "LWRP" do
       lambda { Chef::Resource::LwrpFoo.new("blah").monkey(42) }.should raise_error(ArgumentError)
     end
 
+    it "should have access to the run context and node during class definition" do
+      node = Chef::Node.new(nil)
+      node[:penguin_name] = "jackass"
+      run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new)
+
+      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
+        Chef::Resource.build_from_file("lwrp", file, run_context)
+      end
+
+      cls = Chef::Resource.const_get("LwrpNodeattr")
+      cls.node.should be_kind_of(Chef::Node)
+      cls.run_context.should be_kind_of(Chef::RunContext)
+      cls.node[:penguin_name].should eql("jackass")
+    end
+
   end
 
-  describe "Light-weight Chef::Provider" do
-    before(:each) do
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file)
-      end
-
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file)
-      end
-
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-        Chef::Provider.build_from_file("lwrp", file)
-      end
-
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
-        Chef::Provider.build_from_file("lwrp", file)
-      end
-
-
-      node = Chef::Node.new
-      node.platform(:ubuntu)
-      node.platform_version('8.10')
-      @run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new({}))
-
+  describe "Lightweight Chef::Provider" do
+    before do
+      @node = Chef::Node.new
+      @node.platform(:ubuntu)
+      @node.platform_version('8.10')
+      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}))
       @runner = Chef::Runner.new(@run_context)
     end
 
+    before(:each) do
+      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
+        Chef::Resource.build_from_file("lwrp", file, @run_context)
+      end
+
+      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
+        Chef::Resource.build_from_file("lwrp", file, @run_context)
+      end
+
+      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
+        Chef::Provider.build_from_file("lwrp", file, @run_context)
+      end
+
+      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
+        Chef::Provider.build_from_file("lwrp", file, @run_context)
+      end
+
+    end
+
+    it "should properly handle a new_resource reference" do
+      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource.monkey("bob")
+      resource.provider(:lwrp_monkey_name_printer)
+      resource.run_context = @run_context
+
+      provider = Chef::Platform.provider_for_resource(resource)
+      provider.action_twiddle_thumbs
+    end
 
     it "should load the provider into a properly-named class" do
       Chef::Provider.const_get("LwrpBuckPasser").should be_kind_of(Class)
@@ -171,28 +197,28 @@ describe "LWRP" do
     end
 
     it "should properly handle a new_resource reference" do
-      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
 
-      provider = @runner.build_provider(resource)
+      provider = Chef::Platform.provider_for_resource(resource)
       provider.action_twiddle_thumbs
 
       provider.monkey_name.should == "my monkey's name is 'bob'"
     end
 
     it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
-
-      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
       resource.monkey("bob")
       resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
 
-      provider = @runner.build_provider(resource)
+      provider = Chef::Platform.provider_for_resource(resource)
+      #provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 
       provider.enclosed_resource.monkey.should == 'bob, the monkey'
     end
 
   end
-  
+
 end

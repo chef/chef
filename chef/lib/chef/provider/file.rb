@@ -63,9 +63,9 @@ class Chef
       # Set the content of the file, assuming it is not set correctly already.
       def set_content
         unless compare_content
-          Chef::Log.info("Setting content for #{@new_resource}")
           backup @new_resource.path if ::File.exists?(@new_resource.path)
           ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
+          Chef::Log.info("#{@new_resource} contents updated")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -75,12 +75,12 @@ class Chef
         return false if @new_resource.owner.nil?
 
         @set_user_id = case @new_resource.owner
-                       when /^\d+$/, Integer
-                         @new_resource.owner.to_i
-                       else
-                         # This raises an ArgumentError if you can't find the user
-                         Etc.getpwnam(@new_resource.owner).uid
-                       end
+        when /^\d+$/, Integer
+          @new_resource.owner.to_i
+        else
+          # This raises an ArgumentError if you can't find the user
+          Etc.getpwnam(@new_resource.owner).uid
+        end
 
         @set_user_id == @current_resource.owner
       end
@@ -88,9 +88,9 @@ class Chef
       # Set the ownership on the file, assuming it is not set correctly already.
       def set_owner
         unless compare_owner
-          Chef::Log.info("Setting owner to #{@set_user_id} for #{@new_resource}")
           @set_user_id = negative_complement(@set_user_id)
           ::File.chown(@set_user_id, nil, @new_resource.path)
+          Chef::Log.info("#{@new_resource} owner changed to #{@set_user_id}")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -100,20 +100,20 @@ class Chef
         return false if @new_resource.group.nil?
 
         @set_group_id = case @new_resource.group
-                        when /^\d+$/, Integer
-                          @new_resource.group.to_i
-                        else
-                          Etc.getgrnam(@new_resource.group).gid
-                        end
+        when /^\d+$/, Integer
+          @new_resource.group.to_i
+        else
+          Etc.getgrnam(@new_resource.group).gid
+        end
 
         @set_group_id == @current_resource.group
       end
 
       def set_group
         unless compare_group
-          Chef::Log.info("Setting group to #{@set_group_id} for #{@new_resource}")
           @set_group_id = negative_complement(@set_group_id)
           ::File.chown(nil, @set_group_id, @new_resource.path)
+          Chef::Log.info("#{@new_resource} group changed to #{@set_group_id}")
           @new_resource.updated_by_last_action(true)
         end
       end
@@ -129,18 +129,19 @@ class Chef
 
       def set_mode
         unless compare_mode && @new_resource.mode != nil
-          Chef::Log.info("Setting mode to #{sprintf("%o" % octal_mode(@new_resource.mode))} for #{@new_resource}")
           # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
           ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
+          Chef::Log.info("#{@new_resource} mode changed to #{sprintf("%o" % octal_mode(@new_resource.mode))}")
           @new_resource.updated_by_last_action(true)
         end
       end
 
       def action_create
+        assert_enclosing_directory_exists!
         unless ::File.exists?(@new_resource.path)
-          Chef::Log.info("Creating #{@new_resource} at #{@new_resource.path}")
           ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
           @new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
         else
           set_content unless @new_resource.content.nil?
         end
@@ -150,15 +151,19 @@ class Chef
       end
 
       def action_create_if_missing
-        action_create
+        if ::File.exists?(@new_resource.path)
+          Chef::Log.debug("File #{@new_resource.path} exists, taking no action.")
+        else
+          action_create
+        end
       end
 
       def action_delete
         if ::File.exists?(@new_resource.path)
           if ::File.writable?(@new_resource.path)
             backup unless ::File.symlink?(@new_resource.path)
-            Chef::Log.info("Deleting #{@new_resource} at #{@new_resource.path}")
             ::File.delete(@new_resource.path)
+            Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
             @new_resource.updated_by_last_action(true)
           else
             raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
@@ -169,8 +174,8 @@ class Chef
       def action_touch
         action_create
         time = Time.now
-        Chef::Log.info("Updating #{@new_resource} with new atime/mtime of #{time}")
         ::File.utime(time, time, @new_resource.path)
+        Chef::Log.info("#{@new_resource} updated atime and mtime to #{time}")
         @new_resource.updated_by_last_action(true)
       end
 
@@ -187,8 +192,8 @@ class Chef
           prefix = Chef::Config[:file_backup_path].to_s
           backup_path = ::File.join(prefix, backup_filename)
           FileUtils.mkdir_p(::File.dirname(backup_path)) if Chef::Config[:file_backup_path]
-          Chef::Log.info("Backing up #{@new_resource} to #{backup_path}")
           FileUtils.cp(file, backup_path, :preserve => true)
+          Chef::Log.info("#{@new_resource} backed up to #{backup_path}")
 
           # Clean up after the number of backups
           slice_number = @new_resource.backup
@@ -196,14 +201,22 @@ class Chef
           if backup_files.length >= @new_resource.backup
             remainder = backup_files.slice(slice_number..-1)
             remainder.each do |backup_to_delete|
-              Chef::Log.info("Removing backup of #{@new_resource} at #{backup_to_delete}")
               FileUtils.rm(backup_to_delete)
+              Chef::Log.info("#{@new_resource} removed backup at #{backup_to_delete}")
             end
           end
         end
       end
 
       private
+
+      def assert_enclosing_directory_exists!
+        enclosing_dir = ::File.dirname(@new_resource.path)
+        unless ::File.directory?(enclosing_dir)
+          msg = "Cannot create a file at #{@new_resource.path} because the enclosing directory (#{enclosing_dir}) does not exist"
+          raise Chef::Exceptions::EnclosingDirectoryDoesNotExist, msg
+        end
+      end
 
       def new_resource_content_checksum
         @new_resource.content && Digest::SHA2.hexdigest(@new_resource.content)

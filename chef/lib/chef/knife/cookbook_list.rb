@@ -1,14 +1,15 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Nuo Yan (<nuo@opscode.com>)
+# Copyright:: Copyright (c) 2009, 2010, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +18,6 @@
 #
 
 require 'chef/knife'
-require 'json'
 
 class Chef
   class Knife
@@ -30,23 +30,18 @@ class Chef
         :long => "--with-uri",
         :description => "Show corresponding URIs"
 
-      def run
-        env          = Chef::Config[:environment]
-        api_endpoint = env ? "/environments/#{env}/cookbooks" : "/cookbooks/_latest"
-        output(format_cookbooks_for_display(rest.get_rest(api_endpoint)))
-      end
+      option :all_versions,
+        :short => "-a",
+        :long => "--all",
+        :description => "Show all available versions."
 
-      def format_cookbooks_for_display(api_result)
-        api_result.map do |name, uri|
-          version = uri.split("/").last
-          result = [name, version]
-          result << uri if config[:with_uri]
-          result
-        end
+      def run
+        env          = config[:environment]
+        num_versions = config[:all_versions] ? "num_versions=all" : "num_versions=1"
+        api_endpoint = env ? "/environments/#{env}/cookbooks?#{num_versions}" : "/cookbooks?#{num_versions}"
+        cookbook_versions = rest.get_rest(api_endpoint)
+        ui.output(format_cookbook_list_for_display(cookbook_versions))
       end
     end
   end
 end
-
-
-

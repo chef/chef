@@ -1,0 +1,151 @@
+knife-environment(1) -- Define cookbook policies for the environments in your infrastructure
+========================================
+
+## SYNOPSIS
+
+__knife__ __environment__ _sub-command_ _(options)_
+
+## SUBCOMMANDS
+Environment subcommands follow a basic create, read, update, delete
+(CRUD) pattern. The following subcommands are available:
+
+## CREATE
+__knife environment create__ _environment_ _(options)_
+
+  * `-d`, `--description DESCRIPTION`:
+    The value of the description field.
+
+Create a new environment object on the Chef Server. The envrionment will
+be opened in the text editor for editing prior to creation if the -n
+option is not present.
+
+## DELETE
+__knife environment delete__ _environment_ _(options)_
+
+Destroy an environment on the Chef Server. A prompt for confirmation
+will be displayed if the -y options is not given.
+
+## EDIT
+__knife environment edit__ _environment_ _(options)_
+
+Fetch _environment_ and display it in the text editor for editing. The
+environment will be saved to the Chef Server when the editing session
+exits.
+
+## FROM FILE
+__knife environment from file__ _file_ _(options)_
+
+Create or update an environment from the JSON or Ruby format _file_. See
+__format__ for the proper format of this file.
+
+## LIST
+__knife environment list__ _(options)_
+  * `-w`, `--with-uri`:
+    Show the resource URI for each environment
+
+## SHOW
+__knife environment show__ _environment_ _(options)_
+
+## DESCRIPTION
+Environments provide a means to apply policies to hosts in your
+infrastructure based on business function. For example, you may have a
+separate copy of your infrastructure called "dev" that runs the latest
+version of your application and should use the newest versions of your
+cookbooks when configuring systems, and a production instance of your
+infrastructure where you wish to update code and cookbooks in a more
+controlled fashion. In Chef, this function is implemented with
+_environments_.
+
+Environments contain two major components: a set of cookbook version
+constraints and environment attributes.
+
+## SYNTAX
+A cookbook version constraint is comprised of a _cookbook name_ and a
+_version constraint_. The _cookbook name_ is the name of a cookbook in
+your system, and the _version constraint_ is a String describing the
+version(s) of that cookbook allowed in the environment.  Only one
+_version constraint_ is supported for a given _cookbook name_.
+
+The exact syntax used to define a cookbook version constraint varies
+depending on whether you use the JSON format or the Ruby format. In the
+JSON format, the cookbook version constraints for an environment are
+represented as a single JSON object, like this:
+
+    {"apache2": ">= 1.5.0"}
+
+In the Ruby format, the cookbook version contraints for an environment
+are represented as a Ruby Hash, like this:
+
+    {"apache2" => ">= 1.5.0"}
+
+A _version number_ is a String comprised of two or three digits
+separated by a dot (.) character, or in other words, strings of the form
+"major.minor" or "major.minor.patch". "1.2" and "1.2.3" are examples of
+valid version numbers. Version numbers containing more than three digits
+or alphabetic characters are not supported.
+
+A _version constraint_ String is composed of an _operator_ and a
+_version number_. The following operators are available:
+
+  * `= VERSION`:
+    Equality. Only the exact version specified may be used.
+  * `> VERSION`:
+    Greater than. Only versions greater than `VERSION` may be used.
+  * `>= VERSION`:
+    Greater than or equal to. Only versions equal to VERSION or greater
+    may be used.
+  * `< VERSION`:
+    Less than. Only versions less than VERSION may be used.
+  * `<= VERSION`:
+    Less than or equal to. Only versions lesser or equal to VERSION may
+    be used.
+  * `~> VERSION`:
+    Pessimistic greater than. Depending on the number of components in
+    the given VERSION, the constraint will be optimistic about future
+    minor or patch revisions only. For example, `~> 1.1` will match any
+    version less than `2.0` and greater than or equal to `1.1.0`,
+    whereas `~> 2.0.5` will match any version less than `2.1.0` and
+    greater than or equal to `2.0.5`.
+
+## FORMAT
+The JSON format of an envioronment is as follows:
+
+    {
+      "name": "dev",
+      "description": "The development environment",
+      "cookbook_versions": {
+        "couchdb": "= 11.0.0"
+      },
+      "json_class": "Chef::Environment",
+      "chef_type": "environment",
+      "default_attributes": {
+        "apache2": { "listen_ports": [ "80", "443" ] }
+      },
+      "override_attributes": {
+        "aws_s3_bucket": "production"
+      }
+    }
+
+The Ruby format of an environment is as follows:
+
+    name "dev"
+    description "The development environment"
+    cookbook_versions  "couchdb" => "= 11.0.0"
+    default_attributes "apache2" => { "listen_ports" => [ "80", "443" ] }
+    override_attributes "aws_s3_bucket" => "production"
+
+
+## SEE ALSO
+   __knife-node(1)__ __knife-cookbook(1)__ __knife-role(1)__
+  <http://wiki.opscode.com/display/chef/Environments>
+  <http://wiki.opscode.com/display/chef/Version+Constraints>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Daniel DeLeo <dan@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>

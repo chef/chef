@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,36 +27,50 @@ describe Chef::Provider::Package::Dpkg do
 
     @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
 
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
+    @stdin = StringIO.new
+    @stdout = StringIO.new
     @status = mock("Status", :exitstatus => 0)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stderr = StringIO.new
+    @pid = mock("PID")
     @provider.stub!(:popen4).and_return(@status)
 
     ::File.stub!(:exists?).and_return(true)
   end
-  
+
   describe "when loading the current resource state" do
-  
+
     it "should create a current resource with the name of the new_resource" do
       @provider.load_current_resource
       @provider.current_resource.package_name.should == "wget"
     end
-  
+
     it "should raise an exception if a source is supplied but not found" do
       ::File.stub!(:exists?).and_return(false)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
-    it "gets the source package version from dpkg-deb if provided" do
-      @stdout = StringIO.new("wget\t1.11.4-1ubuntu1")
-      @provider.stub!(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.package_name.should == "wget"
-      @new_resource.version.should == '1.11.4-1ubuntu1'
+    describe 'gets the source package version from dpkg-deb' do
+      def check_version(version)
+        @stdout = StringIO.new("wget\t#{version}")
+        @provider.stub!(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.load_current_resource
+        @provider.current_resource.package_name.should == "wget"
+        @new_resource.version.should == version
+      end
+      
+      it 'if short version provided' do
+        check_version('1.11.4')
+      end
+      
+      it 'if extended version provided' do
+        check_version('1.11.4-1ubuntu1')
+      end
+      
+      it 'if distro-specific version provided' do
+        check_version('1.11.4-1ubuntu1~lucid')
+      end
     end
-  
+
     it "gets the source package name from dpkg-deb correctly when the package name has `-' or `+' characters" do
       @stdout = StringIO.new("foo-pkg++2\t1.11.4-1ubuntu1")
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -85,11 +99,11 @@ Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
 Conflicts: wget-ssl
 DPKG_S
       @provider.stub!(:popen4).with("dpkg -s wget").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-    
+
       @provider.load_current_resource
       @provider.current_resource.version.should == "1.11.4-1ubuntu1"
     end
-  
+
     it "should raise an exception if dpkg fails to run" do
       @status = mock("Status", :exitstatus => -1)
       @provider.stub!(:popen4).and_return(@status)
@@ -106,6 +120,30 @@ DPKG_S
         }
       })
       @provider.install_package("wget", "1.11.4-1ubuntu1")
+    end
+
+    it "should run dpkg -i if the package is a path and the source is nil" do
+      @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
+      @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+      @provider.install_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
+    end
+
+    it "should run dpkg -i if the package is a path and the source is nil for an upgrade" do
+      @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
+      @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+      @provider.upgrade_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -i with the package source and options if specified" do

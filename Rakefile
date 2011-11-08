@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-gems = %w[chef chef-server-api chef-server-webui chef-solr chef-server]
+gems = %w[chef chef-server-api chef-server-webui chef-solr chef-expander chef-server]
 require 'rubygems'
 
 desc "Build the chef gems"
@@ -44,7 +44,8 @@ end
 desc "Run the rspec tests"
 task :spec do
   Dir.chdir("chef") { sh "rake spec" }
-  Dir.chdir("chef-solr") { sh "rake spec" }
+  Dir.chdir("chef-server-api") { sh "rake spec" }
+  Dir.chdir("chef-expander") { sh "rake spec" }
 end
 
 task :default => :spec
@@ -97,22 +98,21 @@ def start_chef_solr(type="normal")
     when "normal"
       exec("./chef-solr/bin/chef-solr -l debug")
     when "features"
+      p = fork { exec("./chef-solr/bin/chef-solr-installer -p /tmp/chef_solr_for_features --force") }
+      Process.wait(p)
       exec("./chef-solr/bin/chef-solr -c #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug")
     end
   end
 end
 
-def start_chef_solr_indexer(type="normal")
+def start_chef_expander(type="normal")
   @chef_solr_indexer   = nil
-  cid = fork
-  if cid
-    @chef_solr_indexer_pid = cid
-  else
+  @chef_solr_indexer_pid = fork do
     case type
     when "normal"
-      exec("./chef-solr/bin/chef-solr-indexer -l debug")
+      exec("./chef-expander/bin/chef-expander -n 1 -i 1 -l debug")
     when "features"
-      exec("./chef-solr/bin/chef-solr-indexer -c #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug")
+      exec("./chef-expander/bin/chef-expander -c #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -n 1 -i 1")
     end
   end
 end
@@ -156,9 +156,10 @@ end
 def start_dev_environment(type="normal")
   start_couchdb(type)
   start_rabbitmq(type)
+  sleep 2
   configure_rabbitmq(type)
   start_chef_solr(type)
-  start_chef_solr_indexer(type)
+  start_chef_expander(type)
   start_chef_server(type)
   start_chef_webui(type)
   puts "Running CouchDB at #{@couchdb_server_pid}"
@@ -245,8 +246,8 @@ namespace :dev do
       end
 
       desc "Start Chef Solr Indexer for testing"
-      task :chef_solr_indexer do
-        start_chef_solr_indexer("features")
+      task :chef_expander do
+        start_chef_expander("features")
         wait_for_ctrlc
       end
 
@@ -287,7 +288,7 @@ namespace :dev do
 
     desc "Start Chef Solr Indexer"
     task :chef_solr_indexer do
-      start_chef_solr_indexer
+      start_chef_expander
       wait_for_ctrlc
     end
 

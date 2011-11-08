@@ -2,9 +2,9 @@
 
 = DESCRIPTION:
 
-Chef is a configuration management tool designed to bring automation to your entire infrastructure. Chef's development is sponsored by Opscode[http://www.opscode.com].
+Chef is a system integration framework designed to bring the benefits of configuration management to your entire infrastructure.
 
-The Chef Wiki is the definitive source of user documentation. 
+The Chef Wiki is the definitive source of user documentation.
 
 * http://wiki.opscode.com/display/chef/Home
 
@@ -16,7 +16,7 @@ This README focuses on developers who want to modify Chef source code. For users
 
 Before working on the code, if you plan to contribute your changes, you need to read the Opscode Contributing document.
 
-* http://wiki.opscode.com/display/opscode/Contributing
+* http://wiki.opscode.com/display/chef/How+to+Contribute
 
 You will also need to set up the repository with the appropriate branches. We document the process on the Chef Wiki.
 
@@ -26,106 +26,100 @@ Once your repository is set up, you can start working on the code. We do use BDD
 
 = ENVIRONMENT:
 
-In order to have a development environment where changes to the Chef code can be tested, we'll need to install a few things after setting up the Git repository.
+Chef has two kinds of code testing:
 
-== Requirements:
+* Unit Tests (rspec)
+* Integration Tests (cucumber)
 
-Install these via your platform's preferred method; for example apt, yum, ports, emerge, etc.
+We're going to set up the local environment in two phases, one for each of these.
 
-* Git
-* CouchDB
-* RabbitMQ
-* libxml2 development package (for webrat)
-* libxslt develoment package (for webrat)
+== Unit Tests (rspec):
 
-Install the following RubyGems.
+We use Rspec to test that the code does what it is supposed to (unit tests).
 
-* ohai
+Non-Ruby software:
+
+* Gecode (version 3.5.0)
+
+Gecode is available on Mac OS X from homebrew, for Ubuntu/Debian from apt.opscode.com, or can be compiled from source.
+
+* http://www.gecode.org/
+
+Install the Chef Gems from source in this repository.
+
+  rake install
+
+Install the following RubyGems:
+
 * rake
-* rspec
-* cucumber
-* webrat
-* merb-core
-* merb-assets
-* merb-haml
-* merb-helpers
-* merb-param-protection
-* merb_cucumber
-* coderay
-* libxml-ruby
+* rspec (2.5.0)
+* dep_selector (requires Gecode to compile native extensions)
 
-Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
+Run rake or rake spec:
 
-roman-merb_cucumber is available from GitHub:
+  rake spec
+  ....
+  Finished in 17.42 seconds
+  3823 examples, 0 failures, 3 pending
 
-  gem install --source http://gems.github.com/ roman-merb_cucumber
+== Integration Tests (cucumber):
 
-== Starting the Environment:
+The integration tests require some additional software on top of what was installed for the unit tests. Most of the integration tests are for testing the Chef Server API interactions, so a Chef Server environment needs to be installed.
 
-Once everything is installed, run the dev:features rake task. Since the features do integration testing, root access is required.
+Non-Ruby software:
 
-  sudo rake dev:features
+* Java
+* CouchDB (0.10+)
+* RabbitMQ (1.7.2+)
 
-The dev:features task:
+These are available in most common distribution packaging systems, including Debian 6.0+ and Ubuntu 10.04+. Java is installed on Mac OS X by default; CouchDB and RabbitMQ are available in homebrew.
 
-* Installs chef, chef-server, chef-server-slice gems. It will fail if required gems above are missing.
-* Starts chef-server on ports 4000 and 4001.
-* Starts chef-indexer.
-* Starts CouchDB on port 5984.
-* Starts the stompserver on port 61613.
+Make sure the RubyGems for the Chef Server are installed (should be from the +rake install+ earlier):
 
-You'll know its running when you see:
+* chef-expander
+* chef-server
+* chef-server-api
+* chef-server-webui
+* chef-solr
 
-   ~ Activating slice 'ChefServerSlice' ...
-  merb : worker (port 4000) ~ Starting Mongrel at port 4000
-  merb : worker (port 4000) ~ Successfully bound to port 4000
-  merb : worker (port 4001) ~ Starting Mongrel at port 4001
-  merb : worker (port 4001) ~ Successfully bound to port 4001
+=== Starting the Environment:
+
+Once everything is installed, run the dev:features rake task. Since the features do integration testing, root access may be required.
+
+  (sudo) rake dev:features
+
+This rake task will do the following:
+
+* Start CouchDB, running on port 5984
+* Start and configure RabbitMQ for Chef, running on port 5672
+* Install Chef SOLR data and start chef-solr, running on port 8983
+* Start chef-server-api on port 4000
+* Start chef-server-webui on port 4001
+* Start chef-expander, the clustered search index broker
 
 You'll want to leave this terminal running the dev environment.
 
 == Web Interface:
 
-With the dev environment running, you can now access the web interface via http://localhost:4000/. Supply an OpenID to log in.
-
-== Spec testing:
-
-We use RSpec for unit/spec tests.
-
-  rake spec
-
-This doesn't actually use the development environment, because it does the testing on all the Chef internals. For integration/usage testing, we use Cucumber features.
+With the dev environment running, you can now access the web interface via http://localhost:4000/. The default login is admin / p@ssw0rd1.
 
 == Integration testing:
 
-We test integration with Cucumber. The available feature tests are rake tasks:
+We test integration with Cucumber. Normally, you'll just run:
 
-  rake features                            # Run Features with Cucumber
-  rake features:api                        # Run Features with Cucumber
-  rake features:api:nodes                  # Run Features with Cucumber
-  rake features:api:nodes:create           # Run Features with Cucumber
-  rake features:api:nodes:delete           # Run Features with Cucumber
-  rake features:api:nodes:list             # Run Features with Cucumber
-  rake features:api:nodes:show             # Run Features with Cucumber
-  rake features:api:nodes:update           # Run Features with Cucumber
-  rake features:api:roles                  # Run Features with Cucumber
-  rake features:api:roles:create           # Run Features with Cucumber
-  rake features:api:roles:delete           # Run Features with Cucumber
-  rake features:api:roles:list             # Run Features with Cucumber
-  rake features:api:roles:show             # Run Features with Cucumber
-  rake features:api:roles:update           # Run Features with Cucumber
-  rake features:client                     # Run Features with Cucumber
-  rake features:language                   # Run Features with Cucumber
-  rake features:language:recipe_include    # Run Features with Cucumber
-  rake features:provider:package:macports  # Run Features with Cucumber
-  rake features:provider:remote_file       # Run Features with Cucumber
-  rake features:search                     # Run Features with Cucumber
+  rake features
+
+In a second terminal, to run all the feature tests. Other feature tests are available as well, see:
+
+  rake -T | grep Cucumber
+
+There are over 60 different sets of features that can be tested.
 
 = LINKS:
 
 Source:
 
-* http://github.com/opscode/chef/tree/master
+* https://github.com/opscode/chef/
 
 Tickets/Issues:
 
@@ -140,7 +134,7 @@ Documentation:
 Chef - A configuration management system
 
 Author:: Adam Jacob (<adam@opscode.com>)
-Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
+Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 License:: Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");

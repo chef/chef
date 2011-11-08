@@ -30,57 +30,63 @@ if [ ! -d /var/run/chef ]; then
   mkdir /var/run/chef
 fi
 
-DAEMON_OPTS="-L $LOGFILE -d -c $CONFIG -i $INTERVAL -s $SPLAY"
+DAEMON_OPTS="-d -P $PIDFILE -L $LOGFILE -c $CONFIG -i $INTERVAL -s $SPLAY"
 
-running_pid() {                                                                 
+running_pid() {
   pid=$1
-  name=$2                                                                     
-  [ -z "$pid" ] && return 1                                                   
-  [ ! -d /proc/$pid ] &&  return 1                                            
+  name=$2
+  [ -z "$pid" ] && return 1
+  [ ! -d /proc/$pid ] &&  return 1
   cmd=`awk '/Name:/ {print $2}' /proc/$pid/status`
-  [ "$cmd" != "$name" ] &&  return 1                                          
-  return 0 
-}   
+  [ "$cmd" != "$name" ] &&  return 1
+  return 0
+}
 
-running() {                                                                     
+running() {
   [ ! -f "$PIDFILE" ] && return 1
   pid=`cat $PIDFILE`
-  running_pid $pid $NAME || return 1                                        
+  running_pid $pid $NAME || return 1
   return 0
-}   
+}
 
-start_server() {                                                                
-  if [ -z "$DAEMONUSER" ] ; then                                          
-    start_daemon -p $PIDFILE $DAEMON $DAEMON_OPTS                       
+start_server() {
+  if [ -z "$DAEMONUSER" ] ; then
+    start_daemon -p $PIDFILE $DAEMON $DAEMON_OPTS
   errcode=$?
   else
-    start-stop-daemon --start --quiet --pidfile $PIDFILE \              
-      --chuid $DAEMONUSER \ 
-      --exec $DAEMON -- $DAEMON_OPTS                          
-    errcode=$?  
-  fi  
-  return $errcode                                                         
-}       
+    start-stop-daemon --start --quiet --pidfile $PIDFILE \
+      --chuid $DAEMONUSER \
+      --exec $DAEMON -- $DAEMON_OPTS
+    errcode=$?
+  fi
+  return $errcode
+}
 
-stop_server() {                                                                 
-   if [ -z "$DAEMONUSER" ] ; then                                          
-     killproc -p $PIDFILE $DAEMON                                        
+stop_server() {
+   if [ -z "$DAEMONUSER" ] ; then
+     killproc -p $PIDFILE $DAEMON
      errcode=$?
    else
-     start-stop-daemon --stop --quiet --pidfile $PIDFILE \               
-       --user $DAEMONUSER \ 
+     start-stop-daemon --stop --quiet --pidfile $PIDFILE \
+       --user $DAEMONUSER \
        --exec $DAEMON
-     errcode=$?  
-   fi  
-   return $errcode                                                         
-}       
+     errcode=$?
+   fi
+   return $errcode
+}
 
-reload_server() {                                                               
-  [ ! -f "$PIDFILE" ] && return 1                                             
-  pid=pidofproc $PIDFILE # This is the daemon's pid                           
-  /bin/kill -1 $pid
-  return $?
-}   
+reload_server() {
+  if [ -z "$DAEMONUSER" ] ; then
+     killproc -p $PIDFILE $DAEMON -HUP
+     errcode=$?
+   else
+     start-stop-daemon --stop --signal HUP --quiet --pidfile $PIDFILE \
+       --user $DAEMONUSER \
+       --exec $DAEMON
+     errcode=$?
+   fi
+   return $errcode
+}
 
 force_stop() {
   [ ! -e "$PIDFILE" ] && return
@@ -108,7 +114,7 @@ case "$1" in
         exit 0
     fi
     if start_server ; then
-        [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time 
+        [ -n "$STARTTIME" ] && sleep $STARTTIME # Wait some time
         if  running ;  then
             log_end_msg 0
         else
@@ -161,8 +167,12 @@ case "$1" in
     fi
     ;;
   reload)
-    log_warning_msg "Reloading $NAME daemon: not implemented, as the daemon"
-    log_warning_msg "cannot re-read the config file (use restart)."
+    if running; then
+      log_daemon_msg "Reloading $DESC" "$NAME"
+      errcode=0
+      reload_server || errcode=$?
+      log_end_msg $errcode
+    fi
     ;;
   *)
     N=/etc/init.d/$NAME

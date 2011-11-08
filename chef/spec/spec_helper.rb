@@ -23,6 +23,7 @@ module Shef
 end
 
 require 'rubygems'
+require 'rspec/mocks'
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
@@ -44,7 +45,8 @@ Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| re
 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"
-Chef::Config[:cache_options] = { } 
+Chef::Config[:cache_options] = { }
+Chef::Config[:persistent_queue] = false
 
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)

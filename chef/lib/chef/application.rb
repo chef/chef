@@ -15,13 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'socket'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/log'
 require 'mixlib/cli'
+require 'tmpdir'
 
 class Chef::Application
   include Mixlib::CLI
+
+  class Wakeup < Exception
+  end
 
   def initialize
     super
@@ -35,14 +40,14 @@ class Chef::Application
     end
 
     unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      trap("QUIT") do
+        Chef::Log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
+      end
+
       trap("HUP") do
         Chef::Log.info("SIGHUP received, reconfiguring")
         reconfigure
       end
-    end
-
-    at_exit do
-      # tear down the logger
     end
 
     # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
@@ -86,9 +91,19 @@ class Chef::Application
 
   end
 
-  # Initialize and configure the logger
+  # Initialize and configure the logger. If the configured log location is not
+  # STDOUT, but stdout is a TTY and we're not daemonizing, we set up a secondary
+  # logger with output to stdout. This way, we magically do the right thing when
+  # the user has configured logging to a file but they're running chef in the
+  # shell to debug something.
   def configure_logging
     Chef::Log.init(Chef::Config[:log_location])
+    if ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize])
+      stdout_logger = Logger.new(STDOUT)
+      STDOUT.sync = true
+      stdout_logger.formatter = Chef::Log.logger.formatter
+      Chef::Log.loggers <<  stdout_logger
+    end
     Chef::Log.level = Chef::Config[:log_level]
   end
 
@@ -111,9 +126,19 @@ class Chef::Application
 
 
   class << self
+    def debug_stacktrace(e)
+      message = "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+      chef_stacktrace_out = "Generated at #{Time.now.to_s}\n"
+      chef_stacktrace_out += message
+
+      Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
+      Chef::Log.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+      Chef::Log.debug(message)
+      true
+    end
+
     # Log a fatal error message to both STDERR and the Logger, exit the application
     def fatal!(msg, err = -1)
-      STDERR.puts("FATAL: #{msg}")
       Chef::Log.fatal(msg)
       Process.exit err
     end

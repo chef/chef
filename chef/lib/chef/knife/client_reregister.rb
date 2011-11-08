@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,12 +17,15 @@
 #
 
 require 'chef/knife'
-require 'chef/api_client'
-require 'json'
 
 class Chef
   class Knife
     class ClientReregister < Knife
+
+      deps do
+        require 'chef/api_client'
+        require 'chef/json_compat'
+      end
 
       banner "knife client reregister CLIENT (options)"
 
@@ -36,21 +39,20 @@ class Chef
 
         if @client_name.nil?
           show_usage
-          Chef::Log.fatal("You must specify a client name")
+          ui.fatal("You must specify a client name")
           exit 1
         end
-        
+
         client = Chef::ApiClient.load(@client_name)
-        key = client.save(true)
+        key = client.save(new_key=true)
         if config[:file]
           File.open(config[:file], "w") do |f|
             f.print(key['private_key'])
           end
         else
-          puts key['private_key']
+          ui.msg key['private_key']
         end
       end
     end
   end
 end
-

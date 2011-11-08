@@ -22,7 +22,7 @@ describe Chef::RunList::RunListExpansion do
   before do
     @run_list = Chef::RunList.new
     @run_list << 'recipe[lobster]' << 'role[rage]' << 'recipe[fist]'
-    @expansion = Chef::RunList::RunListExpansion.new(@run_list.run_list_items)
+    @expansion = Chef::RunList::RunListExpansion.new("_default", @run_list.run_list_items)
   end
 
   describe "before expanding the run list" do
@@ -47,9 +47,27 @@ describe Chef::RunList::RunListExpansion do
     end
   end
 
+  describe "after applying a role with environment-specific run lists" do
+    before do
+      @rage_role = Chef::Role.new.tap do |r|
+        r.name("rage")
+        r.env_run_lists('_default' => [], "prod" => ["recipe[prod-only]"])
+      end
+      @expansion = Chef::RunList::RunListExpansion.new("prod", @run_list.run_list_items)
+      @expansion.should_receive(:fetch_role).and_return(@rage_role)
+      @expansion.expand
+    end
+
+    it "has the correct list of recipes for the given environment" do
+      @expansion.recipes.should == ["lobster", "prod-only", "fist"]
+    end
+
+  end
+
   describe "after applying a role" do
     before do
-      @expansion.applied_role('rage')
+      @expansion.stub!(:fetch_role).and_return(Chef::Role.new)
+      @expansion.inflate_role('rage')
     end
 
     it "tracks the applied role" do
@@ -63,11 +81,15 @@ describe Chef::RunList::RunListExpansion do
 
   describe "after expanding a run list" do
     before do
-      @inflated_role = Chef::Role.new
-      @inflated_role.run_list('recipe[crabrevenge]')
-      @inflated_role.default_attributes({'foo' => 'bar'})
-      @inflated_role.override_attributes({'baz' => 'qux'})
-      @expansion.stub!(:fetch_role).and_return(@inflated_role)
+      @first_role = Chef::Role.new
+      @first_role.run_list('role[mollusk]')
+      @first_role.default_attributes({'foo' => 'bar'})
+      @first_role.override_attributes({'baz' => 'qux'})
+      @second_role = Chef::Role.new
+      @second_role.run_list('recipe[crabrevenge]')
+      @second_role.default_attributes({'foo' => 'boo'})
+      @second_role.override_attributes({'baz' => 'bux'})
+      @expansion.stub!(:fetch_role).and_return(@first_role, @second_role)
       @expansion.expand
     end
 
@@ -75,13 +97,14 @@ describe Chef::RunList::RunListExpansion do
       @expansion.recipes.should == ['lobster', 'crabrevenge', 'fist']
     end
 
-    it "has the merged attributes from the roles" do
+    it "has the merged attributes from the roles with outer roles overridding inner" do
       @expansion.default_attrs.should == {'foo' => 'bar'}
       @expansion.override_attrs.should == {'baz' => 'qux'}
     end
 
     it "has the list of all roles applied" do
-      @expansion.roles.should == ['rage']
+      # this is the correct order, but 1.8 hash order is not stable
+      @expansion.roles.should =~ ['rage', 'mollusk']
     end
 
   end

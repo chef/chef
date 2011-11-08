@@ -1,15 +1,25 @@
-source :gemcutter
+source :rubygems
 
-# MERB
-gem 'rack', '=1.1.0'
-gem 'merb-core', '=1.1.0'
-gem 'merb-haml'
-gem 'merb-assets'
-gem 'merb-helpers'
-gem 'merb-param-protection', '=1.1.0'
 gem 'bunny'
 gem 'uuidtools'
 gem 'ohai'
-gem 'chef'
-gem 'chef-solr'
 gem 'thin'
+gem 'dep_selector'
+
+merb_gems_version = "1.1.3"
+gem "merb-core", merb_gems_version
+gem "merb-assets", merb_gems_version
+gem "merb-haml", merb_gems_version
+gem "merb-helpers", merb_gems_version
+gem "merb-param-protection", merb_gems_version
+
+gem 'chef', :path => '../chef'
+gem 'chef-solr', :path => '../chef-solr'
+
+group :test do
+  gem "rake"
+
+  gem "rspec", "~> 2.5"
+  gem "webrat"
+  gem "webrat-rspec-rails"
+end

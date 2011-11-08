@@ -17,6 +17,10 @@
 .ruby .expr { color: #227; }
 .ruby .escape { color: #277; }
 
+.todo{
+  color:red;
+}
+
 .files {
   padding-left: 20px;
 }
@@ -27,7 +31,6 @@
 }
 
 .search td {
-  /*overflow: auto;*/
   font-size: 0.8em;
 }
 
@@ -49,35 +52,164 @@ dl dt { font-weight: bold; }
   padding-top: 2px;
 }
 
-div.sortable {
+div.roleFormContainer, div.nodeFormContainer, div.environmentFormContainer{
+  padding: 0 15px 15px;
+  min-width:1050px;
+}
+
+div#run_list_editor_container {
+  min-height:450px;
+  min-width:1050px;
+}
+
+div.runListEditorColumn {
+  float:left;
+  margin-top: 20px;
+}
+
+div#current_run_list_display_container{
+  margin-left:20px;
+}
+
+span#cookbook_constraints_picker{
+  float:left;
+  margin-left:10px;
+}
+
+span#cookbook_constraints_picker select{
+  size: 15;
+  margin-right:50px;
+}
+
+span#environment_run_list_selection_control{
+  float:right;
+  margin-right:10px;
+}
+
+div.runListEditorLabel, div#activeRunListName{
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+div.runListEditorLabel{
+  padding: 3px 0 5px 0;
+  margin: 0;
+  color:white;
+  background:#005573;
+  background: -moz-linear-gradient(top,  #007BA7,  #005573);
+  background:-webkit-gradient(linear, left top, left bottom, from(#007BA7), to(#005573));
+  text-shadow: #005573 0px -1px 0px;
+  display: block;
+  text-align:center;
+}
+
+div.activeRunListLabel{
+  padding-right:15px;
+  padding-left:15px;
+}
+
+div#activeRunListName{
+  padding:2px;
+  text-align:center;
+}
+
+div.runListItemListContainer{
+  border: 1px solid #999;
+  margin-top:5px;
+  margin-right: 10px;
+  box-shadow:2px 2px 2px #dfdfdf;
+  /* Safari 5 has a weird problem where these divs increase in width by 15px after updating contents with ajax.
+  Problem doesn't occur in webkit nightlies. setting max-width works around.*/
+  max-width:360px;
+}
+
+div.emptyRunListControlsContainer{
+  padding:10px;
+}
+
+div.runListAvailableItemContainer, div.runListContainer {
+  width: 360px;
+  overflow-y: scroll;
+  background: #eee;
+}
+
+div.runListAvailableItemContainer{
   height: 200px;
-  width: 350px;
-  margin-right: 10px;
-  border: 1px solid black;
-  overflow-y: scroll;
-  background: #777777;
 }
 
-div.sortable.run-list {
-  height: 430px;
-  width: 350px;
-  margin-right: 10px;
-  border: 1px solid black;
-  overflow-y: scroll;
-  background: #777777;
+div.runListAvailableItemContainer .spinner{
+  position: relative;
+  top: 100px;
+  left: 0;
+  z-index: 1000;
+  text-align: center;
 }
 
-div.run-list ul.ui-sortable#for_node, div.run-list ul.ui-sortable#for_role {
-  min-height: 420px;
+div.runListContainer{
+  height: 407px;
 }
 
+div.runListContainerForNode{
+  height:432px;
+}
+
+div.inactive, ul.inactive{
+  display:none;
+}
+
+ul.runListAvailableItemList, ul.runListItemList {
+  padding:5px 0px 0px 0px;
+  min-height:185px;
+  width:100%;
+  list-style-type: none;
+  margin: 0px;
+}
+
+ul.runListItemList{
+  min-height:405.5px;
+}
+
+ul#for_node.runListItemList{
+  min-height:420.5px;
+}
+
+li.runListItem{
+  margin: 0px 5px 5px 5px;
+  padding: 5px;
+  width: 93%;
+  overflow:hidden;
+  cursor:pointer;
+}
+
+li.displayRunListItem{
+  padding: 5px 5px 5px 5px;
+  margin: 0px 5px 0px 5px;
+  width: 93%;
+  border-bottom:1px solid #eee;
+}
+
+div.cloneRunListOption{
+  padding: 5px 5px 5px 5px;
+  margin: 0px 5px 0px 5px;
+  width: 93%;
+}
+
+div.runListAdditionalControls{
+  min-height:15px;
+  padding:5px;
+  color:#fff;
+  background:#005573;
+  background:-webkit-gradient(linear, left top, left bottom, from(#006589), to(#005573));
+}
+div.runListAdditionalControls a{
+  color:#fff;
+}
 
 div.clear {
   clear: left;
 }
 
 table.form th {
-  /* vertical-align: top; */
   font-weight: bold;
   text-align: right;
   padding-right: 10px;
@@ -91,7 +223,6 @@ div.help {
 
 table.form td {
   text-align: left;
-  /* vertical-align: top; */
 }
 
 table.sortable td {
@@ -121,7 +252,7 @@ div#tree {
   float: left;
 }
 
-div#jform { 
+div#jform {
   float: left;
   margin-left: 50px;
 }
@@ -130,23 +261,17 @@ div.editor {
   border: 1px solid black;
 }
 
-#node_available_roles, #node_available_recipes, #for_node, #for_role, #available_recipes { 
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  float: left;
-  margin-right: 10px; 
-  background: #eee; 
-  padding: 5px; 
-  width: 325px;
-  min-height:200px;
+div.attrEditor{
+  clear:both;
 }
 
-#node_available_roles li, #node_available_recipes li, #for_node li, #for_role li, #available_recipes li { 
-  margin: 0 5px 5px 5px; 
-  padding: 5px; 
-  width: 310px; 
-  overflow:hidden;
+div.attrEditor #treecontainer, div.attrEditor #tabcontainer{
+  float:left;
+}
+
+div.attrEditor #tabcontainer{
+  position:relative;
+  top:0px;
 }
 
 #sidebar_block {
@@ -157,19 +282,19 @@ div.editor {
   display: none;
 }
 
-div.tooltip { 
-    background-color: #000; 
-    outline: 1px solid #669; 
-    border: 2px solid #fff; 
-    padding: 10px 15px; 
+div.tooltip {
+    background-color: #000;
+    outline: 1px solid #669;
+    border: 2px solid #fff;
+    padding: 10px 15px;
     /* width: 200px;  */
-    display: none; 
-    color: #fff; 
-    text-align: left; 
-    font-size: 12px; 
-    outline-radius: 4px; 
-    -moz-outline-radius: 4px; 
-    -webkit-outline-radius: 4px; 
+    display: none;
+    color: #fff;
+    text-align: left;
+    font-size: 12px;
+    outline-radius: 4px;
+    -moz-outline-radius: 4px;
+    -webkit-outline-radius: 4px;
 }
 
 table.tooltip {
@@ -185,4 +310,35 @@ h1 label {
   font-size: 12px;
   color: #F7F7F8;
   padding-left: 10px;
+}
+
+.cookbook_version_constraints_cb_name{
+  width:80%;
+}
+
+a.cookbook_version_toggle{
+    text-decoration:none;
+    font-weight:bold;
+    font-size: 24px;
+}
+
+ul.cookbook_versions{
+    list-style-type:none;
+}
+
+#cookbook_version_table{
+    width: auto;
+}
+
+tbody.cookbook_versions td {
+    vertical-align:top;
+}
+
+.invalid_version_error {
+    color: red;
+    font-weight: bold;
+}
+
+#cbVerAddRow td {
+    background: #c1c8d2;
 }

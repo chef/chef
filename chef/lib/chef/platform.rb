@@ -47,6 +47,13 @@ class Chef
               :group => Chef::Provider::Group::Dscl
             }
           },
+          :mac_os_x_server => {
+            :default => {
+              :package => Chef::Provider::Package::Macports,
+              :user => Chef::Provider::User::Dscl,
+              :group => Chef::Provider::Group::Dscl
+            }
+          },
           :freebsd => {
             :default => {
               :group   => Chef::Provider::Group::Pw,
@@ -69,6 +76,17 @@ class Chef
               :package => Chef::Provider::Package::Apt,
               :service => Chef::Provider::Service::Debian,
               :cron => Chef::Provider::Cron,
+              :mdadm => Chef::Provider::Mdadm
+            },
+            "6.0" => {
+              :service => Chef::Provider::Service::Insserv
+            }
+          },
+          :xenserver   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
               :mdadm => Chef::Provider::Mdadm
             }
           },
@@ -108,7 +126,8 @@ class Chef
             :default => {
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
-              :package => Chef::Provider::Package::Zypper
+              :package => Chef::Provider::Package::Zypper,
+              :group => Chef::Provider::Group::Suse
             }
           },
           :redhat   => {
@@ -163,12 +182,56 @@ class Chef
             }
           },
           :solaris  => {},
+          :openindiana => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :opensolaris => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :nexentacore => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
           :solaris2 => {
             :default => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
               :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :netbsd => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :openbsd => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :hpux => {
+            :default => {
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :aix => {
+            :default => {
+              :group => Chef::Provider::Group::Aix
             }
           },
           :default  => {

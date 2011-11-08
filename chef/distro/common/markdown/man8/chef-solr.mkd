@@ -1,0 +1,89 @@
+chef-solr(8) -- Runs as Chef's search server
+========================================
+
+## SYNOPSIS
+
+__chef-solr__ _(options)_
+
+  * `-c`, `--config CONFIG`:
+    The configuration file to use
+  * `-d`, `--daemonize`:
+    Daemonize the process
+  * `-g`, `--group GROUP`:
+    Group to set privilege to
+  * `-l`, `--log_level LEVEL`:
+    Set the log level (debug, info, warn, error, fatal)
+  * `-L`, `--logfile LOGLOCATION`:
+    Set the log file location, defaults to STDOUT - recommended for daemonizing
+  * `-P`, `--pid PIDFILE`:
+    Set the PID file location, defaults to /tmp/chef-solr.pid
+  * `-D`, `--solr-data-dir PATH`:
+    Where the Solr data lives
+  * `-x`, `--solor-heap-size SIZE`:
+    Set the size of the Java Heap
+  * `-H`, `--solr-home-dir PATH`:
+    Solr home directory
+  * `-j`, `--java-opts OPTS`:
+    Raw options passed to Java
+  * `-x`, `--solor-heap-size`:
+    Set the size of the Java Heap
+  * `-W`, `--solr-jetty-dir PATH`:
+    Where to place the Solr Jetty instance
+  * `-u`, `--user USER`:
+    User to set privilege to
+  * `-v`, `--version`:
+    Show chef-solr version
+  * `-h`, `--help`:
+    Show this message
+
+## DESCRIPTION
+
+Chef-solr provides search service for Chef. You need to have both
+chef-solr and chef-expander-cluster running in order for search to work.
+
+__Installation__
+
+Make sure you backed up your data if you are upgrading from a previous version.
+Run chef-solr-installer to upgrade your Chef Solr installation. Answer "yes"
+when prompted for confirmation. The process should look like this:
+
+    yourshell> chef-solr-installer
+    Configuration setting solr_heap_size is unknown and will be ignored
+
+    Chef Solr is already installed in /var/chef/solr
+    Do you want to overwrite the current install? All existing Solr data will be lost. [y/n] y
+    Removing the existing Chef Solr installation
+      rm -rf /var/chef/solr
+      rm -rf /var/chef/solr-jetty
+      rm -rf /var/chef/solr/data
+    Creating Solr Home Directory
+      mkdir -p /var/chef/solr
+      entering /var/chef/solr
+      tar zxvf /Users/ddeleo/opscode/chef/chef-solr/solr/solr-home.tar.gz
+    Creating Solr Data Directory
+      mkdir -p /var/chef/solr/data
+    Unpacking Solr Jetty
+      mkdir -p /var/chef/solr-jetty
+      entering /var/chef/solr-jetty
+      tar zxvf /Users/ddeleo/opscode/chef/chef-solr/solr/solr-jetty.tar.gz
+
+    Successfully installed Chef Solr.
+    You can restore your search index using `knife index rebuild`
+
+## SEE ALSO
+
+__chef-expander-cluster__(8)
+
+Full documentation for Chef and chef-server is located on the Chef
+wiki, http://wiki.opscode.com/display/chef/Home.
+
+## AUTHOR
+
+Chef was written by Adam Jacob <adam@ospcode.com> of Opscode
+(http://www.opscode.com),  with contributions from the community.  This
+manual page was written by Joshua Timberman  <joshua@opscode.com>  with
+help2man.  Permission  is  granted  to copy, distribute and / or modify
+this document under the terms of the Apache 2.0 License.
+
+On Debian systems, the complete text of the Apache 2.0 License  can  be
+found in /usr/share/common-licenses/Apache-2.0.

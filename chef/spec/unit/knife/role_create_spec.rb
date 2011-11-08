@@ -31,6 +31,8 @@ describe Chef::Knife::RoleCreate do
     @role.stub!(:save)
     Chef::Role.stub!(:new).and_return(@role)
     @knife.stub!(:edit_data).and_return(@role)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -76,5 +78,3 @@ describe Chef::Knife::RoleCreate do
     end
   end
 end
-
-

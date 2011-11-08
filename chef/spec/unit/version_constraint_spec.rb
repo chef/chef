@@ -55,6 +55,10 @@ describe Chef::VersionConstraint do
     vc.to_s.should == ">= 0.0.0"
   end
 
+  it "should default to >= 0.0.0 when initialized with nil" do
+    Chef::VersionConstraint.new(nil).to_s.should == ">= 0.0.0"
+  end
+
   describe "include?" do
     describe "handles various input data types" do
       before do

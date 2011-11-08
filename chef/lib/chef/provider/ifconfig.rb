@@ -1,14 +1,14 @@
 #
-# Author:: Jason Jackson (jason.jackson@monster.com)
-# Copyright:: Copyright (c) 2009 Jason Jackson
+# Author:: Jason K. Jackson (jasonjackson@gmail.com)
+# Copyright:: Copyright (c) 2009 Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,18 @@ require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
 require 'erb'
+
+#  Recipe example:
+#
+#    int = {Hash with your network settings...}
+#
+#    ifconfig  int['ip'] do 
+#      ignore_failure  true 
+#      device  int['dev'] 
+#      mask    int['mask']  
+#      gateway int['gateway'] 
+#      mtu     int['mtu']
+#    end
 
 class Chef
   class Provider
@@ -76,34 +88,67 @@ class Chef
             command << " metric #{@new_resource.metric}" if @new_resource.metric
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
-  
+
           run_command(
             :command => command
           )
+          Chef::Log.info("#{@new_resource} added")
           @new_resource.updated_by_last_action(true)
-
         end
 
         # Write out the config files
         generate_config
       end
 
+      def action_enable
+        # check to see if load_current_resource found ifconfig
+        # enables, but does not manage config files
+        unless @current_resource.inet_addr
+          unless @new_resource.device == "lo"
+            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+            command << " netmask #{@new_resource.mask}" if @new_resource.mask
+            command << " metric #{@new_resource.metric}" if @new_resource.metric
+            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+          end
+
+          run_command(
+            :command => command
+          )
+          Chef::Log.info("#{@new_resource} enabled")
+          @new_resource.updated_by_last_action(true)
+        end
+      end
+
       def action_delete
         # check to see if load_current_resource found the interface
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-  
           run_command(
             :command => command
           )
+          delete_config
+          Chef::Log.info("#{@new_resource} deleted")
           @new_resource.updated_by_last_action(true)
         else
-          Chef::Log.debug("Ifconfig #{@current_resource} does not exist")
+          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
         end
       end
 
-      # This is a little lame of me, as if any of these values aren't filled out it leaves blank lines
-      # in the file.  Can refactor later to have this nice and tight.
+      def action_disable
+        # check to see if load_current_resource found the interface
+        # disables, but leaves config files in place.
+        if @current_resource.device
+          command = "ifconfig #{@new_resource.device} down"
+          run_command(
+            :command => command
+          )
+          Chef::Log.info("#{@new_resource} disabled")
+          @new_resource.updated_by_last_action(true)
+        else
+          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
+        end
+      end
+
       def generate_config
         b = binding
         case node[:platform]
@@ -116,17 +161,35 @@ class Chef
 <% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
 <% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
 <% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
+<% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
           }
           template = ::ERB.new(content)
           network_file = ::File.new("/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}", "w")
           network_file.puts(template.result(b))
           network_file.close
+          Chef::Log.info("#{@new_resource} created configuration file")
         when "debian","ubuntu"
           # template
         when "slackware"
           # template
         end
-      end 
+      end
+
+      def delete_config
+        require 'fileutils'
+        case node[:platform]
+        when "centos","redhat","fedora"
+          ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+          if ::File.exist?(ifcfg_file)
+            FileUtils.rm_f(ifcfg_file, :verbose => false, :force => true)
+          end
+        when "debian","ubuntu"
+          # delete configs
+        when "slackware"
+          # delete configs
+        end
+      end
+
     end
   end
 end

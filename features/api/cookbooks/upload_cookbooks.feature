@@ -64,7 +64,7 @@ Feature: CRUD cookbooks
      Then the inflated responses key 'testcookbook_valid' should exist
      When I 'GET' the path '/cookbooks/testcookbook_valid'
      Then the inflated responses key 'testcookbook_valid' should exist
-     Then the inflated responses key 'testcookbook_valid' item '0' should be '0.1.0'
+     Then the inflated responses key 'testcookbook_valid' sub-key 'versions' item '0' sub-key 'version' should equal '0.1.0'
      When I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
      Then the inflated response should match '.*default.rb.*' as json
 
@@ -77,8 +77,9 @@ Feature: CRUD cookbooks
      Then the inflated responses key 'testcookbook_valid' should exist
      When I 'GET' the path '/cookbooks/testcookbook_valid'
      Then the inflated responses key 'testcookbook_valid' should exist
-      And the inflated responses key 'testcookbook_valid' should include '0.1.0'
-      And the inflated responses key 'testcookbook_valid' should include '0.2.0'
+      And the inflated responses key 'testcookbook_valid' sub-key 'versions' should be '2' items long
+      And the inflated responses key 'testcookbook_valid' sub-key 'versions' item '0' sub-key 'version' should equal '0.2.0'
+      And the inflated responses key 'testcookbook_valid' sub-key 'versions' item '1' sub-key 'version' should equal '0.1.0'
 
   @update_cookbook_version_metadata_positive
   Scenario: A successful cookbook version upload that changes the metadata is properly reflected
@@ -140,3 +141,36 @@ Feature: CRUD cookbooks
      Then I should not get an exception
      When I create a cookbook named 'testcookbook_invalid_empty_except_metadata' with only the metadata file
      Then I should get a '400 "Bad Request"' exception
+
+  @freeze_cookbook_version
+  Scenario: Create a frozen Cookbook Version
+    Given I am an administrator
+      And I have uploaded a frozen cookbook named 'testcookbook_valid' at version '0.1.0'
+     When I 'GET' the path '/cookbooks/testcookbook_valid/0.1.0'
+     Then the cookbook version document should be frozen
+
+  @freeze_cookbook_version @overwrite_frozen_version
+  Scenario: Cannot overwrite a frozen Cookbook Version
+    Given I am an administrator
+      And I have uploaded a frozen cookbook named 'testcookbook_valid' at version '0.1.0'
+     When I upload a cookbook named 'testcookbook_valid' at version '0.1.0'
+     Then I should get a '409 "Conflict"' exception
+
+  @create_cookbook_negative @cookbook_non_admin
+  Scenario: Should not be able to create a cookbook if I am not an admin
+    Given I am an administrator
+     When I create a sandbox named 'sandbox1' for cookbook 'testcookbook_valid'
+     Then the inflated responses key 'uri' should match '^http://.+/sandboxes/[^\/]+$'
+     Then I upload a file named 'metadata.json' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'metadata.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'attributes/attributes.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     Then I upload a file named 'recipes/default.rb' from cookbook 'testcookbook_valid' to the sandbox
+     Then the response code should be '200'
+     When I commit the sandbox
+     Then I should not get an exception
+    Given I am a non-admin
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
+     Then I should get a '403 "Forbidden"' exception

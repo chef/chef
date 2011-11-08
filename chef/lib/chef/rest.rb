@@ -22,9 +22,8 @@
 
 require 'net/https'
 require 'uri'
-require 'json'
+require 'chef/json_compat'
 require 'tempfile'
-require 'chef/api_client'
 require 'chef/rest/auth_credentials'
 require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
@@ -64,6 +63,10 @@ class Chef
     end
 
     # Register the client
+    #--
+    # Requires you to load chef/api_client beforehand. explicit require is removed since
+    # most users of this class have no need for chef/api_client. This functionality
+    # should be moved anyway...
     def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
       if (File.exists?(destination) &&  !File.writable?(destination))
         raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
@@ -79,9 +82,10 @@ class Chef
             Chef::Log.debug("Registration response: #{response.inspect}")
             raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
             # Write out the private key
-            file = ::File.open(destination, File::WRONLY|File::EXCL|File::CREAT, 0600)
-            file.print(response["private_key"])
-            file.close
+            ::File.open(destination, "w") {|f|
+              f.chmod(0600)
+              f.print(response["private_key"])
+            }
             throw :done
           rescue IOError
             raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
@@ -162,7 +166,7 @@ class Chef
     #
     # Will return the body of the response on success.
     def run_request(method, url, headers={}, data=false, limit=nil, raw=false)
-      json_body = data ? data.to_json : nil
+      json_body = data ? Chef::JSONCompat.to_json(data) : nil
       headers = build_headers(method, url, headers, json_body, raw)
 
       tf = nil
@@ -180,7 +184,7 @@ class Chef
         if res.kind_of?(Net::HTTPSuccess)
           if res['content-type'] =~ /json/
             response_body = res.body.chomp
-            JSON.parse(response_body)
+            Chef::JSONCompat.from_json(response_body)
           else
             if method == :HEAD
               true
@@ -191,12 +195,12 @@ class Chef
             end
           end
         elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
-          follow_redirect {run_request(:GET, create_url(res['location']), {}, false, nil, raw)}
+          follow_redirect {run_request(method, create_url(res['location']), headers, false, nil, raw)}
         elsif res.kind_of?(Net::HTTPNotModified)
           false
         else
           if res['content-type'] =~ /json/
-            exception = JSON.parse(res.body)
+            exception = Chef::JSONCompat.from_json(res.body)
             msg = "HTTP Request Returned #{res.code} #{res.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
             Chef::Log.warn(msg)
@@ -208,7 +212,7 @@ class Chef
 
     # Runs an HTTP request to a JSON API. File Download not supported.
     def api_request(method, url, headers={}, data=false)
-      json_body = data ? data.to_json : nil
+      json_body = data ? Chef::JSONCompat.to_json(data) : nil
       headers = build_headers(method, url, headers, json_body)
 
       retriable_rest_request(method, url, json_body, headers) do |rest_request|
@@ -216,7 +220,7 @@ class Chef
 
         if response.kind_of?(Net::HTTPSuccess)
           if response['content-type'] =~ /json/
-            JSON.parse(response.body.chomp)
+            Chef::JSONCompat.from_json(response.body.chomp)
           else
             Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
             response.body
@@ -225,10 +229,10 @@ class Chef
           follow_redirect {api_request(:GET, create_url(redirect_location))}
         else
           if response['content-type'] =~ /json/
-            exception = JSON.parse(response.body)
+            exception = Chef::JSONCompat.from_json(response.body)
             msg = "HTTP Request Returned #{response.code} #{response.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-            Chef::Log.warn(msg)
+            Chef::Log.info(msg)
           end
           response.error!
         end
@@ -246,7 +250,7 @@ class Chef
       headers = build_headers(:GET, url, headers, nil, true)
       retriable_rest_request(:GET, url, nil, headers) do |rest_request|
         tempfile = nil
-        response = rest_request.call do |r| 
+        response = rest_request.call do |r|
           if block_given? && r.kind_of?(Net::HTTPSuccess)
             begin
               tempfile = stream_to_tempfile(url, r, &block)
@@ -283,6 +287,9 @@ class Chef
 
         res = yield rest_request
 
+      rescue SocketError, Errno::ETIMEDOUT => e
+        e.message.replace "Error connecting to #{url} - #{e.message}"
+        raise e
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts + 1 > 0
           Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
@@ -297,13 +304,12 @@ class Chef
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
-      rescue Net::HTTPServerException
-        if res.kind_of?(Net::HTTPForbidden)
-          if http_retry_count - http_attempts + 1 > 0
-            Chef::Log.error("Received 403 Forbidden against #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
-            sleep(http_retry_delay)
-            retry
-          end
+      rescue Net::HTTPFatalError => e
+        if http_retry_count - http_attempts + 1 > 0
+          sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)
+          Chef::Log.error("Server returned error for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+          sleep(sleep_time)
+          retry
         end
         raise
       end
@@ -358,6 +364,7 @@ class Chef
       headers["Content-Type"] = 'application/json' if json_body
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
+      headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end
 
@@ -373,15 +380,6 @@ class Chef
       response.read_body do |chunk|
         tf.write(chunk)
         size += chunk.size
-        if Chef::Log.verbose
-          if size == 0
-            Chef::Log.debug("#{url.path} done (0 length file)")
-          elsif total == 0
-            Chef::Log.debug("#{url.path} (zero content length or no Content-Length header)")
-          else
-            Chef::Log.debug("#{url.path}" + " %d%% done (%d of %d)" % [(size * 100) / total, size, total])
-          end
-        end
       end
       tf.close
       tf

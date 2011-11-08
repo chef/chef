@@ -20,10 +20,11 @@ Feature: List clients via the REST API
 
   Scenario: List clients when none have been created with a wrong private key
     Given I am an administrator
-      And there are no clients 
+      And there are no clients
      When I 'GET' the path '/clients' using a wrong private key
      Then I should get a '401 "Unauthorized"' exception
 
+  @oss_only
   Scenario: List clients when one has been created and you are not an admin
     Given I am a non-admin
     Given a 'client' named 'isis' exists

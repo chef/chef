@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "mixlib-authentication", '>= 1.1.3'
 
-  s.add_dependency "json", ">= 1.4.4", "<= 1.4.6"
+  s.add_dependency "dep_selector", ">= 0.0.3"
 
   s.add_dependency "uuidtools", "~> 2.1.1"
 

@@ -20,7 +20,7 @@ require 'rubygems'
 require 'rack'
 require 'thin'
 require 'singleton'
-require 'json'
+require 'chef/json_compat'
 require 'open-uri'
 
 module TinyServer

@@ -23,7 +23,7 @@ a:link, a:visited, a:hover, a:active, h1, h2, h3 { color: #007BA7; }
 
 body {
   color: #222;
-  background: #C2C8D1;
+  background: #F4F4F6;
   font-family: "Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
 }
 
@@ -49,12 +49,6 @@ hr {
 }
 
 /* @end */
-
-#user-navigation {
-  top: auto;
-  bottom: 5px;
-  right: 25px;
-}
 
 #main .block .content {
   background: #F7F7F8;
@@ -85,14 +79,14 @@ hr {
   background-color: #005573;
 }
 
-#main-navigation ul li a:hover {
-  background-color: #001C26;
+#main-navigation ul li a:hover  {
+  background-color: #102E41;
 }
 
-#main-navigation ul li.active a {
-  background-color: #C2C8D1;
-  background: -webkit-gradient(linear, left top, left bottom, from(#C2C8D1), to(#C2C8D1), color-stop(0.5, #F7F7F8), color-stop(0.5, #F7F7F8));
-
+#main-navigation ul li.active a, #main-navigation ul li.active a:visited {
+  background: #F4F4F6;
+  color: #102E41;
+  font-weight: bold;
 }
 
 /* @end */
@@ -140,16 +134,13 @@ hr {
 
 /* @end */
 
-#main-navigation ul li a:link, #main-navigation ul li a:visited, #main-navigation ul li a:hover, #main-navigation ul li a:active,
+#main-navigation ul li a:visited, #main-navigation ul li a:hover,
 .secondary-navigation ul li a:link, .secondary-navigation ul li a:visited, .secondary-navigation ul li a:hover, .secondary-navigation ul li a:active,
 #user-navigation ul li a:link, #user-navigation ul li a:visited, #user-navigation ul li a:hover, #user-navigation ul li a:active {
   text-decoration: none;
   color: #F7F7F8;
 }
 
-#main-navigation ul li.active a:link, #main-navigation ul li.active a:visited, #main-navigation ul li.active a:hover, #main-navigation ul li.active a:active {
-  color: #001C26;
-}
 
 #footer .block {
   color: #F7F7F8;
@@ -211,6 +202,12 @@ hr {
   font-size: .9em;
 }
 
+.form .inline_error_message {
+  color: #FF0000;
+  font-weight: bold;
+  padding-left:5px;
+}
+
 /* @group Flash messages */
 
 .flash .message {
@@ -267,7 +264,7 @@ ul.list li .item .avatar {
 
 /* rounded borders */
 
-#main, #main-navigation, #main-navigation li, #main-navigation li a, .secondary-navigation, #main .block, #sidebar .block, #sidebar h3, ul.list li, 
+#main, #main-navigation, #main-navigation li, #main-navigation li a, .secondary-navigation, #main .block, #sidebar .block, #sidebar h3, ul.list li,
 #footer .block, .form input.button, #box .block, #box .block h2 {
   -moz-border-radius-topleft: 4px;
   -webkit-border-top-left-radius: 4px;
@@ -278,6 +275,22 @@ ul.list li .item .avatar {
 .secondary-navigation li.first a, .secondary-navigation ul li.first, .table th.first, .table th.first {
   -moz-border-radius-topleft: 4px;
   -webkit-border-top-left-radius: 4px;
+}
+
+.table th.first#CookbookVersionConstraints{
+  width:30%;
+}
+
+.table th.operator#CookbookVersionConstraints{
+  width:15%;
+}
+
+.table th.version#CookbookVersionConstraints{
+  width:20%;
+}
+
+.table th.last#CookbookVersionConstraints{
+  width:40%;
 }
 
 .table th.last {

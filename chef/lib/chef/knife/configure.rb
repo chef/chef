@@ -24,6 +24,11 @@ class Chef
       attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
+      deps do
+        require 'ohai'
+        Chef::Knife::ClientCreate.load_deps
+      end
+
       banner "knife configure (options)"
 
       option :repository,
@@ -47,10 +52,6 @@ class Chef
       def run
         ask_user_for_config_path
 
-        Mixlib::Log::Formatter.show_time = false
-        Chef::Log.init(STDOUT)
-        Chef::Log.level(:info)
-
         FileUtils.mkdir_p(chef_config_path)
 
         ask_user_for_config
@@ -68,12 +69,12 @@ cache_type               'BasicFile'
 cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
 EOH
           unless chef_repo.empty?
-            f.puts "cookbook_path [ '#{chef_repo}/cookbooks', '#{chef_repo}/site-cookbooks' ]"
+            f.puts "cookbook_path [ '#{chef_repo}/cookbooks' ]"
           end
         end
 
         if config[:initial]
-          Chef::Log.warn("Creating initial API user...")
+          ui.msg("Creating initial API user...")
           Chef::Config[:chef_server_url] = chef_server
           Chef::Config[:node_name] = admin_client_name
           Chef::Config[:client_key] = admin_client_key
@@ -85,22 +86,22 @@ EOH
           client_create.config[:no_editor] = true
           client_create.run
         else
-          Chef::Log.warn("*****")
-          Chef::Log.warn("")
-          Chef::Log.warn("You must place your client key in:")
-          Chef::Log.warn("  #{new_client_key}")
-          Chef::Log.warn("Before running commands with Knife!")
-          Chef::Log.warn("")
-          Chef::Log.warn("*****")
-          Chef::Log.warn("")
-          Chef::Log.warn("You must place your validation key in:")
-          Chef::Log.warn("  #{validation_key}")
-          Chef::Log.warn("Before generating instance data with Knife!")
-          Chef::Log.warn("")
-          Chef::Log.warn("*****")
+          ui.msg("*****")
+          ui.msg("")
+          ui.msg("You must place your client key in:")
+          ui.msg("  #{new_client_key}")
+          ui.msg("Before running commands with Knife!")
+          ui.msg("")
+          ui.msg("*****")
+          ui.msg("")
+          ui.msg("You must place your validation key in:")
+          ui.msg("  #{validation_key}")
+          ui.msg("Before generating instance data with Knife!")
+          ui.msg("")
+          ui.msg("*****")
         end
 
-        Chef::Log.warn("Configuration file written to #{config[:config_file]}")
+        ui.msg("Configuration file written to #{config[:config_file]}")
       end
 
       def ask_user_for_config_path
@@ -113,7 +114,8 @@ EOH
       end
 
       def ask_user_for_config
-        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => 'http://localhost:4000')
+        server_name = guess_servername
+        @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "http://#{server_name}:4000")
         if config[:initial]
           @new_client_name        = config[:node_name] || ask_question("Please enter a clientname for the new client: ", :default => Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin clientname: ", :default => 'chef-webui')
@@ -126,6 +128,13 @@ EOH
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
+      end
+
+      def guess_servername
+        o = Ohai::System.new
+        o.require_plugin 'os'
+        o.require_plugin 'hostname'
+        o[:fqdn] || 'localhost'
       end
 
       def config_file

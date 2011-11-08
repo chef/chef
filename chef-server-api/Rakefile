@@ -18,6 +18,22 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+begin
+  require 'rspec/core/rake_task'
+
+  desc "Run all specs in spec directory"
+  RSpec::Core::RakeTask.new(:spec) do |t|
+    t.pattern = FileList['spec/unit/**/*_spec.rb']
+  end
+rescue LoadError
+  desc "Install rspec to run the specs"
+  task :spec do
+    abort "rspec is not available, (sudo) gem install rspec to run tests"
+  end
+end
+
+
+task :default => :spec
 desc "Install the gem"
 task :install => :package do
   sh %{gem install pkg/#{GEM_NAME}-#{ChefServerApi::VERSION} --no-rdoc --no-ri}

@@ -15,7 +15,7 @@
         %tbody
           - if @status.empty?
             %tr
-              %td{:colspan => 7}= "You appear to have no nodes - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
+              %td{:colspan => 7}= "You appear to have no nodes #{session[:environment].nil? ? '' : "in the #{session[:environment]} environment"} - try connecting one, or creating or editing a #{link_to('client', url(:clients))}"
           - else
             - @status.sort.each_with_index do |node, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}

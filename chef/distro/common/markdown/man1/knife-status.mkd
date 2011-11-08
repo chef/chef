@@ -1,0 +1,36 @@
+knife-status(1) -- Display status information for the nodes in your infrastructure
+========================================
+
+## SYNOPSIS
+
+__knife__ __status__ _(options)_
+
+  * `-r`, `--run-list RUN_LIST`:
+    Show the run list
+
+## DESCRIPTION
+
+The _status_ sub-command searches the Chef Server for all nodes and
+displays information about the last time the node checked into the
+server and executed a `node.save`. The fields displayed are the relative
+checkin time, the node name, it's operating system platform and version,
+the fully-qualified domain name and the default IP address. If the `-r`
+option is given, the node's run list will also be displayed. Note that
+depending on the configuration of the nodes, the FQDN and IP displayed
+may not be publicly reachable.
+
+
+## SEE ALSO
+   __knife-search__(1)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+
+

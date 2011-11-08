@@ -19,6 +19,8 @@
 class Chef
   module IndexQueue
     class AmqpClient
+      VNODES = 1024
+
       include Singleton
 
       def initialize
@@ -29,11 +31,9 @@ class Chef
         @amqp_client && amqp_client.connected? && amqp_client.stop
         @amqp_client = nil
         @exchange = nil
-        @queue = nil
       end
       
       def stop
-        @queue && @queue.subscription && @queue.unsubscribe
         @amqp_client && @amqp_client.stop
       end
       
@@ -59,24 +59,17 @@ class Chef
         @exchange ||= amqp_client.exchange("chef-indexer", :durable => true, :type => :fanout)
       end
       
-      def queue
-        unless @queue
-          @queue = amqp_client.queue("chef-index-consumer-" + consumer_id, :durable => durable_queue?)
-          @queue.bind(exchange)
-        end
-        @queue
-      end
-      
       def disconnected!
         Chef::Log.error("Disconnected from the AMQP Broker (RabbitMQ)")
         @amqp_client = nil
         reset!
       end
 
-      def send_action(action, data)
+      def queue_for_object(obj_id)
         retries = 0
+        vnode_tag = obj_id_to_int(obj_id) % VNODES
         begin
-          exchange.publish({"action" => action.to_s, "payload" => data}.to_json)
+          yield amqp_client.queue("vnode-#{vnode_tag}", :passive => false, :durable => true, :exclusive => false, :auto_delete => false)
         rescue Bunny::ServerDownError, Bunny::ConnectionError, Errno::ECONNRESET
           disconnected!
           if (retries += 1) < 2
@@ -90,6 +83,15 @@ class Chef
       end
 
       private
+
+      # Sometimes object ids are "proper" UUIDs, like "64bc00eb-120b-b6a2-ec0e-34fc90d151be"
+      # and sometimes they omit the dashes, like "64bc00eb120bb6a2ec0e34fc90d151be"
+      # UUIDTools uses different methods to parse the different styles.
+      def obj_id_to_int(obj_id)
+        UUIDTools::UUID.parse(obj_id).to_i
+      rescue ArgumentError
+        UUIDTools::UUID.parse_hexdigest(obj_id).to_i
+      end
       
       def durable_queue?
         !!Chef::Config[:amqp_consumer_id]
@@ -111,3 +113,4 @@ class Chef
     end
   end
 end
+

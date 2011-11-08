@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
+
+require 'rexml/document'
 require 'chef/log'
 require 'chef/config'
 require 'chef/application'
 require 'chef/daemon'
-require 'chef/client'
 require 'chef/solr'
 
 class Chef
@@ -116,7 +116,76 @@ class Chef
           super
         end
 
+        def schema_file_path
+          @schema_file_path ||= File.join(Chef::Config[:solr_home_path], 'conf', 'schema.xml')
+        end
+
+
+        def schema_document
+          @schema_document ||= begin
+            File.open(schema_file_path, 'r') do |xmlsux|
+              REXML::Document.new(xmlsux)
+            end
+          end
+        end
+
+        def schema_attributes
+          @schema_attributes ||= REXML::XPath.first(schema_document, '/schema').attributes
+        end
+
+        def solr_schema_name
+          schema_attributes["name"]
+        end
+
+        def solr_schema_version
+          schema_attributes["version"]
+        end
+
+        def valid_schema_name?
+          solr_schema_name == Chef::Solr::SCHEMA_NAME
+        end
+
+        def valid_schema_version?
+          solr_schema_version == Chef::Solr::SCHEMA_VERSION
+        end
+
+        def solr_home_exist?
+          File.directory?(Chef::Config[:solr_home_path])
+        end
+
+        def solr_data_dir_exist?
+          File.directory?(Chef::Config[:solr_data_path])
+        end
+
+        def solr_jetty_home_exist?
+          File.directory?(Chef::Config[:solr_jetty_path])
+        end
+
+        def assert_solr_installed!
+          unless solr_home_exist? && solr_data_dir_exist? && solr_jetty_home_exist?
+            Chef::Log.fatal "Chef Solr is not installed or solr_home_path, solr_data_path, and solr_jetty_path are misconfigured."
+            Chef::Log.fatal "Your current configuration is:"
+            Chef::Log.fatal "solr_home_path:  #{Chef::Config[:solr_home_path]}"
+            Chef::Log.fatal "solr_data_path:  #{Chef::Config[:solr_data_path]}"
+            Chef::Log.fatal "solr_jetty_path: #{Chef::Config[:solr_jetty_path]}"
+            Chef::Log.fatal "You can install Chef Solr using the chef-solr-installer script."
+            exit 1
+          end
+        end
+
+        def assert_valid_schema!
+          unless valid_schema_name? && valid_schema_version?
+            Chef::Log.fatal "Your Chef Solr installation needs to be upgraded."
+            Chef::Log.fatal "Expected schema version #{Chef::Solr::SCHEMA_VERSION} but version #{solr_schema_version} is installed."
+            Chef::Log.fatal "Use chef-solr-installer to upgrade your Solr install after backing up your data."
+            exit 1
+          end
+        end
+
         def setup_application
+          assert_solr_installed!
+          assert_valid_schema!
+
           # Need to redirect stdout and stderr so Java process inherits them.
           # If -L wasn't specified, Chef::Config[:log_location] will be an IO
           # object, otherwise it will be a String.
@@ -128,47 +197,7 @@ class Chef
 
           Chef::Log.level = Chef::Config[:log_level]
 
-          # Build up a client
-          node = Chef::Node.new
-          node.platform = :default
-          node.platform_version = 42
-
           Chef::Daemon.change_privilege
-
-          solr_base = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "..", "solr"))
-
-          run_context = Chef::RunContext.new(node, {})
-          # Create the Jetty container
-          unless File.directory?(Chef::Config[:solr_jetty_path])
-            Chef::Log.warn("Initializing the Jetty container")
-            solr_jetty_dir = Chef::Resource::Directory.new(Chef::Config[:solr_jetty_path], run_context)
-            solr_jetty_dir.recursive(true)
-            solr_jetty_dir.run_action(:create)
-            solr_jetty_untar = Chef::Resource::Execute.new("untar_jetty", run_context)
-            solr_jetty_untar.command("tar zxvf #{File.join(solr_base, 'solr-jetty.tar.gz')}")
-            solr_jetty_untar.cwd(Chef::Config[:solr_jetty_path])
-            solr_jetty_untar.run_action(:run)
-          end
-
-          # Create the solr home
-          unless File.directory?(Chef::Config[:solr_home_path])
-            Chef::Log.warn("Initializing Solr home directory")
-            solr_home_dir = Chef::Resource::Directory.new(Chef::Config[:solr_home_path], run_context)
-            solr_home_dir.recursive(true)
-            solr_home_dir.run_action(:create)
-            solr_jetty_untar = Chef::Resource::Execute.new("untar_solr_home", run_context)
-            solr_jetty_untar.command("tar zxvf #{File.join(solr_base, 'solr-home.tar.gz')}")
-            solr_jetty_untar.cwd(Chef::Config[:solr_home_path])
-            solr_jetty_untar.run_action(:run)
-          end
-
-          # Create the solr data path
-          unless File.directory?(Chef::Config[:solr_data_path])
-            Chef::Log.warn("Initializing Solr data directory")
-            solr_data_dir = Chef::Resource::Directory.new(Chef::Config[:solr_data_path], run_context)
-            solr_data_dir.recursive(true)
-            solr_data_dir.run_action(:create)
-          end
         end
 
         def run_application
@@ -191,7 +220,6 @@ class Chef
 
               STDOUT.reopen(@logfile)
               STDERR.reopen(@logfile)
-              @logfile.close
             end
 
             Kernel.exec(command)

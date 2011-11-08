@@ -23,11 +23,15 @@ Merb::Router.prepare do
 
   resources :clients, :id => /[^\/]+/
   resources :roles
+
   resources :environments do |e|
+    e.match("/recipes", :method => "get").to(:controller=>"environments", :action=>"list_recipes")
     e.match("/cookbooks").to(:contoller => "environments", :action => "list_cookbooks").name(:cookbooks)
     e.match("/nodes").to(:controller => "environments", :action => "list_nodes").name(:nodes)
     e.match("/select").to(:controller => "environments", :action => "select_environment").name(:select)
   end
+
+  #match('/environments/create').to(:controller => "environments", :action => "create").name(:environments_create)
 
   match("/status").to(:controller => "status", :action => "index").name(:status)
 
@@ -45,16 +49,10 @@ Merb::Router.prepare do
   match("/cookbooks/_library_files").to(:controller => "cookbooks", :action => "library_files")
   match("/cookbooks/_environments/:environment_id").to(:controller => "cookbooks", :action => "index").name(:cookbooks_by_environment)
 
-  match("/cookbooks/:cookbook_id/templates", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_templates", :action => "index")
-  match("/cookbooks/:cookbook_id/libraries", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_libraries", :action => "index")
-  match("/cookbooks/:cookbook_id/definitions", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_definitions", :action => "index")
-  match("/cookbooks/:cookbook_id/recipes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_recipes", :action => "index")
-  match("/cookbooks/:cookbook_id/attributes", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_attributes", :action => "index")
-  match("/cookbooks/:cookbook_id/files", :cookbook_id => /[\w\.]+/).to(:controller => "cookbook_files", :action => "index")
-
+  match("/cookbooks/:cookbook_id", :cookbook_id => /[\w\.]+/, :method => 'get').to(:controller => "cookbooks", :action => "cb_versions")
   match("/cookbooks/:cookbook_id/:cb_version", :cb_version => /[\w\.]+/, :method => 'get').to(:controller => "cookbooks", :action => "show").name(:show_specific_version_cookbook)
   resources :cookbooks
-  
+
   resources :clients
 
   match("/databags/:databag_id/databag_items", :method => 'get').to(:controller => "databags", :action => "show", :id=>":databag_id")

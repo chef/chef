@@ -18,6 +18,8 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+Chef::Knife::ClientCreate.load_deps
+
 describe Chef::Knife::ClientCreate do
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
@@ -31,12 +33,15 @@ describe Chef::Knife::ClientCreate do
     @knife.stub!(:edit_data).and_return(@client)
     @knife.stub!(:puts)
     Chef::ApiClient.stub!(:new).and_return(@client)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
     it "should create a new Client" do
       Chef::ApiClient.should_receive(:new).and_return(@client)
       @knife.run
+      @stdout.string.should match /created client.+adam/i
     end
 
     it "should set the Client name" do
@@ -67,6 +72,3 @@ describe Chef::Knife::ClientCreate do
 
   end
 end
-
-
-

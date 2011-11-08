@@ -30,10 +30,10 @@ describe Chef::Provider::Service::Solaris do
     @provider = Chef::Provider::Service::Solaris.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
-    @stdin = mock("STDIN", :null_object => true)
-    @stdout = mock("STDOUT", :null_object => true)
-    @stderr = mock("STDERR", :null_object => true)
-    @pid = mock("PID", :null_object => true)
+    @stdin = StringIO.new
+    @stdout = StringIO.new
+    @stderr = StringIO.new
+    @pid = 2342
     @stdout_string = "state disabled"
     @stdout.stub!(:gets).and_return(@stdout_string)
   end

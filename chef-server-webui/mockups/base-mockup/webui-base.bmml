@@ -1,0 +1,30 @@
+<mockup version="1.0" skin="sketch" measuredW="1153" measuredH="862" mockupW="718" mockupH="646">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="435" y="216" w="718" h="646" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Chef%20Server%0Ahttp%3A//localhost%3A4040</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::TabBar" x="444" y="345" w="700" h="38" measuredW="617" measuredH="100" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <selectedIndex>-1</selectedIndex>
+        <tabHPosition>left</tabHPosition>
+        <tabVPosition>top</tabVPosition>
+        <text>Environments%2C%20Search%2C%20Status%2C%20Roles%2C%20Nodes%2C%20Cookbooks%2C%20Databags%2C%20Clients%2C%20Users</text>
+        <verticalScrollbar>false</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="459" y="308" w="-1" h="-1" measuredW="137" measuredH="37" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>24</size>
+        <text>Chef%20Server</text>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::Label" x="1009" y="345" w="-1" h="-1" measuredW="120" measuredH="23" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%5BEdit%20accout%5D%20%20%5BLogout%5D</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

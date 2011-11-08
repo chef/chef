@@ -1,0 +1,180 @@
+knife-search(1) -- Find objects on a Chef Server by query
+========================================
+
+## SYNOPSIS
+
+__knife__ __search INDEX QUERY__ _(options)_
+
+  * `-a`, `--attribute ATTR`:
+    Show only one attribute
+  * `-i`, `--id-only`:
+    Show only the ID of matching objects
+  * `-q`, `--query QUERY`:
+    The search query; useful to protect queries starting with -
+  * `-R`, `--rows INT`:
+    The number of rows to return
+  * `-r`, `--run-list`:
+    Show only the run list
+  * `-o`, `--sort SORT`:
+    The order to sort the results in
+  * `-b`, `--start ROW`:
+    The row to start returning results at
+  * `-m`, `--medium`:
+    Display medium sized output when searching nodes using the default
+    summary format
+  * `-l`, `--long`:
+    Display long output when searching nodes using the default summary
+    format
+
+## DESCRIPTION
+
+Search is a feature of the Chef Server that allows you to use a
+full-text search engine to query information about your infrastructure
+and applications. You can utilize this service via search calls in a
+recipe or the knife search command.  The search syntax is based on
+Lucene.
+
+
+## INDEXES
+
+Search indexes are a feature of the Chef Server and the search
+sub-command allows querying any of the available indexes using SOLR
+query syntax. The following data types are indexed for search:
+
+  * _node_
+  * _role_
+  * _environment_
+  * _clients_
+  * _data bag_
+
+Data bags are indexed by the data bag's name. For example, to search a
+data bag named "admins":
+
+    knife search admins "field:search_pattern"
+
+## QUERY SYNTAX
+
+Queries have the form `field:search_pattern` where `field` is a key in
+the JSON description of the relevant objects (nodes, roles,
+environments, or data bags).  Both `field` and `search_pattern` are
+case-sensitive.  `search_pattern` can be an exact, wildcard,
+range, or fuzzy match (see below).  The `field` supports exact
+matching and limited wildcard matching.
+
+Searches will return the relevant objects (nodes, roles, environments,
+or data bags) where the `search_pattern` matches the object's value of
+`field`.
+
+### FIELD NAMES
+
+Field names are the keys within the JSON description of the object
+being searched.  Nested Keys can be searched by placing an underscore
+("_") between key names.
+
+### WILDCARD MATCHING FOR FIELD NAMES
+
+The field name also has limited support for wildcard matching. Both
+the "*" and "?" wildcards (see below) can be used within a field name;
+however, they cannot be the first character of the field name.
+
+### EXACT MATCHES
+Without any search modifiers, a search returns those fields for which
+the `search_pattern` exactly matches the value of `field` in the JSON
+description of the object.
+
+### WILDCARD MATCHES
+
+Search support both single- and multi-character wildcard searches
+within a search pattern.
+
+'?' matches exactly one character.
+
+'*' matches zero or more characters.
+
+### RANGE MATCHES
+Range searches allows one to match values between two given values.  To
+match values between X and Y, inclusively, use square brackets:
+
+    knife search INDEX 'field:[X TO Y]
+
+To match values between X and Y, exclusively, use curly brackets:
+
+    knife search INDEX 'field:{X TO Y}'
+
+Values are sorted in lexicographic order.
+
+### FUZZY MATCHES
+
+Fuzzy searches allows one to match values based on the Levenshtein
+Distance algorithm.  To perform a fuzzy match, append a tilda (~) to
+the search term:
+
+    knife search INDEX 'field:term~'
+
+This search would return nodes whose `field` was 'perm' or 'germ'.
+
+### BOOLEAN OPERATORS
+
+The boolean operators NOT, AND, and OR are supported.  To find values
+of `field` that are not X:
+
+    knife search INDEX 'field:(NOT X)'
+
+To find records where `field1` is X and `field2` is Y:
+
+    knife search INDEX 'field1:X AND field2:Y'
+
+To find records where `field` is X or Y:
+
+    knife search INDEX 'field:X OR field:Y'
+
+### QUOTING AND SPECIAL CHARACTERS
+
+In order to avoid having special characters and escape sequences
+within your search term interpreted by either Ruby or the shell,
+enclose them in single quotes.
+
+Search terms that include spaces should be enclosed in double-quotes:
+
+    knife search INDEX 'field:"term with spaces"'
+
+The following characters must be escaped:
+
+    + - && || ! ( ) { } [ ] ^ " ~ * ? : \
+
+## EXAMPLES
+
+Find the nodes with the fully-qualified domain name (FQDN)
+www.example.com:
+
+    knife search node 'fqdn:www.example.com'
+
+Find the nodes running a version of Ubuntu:
+
+    knife search node 'platform:ubuntu*'
+
+Find all nodes running CentOS in the production environment:
+
+    knife search node 'chef_environment:production AND platform:centos'
+
+## KNOWN BUGS
+
+  * Searches against the client index return no results in most cases. (CHEF-2477)
+  * Searches using the fuzzy match operator (~) produce an error. (CHEF-2478)
+
+## SEE ALSO
+   __knife-ssh__(1)
+   <http://wiki.opscode.com/display/chef/Attributes>
+   [Lucene Query Parser Syntax](http://lucene.apache.org/java/2_3_2/queryparsersyntax.html)
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> with many contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+
+

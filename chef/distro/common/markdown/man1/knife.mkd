@@ -1,0 +1,220 @@
+knife(1) -- Chef Server API client utility
+========================================
+
+## SYNOPSIS
+
+__knife__ _sub-command_ [_argument_...] _(options)_
+
+## DESCRIPTION
+
+Knife is a command-line utility used to manage data on a Chef server
+through the HTTP(S) API. Knife is organized into groups of subcommands
+centered around the various object types in Chef. Each category of
+subcommand is documented in its own manual page. Available topics are:
+
+  * bootstrap
+  * client
+  * configure
+  * cookbook-site
+  * cookbook
+  * data-bag
+  * environment
+  * exec
+  * index
+  * node
+  * recipe
+  * role
+  * search
+  * ssh
+  * status
+  * tag
+
+If the knife manuals are in your `MANPATH`, you can access help for the
+above topics using `man knife-TOPIC`; otherwise, you can view the
+documentation using `knife help TOPIC`.
+
+## OPTIONS
+  * `-s`, `--server-url` URL:
+    Chef Server URL, corresponds to `Chef::Config` `chef_server_url`.
+  * `-k`, `--key` KEY:
+    API Client Key, corresponds to `Chef::Config` `client_key`.
+  * `-c`, `--config` CONFIG:
+    The configuration file to use
+  * `-E`, `--environment ENVIRONMENT`:
+    Set the Chef environment
+  * `-e`, `--editor` EDITOR:
+    Set the editor to use for interactive commands
+  * `-F`, `--format` FORMAT:
+    Which format to use for output. See FORMATS for details.
+  * `-V`, `--verbose`:
+    More verbose output.  Use twice for max verbosity
+  * `-n`, `--no-editor`:
+    Do not open EDITOR, just accept the data as is
+  * `-u`, `--user` USER:
+    API Client Username, corresponds to `Chef::Config` `node_name`.
+  * `-p`, `--print-after`:
+    Show the data after a destructive operation
+  * `-v`, `--version`:
+    Show chef version
+  * `-y`, `--yes`:
+    Say yes to all prompts for confirmation
+  * `--defaults`:
+    Accept default values for all questions
+  * `--color`:
+    Use colored output
+  * `--no-color`:
+    Don't use colors in the output
+  * `-h`, `--help`:
+    Show the available options for a command.
+
+## SUB-COMMANDS
+
+Sub-commands that operate on the basic Chef data types are structured as
+_NOUN verb NOUN (options)_. For all data types, the following commands
+are available:
+
+* create (create)
+* list and show (read)
+* edit (update)
+* delete (destroy)
+
+Knife also includes commands that take actions other than displaying or
+modifying data on the Chef Server, such as __knife-ssh(1)__.
+
+## CONFIGURATION
+
+The knife configuration file is a Ruby DSL to set configuration
+parameters for Knife's __GENERAL OPTIONS__. The default location for the
+config file is `~/.chef/knife.rb`. If managing multiple Chef
+repositories, per-repository config files can be created. The file must
+be `.chef/knife.rb` in the current directory of the repository.
+
+If the config file exists, knife uses these settings for __GENERAL OPTIONS__ defaults.
+
+  * `node_name`:
+    User or client identity (i.e., _name_) to use for authenticating
+    requests to the Chef Server.
+  * `client_key`:
+    Private key file to authenticate to the Chef server. Corresponds to the
+    `-k` or `--key` option.
+  * `chef_server_url`:
+    URL of the Chef server. Corresponds to the `-s` or `--server-url`
+    option. This is requested from the user when running this sub-command.
+  * `cache_type`:
+    The type of cache to use. Default is BasicFile. This can be any type of
+    Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper,
+    File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant,
+    Xattr, YAML.
+  * `cache_options`:
+    Specifies various options to use for caching. These options are
+    dependent on the `cache_type`.
+  * `validation_client_name`:
+    Specifies the name of the client used to validate new clients.
+  * `validation_key`:
+    Specifies the private key file to use when bootstrapping new hosts.
+    See knife-client(1) for more information about the validation
+    client.
+  * `cookbook_copyright`, `cookbook_email`, `cookbook_license`, `readme_format`
+    Used by `knife cookbook create` sub-command to specify the copyright
+    holder, maintainer email, license and readme format (respectively) for new cookbooks.
+    The copyright holder is listed as the maintainer in the cookbook's
+    metadata and as the Copyright in the comments of the default recipe. The
+    maintainer email is used in the cookbook metadata. The license
+    determines what preamble to put in the comment of the default recipe,
+    and is listed as the license in the cookbook metadata. Currently
+    supported licenses are "apachev2" and "none". Any other values will
+    result in an empty license in the metadata (needs to be filled in by the
+    author), and no comment preamble in the default recipe. Currently supported 
+    readme formats are "md", "mkd", "txt", and "rdoc".  Any other value will
+    result in an unformatted README.
+
+## FILES
+
+_~/.chef/knife.rb_
+
+Ruby DSL configuration file for knife. See __CONFIGURATION__.
+
+## FORMATS 
+
+The amount of content displayed and the output format are
+modified by the `--format` option. If no alternate format is selected,
+the default is summary.
+
+Valid formats are:
+
+  * `summary`:
+    displays the node in a custom, summarized format (default)
+  * `text`:
+    displays the node data in its entirety using the colorized tree display 
+  * `json`:
+    displays the node in JSON format
+  * `yaml`:
+    displays the node in YAML format
+  * `pp`:
+    displays the node using Ruby's pretty printer.
+
+For brevity, only the first character of the format is required, for
+example, -Fj will produce JSON format output.
+
+## CHEF WORKFLOW
+
+When working with Chef and Knife in the local repository, the recommended workflow outline looks like:
+
+* Create repository. A skeleton sample is provided at _http://github.com/opscode/chef-repo/_.
+* Configure knife, see __CONFIGURATION__.
+* Download cookbooks from the Opscode cookbooks site, see __COOKBOOK SITE SUB-COMMANDS__.
+* Or, create new cookbooks, see `cookbook create` sub-command.
+* Commit changes to the version control system. See your tool's documentation.
+* Upload cookbooks to the Chef Server, see __COOKBOOK SUB-COMMANDS__.
+* Launch instances in the Cloud, OR provision new hosts; see __CLOUD COMPUTING SUB-COMMANDS__ and __BOOTSTRAP SUB-COMMANDS__.
+* Watch Chef configure systems!
+
+A note about git: Opscode and many folks in the Chef community use git,
+but it is not required, except in the case of the `cookbook site vendor`
+sub-command, as it uses git directly. Version control is strongly
+recommended though, and git fits with a lot of the workflow paradigms.
+
+
+## EXAMPLES
+
+
+## ENVIRONMENT
+  * `EDITOR`:
+    The text editor to use for editing data. The --editor option takes
+    precedence over this value, and the --no-editor option supresses
+    data editing entirely.
+
+## SEE ALSO
+  __chef-client(8)__ __chef-server(8)__ __shef(1)__
+
+  __knife-bootstrap(1)__ __knife-client(1)__ __knife-configure(1)__
+  __knife-cookbook-site(1)__ __knife-cookbook(1)__ __knife-data-bag(1)__
+  __knife-environment(1)__ __knife-exec(1)__ __knife-index(1)__
+  __knife-node(1)__ __knife-recipe(1)__ __knife-role(1)__
+  __knife-search(1)__ __knife-ssh(1)__ __knife-tag(1)__
+
+  Complete Chef documentation is available online: <http://wiki.opscode.com/display/chef/Home/>
+
+  JSON is JavaScript Object Notation <http://json.org/>
+
+  SOLR is an open source search engine. <http://lucene.apache.org/solr/>
+
+  __git(1)__ is a version control system <http://git-scm.com/>
+
+  This manual page was generated from Markdown with __ronn(1)__ <http://rtomayko.github.com/ronn/ronn.1.html>
+
+## AUTHOR
+   Chef was written by Adam Jacob <adam@opscode.com> of Opscode
+   (<http://www.opscode.com>), with contributions from the community.
+
+## DOCUMENTATION
+   This manual page was written by Joshua Timberman <joshua@opscode.com>.
+
+## LICENSE
+   Both Chef and this documentation are released under the terms of the
+   Apache 2.0 License. You may view the license online: <http://www.apache.org/licenses/LICENSE-2.0.html>
+   On some systems, the complete text of the Apache 2.0 License may be found in `/usr/share/common-licenses/Apache-2.0`.
+
+## CHEF
+   Knife is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
+

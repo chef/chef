@@ -23,6 +23,10 @@ class Chef
   class Knife
     class CookbookSiteUnshare < Knife
 
+      deps do
+        require 'chef/json_compat'
+      end
+
       banner "knife cookbook site unshare COOKBOOK"
       category "cookbook site"
 
@@ -30,7 +34,7 @@ class Chef
         @cookbook_name = @name_args[0]
         if @cookbook_name.nil?
           show_usage
-          Chef::Log.fatal "You must provide the name of the cookbook to unshare"
+          ui.fatal "You must provide the name of the cookbook to unshare"
           exit 1
         end
 
@@ -40,11 +44,11 @@ class Chef
           rest.delete_rest "http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}"
         rescue Net::HTTPServerException => e
           raise e unless e.message =~ /Forbidden/
-          Chef::Log.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
+          ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
           exit 1
         end
 
-        Chef::Log.info "Unshared cookbook #{@cookbook_name}"
+        ui.info "Unshared cookbook #{@cookbook_name}"
       end
 
     end

@@ -1,0 +1,107 @@
+chef-solo(8) -- Runs chef in solo mode against a specified cookbook location.
+========================================
+
+## SYNOPSIS
+
+__chef-solo__ _(options)_
+
+  * `-c`, `--config CONFIG`:
+    The configuration file to use
+  * `-d`, `--daemonize`:
+    Daemonize the process
+  * `-g`, `--group GROUP`:
+    Group to set privilege to
+  * `-i`, `--interval SECONDS`:
+    Run chef-client periodically, in seconds
+  * `-j`, `--json-attributes JSON_ATTRIBS`:
+    Load attributes from a JSON file or URL
+  * `-l`, `--log_level LEVEL`:
+    Set the log level (debug, info, warn, error, fatal)
+  * `-L`, `--logfile LOGLOCATION`:
+    Set the log file location, defaults to STDOUT - recommended for
+    daemonizing
+  * `-N`, `--node-name NODE_NAME`:
+    The node name for this client
+  * `-r`, `--recipe-url RECIPE_URL`:
+    Pull  down  a  remote  gzipped  tarball of recipes and untar it to the
+    cookbook cache.
+  * `-s`, `--splay SECONDS`:
+    The splay time for running at intervals, in seconds
+  * `-u`, `--user USER`:
+    User to set privilege to
+  * `-v`, `--version`:
+    Show chef version
+  * `-h`, `--help`:
+    Show this message
+
+## DESCRIPTION
+
+Chef Solo allows you to run Chef Cookbooks in the absence of a Chef Server.
+To do this, the complete cookbook needs to be present on disk.
+
+By default Chef Solo will look in /etc/chef/solo.rb for its configuration.
+This configuration file has two required variables: file_cache_path and
+cookbook_path.
+
+For example:
+    file_cache_path "/var/chef-solo"
+    cookbook_path "/var/chef-solo/cookbooks"
+
+For your own systems, you can change this to reflect any directory you like,
+but you'll need to specify absolute paths and the cookbook_path directory
+should be a subdirectory of the file_cache_path.
+
+You can also specify cookbook_path as an array, passing multiple locations
+to search for cookbooks.
+
+For example:
+    file_cache_path "/var/chef-solo"
+    cookbook_path ["/var/chef-solo/cookbooks", "/var/chef-solo/site-cookbooks"]
+
+Note that earlier entries are now overridden by later ones.
+
+Since chef-solo doesn't have any interaction with a Chef Server, you'll need
+to specify node-specifc attributes in a JSON file. This can be located on the
+target system itself, or it can be stored on a remote server such as S3, or a
+web server on your network.
+
+Within the JSON file, you'll also specify the recipes that Chef should run in
+the "run_list". An example JSON file, which sets a resolv.conf:
+
+    {
+      "resolver": {
+        "nameservers": [ "10.0.0.1" ],
+        "search":"int.example.com"
+      },
+      "run_list": [ "recipe[resolver]" ]
+    }
+
+Then you can run chef-solo with -j to specify the JSON file. It will look for
+cookbooks in the cookbook_path configured in the configuration file, and apply
+attributes and use the run_list from the JSON file specified.
+
+You can use -c to specify the path to the configuration file (if you don't want
+chef-solo to use the default). You can also specify -r for a cookbook tarball.
+
+For example:
+    chef-solo -c ~/solo.rb -j ~/node.json  -r http://www.example.com/chef-solo.tar.gz
+
+In the above case, chef-solo would extract the tarball to your specified
+cookbook_path, use ~/solo.rb as the configuration file, and apply attributes
+and use the run_list from ~/node.json.
+
+## SEE ALSO
+
+Full documentation for Chef and  chef-solo  is  located  on  the  Chef  wiki,
+http://wiki.opscode.com/display/chef/Home.
+
+## AUTHOR
+
+Chef was written by Adam Jacob <adam@ospcode.com> of Opscode
+(http://www.opscode.com),  with contributions from the community.  This
+manual page was written by Joshua Timberman  <joshua@opscode.com>  with
+help2man.  Permission  is  granted  to copy, distribute and / or modify
+this document under the terms of the Apache 2.0 License.
+
+On Debian systems, the complete text of the Apache 2.0 License  can  be
+found in /usr/share/common-licenses/Apache-2.0.

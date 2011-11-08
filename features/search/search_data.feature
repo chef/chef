@@ -37,3 +37,10 @@ Feature: Search Data
       And a file named 'francis' should exist
       And a file named 'axl_rose' should exist
 
+  @correctness
+  Scenario: Search the node and data bag index and verify correctness
+    Given I am an administrator
+      And a set of nodes pre-populated with known, searchable data
+      And the search index has been committed
+     When I execute a randomized set of searches across my infrastructure
+     Then all of the searches should return the expected results

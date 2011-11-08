@@ -19,12 +19,13 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+Chef::Knife::EnvironmentFromFile.load_deps
+
 describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
     @knife = Chef::Knife::EnvironmentFromFile.new
-    @knife.stub!(:msg).and_return true
-    @knife.stub!(:output).and_return true
-    @knife.stub!(:show_usage).and_return true
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
     @knife.name_args = [ "spec.rb" ]
 
     @environment = Chef::Environment.new
@@ -32,16 +33,12 @@ describe Chef::Knife::EnvironmentFromFile do
     @environment.description("runs the unit tests")
     @environment.cookbook_versions({"apt" => "= 1.2.3"})
     @environment.stub!(:save).and_return true
-    @knife.stub!(:load_from_file).and_return @environment
+    @knife.loader.stub!(:load_from).and_return @environment
   end
 
   describe "run" do
-    it "should load from a file" do
-      @knife.should_receive(:load_from_file)
-      @knife.run
-    end
-
-    it "should save the environment" do
+    it "loads the environment data from a file and saves it" do
+      @knife.loader.should_receive(:load_from).with('environments', 'spec.rb').and_return(@environment)
       @environment.should_receive(:save)
       @knife.run
     end
@@ -53,6 +50,7 @@ describe Chef::Knife::EnvironmentFromFile do
 
     it "should show usage and exit if not filename is provided" do
       @knife.name_args = []
+      @knife.ui.should_receive(:fatal)
       @knife.should_receive(:show_usage)
       lambda { @knife.run }.should raise_error(SystemExit)
     end

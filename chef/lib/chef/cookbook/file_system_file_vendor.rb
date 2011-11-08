@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,25 +30,27 @@ class Chef
     # locations, since in the chef-client case, that information is
     # non-sensical.
     class FileSystemFileVendor < FileVendor
-      
-      def initialize(manifest)
+
+      def initialize(manifest, *repo_paths)
         @cookbook_name = manifest[:cookbook_name]
+        @repo_paths = repo_paths.flatten
+        raise ArgumentError, "You must specify at least one repo path" if @repo_paths.empty?
       end
-      
+
       # Implements abstract base's requirement. It looks in the
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        location = Array(Chef::Config.cookbook_path).inject(nil) do |memo, basepath|
+        location = @repo_paths.inject(nil) do |memo, basepath|
           candidate_location = File.join(basepath, @cookbook_name, filename)
           memo = candidate_location if File.exist?(candidate_location)
           memo
         end
         raise "File #{filename} does not exist for cookbook #{@cookbook_name}" unless location
-        
+
         location
       end
-      
+
     end
   end
 end

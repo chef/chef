@@ -21,7 +21,7 @@ require 'chef/mixin/params_validate'
 require 'chef/couchdb'
 require 'chef/index_queue'
 require 'digest/sha1'
-require 'json'
+require 'chef/json_compat'
 
 class Chef
   class OpenIDRegistration
