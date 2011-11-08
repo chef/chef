@@ -51,56 +51,6 @@ describe Chef::Client do
     @client.node = @node
   end
 
-  describe "when enforcing path sanity" do
-    before do
-      Chef::Config[:enforce_path_sanity] = true
-      @ruby_bindir = '/some/ruby/bin'
-      @gem_bindir = '/some/gem/bin'
-      Gem.stub!(:bindir).and_return(@gem_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return(@ruby_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('host_os').and_return('darwin11.1.0')
-    end
-
-    it "adds all useful PATHs that are not yet in PATH to PATH" do
-      env = {"PATH" => ""}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    end
-
-    it "does not re-add paths that already exist in PATH" do
-      env = {"PATH" => "/usr/bin:/sbin:/bin"}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "/usr/bin:/sbin:/bin:#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin"
-    end
-
-    it "adds the current executing Ruby's bindir and Gem bindir to the PATH" do
-      env = {"PATH" => ""}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "#{@ruby_bindir}:#{@gem_bindir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    end
-
-    it "does not create entries for Ruby/Gem bindirs if they exist in SANE_PATH or PATH" do
-      ruby_bindir = '/usr/bin'
-      gem_bindir = '/yo/gabba/gabba'
-      Gem.stub!(:bindir).and_return(gem_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return(ruby_bindir)
-      env = {"PATH" => gem_bindir}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "/yo/gabba/gabba:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    end
-
-    it "does the right thing on windows" do
-      ruby_bindir = 'C:\ruby\bin'
-      gem_bindir = 'C:\gems\bin'
-      Gem.stub!(:bindir).and_return(gem_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return(ruby_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('host_os').and_return('mswin')
-      env = {"PATH" => 'C:\Windows\system32;C:\mr\softie'}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "C:\\Windows\\system32;C:\\mr\\softie;#{ruby_bindir};#{gem_bindir}"
-    end
-  end
-
   describe "run" do
     it "should identify the node and run ohai, then register the client" do
       mock_chef_rest_for_node = mock("Chef::REST (node)")
