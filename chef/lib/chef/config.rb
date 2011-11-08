@@ -204,6 +204,7 @@ class Chef
     client_key "/etc/chef/client.pem"
     validation_key "/etc/chef/validation.pem"
     validation_client_name "chef-validator"
+    data_bag_keyfile "/etc/chef/encrypted_data_bag_secret"
     web_ui_client_name "chef-webui"
     web_ui_key "/etc/chef/webui.pem"
     web_ui_admin_user_name  "admin"
