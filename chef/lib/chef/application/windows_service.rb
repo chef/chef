@@ -125,7 +125,6 @@ class Chef
 
       def service_stop
         Chef::Log.info("SERVICE_CONTROL_STOP received, stopping")
-        puts "This is on standard output"
       end
 
       def service_pause
