@@ -964,7 +964,7 @@ class Chef
           end
 
           # At this point package_name could be:
-          # 
+          #
           # 1) a package name, eg: "foo"
           # 2) a package name.arch, eg: "foo.i386"
           # 3) or a dependency, eg: "foo >= 1.1"

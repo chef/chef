@@ -100,7 +100,7 @@ __knife node show__ _node name_ _(options)_
     Display more, but not all, of the node's data when using the default
     _summary_ format
 
-Displays the node identified by _node name_ on stdout. 
+Displays the node identified by _node name_ on stdout.
 
 ## RUN LIST ITEM FORMAT
 Run list items may be either roles or recipes. When adding a role to a

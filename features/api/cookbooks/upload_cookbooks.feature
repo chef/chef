@@ -55,7 +55,7 @@ Feature: CRUD cookbooks
      Then I should not get an exception
      When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
      Then I should not get an exception
-     
+
   @create_cookbook_positive
   Scenario: Cookbook successfully uploaded via sandbox should later be visible via /cookbooks, including its versions and metadata
     Given I am an administrator
@@ -112,7 +112,7 @@ Feature: CRUD cookbooks
      Then I should not get an exception
      When I create a versioned cookbook named 'testcookbook_valid' versioned '0.1.0' with 'testcookbook_valid'
      Then I should get a '400 "Bad Request"' exception
-  
+
   @create_cookbook_negative
   Scenario: Should not be able to create a cookbook if it has no metadata file
     Given I am an administrator
@@ -126,7 +126,7 @@ Feature: CRUD cookbooks
      Then I should not get an exception
      When I create a versioned cookbook named 'testcookbook_invalid_nometadata' versioned '0.1.0' with 'testcookbook_invalid_nometadata'
      Then I should get a '400 "Bad Request"' exception
-    
+
   #  update a cookbook with no files should fail
   @create_cookbook_negative
   Scenario: Should not be able to create a cookbook if it has no files and just metadata

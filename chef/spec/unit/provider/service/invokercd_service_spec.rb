@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
   end
-  
+
   it "should create a current resource with the name of the new resource" do
     @provider.load_current_resource
     @provider.current_resource.should equal(@current_resource)
@@ -60,7 +60,7 @@ PS
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@current_resource.service_name} status"})
       @provider.load_current_resource
     end
-  
+
     it "should set running to true if the the status command returns 0" do
       @provider.stub!(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@current_resource.service_name} status"}).and_return(0)
       @provider.load_current_resource
@@ -83,14 +83,14 @@ PS
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d chefhasmonkeypants status"})
       @provider.load_current_resource
     end
-    
+
   end
-  
+
   describe "when the node has not specified a ps command" do
     before do
       @node[:command] = {:ps => nil}
     end
-    
+
     it "should set running to false if the node has a nil ps attribute" do
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
@@ -98,7 +98,7 @@ PS
     it "should set running to false if the node has an empty ps attribute" do
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
-    
+
   end
 
 
@@ -114,7 +114,7 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource 
+      @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
@@ -144,7 +144,7 @@ RUNNING_PS
     it "should call '/usr/sbin/invoke-rc.d service_name start' if no start command is specified" do
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@new_resource.service_name} start"}).and_return(0)
       @provider.start_service()
-    end 
+    end
   end
 
   describe Chef::Provider::Service::Invokercd, "stop_service" do

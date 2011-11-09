@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,9 @@
 class Chef
   module Mixin
     module FromFile
-    
-      # Loads a given ruby file, and runs instance_eval against it in the context of the current 
-      # object.  
+
+      # Loads a given ruby file, and runs instance_eval against it in the context of the current
+      # object.
       #
       # Raises an IOError if the file cannot be found, or is not readable.
       def from_file(filename)
@@ -33,7 +33,7 @@ class Chef
         end
       end
 
-      # Loads a given ruby file, and runs class_eval against it in the context of the current 
+      # Loads a given ruby file, and runs class_eval against it in the context of the current
       # object.
       #
       # Raises an IOError if the file cannot be found, or is not readable.

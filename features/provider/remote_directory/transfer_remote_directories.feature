@@ -12,7 +12,7 @@ Feature: Transfer remote directories
 	     And a file named 'transfer_directory/foo.txt' should contain 'tyrantanic'
 	     And a file named 'transfer_directory/bar.txt' should contain 'Space Manoeuvres stage 1'
 	     And a file named 'transfer_directory/baz.txt' should contain 'micromega'
- 
 
 
-  
+
+

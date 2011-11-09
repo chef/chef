@@ -21,7 +21,7 @@ require 'chef/resource/directory'
 class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :remote_directory

@@ -19,23 +19,23 @@ Feature: Deploy
      And a file named 'deploy/current/config/database.yml' should exist
      And a file named 'deploy/current/db/production.sqlite3' should exist
      And a file named 'deploy/current/tmp/restart.txt' should exist
- 
+
  Scenario: Deploy an app again
    Given a validated node
      And it includes the recipe 'deploy'
-     And I have a clone of the rails app in the data/tmp dir 
+     And I have a clone of the rails app in the data/tmp dir
      And that I have 'rails' '2.3.4' installed
      And that I have 'sqlite3-ruby' '1.2.5' installed
     When I run the chef-client
      And I run the chef-client again
      And there should be 'two' releases
- 
+
  Scenario: Deploy an app with custom layout attributes and callbacks
    Given a validated node
      And it includes the recipe 'deploy::callbacks'
      And I have a clone of the rails app in the data/tmp dir
      And that I have 'rails' '2.3.4' installed
-     And that I have 'sqlite3-ruby' '1.2.5' installed   
+     And that I have 'sqlite3-ruby' '1.2.5' installed
     When I run the chef-client
     Then the run should exit '0'
      And a callback named <callback_file> should exist
@@ -46,11 +46,11 @@ Feature: Deploy
      And the callback named <callback> should have run
  	     |	before_restart.rb	|
  	     |	after_restart.rb	|
- 
+
   Scenario: Deploy an app with resources inside the callbacks (embedded recipes)
     Given a validated node
       And it includes the recipe 'deploy::embedded_recipe_callbacks'
-      And I have a clone of the rails app in the data/tmp dir 
+      And I have a clone of the rails app in the data/tmp dir
       And that I have 'rails' '2.3.4' installed
       And that I have 'sqlite3-ruby' '1.2.5' installed
      When I run the chef-client
@@ -81,7 +81,7 @@ Feature: Deploy
   Scenario: Deploy an app twice using the idempotent revision deploy strategy
     Given a validated node
       And it includes the recipe 'deploy::revision_deploy'
-      And I have a clone of the rails app in the data/tmp dir  
+      And I have a clone of the rails app in the data/tmp dir
       And that I have 'rails' '2.3.4' installed
       And that I have 'sqlite3-ruby' '1.2.5' installed
      When I run the chef-client

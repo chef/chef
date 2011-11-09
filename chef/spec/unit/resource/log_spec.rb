@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,8 @@ describe Chef::Resource::Log do
   before(:each) do
     @log_str = "this is my string to log"
     @resource = Chef::Resource::Log.new(@log_str)
-  end  
- 
+  end
+
   it "should create a new Chef::Resource::Log" do
       @resource.should be_a_kind_of(Chef::Resource)
       @resource.should be_a_kind_of(Chef::Resource::Log)
@@ -37,7 +37,7 @@ describe Chef::Resource::Log do
   it "should allow you to set a log string" do
     @resource.name.should == @log_str
   end
-  
+
   it "should accept a vaild level option" do
     @resource.level :debug
     @resource.level :info
@@ -48,4 +48,4 @@ describe Chef::Resource::Log do
   end
 
 end
-  
+

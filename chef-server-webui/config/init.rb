@@ -18,7 +18,7 @@
 #
 
 
-require "merb-core" 
+require "merb-core"
 require "merb-haml"
 require "merb-assets"
 require "merb-helpers"
@@ -40,7 +40,7 @@ Merb::Config.use do |c|
   c[:session_id_key]     = '_chef_server_session_id'
   c[:session_secret_key] = Chef::Config.manage_secret_key
   c[:session_store]      = 'cookie'
-  
+
   c[:log_level] = Chef::Config[:log_level]
   if Chef::Config[:log_location].kind_of?(String)
     c[:log_file] = Chef::Config[:log_location]
@@ -50,7 +50,7 @@ end
 Chef::Config[:node_name] = Chef::Config[:web_ui_client_name]
 Chef::Config[:client_key] = Chef::Config[:web_ui_key]
 
-# Create the default admin user "admin" if no admin user exists  
+# Create the default admin user "admin" if no admin user exists
 unless Chef::WebUIUser.admin_exist
   user = Chef::WebUIUser.new
   user.name = Chef::Config[:web_ui_admin_user_name]

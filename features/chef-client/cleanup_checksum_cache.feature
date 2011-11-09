@@ -4,7 +4,7 @@ Feature: Cleanup checksum cache
   As a sysadmin
   I want Chef to remove unused checksum cache files
 
-  Scenario: Remove cached file checksums that are no longer needed 
+  Scenario: Remove cached file checksums that are no longer needed
     Given a validated node
       And it includes the recipe 'template'
      When I run the chef-client with '-l info' and the 'client_with_checksum_caching' config
@@ -14,6 +14,6 @@ Feature: Cleanup checksum cache
      Then the run should exit '0'
       And 'stdout' should have 'Removing unused checksum cache file .*chef\-file\-\-.*\-chef\-rendered\-template.*'
 
-      
+
 # for example:
 # DEBUG: removing unused checksum cache file /Users/ddeleo/opscode/chef/features/data/tmp/checksum_cache/chef-file--var-folders-Ui-UiODstTvGJm3edk+EIMyf++++TI--Tmp--chef-rendered-template20100929-40338-1rjvhyc-0

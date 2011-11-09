@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ describe Chef::Resource::RemoteFile do
     @resource.provider.should == Chef::Provider::CookbookFile
     Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::CookbookFile
   end
-  
+
   describe "source" do
     it "should accept a string for the remote file source" do
       @resource.source "something"
@@ -59,13 +59,13 @@ describe Chef::Resource::RemoteFile do
       r.source.should eql("fakey_fakerton")
     end
   end
-  
+
   describe "cookbook" do
     it "should accept a string for the cookbook name" do
       @resource.cookbook "something"
       @resource.cookbook.should eql("something")
     end
-    
+
     it "should default to nil" do
       @resource.cookbook.should == nil
     end
@@ -81,5 +81,5 @@ describe Chef::Resource::RemoteFile do
       @resource.checksum.should == nil
     end
   end
-  
+
 end

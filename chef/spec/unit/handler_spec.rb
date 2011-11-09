@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -125,9 +125,9 @@ describe Chef::Handler do
       @end_time = @start_time + 4.2
       Time.stub!(:now).and_return(@start_time, @end_time)
       @run_status.start_clock
-      @run_status.stop_clock 
+      @run_status.stop_clock
     end
-    
+
     it "has a shortcut for all resources" do
       @handler.all_resources.should == @all_resources
     end
@@ -157,7 +157,7 @@ describe Chef::Handler do
     end
 
     it "has a shortcut for the success? and failed? predicates" do
-      @handler.success?.should be_true 
+      @handler.success?.should be_true
       @handler.failed?.should be_false
     end
 

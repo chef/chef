@@ -26,7 +26,7 @@ class Chef
 
       #include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
-      
+
       def popen4
         raise Exception, "deprecated, bitches"
       end

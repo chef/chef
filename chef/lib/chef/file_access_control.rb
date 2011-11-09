@@ -27,11 +27,11 @@ class Chef
   class FileAccessControl
     UINT = (1 << 32)
     UID_MAX = (1 << 32) - 10
-  
+
     attr_reader :resource
-  
+
     attr_reader :file
-  
+
     # FileAccessControl objects set the owner, group and mode of +file+ to
     # the values specified by +resource+. +file+ is completely independent
     # of any file or path attribute on +resource+, so it is possible to set
@@ -46,17 +46,17 @@ class Chef
       @resource, @file = resource, file
       @modified = false
     end
-  
+
     def modified?
       @modified
     end
-  
+
     def set_all
       set_owner
       set_group
       set_mode
     end
-  
+
     # Workaround the fact that Ruby's Etc module doesn't believe in negative
     # uids, so negative uids show up as the diminished radix complement of
     # a uint. For example, a uid of -2 is reported as 4294967294
@@ -67,7 +67,7 @@ class Chef
         int
       end
     end
-  
+
     def target_uid
       return nil if resource.owner.nil?
       if resource.owner.kind_of?(String)
@@ -81,7 +81,7 @@ class Chef
     rescue ArgumentError
       raise Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?"
     end
-  
+
     def set_owner
       if (uid = target_uid) && (uid != stat.uid)
         File.chown(uid, nil, file)
@@ -89,7 +89,7 @@ class Chef
         modified
       end
     end
-  
+
     def target_gid
       return nil if resource.group.nil?
       if resource.group.kind_of?(String)
@@ -103,7 +103,7 @@ class Chef
     rescue ArgumentError
       raise Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?"
     end
-  
+
     def set_group
       if (gid = target_gid) && (gid != stat.gid)
         File.chown(nil, gid, file)
@@ -124,14 +124,14 @@ class Chef
         modified
       end
     end
-  
+
 
     def stat
       @stat ||= ::File.stat(file)
     end
-  
+
     private
-  
+
     def modified
       @modified = true
     end
@@ -139,6 +139,6 @@ class Chef
     def log_string
       @resource || @file
     end
-  
+
   end
 end

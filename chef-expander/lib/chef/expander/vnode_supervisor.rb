@@ -54,7 +54,7 @@ module Chef
         vnodes = Expander.config.vnode_numbers
 
         $0 = "chef-expander#{Expander.config.ps_tag} worker ##{Expander.config.index} (vnodes #{vnodes.min}-#{vnodes.max})"
-        
+
         AMQP.start(Expander.config.amqp_config) do
           start_consumers
           await_parent_death
@@ -171,7 +171,7 @@ module Chef
           log.debug { "Stopping consumer on VNode #{vnode_number}"}
           vnode.stop
         end
-        
+
       end
 
       def vnode_added(vnode)

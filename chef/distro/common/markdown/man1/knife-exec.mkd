@@ -15,7 +15,7 @@ commands available.
 
 ## EXAMPLES
   * Make an API call against an arbitrary endpoint:
-    knife exec -E 'api.get("nodes/fluke.localdomain/cookbooks")'  
+    knife exec -E 'api.get("nodes/fluke.localdomain/cookbooks")'
     => list of cookbooks for the node _fluke.localdomain_
   * Remove the role _obsolete_ from all nodes:
     knife exec -E 'nodes.transform(:all){|n| n.run\_list.delete("role[obsolete]")}'

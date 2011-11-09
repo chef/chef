@@ -157,7 +157,7 @@ class Environments < Application
   # Take the given run_list and return the versions of cookbooks that would
   # be used after applying the constraints of the given environment.
   #
-  # INPUT: 
+  # INPUT:
   #  :run_list = an Array of String's, e.g.,
   #  ["recipe[apache2]", "recipe[runit]"]
   #

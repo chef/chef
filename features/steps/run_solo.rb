@@ -11,7 +11,7 @@ When /^I run chef-solo with the '(.+)' recipe$/ do |recipe_name|
   # Set up the cache dir.
   cache_dir = "#{tmpdir}/chef-solo-cache-features"
   system("mkdir -p #{cache_dir}")
-  cleanup_dirs << cache_dir 
+  cleanup_dirs << cache_dir
 
   # Cookbook dir
   cookbook_dir ||= File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'cookbooks'))
@@ -48,7 +48,7 @@ When /^I run chef-solo without cookbooks$/ do
   # Set up the cache dir.
   cache_dir = "#{tmpdir}/chef-solo-cache-features"
   system("mkdir -p #{cache_dir}")
-  cleanup_dirs << cache_dir 
+  cleanup_dirs << cache_dir
 
   # Empty Cookbook dir
   system("mkdir #{cache_dir}/cookbooks")

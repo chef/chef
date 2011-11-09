@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ class Chef
           raise(Chef::Exceptions::Group,"dscl error: #{result.inspect}") if result[2] =~ /No such key: /
           return result[2]
         end
-        
+
         # This is handled in providers/group.rb by Etc.getgrnam()
         # def group_exists?(group)
         #   groups = safe_dscl("list /Groups")
@@ -88,13 +88,13 @@ class Chef
           super
           raise Chef::Exceptions::Group, "Could not find binary /usr/bin/dscl for #{@new_resource}" unless ::File.exists?("/usr/bin/dscl")
         end
-        
+
         def create_group
           dscl_create_group
           set_gid
           set_members
         end
-        
+
         def manage_group
           if @new_resource.group_name && (@current_resource.group_name != @new_resource.group_name)
             dscl_create_group
@@ -106,12 +106,12 @@ class Chef
             set_members
           end
         end
-        
+
         def dscl_create_group
           safe_dscl("create /Groups/#{@new_resource.group_name}")
           safe_dscl("create /Groups/#{@new_resource.group_name} Password '*'")
         end
-        
+
         def remove_group
           safe_dscl("delete /Groups/#{@new_resource.group_name}")
         end

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -133,19 +133,19 @@ describe Chef::CookbookVersion do
     end
 
     it "creates a manifest hash of its contents" do
-      expected = {"recipes"=>[], 
-                  "definitions"=>[], 
-                  "libraries"=>[], 
-                  "attributes"=>[], 
-                  "files"=>[], 
-                  "templates"=>[], 
-                  "resources"=>[], 
-                  "providers"=>[], 
-                  "root_files"=>[], 
-                  "cookbook_name"=>"tatft", 
+      expected = {"recipes"=>[],
+                  "definitions"=>[],
+                  "libraries"=>[],
+                  "attributes"=>[],
+                  "files"=>[],
+                  "templates"=>[],
+                  "resources"=>[],
+                  "providers"=>[],
+                  "root_files"=>[],
+                  "cookbook_name"=>"tatft",
                   "metadata"=>Chef::Cookbook::Metadata.new,
-                  "version"=>"0.0.0", 
-                  "name"=>"tatft-0.0.0"} 
+                  "version"=>"0.0.0",
+                  "name"=>"tatft-0.0.0"}
       @cookbook_version.manifest.should == expected
     end
   end
@@ -275,7 +275,7 @@ describe Chef::CookbookVersion do
         useful_explanation = Regexp.new(Regexp.escape("Cookbook 'tatft' (0.0.0) does not contain"))
         @attempt_to_load_file.should raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
       end
-  
+
       it "lists suggested places to look" do
         useful_explanation = Regexp.new(Regexp.escape("files/default/no-such-thing.txt"))
         @attempt_to_load_file.should raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
@@ -369,7 +369,7 @@ describe Chef::CookbookVersion do
       b.version = "1.2.0"
       a.should == b
     end
-    
+
 
     it "should not allow you to sort cookbooks with different names" do
       apt = Chef::CookbookVersion.new "apt"

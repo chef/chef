@@ -21,7 +21,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class File < Chef::Resource
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :file
@@ -67,11 +67,11 @@ class Chef
         set_or_return(
           :mode,
           arg,
-          :callbacks => { 
-            "not in valid numeric range" => lambda { |m| 
+          :callbacks => {
+            "not in valid numeric range" => lambda { |m|
               if m.kind_of?(String)
                 m =~ /^0/ || m="0#{m}"
-              end 
+              end
               Integer(m)<=07777 && Integer(m)>=0
             }
           }

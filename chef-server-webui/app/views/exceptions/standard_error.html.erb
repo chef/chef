@@ -24,8 +24,8 @@
 				color:#00BF10;
 			}
 			h1 sup.error_300 {
-				/* pretty sure you cant 'see' status 300 
-				errors but if you could I think they 
+				/* pretty sure you cant 'see' status 300
+				errors but if you could I think they
 				would be blue */
 				color:#1B2099;
 			}
@@ -83,14 +83,14 @@
 				width:19px;
 				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAB1CAIAAAAqdO2mAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAXZJREFUeNrslK1ywkAUhcMOBomEOiSdqLxEBJX0NaijOsjyHGGmCGyQQYaiiiw4gktkcOmZbpsuuzQ/M5XnqJ2d3S/n3nM3rTzPLUP7/Tt0+pLcGQwG3W53OLyHzPMtjYL7q9UqSRLrD4E1Gj1orCvKYuFHUWTVkOM44/HjDcp8/lL4r6NerzeZPMm1KFw0QkDn83m5fP2lHA4fNQvRtNvtjsfDd0WzmSfb2e/fdTqdOvdh/HLJZLOn0+d2HJ+KRGzbdl23EpFlmed5cp2maRzHQq1lvQ5KMi6EUZBGfup6E1pTfd+vrGW7jbQ2C9hTt9BpqNyIWaAwAy6xg2eBz5iRC/NomiZhGN5sqmnkauo0BUGgVQoBjQ80oCACgNQdZHfTYBkF2mxCtWWAqunWpahxIDUt3QYUxIFQpJHyIWpXjinabKbbwItMHT+NyjchrP8QKaSQQgoppJBCCimkkEIKKaSQQgoppJBCCimkkEIKKaSo+hRgAEFD17X08O2NAAAAAElFTkSuQmCC);
 				background-position:top left;
-				background-repeat:no-repeat;				
+				background-repeat:no-repeat;
 			}
 			table.trace tr.source td.collapse {
 				width:19px;
 				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAB1CAIAAAAqdO2mAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVxJREFUeNrs0zFygkAUBmBlUkgJHdABlQwVkVJKKUxBYWbkALTxMJwhltyDFkss03IF8pudIcwaDaDl/6pd2P327b7d+eHwMXs4lNkzggoVKlSoUKFChQoVKlSoUKFChQoVKlSoUKFChQqVEYqm6ft9+qiSJEkYho7jTlcw2fd9NOI4nq4gEdFwXXe1Cqco63VkWVbXRTqLhTpOwQRpF7quR1E0TgGhqvLKUFCyoQqG/rks3O6kZKW/eRFpevOCoGTXVTcMQ5EyxyDEkML1c5RzuZOICIyXqn7JBVez6282MWrx731HOv2qB8Hri2lamNk0DfpVVdV1Peodappmmua8bdvzuc7zfNprzrLMth1FnGh/X8MjCAIQv/cFz/+65PcDh7rbvYv2ZUfdj+PxsyzLgVl0hKwgTqeqKApx2LeOc7t98zyv/1FWOgvx9RPii23bmL9cetJ8Ed8CDAC6aFW8bCzFhwAAAABJRU5ErkJggg==);
 				background-position:bottom left;
-				background-repeat:no-repeat;	
-				background-color:#6F706F;			
+				background-repeat:no-repeat;
+				background-color:#6F706F;
 			}
 			table.trace tr td.path {
 				padding-left:10px;
@@ -99,7 +99,7 @@
 				padding-left:35px;
 				white-space: pre;
 				line-height:9px;
-				padding-bottom:10px;				
+				padding-bottom:10px;
 			}
 				table.trace tr td.code em {
 					font-weight:bold;
@@ -127,7 +127,7 @@
 </head>
 <body>
 	<div class="internalError">
-		
+
 		<div class="header">
 			<h1><%= @exception_name %> <sup class="error_<%= @exception.class::STATUS %>"><%= @exception.class::STATUS %></sup></h1>
 			<% if show_details = ::Merb::Config[:exception_details] -%>
@@ -142,24 +142,24 @@
 			<% end %>
 			<%= "<li>None</li>" if params[:original_params].empty? %>
 			</ul>
-			
+
 			<h3>Session</h3>
 			<ul>
 			<% params[:original_session].each do |param, value| %>
 				<li><strong><%= param %>:</strong> <%= value.inspect %></li>
 			<% end %>
-			<%= "<li>None</li>" if params[:original_session].empty? %>			
+			<%= "<li>None</li>" if params[:original_session].empty? %>
 			</ul>
-			
+
 			<h3>Cookies</h3>
 			<ul>
 			<% params[:original_cookies].each do |param, value| %>
 				<li><strong><%= param %>:</strong> <%= value.inspect %></li>
 			<% end %>
-			<%= "<li>None</li>" if params[:original_cookies].empty? %>			
-			</ul>			
+			<%= "<li>None</li>" if params[:original_cookies].empty? %>
+			</ul>
 		</div>
-		
+
 	<% if show_details %>
 		<table class="trace">
 			<% @exception.backtrace.each_with_index do |line, index| %>
@@ -177,7 +177,7 @@
 						</td>
 						<td class="line">
 							<a href="txmt://open?url=file://<%=file = (line.match(/^([^:]+)/)[1] rescue 'unknown')%>&amp;line=<%= lineno = line.match(/:([0-9]+):/)[1] rescue '?' %>"><%=lineno%></a>&nbsp;
-						</td> 
+						</td>
 					</tr>
 					<tr class="source">
 						<td class="collapse">

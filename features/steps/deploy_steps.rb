@@ -75,7 +75,7 @@ end
 Then /^the callback named <callback> should have run$/ do |callback_files|
   callback_files.raw.each do |file|
     hook_name = file.first.gsub(/\.rb$/, "")
-    evidence_file = "deploy/current/app/" + hook_name 
+    evidence_file = "deploy/current/app/" + hook_name
     expected_contents = {"hook_name" => hook_name, "env" => "production"}
     actual_contents = Chef::JSONCompat.from_json(IO.read(File.join(tmpdir, evidence_file)))
     expected_contents.should == actual_contents

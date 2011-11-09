@@ -51,7 +51,7 @@ class Chef
     class Deploy < Chef::Resource
 
       provider_base Chef::Provider::Deploy
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :deploy
@@ -375,7 +375,7 @@ class Chef
         arg ||= block
         set_or_return(:after_restart, arg, :kind_of => [Proc, String])
       end
-      
+
       def additional_remotes(arg=nil)
         set_or_return(
           :additional_remotes,

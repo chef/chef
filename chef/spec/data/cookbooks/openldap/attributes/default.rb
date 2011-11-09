@@ -11,5 +11,5 @@ when "corp"
 else
   ldap_server "ops1prod"
   ldap_basedn "dc=hjksolutions,dc=com"
-  ldap_replication_password "forsure" 
+  ldap_replication_password "forsure"
 end

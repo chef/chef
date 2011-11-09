@@ -500,7 +500,7 @@ describe Chef::Provider::Package::Rubygems do
         @provider.action_remove
       end
     end
-    
+
     describe "in an alternate gem environment" do
       it "uninstalls via the gem command" do
         @new_resource.gem_binary('/usr/weird/bin/gem')

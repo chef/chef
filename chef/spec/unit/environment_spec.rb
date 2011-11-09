@@ -288,7 +288,7 @@ describe Chef::Environment do
       recipes.should =~ ["god", "apache2", "apache2::mod_ssl"]
     end
 
-    
+
     it "should load all the cookbook versions" do
       Chef::CookbookVersion.should_receive(:cdb_list)
       Chef::Environment.cdb_load_filtered_cookbook_versions("prod")

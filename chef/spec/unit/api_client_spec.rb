@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,8 +57,8 @@ describe Chef::ApiClient do
     end
 
     it "should return the current admin value" do
-      @client.admin true 
-      @client.admin.should == true 
+      @client.admin true
+      @client.admin.should == true
     end
 
     it "should default to false" do
@@ -82,7 +82,7 @@ describe Chef::ApiClient do
 
     it "should throw an ArgumentError if you feed it something lame" do
       lambda { @client.public_key Hash.new }.should raise_error(ArgumentError)
-    end 
+    end
   end
 
   describe "private_key" do
@@ -97,7 +97,7 @@ describe Chef::ApiClient do
 
     it "should throw an ArgumentError if you feed it something lame" do
       lambda { @client.private_key Hash.new }.should raise_error(ArgumentError)
-    end 
+    end
   end
 
   describe "create_keys" do
@@ -136,7 +136,7 @@ describe Chef::ApiClient do
     %w{
       name
       public_key
-    }.each do |t| 
+    }.each do |t|
       it "should include '#{t}'" do
         @serial.should =~ /"#{t}":"#{@client.send(t.to_sym)}"/
       end
@@ -168,7 +168,7 @@ describe Chef::ApiClient do
       name
       public_key
       admin
-    }.each do |t| 
+    }.each do |t|
       it "should match '#{t}'" do
         @deserial.send(t.to_sym).should == @client.send(t.to_sym)
       end

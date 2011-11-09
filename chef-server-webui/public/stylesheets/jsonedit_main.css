@@ -1,8 +1,8 @@
 /* Put this inside a @media qualifier so Netscape 4 ignores it */
-@media screen, print { 
+@media screen, print {
 	/* Turn off list bullets */
-	ul.mktree  li { list-style: none; } 
-	
+	ul.mktree  li { list-style: none; }
+
 	ul.mktree {margin: 0px; margin-left: -10px !important; margin-top: 3px;}
 	/* Control how "spaced out" the tree is */
 	ul.mktree, ul.mktree ul , ul.mktree li { margin-left:10px; padding:0px; white-space: nowrap}
@@ -16,8 +16,8 @@
 	ul.mktree  li.liOpen    ul { display: block; border-left:1px solid #f5f5f5; border-top:1px solid #f5f5f5;}
 	ul.mktree  li.liClosed  ul { display: none; }
 
-	
-	ul.mktree  li { line-height: 16px } 
+
+	ul.mktree  li { line-height: 16px }
 	/* Format menu items differently depending on what level of the tree they are in */
 	/* Uncomment this if you want your fonts to decrease in size the deeper they are in the tree */
 /*
@@ -39,11 +39,11 @@
 	margin-right:4px;
 }
 #treecontainer div, #treecontainer a{
-	color: #000000; 
+	color: #000000;
 	font-size: 12px;
 	font-family:"Helvetica Neue",Helvetica,Arial,"Bitstream Vera Sans",sans-serif;
-	text-decoration: none; 
-	padding-left: 2px; 
+	text-decoration: none;
+	padding-left: 2px;
 	padding-right: 2px;
 	cursor:pointer;
 }
@@ -132,7 +132,7 @@ ul.tablayout a.active {
 	background-color:#f0f0f0;
 }
 #tab-container-2-nav li{
-	
+
 }
 .xmlchoice{
 	height:24px;
@@ -168,7 +168,7 @@ ul.tablayout a.active {
 
 .tab h2{margin: 0 0 20px 0;}
 
-.tab .button{	
+.tab .button{
 	border:1px solid white;
 	float:left;
 	height:20px;
@@ -177,7 +177,7 @@ ul.tablayout a.active {
 	background-position: center center;
 	cursor: pointer;
 }
-.tabn .button{	
+.tabn .button{
 	border:1px solid #f0f0f0;
 	float:left;
 	height:20px;
@@ -189,7 +189,7 @@ ul.tablayout a.active {
 .tab .button:hover{border:1px outset;}
 .buttondown{border:1px inset !important}
 .tab #addbutton {
-	display: none;	
+	display: none;
 	background:#EEEEEE none repeat scroll 0 0;
 	border:1px solid #001C26;
 	color:#001C26;

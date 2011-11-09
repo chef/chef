@@ -34,7 +34,7 @@ Feature: CRUD cookbooks
      Then I should get a '404 "Not Found"' exception
 
   # Currently you cannot delete a cookbook by, e.g., DELETE /cookbooks/foo.
-  # You delete all of its versions and then it disappears.     
+  # You delete all of its versions and then it disappears.
   @delete_cookbook_positive
   Scenario: I should be able to delete a cookbook by deleting all of its versions
     Given I am an administrator
@@ -45,7 +45,7 @@ Feature: CRUD cookbooks
      Then the inflated responses key 'testcookbook_valid' should not exist
      When I 'GET' the path '/cookbooks/testcookbook_valid'
      Then I should get a '404 "Not Found"' exception
-     
+
   @delete_cookbook_negative
   Scenario: I should not be able to delete a cookbook that doesn't exist'
     Given I am an administrator

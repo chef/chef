@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ describe Chef::Provider::Service::Solaris do
   it "should raise an error if /bin/svcs does not exist" do
     File.should_receive(:exists?).with("/bin/svcs").and_return(false)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
-  end 
+  end
 
   describe "on a host with /bin/svcs" do
 
@@ -60,7 +60,7 @@ describe Chef::Provider::Service::Solaris do
       it "should return the current resource" do
         @provider.stub!(:popen4).with("/bin/svcs -l chef").and_return(@status)
         @provider.load_current_resource.should eql(@current_resource)
-      end 
+      end
 
       it "should popen4 '/bin/svcs -l service_name'" do
         @provider.should_receive(:popen4).with("/bin/svcs -l chef").and_return(@status)

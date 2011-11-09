@@ -22,7 +22,7 @@ require 'chef' / 'node'
 class Status < Application
 
   provides :html
-  before :login_required 
+  before :login_required
 
   def index
     begin
@@ -38,7 +38,7 @@ class Status < Application
       @status = {}
       @_message = {:error => "Could not list status"}
       render
-    end 
+    end
   end
 
 end

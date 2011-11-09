@@ -213,7 +213,7 @@ class Chef
 
         class AlternateGemEnvironment < GemEnvironment
           JRUBY_PLATFORM = /(:?universal|x86_64|x86)\-java\-[0-9\.]+/
-          
+
           def self.gempath_cache
             @gempath_cache ||= {}
           end
@@ -384,7 +384,7 @@ class Chef
           return false unless @current_resource && @current_resource.version
           return false if @current_resource.version.nil?
           # in the future we could support squiggly requirements like "~> 1.2.0"
-          # for now, the behavior when using anything other than exact 
+          # for now, the behavior when using anything other than exact
           # requirements is undefined.
           Gem::Requirement.new(@new_resource.version).satisfied_by?(Gem::Version.new(@current_resource.version))
         end

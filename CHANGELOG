@@ -26,7 +26,7 @@ Release Notes - Chef - Version 0.8.10
     * [CHEF-1083] - chef-server-webui doesn't correctly rescue load error when it tries to load itself from source checkout
 
 ** Improvement
-    * [CHEF-510] - be able to use debian/ubuntu libjs-jquery packaged library for chef-server 
+    * [CHEF-510] - be able to use debian/ubuntu libjs-jquery packaged library for chef-server
     * [CHEF-527] - debian/ubuntu packages should use /etc/default/chef-{client,server} for settings to the init script
     * [CHEF-1057] - Support templates that are already on the file system
 
@@ -177,7 +177,7 @@ Release Notes - Chef - Version 0.8.2
     * [CHEF-854] - shef executable needs to be added to the gemspec
     * [CHEF-855] - ruby-openid required by chef-server-webui, and missing in rakefile
     * [CHEF-858] - Provider detection broken if Resource type and Provider name matches
-    * [CHEF-859] - route provider will incorrectly configures centos/rhel networking 
+    * [CHEF-859] - route provider will incorrectly configures centos/rhel networking
     * [CHEF-860] - chef-web-ui status button shows 500 error
     * [CHEF-864] - Unable to reindex chef via knife or chef-solr-rebuild
     * [CHEF-870] - does not close stderr when daemonising
@@ -187,7 +187,7 @@ Release Notes - Chef - Version 0.8.2
     * [CHEF-880] - chef-server-api should require admin privileges to update data bag items
     * [CHEF-896] - file_backup_path include prefix in log output
     * [CHEF-897] - package provider does not tell you about which package is the cause of problems
-    * [CHEF-898] - chef-solr-indexer needs to depend on uuidtools 
+    * [CHEF-898] - chef-solr-indexer needs to depend on uuidtools
     * [CHEF-900] - security vulnerability in 0.8 webui
     * [CHEF-901] - If a role is deleted, any nodes that had that role can not be edited or deleted with the webgui
     * [CHEF-902] - mixlib-authentication fails to generate SHA1
@@ -217,7 +217,7 @@ Release Notes - Chef - Version 0.8.2
     * [CHEF-989] - Search for client in the webui returns 404 when trying to show the client in the search result
 
 ** Improvement
-    * [CHEF-291] - No high-level cookbook endpoint in REST API 
+    * [CHEF-291] - No high-level cookbook endpoint in REST API
     * [CHEF-358] - Refactor the REST API
     * [CHEF-374] - drop outdated contrib/
     * [CHEF-555] - Default adapter for chef-server merb should be thin instead of mongrel
@@ -234,7 +234,7 @@ Release Notes - Chef - Version 0.8.2
     * [CHEF-671] - SCM providers should be able to specify the group
     * [CHEF-676] - redhat init script update
     * [CHEF-684] - Should be possible for roles to be created without anything in the run_list
-    * [CHEF-687] - shef: irb/REPL mode for chef 
+    * [CHEF-687] - shef: irb/REPL mode for chef
     * [CHEF-698] - Validate JSON in the Web UI
     * [CHEF-699] - solo and client modes in shef
     * [CHEF-705] - chef-repo with rake install should update roles via the api
@@ -305,7 +305,7 @@ Release Notes - Chef - Version 0.7.14
     * [CHEF-454] - Centos4 yum provider failure
     * [CHEF-565] - dpkg provider fails at packages with a dash in it, causing packages to be re-installed on every chef run
     * [CHEF-570] - Portage package provider uses wrong regexp in load_current_resource
-    * [CHEF-577] - provider.rb doesn't give @definitions a default value of Hash.new, causing epic fail in resource DSL 
+    * [CHEF-577] - provider.rb doesn't give @definitions a default value of Hash.new, causing epic fail in resource DSL
     * [CHEF-588] - RC is missing debugging info in find_preferred_file
     * [CHEF-591] - if service doesn't have a status command, process table inspection fails in simple service provider
     * [CHEF-593] - deploy resource is not idempotent
@@ -473,10 +473,10 @@ Release Notes - Chef - Version 0.7.2
     * [CHEF-359] - Using chef-server-slice results in exceptions.rb "superclass mismatch for class Exceptions"
     * [CHEF-360] - rake tasks should copy roles
     * [CHEF-362] - undefined method `sync=' for "/var/log/chef/server.log":String (NoMethodError)
-    * [CHEF-367] - node run_list is empty when running chef-client with a json file specifying run_list 
+    * [CHEF-367] - node run_list is empty when running chef-client with a json file specifying run_list
     * [CHEF-369] - chef-indexer pid and permissions
     * [CHEF-372] - chef-client and chef-solo will fail to run ohai if the node_name is explicitly configured.
-    * [CHEF-376] - Roles don't save. 
+    * [CHEF-376] - Roles don't save.
     * [CHEF-383] - Cookies have limit of 4K.
     * [CHEF-386] - 'rake roles' doesn't update json files from ruby files
     * [CHEF-387] - deleting a role generates a 500 error in the web interface
@@ -585,7 +585,7 @@ http://tickets.opscode.com
     * [CHEF-182] - Chef::Exception masks ::Exception (see OHAI-79)
     * [CHEF-185] - file delete backs up links
     * [CHEF-186] - file delete fails if file does not exist
-    * [CHEF-188] - Merb dependencies for both the server app and slice need to be updated to 1.0.10 
+    * [CHEF-188] - Merb dependencies for both the server app and slice need to be updated to 1.0.10
     * [CHEF-190] - apt provider fails on non-English debian installations
     * [CHEF-195] - The backup attribute for File needlessly creates a backup then deletes it when set to 0
     * [CHEF-198] - chef-solo banner
@@ -736,7 +736,7 @@ http://tickets.opscode.com/
     * [CHEF-3] - Require chef loads everything
     * [CHEF-7] - Remote File tests failing after Solo updates
     * [CHEF-10] - Remove Chef::FileStore in favor of Chef::FileCache
-    * [CHEF-12] - spec_helper causes bogus Constant redefinition 
+    * [CHEF-12] - spec_helper causes bogus Constant redefinition
     * [CHEF-16] - Search and SearchIndex are only used by the Chef Server, but they live in Chef Client
     * [CHEF-18] - Search index does not understand nested hashes
     * [CHEF-22] - templates aren't created / found in the cache and execution aborts

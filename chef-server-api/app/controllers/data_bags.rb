@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,16 @@
 require 'chef/data_bag'
 
 class DataBags < Application
-  
+
   provides :json
-  
+
   before :authenticate_every
   before :is_admin, :only => [ :create, :destroy ]
-  
+
   def index
     @bag_list = Chef::DataBag.cdb_list(false)
     display(@bag_list.inject({}) { |r,b| r[b] = absolute_url(:datum, :id => b); r })
-    
+
   end
 
   def show
@@ -49,7 +49,7 @@ class DataBags < Application
       @data_bag = Chef::DataBag.new
       @data_bag.name(params["name"])
     end
-    exists = true 
+    exists = true
     begin
       Chef::DataBag.cdb_load(@data_bag.name)
     rescue Chef::Exceptions::CouchDBNotFound
@@ -64,12 +64,12 @@ class DataBags < Application
   def destroy
     begin
       @data_bag = Chef::DataBag.cdb_load(params[:id])
-    rescue Chef::Exceptions::CouchDBNotFound => e 
+    rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load data bag #{params[:id]}"
     end
     @data_bag.cdb_destroy
     @data_bag.couchdb_rev = nil
     display @data_bag
   end
-  
+
 end

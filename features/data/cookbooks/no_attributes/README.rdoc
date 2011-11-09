@@ -2,7 +2,7 @@
 
 = REQUIREMENTS:
 
-= ATTRIBUTES: 
+= ATTRIBUTES:
 
 = USAGE:
 

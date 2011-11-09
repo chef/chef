@@ -1,6 +1,6 @@
 @api @api_roles @roles_show
-Feature: Show a role via the REST API 
-  In order to know what the details are for a Role 
+Feature: Show a role via the REST API
+  In order to know what the details are for a Role
   As a Developer
   I want to show the details for a specific Role
 
@@ -12,7 +12,7 @@ Feature: Show a role via the REST API
 
   Scenario: Show a missing role
     Given I am an administrator
-      And there are no roles 
+      And there are no roles
      When I 'GET' the path '/roles/bobo'
      Then I should get a '404 "Not Found"' exception
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # chef-solr Startup script for the SOLR search engine
 #
 # chkconfig: - 94 06
@@ -42,7 +42,7 @@ start() {
 
 stop() {
     echo -n $"Stopping $prog: "
-    killproc -p $pidfile $prog 
+    killproc -p $pidfile $prog
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile

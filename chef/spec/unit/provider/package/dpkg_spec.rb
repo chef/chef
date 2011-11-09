@@ -57,15 +57,15 @@ describe Chef::Provider::Package::Dpkg do
         @provider.current_resource.package_name.should == "wget"
         @new_resource.version.should == version
       end
-      
+
       it 'if short version provided' do
         check_version('1.11.4')
       end
-      
+
       it 'if extended version provided' do
         check_version('1.11.4-1ubuntu1')
       end
-      
+
       it 'if distro-specific version provided' do
         check_version('1.11.4-1ubuntu1~lucid')
       end

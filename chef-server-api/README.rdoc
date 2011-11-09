@@ -12,19 +12,19 @@ I'm in ur netwerk, cookin up yer servers. :)
 
 chef:
 
-*  ruby-openid  
-*  json  
-*  erubis  
-*  stomp  
-*  ohai  
+*  ruby-openid
+*  json
+*  erubis
+*  stomp
+*  ohai
 
 chef-server and the chef-server-api (merb slice), same requires as chef above, plus:
 
-*  merb-core 
-*  merb-haml 
+*  merb-core
+*  merb-haml
 *  thin
 *  haml
-*  ruby-openid 
+*  ruby-openid
 *  syntax
 
 Interim Note:
@@ -46,10 +46,10 @@ External Servers:
 Install all of the above.  To fire up a develpment environment, do the following:
 
   * Start CouchDB with 'couchdb'
-  * Start stompserver with 'stompserver' 
+  * Start stompserver with 'stompserver'
   * Start chef-indexer with:
 
-    chef-indexer -l debug 
+    chef-indexer -l debug
 
   * Start chef-server:
 
@@ -57,7 +57,7 @@ Install all of the above.  To fire up a develpment environment, do the following
 
   * Test run chef to begin node registration:
 
-    sudo ./bin/chef-client 
+    sudo ./bin/chef-client
 
   * Validate the node registration:
 
@@ -67,7 +67,7 @@ Install all of the above.  To fire up a develpment environment, do the following
 
   * Test run chef with:
 
-    chef-client 
+    chef-client
 
 == LICENSE:
 

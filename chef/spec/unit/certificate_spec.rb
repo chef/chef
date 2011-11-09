@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,8 +39,8 @@ describe Chef::Certificate do
       FileUtils.stub!(:chown).and_return(true)
       File.stub!(:open).and_return(true)
       File.stub!(:exists?).and_return(false)
-      @ca_cert = FakeFile.new 
-      @ca_key = FakeFile.new 
+      @ca_cert = FakeFile.new
+      @ca_key = FakeFile.new
     end
 
     it "should generate a ca certificate" do
@@ -48,7 +48,7 @@ describe Chef::Certificate do
       Chef::Certificate.generate_signing_ca
       @ca_cert.data.should =~ /BEGIN CERTIFICATE/
     end
-    
+
     it "should generate an RSA private key" do
       File.should_receive(:open).with(Chef::Config[:signing_ca_key], File::WRONLY|File::EXCL|File::CREAT, 0600).and_yield(@ca_key)
       FileUtils.should_not_receive(:chown)

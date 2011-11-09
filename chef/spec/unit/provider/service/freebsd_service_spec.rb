@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ describe Chef::Provider::Service::Freebsd do
     @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
-  
+
   describe "load_current_resource" do
     before(:each) do
       @status = mock("Status", :exitstatus => 0)
@@ -55,7 +55,7 @@ PS_SAMPLE
       ::File.stub!(:open).and_return(@lines)
 
     end
-  
+
     it "should create a current resource with the name of the new resource" do
       Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
@@ -75,7 +75,7 @@ PS_SAMPLE
         @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"})
         @provider.load_current_resource
       end
-  
+
       it "should set running to true if the the status command returns 0" do
         @provider.stub!(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"}).and_return(0)
         @current_resource.should_receive(:running).with(true)
@@ -98,7 +98,7 @@ PS_SAMPLE
         @provider.should_receive(:run_command).with({:command => "/bin/chefhasmonkeypants status"})
         @provider.load_current_resource
       end
-    
+
     end
 
     it "should set running to false if the node has a nil ps attribute" do
@@ -131,7 +131,7 @@ PS_SAMPLE
         @stdout.stub!(:each_line).and_yield("555  ??  Ss     0:05.16 /usr/sbin/cron -s").
                                   and_yield(" 9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT")
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        @provider.load_current_resource 
+        @provider.load_current_resource
         @current_resource.running.should be_true
       end
 
@@ -165,7 +165,7 @@ PS_SAMPLE
       @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"YES\""])
       @provider.enable_service()
     end
-  
+
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       @current_resource.stub!(:enabled).and_return(false)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "bar" ])

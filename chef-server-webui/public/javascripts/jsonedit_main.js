@@ -139,7 +139,7 @@ var BCJT = function() {
             };
         } (),
         mktree: function() {
-            /* All below code was obtained from: http://www.javascripttoolbox.com/lib/mktree/ 
+            /* All below code was obtained from: http://www.javascripttoolbox.com/lib/mktree/
             the autor is: Matt Kruse (http://www.mattkruse.com/)
             (The code below was slightly modified!)
             */
@@ -170,9 +170,9 @@ var BCJT = function() {
                             if (item.firstChild.nodeName == "#text") { t = t + item.firstChild.nodeValue; item.removeChild(item.firstChild); }
                             s.onclick = treeNodeOnclick;
 							folders.push(item);
-                        } else { 
+                        } else {
 							item.className = nodeBulletClass;
-							s.onclick = retFalse; 
+							s.onclick = retFalse;
 							items.push(item);
 						}
                         s.appendChild(document.createTextNode(t));
@@ -277,13 +277,13 @@ var BCJTE = function(){
 			var pn = this.cli.parentNode.parentNode.id;
 			this.cli.parentNode.removeChild(this.cli);
 			this.reloadTree();
-			
+
 			//clear boxes
 			if (this.mktree){
 				this.ca = null;
 				this.cp = null;
 				this.cli = null;
-				
+
 				//clear boxes
 				$$("jsonname").value = "";
 				$$("jsonvalue").value = "";
@@ -295,11 +295,11 @@ var BCJTE = function(){
 				$$("savedstatus").style.display = "none";
 				$$("deletedstatus").style.display = "block";
 			}
-			
+
 			/* expanding fails because the tree is being reindexed during reload... the old id probably doens't exist anymore */
 			BCJT.mktree.expandToItem("tree"+this.index, pn);
 			//alert(this.index +"\n"+ pn);
-			
+
 		}
 	};
 	tp.prototype.addNode = function(nn, nv, t){
@@ -326,7 +326,7 @@ var BCJTE = function(){
 				case 'object':
 				    obj[nn] = nObj;
 				    break;
-				case 'array': 
+				case 'array':
 				    obj.push(nObj);
 				    break;
 				default: throw "Unable to add a child to type: " + objType;
@@ -341,7 +341,7 @@ var BCJTE = function(){
 				this.ca = null;
 				this.cp = null;
 				this.cli = null;
-				
+
 				//clear boxes
 				$$("jsonname").value = "";
 				$$("jsonvalue").value = "";
@@ -357,7 +357,7 @@ var BCJTE = function(){
 
 			/* expanding fails because the tree is being reindexed during reload... the old id probably doens't exist anymore */
 			BCJT.mktree.expandToItem("tree"+this.index, cid);
-			
+
 		}
 	};
 	tp.prototype.save = function(nv,t){
@@ -369,7 +369,7 @@ var BCJTE = function(){
 			var nn = "";
 			if (pt == 'array') {
 				nn = this.cp.substring(this.cp.lastIndexOf("[")+1,this.cp.lastIndexOf("]"));
-				
+
 			} else {
 				nn = this.cp.substring(this.cp.lastIndexOf("[")+2,this.cp.lastIndexOf("]")-1);
 			}
@@ -378,7 +378,7 @@ var BCJTE = function(){
 			try{
 				switch(t){
 					case 'string':
-						nObj = nv; 
+						nObj = nv;
 						break;
 					case 'object': case 'boolean': case 'function': case 'number':
 						nObj = JSON.parse(nv);
@@ -386,7 +386,7 @@ var BCJTE = function(){
 					case 'array':
 						nObj = JSON.parse(nv);
 						break;
-					case 'null': 
+					case 'null':
 						nObj = null;
 						break;
 					default: return t;
@@ -411,7 +411,7 @@ var BCJTE = function(){
 						$$("addbutton").style.display = "none";
 						$$("savebutton").style.display = "inline";
 					}
-				}						
+				}
 				$$("savedstatus").style.display = "block";
 			}catch(e){
 				$$("log").innerHTML = "There's an error in your value!<br />" + e;
@@ -419,11 +419,11 @@ var BCJTE = function(){
 			}
 		}
 	};
-	
+
 	function searchJson(tree, keyword){
 		var results = [];
 		var li = 0;
-		function searchKeyword(input,word){if (input===null){return -1;}return input.toString().search(new RegExp(word,"gi"));}		
+		function searchKeyword(input,word){if (input===null){return -1;}return input.toString().search(new RegExp(word,"gi"));}
 		function searchTree(content,index,dots,inside,keyword){
 			if (tree.isTypeOf(content) == Array){
 				for (var i=0; i<content.length; i++){
@@ -438,12 +438,12 @@ var BCJTE = function(){
 					searchTree(content[i], -1, dots,true,keyword);
 					li++;
 					if (searchKeyword(i,keyword) > -1 && tree.isTypeOf(i)!==Object){makeList(dots, i, li, "label");}
-					if (searchKeyword(content[i],keyword) > -1 && tree.isTypeOf(content[i])!==Object){makeList(dots, i, li, "value");}					
-					dots=dots.substr(0, dots.length - i.length - 4);	
+					if (searchKeyword(content[i],keyword) > -1 && tree.isTypeOf(content[i])!==Object){makeList(dots, i, li, "value");}
+					dots=dots.substr(0, dots.length - i.length - 4);
 				}
-			}				
+			}
 		}
-		function makeList(dots, where, id, val){results.push({"a":"a"+id,"li":"li"+id,"path":escape(dots),"value":where,"where":val});}		
+		function makeList(dots, where, id, val){results.push({"a":"a"+id,"li":"li"+id,"path":escape(dots),"value":where,"where":val});}
 		return function(){
 			li =0;
 			results.length = 0;
@@ -507,9 +507,9 @@ var BCJTEP = function(){
 		save: function(jsonPath){
       if (jsonPath) {
         var jsval = eval("BCJT.tree.forest[0]." + BCJTEP.escapeslashes(jsonPath));
-			  return JSON.stringify(jsval);	
+			  return JSON.stringify(jsval);
       } else {
-			  return JSON.stringify(BCJT.tree.forest[0].json);	
+			  return JSON.stringify(BCJT.tree.forest[0].json);
       }
 		},
 		build: function(){
@@ -527,7 +527,7 @@ var BCJTEP = function(){
 				$$("savebutton").style.display = "inline";
 				$$("savedstatus").style.display = "none";
 				$$("deletedstatus").style.display = "none";
-				
+
 				if ("json" == unescape(p.jsonPath)){
 					tabber1.show(3);
 					$$("jsonstr").value = p.jsonValue;
@@ -548,7 +548,7 @@ var BCJTEP = function(){
 					  }
 					  $$("jsonpath").innerHTML = "Path: " + unescape(p.jsonPath);
             $$("jsonmode").innerHTML = "Mode: " + jsonmode;
-					  selectType($$("jsontypes"),p.jsonType); 
+					  selectType($$("jsontypes"),p.jsonType);
 				}
 			}});
 			if (r){return r;
@@ -557,7 +557,7 @@ var BCJTEP = function(){
 				$$("console").style.display = "block";
 				return false;
 			}
-		},	
+		},
 		escapeslashes: escapeslashes,
 		stripslashes: stripslashes,
 		uType: determineUserType,
@@ -591,20 +591,20 @@ BCJTEP.prototype = function(){
 				$$("searchtab").className = "show";
 			}
 		})
-		
+
 		var jsontypes = $$("jsontypes");
 		var j = BCJTE.objectTypes.length;
 		for (var i = 0; i<j; i++){BCJTE.addOptions(jsontypes, i ,BCJTE.objectTypes[i]);}
-		
+
 		addE($$("savebutton"), "click", function(){
 				if ($$("autodetect").checked){
 					BCJTEP.selectType( $$("jsontypes"), BCJTEP.uType($$("jsonvalue").value) );
 				}
-				var obj = BCJT.tree.forest[0];				
+				var obj = BCJT.tree.forest[0];
 				var listtype = $$("jsontypes").options[$$("jsontypes").selectedIndex].text;
 				obj.save($$("jsonvalue").value,listtype);
 			});
-		
+
 		addE($$("addbutton"), "click", function(){
 				if ($$("autodetect").checked){
 					BCJTEP.selectType( $$("jsontypes"), BCJTEP.uType($$("jsonvalue").value) );
@@ -622,7 +622,7 @@ BCJTEP.prototype = function(){
 				alert("Save");
 			}
 		});*/
-		
+
 		addE($$("refresh"), "mousedown", function(){
 			$$("refresh").className = "button buttondown";
 			$$("refresh").style.backgroundPosition = "right bottom";
@@ -633,7 +633,7 @@ BCJTEP.prototype = function(){
 			$$("refresh").style.backgroundPosition = "center center";
 		});
 
-		
+
 		addE($$("add"), "mousedown", function(){
 			$$("add").className = "button buttondown";
 			$$("add").style.backgroundPosition = "right bottom";
@@ -642,8 +642,8 @@ BCJTEP.prototype = function(){
 			$$("jsonnameinput").style.display = "inline";
 			$$("jsonvalue").value = "";
 			$$("jsontypes").selectedIndex = 0;
-			
-			var objTree = BCJT.tree.forest[0];	
+
+			var objTree = BCJT.tree.forest[0];
 			var obj = eval(BCJTEP.escapeslashes(objTree.cp));
 			var objType = objTree.strIsTypeOf(objTree.isTypeOf(obj));
 
@@ -663,8 +663,8 @@ BCJTEP.prototype = function(){
 		addE($$("add"), "mouseup", function(){
 			$$("add").className = "button";
 			$$("add").style.backgroundPosition = "center center";
-		});	
-		
+		});
+
     addE($$("jsontypes"), "change", function(){
 				var listtype = $$("jsontypes").options[$$("jsontypes").selectedIndex].text;
 				var jsonmode = $$("autodetect").checked ? "Automatic" : "Standard";
@@ -674,7 +674,7 @@ BCJTEP.prototype = function(){
         $$("jsonmode").innerHTML = "Mode: " + jsonmode;
 
 			});
-		
+
 		addE($$("delete"), "mousedown", function(){
 			$$("delete").className = "button buttondown";
 			$$("delete").style.backgroundPosition = "right bottom";
@@ -684,7 +684,7 @@ BCJTEP.prototype = function(){
 			$$("delete").className = "button";
 			$$("delete").style.backgroundPosition = "center center";
 		});
-		
+
 		addE($$("search"), "click", function(){
 			BCJTEP.writeResults();
 		});

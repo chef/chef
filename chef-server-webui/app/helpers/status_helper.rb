@@ -28,6 +28,6 @@ module Merb
       seconds = (difference % 60)
       return [hours, minutes, seconds]
     end
-    
+
   end
 end

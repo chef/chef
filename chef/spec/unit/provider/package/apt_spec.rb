@@ -107,18 +107,18 @@ VPKG_STDOUT
       @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient15-dev").and_return(virtual_package)
       showpkg_out =<<-SHOWPKG_STDOUT
 Package: libmysqlclient15-dev
-Versions: 
+Versions:
 
-Reverse Depends: 
+Reverse Depends:
   libmysqlclient-dev,libmysqlclient15-dev
   libmysqlclient-dev,libmysqlclient15-dev
   libmysqlclient-dev,libmysqlclient15-dev
   libmysqlclient-dev,libmysqlclient15-dev
   libmysqlclient-dev,libmysqlclient15-dev
   libmysqlclient-dev,libmysqlclient15-dev
-Dependencies: 
-Provides: 
-Reverse Provides: 
+Dependencies:
+Provides:
+Reverse Provides:
 libmysqlclient-dev 5.1.41-3ubuntu12.7
 libmysqlclient-dev 5.1.41-3ubuntu12.10
 libmysqlclient-dev 5.1.41-3ubuntu12
@@ -156,17 +156,17 @@ VPKG_STDOUT
       @provider.should_receive(:shell_out!).with("apt-cache policy mp3-decoder").and_return(virtual_package)
       showpkg_out=<<-SHOWPKG_STDOUT
 Package: mp3-decoder
-Versions: 
+Versions:
 
-Reverse Depends: 
+Reverse Depends:
   nautilus,mp3-decoder
   vux,mp3-decoder
   plait,mp3-decoder
   ecasound,mp3-decoder
   nautilus,mp3-decoder
-Dependencies: 
-Provides: 
-Reverse Provides: 
+Dependencies:
+Provides:
+Reverse Provides:
 vlc-nox 1.0.6-1ubuntu1.8
 vlc 1.0.6-1ubuntu1.8
 vlc-nox 1.0.6-1ubuntu1

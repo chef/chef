@@ -21,5 +21,5 @@ class Main < Application
       render
     end
   end
-  
+
 end

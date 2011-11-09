@@ -18,7 +18,7 @@ Feature: Templates
 	     Then the run should exit '0'
 	      And a file named 'node.txt' should contain 'bawt is fujins bot'
 	      And a file named 'node.txt' should contain 'cheers!'
-	
+
 # Read the JIRA ticket for the full story, but what we're testing is that the
 # template resource executes correctly the second time it's run in the same
 # chef process

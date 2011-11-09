@@ -86,11 +86,11 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def enable_service
     run_command_with_systems_locale(:command => "/bin/systemctl enable #{@new_resource.service_name}")
-  end 
+  end
 
   def disable_service
     run_command_with_systems_locale(:command => "/bin/systemctl disable #{@new_resource.service_name}")
-  end 
+  end
 
   def is_active?
     run_command_with_systems_locale({:command => "/bin/systemctl is-active #{@new_resource.service_name}", :ignore_failure => true}) == 0

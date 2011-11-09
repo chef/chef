@@ -25,11 +25,11 @@ require 'erb'
 #
 #    int = {Hash with your network settings...}
 #
-#    ifconfig  int['ip'] do 
-#      ignore_failure  true 
-#      device  int['dev'] 
-#      mask    int['mask']  
-#      gateway int['gateway'] 
+#    ifconfig  int['ip'] do
+#      ignore_failure  true
+#      device  int['dev']
+#      mask    int['mask']
+#      gateway int['gateway']
 #      mtu     int['mtu']
 #    end
 

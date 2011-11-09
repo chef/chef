@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,9 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 require 'chef/node/attribute'
 
-describe Chef::Node::Attribute do 
+describe Chef::Node::Attribute do
   before(:each) do
-    @attribute_hash = 
+    @attribute_hash =
       {"dmi"=>{},
         "command"=>{"ps"=>"ps -ef"},
         "platform_version"=>"10.5.7",
@@ -193,7 +193,7 @@ describe Chef::Node::Attribute do
     @default_hash = {
       "domain" => "opscode.com",
       "hot" => { "day" => "saturday" },
-      "music" => { 
+      "music" => {
         "jimmy_eat_world" => "is fun!",
         "mastodon" => "rocks",
         "mars_volta" => "is loud and nutty",
@@ -225,7 +225,7 @@ describe Chef::Node::Attribute do
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
         na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
-        na.send(accessor).should == { accessor => true } 
+        na.send(accessor).should == { accessor => true }
       end
     end
 
@@ -426,10 +426,10 @@ describe Chef::Node::Attribute do
       @attributes["music"]
       @attributes.has_key?("apophis").should == true
     end
-    
+
     it "should find keys at the current nesting level" do
       @attributes["music"]
-      @attributes.has_key?("mastodon").should == true 
+      @attributes.has_key?("mastodon").should == true
       @attributes.has_key?("whitesnake").should == false
     end
 
@@ -443,7 +443,7 @@ describe Chef::Node::Attribute do
 
     [:include?, :key?, :member?].each do |method|
       it "should alias the method #{method} to itself" do
-        @attributes.should respond_to(method) 
+        @attributes.should respond_to(method)
       end
 
       it "#{method} should behave like has_key?" do
@@ -463,7 +463,7 @@ describe Chef::Node::Attribute do
 
     it "should be looking at the current position of the object" do
       @attributes["music"]
-      @attributes.attribute?("mastodon").should == true 
+      @attributes.attribute?("mastodon").should == true
       @attributes.attribute?("whitesnake").should == false
     end
   end
@@ -516,7 +516,7 @@ describe Chef::Node::Attribute do
       collect.include?("snakes").should == true
       collect.include?("snack").should == true
       collect.include?("place").should == true
-      collect.length.should == 5 
+      collect.length.should == 5
     end
 
     it "should yield lower if we go deeper" do
@@ -527,7 +527,7 @@ describe Chef::Node::Attribute do
       collect.include?("two").should == true
       collect.include?("four").should == true
       collect.include?("six").should == true
-      collect.length.should == 3 
+      collect.length.should == 3
     end
 
     it "should not raise an exception if one of the hashes has a nil value on a deep lookup" do
@@ -601,7 +601,7 @@ describe Chef::Node::Attribute do
       @attributes.each_key do |k|
         collect << k
       end
-     
+
       collect.should include("one")
       collect.should include("snack")
       collect.should include("hut")
@@ -644,7 +644,7 @@ describe Chef::Node::Attribute do
       collect["snack"].should == "cookies"
     end
   end
-  
+
   describe "each_value" do
     before do
       @attributes = Chef::Node::Attribute.new(

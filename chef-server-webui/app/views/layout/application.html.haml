@@ -13,7 +13,7 @@
     = js_include_tag "jquery.suggest"
 
     = catch_content :header_content
-        
+
   %body
     #container
       #header
@@ -55,7 +55,7 @@
                   .flash
                     - message.each do |type, msg|
                       %div{:class => "message #{type}"}
-                        %p= msg             
+                        %p= msg
           = catch_content :for_layout
           #footer
             .block

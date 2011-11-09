@@ -32,9 +32,9 @@ class Chef
           if Dir.glob("/etc/rc**/S*#{@current_resource.service_name}").empty?
             @current_resource.enabled false
           else
-            @current_resource.enabled true 
+            @current_resource.enabled true
           end
-  
+
           @current_resource
         end
 

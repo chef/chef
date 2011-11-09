@@ -27,9 +27,9 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     @new_resource.supports[:restart] = true
 
     super
-    
+
     raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")
-    
+
     @current_resource.enabled(
       Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
         exists = ::File.exists? file
@@ -42,11 +42,11 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
     @current_resource
   end
-  
+
   def enable_service()
     run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
   end
-  
+
   def disable_service()
     run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
   end

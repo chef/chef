@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -71,23 +71,23 @@ class Chef
         def create_user
           @net_user.add(set_options)
         end
-        
+
         def manage_user
           @net_user.update(set_options)
         end
-        
+
         def remove_user
           @net_user.delete
         end
-        
+
         def check_lock
           @net_user.check_enabled
         end
-        
+
         def lock_user
           @net_user.disable_account
         end
-        
+
         def unlock_user
           @net_user.enable_account
         end

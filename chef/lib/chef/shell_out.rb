@@ -113,7 +113,7 @@ class Chef
       @stdout, @stderr = '', ''
       @live_stream = nil
       @command_log_level = :debug
-      @command_log_prepend = nil 
+      @command_log_prepend = nil
       @environment = DEFAULT_ENVIRONMENT
       @cwd = nil
       @valid_exit_codes = [0]

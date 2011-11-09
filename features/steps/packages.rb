@@ -20,7 +20,7 @@ Given /^I have configured my apt sources for integration tests$/ do
 end
 
 def remove_integration_test_apt_source
-  FileUtils.rm("/etc/apt/sources.list.d/chef-integration-test.list")  
+  FileUtils.rm("/etc/apt/sources.list.d/chef-integration-test.list")
 rescue Errno::ENOENT
   Chef::Log.info("Attempted to remove integration test from /etc/apt/sources.list.d but it didn't exist")
 end
@@ -68,7 +68,7 @@ Given "the apt server is running" do
       apt_server.shutdown
       apt_server_thread.join
     end
-    
+
     apt_server.start
   end
 
@@ -86,11 +86,11 @@ end
 
 Given /^the gems server is running$/ do
   self.gemserver_thread = Thread.new do
-    trap("INT") do 
+    trap("INT") do
       gemserver.shutdown
       gemserver_thread.join
     end
-    
+
     gemserver.start
   end
 end

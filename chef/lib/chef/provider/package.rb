@@ -186,11 +186,11 @@ class Chef
           remote_file.cookbook_name = @new_resource.cookbook_name
           remote_file.source(@new_resource.response_file)
           remote_file.backup(false)
-        end      
+        end
 
         remote_file
       end
-      
+
       def expand_options(options)
         options ? " #{options}" : ""
       end

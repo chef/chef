@@ -1,6 +1,6 @@
 @api @api_clients @clients_show
-Feature: Show a client via the REST API 
-  In order to know what the details are for a client 
+Feature: Show a client via the REST API
+  In order to know what the details are for a client
   As a Developer
   I want to show the details for a specific client
 
@@ -14,7 +14,7 @@ Feature: Show a client via the REST API
 
   Scenario: Show a missing client
     Given I am an administrator
-      And there are no clients 
+      And there are no clients
      When I 'GET' the path '/clients/frankenstein'
      Then I should get a '404 "Not Found"' exception
 

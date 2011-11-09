@@ -5,7 +5,7 @@ require 'chef'
 #Chef::Config.from_file(File.join("/etc", "chef", "server.rb"))
 Chef::Config.from_file(File.expand_path(File.dirname(__FILE__) + '/../features/data/config/server.rb'))
 
-Merb::Config.setup(:merb_root   => File.expand_path(File.dirname(__FILE__)), 
+Merb::Config.setup(:merb_root   => File.expand_path(File.dirname(__FILE__)),
                    :environment => 'production',
                    :fork_for_class_load => false)
 

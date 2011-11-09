@@ -32,7 +32,7 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     @field_ko_prefix = Chef::Mixin::DeepMerge::DEFAULT_FIELD_KNOCKOUT_PREFIX
   end
   #@dm = Chef::Mixin::DeepMerge
-  
+
 
   # deep_merge core tests - moving from basic to more complex
 

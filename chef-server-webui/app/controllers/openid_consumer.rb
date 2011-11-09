@@ -54,7 +54,7 @@ class OpenidConsumer < Application
   end
 
   def login
-    if session[:user] 
+    if session[:user]
       redirect(url(:nodes), :message => { :warning => "You've already logged in with user #{session[:user]}"  })
     else
       oid = params[:openid_identifier]
@@ -74,7 +74,7 @@ class OpenidConsumer < Application
         raise BadRequest, "Verification failed: #{oidresp.message}" + (oidresp.display_identifier ? " for identifier '#{oidresp.display_identifier}'" : "")
       when OpenID::Consumer::SUCCESS
         #session[:openid] = oidresp.identity_url
-        # The "if" condition no longer seems need to/can be reached, so I took it out. [nuo] 
+        # The "if" condition no longer seems need to/can be reached, so I took it out. [nuo]
         #
         # if oidresp.display_identifier =~ /openid\/server\/node\/(.+)$/
         #   reg_name = $1
@@ -97,11 +97,11 @@ class OpenidConsumer < Application
             end
             break
           end
-        end        
+        end
         if session[:user].nil?
           redirect(url(:openid_consumer),  :message => { :error => "No user is associated with this OpenID." })
           return "No user is associated with this OpenID."
-        end 
+        end
         #end
         redirect_back_or_default(absolute_url(:nodes))
         return "Verification of #{oidresp.display_identifier} succeeded."
@@ -132,12 +132,12 @@ class OpenidConsumer < Application
       true
     end
   end
-   
+
   def is_authorized_openid_identifier?(openid, authorized_identifiers)
     Chef::Log.debug("Checking for valid openid identifier: openid: #{openid}, authorized openids: #{authorized_identifiers}")
     if authorized_identifiers and openid
-      if authorized_identifiers.length > 0 
-        authorized_identifiers.detect { |p| Chef::Log.debug("Openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p } 
+      if authorized_identifiers.length > 0
+        authorized_identifiers.detect { |p| Chef::Log.debug("Openid: #{openid} (#{openid.class}), p: #{p} (#{p.class})"); openid == p }
       else
         true
       end

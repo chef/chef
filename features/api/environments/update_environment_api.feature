@@ -44,7 +44,7 @@ Feature: Update an environment via the REST API
       And an 'environment' named 'cucumber'
      When I 'PUT' the 'environment' to the path '/environments/_default'
      Then I should get a '<exception_type>' exception
-  
+
   Examples:
     | user_type        | exception_type           |
     | an administrator | 405 "Method Not Allowed" |

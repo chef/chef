@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ class Clients < Application
   before :is_admin, :only => [ :index, :update, :destroy ]
   before :is_admin_or_validator, :only => [ :create ]
   before :admin_or_requesting_node, :only => [ :show ]
-  
+
   # GET /clients
   def index
     @list = Chef::ApiClient.cdb_list(true)
@@ -46,7 +46,7 @@ class Clients < Application
 
   # POST /clients
   def create
-    exists = true 
+    exists = true
     if params.has_key?(:inflated_object)
       params[:name] ||= params[:inflated_object].name
       params[:admin] ||= params[:inflated_object].admin
@@ -61,7 +61,7 @@ class Clients < Application
     begin
       Chef::ApiClient.cdb_load(params[:name])
     rescue Chef::Exceptions::CouchDBNotFound
-      exists = false 
+      exists = false
     end
     raise Conflict, "Client already exists" if exists
 
@@ -70,7 +70,7 @@ class Clients < Application
     @client.admin(params[:admin]) if params[:admin]
     @client.create_keys
     @client.cdb_save
-    
+
     self.status = 201
     headers['Location'] = absolute_url(:client, @client.name)
     display({ :uri => absolute_url(:client, @client.name), :private_key => @client.private_key })
@@ -88,7 +88,7 @@ class Clients < Application
     rescue Chef::Exceptions::CouchDBNotFound => e
       raise NotFound, "Cannot load client #{params[:id]}"
     end
-    
+
     @client.admin(params[:admin]) unless params[:admin].nil?
 
     results = { :name => @client.name, :admin => @client.admin }

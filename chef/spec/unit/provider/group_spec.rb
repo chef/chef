@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,14 +28,14 @@ describe Chef::Provider::User do
     @new_resource.members "aj"
 
     @provider = Chef::Provider::Group.new(@new_resource, @run_context)
-    
+
     @current_resource = Chef::Resource::Group.new("aj", @run_context)
     @current_resource.gid 500
     @current_resource.members "aj"
-    
+
     @provider.current_resource = @current_resource
   end
-  
+
   it "assumes the group exists by default" do
     @provider.group_exists.should be_true
   end
@@ -49,7 +49,7 @@ describe Chef::Provider::User do
         )
       Etc.stub!(:getgrnam).and_return(@pw_group)
     end
-  
+
     it "sets the group name of the current resource to the group name of the new resource" do
       @provider.load_current_resource
       @provider.current_resource.group_name.should == 'wheel'
@@ -65,22 +65,22 @@ describe Chef::Provider::User do
       @provider.load_current_resource
       @new_resource.gid.should == 20
     end
-  
+
     it "looks up the group in /etc/group with getgrnam" do
       Etc.should_receive(:getgrnam).with(@new_resource.group_name).and_return(@pw_group)
       @provider.load_current_resource
       @provider.current_resource.gid.should == 20
       @provider.current_resource.members.should == %w{root aj}
     end
-  
+
     it "should flip the value of exists if it cannot be found in /etc/group" do
       Etc.stub!(:getgrnam).and_raise(ArgumentError)
       @provider.load_current_resource
       @provider.group_exists.should be_false
     end
-  
+
     it "should return the current resource" do
-      @provider.load_current_resource.should equal(@provider.current_resource)    
+      @provider.load_current_resource.should equal(@provider.current_resource)
     end
   end
 
@@ -91,7 +91,7 @@ describe Chef::Provider::User do
         @provider.compare_group.should be_true
       end
     end
-  
+
     it "should return false if gid and members are equal" do
       @provider.compare_group.should be_false
     end
@@ -116,28 +116,28 @@ describe Chef::Provider::User do
       @provider.should_receive(:create_group).and_return(true)
       @provider.action_create
     end
-  
+
     it "should set the the new_resources updated flag when it creates the group" do
       @provider.group_exists = false
       @provider.stub!(:create_group)
       @provider.action_create
       @provider.new_resource.should be_updated
     end
-  
+
     it "should check to see if the group has mismatched attributes if the group exists" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(false)
       @provider.action_create
       @provider.new_resource.should_not be_updated
     end
-  
+
     it "should call manage_group if the group exists and has mismatched attributes" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(true)
       @provider.should_receive(:manage_group).and_return(true)
       @provider.action_create
     end
-  
+
     it "should set the the new_resources updated flag when it creates the group if we call manage_group" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(true)
@@ -148,14 +148,14 @@ describe Chef::Provider::User do
   end
 
   describe "when removing a group" do
-  
+
     it "should not call remove_group if the group does not exist" do
       @provider.group_exists = false
-      @provider.should_not_receive(:remove_group) 
+      @provider.should_not_receive(:remove_group)
       @provider.action_remove
       @provider.new_resource.should_not be_updated
     end
-  
+
     it "should call remove_group if the group exists" do
       @provider.group_exists = true
       @provider.should_receive(:remove_group)
@@ -169,26 +169,26 @@ describe Chef::Provider::User do
       @provider.group_exists = true
       @provider.stub!(:manage_group).and_return(true)
     end
- 
+
     it "should run manage_group if the group exists and has mismatched attributes" do
       @provider.should_receive(:compare_group).and_return(true)
       @provider.should_receive(:manage_group).and_return(true)
       @provider.action_manage
     end
-  
+
     it "should set the new resources updated flag to true if manage_group is called" do
       @provider.stub!(:compare_group).and_return(true)
       @provider.stub!(:manage_group).and_return(true)
       @provider.action_manage
       @new_resource.should be_updated
     end
-  
+
     it "should not run manage_group if the group does not exist" do
       @provider.group_exists = false
       @provider.should_not_receive(:manage_group)
       @provider.action_manage
     end
-  
+
     it "should not run manage_group if the group exists but has no differing attributes" do
       @provider.should_receive(:compare_group).and_return(false)
       @provider.should_not_receive(:manage_group)
@@ -201,26 +201,26 @@ describe Chef::Provider::User do
       @provider.group_exists = true
       @provider.stub!(:manage_group).and_return(true)
     end
- 
+
     it "should run manage_group if the group exists and has mismatched attributes" do
       @provider.should_receive(:compare_group).and_return(true)
       @provider.should_receive(:manage_group).and_return(true)
       @provider.action_modify
     end
-  
+
     it "should set the new resources updated flag to true if manage_group is called" do
       @provider.stub!(:compare_group).and_return(true)
       @provider.stub!(:manage_group).and_return(true)
       @provider.action_modify
       @new_resource.should be_updated
     end
-  
+
     it "should not run manage_group if the group exists but has no differing attributes" do
       @provider.should_receive(:compare_group).and_return(false)
       @provider.should_not_receive(:manage_group)
       @provider.action_modify
     end
-  
+
     it "should raise a Chef::Exceptions::Group if the group doesn't exist" do
       @provider.group_exists = false
       lambda { @provider.action_modify }.should raise_error(Chef::Exceptions::Group)

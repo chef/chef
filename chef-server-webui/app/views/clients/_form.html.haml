@@ -5,13 +5,13 @@
         %label.label Name
         = text_field :id => "client_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @client.name
         %span.description The name of the Client
-    
+
     - if form_for == "edit"
       %div.group.form
         %label.label Private Key
         = check_box :name => "regen_private_key", :label => "Regenerate Private Key (Existing one will no longer work!)", :value => "1"
         %br/
-        
+
     %div.group.form
       %label.label Admin
       = check_box :id => "client_admin", :name => "admin", :value => "true", :label => "Whether or not the Client is an admin", :checked => @client.admin

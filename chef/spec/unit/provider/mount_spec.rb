@@ -22,13 +22,13 @@ describe Chef::Provider::Mount do
   before(:each) do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @new_resource = Chef::Resource::Mount.new('/tmp/foo')
     @new_resource.device      "/dev/sdz1"
     @new_resource.name        "/tmp/foo"
     @new_resource.mount_point "/tmp/foo"
     @new_resource.fstype      "ext3"
-    
+
     @current_resource = Chef::Resource::Mount.new('/tmp/foo')
     @current_resource.device      "/dev/sdz1"
     @current_resource.name        "/tmp/foo"
@@ -38,7 +38,7 @@ describe Chef::Provider::Mount do
     @provider = Chef::Provider::Mount.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
-  
+
   describe "when the target state is a mounted filesystem" do
 
     it "should mount the filesystem if it isn't mounted" do
@@ -73,7 +73,7 @@ describe Chef::Provider::Mount do
     before do
       @new_resource.supports[:remount] = true
     end
-    
+
     it "should remount the filesystem if remount is support and it is mounted" do
       @current_resource.mounted(true)
       @provider.should_receive(:remount_fs)

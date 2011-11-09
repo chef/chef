@@ -116,7 +116,7 @@ div#tree {
   float: left;
 }
 
-div#jform { 
+div#jform {
   float: left;
   margin-left: 50px;
 }
@@ -137,19 +137,19 @@ div.editor {
   display: none;
 }
 
-div.tooltip { 
-    background-color: #000; 
-    outline: 1px solid #669; 
-    border: 2px solid #fff; 
-    padding: 10px 15px; 
+div.tooltip {
+    background-color: #000;
+    outline: 1px solid #669;
+    border: 2px solid #fff;
+    padding: 10px 15px;
     /* width: 200px;  */
-    display: none; 
-    color: #fff; 
-    text-align: left; 
-    font-size: 12px; 
-    outline-radius: 4px; 
-    -moz-outline-radius: 4px; 
-    -webkit-outline-radius: 4px; 
+    display: none;
+    color: #fff;
+    text-align: left;
+    font-size: 12px;
+    outline-radius: 4px;
+    -moz-outline-radius: 4px;
+    -webkit-outline-radius: 4px;
 }
 
 table.tooltip {

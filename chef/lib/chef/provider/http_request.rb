@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,9 @@ require 'tempfile'
 class Chef
   class Provider
     class HttpRequest < Chef::Provider
-      
+
       attr_accessor :rest
-      
+
       def load_current_resource
         @rest = Chef::REST.new(@new_resource.url, nil, nil)
       end
@@ -45,10 +45,10 @@ class Chef
       end
 
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
-      def action_get  
+      def action_get
         message = check_message(@new_resource.message)
         body = @rest.run_request(
-          :GET, 
+          :GET,
           @rest.create_url("#{@new_resource.url}?message=#{message}"),
           @new_resource.headers,
           false,
@@ -59,9 +59,9 @@ class Chef
         Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} GET request response: #{body}")
       end
-      
+
       # Send a PUT request to @new_resource.url, with the message as the payload
-      def action_put 
+      def action_put
         message = check_message(@new_resource.message)
         body = @rest.run_request(
           :PUT,
@@ -75,7 +75,7 @@ class Chef
         Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
       end
-      
+
       # Send a POST request to @new_resource.url, with the message as the payload
       def action_post
         message = check_message(@new_resource.message)
@@ -91,7 +91,7 @@ class Chef
         Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
         Chef::Log.debug("#{@new_resource} POST request response: #{body}")
       end
-      
+
       # Send a DELETE request to @new_resource.url
       def action_delete
         body = @rest.run_request(
@@ -106,9 +106,9 @@ class Chef
         Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
       end
-      
+
       private
-        
+
         def check_message(message)
           if message.kind_of?(Proc)
             message.call
@@ -116,7 +116,7 @@ class Chef
             message
           end
         end
-      
+
     end
   end
 end

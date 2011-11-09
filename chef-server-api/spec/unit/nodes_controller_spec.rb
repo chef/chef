@@ -58,7 +58,7 @@ describe "Nodes controller" do
 
     it "creates a node if no same-named node exists" do
       create_node = make_node("node1")
-      
+
       Chef::Node.should_receive(:cdb_load).with("node1").and_raise(Chef::Exceptions::CouchDBNotFound)
       create_node.should_receive(:cdb_save)
 

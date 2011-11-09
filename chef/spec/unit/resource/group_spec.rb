@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Resource::Group, "initialize" do
   before(:each) do
     @resource = Chef::Resource::Group.new("admin")
-  end  
+  end
 
   it "should create a new Chef::Resource::Group" do
     @resource.should be_a_kind_of(Chef::Resource)
@@ -31,7 +31,7 @@ describe Chef::Resource::Group, "initialize" do
   it "should set the resource_name to :group" do
     @resource.resource_name.should eql(:group)
   end
-  
+
   it "should set the group_name equal to the argument to initialize" do
     @resource.group_name.should eql("admin")
   end
@@ -39,7 +39,7 @@ describe Chef::Resource::Group, "initialize" do
   it "should default gid to nil" do
     @resource.gid.should eql(nil)
   end
-  
+
   it "should default members to an empty array" do
     @resource.members.should eql([])
   end
@@ -47,11 +47,11 @@ describe Chef::Resource::Group, "initialize" do
   it "should alias users to members, also an empty array" do
     @resource.users.should eql([])
   end
-  
+
   it "should set action to :create" do
     @resource.action.should eql(:create)
   end
-  
+
   %w{create remove modify manage}.each do |action|
     it "should allow action #{action}" do
       @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
@@ -115,11 +115,11 @@ describe Chef::Resource::Group, "append" do
   before(:each) do
     @resource = Chef::Resource::Group.new("admin")
   end
-  
+
   it "should default to false" do
     @resource.append.should eql(false)
   end
-  
+
   it "should allow a boolean" do
     @resource.append true
     @resource.append.should eql(true)
@@ -128,5 +128,5 @@ describe Chef::Resource::Group, "append" do
   it "should not allow a hash" do
     lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
   end
-  
+
 end

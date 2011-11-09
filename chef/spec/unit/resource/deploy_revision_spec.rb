@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 describe Chef::Resource::DeployRevision do
-  
+
   it "defaults to the revision deploy provider" do
     @resource = Chef::Resource::DeployRevision.new("deploy _this_!")
     @resource.provider.should == Chef::Provider::Deploy::Revision
@@ -29,11 +29,11 @@ describe Chef::Resource::DeployRevision do
     @resource = Chef::Resource::DeployRevision.new("deploy _this_!")
     @resource.resource_name.should == :deploy_revision
   end
-  
+
 end
 
 describe Chef::Resource::DeployBranch do
-  
+
   it "defaults to the revision deploy provider" do
     @resource = Chef::Resource::DeployBranch.new("deploy _this_!")
     @resource.provider.should == Chef::Provider::Deploy::Revision
@@ -43,5 +43,5 @@ describe Chef::Resource::DeployBranch do
     @resource = Chef::Resource::DeployBranch.new("deploy _this_!")
     @resource.resource_name.should == :deploy_branch
   end
-  
+
 end

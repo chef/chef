@@ -15,6 +15,6 @@ Feature: Install deb Packages from the Filesystem
       And the dpkg package 'chef-integration-test' should be installed
 
 
-  
-  
-  
+
+
+

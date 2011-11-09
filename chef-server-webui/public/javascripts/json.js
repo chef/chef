@@ -56,11 +56,11 @@ if (!this.JSON) {
             switch (typeof value) {
             case 'string':
                 return quote(value);
-				
+
 			/* added for the BC Json Editor to enable editing of functions */
 			case 'function':
 				return value;
-				
+
             case 'number':
                 return isFinite(value) ? String(value) : 'null';
             case 'boolean':
