@@ -616,7 +616,7 @@ F
     #
     # === Returns
     # <Chef::Resource>:: returns the proper Chef::Resource class
-    def self.resource_for_platform(short_name, platform, version)
+    def self.resource_for_platform(short_name, platform=nil, version=nil)
       platform_map.get(short_name, platform, version)
     end
 
