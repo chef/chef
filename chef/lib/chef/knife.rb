@@ -21,6 +21,7 @@ require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
 require 'chef/rest'
@@ -32,6 +33,7 @@ class Chef
     Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
 
     include Mixlib::CLI
+    include Chef::Mixin::PathSanity
     extend Chef::Mixin::ConvertToClassName
     extend Forwardable
 
@@ -388,6 +390,7 @@ class Chef
       unless self.respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
+      enforce_path_sanity
       run
     rescue Exception => e
       raise if config[:verbosity] == 2
