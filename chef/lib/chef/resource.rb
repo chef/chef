@@ -21,7 +21,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
 require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/command'
+require 'chef/resource/conditional'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
@@ -71,7 +71,7 @@ F
 
     end
 
-    FORBIDDEN_IVARS = [:@run_context, :@node]
+    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
 
     include Chef::Mixin::CheckHelper
@@ -117,10 +117,8 @@ F
       @ignore_failure = false
       @retries = 0
       @retry_delay = 2
-      @not_if = nil
-      @not_if_args = {}
-      @only_if = nil
-      @only_if_args = {}
+      @not_if = []
+      @only_if = []
       @immediate_notifications = Array.new
       @delayed_notifications = Array.new
       @source_line = nil
@@ -372,24 +370,16 @@ F
       instance_vars
     end
 
-    def only_if(arg=nil, args = {}, &blk)
-      if Kernel.block_given?
-        @only_if = blk
-        @only_if_args = args
-      else
-        @only_if = arg if arg
-        @only_if_args = args if arg
+    def only_if(command=nil, opts={}, &block)
+      if command || block_given?
+        @only_if << Conditional.only_if(command, opts, &block)
       end
       @only_if
     end
 
-    def not_if(arg=nil, args = {}, &blk)
-      if Kernel.block_given?
-        @not_if = blk
-        @not_if_args = args
-      else
-        @not_if = arg if arg
-        @not_if_args = args if arg
+    def not_if(command=nil, opts={}, &block)
+      if command || block_given?
+        @not_if << Conditional.not_if(command, opts, &block)
       end
       @not_if
     end
@@ -416,25 +406,7 @@ F
       updated_by_last_action(false)
 
       begin
-        # Check if this resource has an only_if block -- if it does,
-        # evaluate the only_if block and skip the resource if
-        # appropriate.
-        if only_if
-          unless Chef::Mixin::Command.only_if(only_if, only_if_args)
-            Chef::Log.debug("Skipping #{self} due to only_if")
-            return
-          end
-        end
-
-        # Check if this resource has a not_if block -- if it does,
-        # evaluate the not_if block and skip the resource if
-        # appropriate.
-        if not_if
-          unless Chef::Mixin::Command.not_if(not_if, not_if_args)
-            Chef::Log.debug("Skipping #{self} due to not_if")
-            return
-          end
-        end
+        return if should_skip?
 
         # TODO: 2011-11-02 schisamo - make this work with
         # new platform => short_name => resource
@@ -446,9 +418,31 @@ F
           Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
         else
           Chef::Log.error("#{self} (#{defined_at}) has had an error")
-          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.message}")
+          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
           new_exception.set_backtrace(e.backtrace)
           raise new_exception
+        end
+      end
+    end
+
+    # Evaluates not_if and only_if conditionals. Returns a falsey value if any
+    # of the conditionals indicate that this resource should be skipped, i.e.,
+    # if an only_if evaluates to false or a not_if evaluates to true.
+    #
+    # If this resource should be skipped, returns the first conditional that
+    # "fails" its check. Subsequent conditionals are not evaluated, so in
+    # general it's not a good idea to rely on side effects from not_if or
+    # only_if commands/blocks being evaluated.
+    def should_skip?
+      conditionals = only_if + not_if
+      return false if conditionals.empty?
+
+      conditionals.find do |conditional|
+        if conditional.continue?
+          false
+        else
+          Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
+          true
         end
       end
     end
