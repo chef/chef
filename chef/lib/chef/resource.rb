@@ -370,6 +370,20 @@ F
       instance_vars
     end
 
+    # If command is a block, returns true if the block returns true, false if it returns false.
+    # ("Only run this resource if the block is true")
+    #
+    # If the command is not a block, executes the command.  If it returns any status other than
+    # 0, it returns false (clearly, a 0 status code is true)
+    #
+    # === Parameters
+    # command<String>:: A a string to execute.
+    # opts<Hash>:: Options control the execution of the command
+    # block<Proc>:: A ruby block to run. Ignored if a command is given.
+    #
+    # === Evaluation
+    # * evaluates to true if the block is true, or if the command returns 0
+    # * evaluates to false if the block is false, or if the command returns a non-zero exit code.
     def only_if(command=nil, opts={}, &block)
       if command || block_given?
         @only_if << Conditional.only_if(command, opts, &block)
@@ -377,6 +391,20 @@ F
       @only_if
     end
 
+    # If command is a block, returns false if the block returns true, true if it returns false.
+    # ("Do not run this resource if the block is true")
+    #
+    # If the command is not a block, executes the command.  If it returns a 0 exitstatus, returns false.
+    # ("Do not run this resource if the command returns 0")
+    #
+    # === Parameters
+    # command<String>:: A a string to execute.
+    # opts<Hash>:: Options control the execution of the command
+    # block<Proc>:: A ruby block to run. Ignored if a command is given.
+    #
+    # === Evaluation
+    # * evaluates to true if the block is false, or if the command returns a non-zero exit status.
+    # * evaluates to false if the block is true, or if the command returns a 0 exit status.
     def not_if(command=nil, opts={}, &block)
       if command || block_given?
         @not_if << Conditional.not_if(command, opts, &block)
