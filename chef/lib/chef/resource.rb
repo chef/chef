@@ -23,6 +23,7 @@ require 'chef/mixin/language'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/command'
 require 'chef/resource_collection'
+require 'chef/resource_platform_map'
 require 'chef/node'
 
 require 'chef/mixin/deprecation'
@@ -435,6 +436,8 @@ F
           end
         end
 
+        # TODO: 2011-11-02 schisamo - make this work with
+        # new platform => short_name => resource
         provider = Chef::Platform.provider_for_resource(self)
         provider.load_current_resource
         provider.send("action_#{action}")
@@ -463,110 +466,176 @@ F
       updated
     end
 
-    class << self
-
-      def json_create(o)
-        resource = self.new(o["instance_vars"]["@name"])
-        o["instance_vars"].each do |k,v|
-          resource.instance_variable_set("@#{k}".to_sym, v)
-        end
-        resource
+    def self.json_create(o)
+      resource = self.new(o["instance_vars"]["@name"])
+      o["instance_vars"].each do |k,v|
+        resource.instance_variable_set("@#{k}".to_sym, v)
       end
+      resource
+    end
 
-      include Chef::Mixin::ConvertToClassName
+    extend Chef::Mixin::ConvertToClassName
 
-      def attribute(attr_name, validation_opts={})
-        # This atrocity is the only way to support 1.8 and 1.9 at the same time
-        # When you're ready to drop 1.8 support, do this:
-        # define_method attr_name.to_sym do |arg=nil|
-        # etc.
-        shim_method=<<-SHIM
-        def #{attr_name}(arg=nil)
-          _set_or_return_#{attr_name}(arg)
-        end
-        SHIM
-        class_eval(shim_method)
-
-        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
-          set_or_return(attr_name.to_sym, arg, validation_opts)
-        end
+    def self.attribute(attr_name, validation_opts={})
+      # This atrocity is the only way to support 1.8 and 1.9 at the same time
+      # When you're ready to drop 1.8 support, do this:
+      # define_method attr_name.to_sym do |arg=nil|
+      # etc.
+      shim_method=<<-SHIM
+      def #{attr_name}(arg=nil)
+        _set_or_return_#{attr_name}(arg)
       end
-      
-      def build_from_file(cookbook_name, filename, run_context)
-        rname = filename_to_qualified_string(cookbook_name, filename)
+      SHIM
+      class_eval(shim_method)
 
-        # Add log entry if we override an existing light-weight resource.
-        class_name = convert_to_class_name(rname)
-        overriding = Chef::Resource.const_defined?(class_name)
-        Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
+      define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
+        set_or_return(attr_name.to_sym, arg, validation_opts)
+      end
+    end
 
-        new_resource_class = Class.new self do |cls|
+    def self.build_from_file(cookbook_name, filename, run_context)
+      rname = filename_to_qualified_string(cookbook_name, filename)
 
-          # default initialize method that ensures that when initialize is finally
-          # wrapped (see below), super is called in the event that the resource
-          # definer does not implement initialize
-          def initialize(name, run_context)
-            super(name, run_context)
+      # Add log entry if we override an existing light-weight resource.
+      class_name = convert_to_class_name(rname)
+      overriding = Chef::Resource.const_defined?(class_name)
+      Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
+
+      new_resource_class = Class.new self do |cls|
+
+        # default initialize method that ensures that when initialize is finally
+        # wrapped (see below), super is called in the event that the resource
+        # definer does not implement initialize
+        def initialize(name, run_context)
+          super(name, run_context)
+        end
+
+        @actions_to_create = []
+
+        class << cls
+          include Chef::Mixin::FromFile
+
+          attr_accessor :run_context
+
+          def node
+            self.run_context.node
           end
 
-          @actions_to_create = []
-
-          class << cls
-            include Chef::Mixin::FromFile
-            
-            attr_accessor :run_context
-
-            def node
-              self.run_context.node
-            end
-
-            def actions_to_create
-              @actions_to_create
-            end
-
-            define_method(:actions) do |*action_names|
-              actions_to_create.push(*action_names)
-            end
+          def actions_to_create
+            @actions_to_create
           end
 
-          # set the run context in the class instance variable
-          cls.run_context = run_context
-          
-          # load resource definition from file
-          cls.class_from_file(filename)
-
-          # create a new constructor that wraps the old one and adds the actions
-          # specified in the DSL
-          old_init = instance_method(:initialize)
-
-          define_method(:initialize) do |name, *optional_args|
-            args_run_context = optional_args.shift
-            @resource_name = rname.to_sym
-            old_init.bind(self).call(name, args_run_context)
-            allowed_actions.push(self.class.actions_to_create).flatten!
+          define_method(:actions) do |*action_names|
+            actions_to_create.push(*action_names)
           end
         end
 
-        # register new class as a Chef::Resource
-        class_name = convert_to_class_name(rname)
-        Chef::Resource.const_set(class_name, new_resource_class)
-        Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
+        # set the run context in the class instance variable
+        cls.run_context = run_context
 
-        new_resource_class
+        # load resource definition from file
+        cls.class_from_file(filename)
+
+        # create a new constructor that wraps the old one and adds the actions
+        # specified in the DSL
+        old_init = instance_method(:initialize)
+
+        define_method(:initialize) do |name, *optional_args|
+          args_run_context = optional_args.shift
+          @resource_name = rname.to_sym
+          old_init.bind(self).call(name, args_run_context)
+          allowed_actions.push(self.class.actions_to_create).flatten!
+        end
       end
 
-      # Resources that want providers namespaced somewhere other than
-      # Chef::Provider can set the namespace with +provider_base+
-      # Ex:
-      #   class MyResource < Chef::Resource
-      #     provider_base Chef::Provider::Deploy
-      #     # ...other stuff
-      #   end
-      def provider_base(arg=nil)
-        @provider_base ||= arg
-        @provider_base ||= Chef::Provider
-      end
+      # register new class as a Chef::Resource
+      class_name = convert_to_class_name(rname)
+      Chef::Resource.const_set(class_name, new_resource_class)
+      Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
 
+      new_resource_class
+    end
+
+    # Resources that want providers namespaced somewhere other than
+    # Chef::Provider can set the namespace with +provider_base+
+    # Ex:
+    #   class MyResource < Chef::Resource
+    #     provider_base Chef::Provider::Deploy
+    #     # ...other stuff
+    #   end
+    def self.provider_base(arg=nil)
+      @provider_base ||= arg
+      @provider_base ||= Chef::Provider
+    end
+
+    def self.platform_map
+      @@platform_map ||= PlatformMap.new
+    end
+
+    # Maps a short_name (and optionally a platform  and version) to a
+    # Chef::Resource.  This allows finer grained per platform resource
+    # attributes and the end of overloaded resource definitions
+    # (I'm looking at you Chef::Resource::Package)
+    # Ex:
+    #   class WindowsFile < Chef::Resource
+    #     provides :file, :on_platforms => ["windows"]
+    #     # ...other stuff
+    #   end
+    #
+    # TODO: 2011-11-02 schisamo - platform_version support
+    def self.provides(short_name, opts={})
+      short_name_sym = short_name
+      if short_name.kind_of?(String)
+        short_name.downcase!
+        short_name.gsub!(/\s/, "_")
+        short_name_sym = short_name.to_sym
+      end
+      if opts.has_key?(:on_platforms)
+        opts[:on_platforms].each do |p|
+          platform_map.set(
+            :platform => p.to_sym,
+            :short_name => short_name_sym,
+            :resource => self
+          )
+        end
+      else
+        platform_map.set(
+          :short_name => short_name_sym,
+          :resource => self
+        )
+      end
+    end
+
+    # Returns a resource based on a short_name anda platform and version.
+    #
+    #
+    # ==== Parameters
+    # short_name<Symbol>:: short_name of the resource (ie :directory)
+    # platform<Symbol,String>:: platform name
+    # version<String>:: platform version
+    #
+    # === Returns
+    # <Chef::Resource>:: returns the proper Chef::Resource class
+    def self.resource_for_platform(short_name, platform=nil, version=nil)
+      platform_map.get(short_name, platform, version)
+    end
+
+    # Returns a resource based on a short_name and a node's
+    # platform and version.
+    #
+    # ==== Parameters
+    # short_name<Symbol>:: short_name of the resource (ie :directory)
+    # node<Chef::Node>:: Node object to look up platform and version in
+    #
+    # === Returns
+    # <Chef::Resource>:: returns the proper Chef::Resource class
+    def self.resource_for_node(short_name, node)
+      begin
+        platform, version = Chef::Platform.find_platform_and_version(node)
+      rescue ArgumentError
+      end
+      resource = resource_for_platform(short_name, platform, version)
+      resource
     end
 
     private

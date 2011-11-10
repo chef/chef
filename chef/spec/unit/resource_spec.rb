@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -355,6 +356,67 @@ describe Chef::Resource do
 
   end
 
+  describe "building the platform map" do
+
+    it 'adds mappings for a single platform' do
+      klz = Class.new(Chef::Resource)
+      Chef::Resource.platform_map.should_receive(:set).with(
+        :platform => :autobots, :short_name => :dinobot, :resource => klz
+      )
+      klz.provides :dinobot, :on_platforms => ['autobots']
+    end
+
+    it 'adds mappings for multiple platforms' do
+      klz = Class.new(Chef::Resource)
+      Chef::Resource.platform_map.should_receive(:set).twice
+      klz.provides :energy, :on_platforms => ['autobots','decepticons']
+    end
+
+    it 'adds mappings for all platforms' do
+      klz = Class.new(Chef::Resource)
+      Chef::Resource.platform_map.should_receive(:set).with(
+        :short_name => :tape_deck, :resource => klz
+      )
+      klz.provides :tape_deck
+    end
+
+  end
+
+  describe "lookups from the platform map" do
+
+    before(:each) do
+      @node = Chef::Node.new
+      @node.name("bumblebee")
+      @node.platform("autobots")
+      @node.platform_version("6.1")
+      Object.const_set('Soundwave', Class.new(Chef::Resource))
+      Object.const_set('Grimlock', Class.new(Chef::Resource){ provides :dinobot, :on_platforms => ['autobots'] })
+    end
+
+    after(:each) do
+      Object.send(:remove_const, :Soundwave)
+      Object.send(:remove_const, :Grimlock)
+    end
+
+    describe "resource_for_platform" do
+      it 'return a resource by short_name and platform' do
+        Chef::Resource.resource_for_platform(:dinobot,'autobots','6.1').should eql(Grimlock)
+      end
+      it "returns a resource by short_name if nothing else matches" do
+        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
+      end
+    end
+
+    describe "resource_for_node" do
+      it "returns a resource by short_name and node" do
+        Chef::Resource.resource_for_node(:dinobot, @node).should eql(Grimlock)
+      end
+      it "returns a resource by short_name if nothing else matches" do
+        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
+      end
+    end
+
+  end
 end
 
 describe Chef::Resource::Notification do
