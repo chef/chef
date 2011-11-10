@@ -189,12 +189,10 @@ describe Chef::Resource do
   describe "to_hash" do
     it "should convert to a hash" do
       hash = @resource.to_hash
-      expected_keys = [ :only_if, :allowed_actions, :params, :provider,
-                        :updated, :updated_by_last_action, :before, :not_if, :supports,
-                        :delayed_notifications, :immediate_notifications, :noop,
-                        :ignore_failure, :name, :source_line, :action,
-                        :not_if_args, :only_if_args, :retries, :retry_delay
-                      ]
+      expected_keys = [ :allowed_actions, :params, :provider, :updated,
+        :updated_by_last_action, :before, :supports, :delayed_notifications,
+        :immediate_notifications, :noop, :ignore_failure, :name, :source_line,
+        :action, :retries, :retry_delay ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -318,39 +316,55 @@ describe Chef::Resource do
     end
 
     it "does not run only_if if no only_if command is given" do
-      Chef::Mixin::Command.should_not_receive(:only_if)
+      @resource.not_if.clear
       @resource.run_action(:purr)
     end
 
-    it "runs its only_if with Chef::Mixin::Command.only_if" do
-      @resource.only_if(true)
-      Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
+    it "runs runs an only_if when one is given" do
+      snitch_variable = nil
+      @resource.only_if { snitch_variable = true }
+      @resource.only_if.first.positivity.should == :only_if
+      #Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
+      @resource.run_action(:purr)
+      snitch_variable.should be_true
+    end
+
+    it "runs multiple only_if conditionals" do
+      snitch_var1, snitch_var2 = nil, nil
+      @resource.only_if { snitch_var1 = 1 }
+      @resource.only_if { snitch_var2 = 2 }
+      @resource.run_action(:purr)
+      snitch_var1.should == 1
+      snitch_var2.should == 2
+    end
+
+    it "accepts command options for only_if conditionals" do
+      @resource.only_if("true", :cwd => '/tmp')
+      @resource.only_if.first.command_opts.should == {:cwd => '/tmp'}
       @resource.run_action(:purr)
     end
 
-    it "changes the working directory to the specified directory for only_if" do
-      @resource.should_receive(:only_if).twice.and_return("/bin/true")
-      @resource.should_receive(:only_if_args).and_return({:cwd => "/tmp"})
-      Chef::Mixin::Command.should_receive(:only_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
-      @resource.run_action(:purr)
-    end
-
-    it "runs its not_if command with Chef::Mixin::Command.not_if" do
-      @resource.should_receive(:not_if).twice.and_return(true)
-      Chef::Mixin::Command.should_receive(:not_if).with(true, {}).and_return(false)
+    it "runs not_if as a command when it is a string" do
+      @resource.not_if "pwd"
       @resource.run_action(:purr)
     end
 
     it "does not run not_if if no not_if command is given" do
-      @resource.should_receive(:not_if).and_return(nil)
       @resource.run_action(:purr)
     end
 
-    it "changes the working directory to the specified directory for only_if" do
-      @resource.should_receive(:not_if).twice.and_return("/bin/true")
-      @resource.should_receive(:not_if_args).and_return({:cwd => "/tmp"})
-      Chef::Mixin::Command.should_receive(:not_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
+    it "accepts command options for not_if conditionals" do
+      @resource.not_if("pwd" , :cwd => '/tmp')
+      @resource.not_if.first.command_opts.should == {:cwd => '/tmp'}
+    end
+
+    it "accepts multiple not_if conditionals" do
+      snitch_var1, snitch_var2 = true, true
+      @resource.not_if {snitch_var1 = nil}
+      @resource.not_if {snitch_var2 = false}
       @resource.run_action(:purr)
+      snitch_var1.should be_nil
+      snitch_var2.should be_false
     end
 
   end
