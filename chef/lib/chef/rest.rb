@@ -167,6 +167,10 @@ class Chef
     # Will return the body of the response on success.
     def run_request(method, url, headers={}, data=false, limit=nil, raw=false)
       json_body = data ? Chef::JSONCompat.to_json(data) : nil
+      # Force encoding to binary to fix SSL related EOFErrors
+      # cf. http://tickets.opscode.com/browse/CHEF-2363
+      # http://redmine.ruby-lang.org/issues/5233
+      json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
       headers = build_headers(method, url, headers, json_body, raw)
 
       tf = nil
