@@ -34,6 +34,7 @@ describe Chef::Knife::DataBagFromFile do
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
     @db_file = Tempfile.new(["data_bag_from_file_test", ".json"])
+    @db_file2 = Tempfile.new(["data_bag_from_file_test2", ".json"])
     @plain_data = {
         "id" => "item_name",
         "greeting" => "hello",
@@ -49,6 +50,19 @@ describe Chef::Knife::DataBagFromFile do
     dbag = Chef::DataBagItem.new
     Chef::DataBagItem.stub!(:new).and_return(dbag)
     dbag.should_receive(:save)
+    @knife.run
+
+    dbag.data_bag.should == 'bag_name'
+    dbag.raw_data.should == @plain_data
+  end
+
+  it "loads all from a mutiple files and saves" do
+    @knife.name_args = [ 'bag_name', @db_file.path, @db_file2.path ]
+    @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
+    @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file2.path).and_return(@plain_data)
+    dbag = Chef::DataBagItem.new
+    Chef::DataBagItem.stub!(:new).and_return(dbag)
+    dbag.should_receive(:save).twice
     @knife.run
 
     dbag.data_bag.should == 'bag_name'
