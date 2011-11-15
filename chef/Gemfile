@@ -1,3 +1,15 @@
 source :rubygems
 
 gemspec
+
+platforms :mswin, :mingw do
+  gem "rdp-ruby-wmi", "0.3.1"
+  gem "windows-api", "1.4.8"
+  gem "windows-pr", "0.4.0"
+  gem "win32-api", "1.2.1"
+  gem "win32-dir", "0.3.7"
+  gem "win32-event", "0.5.2"
+  gem "win32-mutex", "0.3.1"
+  gem "win32-process", "0.6.5"
+  gem "win32-service", "0.7.2"
+end
