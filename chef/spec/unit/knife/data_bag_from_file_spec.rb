@@ -33,8 +33,10 @@ describe Chef::Knife::DataBagFromFile do
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
-    @db_file = Tempfile.new(["data_bag_from_file_test", ".json"])
-    @db_file2 = Tempfile.new(["data_bag_from_file_test2", ".json"])
+    @db_folder = File.join(Dir.tmpdir, 'data_bags', 'bag_name')
+    FileUtils.mkdir_p(@db_folder)
+    @db_file = Tempfile.new(["data_bag_from_file_test", ".json"], @db_folder)
+    @db_file2 = Tempfile.new(["data_bag_from_file_test2", ".json"], @db_folder)
     @plain_data = {
         "id" => "item_name",
         "greeting" => "hello",
@@ -43,6 +45,12 @@ describe Chef::Knife::DataBagFromFile do
     @db_file.write(@plain_data.to_json)
     @db_file.flush
     @knife.instance_variable_set(:@name_args, ['bag_name', @db_file.path])
+  end
+
+  after do
+    [@db_file, @db_file2].each do |f|
+      File.unlink(f.path)
+    end
   end
 
   it "loads from a file and saves" do
@@ -71,15 +79,41 @@ describe Chef::Knife::DataBagFromFile do
 
   it "loads all from a folder and saves" do
     dir = File.dirname(@db_file.path)
-    @knife.name_args = [ 'bag_name', File.dirname(@db_file.path) ]
-    paths = Dir.glob(File.join(dir, '*.json'))
-    paths.each do |path|
-      @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', path).and_return(@plain_data)
-    end
+    @knife.name_args = [ 'bag_name', @db_folder ]
+    @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
+    @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', @db_file2.path).and_return(@plain_data)
     dbag = Chef::DataBagItem.new
     Chef::DataBagItem.stub!(:new).and_return(dbag)
-    dbag.should_receive(:save).exactly(paths.size)
+    dbag.should_receive(:save).twice
     @knife.run
+  end
+
+  describe "loading all data bags" do
+
+    before do
+      @pwd = Dir.pwd
+      Dir.chdir(Dir.tmpdir)
+    end
+
+    after do
+      Dir.chdir(@pwd)
+    end
+
+    it "loads all data bags when -a or --all options is provided" do
+      @knife.name_args = []
+      @knife.stub!(:config).and_return({:all => true})
+      @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", File.basename(@db_file.path)).
+        and_return(@plain_data)
+      @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", File.basename(@db_file2.path)).
+        and_return(@plain_data)
+      dbag = Chef::DataBagItem.new
+      Chef::DataBagItem.stub!(:new).and_return(dbag)
+      dbag.should_receive(:save).twice
+      @knife.run
+      dbag.data_bag.should == 'bag_name'
+      dbag.raw_data.should == @plain_data
+    end
+
   end
 
   describe "encrypted data bag items" do

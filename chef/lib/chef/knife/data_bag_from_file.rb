@@ -69,16 +69,37 @@ class Chef
       end
 
       def run
-        if @name_args.size < 2
-          ui.msg(opt_parser)
-          exit(1)
+        if config[:all] == true
+          load_all_data_bags
+        else
+          if @name_args.size < 2
+            ui.msg(opt_parser)
+            exit(1)
+          end
+          @data_bag = @name_args.shift
+          load_data_bag_items(@data_bag, @name_args)
         end
-        @data_bag = @name_args.shift
-        load_data_bag_items(@data_bag, @name_args)
       end
 
       private
-      def load_data_bag_items(data_bag, items)
+      def find_all_data_bags
+        Dir.glob("./data_bags/*").
+          select { |f| File.directory?(f) }.
+          map { |f| File.basename(f) }
+      end
+
+      def find_all_data_bag_items(data_bag)
+        Dir.glob("./data_bags/#{data_bag}/*.json").map { |f| File.basename(f) }
+      end
+
+      def load_all_data_bags
+        find_all_data_bags.each do |data_bag|
+          load_data_bag_items(data_bag)
+        end
+      end
+
+      def load_data_bag_items(data_bag, items = nil)
+        items ||= find_all_data_bag_items(data_bag)
         item_paths = normalize_item_paths(items)
         item_paths.each do |item_path|
           item = loader.load_from("data_bags", data_bag, item_path)
