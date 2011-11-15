@@ -18,6 +18,8 @@
 
 class Chef
   module Win32
+    class Version
 
+    end
   end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: John Keiser (<jkeiser@ospcode.com>)
+# Author:: Mark Mzyk (<mmzyk@ospcode.com>)
 # Copyright:: Copyright 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,8 +17,13 @@
 # limitations under the License.
 #
 
+require 'chef/win32/file'
+
 class Chef
   module Win32
+    class File
+      include Chef::Win32::API::File
 
+    end
   end
 end

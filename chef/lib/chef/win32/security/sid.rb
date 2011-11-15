@@ -19,6 +19,9 @@
 
 class Chef
   module Win32
+    class SID
+      include Chef::Win32::API::Security
 
+    end
   end
 end

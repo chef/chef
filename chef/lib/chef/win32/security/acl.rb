@@ -19,6 +19,12 @@
 
 class Chef
   module Win32
+    class Security
+      class ACL
+        include Chef::Win32::API::Security
 
+      end
+    end
   end
 end
+

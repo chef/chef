@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-class Chef
-  module Win32
-
-  end
-end
+require 'chef/win32/security/ace'
+require 'chef/win32/security/acl'
+require 'chef/win32/security/securable_object'
+require 'chef/win32/security/security_descriptor'
+require 'chef/win32/security/sid'

@@ -1,6 +1,5 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Author:: John Keiser (<jkeiser@ospcode.com>)
 # Copyright:: Copyright 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,8 +16,13 @@
 # limitations under the License.
 #
 
+require 'chef/win32/service'
+
 class Chef
   module Win32
+    class Service
+      include Chef::Win32::API::Service
 
+    end
   end
 end

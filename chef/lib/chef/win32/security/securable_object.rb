@@ -19,6 +19,11 @@
 
 class Chef
   module Win32
+    class Security
+      class SecurableObject
+        include Chef::Win32::API::Security
 
+      end
+    end
   end
 end

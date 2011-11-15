@@ -1,5 +1,4 @@
 #
-# Author:: John Keiser (<jkeiser@ospcode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
 # Copyright:: Copyright 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -17,13 +16,12 @@
 # limitations under the License.
 #
 
+require 'ffi'
+
 class Chef
   module Win32
-    class Security
-      class ACE
-        include Chef::Win32::API::Security
-
-      end
+    module API
+      # put shared stuff (like constants) for all raw Win32 API calls
     end
   end
 end
