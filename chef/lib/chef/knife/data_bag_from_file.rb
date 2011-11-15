@@ -70,7 +70,7 @@ class Chef
 
       def run
         if config[:all] == true
-          load_all_data_bags
+          load_all_data_bags(@name_args)
         else
           if @name_args.size < 2
             ui.msg(opt_parser)
@@ -82,18 +82,23 @@ class Chef
       end
 
       private
+      def data_bags_path
+        @data_bag_path ||= "data_bags"
+      end
+
       def find_all_data_bags
-        Dir.glob("./data_bags/*").
+        Dir.glob("./#{data_bags_path}/*").
           select { |f| File.directory?(f) }.
           map { |f| File.basename(f) }
       end
 
       def find_all_data_bag_items(data_bag)
-        Dir.glob("./data_bags/#{data_bag}/*.json").map { |f| File.basename(f) }
+        Dir.glob("./#{data_bags_path}/#{data_bag}/*.json").map { |f| File.basename(f) }
       end
 
-      def load_all_data_bags
-        find_all_data_bags.each do |data_bag|
+      def load_all_data_bags(args)
+        data_bags = args.empty? ? find_all_data_bags : [args.shift]
+        data_bags.each do |data_bag|
           load_data_bag_items(data_bag)
         end
       end
@@ -102,7 +107,7 @@ class Chef
         items ||= find_all_data_bag_items(data_bag)
         item_paths = normalize_item_paths(items)
         item_paths.each do |item_path|
-          item = loader.load_from("data_bags", data_bag, item_path)
+          item = loader.load_from("#{data_bags_path}", data_bag, item_path)
           item = if use_encryption
                    secret = read_secret
                    Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
