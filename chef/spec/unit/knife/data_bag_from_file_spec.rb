@@ -69,6 +69,19 @@ describe Chef::Knife::DataBagFromFile do
     dbag.raw_data.should == @plain_data
   end
 
+  it "loads all from a folder and saves" do
+    dir = File.dirname(@db_file.path)
+    @knife.name_args = [ 'bag_name', File.dirname(@db_file.path) ]
+    paths = Dir.glob(File.join(dir, '*.json'))
+    paths.each do |path|
+      @knife.loader.should_receive(:load_from).with("data_bags", 'bag_name', path).and_return(@plain_data)
+    end
+    dbag = Chef::DataBagItem.new
+    Chef::DataBagItem.stub!(:new).and_return(dbag)
+    dbag.should_receive(:save).exactly(paths.size)
+    @knife.run
+  end
+
   describe "encrypted data bag items" do
     before(:each) do
       @secret = "abc123SECRET"

@@ -69,7 +69,8 @@ class Chef
           exit(1)
         end
         @data_bag = @name_args.shift
-        @name_args.each do |item_path|
+        item_paths = normalize_item_paths(@name_args)
+        item_paths.each do |item_path|
           item = loader.load_from("data_bags", @data_bag, item_path)
           item = if use_encryption
                    secret = read_secret
@@ -83,6 +84,19 @@ class Chef
           dbag.save
           ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
         end
+      end
+
+      private
+      def normalize_item_paths(args)
+        paths = Array.new
+        args.each do |path|
+          if File.directory?(path)
+            paths.concat(Dir.glob(File.join(path, "*.json")))
+          else
+            paths << path
+          end
+        end
+        paths
       end
     end
   end
