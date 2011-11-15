@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,23 +64,25 @@ class Chef
       end
 
       def run
-        if @name_args.size != 2
+        if @name_args.size < 2
           ui.msg(opt_parser)
           exit(1)
         end
-        @data_bag, @item_path = @name_args[0], @name_args[1]
-        item = loader.load_from("data_bags", @data_bag, @item_path)
-        item = if use_encryption
-                 secret = read_secret
-                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
-               else
-                 item
-               end
-        dbag = Chef::DataBagItem.new
-        dbag.data_bag(@name_args[0])
-        dbag.raw_data = item
-        dbag.save
-        ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
+        @data_bag = @name_args.shift
+        @name_args.each do |item_path|
+          item = loader.load_from("data_bags", @data_bag, item_path)
+          item = if use_encryption
+                   secret = read_secret
+                   Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
+                 else
+                   item
+                 end
+          dbag = Chef::DataBagItem.new
+          dbag.data_bag(@data_bag)
+          dbag.raw_data = item
+          dbag.save
+          ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
+        end
       end
     end
   end
