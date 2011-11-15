@@ -37,6 +37,9 @@ describe Chef::Knife::DataBagFromFile do
     FileUtils.mkdir_p(@db_folder)
     @db_file = Tempfile.new(["data_bag_from_file_test", ".json"], @db_folder)
     @db_file2 = Tempfile.new(["data_bag_from_file_test2", ".json"], @db_folder)
+    @db_folder2 = File.join(Dir.tmpdir, 'data_bags', 'bag_name2')
+    FileUtils.mkdir_p(@db_folder2)
+    @db_file3 = Tempfile.new(["data_bag_from_file_test3", ".json"], @db_folder2)
     @plain_data = {
         "id" => "item_name",
         "greeting" => "hello",
@@ -48,9 +51,8 @@ describe Chef::Knife::DataBagFromFile do
   end
 
   after do
-    [@db_file, @db_file2].each do |f|
-      File.unlink(f.path)
-    end
+    FileUtils.rm_rf(@db_folder)
+    FileUtils.rm_rf(@db_folder2)
   end
 
   it "loads from a file and saves" do
@@ -106,11 +108,24 @@ describe Chef::Knife::DataBagFromFile do
         and_return(@plain_data)
       @knife.loader.should_receive(:load_from).with("data_bags", "bag_name", File.basename(@db_file2.path)).
         and_return(@plain_data)
+      @knife.loader.should_receive(:load_from).with("data_bags", "bag_name2", File.basename(@db_file3.path)).
+        and_return(@plain_data)
       dbag = Chef::DataBagItem.new
       Chef::DataBagItem.stub!(:new).and_return(dbag)
-      dbag.should_receive(:save).twice
+      dbag.should_receive(:save).exactly(3).times
       @knife.run
-      dbag.data_bag.should == 'bag_name'
+    end
+
+    it "loads all data bags items when -a or --all options is provided" do
+      @knife.name_args = ["bag_name2"]
+      @knife.stub!(:config).and_return({:all => true})
+      @knife.loader.should_receive(:load_from).with("data_bags", "bag_name2", File.basename(@db_file3.path)).
+        and_return(@plain_data)
+      dbag = Chef::DataBagItem.new
+      Chef::DataBagItem.stub!(:new).and_return(dbag)
+      dbag.should_receive(:save)
+      @knife.run
+      dbag.data_bag.should == 'bag_name2'
       dbag.raw_data.should == @plain_data
     end
 
