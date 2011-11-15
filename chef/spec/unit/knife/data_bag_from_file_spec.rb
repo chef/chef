@@ -123,7 +123,7 @@ describe Chef::Knife::DataBagFromFile do
     it "prints help if given no arguments" do
       @knife.instance_variable_set(:@name_args, [])
       lambda { @knife.run }.should raise_error(SystemExit)
-      @stdout.string.should match(/^knife data bag from file BAG FILE \(options\)/)
+      @stdout.string.should match(/^knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] \(options\)/)
     end
   end
 

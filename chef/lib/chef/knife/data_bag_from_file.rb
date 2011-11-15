@@ -31,7 +31,7 @@ class Chef
         require 'chef/encrypted_data_bag_item'
       end
 
-      banner "knife data bag from file BAG FILE (options)"
+      banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
       category "data bag"
 
       option :secret,
