@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/file'
+require 'chef/win32/file/api'
 
 class Chef
   module Win32
