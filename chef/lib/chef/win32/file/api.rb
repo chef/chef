@@ -21,8 +21,8 @@ require 'chef/win32/api'
 
 class Chef
   module Win32
-    module API
-      module File
+    module File
+      module API
         # put raw Win32 API calls here
       end
     end

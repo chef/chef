@@ -22,7 +22,7 @@ require 'chef/win32/file/api'
 class Chef
   module Win32
     class File
-      include Chef::Win32::API::File
+      include Chef::Win32::File::API
 
     end
   end

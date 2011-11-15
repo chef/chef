@@ -21,7 +21,7 @@ require 'chef/win32/service/api'
 class Chef
   module Win32
     class Service
-      include Chef::Win32::API::Service
+      include Chef::Win32::Service::API
 
     end
   end
