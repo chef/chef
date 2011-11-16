@@ -1,6 +1,6 @@
 class Chef
   class Solr
-    VERSION = '0.10.6.beta.3'
+    VERSION = '0.10.6.rc.1'
 
     # Solr Schema. Used to detect incompatibilities between installed solr and
     # chef-solr versions.
