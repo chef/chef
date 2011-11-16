@@ -873,6 +873,7 @@ class Chef
 
         # Functions
         attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
+        attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
         attach_function :GetLastError, [], :uint32
         attach_function :SetLastError, [:DWORD], :void
         attach_function :SetLastErrorEx, [:DWORD, :DWORD], :void

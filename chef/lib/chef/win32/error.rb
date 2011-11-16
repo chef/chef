@@ -19,6 +19,7 @@
 require 'chef/win32/api/error'
 require 'chef/win32/error/win32_api_error'
 require 'chef/win32/memory'
+require 'chef/win32/unicode'
 
 class Chef
   module Win32
@@ -33,16 +34,15 @@ class Chef
         language_id = args[:language_id] || 0
         varargs = args[:varargs] || [:int, 0]
 
-        # TODO: internationalization?
         buffer = FFI::MemoryPointer.new :pointer
-        num_chars = FormatMessageA(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
+        num_chars = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
         if num_chars == 0
           raise_last_error
         end
 
         # Extract the string
         begin
-          return buffer.read_pointer.get_bytes(0, num_chars)
+          return buffer.read_pointer.read_wstring(num_chars)
         ensure
           Chef::Win32::Memory::local_free(buffer.read_pointer)
         end

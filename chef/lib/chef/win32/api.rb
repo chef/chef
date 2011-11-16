@@ -27,8 +27,6 @@ class Chef
 
       # put shared stuff (like constants) for all raw Win32 API calls
       def self.extended(host)
-        puts "#{self} includes #{host}"
-        puts (host.instance_methods - Object.methods).sort
         host.ffi_lib 'user32', 'kernel32'
         host.ffi_convention :stdcall
 
