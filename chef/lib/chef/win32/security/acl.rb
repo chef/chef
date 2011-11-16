@@ -1,6 +1,5 @@
 #
-# Author:: John Keiser (<jkeiser@ospcode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,14 +16,77 @@
 # limitations under the License.
 #
 
+require 'chef/win32/security'
+require 'chef/win32/security/ace'
+require 'ffi'
+
 class Chef
   module Win32
-    class Security
+    module Security
       class ACL
-        include Chef::Win32::API::Security
+        include Enumerable
 
+        include Chef::Win32::Security
+
+        def initialize(pointer, owner = nil)
+          @struct = :ACLStruct.new pointer
+          # Keep a reference to the actual owner of this memory so that it isn't freed out from under us
+          # TODO this could be avoided if we could mark a pointer's parent manually
+          @owner = owner
+        end
+
+        def self.create(aces)
+          aces_size = aces.inject(0) { |sum,ace| sum + ace.size }
+          acl_size = align_dword(ACLStruct.size + aces_size) # What the heck is 94???
+          acl = initialize_acl(acl_size)
+          aces.each { |ace| add_ace(acl, ace) }
+          acl
+        end
+
+        attr_reader :struct
+
+        def pointer
+          struct.pointer
+        end
+
+        def [](index)
+          get_ace(self, index)
+        end
+
+        def delete_at(index)
+          delete_ace(self, index)
+        end
+
+        def each
+          0.upto(length-1) { |i| yield self[i] }
+        end
+
+        def insert(index, *aces)
+          aces.reverse_each { |ace| add_ace(self, ace, index) }
+        end
+
+        def length
+          struct[:AceCount]
+        end
+
+        def push(*aces)
+          aces.each { |ace| add_ace(self, ace) }
+        end
+
+        def unshift(*aces)
+          aces.each { |ace| add_ace(self, ace, 0) }
+        end
+
+        def valid?
+          is_valid_acl(self)
+        end
+
+        private
+
+        def self.align_dword(size)
+          (size + 4 - 1) & 0xfffffffc
+        end
       end
     end
   end
 end
-

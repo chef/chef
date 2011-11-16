@@ -1,6 +1,5 @@
 #
-# Author:: John Keiser (<jkeiser@ospcode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,11 +16,45 @@
 # limitations under the License.
 #
 
+require 'chef/win32/security'
+
 class Chef
   module Win32
-    class SID
-      include Chef::Win32::API::Security
+    module Security
+      class SID
 
+        include Chef::Win32::Security
+
+        def initialize(pointer, owner = nil)
+          @pointer = pointer
+          # Keep a reference to the actual owner of this memory so we don't get freed
+          @owner = owner
+        end
+
+        def self.from_account(name)
+          domain, sid, use = lookup_account_name(name)
+          sid
+        end
+
+        attr_reader :pointer
+
+        def account
+          lookup_account_sid(self)
+        end
+
+        def account_name
+          domain, name, use = account
+          (domain != nil && domain.length > 0) ? "#{domain}\\#{name}" : name
+        end
+
+        def size
+          get_length_sid(self)
+        end
+
+        def valid?
+          is_valid_sid(self)
+        end
+      end
     end
   end
 end

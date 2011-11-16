@@ -1,6 +1,5 @@
 #
-# Author:: John Keiser (<jkeiser@ospcode.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,12 +16,77 @@
 # limitations under the License.
 #
 
+require 'chef/win32/security'
+require 'chef/win32/security/acl'
+require 'chef/win32/security/sid'
+
 class Chef
   module Win32
-    class Security
+    module Security
       class SecurityDescriptor
-        include Chef::Win32::API::Security
 
+        include Chef::Win32::Security
+
+        def initialize(pointer)
+          @pointer = pointer
+        end
+
+        attr_reader :pointer
+
+        def absolute?
+          !self_relative?
+        end
+
+        def control
+          control, version = get_security_descriptor_control(self)
+          control
+        end
+
+        def dacl
+          raise "DACL not present" if !dacl_present?
+          present, acl, defaulted = get_security_descriptor_dacl(self)
+          acl
+        end
+
+        def dacl_inherits?
+          (control & SE_DACL_PROTECTED) == 0
+        end
+
+        def dacl_present?
+          (control & SE_DACL_PRESENT) != 0
+        end
+
+        def group
+          result, defaulted = get_security_descriptor_group(self)
+          result
+        end
+
+        def owner
+          result, defaulted = get_security_descriptor_owner(self)
+          result
+        end
+
+        def sacl
+          raise "SACL not present" if !sacl_present?
+          present, acl, defaulted = get_security_descriptor_sacl(self)
+          acl
+        end
+
+        def sacl_inherits?
+          (control & SE_SACL_PROTECTED) == 0
+        end
+
+        def sacl_present?
+          (control & SE_SACL_PRESENT) != 0
+        end
+
+        def self_relative?
+          (control & SE_SELF_RELATIVE) != 0
+        end
+
+        def valid?
+          is_valid_security_descriptor(self)
+        end
       end
     end
   end
