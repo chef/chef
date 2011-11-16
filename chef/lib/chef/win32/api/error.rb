@@ -21,7 +21,10 @@ require 'chef/win32/api'
 class Chef
   module Win32
     module API
-      module ERROR
+      module Error
+
+        include Chef::Win32::API
+        extend Chef::Win32::API
 
         S_OK                      = 0
         NO_ERROR                  = 0

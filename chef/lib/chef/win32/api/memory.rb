@@ -23,6 +23,9 @@ class Chef
     module API
       module Memory
 
+        include Chef::Win32::API
+        extend Chef::Win32::API
+
         LMEM_FIXED          = 0x0000
         LMEM_MOVEABLE       = 0x0002
         LMEM_NOCOMPACT      = 0x0010
