@@ -3,6 +3,7 @@ source :rubygems
 gemspec
 
 platforms :mswin, :mingw do
+  gem "ffi", "1.0.9"
   gem "rdp-ruby-wmi", "0.3.1"
   gem "windows-api", "0.4.0"
   gem "windows-pr", "1.2.1"
