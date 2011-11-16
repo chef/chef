@@ -23,7 +23,6 @@ class Chef
     module API
       module Security
 
-        include Chef::Win32::API
         extend Chef::Win32::API
 
         SE_OBJECT_TYPE = enum :SE_OBJECT_TYPE, [
@@ -52,7 +51,7 @@ class Chef
              :SidTypeInvalid,
              :SidTypeUnknown,
              :SidTypeComputer,
-             :SidTypeLabel 
+             :SidTypeLabel
         ]
 
         # ACE_HEADER AceType
@@ -145,20 +144,20 @@ class Chef
         # Access System Security Right
         ACCESS_SYSTEM_SECURITY            = 0x01000000
         # File/Directory Specific Rights
-        FILE_READ_DATA             =  0x0001 
-        FILE_LIST_DIRECTORY        =  0x0001 
-        FILE_WRITE_DATA            =  0x0002 
-        FILE_ADD_FILE              =  0x0002 
-        FILE_APPEND_DATA           =  0x0004 
-        FILE_ADD_SUBDIRECTORY      =  0x0004 
-        FILE_CREATE_PIPE_INSTANCE  =  0x0004 
-        FILE_READ_EA               =  0x0008 
-        FILE_WRITE_EA              =  0x0010 
-        FILE_EXECUTE               =  0x0020 
-        FILE_TRAVERSE              =  0x0020 
-        FILE_DELETE_CHILD          =  0x0040 
-        FILE_READ_ATTRIBUTES       =  0x0080 
-        FILE_WRITE_ATTRIBUTES      =  0x0100 
+        FILE_READ_DATA             =  0x0001
+        FILE_LIST_DIRECTORY        =  0x0001
+        FILE_WRITE_DATA            =  0x0002
+        FILE_ADD_FILE              =  0x0002
+        FILE_APPEND_DATA           =  0x0004
+        FILE_ADD_SUBDIRECTORY      =  0x0004
+        FILE_CREATE_PIPE_INSTANCE  =  0x0004
+        FILE_READ_EA               =  0x0008
+        FILE_WRITE_EA              =  0x0010
+        FILE_EXECUTE               =  0x0020
+        FILE_TRAVERSE              =  0x0020
+        FILE_DELETE_CHILD          =  0x0040
+        FILE_READ_ATTRIBUTES       =  0x0080
+        FILE_WRITE_ATTRIBUTES      =  0x0100
         FILE_ALL_ACCESS            = STANDARD_RIGHTS_REQUIRED |
                                      SYNCHRONIZE |
                                      0x1FF

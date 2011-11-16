@@ -23,7 +23,6 @@ class Chef
     module API
       module Error
 
-        include Chef::Win32::API
         extend Chef::Win32::API
 
         S_OK                      = 0

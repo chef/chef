@@ -40,39 +40,41 @@ class Chef
       end
     end
 
-    module Error
-      include Chef::Win32::API::Error
+    class Error
 
-      def format_message(message_id = 0, args = {})
-        flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
-        source = args[:source]
-        language_id = args[:language_id] || 0
-        varargs = args[:varargs] || [:int, 0]
+      class << self
+        include Chef::Win32::API::Error
+        require 'chef/win32/memory'
 
-        buffer = FFI::MemoryPointer.new :pointer
-        num_chars = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
-        if num_chars == 0
-          raise_last_error
+        def format_message(message_id = 0, args = {})
+          flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
+          source = args[:source]
+          language_id = args[:language_id] || 0
+          varargs = args[:varargs] || [:int, 0]
+
+          buffer = FFI::MemoryPointer.new :pointer
+          num_chars = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
+          if num_chars == 0
+            raise_last_error
+          end
+
+          # Extract the string
+          begin
+            return buffer.read_pointer.read_wstring(num_chars)
+          ensure
+            Chef::Win32::Memory.local_free(buffer.read_pointer)
+          end
         end
 
-        # Extract the string
-        begin
-          return buffer.read_pointer.read_wstring(num_chars)
-        ensure
-          require 'chef/win32/memory'
-          include Chef::Win32::Memory
-          local_free(buffer.read_pointer)
+        def get_last_error
+          GetLastError()
         end
-      end
 
-      def get_last_error
-        GetLastError()
-      end
-
-      def raise_last_error
-        code = get_last_error
-        message = format_message(code).strip
-        raise Chef::Win32::APIError.new(code, message)
+        def raise_last_error
+          code = get_last_error
+          message = format_message(code).strip
+          raise Chef::Win32::APIError.new(code, message)
+        end
       end
 
       # TODO remove these if not needed

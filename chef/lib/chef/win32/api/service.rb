@@ -22,7 +22,9 @@ class Chef
   module Win32
     module API
       module Service
-        # put raw Win32 API calls here
+
+        extend Chef::Win32::API
+
       end
     end
   end

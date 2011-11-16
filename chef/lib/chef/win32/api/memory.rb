@@ -23,7 +23,6 @@ class Chef
     module API
       module Memory
 
-        include Chef::Win32::API
         extend Chef::Win32::API
 
         LMEM_FIXED          = 0x0000

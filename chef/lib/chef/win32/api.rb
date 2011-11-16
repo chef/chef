@@ -22,7 +22,7 @@ require 'ffi'
 class Chef
   module Win32
     module API
-      extend FFI::Library
+
       include FFI::Library
 
       # put shared stuff (like constants) for all raw Win32 API calls
