@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/win32/error/api'
+require 'chef/win32/api/error'
 require 'chef/win32/error/win32_api_error'
 require 'chef/win32/memory'
 
@@ -24,7 +24,7 @@ class Chef
   module Win32
     module Error
 
-      include Chef::Win32::Error::API
+      include Chef::Win32::API::Error
 
       def format_message(args)
         flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY

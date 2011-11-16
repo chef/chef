@@ -16,13 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/library'
+require 'chef/win32/api'
 
 class Chef
   module Win32
-    module Memory
-      module API
-        extend Chef::Win32::API::Library
+    module API
+      module Memory
 
         LMEM_FIXED          = 0x0000
         LMEM_MOVEABLE       = 0x0002
@@ -41,7 +40,7 @@ class Chef
         LMEM_LOCKCOUNT      = 0x00FF
 
         attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
-        # This is a macro 
+        # This is a macro
         def LocalDiscard(pointer)
           LocalReAlloc(pointer, 0, LMEM_MOVEABLE)
         end

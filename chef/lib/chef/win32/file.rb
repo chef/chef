@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require 'chef/win32/file/api'
+require 'chef/win32/api/file'
 
 class Chef
   module Win32
     class File
-      include Chef::Win32::File::API
+      include Chef::Win32::API::File
 
     end
   end

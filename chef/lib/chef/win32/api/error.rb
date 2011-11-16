@@ -16,13 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/win32/api/library'
+require 'chef/win32/api'
 
 class Chef
   module Win32
-    module Error
-      module API
-        extend Chef::Win32::API::Library
+    module API
+      module ERROR
 
         S_OK                      = 0
         NO_ERROR                  = 0

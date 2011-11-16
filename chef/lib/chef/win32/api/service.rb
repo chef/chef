@@ -20,8 +20,8 @@ require 'chef/win32/api'
 
 class Chef
   module Win32
-    module Service
-      module API
+    module API
+      module Service
         # put raw Win32 API calls here
       end
     end

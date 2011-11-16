@@ -17,13 +17,13 @@
 #
 
 require 'chef/win32/error'
-require 'chef/win32/memory/api'
+require 'chef/win32/api/memory'
 
 class Chef
   module Win32
     module Memory
       include Chef::Win32::Error
-      include Chef::Win32::Memory::API
+      include Chef::Win32::API::Memory
 
       # local_alloc(length[, flags]) [BLOCK]
       # Allocates memory using LocalAlloc
