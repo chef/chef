@@ -26,6 +26,6 @@ end
 
 class String
   def to_wstring
-    string.encode("UTF-16LE")
+    self.encode("UTF-16LE")
   end
 end
