@@ -16,9 +16,96 @@
 # limitations under the License.
 #
 
+require 'chef/win32/api/system'
+require 'chef/win32/error'
+require 'chef/win32/memory'
+require 'chef/win32/unicode'
+
 class Chef
   module Win32
     class Version
+
+      include Chef::Win32::API::System
+
+      WIN_VERSIONS = {
+        "Windows 7" => {:major => 6, :minor => 1, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
+        "Windows Server 2008 R2" => {:major => 6, :minor => 1, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
+        "Windows Server 2008" => {:major => 6, :minor => 0, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
+        "Windows Vista" => {:major => 6, :minor => 0, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
+        "Windows Server 2003 R2" => {:major => 5, :minor => 2, :callable => lambda{ get_system_metrics(SM_SERVERR2) != 0 }},
+        "Windows Home Server" => {:major => 5, :minor => 2, :callable => lambda{  (@suite_mask & VER_SUITE_WH_SERVER) == VER_SUITE_WH_SERVER }},
+        "Windows Server 2003" => {:major => 5, :minor => 2, :callable => lambda{ get_system_metrics(SM_SERVERR2) == 0 }},
+        "Windows XP" => {:major => 5, :minor => 1},
+        "Windows 2000" => {:major => 5, :minor => 0}
+      }
+
+      def initialize
+        @major_version, @minor_version, @build_number = get_version
+        ver_info = get_version_ex
+        @product_type = ver_info[:w_product_type]
+        @suite_mask = ver_info[:w_suite_mask]
+        @sp_major_version = ver_info[:w_service_pack_major]
+        @sp_minor_version = ver_info[:w_service_pack_minor]
+        @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
+      end
+
+      marketing_names = Array.new
+
+      # General Windows checks
+      WIN_VERSIONS.each do |k,v|
+        method_name = "#{k.gsub(/\s/, '_').downcase}?"
+        define_method(method_name) do
+          (@major_version == v[:major]) &&
+          (@minor_version == v[:minor]) &&
+          (v[:callable] ? v[:callable].call : true)
+        end
+        marketing_names << [k, method_name]
+      end
+
+      define_method(:marketing_name) do
+        marketing_names.each do |mn|
+          break mn[0] if self.send(mn[1])
+        end
+      end
+
+      # Server Type checks
+      %w{ core full datacenter }.each do |m|
+        define_method("server_#{m}?") do
+          if @sku
+            !(PRODUCT_TYPE[@sku][:name] =~ /#{m}/i).nil?
+          else
+            false
+          end
+        end
+      end
+
+      def get_version
+        version = GetVersion()
+        major = LOBYTE(LOWORD(version))
+        minor = HIBYTE(LOWORD(version))
+        build = version < 0x80000000 ? HIWORD(version) : 0
+        [major, minor, build]
+      end
+
+      def get_version_ex
+        lp_version_info = OSVERSIONINFOEX.new
+        lp_version_info[:dw_os_version_info_size] = lp_version_info.size
+        lp_version_info[:dw_os_version_info_size] = OSVERSIONINFOEX.size
+        unless GetVersionExA(lp_version_info)
+          Chef::Win32::Error.raise_last_error
+        end
+        lp_version_info
+      end
+
+      def get_product_info(major, minor, sp_major, sp_minor)
+        out = FFI::MemoryPointer.new(:uint32)
+        GetProductInfo(major, minor, sp_major, sp_minor, out)
+        out.get_uint(0)
+      end
+
+      def get_system_metrics(n_index)
+        GetSystemMetrics(n_index)
+      end
 
     end
   end
