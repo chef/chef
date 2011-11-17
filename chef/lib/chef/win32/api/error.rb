@@ -871,12 +871,40 @@ class Chef
         SEM_NOOPENFILEERRORBOX     = 0x8000
 
         # Functions
+=begin
+DWORD WINAPI FormatMessage(
+  __in      DWORD dwFlags,
+  __in_opt  LPCVOID lpSource,
+  __in      DWORD dwMessageId,
+  __in      DWORD dwLanguageId,
+  __out     LPTSTR lpBuffer,
+  __in      DWORD nSize,
+  __in_opt  va_list *Arguments
+);
+=end
         attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
         attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
+
+=begin
+DWORD WINAPI GetLastError(void);
+=end
         attach_function :GetLastError, [], :uint32
+=begin
+void WINAPI SetLastError(
+  __in  DWORD dwErrCode
+);
+=end
         attach_function :SetLastError, [:DWORD], :void
         attach_function :SetLastErrorEx, [:DWORD, :DWORD], :void
+=begin
+UINT WINAPI GetErrorMode(void);s
+=end
         attach_function :GetErrorMode, [], :uint
+=begin
+UINT WINAPI SetErrorMode(
+  __in  UINT uMode
+);
+=end
         attach_function :SetErrorMode, [:UINT], :UINT
       end
     end

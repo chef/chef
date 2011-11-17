@@ -41,14 +41,47 @@ class Chef
         LMEM_DISCARDED      = 0x4000
         LMEM_LOCKCOUNT      = 0x00FF
 
+=begin
+HLOCAL WINAPI LocalAlloc(
+  __in  UINT uFlags,
+  __in  SIZE_T uBytes
+);
+=end
         attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
+=begin
+HLOCAL WINAPI LocalDiscard(
+  [in]  HLOCAL hlocMem
+);
+=end
         # This is a macro
         def LocalDiscard(pointer)
           LocalReAlloc(pointer, 0, LMEM_MOVEABLE)
         end
+=begin
+UINT WINAPI LocalFlags(
+  __in  HLOCAL hMem
+);
+=end
         attach_function :LocalFlags, [ :pointer ], :UINT
+=begin
+HLOCAL WINAPI LocalFree(
+  __in  HLOCAL hMem
+);
+=end
         attach_function :LocalFree, [ :pointer ], :pointer
+=begin
+HLOCAL WINAPI LocalReAlloc(
+  __in  HLOCAL hMem,
+  __in  SIZE_T uBytes,
+  __in  UINT uFlags
+);
+=end
         attach_function :LocalReAlloc, [ :pointer, :SIZE_T, :UINT ], :pointer
+=begin
+UINT WINAPI LocalSize(
+  __in  HLOCAL hMem
+);
+=end
         attach_function :LocalSize, [ :pointer ], :SIZE_T
 
         # C memory allocators and movers (memcpy is particularly useful)
