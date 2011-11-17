@@ -19,28 +19,10 @@
 require 'chef/win32/api/error'
 require 'chef/win32/memory'
 require 'chef/win32/unicode'
+require 'chef/exceptions'
 
 class Chef
   module Win32
-
-    class APIError < RuntimeError
-
-      def initialize(error_code, error_message)
-        @error_code = error_code
-        @error_message = error_message
-      end
-
-      attr_reader :error_code, :error_message
-
-      def message
-        to_s
-      end
-
-      def to_s
-        "#{error_code}: #{error_message}"
-      end
-    end
-
     class Error
 
       class << self
@@ -70,57 +52,25 @@ class Chef
           GetLastError()
         end
 
-        def raise_last_error
+        # Checks the calling thread for a an error code.  Retrieves and formats
+        # the associated error message.
+        # === Returns
+        # nil::: always returns nil when it does not raise
+        # === Raises
+        # Chef::Exceptions::Win32APIError:::
+        def raise!
           code = get_last_error
-          message = format_message(code).strip
-          raise Chef::Win32::APIError.new(code, message)
+          if code > 0
+            msg = format_message(code).strip
+            formatted_message = ""
+            formatted_message << "---- Begin Win32 API output ----\n"
+            formatted_message << "System Error Code: #{code}\n"
+            formatted_message << "Formatted Message: #{msg}\n"
+            formatted_message << "---- End Win32 API output ----\n"
+            raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
+          end
         end
       end
-
-      # TODO remove these if not needed
-      # def IS_ERROR(status)
-      #   status >> 31 == 1
-      # end
-
-      # def MAKE_HRESULT(sev, fac, code)
-      #   sev << 31 | fac << 16 | code
-      # end
-
-      # def MAKE_SCODE(sev, fac, code)
-      #   sev << 31 | fac << 16 | code
-      # end
-
-      # def HRESULT_CODE(hr)
-      #   hr & 0xFFFF
-      # end
-
-      # def HRESULT_FACILITY(hr)
-      #   (hr >> 16) & 0x1fff
-      # end
-
-      # def HRESULT_FROM_NT(x)
-      #   x | 0x10000000 # FACILITY_NT_BIT
-      # end
-
-      # def HRESULT_FROM_WIN32(x)
-      #   if x <= 0
-      #     x
-      #   else
-      #     (x & 0x0000FFFF) | (7 << 16) | 0x80000000
-      #   end
-      # end
-
-      # def HRESULT_SEVERITY(hr)
-      #   (hr >> 31) & 0x1
-      # end
-
-      # def FAILED(status)
-      #   status < 0
-      # end
-
-      # def SUCCEEDED(status)
-      #   status >= 0
-      # end
     end
   end
 end
