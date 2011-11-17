@@ -26,6 +26,46 @@ class Chef
 
         extend Chef::Win32::API
 
+        FILE_ATTRIBUTE_REPARSE_POINT = 0x400
+        IO_REPARSE_TAG_SYMLINK = 0xA000000C
+        INVALID_FILE_ATTRIBUTES = 0xFFFFFFFF
+        INVALID_HANDLE_VALUE = 0xFFFFFFFF
+        MAX_PATH = 260
+
+        class FILETIME < FFI::Struct
+          layout :dw_low_date_time, :DWORD,
+          :dw_high_date_time, :DWORD,
+        end
+
+        class WIN32_FIND_DATA < FFI::Struct
+          layout :dw_file_attributes, :DWORD,
+          :ft_creation_time, FILETIME,
+          :ft_last_access_time, FILETIME,
+          :ft_last_write_time, FILETIME,
+          :n_file_size_high, :DWORD,
+          :n_file_size_low, :DWORD,
+          :dw_reserved_0, :DWORD,
+          :dw_reserved_1, :DWORD,
+          :c_file_name, [:BYTE, MAX_PATH*2],
+          :c_alternate_file_name, [:BYTE, 14],
+        end
+
+=begin
+DWORD WINAPI GetFileAttributes(
+  __in  LPCTSTR lpFileName
+);
+=end
+        attach_function :GetFileAttributesA, [:pointer], :DWORD
+        attach_function :GetFileAttributesW, [:pointer], :DWORD
+=begin
+HANDLE WINAPI FindFirstFile(
+  __in   LPCTSTR lpFileName,
+  __out  LPWIN32_FIND_DATA lpFindFileData
+);
+=end
+        attach_function :FindFirstFileA, [:pointer, :pointer], :ulong
+        attach_function :FindFirstFileW, [:pointer, :pointer], :ulong
+
       end
     end
   end
