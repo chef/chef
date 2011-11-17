@@ -87,13 +87,11 @@ class Chef
       end
 
       def find_all_data_bags
-        Dir.glob("./#{data_bags_path}/*").
-          select { |f| File.directory?(f) }.
-          map { |f| File.basename(f) }
+        loader.find_all_objects("./#{data_bags_path}", loader.class::ObjectType::FOLDER)
       end
 
       def find_all_data_bag_items(data_bag)
-        Dir.glob("./#{data_bags_path}/#{data_bag}/*.json").map { |f| File.basename(f) }
+        loader.find_all_objects("./#{data_bags_path}/#{data_bag}")
       end
 
       def load_all_data_bags(args)

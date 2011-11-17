@@ -24,6 +24,11 @@ class Chef
         attr_reader :ui
         attr_reader :klass
 
+        class ObjectType
+          FILE = 1
+          FOLDER = 2
+        end
+
         def initialize(klass, ui)
           @klass = klass
           @ui = ui
@@ -48,6 +53,30 @@ class Chef
               nil
             end
           end
+        end
+
+        # Find all objects in the given location
+        # If the object type is File it will look for all *.{json,rb}
+        # files, otherwise it will lookup for folders only (useful for
+        # data_bags)
+        #
+        # @param [String] path - base look up location
+        # @param [Integer<ObjectType>] type - type of the object FILE or FOLDER
+        #
+        # @return [Array<String>] basenames of the found objects
+        #
+        # @api public
+        def find_all_objects(path, type = ObjectType::FILE)
+          path = File.join(path, '*')
+          path << '.{json,rb}' if type == ObjectType::FILE
+
+          objects = Dir.glob(File.expand_path(path))
+
+          if type == ObjectType::FOLDER
+            objects.delete_if { |o| !File.directory?(o) }
+          end
+
+          objects.map { |o| File.basename(o) }
         end
 
         def object_from_file(filename)
