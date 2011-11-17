@@ -133,7 +133,7 @@ class Chef
             :dw_minor_version, :DWORD,
             :dw_build_number, :DWORD,
             :dw_platform_id, :DWORD,
-            :sz_csd_version, [:TCHAR, 128],
+            :sz_csd_version, [:BYTE, 256],
             :w_service_pack_major, :WORD,
             :w_service_pack_minor, :WORD,
             :w_suite_mask, :WORD,

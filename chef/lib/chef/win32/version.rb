@@ -89,9 +89,8 @@ class Chef
 
       def get_version_ex
         lp_version_info = OSVERSIONINFOEX.new
-        lp_version_info[:dw_os_version_info_size] = lp_version_info.size
         lp_version_info[:dw_os_version_info_size] = OSVERSIONINFOEX.size
-        unless GetVersionExA(lp_version_info)
+        unless GetVersionExW(lp_version_info)
           Chef::Win32::Error.raise_last_error
         end
         lp_version_info
