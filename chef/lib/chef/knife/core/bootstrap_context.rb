@@ -50,6 +50,10 @@ class Chef
           IO.read(@chef_config[:validation_key])
         end
 
+        def data_bag_keyfile
+          IO.read(@chef_config[:data_bag_keyfile])
+        end
+
         def encrypted_data_bag_secret
           IO.read(@chef_config[:encrypted_data_bag_secret])
         end

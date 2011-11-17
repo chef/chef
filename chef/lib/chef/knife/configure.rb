@@ -23,6 +23,8 @@ class Chef
     class Configure < Knife
       attr_reader :chef_server, :new_client_name, :admin_client_name, :admin_client_key
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
+      attr_reader :data_bag_keyfile
+
 
       deps do
         require 'ohai'
