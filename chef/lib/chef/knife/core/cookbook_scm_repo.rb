@@ -28,12 +28,14 @@ class Chef
 
       attr_reader :repo_path
       attr_reader :default_branch
+      attr_reader :use_current_branch
       attr_reader :ui
 
       def initialize(repo_path, ui, opts={})
         @repo_path = repo_path
         @ui = ui
         @default_branch = 'master'
+        @use_current_branch = false
         apply_opts(opts)
       end
 
@@ -46,6 +48,9 @@ class Chef
           ui.error "The cookbook repo #{repo_path} is not a git repository."
           ui.info("Use `git init` to initialize a git repo")
           exit 1
+        end
+        if use_current_branch
+          @default_branch = get_current_branch()
         end
         unless branch_exists?(default_branch)
           ui.error "The default branch '#{default_branch}' does not exist"
@@ -117,6 +122,11 @@ class Chef
         git("branch --no-color").stdout.lines.any? {|l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
+      def get_current_branch()
+        ref = git("symbolic-ref HEAD").stdout
+        ref.chomp.split('/')[2]
+      end
+
       private
 
       def git_repo?(directory)
@@ -134,6 +144,8 @@ class Chef
           case option.to_s
           when 'default_branch'
             @default_branch = value
+          when 'use_current_branch'
+            @use_current_branch = value
           end
         end
       end

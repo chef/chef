@@ -52,6 +52,13 @@ class Chef
         :description => "Default branch to work with",
         :default => "master"
 
+      option :use_current_branch,
+        :short =>  "-b",
+        :long => "--use-current-branch",
+        :description => "Use the current branch",
+        :boolean => true,
+        :default => false
+
       attr_reader :cookbook_name
       attr_reader :vendor_path
 
@@ -75,8 +82,10 @@ class Chef
         upstream_file = File.join(@install_path, "#{@cookbook_name}.tar.gz")
 
         @repo.sanity_check
-        @repo.reset_to_default_state
-        @repo.prepare_to_import(@cookbook_name)
+        unless config[:use_current_branch]
+          @repo.reset_to_default_state
+          @repo.prepare_to_import(@cookbook_name)
+        end
 
         downloader = download_cookbook_to(upstream_file)
         clear_existing_files(File.join(@install_path, @cookbook_name))
@@ -88,12 +97,15 @@ class Chef
         File.unlink(upstream_file)
 
         if @repo.finalize_updates_to(@cookbook_name, downloader.version)
-          @repo.reset_to_default_state
+          unless config[:use_current_branch]
+            @repo.reset_to_default_state
+          end
           @repo.merge_updates_from(@cookbook_name, downloader.version)
         else
-          @repo.reset_to_default_state
+          unless config[:use_current_branch]
+            @repo.reset_to_default_state
+          end
         end
-
 
         unless config[:no_deps]
           md = Chef::Cookbook::Metadata.new
