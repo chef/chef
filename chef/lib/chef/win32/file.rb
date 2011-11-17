@@ -27,23 +27,20 @@ class Chef
         include Chef::Win32::API::File
 
         def symlink?(file_name)
-          symlink = false
-          path = ("\\\\?\\" << file_name).to_wstring
+          is_symlink = false
+          path = FFI::MemoryPointer.from_string(("\\\\?\\" << file_name).to_wstring)
+          path_ansi = FFI::MemoryPointer.from_string(file_name)
           out = GetFileAttributesW(path)
-          if out == INVALID_FILE_ATTRIBUTES
-            Chef::Win32::Error.raise!
-          end
           if ((out & FILE_ATTRIBUTE_REPARSE_POINT) != 0)
             find_data = WIN32_FIND_DATA.new
-            handle = FindFirstFileW(path, find_data)
-            if handle == INVALID_HANDLE_VALUE
+            if FindFirstFileA(path_ansi, find_data) == INVALID_HANDLE_VALUE
               Chef::Win32::Error.raise!
             end
             if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
-              symlink = true
+              is_symlink = true
             end
           end
-          symlink
+          is_symlink
         end
 
       end
