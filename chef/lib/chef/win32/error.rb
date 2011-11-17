@@ -52,23 +52,22 @@ class Chef
           GetLastError()
         end
 
-        # Checks the calling thread for a an error code.  Retrieves and formats
-        # the associated error message.
+        # Raises the last error.  This should only be called by
+        # Win32 API wrapper functions, and then only when wrapped
+        # in an if() statement (since it unconditionally exits)
         # === Returns
         # nil::: always returns nil when it does not raise
         # === Raises
         # Chef::Exceptions::Win32APIError:::
         def raise!
           code = get_last_error
-          if code > 0
-            msg = format_message(code).strip
-            formatted_message = ""
-            formatted_message << "---- Begin Win32 API output ----\n"
-            formatted_message << "System Error Code: #{code}\n"
-            formatted_message << "Formatted Message: #{msg}\n"
-            formatted_message << "---- End Win32 API output ----\n"
-            raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
-          end
+          msg = format_message(code).strip
+          formatted_message = ""
+          formatted_message << "---- Begin Win32 API output ----\n"
+          formatted_message << "System Error Code: #{code}\n"
+          formatted_message << "System Error Message: #{msg}\n"
+          formatted_message << "---- End Win32 API output ----\n"
+          raise Chef::Exceptions::Win32APIError, msg + "\n" + formatted_message
         end
       end
     end

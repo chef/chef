@@ -23,8 +23,6 @@ require 'chef/win32/error'
 class Chef
   module Win32
     class File
-      include Chef::Win32::API::File
-
       class << self
         include Chef::Win32::API::File
 
