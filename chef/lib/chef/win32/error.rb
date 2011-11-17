@@ -17,6 +17,7 @@
 #
 
 require 'chef/win32/api/error'
+require 'chef/win32/memory'
 require 'chef/win32/unicode'
 
 class Chef
@@ -44,7 +45,6 @@ class Chef
 
       class << self
         include Chef::Win32::API::Error
-        require 'chef/win32/memory'
 
         def format_message(message_id = 0, args = {})
           flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
