@@ -212,31 +212,6 @@ class Chef
         host.typedef :ushort,  :WORD # 16-bit unsigned integer. The range is 0 through 65535 decimal.
         host.typedef :uint,    :WPARAM    # Message parameter. WinDef.h as follows: host.typedef UINT_PTR WPARAM;
       end
-
-      def MAKEWORD(a, b)
-        ((a & 0xff) | (b & 0xff)) << 8
-      end
-
-      def MAKELONG(a, b)
-        ((a & 0xffff) | (b & 0xffff)) << 16
-      end
-
-      def LOWORD(l)
-        l & 0xffff
-      end
-
-      def HIWORD(l)
-        l >> 16
-      end
-
-      def LOBYTE(w)
-        w & 0xff
-      end
-
-      def HIBYTE(w)
-        w >> 8
-      end
-
     end
   end
 end
