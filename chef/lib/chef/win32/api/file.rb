@@ -66,6 +66,13 @@ class Chef
         end
 
 =begin
+BOOL WINAPI FindClose(
+  __inout  HANDLE hFindFile
+);
+=end
+        attach_function :FindClose, [:HANDLE], :BOOL
+
+=begin
 DWORD WINAPI GetFileAttributes(
   __in  LPCTSTR lpFileName
 );

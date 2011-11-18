@@ -65,6 +65,17 @@ class Chef
           wstring
         end
 
+        def utf16?(string)
+          encoding = begin
+            if string.respond_to?(:encoding)
+              string.encoding.name
+            else
+              # TODO find a Ruby 1.8 way to check this
+            end
+          end
+          %w{UTF-16LE UTF16LE}.include?(encoding)
+        end
+
       end
 
     end

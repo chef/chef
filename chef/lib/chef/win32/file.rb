@@ -27,19 +27,42 @@ class Chef
       class << self
         include Chef::Win32::API::File
 
+        # Return true if the named file is a symbolic link, false otherwise.
+        #
+        # This method requires Windows Vista or later to work. Otherwise, it
+        # always returns false as per MRI.
+        #
         def symlink?(file_name)
           is_symlink = false
           path = ("\\\\?\\" << file_name).to_wstring
           if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
-            find_data = WIN32_FIND_DATA.new
-            if FindFirstFileW(path, find_data) == INVALID_HANDLE_VALUE
-              Chef::Win32::Error.raise!
-            end
-            if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
-              is_symlink = true
+            find_file(path) do |handle, find_data|
+              if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
+                is_symlink = true
+              end
             end
           end
           is_symlink
+        end
+
+        private
+
+        # retrieves a file search handle and passes it
+        # to +&block+ along with the find_data.  also
+        # ensures the handle is closed on exit of the block
+        def find_file(path, &block)
+          begin
+            # check to see if the file is already UTF16-LE encoded`
+            path = ("\\\\?\\" << path).to_wstring unless Chef::Win32::Unicode.utf16?(path)
+            find_data = WIN32_FIND_DATA.new
+            handle = FindFirstFileW(path, find_data)
+            if handle == INVALID_HANDLE_VALUE
+              Chef::Win32::Error.raise!
+            end
+            block.call(handle, find_data)
+          ensure
+            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
+          end
         end
 
       end
