@@ -94,7 +94,7 @@ class Chef
         end
 
         def utf16_to_utf8(string)
-          if RUBY_VERSION.to_f >= 1.9
+          if string.respond_to?(:force_encoding)
             string.force_encoding("UTF-16LE").encode("UTF-8")
           else
             require 'iconv'
