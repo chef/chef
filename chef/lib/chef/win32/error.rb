@@ -33,11 +33,10 @@ class Chef
           source = args[:source]
           language_id = args[:language_id] || 0
           varargs = args[:varargs] || [:int, 0]
-
           buffer = FFI::MemoryPointer.new :pointer
           num_chars = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, source, message_id, language_id, buffer, 0, *varargs)
           if num_chars == 0
-            raise_last_error
+            raise!
           end
 
           # Extract the string
