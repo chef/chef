@@ -31,7 +31,7 @@ class Chef
           # Ruby likes to mark binary data as ASCII-8BIT
           ustring = ustring.force_encoding('UTF-8') if ustring.respond_to?(:force_encoding)
 
-          # ensure we have double-null termination
+          # ensure we have the double-null termination Windows Wide likes
           ustring = ustring << "\000\000" if ustring[-1].chr != "\000"
 
           # encode it all as UTF-16LE AKA Windows Wide Character AKA Windows Unicode
@@ -52,7 +52,7 @@ class Chef
           wstring = wstring.force_encoding('UTF-16LE') if wstring.respond_to?(:force_encoding)
 
           # encode it all as UTF-8
-          ustring = begin
+          wstring = begin
             if wstring.respond_to?(:encode)
               wstring.encode('UTF-8')
             else
@@ -60,7 +60,7 @@ class Chef
               Iconv.conv("UTF-8", "UTF-16LE", wstring)
             end
           end
-          # remove NULL characters
+          # remove trailing CRLF and NULL characters
           wstring.strip!
           wstring
         end
