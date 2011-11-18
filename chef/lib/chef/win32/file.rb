@@ -28,6 +28,39 @@ class Chef
       class << self
         include Chef::Win32::API::File
 
+        # Creates a symbolic link called +new_name+ for the file or directory
+        # +old_name+.
+        #
+        # This method requires Windows Vista or later to work. Otherwise, it
+        # returns nil as per MRI.
+        #
+        def link(old_name, new_name)
+          # TODO do a check for CreateHardLinkW and
+          # raise NotImplemented exception on older Windows
+          old_name = encode_path(old_name)
+          new_name = encode_path(new_name)
+          unless CreateHardLinkW(new_name, old_name, nil)
+            Chef::Win32::Error.raise!
+          end
+        end
+
+        # Creates a symbolic link called +new_name+ for the file or directory
+        # +old_name+.
+        #
+        # This method requires Windows Vista or later to work. Otherwise, it
+        # returns nil as per MRI.
+        #
+        def symlink(old_name, new_name)
+          # TODO do a check for CreateSymbolicLinkW and
+          # raise NotImplemented exception on older Windows
+          flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
+          old_name = encode_path(old_name)
+          new_name = encode_path(new_name)
+          unless CreateSymbolicLinkW(new_name, old_name, flags)
+            Chef::Win32::Error.raise!
+          end
+        end
+
         # Return true if the named file is a symbolic link, false otherwise.
         #
         # This method requires Windows Vista or later to work. Otherwise, it

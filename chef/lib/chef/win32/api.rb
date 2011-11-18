@@ -122,12 +122,14 @@ class Chef
         host.typedef :pointer, :LPHANDLE # Pointer to a HANDLE. WinDef.h as follows: host.typedef HANDLE *LPHANDLE;
         host.typedef :pointer, :LPINT # Pointer to an INT.
         host.typedef :pointer, :LPLONG # Pointer to an LONG.
+        host.typedef :pointer, :LPSECURITY_ATTRIBUTES # Pointer to SECURITY_ATTRIBUTES struct
         host.typedef :pointer, :LPSTR # Pointer to a null-terminated string of 8-bit Windows (ANSI) characters.
         host.typedef :pointer, :LPTSTR # An LPWSTR if UNICODE is defined, an LPSTR otherwise.
         host.typedef :pointer, :LPVOID # Pointer to any type.
         host.typedef :pointer, :LPWORD # Pointer to a WORD.
         host.typedef :pointer, :LPWSTR # Pointer to a null-terminated string of 16-bit Unicode characters.
         host.typedef :long,    :LRESULT # Signed result of message processing. WinDef.h: host.typedef LONG_PTR LRESULT;
+        host.typedef :pointer, :LPWIN32_FIND_DATA # Pointer to WIN32_FIND_DATA struct
         host.typedef :pointer, :PBOOL # Pointer to a BOOL.
         host.typedef :pointer, :PBOOLEAN # Pointer to a BOOL.
         host.typedef :pointer, :PBYTE # Pointer to a BYTE.

@@ -47,11 +47,46 @@ class Chef
         INVALID_HANDLE_VALUE = 0xFFFFFFFF
         MAX_PATH = 260
 
+        SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1
+
+=begin
+typedef struct _FILETIME {
+  DWORD dwLowDateTime;
+  DWORD dwHighDateTime;
+} FILETIME, *PFILETIME;
+=end
         class FILETIME < FFI::Struct
           layout :dw_low_date_time, :DWORD,
           :dw_high_date_time, :DWORD
         end
 
+=begin
+typedef struct _SECURITY_ATTRIBUTES {
+  DWORD  nLength;
+  LPVOID lpSecurityDescriptor;
+  BOOL   bInheritHandle;
+} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
+=end
+        class SECURITY_ATTRIBUTES < FFI::Struct
+          layout :n_length, :DWORD,
+          :lp_security_descriptor, :LPVOID,
+          :b_inherit_handle, :DWORD
+        end
+
+=begin
+typedef struct _WIN32_FIND_DATA {
+  DWORD    dwFileAttributes;
+  FILETIME ftCreationTime;
+  FILETIME ftLastAccessTime;
+  FILETIME ftLastWriteTime;
+  DWORD    nFileSizeHigh;
+  DWORD    nFileSizeLow;
+  DWORD    dwReserved0;
+  DWORD    dwReserved1;
+  TCHAR    cFileName[MAX_PATH];
+  TCHAR    cAlternateFileName[14];
+} WIN32_FIND_DATA, *PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
+=end
         class WIN32_FIND_DATA < FFI::Struct
           layout :dw_file_attributes, :DWORD,
           :ft_creation_time, FILETIME,
@@ -84,8 +119,25 @@ HANDLE WINAPI FindFirstFile(
   __out  LPWIN32_FIND_DATA lpFindFileData
 );
 =end
-        attach_function :FindFirstFileW, [:LPCWSTR, :pointer], :HANDLE
-        attach_function :FindFirstFileA, [:LPCWSTR, :pointer], :HANDLE
+        attach_function :FindFirstFileW, [:LPCTSTR, :LPWIN32_FIND_DATA], :HANDLE
+
+=begin
+BOOL WINAPI CreateHardLink(
+  __in        LPCTSTR lpFileName,
+  __in        LPCTSTR lpExistingFileName,
+  __reserved  LPSECURITY_ATTRIBUTES lpSecurityAttributes
+);
+=end
+        attach_function :CreateHardLinkW, [:LPCTSTR, :LPCTSTR, :LPSECURITY_ATTRIBUTES], :BOOLEAN
+
+=begin
+BOOLEAN WINAPI CreateSymbolicLink(
+  __in  LPTSTR lpSymlinkFileName,
+  __in  LPTSTR lpTargetFileName,
+  __in  DWORD dwFlags
+);
+=end
+        attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
 
       end
     end
