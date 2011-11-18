@@ -19,19 +19,17 @@
 
 require 'chef/win32/api/file'
 require 'chef/win32/error'
-require 'windows/unicode'
+require 'chef/win32/unicode'
 
 class Chef
   module Win32
     class File
       class << self
         include Chef::Win32::API::File
-        include Windows::Unicode
 
         def symlink?(file_name)
           is_symlink = false
-          path = FFI::MemoryPointer.from_string(multi_to_wide("\\\\?\\" << file_name))
-          path_ansi = FFI::MemoryPointer.from_string(file_name)
+          path = ("\\\\?\\" << file_name).to_wstring
           if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
             find_data = WIN32_FIND_DATA.new
             if FindFirstFileW(path, find_data) == INVALID_HANDLE_VALUE
