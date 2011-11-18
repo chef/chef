@@ -18,6 +18,7 @@
 #
 
 require 'chef/win32/api/file'
+require 'chef/win32/api/security'
 require 'chef/win32/error'
 require 'chef/win32/unicode'
 
@@ -27,6 +28,7 @@ class Chef
 
       class << self
         include Chef::Win32::API::File
+        include Chef::Win32::API::Security
 
         # Creates a symbolic link called +new_name+ for the file or directory
         # +old_name+.
@@ -79,6 +81,24 @@ class Chef
           is_symlink
         end
 
+        # Returns the path of the of the symbolic link referred to by +file+.
+        #
+        # Requires Windows Vista or later. On older versions of Windows it
+        # will raise a NotImplementedError, as per MRI.
+        #
+        def readlink(link_name)
+          # TODO do a check for GetFinalPathNameByHandleW and
+          # raise NotImplemented exception on older Windows
+          open_file(link_name) do |handle|
+            buffer = FFI::MemoryPointer.new(0.chr * MAX_PATH)
+            num_chars = GetFinalPathNameByHandleW(handle, buffer, buffer.size, FILE_NAME_NORMALIZED)
+            if num_chars == 0
+              Chef::Win32::Error.raise! #could be misleading if problem is too small buffer size as GetLastError won't report failure
+            end
+            buffer.read_wstring(num_chars).sub(path_prepender, "")
+          end
+        end
+
         private
 
         # takes the given path pre-pends "\\?\" and
@@ -86,7 +106,11 @@ class Chef
         # to be passed to the *W vesion of WinAPI File
         # functions
         def encode_path(path)
-          ("\\\\?\\" << path).to_wstring
+          (path_prepender << path).to_wstring
+        end
+
+        def path_prepender
+          "\\\\?\\"
         end
 
         # retrieves a file search handle and passes it
@@ -101,6 +125,21 @@ class Chef
               Chef::Win32::Error.raise!
             end
             block.call(handle, find_data)
+          ensure
+            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
+          end
+        end
+
+        def open_file(path, &block)
+          begin
+            path = encode_path(path)
+            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
+                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nil)
+
+            if handle == INVALID_HANDLE_VALUE
+              Chef::Win32::Error.raise!
+            end
+            block.call(handle)
           ensure
             FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
           end

@@ -49,6 +49,13 @@ class Chef
 
         SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1
 
+        FILE_NAME_NORMALIZED = 0x0
+        FILE_NAME_OPENED = 0x8
+
+        # TODO add the rest of these CONSTS
+        FILE_SHARE_READ = 0x00000001
+        OPEN_EXISTING = 3
+
 =begin
 typedef struct _FILETIME {
   DWORD dwLowDateTime;
@@ -101,6 +108,19 @@ typedef struct _WIN32_FIND_DATA {
         end
 
 =begin
+HANDLE WINAPI CreateFile(
+  __in      LPCTSTR lpFileName,
+  __in      DWORD dwDesiredAccess,
+  __in      DWORD dwShareMode,
+  __in_opt  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  __in      DWORD dwCreationDisposition,
+  __in      DWORD dwFlagsAndAttributes,
+  __in_opt  HANDLE hTemplateFile
+);
+=end
+        attach_function :CreateFileW, [:LPCTSTR, :DWORD, :DWORD, :LPSECURITY_ATTRIBUTES, :DWORD, :DWORD, :pointer], :HANDLE
+
+=begin
 BOOL WINAPI FindClose(
   __inout  HANDLE hFindFile
 );
@@ -113,6 +133,17 @@ DWORD WINAPI GetFileAttributes(
 );
 =end
         attach_function :GetFileAttributesW, [:LPCWSTR], :DWORD
+
+=begin
+DWORD WINAPI GetFinalPathNameByHandle(
+  __in   HANDLE hFile,
+  __out  LPTSTR lpszFilePath,
+  __in   DWORD cchFilePath,
+  __in   DWORD dwFlags
+);
+=end
+        attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
+
 =begin
 HANDLE WINAPI FindFirstFile(
   __in   LPCTSTR lpFileName,
