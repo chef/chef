@@ -24,6 +24,7 @@ require 'chef/win32/unicode'
 class Chef
   module Win32
     class File
+
       class << self
         include Chef::Win32::API::File
 
@@ -34,9 +35,9 @@ class Chef
         #
         def symlink?(file_name)
           is_symlink = false
-          path = ("\\\\?\\" << file_name).to_wstring
+          path = encode_path(file_name)
           if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
-            find_file(path) do |handle, find_data|
+            find_file(file_name) do |handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
                 is_symlink = true
               end
@@ -47,13 +48,20 @@ class Chef
 
         private
 
+        # takes the given path pre-pends "\\?\" and
+        # UTF-16LE encodes it.  Used to prepare paths
+        # to be passed to the *W vesion of WinAPI File
+        # functions
+        def encode_path(path)
+          ("\\\\?\\" << path).to_wstring
+        end
+
         # retrieves a file search handle and passes it
         # to +&block+ along with the find_data.  also
         # ensures the handle is closed on exit of the block
         def find_file(path, &block)
           begin
-            # check to see if the file is already UTF16-LE encoded`
-            path = ("\\\\?\\" << path).to_wstring unless Chef::Win32::Unicode.utf16?(path)
+            path = encode_path(path)
             find_data = WIN32_FIND_DATA.new
             handle = FindFirstFileW(path, find_data)
             if handle == INVALID_HANDLE_VALUE
