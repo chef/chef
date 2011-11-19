@@ -27,11 +27,19 @@ class Chef::Knife::Exec < Chef::Knife
     :long => "--exec CODE",
     :description => "a string of Chef code to execute"
 
+  option :script_path,
+    :short => "-p PATH:PATH",
+    :long => "--script-path PATH:PATH",
+    :description => "A colon-separated path to look for scripts in",
+    :proc => lambda { |o| o.split(":") }
+
   deps do
     require 'chef/shef/ext'
   end
 
   def run
+    config[:script_path] ||= Chef::Config[:script_path]
+
     scripts = Array(name_args)
     context = Object.new
     Shef::Extensions.extend_context_object(context)
@@ -39,7 +47,7 @@ class Chef::Knife::Exec < Chef::Knife
       context.instance_eval(config[:exec], "-E Argument", 0)
     elsif !scripts.empty?
       scripts.each do |script|
-        file = File.expand_path(script)
+        file = find_script(script)
         context.instance_eval(IO.read(file), file, 0)
       end
     else
@@ -47,5 +55,26 @@ class Chef::Knife::Exec < Chef::Knife
       context.instance_eval(script, "STDIN", 0)
     end
   end
-  
+
+  def find_script(x)
+    # Try to find a script. First try expanding the path given.
+    # Failing that, try searching the script path. If we can't find
+    # anything, just return the expanded path of what we were given.
+
+    script = File.expand_path(x)
+    unless File.exists?(script)
+      Chef::Log.debug("Searching script_path: #{config[:script_path].inspect}")
+      config[:script_path].each do |path|
+        test = File.join(path, x)
+        Chef::Log.debug("Testing: #{test}")
+        if File.exists?(test)
+          script = test
+          Chef::Log.debug("Found: #{test}")
+          break
+        end
+      end
+    end
+    return script
+  end
+ 
 end
