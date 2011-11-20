@@ -71,10 +71,15 @@ class Chef
         
         def source_listing
           @source_listing ||= begin
-            line_index = line_number - 1
-            beginning_line = line_index <= SOURCE_CONTEXT_WINDOW ? 0 : line_index - SOURCE_CONTEXT_WINDOW
-            source_size = SOURCE_CONTEXT_WINDOW * 2 + 1
             lines = @template.split(/\n/)
+            if line_number
+              line_index = line_number - 1
+              beginning_line = line_index <= SOURCE_CONTEXT_WINDOW ? 0 : line_index - SOURCE_CONTEXT_WINDOW
+              source_size = SOURCE_CONTEXT_WINDOW * 2 + 1
+            else
+              beginning_line = 0
+              source_size    = lines.length
+            end
             contextual_lines = lines[beginning_line, source_size]
             output = []
             contextual_lines.each_with_index do |line, index|
