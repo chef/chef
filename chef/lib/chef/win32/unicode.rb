@@ -29,7 +29,7 @@ class Chef
         def utf8_to_wide(ustring)
           # ensure it is actually UTF-8
           # Ruby likes to mark binary data as ASCII-8BIT
-          ustring = ustring.force_encoding('UTF-8') if ustring.respond_to?(:force_encoding)
+          ustring = (ustring + "").force_encoding('UTF-8') if ustring.respond_to?(:force_encoding) && ustring.encoding.name != "UTF-8"
 
           # ensure we have the double-null termination Windows Wide likes
           ustring = ustring << "\000\000" if ustring[-1].chr != "\000"
