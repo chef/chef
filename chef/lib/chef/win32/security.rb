@@ -26,6 +26,7 @@ class Chef
     class Security
 
       class << self
+        include Chef::Win32::API::Error
         include Chef::Win32::API::Security
 
         #
@@ -104,7 +105,7 @@ class Chef
         def get_named_security_info(path, type = :SE_FILE_OBJECT, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
           security_descriptor = FFI::MemoryPointer.new :pointer
           hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
-          if hr != :S_OK
+          if FAILED(hr)
             Chef::Win32::Error.raise!
           end
 
@@ -177,7 +178,7 @@ class Chef
 
         def initialize_acl(acl_size)
           acl = FFI::MemoryPointer.new acl_size
-          unless Win::Security::InitializeAcl(acl, acl_size, ACL_REVISION)
+          unless InitializeAcl(acl, acl_size, ACL_REVISION)
             Chef::Win32::Error.raise!
           end
           ACL.new(acl)
@@ -213,7 +214,7 @@ class Chef
           system_name = system_name.to_wstring if system_name
           if LookupAccountNameW(system_name, name.to_wstring, nil, sid_size, nil, referenced_domain_name_size, nil)
             raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountName, and got no error!"
-          elsif get_last_error != ERROR_INSUFFICIENT_BUFFER
+          elsif Chef::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
             Chef::Win32::Error.raise!
           end
 
@@ -232,9 +233,10 @@ class Chef
           # Figure out how big the buffer needs to be
           name_size = FFI::Buffer.new(:long).write_long(0)
           referenced_domain_name_size = FFI::Buffer.new(:long).write_long(0)
-          if LookupAccountSidW(system_name.to_wstring, sid, nil, name_size, nil, referenced_domain_name_size, nil)
+          system_name = system_name.to_wstring if system_name
+          if LookupAccountSidW(system_name, sid, nil, name_size, nil, referenced_domain_name_size, nil)
             raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountSid, and got no error!"
-          elsif get_last_error != ERROR_INSUFFICIENT_BUFFER
+          elsif Chef::Win32::Error::get_last_error != ERROR_INSUFFICIENT_BUFFER
             Chef::Win32::Error.raise!
           end
 
@@ -312,7 +314,7 @@ class Chef
           end
 
           hr = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
-          if hr != :S_OK
+          if FAILED(hr)
             Chef::Win32::Error.raise!
           end
         end

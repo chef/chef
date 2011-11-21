@@ -22,14 +22,12 @@ require 'ffi'
 
 class Chef
   module Win32
-    module Security
+    class Security
       class ACL
         include Enumerable
 
-        include Chef::Win32::Security
-
         def initialize(pointer, owner = nil)
-          @struct = :ACLStruct.new pointer
+          @struct = Chef::Win32::API::Security::ACLStruct.new pointer
           # Keep a reference to the actual owner of this memory so that it isn't freed out from under us
           # TODO this could be avoided if we could mark a pointer's parent manually
           @owner = owner
@@ -37,24 +35,32 @@ class Chef
 
         def self.create(aces)
           aces_size = aces.inject(0) { |sum,ace| sum + ace.size }
-          acl_size = align_dword(ACLStruct.size + aces_size) # What the heck is 94???
-          acl = initialize_acl(acl_size)
-          aces.each { |ace| add_ace(acl, ace) }
+          acl_size = align_dword(Chef::Win32::API::Security::ACLStruct.size + aces_size) # What the heck is 94???
+          acl = Chef::Win32::Security.initialize_acl(acl_size)
+          aces.each { |ace| Chef::Win32::Security.add_ace(acl, ace) }
           acl
         end
 
         attr_reader :struct
+
+        def ==(other)
+          return false if length != other.length
+          0.upto(length-1) do |i|
+            return false if self[i] != other[i]
+          end
+          return true
+        end
 
         def pointer
           struct.pointer
         end
 
         def [](index)
-          get_ace(self, index)
+          Chef::Win32::Security.get_ace(self, index)
         end
 
         def delete_at(index)
-          delete_ace(self, index)
+          Chef::Win32::Security.delete_ace(self, index)
         end
 
         def each
@@ -70,15 +76,15 @@ class Chef
         end
 
         def push(*aces)
-          aces.each { |ace| add_ace(self, ace) }
+          aces.each { |ace| Chef::Win32::Security.add_ace(self, ace) }
         end
 
         def unshift(*aces)
-          aces.each { |ace| add_ace(self, ace, 0) }
+          aces.each { |ace| Chef::Win32::Security.add_ace(self, ace, 0) }
         end
 
         def valid?
-          is_valid_acl(self)
+          Chef::Win32::Security.is_valid_acl(self)
         end
 
         private

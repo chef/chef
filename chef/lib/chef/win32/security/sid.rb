@@ -20,10 +20,8 @@ require 'chef/win32/security'
 
 class Chef
   module Win32
-    module Security
+    class Security
       class SID
-
-        include Chef::Win32::Security
 
         def initialize(pointer, owner = nil)
           @pointer = pointer
@@ -32,14 +30,14 @@ class Chef
         end
 
         def self.from_account(name)
-          domain, sid, use = lookup_account_name(name)
+          domain, sid, use = Chef::Win32::Security.lookup_account_name(name)
           sid
         end
 
         attr_reader :pointer
 
         def account
-          lookup_account_sid(self)
+          Chef::Win32::Security.lookup_account_sid(self)
         end
 
         def account_name
@@ -48,11 +46,11 @@ class Chef
         end
 
         def size
-          get_length_sid(self)
+          Chef::Win32::Security.get_length_sid(self)
         end
 
         def valid?
-          is_valid_sid(self)
+          Chef::Win32::Security.is_valid_sid(self)
         end
       end
     end

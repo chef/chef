@@ -22,49 +22,73 @@ require 'chef/win32/security/sid'
 
 class Chef
   module Win32
-    module Security
+    class Security
       class SecurableObject
-
-        include Chef::Win32::Security
 
         def initialize(path, type = :SE_FILE_OBJECT)
           @path = path
           @type = type
         end
 
-        attr_reader :pointer
+        attr_reader :path
+        attr_reader :type
+
+        SecurityConst = Chef::Win32::API::Security
+
+        # This method predicts what the rights mask would be on an object
+        # if you created an ACE with the given mask.  Specifically, it looks for
+        # generic attributes like GENERIC_READ, and figures out what specific
+        # attributes will be set.  This is important if you want to try to
+        # compare an existing ACE with one you want to create.
+        def predict_rights_mask(generic_mask)
+          mask = generic_mask
+          #mask |= Chef::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::Win32::API::Security::GENERIC_READ) != 0
+          #mask |= Chef::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::Win32::API::Security::GENERIC_WRITE) != 0
+          #mask |= Chef::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::Win32::API::Security::GENERIC_EXECUTE) != 0
+          #mask |= Chef::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::Win32::API::Security::GENERIC_ALL) != 0
+          if type == :SE_FILE_OBJECT
+            mask |= Chef::Win32::API::Security::FILE_GENERIC_READ if (mask & Chef::Win32::API::Security::GENERIC_READ) != 0
+            mask |= Chef::Win32::API::Security::FILE_GENERIC_WRITE if (mask & Chef::Win32::API::Security::GENERIC_WRITE) != 0
+            mask |= Chef::Win32::API::Security::FILE_GENERIC_EXECUTE if (mask & Chef::Win32::API::Security::GENERIC_EXECUTE) != 0
+            mask |= Chef::Win32::API::Security::FILE_ALL_ACCESS if (mask & Chef::Win32::API::Security::GENERIC_ALL) != 0
+          else
+            raise "Unimplemented object type for predict_security_mask: #{type}"
+          end
+          mask &= ~(Chef::Win32::API::Security::GENERIC_READ | Chef::Win32::API::Security::GENERIC_WRITE | Chef::Win32::API::Security::GENERIC_EXECUTE | Chef::Win32::API::Security::GENERIC_ALL)
+          mask
+        end
 
         def security_descriptor(include_sacl = false)
-          security_information = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION
-          security_information |= SACL_SECURITY_INFORMATION if include_sacl
-          get_named_security_info(@path, @type, security_information)
+          security_information = Chef::Win32::API::Security::OWNER_SECURITY_INFORMATION | Chef::Win32::API::Security::GROUP_SECURITY_INFORMATION | Chef::Win32::API::Security::DACL_SECURITY_INFORMATION
+          security_information |= Chef::Win32::API::Security::SACL_SECURITY_INFORMATION if include_sacl
+          Security.get_named_security_info(path, type, security_information)
         end
 
         def dacl=(val)
-          set_named_security_info(@path, @type, :dacl => val)
+          Security.set_named_security_info(path, type, :dacl => val)
         end
 
         # You don't set dacl_inherits without also setting dacl,
         # because Windows gets angry and denies you access.  So
         # if you want to do that, you may as well do both at once.
         def set_dacl(dacl, dacl_inherits)
-          set_named_security_info(@path, @type, :dacl => dacl, :dacl_inherits => dacl_inherits)
+          Security.set_named_security_info(path, type, :dacl => dacl, :dacl_inherits => dacl_inherits)
         end
 
         def group=(val)
-          set_named_security_info(@path, @type, :group => val)
+          Security.set_named_security_info(path, type, :group => val)
         end
 
         def owner=(val)
-          set_named_security_info(@path, @type, :owner => val)
+          Security.set_named_security_info(path, type, :owner => val)
         end
 
         def sacl=(val)
-          set_named_security_info(@path, @type, :sacl => val)
+          Security.set_named_security_info(path, type, :sacl => val)
         end
 
         def set_sacl(sacl, sacl_inherits)
-          set_named_security_info(@path, @type, :sacl => sacl, :sacl_inherits => sacl_inherits)
+          Security.set_named_security_info(path, type, :sacl => sacl, :sacl_inherits => sacl_inherits)
         end
       end
     end

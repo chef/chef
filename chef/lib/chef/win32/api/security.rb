@@ -225,10 +225,10 @@ class Chef
           # The AceTypes this structure supports
           def self.supports?(ace_type)
             [
-              Win::Security::ACCESS_ALLOWED_ACE_TYPE,
-              Win::Security::ACCESS_DENIED_ACE_TYPE,
-              Win::Security::SYSTEM_AUDIT_ACE_TYPE,
-              Win::Security::SYSTEM_ALARM_ACE_TYPE
+              ACCESS_ALLOWED_ACE_TYPE,
+              ACCESS_DENIED_ACE_TYPE,
+              SYSTEM_AUDIT_ACE_TYPE,
+              SYSTEM_ALARM_ACE_TYPE
             ].include?(ace_type)
           end
         end
