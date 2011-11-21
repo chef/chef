@@ -16,14 +16,15 @@
 # limitations under the License.
 #
 
+require 'chef/log'
 require 'chef/win32/security'
 
 class Chef
-  class Win32FileAccessControl
+  class WindowsFileAccessControl
     include Chef::Win32::API::Security
 
     def self.apply_security_policy(resource, securable_object)
-      provider = Win32FileAccessControl.new(resource, securable_object)
+      provider = WindowsFileAccessControl.new(resource, securable_object)
       provider.apply_security_policy()
     end
 
@@ -31,34 +32,41 @@ class Chef
       existing = securable_object.security_descriptor
       # Apply owner and group
       if existing.owner != target_owner
-        puts "Changing owner from #{existing.owner.account_name} to #{target_owner.account_name}"
+        Chef::Log.info("Changing owner from #{existing.owner.account_name} to #{target_owner.account_name}")
         securable_object.owner = target_owner
+        modified
       end
       if existing.group != target_group
-        puts "Changing group from #{existing.group.account_name} to #{target_group.account_name}"
+        Chef::Log.info("Changing group from #{existing.group.account_name} to #{target_group.account_name}")
         securable_object.group = target_group
+        modified
       end
 
       # Apply DACL and inherits
       target_dacl = build_target_dacl
       if existing.dacl_inherits? != target_inherits
-        puts "Changing DACL and inherits"
+        Chef::Log.info("Changing DACL and inherits")
         securable_object.set_dacl(target_dacl, target_inherits)
+        modified
       elsif !acls_equal(target_dacl, existing.dacl)
-        puts "Changing DACL"
+        Chef::Log.info("Changing DACL")
         securable_object.dacl = target_dacl
+        modified
       end
     end
-
-    private
 
     def initialize(resource, securable_object)
       @resource = resource
       @securable_object = securable_object
+      @modified = false
     end
-    
+
     attr_reader :resource
     attr_reader :securable_object
+
+    def modified?
+      @modified
+    end
 
     Security = Chef::Win32::Security
     ACE = Security::ACE
@@ -79,10 +87,12 @@ class Chef
     end
 
     def target_owner
+      return nil if resource.owner.nil?
       get_sid(resource.owner)
     end
 
     def target_group
+      return nil if resource.group.nil?
       get_sid(resource.group)
     end
 
@@ -114,5 +124,12 @@ class Chef
         raise "Must specify username, group or SID: #{value}"
       end
     end
+
+    private
+
+    def modified
+      @modified = true
+    end
+
   end
 end
