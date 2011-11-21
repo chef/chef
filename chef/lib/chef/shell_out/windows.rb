@@ -119,6 +119,9 @@ class Chef
 
       class ThingThatLooksSortOfLikeAProcessStatus
         attr_accessor :exitstatus
+        def success?
+          exitstatus == 0
+        end
       end
 
       def consume_output(open_streams, stdout_read, stderr_read)
