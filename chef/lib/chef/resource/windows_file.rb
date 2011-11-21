@@ -74,7 +74,9 @@ class Chef
       end
 
       def mode(arg=nil)
-        raise NotImplementedError, "WindowsFile resources should use the 'rights' attribute.  *nix => win security translation coming soon."
+        unless arg.nil?
+          raise NotImplementedError, "WindowsFile resources should use the 'rights' attribute.  *nix => win security translation coming soon."
+        end
       end
 
     end

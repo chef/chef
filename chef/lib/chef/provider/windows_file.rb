@@ -33,22 +33,15 @@ class Chef
         @current_resource.path(@new_resource.path)
 
         # TODO ADD NEW Win32 SECURITY HOOKS HERE
-        if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
+        #if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
           # @current_resource.owner()
           # @current_resource.group()
           # @current_resource.rights()
-        end
-        # if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
-        #   #cstats = ::File.stat(@current_resource.path)
-        #   @current_resource.owner(cstats.uid)
-        #   @current_resource.group(cstats.gid)
-        #   @current_resource.mode(octal_mode(cstats.mode))
-        # end
+        #end
 
         @current_resource
       end
 
-      # Set the ownership on the file, assuming it is not set correctly already.
       def set_owner
         # TODO REMOVE THIS STUB
       end
@@ -61,18 +54,15 @@ class Chef
         # TODO REMOVE THIS STUB
       end
 
-      def set_rights
-        # TODO IMPLEMENT
-      end
-
       def set_all_access_controls(file)
-        modified = Chef::WindowsFileAccessControl.apply_security_policy(@new_resource, file)
-        @new_resource.updated_by_last_action(modified)
+        access_controls = Chef::WindowsFileAccessControl.new(@new_resource, file)
+        access_controls.set_all
+        @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
       def action_create
         super
-        set_all_access_controls(@new_resource.path) unless @new_resource.rights.nil?
+        set_all_access_controls(@new_resource.path)
       end
 
       def action_create_if_missing
