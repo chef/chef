@@ -34,6 +34,10 @@ class Chef
           sid
         end
 
+        def ==(other)
+          Chef::Win32::Security.equal_sid(self, other)
+        end
+
         attr_reader :pointer
 
         def account

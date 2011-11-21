@@ -81,6 +81,12 @@ class Chef
           end
         end
 
+        def equal_sid(sid1, sid2)
+          sid1 = sid1.pointer if sid1.respond_to?(:pointer)
+          sid2 = sid2.pointer if sid2.respond_to?(:pointer)
+          EqualSid(sid1, sid2)
+        end
+
         def free_sid(sid)
           sid = sid.pointer if sid.respond_to?(:pointer)
           unless FreeSid(sid).null?
