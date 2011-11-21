@@ -18,14 +18,14 @@
 
 require 'chef/resource/file'
 require 'chef/provider/windows_file'
+require 'chef/mixin/windows_securable'
 
 class Chef
   class Resource
     class WindowsFile < Chef::Resource::File
+      include Chef::Mixin::WindowsSecurable
 
       provides :file, :on_platforms => ["windows"]
-
-      VALID_RIGHTS = [:read, :write, :execute, :full_control, :deny]
 
       def initialize(name, run_context=nil)
         super
@@ -34,49 +34,6 @@ class Chef
         @action = "create"
         @inherits = false
         @provider = Chef::Provider::WindowsFile
-      end
-
-      # supports params like this:
-      #
-      #   rights :read, ["Administrators","Everyone"]
-      #   rights :write, "Administrators"
-      #
-      # should also also allow multiple right declarations
-      # in a single resource block as the data will be merged
-      # into a single internal hash
-      def rights(permission=nil, *args)
-        rights = nil
-        unless permission == nil
-          input = {:permission => permission.to_sym, :principal => args[0] }
-          validations = {:permission => { :required => true, :equal_to => VALID_RIGHTS },
-                          :principal => { :required => true, :kind_of => [String, Array] }}
-          validate(input, validations)
-
-          rights ||= @rights ||= Hash.new
-
-          # builds an internal hash like:
-          #   {:write=>"Administrator", :read=>["Administrators", "Everyone"]}
-          rights.merge!(input[:permission] => input[:principal])
-        end
-        set_or_return(
-          :rights,
-          rights,
-          {}
-        )
-      end
-
-      def inherits(arg=nil)
-        set_or_return(
-          :inherits,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def mode(arg=nil)
-        unless arg.nil?
-          raise NotImplementedError, "WindowsFile resources should use the 'rights' attribute.  *nix => win security translation coming soon."
-        end
       end
 
     end
