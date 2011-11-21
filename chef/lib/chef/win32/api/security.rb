@@ -244,6 +244,8 @@ class Chef
         attach_function :AddAccessAllowedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
         attach_function :AddAccessDeniedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
         attach_function :AddAccessDeniedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
+        attach_function :ConvertSidToStringSidA, [ :pointer, :pointer ], :BOOL
+        attach_function :ConvertStringSidToSidW, [ :pointer, :pointer ], :BOOL
         attach_function :DeleteAce, [ :pointer, :DWORD ], :BOOL
         attach_function :EqualSid, [ :pointer, :pointer ], :BOOL
         attach_function :FreeSid, [ :pointer ], :pointer

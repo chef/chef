@@ -34,8 +34,12 @@ class Chef
           sid
         end
 
+        def self.from_string_sid(string_sid)
+          Chef::Win32::Security::convert_string_sid_to_sid(string_sid)
+        end
+
         def ==(other)
-          Chef::Win32::Security.equal_sid(self, other)
+          other != nil && Chef::Win32::Security.equal_sid(self, other)
         end
 
         attr_reader :pointer
@@ -51,6 +55,10 @@ class Chef
 
         def size
           Chef::Win32::Security.get_length_sid(self)
+        end
+
+        def to_s
+          Chef::Win32::Security.convert_sid_to_string_sid(self)
         end
 
         def valid?

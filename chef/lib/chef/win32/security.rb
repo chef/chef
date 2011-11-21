@@ -74,6 +74,36 @@ class Chef
           end
         end
 
+        def convert_sid_to_string_sid(sid)
+          sid = sid.pointer if sid.respond_to?(:pointer)
+          result = FFI::MemoryPointer.new :pointer
+          # TODO: use the W version
+          unless ConvertSidToStringSidA(sid, result)
+            Chef::Win32::Error.raise!
+          end
+
+          result_string = result.read_pointer.read_string
+
+          Chef::Win32::Memory.local_free(result.read_pointer)
+
+          result_string
+        end
+
+        def convert_string_sid_to_sid(string_sid)
+          result = FFI::MemoryPointer.new :pointer
+          unless ConvertStringSidToSidW(string_sid.to_wstring, result)
+            Chef::Win32::Error.raise!
+          end
+
+          result_pointer = result.read_pointer
+          sid = SID.new(result_pointer)
+
+          # The result pointer must be freed with local_free
+          ObjectSpace.define_finalizer(sid, proc { local_free(result_pointer) })
+
+          sid
+        end
+
         def delete_ace(acl, index)
           acl = acl.pointer if acl.respond_to?(:pointer)
           unless DeleteAce(acl, index)
