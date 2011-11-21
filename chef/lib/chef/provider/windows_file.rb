@@ -66,9 +66,8 @@ class Chef
       end
 
       def set_all_access_controls(file)
-        access_controls = Chef::WindowsFileAccessControl.new(@new_resource, file)
-        access_controls.apply_security_policy
-        @new_resource.updated_by_last_action(access_controls.modified?)
+        modified = Chef::WindowsFileAccessControl.apply_security_policy(@new_resource, file)
+        @new_resource.updated_by_last_action(modified)
       end
 
       def action_create

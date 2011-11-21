@@ -29,17 +29,19 @@ class Chef
     end
 
     def apply_security_policy
+      modified = false
+
       existing = securable_object.security_descriptor
       # Apply owner and group
       if existing.owner != target_owner
         Chef::Log.info("Changing owner from #{existing.owner.account_name} to #{target_owner.account_name}")
         securable_object.owner = target_owner
-        modified
+        modified = true
       end
       if existing.group != target_group
         Chef::Log.info("Changing group from #{existing.group.account_name} to #{target_group.account_name}")
         securable_object.group = target_group
-        modified
+        modified = true
       end
 
       # Apply DACL and inherits
@@ -47,35 +49,35 @@ class Chef
       if existing.dacl_inherits? != target_inherits
         Chef::Log.info("Changing DACL and inherits")
         securable_object.set_dacl(target_dacl, target_inherits)
-        modified
+        modified = true
       elsif !acls_equal(target_dacl, existing.dacl)
         Chef::Log.info("Changing DACL")
         securable_object.dacl = target_dacl
-        modified
+        modified = true
       end
+
+      modified
     end
+
+    private
 
     def initialize(resource, securable_object)
       @resource = resource
       @securable_object = securable_object
-      @modified = false
     end
-
+    
     attr_reader :resource
     attr_reader :securable_object
-
-    def modified?
-      @modified
-    end
 
     Security = Chef::Win32::Security
     ACE = Security::ACE
 
     def acls_equal(target_acl, actual_acl)
+      actual_acl = actual_acl.select { |ace| !ace.inherited? }
       return false if target_acl.length != actual_acl.length
       0.upto(target_acl.length - 1) do |i|
-        target_ace = a[i]
-        actual_ace = b[i]
+        target_ace = target_acl[i]
+        actual_ace = actual_acl[i]
         return false if target_ace.sid != actual_ace.sid
         return false if target_ace.flags != actual_ace.flags
         return false if securable_object.predict_rights_mask(target_ace.mask) != actual_ace.mask
@@ -87,13 +89,18 @@ class Chef
     end
 
     def target_owner
+      # TODO: make sure resource is tagged with the current user as the owner
       return nil if resource.owner.nil?
       get_sid(resource.owner)
     end
 
     def target_group
-      return nil if resource.group.nil?
-      get_sid(resource.group)
+      if resource.group == nil
+        # TODO: use well-known SIDs for this.  It appears to default to the "Domain Users" well-known SID.
+        get_sid("None")
+      else
+        get_sid(resource.group)
+      end
     end
 
     def build_target_dacl
@@ -124,12 +131,5 @@ class Chef
         raise "Must specify username, group or SID: #{value}"
       end
     end
-
-    private
-
-    def modified
-      @modified = true
-    end
-
   end
 end
