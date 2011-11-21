@@ -435,10 +435,14 @@ F
 
       begin
         return if should_skip?
-
-        # TODO: 2011-11-02 schisamo - make this work with
-        # new platform => short_name => resource
-        provider = Chef::Platform.provider_for_resource(self)
+        # leverage new platform => short_name => resource
+        # which requires explicitly setting provider in
+        # resource class
+        if self.provider
+          provider = self.provider.new(self, self.run_context)
+        else # fall back to old provider resolution
+          provider = Chef::Platform.provider_for_resource(self)
+        end
         provider.load_current_resource
         provider.send("action_#{action}")
       rescue => e
