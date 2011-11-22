@@ -1,14 +1,15 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +18,25 @@
 #
 
 require 'chef/resource/file'
+require 'chef/provider/remote_file'
+require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class RemoteFile < Chef::Resource::File
-      
+      include Chef::Mixin::Securable
+
+      provides :remote_file, :on_platforms => :all
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :remote_file
         @action = "create"
         @source = ::File.basename(name)
         @cookbook = nil
+        @provider = Chef::Provider::RemoteFile
       end
-      
+
       def source(args=nil)
         set_or_return(
           :source,
@@ -37,7 +44,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def cookbook(args=nil)
         set_or_return(
           :cookbook,
@@ -71,7 +78,7 @@ class Chef
       end
 
       private
-      
+
       def absolute_uri?(source)
         URI.parse(source).absolute?
       rescue URI::InvalidURIError
