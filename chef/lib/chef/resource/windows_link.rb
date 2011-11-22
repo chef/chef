@@ -16,40 +16,24 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require 'chef/resource/link'
 require 'chef/provider/windows_link'
+require 'chef/mixin/windows_securable'
 
 class Chef
   class Resource
     class WindowsLink < Chef::Resource::Link
+      include Chef::Mixin::WindowsSecurable
 
       provides :link, :on_platform  => ['windows']
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :windows_link
-        @to = nil
         @action = :create
-        @link_type = :symbolic
         @target_file = name
-        @allowed_actions.push(:create, :delete)
+        @inherits = nil
         @provider = Chef::Provider::WindowsLink
-      end
-
-      def group(arg=nil)
-        set_or_return(
-          :group,
-          arg,
-          :regex => Chef::Config[:group_valid_regex]
-        )
-      end
-
-      def owner(arg=nil)
-        set_or_return(
-          :owner,
-          arg,
-          :regex => Chef::Config[:user_valid_regex]
-        )
       end
 
     end
