@@ -32,7 +32,7 @@ class Chef
         @resource_name = :windows_file
         @path = name
         @action = :create
-        @inherits = false
+        @inherits = nil
         @provider = Chef::Provider::WindowsFile
       end
 

@@ -17,19 +17,16 @@
 #
 
 require 'chef/provider/file'
-require 'chef/mixin/checksum'
-require 'chef/win32/file'
-require 'chef/win32/security'
-require 'chef/windows_file_access_control'
+require 'chef/resource/windows_file'
+require 'chef/file_access_control'
 
 class Chef
   class Provider
     class WindowsFile < Chef::Provider::File
-      include Chef::Mixin::Checksum
 
       def load_current_resource
         @current_resource = Chef::Resource::WindowsFile.new(@new_resource.name)
-        @new_resource.path.gsub!(/\\/, "/") # for Windows
+        @new_resource.path.gsub!(::File::ALT_SEPARATOR, ::File::SEPARATOR) # for Windows
         @current_resource.path(@new_resource.path)
 
         # TODO ADD NEW Win32 SECURITY HOOKS HERE
@@ -54,8 +51,9 @@ class Chef
         # TODO REMOVE THIS STUB
       end
 
+      # TODO make a Securable mixin
       def set_all_access_controls(file)
-        access_controls = Chef::WindowsFileAccessControl.new(@new_resource, file)
+        access_controls = Chef::FileAccessControl.new(@new_resource, file)
         access_controls.set_all
         @new_resource.updated_by_last_action(access_controls.modified?)
       end
@@ -76,7 +74,6 @@ class Chef
       def action_touch
         super
       end
-
     end
   end
 end

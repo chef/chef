@@ -18,7 +18,7 @@
 
 require 'chef/provider'
 require 'chef/provider/directory'
-require 'chef/windows_file_access_control'
+require 'chef/file_access_control'
 
 class Chef
   class Provider
@@ -34,6 +34,7 @@ class Chef
         #   @current_resource.group(cstats.gid)
         #   @current_resource.mode("%o" % (cstats.mode & 007777))
         # end
+
         @current_resource
       end
 
@@ -49,10 +50,11 @@ class Chef
         # TODO REMOVE THIS STUB
       end
 
+      # TODO make a Securable mixin
       def set_all_access_controls(directory)
-        access_controls = Chef::WindowsFileAccessControl.new(@new_resource, directory)
+        access_controls = Chef::FileAccessControl.new(@new_resource, directory)
         access_controls.set_all
-        @new_resource.updated_by_last_action(access_controls.modified?) unless @new_resource.updated_by_last_action?
+        @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
       def action_create
