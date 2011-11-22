@@ -31,7 +31,7 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :directory
-        @path = name
+        @path = ::File.expand_path(name)
         @action = :create
         @recursive = false
         @allowed_actions.push(:create, :delete)
@@ -47,6 +47,7 @@ class Chef
       end
 
       def path(arg=nil)
+        arg = ::File.expand_path(arg) unless arg.nil?
         set_or_return(
           :path,
           arg,
