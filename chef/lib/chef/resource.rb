@@ -21,7 +21,6 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
 require 'chef/mixin/convert_to_class_name'
-require 'chef/platform'
 require 'chef/resource/conditional'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
@@ -618,7 +617,9 @@ F
         short_name_sym = short_name.to_sym
       end
       if opts.has_key?(:on_platforms)
-        opts[:on_platforms].each do |p|
+        platforms = [opts[:on_platforms]].flatten
+        platforms.each do |p|
+          p = :default if :all == p.to_sym
           platform_map.set(
             :platform => p.to_sym,
             :short_name => short_name_sym,
