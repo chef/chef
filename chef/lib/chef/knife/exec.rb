@@ -59,20 +59,23 @@ class Chef::Knife::Exec < Chef::Knife
   def find_script(x)
     # Try to find a script. First try expanding the path given.
     # Failing that, try searching the script path. If we can't find
-    # anything, just return the expanded path of what we were given.
+    # anything, fail gracefully.
 
     script = File.expand_path(x)
     unless File.exists?(script)
       Chef::Log.debug("Searching script_path: #{config[:script_path].inspect}")
       config[:script_path].each do |path|
+        path = File.expand_path(path)
         test = File.join(path, x)
         Chef::Log.debug("Testing: #{test}")
         if File.exists?(test)
           script = test
           Chef::Log.debug("Found: #{test}")
-          break
+          return script
         end
       end
+      ui.error("\"#{x}\" not found in current directory or script_path, giving up.")
+      exit(1)
     end
     return script
   end
