@@ -26,53 +26,22 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::WindowsFile.new(@new_resource.name)
-        @new_resource.path.gsub!(::File::ALT_SEPARATOR, ::File::SEPARATOR) # for Windows
+        @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
 
-        # TODO ADD NEW Win32 SECURITY HOOKS HERE
-        #if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
-          # @current_resource.owner()
-          # @current_resource.group()
-          # @current_resource.rights()
-        #end
+        # TODO set owner, group, rights for @current_resource
+        # if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
+        #   @current_resource.owner()
+        #   @current_resource.group()
+        #   @current_resource.rights()
+        # end
 
         @current_resource
       end
 
-      def set_owner
-        # TODO REMOVE THIS STUB
-      end
-
-      def set_group
-        # TODO REMOVE THIS STUB
-      end
-
-      def set_mode
-        # TODO REMOVE THIS STUB
-      end
-
-      # TODO make a Securable mixin
-      def set_all_access_controls(file)
-        access_controls = Chef::FileAccessControl.new(@new_resource, file)
-        access_controls.set_all
-        @new_resource.updated_by_last_action(access_controls.modified?)
-      end
-
       def action_create
         super
-        set_all_access_controls(@new_resource.path)
-      end
-
-      def action_create_if_missing
-        super
-      end
-
-      def action_delete
-        super
-      end
-
-      def action_touch
-        super
+        enforce_ownership_and_permissions
       end
     end
   end

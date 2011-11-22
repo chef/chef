@@ -23,11 +23,12 @@ require 'chef/file_access_control'
 class Chef
   class Provider
     class WindowsDirectory < Chef::Provider::Directory
+
       def load_current_resource
         @current_resource = Chef::Resource::WindowsDirectory.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
 
-        # TODO ADD NEW Win32 SECURITY HOOKS HERE
+        # TODO set owner, group, rights for @current_resource
         # if ::File.exist?(@current_resource.path) && ::File.directory?(@current_resource.path)
         #   cstats = ::File.stat(@current_resource.path)
         #   @current_resource.owner(cstats.uid)
@@ -38,33 +39,11 @@ class Chef
         @current_resource
       end
 
-      def set_owner
-        # TODO REMOVE THIS STUB
-      end
-
-      def set_group
-        # TODO REMOVE THIS STUB
-      end
-
-      def set_mode
-        # TODO REMOVE THIS STUB
-      end
-
-      # TODO make a Securable mixin
-      def set_all_access_controls(directory)
-        access_controls = Chef::FileAccessControl.new(@new_resource, directory)
-        access_controls.set_all
-        @new_resource.updated_by_last_action(access_controls.modified?)
-      end
-
       def action_create
         super
-        set_all_access_controls(@new_resource.path)
+        enforce_ownership_and_permissions
       end
 
-      def action_delete
-        super
-      end
     end
   end
 end
