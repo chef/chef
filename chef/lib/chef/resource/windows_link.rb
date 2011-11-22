@@ -18,12 +18,12 @@
 
 require 'chef/resource/link'
 require 'chef/provider/windows_link'
-require 'chef/mixin/windows_securable'
+require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class WindowsLink < Chef::Resource::Link
-      include Chef::Mixin::WindowsSecurable
+      include Chef::Mixin::Securable
 
       provides :link, :on_platform  => ['windows']
 
