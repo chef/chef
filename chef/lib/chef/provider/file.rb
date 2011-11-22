@@ -46,12 +46,12 @@ class Chef
         @current_resource = Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
-          cstats = ::File.stat(@current_resource.path)
-          @current_resource.owner(cstats.uid)
-          @current_resource.group(cstats.gid)
-          @current_resource.mode(octal_mode(cstats.mode))
-        end
+        # if ::File.exist?(@current_resource.path) && ::File.readable?(@current_resource.path)
+        #   cstats = ::File.stat(@current_resource.path)
+        #   @current_resource.owner(cstats.uid)
+        #   @current_resource.group(cstats.gid)
+        #   @current_resource.mode(octal_mode(cstats.mode))
+        # end
         @current_resource
       end
 
@@ -70,71 +70,71 @@ class Chef
         end
       end
 
-      # Compare the ownership of a file.  Returns true if they are the same, false if they are not.
-      def compare_owner
-        return false if @new_resource.owner.nil?
+      # # Compare the ownership of a file.  Returns true if they are the same, false if they are not.
+      # def compare_owner
+      #   return false if @new_resource.owner.nil?
 
-        @set_user_id = case @new_resource.owner
-        when /^\d+$/, Integer
-          @new_resource.owner.to_i
-        else
-          # This raises an ArgumentError if you can't find the user
-          Etc.getpwnam(@new_resource.owner).uid
-        end
+      #   @set_user_id = case @new_resource.owner
+      #   when /^\d+$/, Integer
+      #     @new_resource.owner.to_i
+      #   else
+      #     # This raises an ArgumentError if you can't find the user
+      #     Etc.getpwnam(@new_resource.owner).uid
+      #   end
 
-        @set_user_id == @current_resource.owner
-      end
+      #   @set_user_id == @current_resource.owner
+      # end
 
-      # Set the ownership on the file, assuming it is not set correctly already.
-      def set_owner
-        unless compare_owner
-          @set_user_id = negative_complement(@set_user_id)
-          ::File.chown(@set_user_id, nil, @new_resource.path)
-          Chef::Log.info("#{@new_resource} owner changed to #{@set_user_id}")
-          @new_resource.updated_by_last_action(true)
-        end
-      end
+      # # Set the ownership on the file, assuming it is not set correctly already.
+      # def set_owner
+      #   unless compare_owner
+      #     @set_user_id = negative_complement(@set_user_id)
+      #     ::File.chown(@set_user_id, nil, @new_resource.path)
+      #     Chef::Log.info("#{@new_resource} owner changed to #{@set_user_id}")
+      #     @new_resource.updated_by_last_action(true)
+      #   end
+      # end
 
-      # Compares the group of a file.  Returns true if they are the same, false if they are not.
-      def compare_group
-        return false if @new_resource.group.nil?
+      # # Compares the group of a file.  Returns true if they are the same, false if they are not.
+      # def compare_group
+      #   return false if @new_resource.group.nil?
 
-        @set_group_id = case @new_resource.group
-        when /^\d+$/, Integer
-          @new_resource.group.to_i
-        else
-          Etc.getgrnam(@new_resource.group).gid
-        end
+      #   @set_group_id = case @new_resource.group
+      #   when /^\d+$/, Integer
+      #     @new_resource.group.to_i
+      #   else
+      #     Etc.getgrnam(@new_resource.group).gid
+      #   end
 
-        @set_group_id == @current_resource.group
-      end
+      #   @set_group_id == @current_resource.group
+      # end
 
-      def set_group
-        unless compare_group
-          @set_group_id = negative_complement(@set_group_id)
-          ::File.chown(nil, @set_group_id, @new_resource.path)
-          Chef::Log.info("#{@new_resource} group changed to #{@set_group_id}")
-          @new_resource.updated_by_last_action(true)
-        end
-      end
+      # def set_group
+      #   unless compare_group
+      #     @set_group_id = negative_complement(@set_group_id)
+      #     ::File.chown(nil, @set_group_id, @new_resource.path)
+      #     Chef::Log.info("#{@new_resource} group changed to #{@set_group_id}")
+      #     @new_resource.updated_by_last_action(true)
+      #   end
+      # end
 
-      def compare_mode
-        case @new_resource.mode
-        when /^\d+$/, Integer
-          octal_mode(@new_resource.mode) == octal_mode(@current_resource.mode)
-        else
-          false
-        end
-      end
+      # def compare_mode
+      #   case @new_resource.mode
+      #   when /^\d+$/, Integer
+      #     octal_mode(@new_resource.mode) == octal_mode(@current_resource.mode)
+      #   else
+      #     false
+      #   end
+      # end
 
-      def set_mode
-        unless compare_mode && @new_resource.mode != nil
-          # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
-          ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
-          Chef::Log.info("#{@new_resource} mode changed to #{sprintf("%o" % octal_mode(@new_resource.mode))}")
-          @new_resource.updated_by_last_action(true)
-        end
-      end
+      # def set_mode
+      #   unless compare_mode && @new_resource.mode != nil
+      #     # CHEF-174, bad mojo around treating integers as octal.  If a string is passed, we try to do the "right" thing
+      #     ::File.chmod(octal_mode(@new_resource.mode), @new_resource.path)
+      #     Chef::Log.info("#{@new_resource} mode changed to #{sprintf("%o" % octal_mode(@new_resource.mode))}")
+      #     @new_resource.updated_by_last_action(true)
+      #   end
+      # end
 
       def action_create
         assert_enclosing_directory_exists!
@@ -145,9 +145,10 @@ class Chef
         else
           set_content unless @new_resource.content.nil?
         end
-        set_owner unless @new_resource.owner.nil?
-        set_group unless @new_resource.group.nil?
-        set_mode unless @new_resource.mode.nil?
+        # set_owner unless @new_resource.owner.nil?
+        # set_group unless @new_resource.group.nil?
+        # set_mode unless @new_resource.mode.nil?
+        enforce_ownership_and_permissions
       end
 
       def action_create_if_missing
