@@ -43,14 +43,23 @@ class Chef
       # on the file when you save the ACL)
       def acls_equal(target_acl, actual_acl)
         actual_acl = actual_acl.select { |ace| !ace.inherited? }
-        return false if target_acl.length != actual_acl.length
-        0.upto(target_acl.length - 1) do |i|
-          target_ace = target_acl[i]
-          actual_ace = actual_acl[i]
-          return false if target_ace.sid != actual_ace.sid
-          return false if target_ace.flags != actual_ace.flags
-          return false if securable_object.predict_rights_mask(target_ace.mask) != actual_ace.mask
+        # When ACLs apply to children, Windows splits them on the file system into two ACLs:
+        # one specific applying to this container, and one generic applying to children.
+        new_target_acl = []
+        target_acl.each do |target_ace|
+          if target_ace.flags & INHERIT_ONLY_ACE == 0
+            self_ace = target_ace.dup
+            self_ace.flags = 0
+            self_ace.mask = securable_object.predict_rights_mask(target_ace.mask)
+            new_target_acl << self_ace
+          end
+          if target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
+            children_ace = target_ace.dup
+            children_ace.flags |= INHERIT_ONLY_ACE
+            new_target_acl << children_ace
+          end
         end
+        return actual_acl == new_target_acl
       end
 
       def existing_descriptor
@@ -116,9 +125,9 @@ class Chef
 
       def mode_ace(sid, mode)
         mask = 0
-        mask |= GENERIC_READ if mode & 1 != 0
+        mask |= GENERIC_READ if mode & 4 != 0
         mask |= GENERIC_WRITE if mode & 2 != 0
-        mask |= GENERIC_EXECUTE if mode & 3 != 0
+        mask |= GENERIC_EXECUTE if mode & 1 != 0
         return [] if mask == 0
         [ ACE.access_allowed(sid, mask) ]
       end
@@ -129,19 +138,41 @@ class Chef
 
         if !resource.rights.nil?
           acls = [] if acls.nil?
-          resource.rights.each_pair do |type, users|
-            users = [users] unless users.kind_of? Array
-            case type
-            when :deny
-              users.each { |user| acls.push ACE.access_denied(get_sid(user), GENERIC_ALL) }
-            when :read
-              users.each { |user| acls.push ACE.access_allowed(get_sid(user), GENERIC_READ | GENERIC_EXECUTE) }
-            when :write
-              users.each { |user| acls.push ACE.access_allowed(get_sid(user), GENERIC_WRITE | GENERIC_READ | GENERIC_EXECUTE) }
-            when :full_control
-              users.each { |user| acls.push ACE.access_allowed(get_sid(user), GENERIC_ALL) }
-            else
-              raise "Unknown rights type #{type}"
+
+          resource.rights.each do |rights|
+            permission = rights[:permission]
+            [ rights[:principal] ].flatten.each do |principal|
+
+              # Handle inheritance flags
+              flags = 0
+              case rights[:applies_to_children]
+              when true
+                flags |= CONTAINER_INHERIT_ACE
+                flags |= OBJECT_INHERIT_ACE
+              when :containers_only
+                flags |= CONTAINER_INHERIT_ACE
+              when :objects_only
+                flags |= OBJECT_INHERIT_ACE
+              end
+              if rights[:applies_to_self] == false
+                flags |= INHERIT_ONLY_ACE
+              end
+              if rights[:one_level_deep]
+                flags |= NO_PROPAGATE_INHERIT_ACE
+              end
+
+              # Create ACE
+              sid = get_sid(principal)
+              case permission
+              when :deny
+                acls.push ACE.access_denied(sid, GENERIC_ALL, flags)
+              when :read
+                acls.push ACE.access_allowed(sid, GENERIC_READ | GENERIC_EXECUTE, flags)
+              when :write
+                acls.push ACE.access_allowed(sid, GENERIC_WRITE | GENERIC_READ | GENERIC_EXECUTE, flags)
+              when :full_control
+                acls.push ACE.access_allowed(sid, GENERIC_ALL, flags)
+              end
             end
           end
         end

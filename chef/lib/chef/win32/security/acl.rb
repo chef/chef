@@ -87,6 +87,9 @@ class Chef
           Chef::Win32::Security.is_valid_acl(self)
         end
 
+        def to_s
+          "[#{self.collect { |ace| ace.to_s }.join(", ")}]"
+        end
         private
 
         def self.align_dword(size)

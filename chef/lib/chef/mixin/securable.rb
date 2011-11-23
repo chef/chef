@@ -66,6 +66,7 @@ class Chef
         #
         #   rights :read, ["Administrators","Everyone"]
         #   rights :write, "Administrators"
+        #   rights :full_control, "Users", :inherited => true
         #
         # should also also allow multiple right declarations
         # in a single resource block as the data will be merged
@@ -75,20 +76,39 @@ class Chef
         # multiple instances of the attribute with separate runtime states.
         # See +Chef::Resource::RemoteDirectory+ for example usage (rights and files_rights)
         def self.rights_attribute(name)
-          define_method(name) do |permission, *args|
+          define_method(name) do |*args|
+            # Ruby 1.8 compat: default the arguments
+            permission = args.length >= 1 ? args[0] : nil
+            principal = args.length >= 2 ? args[1] : nil
+            args_hash = args.length >= 3 ? args[2] : nil
+            raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
+            
             rights = nil
             unless permission == nil
-              input = {:permission => permission.to_sym, :principal => args[0] }
+              input = {
+                :permission => permission.to_sym,
+                :principal => principal
+              }
+              input.merge!(args_hash) if args_hash != nil
+
               validations = {:permission => { :required => true, :equal_to => VALID_RIGHTS },
-                              :principal => { :required => true, :kind_of => [String, Array] }}
+                             :principal => { :required => true, :kind_of => [String, Array] },
+                             :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ]},
+                             :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
+                             :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] }
+                            }
               validate(input, validations)
 
-              rights ||= (self.instance_variable_get("@#{name.to_s}".to_sym))
-              rights ||= Hash.new
-
-              # builds an internal hash like:
-              #   {:write=>"Administrator", :read=>["Administrators", "Everyone"]}
-              rights.merge!(input[:permission] => input[:principal])
+              if (!input.has_key?(:applies_to_children) || input[:applies_to_children] == false)
+                if input[:applies_to_self] == false
+                  raise "'rights' attribute must specify either :applies_to_children or :applies_to_self."
+                end
+                if input[:one_level_deep] == true
+                  raise "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
+                end
+              end
+              rights ||= []
+              rights << input
             end
             set_or_return(
               name,
@@ -97,6 +117,7 @@ class Chef
             )
           end
         end
+
         # create a default 'rights' attribute
         rights_attribute(:rights)
 

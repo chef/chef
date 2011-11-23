@@ -42,18 +42,22 @@ class Chef
           Chef::Win32::API::Security::ACE_WITH_MASK_AND_SID.offset_of(:SidStart) + sid.size
         end
 
-        def self.access_allowed(sid, access_mask, flags = 0)
-          create_ace_with_mask_and_sid(Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE, flags, access_mask, sid)
+        def self.access_allowed(sid, mask, flags = 0)
+          create_ace_with_mask_and_sid(Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE, flags, mask, sid)
         end
 
-        def self.access_denied(sid, access_mask, flags = 0)
-          create_ace_with_mask_and_sid(Chef::Win32::API::Security::ACCESS_DENIED_ACE_TYPE, flags, access_mask, sid)
+        def self.access_denied(sid, mask, flags = 0)
+          create_ace_with_mask_and_sid(Chef::Win32::API::Security::ACCESS_DENIED_ACE_TYPE, flags, mask, sid)
         end
 
         attr_reader :struct
 
         def ==(other)
-          type == other.type && flags == other.flags && access_mask == other.access_mask && sid == other.sid
+          type == other.type && flags == other.flags && mask == other.mask && sid == other.sid
+        end
+
+        def dup
+          ACE.create_ace_with_mask_and_sid(type, flags, mask, sid)
         end
 
         def flags
@@ -92,6 +96,10 @@ class Chef
           # The SID runs off the end of the structure, starting at :SidStart.
           # Use pointer arithmetic to get a pointer to that location.
           Chef::Win32::Security::SID.new(struct.pointer + struct.offset_of(:SidStart))
+        end
+
+        def to_s
+          "#{sid.account_name}/flags:#{flags.to_s(16)}/mask:#{mask.to_s(16)}"
         end
 
         def type
