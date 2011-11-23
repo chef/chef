@@ -25,7 +25,9 @@ class Chef
       include Chef::Win32::API::Security
 
       Security = Chef::Win32::Security
+      ACL = Security::ACL
       ACE = Security::ACE
+      SID = Security::SID
 
       def set_all
         set_owner
@@ -57,8 +59,8 @@ class Chef
 
       def get_sid(value)
         if value.kind_of?(String)
-          Chef::Win32::Security::SID.from_account(value)
-        elsif value.kind_of?(Chef::Win32::Security::SID)
+          SID.from_account(value)
+        elsif value.kind_of?(SID)
           value
         else
           raise "Must specify username, group or SID: #{value}"
@@ -84,7 +86,7 @@ class Chef
           # specified, we need to change only inherited ACLs and leave
           # explicit ACLs alone.
           if dacl.nil? && !existing_dacl.nil?
-            dacl = Chef::Win32::Security::ACL.create(existing_dacl.select { |ace| puts "ACE #{ace}"; !ace.inherited? })
+            dacl = ACL.create(existing_dacl.select { |ace| !ace.inherited? })
           end
           securable_object.set_dacl(dacl, inherits)
           Chef::Log.info("#{log_string} permissions changed to #{dacl} with inherits of #{inherits}")
@@ -98,7 +100,7 @@ class Chef
 
       def set_group
         if (group = target_group) && (group != existing_descriptor.group)
-          Chef::Log.info("#{log_string} group changed to #{gid}")
+          Chef::Log.info("#{log_string} group changed to #{group}")
           securable_object.group = group
           modified
         end
@@ -106,32 +108,65 @@ class Chef
 
       def set_owner
         if (owner = target_owner) && (owner != existing_descriptor.owner)
-          Chef::Log.info("#{log_string} owner changed to #{uid}")
+          Chef::Log.info("#{log_string} owner changed to #{owner}")
           securable_object.owner = owner
           modified
         end
       end
 
-      def target_dacl
-        return nil if resource.rights.nil?
+      def mode_ace(sid, mode)
+        mask = 0
+        mask |= GENERIC_READ if mode & 1 != 0
+        mask |= GENERIC_WRITE if mode & 2 != 0
+        mask |= GENERIC_EXECUTE if mode & 3 != 0
+        return [] if mask == 0
+        [ ACE.access_allowed(sid, mask) ]
+      end
 
-        acls = []
-        resource.rights.each_pair do |type, users|
-          users = [users] unless users.kind_of? Array
-          case type
-          when :deny
-            users.each { |user| acls.push ACE.access_denied(get_sid(user), GENERIC_ALL) }
-          when :read
-            users.each { |user| acls.push(ACE.access_allowed(get_sid(user), GENERIC_READ | GENERIC_EXECUTE)) }
-          when :write
-            users.each { |user| acls.push(ACE.access_allowed(get_sid(user), GENERIC_WRITE | GENERIC_READ | GENERIC_EXECUTE)) }
-          when :full
-            users.each { |user| acls.push(ACE.access_allowed(get_sid(user), GENERIC_ALL)) }
-          else
-            raise "Unknown rights type #{type}"
+      def target_dacl
+        return nil if resource.rights.nil? && resource.mode.nil?
+        acls = nil
+
+        if !resource.rights.nil?
+          acls = [] if acls.nil?
+          resource.rights.each_pair do |type, users|
+            users = [users] unless users.kind_of? Array
+            case type
+            when :deny
+              users.each { |user| acls.push ACE.access_denied(get_sid(user), GENERIC_ALL) }
+            when :read
+              users.each { |user| acls.push ACE.access_allowed(get_sid(user), GENERIC_READ | GENERIC_EXECUTE) }
+            when :write
+              users.each { |user| acls.push ACE.access_allowed(get_sid(user), GENERIC_WRITE | GENERIC_READ | GENERIC_EXECUTE) }
+            when :full_control
+              users.each { |user| acls.push ACE.access_allowed(get_sid(user), GENERIC_ALL) }
+            else
+              raise "Unknown rights type #{type}"
+            end
           end
         end
-        Chef::Win32::Security::ACL.create(acls)
+
+        if !resource.mode.nil?
+          acls = [] if acls.nil?
+
+          owner = target_owner
+          if owner
+            acls += mode_ace(owner, (resource.mode & 0700) >> 6)
+          elsif resource.mode & 0700 != 0
+            raise "Mode #{resource.mode.to_s(8)} includes bits for the owner, but owner is not specified"
+          end
+
+          group = target_group
+          if group
+            acls += mode_ace(group, (resource.mode & 070) >> 3)
+          elsif resource.mode & 070 != 0
+            raise "Mode #{resource.mode.to_s(8)} includes bits for the group, but group is not specified"
+          end
+
+          acls += mode_ace(SID.Everyone, (resource.mode & 07))
+        end
+
+        acls.nil? ? nil : Chef::Win32::Security::ACL.create(acls)
       end
 
       def target_group

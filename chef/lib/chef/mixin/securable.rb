@@ -36,10 +36,31 @@ class Chef
         )
       end
 
+      def mode(arg=nil)
+        set_or_return(
+          :mode,
+          arg,
+          :callbacks => {
+            "not in valid numeric range" => lambda { |m|
+              if m.kind_of?(String)
+                m =~ /^0/ || m="0#{m}"
+              end
+
+              # Windows does not support the sticky or setuid bits
+              if RUBY_PLATFORM =~ /mswin|mingw|windows/
+                Integer(m)<=0777 && Integer(m)>=0
+              else
+                Integer(m)<=07777 && Integer(m)>=0
+              end
+            }
+          }
+        )
+      end
+
       # TODO should this be separated into different files?
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
-        VALID_RIGHTS = [:read, :write, :execute, :full_control, :deny]
+        VALID_RIGHTS = [:read, :write, :full_control, :deny]
 
         # supports params like this:
         #
@@ -77,30 +98,6 @@ class Chef
             :kind_of => [ TrueClass, FalseClass ]
           )
         end
-
-        def mode(arg=nil)
-          unless arg.nil?
-            raise NotImplementedError, "WindowsFile resources should use the 'rights' attribute.  *nix => win security translation coming soon."
-          end
-        end
-
-      else
-
-        def mode(arg=nil)
-          set_or_return(
-            :mode,
-            arg,
-            :callbacks => {
-              "not in valid numeric range" => lambda { |m|
-                if m.kind_of?(String)
-                  m =~ /^0/ || m="0#{m}"
-                end
-                Integer(m)<=07777 && Integer(m)>=0
-              }
-            }
-          )
-        end
-
       end
     end
   end
