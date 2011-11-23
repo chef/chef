@@ -932,7 +932,7 @@ DWORD WINAPI FormatMessage(
 =begin
 DWORD WINAPI GetLastError(void);
 =end
-        attach_function :GetLastError, [], :uint32
+        attach_function :GetLastError, [], :DWORD
 =begin
 void WINAPI SetLastError(
   __in  DWORD dwErrCode

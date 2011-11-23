@@ -172,7 +172,8 @@ class Chef
           unless GetSecurityDescriptorDacl(security_descriptor, present, acl, defaulted)
             Chef::Win32::Error.raise!
           end
-          [ present.read_char != 0, ACL.new(acl.read_pointer, security_descriptor), defaulted.read_char != 0 ]
+          acl = acl.read_pointer
+          [ present.read_char != 0, acl.null? ? nil : ACL.new(acl, security_descriptor), defaulted.read_char != 0 ]
         end
 
         def get_security_descriptor_group(security_descriptor)
@@ -209,7 +210,8 @@ class Chef
           unless GetSecurityDescriptorSacl(security_descriptor, present, acl, defaulted)
             Chef::Win32::Error.raise!
           end
-          [ present.read_char != 0, ACL.new(acl.read_pointer, security_descriptor), defaulted.read_char != 0 ]
+          acl = acl.read_pointer
+          [ present.read_char != 0, acl.null? ? nil : ACL.new(acl, security_descriptor), defaulted.read_char != 0 ]
         end
 
         def initialize_acl(acl_size)

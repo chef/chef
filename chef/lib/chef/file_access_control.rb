@@ -56,12 +56,6 @@ class Chef
       @modified
     end
 
-    def set_all
-      set_owner
-      set_group
-      set_mode
-    end
-
     private
 
     def modified

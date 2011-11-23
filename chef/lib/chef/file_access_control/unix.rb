@@ -26,6 +26,12 @@ class Chef
       UINT = (1 << 32)
       UID_MAX = (1 << 32) - 10
 
+      def set_all
+        set_owner
+        set_group
+        set_mode
+      end
+
       # Workaround the fact that Ruby's Etc module doesn't believe in negative
       # uids, so negative uids show up as the diminished radix complement of
       # a uint. For example, a uid of -2 is reported as 4294967294
