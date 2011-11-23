@@ -65,7 +65,7 @@ class Chef
           if current_release?(release_path) 
             Chef::Log.debug("#{@new_resource} is the latest version")
           else
-            action_rollback
+            rollback_to release_path
           end
         else
 
@@ -93,16 +93,15 @@ class Chef
       end
 
       def action_rollback
-        if release_path
-          rp_index = all_releases.index(release_path)
-          raise RuntimeError, "There is no release to rollback to!" unless rp_index
-          rp_index += 1
-          releases_to_nuke = all_releases[rp_index..-1]
-        else
-          @release_path = all_releases[-2]
-          raise RuntimeError, "There is no release to rollback to!" unless @release_path
-          releases_to_nuke = [ all_releases.last ]
-        end
+        rollback_to all_releases[-2]
+      end
+
+      def rollback_to(target_release_path)
+        @release_path = target_release_path
+        raise RuntimeError, "There is no release to rollback to!" unless @release_path
+
+        rp_index = all_releases.index(release_path)
+        releases_to_nuke = all_releases[(rp_index + 1)..-1]
 
         rollback
 

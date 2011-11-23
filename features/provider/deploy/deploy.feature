@@ -58,9 +58,7 @@ Feature: Deploy
       And a file named 'deploy/current/app/before_symlink_was_here.txt' should exist
       And a file named 'deploy/current/tmp/restart.txt' should exist
 
-  @chef-1816 @known_issue
-  Scenario: Deploy twice and rollback once
-    Given I haven't yet fixed CHEF-1816, this test should be pending
+  Scenario: Deploy twice and rollback once using timestamped based deploy
     Given a test git repo in the temp directory
       And a validated node
       And it includes the recipe 'deploy::deploy_commit1'
@@ -78,9 +76,7 @@ Feature: Deploy
      Then the run should exit '0'
      Then there should be 'one' release
 
-  @chef-2723 @known_issue
   Scenario: Make changes, commit them, deploy again using revision based strategy and do rollback
-    Given I haven't yet fixed CHEF-1816, this test should be pending
     Given a validated node
       And it includes the recipe 'deploy::revision_deploy'
       And I have a clone of the rails app in the data/tmp dir

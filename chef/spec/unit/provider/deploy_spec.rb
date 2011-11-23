@@ -87,7 +87,7 @@ describe Chef::Provider::Deploy do
   it "should call action_rollback if there is already a deploy of this revision at release_path, and it is not the current release" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir, "102021"])
     @provider.stub!(:current_release?).with(@expected_release_dir).and_return(false)
-    @provider.should_receive(:action_rollback)
+    @provider.should_receive(:rollback_to).with(@expected_release_dir)
     @provider.should_receive(:current_release?)
     @provider.action_deploy
   end
