@@ -47,7 +47,7 @@ class Chef
               end
 
               # Windows does not support the sticky or setuid bits
-              if RUBY_PLATFORM =~ /mswin|mingw|windows/
+              if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
                 Integer(m)<=0777 && Integer(m)>=0
               else
                 Integer(m)<=07777 && Integer(m)>=0
@@ -58,7 +58,7 @@ class Chef
       end
 
       # TODO should this be separated into different files?
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+      if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
 
         VALID_RIGHTS = [:read, :write, :full_control, :deny]
 
@@ -70,26 +70,35 @@ class Chef
         # should also also allow multiple right declarations
         # in a single resource block as the data will be merged
         # into a single internal hash
-        def rights(permission=nil, *args)
-          rights = nil
-          unless permission == nil
-            input = {:permission => permission.to_sym, :principal => args[0] }
-            validations = {:permission => { :required => true, :equal_to => VALID_RIGHTS },
-                            :principal => { :required => true, :kind_of => [String, Array] }}
-            validate(input, validations)
+        #
+        # This method 'creates' rights methods..this allows us to have
+        # two instances of the method with separate runtime states.
+        # See +Chef::Resource::RemoteDirectory+ for example usage (rights and files_rights)
+        def self.rights_attribute(name)
+          define_method(name) do |permission=nil, *args|
+            rights = nil
+            unless permission == nil
+              input = {:permission => permission.to_sym, :principal => args[0] }
+              validations = {:permission => { :required => true, :equal_to => VALID_RIGHTS },
+                              :principal => { :required => true, :kind_of => [String, Array] }}
+              validate(input, validations)
 
-            rights ||= @rights ||= Hash.new
+              rights ||= (self.instance_variable_get("@#{name.to_s}".to_sym))
+              rights ||= Hash.new
 
-            # builds an internal hash like:
-            #   {:write=>"Administrator", :read=>["Administrators", "Everyone"]}
-            rights.merge!(input[:permission] => input[:principal])
+              # builds an internal hash like:
+              #   {:write=>"Administrator", :read=>["Administrators", "Everyone"]}
+              rights.merge!(input[:permission] => input[:principal])
+            end
+            set_or_return(
+              name,
+              rights,
+              {}
+            )
           end
-          set_or_return(
-            :rights,
-            rights,
-            {}
-          )
         end
+        # create a default 'rights' attribute
+        rights_attribute(:rights)
 
         def inherits(arg=nil)
           set_or_return(
