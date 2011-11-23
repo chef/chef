@@ -71,11 +71,11 @@ class Chef
         # in a single resource block as the data will be merged
         # into a single internal hash
         #
-        # This method 'creates' rights methods..this allows us to have
-        # two instances of the method with separate runtime states.
+        # This method 'creates' rights attributes..this allows us to have
+        # multiple instances of the attribute with separate runtime states.
         # See +Chef::Resource::RemoteDirectory+ for example usage (rights and files_rights)
         def self.rights_attribute(name)
-          define_method(name) do |permission=nil, *args|
+          define_method(name) do |permission, *args|
             rights = nil
             unless permission == nil
               input = {:permission => permission.to_sym, :principal => args[0] }
