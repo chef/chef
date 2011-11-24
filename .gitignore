@@ -38,3 +38,4 @@ features/data/cookbooks_not_uploaded_at_feature_start/*/metadata.json
 Gemfile.lock
 */tags
 *~
+TAGS
