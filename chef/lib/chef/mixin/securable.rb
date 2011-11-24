@@ -65,8 +65,9 @@ class Chef
         # supports params like this:
         #
         #   rights :read, ["Administrators","Everyone"]
-        #   rights :write, "Administrators"
-        #   rights :full_control, "Users", :inherited => true
+        #   rights :deny, "Pinky"
+        #   rights :full_control, "Users", :applies_to_children => true
+        #   rights :write, "John Keiser", :applies_to_children => :containers_only, :applies_to_self => false, :one_level_deep => true
         #
         # should also also allow multiple right declarations
         # in a single resource block as the data will be merged
@@ -82,7 +83,7 @@ class Chef
             principal = args.length >= 2 ? args[1] : nil
             args_hash = args.length >= 3 ? args[2] : nil
             raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
-            
+
             rights = nil
             unless permission == nil
               input = {
