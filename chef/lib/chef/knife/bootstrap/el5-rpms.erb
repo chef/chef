@@ -5,11 +5,17 @@ wget http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.r
 rpm -Uvh /tmp/epel-release-5-4.noarch.rpm
 rpm -Uvh http://rbel.frameos.org/rbel5
 
-yum install -y ruby-shadow ruby-devel dmidecode git
+yum install -y ruby-shadow ruby.x86_64 ruby-devel.x86_64 dmidecode git
 yum install -y rubygem-chef
+
+service ntpd stop
+ntpdate 0.pool.ntp.org
+service ntpd start
+
 
 (
 cat <<'EOP'
+<%= validation_key %>
 EOP
 ) > /tmp/validation.pem
 awk NF /tmp/validation.pem > /etc/chef/validation.pem
@@ -17,15 +23,7 @@ rm /tmp/validation.pem
 
 (
 cat <<'EOP'
-log_level        :info
-log_location     STDOUT
-chef_server_url  "http://chef.example.com"
-validation_client_name "chef-validator"
-# Using default node name
-file_backup_path   "/var/lib/chef"
-file_cache_path    "/var/cache/chef"
-pid_file           "/var/run/chef/client.pid"
-encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"
+<%= config_content %>
 EOP
 ) > /etc/chef/client.rb
 
@@ -39,20 +37,14 @@ awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
 rm /tmp/encrypted_data_bag_secret
 <% end -%>
 
-
 (
 cat <<'EOP'
-<%= { "run_list" => @run_list }.to_json %>
-EOP
-) > /etc/chef/first-boot.json
-
-(
-cat <<'EOP'
-<%= { "run_list" => @run_list }.to_json %>
+<%= node_definition %>
 EOP
 ) > /etc/chef/first-boot.json
 
 
 
 <%= start_chef %>' 
+
 
