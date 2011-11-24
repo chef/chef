@@ -5,7 +5,7 @@ wget http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.r
 rpm -Uvh /tmp/epel-release-6-5.noarch.rpm
 rpm -Uvh http://rbel.frameos.org/rbel6
 
-yum install -y ruby.x86_64 ruby-shadow ruby-devel.x86_64 dmidecode git
+yum install -y "ruby.$(uname -i)" "ruby-devel.$(uname -i)" ruby-shadow dmidecode git
 
 yum install -y rubygem-chef
 

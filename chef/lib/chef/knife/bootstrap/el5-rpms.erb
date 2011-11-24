@@ -5,7 +5,7 @@ wget http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.r
 rpm -Uvh /tmp/epel-release-5-4.noarch.rpm
 rpm -Uvh http://rbel.frameos.org/rbel5
 
-yum install -y ruby-shadow ruby.x86_64 ruby-devel.x86_64 dmidecode git
+yum install -y ruby-shadow "ruby.$(uname -i)" "ruby-devel.$(uname -i)" dmidecode git
 yum install -y rubygem-chef
 
 service ntpd stop
@@ -39,7 +39,7 @@ rm /tmp/encrypted_data_bag_secret
 
 (
 cat <<'EOP'
-<%= node_definition %>
+<%= { "run_list" => @run_list }.to_json %>
 EOP
 ) > /etc/chef/first-boot.json
 
