@@ -144,7 +144,7 @@ class Chef
 
         # since we're in a local branch already, just reset to specified revision rather than merge
         fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
-        Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revison #{target_revision}"
+        Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
         shell_out!(fetch_command, run_options(:cwd => @new_resource.destination))
       end
 
