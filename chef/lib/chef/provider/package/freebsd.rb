@@ -60,7 +60,7 @@ class Chef
         end
 
         def ports_makefile_variable_value(variable)
-          make_v = shell_out!("make -V #{variable} -f #{port_path}/Makefile", :env => nil, :returns => [0,1])
+          make_v = shell_out!("make -V #{variable}", :cwd => port_path, :env => nil, :returns => [0,1])
           make_v.stdout.strip.split($\).first # $\ is the line separator, i.e., newline
         end
 
