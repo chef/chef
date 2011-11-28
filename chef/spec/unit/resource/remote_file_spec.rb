@@ -38,6 +38,12 @@ describe Chef::Resource::RemoteFile do
     Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
   end
 
+  it "says its provider is RemoteFile when the source is an absolute URI, even if URI is specification invalid" do
+    @resource.source("http://some_invalid_subdomain.google.com/robots.txt")
+    @resource.provider.should == Chef::Provider::RemoteFile
+    Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
+  end
+
   it "says its provider is CookbookFile when the source is a relative URI" do
     @resource.source('seattle.txt')
     @resource.provider.should == Chef::Provider::CookbookFile
