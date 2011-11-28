@@ -304,7 +304,7 @@ class Chef
 
         def initialize(new_resource, run_context=nil)
           super
-          if new_resource.gem_binary
+          if new_resource.gem_binary or Gem.configuration.
             if new_resource.options && new_resource.options.kind_of?(Hash)
               msg =  "options cannot be given as a hash when using an explicit gem_binary\n"
               msg << "in #{new_resource} from #{new_resource.source_line}"
@@ -393,23 +393,22 @@ class Chef
         # Installs the gem, using either the gems API or shelling out to `gem`
         # according to the following criteria:
         # 1. Use gems API (Gem::DependencyInstaller) by default
-        # 2. shell out to `gem install` when a String of options is given
+        # 2. shell out to `gem install` when a String of options is given,
+        #    if we were passed a specific binary to use, or 
+        #    the "gem" config option is set by a gemrc file that is in scope.
         # 3. use gems API with options if a hash of options is given
         def install_package(name, version)
-          if source_is_remote? && @new_resource.gem_binary.nil?
-            if @new_resource.options.nil?
-              @gem_env.install(gem_dependency, :sources => gem_sources)
-            elsif @new_resource.options.kind_of?(Hash)
-              options = @new_resource.options
-              options[:sources] = gem_sources
-              @gem_env.install(gem_dependency, options)
-            else
-              install_via_gem_command(name, version)
-            end
-          elsif @new_resource.gem_binary.nil?
-            @gem_env.install(@new_resource.source)
-          else
+          case
+          when Gem.configuration["gem"] || @new_resource.gem_binary || @new_resource.options.kind_of?(String)
             install_via_gem_command(name,version)
+          when source_is_remote? && @new_resource.options.kind_of?(Hash)
+            options = @new_resource.options
+            options[:sources] = gem_sources
+            @gem_env.install(gem_dependency, options)
+          when source_is_remote?
+            @gem_env.install(gem_dependency, :sources => gem_sources)
+          else
+            @gem_env.install(@new_resource.source)
           end
           true
         end
@@ -428,16 +427,13 @@ class Chef
         end
 
         def remove_package(name, version)
-          if @new_resource.gem_binary.nil?
-            if @new_resource.options.nil?
-              @gem_env.uninstall(name, version)
-            elsif @new_resource.options.kind_of?(Hash)
-              @gem_env.uninstall(name, version, @new_resource.options)
-            else
-              uninstall_via_gem_command(name, version)
-            end
-          else
+          case
+          when Gem.configuration["gem"] || @new_resource.gem_binary || @new_resource.options.kind_of?(String)
             uninstall_via_gem_command(name, version)
+          when @new_resource.options.kind_of?(Hash)
+            @gem_env.uninstall(name, version, @new_resource.options)
+          else
+            @gem_env.uninstall(name, version)
           end
         end
 
