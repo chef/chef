@@ -99,7 +99,7 @@ class Chef
           sid = SID.new(result_pointer)
 
           # The result pointer must be freed with local_free
-          ObjectSpace.define_finalizer(sid, proc { local_free(result_pointer) })
+          ObjectSpace.define_finalizer(sid, Memory.local_free_finalizer(result_pointer))
 
           sid
         end
@@ -149,7 +149,7 @@ class Chef
           result = SecurityDescriptor.new(result_pointer)
 
           # This memory has to be freed with LocalFree.
-          ObjectSpace.define_finalizer(result, proc { local_free(result_pointer) })
+          ObjectSpace.define_finalizer(result, Memory.local_free_finalizer(result_pointer))
 
           result
         end

@@ -92,6 +92,11 @@ class Chef
           end
           result
         end
+
+        def local_free_finalizer(pointer)
+          proc { local_free(pointer) }
+        end
+
       end
     end
   end
