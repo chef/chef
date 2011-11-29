@@ -98,6 +98,12 @@ describe Chef::Resource::Cron do
     @resource.shell.should eql("/bin/zsh")
   end
 
+  it "should allow you to specify environment variables hash" do
+    env = {"TEST" => "LOL"}
+    @resource.environment env
+    @resource.environment.should eql(env)
+  end
+
   it "should allow * for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
       @resource.send(x, "*").should eql("*")
