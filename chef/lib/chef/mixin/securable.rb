@@ -52,6 +52,13 @@ class Chef
               else
                 Integer(m)<=07777 && Integer(m)>=0
               end
+            },
+            "not in a valid numeric range" => lambda { |m|
+                passes = false
+                if /^\d{3,4}$/.match(m.to_s)
+                  passes = true
+                end
+                passes
             }
           }
         )
