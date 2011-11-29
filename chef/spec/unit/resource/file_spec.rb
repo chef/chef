@@ -67,7 +67,7 @@ describe Chef::Resource::File do
   end
 
   it "should use the object name as the path by default" do
-    @resource.path.should eql("fakey_fakerton")
+    @resource.path.should eql(File.expand_path("fakey_fakerton"))
   end
 
   it "should accept a string as the path" do
