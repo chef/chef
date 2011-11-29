@@ -172,6 +172,14 @@ class Chef
           :kind_of => String
         )
       end
+
+      def environment(arg=nil)
+        set_or_return(
+          :environment,
+          arg,
+          :kind_of => Hash
+        )
+      end
       
       private
       
