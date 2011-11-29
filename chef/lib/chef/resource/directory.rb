@@ -47,6 +47,14 @@ class Chef
       end
 
       def path(arg=nil)
+        if arg.kind_of?(String)
+          arg = ::File.expand_path(arg)
+        else
+          unless arg.nil?
+            raise ArgumentError, "Path must be a string! You passed #{arg.inspect}"
+          end
+        end
+
         arg = ::File.expand_path(arg) unless arg.nil?
         set_or_return(
           :path,

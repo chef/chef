@@ -44,11 +44,12 @@ describe Chef::Resource::Directory do
   end
 
   it "should use the object name as the path by default" do
-    @resource.path.should eql("fakey_fakerton")
+    @resource.path.should eql(File.expand_path("fakey_fakerton"))
   end
 
   it "should accept a string as the path" do
     lambda { @resource.path "/tmp" }.should_not raise_error(ArgumentError)
+    @resource.path.should eql("/tmp")
     lambda { @resource.path Hash.new }.should raise_error(ArgumentError)
   end
 
