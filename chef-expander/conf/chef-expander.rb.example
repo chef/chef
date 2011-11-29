@@ -1,5 +1,5 @@
 # The URL is the only Solr config Chef Expander needs #
-solr_url        "http://localhost:8983"
+solr_url        "http://localhost:8983/solr"
 
 # Parameters for connecting to RabbitMQ
 amqp_host   'localhost'
