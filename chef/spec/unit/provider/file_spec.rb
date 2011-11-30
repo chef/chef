@@ -107,6 +107,15 @@ describe Chef::Provider::File do
     lambda { @provider.set_content }.should_not raise_error
   end
 
+  it "should create the file if it is missing, then set the attributes on action_create" do
+    @provider.load_current_resource
+    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.should_receive(:enforce_ownership_and_permissions)
+    File.stub!(:open).and_return(1)
+    File.should_receive(:open).with(@provider.new_resource.path, "w+")
+    @provider.action_create
+  end
+
   it "should create the file with the proper content if it is missing, then set attributes on action_create" do
     io = StringIO.new
     @provider.load_current_resource
