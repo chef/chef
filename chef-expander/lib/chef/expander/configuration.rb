@@ -145,6 +145,15 @@ module Chef
 
         configurable :solr_url, "http://localhost:8983/solr"
 
+        # override the setter for solr_url for backward compatibilty
+        def solr_url=(url)
+          if url && url == "http://localhost:8983"
+            log.warn {"You seem to have a legacy setting for solr_url: did you mean #{url}/solr ?"}
+            url = "#{url}/solr"
+          end
+          @solr_url = url
+        end
+
         configurable :amqp_host, '0.0.0.0'
 
         configurable :amqp_port, 5672
