@@ -168,6 +168,8 @@ class Chef
         ffi_lib 'user32', 'kernel32'
         ffi_convention :stdcall
 
+        attach_function :CloseHandle, [ :HANDLE ], :BOOL
+
 =begin
 DWORD WINAPI GetVersion(void);
 =end
