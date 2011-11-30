@@ -38,6 +38,7 @@ class Chef
         @path = nil
         @shell = nil
         @home = nil
+        @environment = {}
       end
 
       def minute(arg=nil)
