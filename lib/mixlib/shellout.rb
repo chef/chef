@@ -18,7 +18,6 @@
 
 require 'etc'
 require 'tmpdir'
-require 'chef/log'
 require 'fcntl'
 require 'mixlib/shellout/exceptions'
 
@@ -56,8 +55,15 @@ module Mixlib
     # the command's output will be echoed to STDOUT.
     attr_accessor :live_stream
 
-    attr_accessor :command_log_level
-    attr_accessor :command_log_prepend
+    # If a logger is set, ShellOut will log a message before it executes the
+    # command.
+    attr_accessor :logger
+
+    # The log level at which ShellOut should log.
+    attr_accessor :log_level
+
+    # A string which will be prepended to the log message.
+    attr_accessor :log_tag
 
     # The command to be executed.
     attr_reader :command
@@ -82,7 +88,7 @@ module Mixlib
     # Data written to stderr by the subprocess
     attr_reader :stderr
 
-    # A Process::Status (or ducktype) Object collected when the subprocess is
+    # A Process::Status (or ducktype) object collected when the subprocess is
     # reaped.
     attr_reader :status
 
@@ -134,8 +140,8 @@ module Mixlib
     def initialize(*command_args)
       @stdout, @stderr = '', ''
       @live_stream = nil
-      @command_log_level = :debug
-      @command_log_prepend = nil 
+      @log_level = :debug
+      @log_tag = nil
       @environment = DEFAULT_ENVIRONMENT
       @cwd = nil
       @valid_exit_codes = [0]
@@ -200,13 +206,12 @@ module Mixlib
     # * Errno::EACCES  when you are not privileged to execute the command
     # * Errno::ENOENT  when the command is not available on the system (or not
     #   in the current $PATH)
-    # * ::CommandTimeout  when the command does not complete
+    # * CommandTimeout  when the command does not complete
     #   within +timeout+ seconds (default: 60s)
     def run_command
-      if command_log_prepend
-        Chef::Log.send(command_log_level, "#{command_log_prepend} sh(#{@command})")
-      else
-        Chef::Log.send(command_log_level, "sh(#{@command})")
+      if logger
+        log_message = (log_tag.nil? ? "" : "#@log_tag ") << "sh(#@command)"
+        logger.send(log_level, log_message)
       end
       super
     end
@@ -262,10 +267,12 @@ module Mixlib
           self.valid_exit_codes = Array(setting)
         when 'live_stream'
           self.live_stream = setting
-        when 'command_log_level'
-          self.command_log_level = setting
-        when 'command_log_prepend'
-          self.command_log_prepend = setting
+        when 'logger'
+          self.logger = setting
+        when 'log_level'
+          self.log_level = setting
+        when 'log_tag'
+          self.log_tag = setting
         when 'environment', 'env'
           # passing :environment => nil means don't set any new ENV vars
           @environment = setting.nil? ? {} : @environment.dup.merge!(setting)
