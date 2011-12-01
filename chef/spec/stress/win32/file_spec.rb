@@ -17,15 +17,21 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'chef/win32/file'
 
 describe Chef::Win32::File do
+  before(:each) do
+    @path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs"))
+  end
+
+  it "should not leak memory" do
+    test = lambda { Chef::Win32::File.symlink?(@path) }
+    test.should_not leak_memory(:warmup => 50, :iterations => 100)
+  end
 
   it "should not leak handles" do
-    lambda {
-      #Chef::Win32::File.symlink?(File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs")))
-      a = 1
-    }.should_not leak(:warmup => 50, :iterations => 100)
-
+    test = lambda { Chef::Win32::File.symlink?(@path) }
+    test.should_not leak_handles(:warmup => 50, :iterations => 100)
   end
 
 end
