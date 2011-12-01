@@ -16,9 +16,6 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), '..', 'prof', 'gc')
-require File.join(File.dirname(__FILE__), '..', 'prof', 'win32')
-
 module Matchers
   module LeakBase
     include RSpec::Matchers
@@ -60,10 +57,11 @@ module Matchers
 
     def profiler
       @profiler ||= begin
-        case RbConfig::CONFIG['host_os']
-        when /mswin|mingw|windows/
+        if Chef::Platform.windows?
+          require File.join(File.dirname(__FILE__), '..', 'prof', 'win32')
           RSpec::Prof::Win32::Profiler.new
         else
+          require File.join(File.dirname(__FILE__), '..', 'prof', 'gc')
           RSpec::Prof::GC::Profiler.new
         end
       end
