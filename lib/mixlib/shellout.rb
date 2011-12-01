@@ -147,15 +147,21 @@ module Mixlib
       @command = command_args.size == 1 ? command_args.first : command_args
     end
 
+    # Set the umask that the subprocess will have. If given as a string, it
+    # will be converted to an integer by String#oct.
     def umask=(new_umask)
       @umask = (new_umask.respond_to?(:oct) ? new_umask.oct : new_umask.to_i) & 007777
     end
 
+    # The uid that the subprocess will switch to. If the user attribute was
+    # given as a username, it is converted to a uid by Etc.getpwnam
     def uid
       return nil unless user
       user.kind_of?(Integer) ? user : Etc.getpwnam(user.to_s).uid
     end
 
+    # The gid that the subprocess will switch to. If the group attribute is
+    # given as a group name, it is converted to a gid by Etc.getgrnam
     def gid
       return nil unless group
       group.kind_of?(Integer) ? group : Etc.getgrnam(group.to_s).gid
@@ -178,6 +184,9 @@ module Mixlib
       msg
     end
 
+    # The exit status of the subprocess. Will be nil if the command is still
+    # running or died without setting an exit status (e.g., terminated by
+    # `kill -9`).
     def exitstatus
       @status && @status.exitstatus
     end
