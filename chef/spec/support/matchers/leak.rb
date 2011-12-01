@@ -18,42 +18,45 @@
 
 require File.join(File.dirname(__FILE__), '..', 'prof', 'gc')
 require File.join(File.dirname(__FILE__), '..', 'prof', 'win32')
+require 'rspec/matchers/be_within'
 
 module Matchers
   class Leak
+    include RSpec::Matchers
+
     def initialize(opts={}, &block)
       @warmup = opts[:warmup] || 5
       @iterations = opts[:iterations] || 100
+      @variance = opts[:variance] || 1000
     end
 
     def matches?(given_proc)
 
       profiler.start
 
-      initial_measure = 0
-      final_measure = 0
+      @initial_measure = 0
+      @final_measure = 0
 
       @warmup.times do
         given_proc.call
       end
 
-      initial_measure = profiler.sample
+      @initial_measure = profiler.working_set_size
 
       @iterations.times do
         given_proc.call
       end
 
-      final_measure = profiler.sample
-
-      final_measure <= initial_measure
+      @final_measure = profiler.working_set_size
+      @final_measure > (@initial_measure + @variance)
     end
 
     def failure_message_for_should
-      "expected #{@target.inspect} to be in Zone #{@expected}"
+      "expected #{@final_measure} to be greater than or within +/- #{@variance} delta of #{@initial_measure}"
     end
 
     def failure_message_for_should_not
-      "expected #{@target.inspect} not to be in Zone #{@expected}"
+      "expected #{@final_measure} to be less than or within +/- #{@variance} delta of #{@initial_measure}"
     end
 
     private
@@ -61,9 +64,9 @@ module Matchers
       @profiler ||= begin
         case RbConfig::CONFIG['host_os']
         when /mswin|mingw|windows/
-          Rspec::Prof::Win32::Profiler.new
+          RSpec::Prof::Win32::Profiler.new
         else
-          Rspec::Prof::GC::Profiler.new
+          RSpec::Prof::GC::Profiler.new
         end
       end
     end
