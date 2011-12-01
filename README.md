@@ -10,14 +10,21 @@ Invoke find(1) to search for .rb files:
 
       find = Mixlib::ShellOut.new("find . -name '*.rb'")
       find.run_command
+
 If all went well, the results are on `stdout`
+
       puts find.stdout
+
 `find(1)` prints diagnostic info to STDERR:
+
       puts "error messages" + find.stderr
+
 Raise an exception if it didn't exit with 0
+
       find.error!
 
 Run a command as the `www` user with no extra ENV settings from `/tmp`
+
       cmd = Mixlib::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
       cmd.run_command # etc.
 
