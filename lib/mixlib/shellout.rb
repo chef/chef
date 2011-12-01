@@ -38,19 +38,53 @@ module Mixlib
       include ShellOut::Unix
     end
 
+    # User the command will run as. Normally set via options passed to new
     attr_accessor :user
+
+    # Group the command will run as. Normally set via options passed to new
     attr_accessor :group
+
+    # Working directory for the subprocess. Normally set via options to new
     attr_accessor :cwd
+
+    # An Array of acceptable exit codes. #error! uses this list to determine if
+    # the command was successful. Normally set via options to new
     attr_accessor :valid_exit_codes
+
+    # When live_stream is set, stdout of the subprocess will be copied to it as
+    # the subprocess is running. For example, if live_stream is set to STDOUT,
+    # the command's output will be echoed to STDOUT.
     attr_accessor :live_stream
+
     attr_accessor :command_log_level
     attr_accessor :command_log_prepend
 
-    attr_reader :command, :umask, :environment
+    # The command to be executed.
+    attr_reader :command
+
+    # The umask that will be set for the subcommand.
+    attr_reader :umask
+
+    # Environment variables that will be set for the subcommand. Refer to the
+    # documentation of new to understand how ShellOut interprets this.
+    attr_reader :environment
+
+    # The maximum time this command is allowed to run. Usually set via options
+    # to new
     attr_writer :timeout
+
+    # The amount of time the subcommand took to execute
     attr_reader :execution_time
 
-    attr_reader :stdout, :stderr, :status
+    # Data written to stdout by the subprocess
+    attr_reader :stdout
+
+    # Data written to stderr by the subprocess
+    attr_reader :stderr
+
+    # A Process::Status (or ducktype) Object collected when the subprocess is
+    # reaped.
+    attr_reader :status
 
     attr_reader :stdin_pipe, :stdout_pipe, :stderr_pipe, :process_status_pipe
 
@@ -86,7 +120,7 @@ module Mixlib
     #   seconds. Note: the stdlib Timeout library is not used.
     # === Examples:
     # Invoke find(1) to search for .rb files:
-    #   find = Chef::ShellOut.new("find . -name '*.rb'")
+    #   find = Mixlib::ShellOut.new("find . -name '*.rb'")
     #   find.run_command
     #   # If all went well, the results are on +stdout+
     #   puts find.stdout
@@ -95,7 +129,7 @@ module Mixlib
     #   # Raise an exception if it didn't exit with 0
     #   find.error!
     # Run a command as the +www+ user with no extra ENV settings from +/tmp+
-    #   cmd = Chef::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
+    #   cmd = Mixlib::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
     #   cmd.run_command # etc.
     def initialize(*command_args)
       @stdout, @stderr = '', ''
@@ -181,14 +215,14 @@ module Mixlib
       end
     end
 
-    # Raises a ::ShellCommandFailed exception, appending the
+    # Raises a ShellCommandFailed exception, appending the
     # command's stdout, stderr, and exitstatus to the exception message.
     # === Arguments
     # +msg+:  A String to use as the basis of the exception message. The
     # default explanation is very generic, providing a more informative message
     # is highly encouraged.
     # === Raises
-    # ::ShellCommandFailed  always
+    # ShellCommandFailed  always
     def invalid!(msg=nil)
       msg ||= "Command produced unexpected results"
       raise ShellCommandFailed, msg + "\n" + format_for_exception
