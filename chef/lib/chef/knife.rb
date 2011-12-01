@@ -162,7 +162,7 @@ class Chef
       load_commands
       subcommand_class = subcommand_class_from(args)
       subcommand_class.options = options.merge!(subcommand_class.options)
-      subcommand_class.load_deps unless want_help?(args)
+      subcommand_class.load_deps
       instance = subcommand_class.new(args)
       instance.configure_chef
       instance.run_with_pretty_exceptions
@@ -212,9 +212,7 @@ class Chef
     # Error out and print usage. probably becuase the arguments given by the
     # user could not be resolved to a subcommand.
     def self.subcommand_not_found!(args)
-      unless want_help?(args)
-        ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
-      end
+      ui.fatal("Cannot find sub command for: '#{args.join(' ')}'")
 
       if category_commands = guess_category(args)
         list_commands(category_commands)
@@ -226,13 +224,6 @@ class Chef
       end
 
       exit 10
-    end
-
-    # :nodoc:
-    # TODO: duplicated with chef/application/knife
-    # all logic should be removed from that and Chef::Knife should own it.
-    def self.want_help?(args)
-      (args.any? { |arg| arg =~ /^(:?(:?\-\-)?help|\-h)$/})
     end
 
     @@chef_config_dir = nil
