@@ -141,8 +141,8 @@ class Chef
         def get_named_security_info(path, type = :SE_FILE_OBJECT, info = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION)
           security_descriptor = FFI::MemoryPointer.new :pointer
           hr = GetNamedSecurityInfoW(path.to_wstring, type, info, nil, nil, nil, nil, security_descriptor)
-          if FAILED(hr)
-            Chef::Win32::Error.raise!
+          if hr != ERROR_SUCCESS
+            Chef::Win32::Error.raise!("get_named_security_info(#{path}, #{type}, #{info})")
           end
 
           result_pointer = security_descriptor.read_pointer
