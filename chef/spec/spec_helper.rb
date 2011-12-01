@@ -41,7 +41,6 @@ require 'chef/shef'
 require 'chef/util/file_edit'
 
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
-Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |lib| require lib }
 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"
@@ -71,6 +70,7 @@ def with_argv(*argv)
 end
 
 # include custom matchers
+Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
 RSpec.configure do |config|
   config.include(Matchers)
 end
