@@ -20,6 +20,7 @@ module RSpec
   module Prof
     module Win32
       class Profiler
+
         def start
           #raise 'Not Implemented'
         end
@@ -28,36 +29,15 @@ module RSpec
           #raise 'Not Implemented'
         end
 
-        def sample
-          Sample.new(Chef::Win32::Process.get_current_process.handle_count, Chef::Win32::Process.get_current_process.memory_info[:WorkingSetSize])
+        def working_set_size
+          Chef::Win32::Process.get_current_process.memory_info[:WorkingSetSize]
+        end
+
+        def handle_count
+          Chef::Win32::Process.get_current_process.handle_count
         end
       end
 
-      class Sample
-        include Comparable
-
-        attr_reader :handle_count
-        attr_reader :working_set_size
-
-        def initialize(handle_count, working_set_size)
-          @handle_count = handle_count
-          @working_set_size = working_set_size
-        end
-
-        def <=>(other)
-          if (self.handle_count < other.handle_count) || (self.working_set_size < other.working_set_size)
-            -1
-          elsif (self.handle_count > other.handle_count) || (self.working_set_size > other.working_set_size)
-            1
-          else
-            0
-          end
-        end
-
-        def to_s
-          ":handle_count => #{handle_count}, :working_set_size => #{working_set_size}"
-        end
-      end
     end
   end
 end

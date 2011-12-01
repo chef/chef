@@ -34,38 +34,19 @@ module RSpec
           ::GC::Profiler.disable
         end
 
-        def sample
+        def working_set_size
           begin
             ::GC.start
-            Sample.new(::GC::Profiler.result.scan(LINE_PATTERN)[-1][2]) if ::GC::Profiler.enabled?
+            ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
           ensure
             ::GC::Profiler.clear
           end
         end
-      end
 
-      class Sample
-        include Comparable
-
-        attr_reader :use_size
-
-        def initialize(use_size)
-          @use_size = use_size
+        def handle_count
+          0
         end
 
-        def <=>(other)
-          if self.use_size < other.use_size
-            -1
-          elsif self.use_size > other.use_size
-            1
-          else
-            0
-          end
-        end
-
-        def to_s
-          use_size
-        end
       end
     end
   end
