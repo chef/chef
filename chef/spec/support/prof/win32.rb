@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'chef/win32/process'
+
 module RSpec
   module Prof
     module Win32
