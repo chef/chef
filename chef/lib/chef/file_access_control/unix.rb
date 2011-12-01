@@ -59,7 +59,11 @@ class Chef
 
       def set_owner
         if (uid = target_uid) && (uid != stat.uid)
-          File.chown(uid, nil, file)
+          if resource.instance_of?(Chef::Resource::Link)
+            File.lchown(uid, nil, file)
+          else
+            File.chown(uid, nil, file)
+          end
           Chef::Log.info("#{log_string} owner changed to #{uid}")
           modified
         end
@@ -81,7 +85,11 @@ class Chef
 
       def set_group
         if (gid = target_gid) && (gid != stat.gid)
-          File.chown(nil, gid, file)
+          if resource.instance_of?(Chef::Resource::Link)
+            File.lchown(gid, nil, file)
+          else
+            File.chown(gid, nil, file)
+          end
           Chef::Log.info("#{log_string} group changed to #{gid}")
           modified
         end
