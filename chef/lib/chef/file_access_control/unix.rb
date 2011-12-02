@@ -29,7 +29,7 @@ class Chef
       def set_all
         set_owner
         set_group
-        set_mode
+        set_mode unless resource.instance_of?(Chef::Resource::Link)
       end
 
       # Workaround the fact that Ruby's Etc module doesn't believe in negative

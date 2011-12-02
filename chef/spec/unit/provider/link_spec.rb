@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'ostruct'
+
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
 describe Chef::Resource::Link do
@@ -213,75 +215,14 @@ describe Chef::Resource::Link do
             @new_resource.owner('toor')
           end
 
-          it "should compare the current owner with the requested owner" do
-            @provider.current_resource.owner(501)
-            @provider.compare_owner.should eql(true)
-
-            @provider.current_resource.owner(777)
-            @provider.compare_owner.should eql(false)
-
-            @provider.new_resource.owner(501)
-            @provider.current_resource.owner(501)
-            @provider.compare_owner.should eql(true)
-
-            @provider.new_resource.owner("501")
-            @provider.current_resource.owner(501)
-            @provider.compare_owner.should eql(true)
-          end
-
-          it "should set the ownership on the file to the requested owner" do
-            @provider.new_resource.stub!(:owner).and_return(9982398)
-            File.stub!(:lchown).and_return(1)
-            File.should_receive(:lchown).with(9982398, nil, @provider.current_resource.target_file)
-            lambda { @provider.set_owner }.should_not raise_error
-          end
-
-          it "should raise an exception if you are not root and try to change ownership" do
-            @provider.new_resource.stub!(:owner).and_return(0)
-            if Process.uid != 0
-              lambda { @provider.set_owner }.should raise_error
-            end
-          end
-
-          it "should compare the current group with the requested group" do
-            Etc.stub!(:getgrnam).and_return(OpenStruct.new(:name => "adam",:gid => 501))
-
-            @provider.current_resource.group(501)
-            @provider.compare_group.should eql(true)
-
-            @provider.current_resource.group(777)
-            @provider.compare_group.should eql(false)
-
-            @provider.new_resource.group(501)
-            @provider.current_resource.group(501)
-            @provider.compare_group.should eql(true)
-
-            @provider.new_resource.group("501")
-            @provider.current_resource.group(501)
-            @provider.compare_group.should eql(true)
-          end
-
-          it "should set the group on the file to the requested group" do
-            @provider.new_resource.stub!(:group).and_return(9982398)
-            File.stub!(:lchown).and_return(1)
-            File.should_receive(:lchown).with(nil, 9982398, @provider.current_resource.target_file)
-            lambda { @provider.set_group }.should_not raise_error
-          end
-
-          it "should create link using ruby builtin link function" do
-            @provider.new_resource.stub!(:group).and_return(9982398)
-            File.stub!(:lchown).and_return(1)
-            File.should_receive(:lchown).with(nil, 9982398, @provider.current_resource.target_file)
-            File.should_receive(:symlink).with("/tmp/lolololol", "/tmp/fofile-link").and_return(true)
+          it "should call enforce_ownership_and_permissions" do
+            @provider.should_receive(:enforce_ownership_and_permissions)
             @provider.action_create
           end
 
-          it "should create the link if it is missing, then set the attributes on action_create" do
-            @provider.new_resource.stub!(:owner).and_return(9982398)
-            @provider.new_resource.stub!(:group).and_return(9982398)
-            File.stub!(:lchown).and_return(1)
-            File.should_receive(:lchown).with(nil, 9982398, @provider.new_resource.target_file)
-            File.should_receive(:lchown).with(9982398, nil, @provider.new_resource.target_file)
+          it "should create link using ruby builtin link function" do
+            @provider.stub!(:enforce_ownership_and_permissions)
+            File.should_receive(:symlink).with("/tmp/lolololol", "/tmp/fofile-link").and_return(true)
             @provider.action_create
           end
         end
@@ -298,8 +239,7 @@ describe Chef::Resource::Link do
 
           it "we should not attempt to set owner or group" do
             File.should_receive(:link).with("/tmp/lolololol", "/tmp/fofile-link")
-            @provider.should_not_receive(:set_owner)
-            @provider.should_not_receive(:set_group)
+            @provider.should_not_receive(:enforce_ownership_and_permissions)
             @provider.action_create
           end
         end

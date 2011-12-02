@@ -66,54 +66,6 @@ class Chef
         @current_resource
       end
 
-      # Compare the ownership of a symlink.  Returns true if they are the same, false if they are not.
-      def compare_owner
-        return false if @new_resource.owner.nil?
-
-        @set_user_id = case @new_resource.owner
-                       when /^\d+$/, Integer
-                         @new_resource.owner.to_i
-                       else
-                         # This raises an ArgumentError if you can't find the user
-                         Etc.getpwnam(@new_resource.owner).uid
-                       end
-
-        @set_user_id == @current_resource.owner
-      end
-
-      # Set the ownership on the symlink, assuming it is not set correctly already.
-      def set_owner
-        unless compare_owner
-          @set_user_id = negative_complement(@set_user_id)
-          ::File.lchown(@set_user_id, nil, @new_resource.target_file)
-          Chef::Log.info("#{@new_resource} owner changed to #{@set_user_id}")
-          @new_resource.updated_by_last_action(true)
-        end
-      end
-
-      # Compares the group of a symlink.  Returns true if they are the same, false if they are not.
-      def compare_group
-        return false if @new_resource.group.nil?
-
-        @set_group_id = case @new_resource.group
-                        when /^\d+$/, Integer
-                          @new_resource.group.to_i
-                        else
-                          Etc.getgrnam(@new_resource.group).gid
-                        end
-
-        @set_group_id == @current_resource.group
-      end
-
-      def set_group
-        unless compare_group
-          @set_group_id = negative_complement(@set_group_id)
-          ::File.lchown(nil, @set_group_id, @new_resource.target_file)
-          Chef::Log.info("#{@new_resource} group changed to #{@set_group_id}")
-          @new_resource.updated_by_last_action(true)
-        end
-      end
-
       def action_create
         if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
           if @new_resource.link_type == :symbolic
@@ -133,8 +85,7 @@ class Chef
           @new_resource.updated_by_last_action(true)
         end
         if @new_resource.link_type == :symbolic
-          set_owner unless @new_resource.owner.nil?
-          set_group unless @new_resource.group.nil?
+          enforce_ownership_and_permissions
         end
       end
 
