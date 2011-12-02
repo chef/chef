@@ -3,7 +3,7 @@ require 'mixlib/shellout/version'
 
 Gem::Specification.new do |s|
   s.name = 'mixlib-shellout'
-  s.version = Mixlib::Shellout::VERSION
+  s.version = Mixlib::ShellOut::VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.md", "LICENSE" ]

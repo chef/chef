@@ -15,7 +15,7 @@ end
 
 desc "Build it and ship it"
 task :ship => :gem do
-  sh("git tag #{Mixlib::ShellOut::Version}")
+  sh("git tag #{Mixlib::ShellOut::VERSION}")
   sh("git push opscode --tags")
   Dir[File.expand_path("../pkg/*.gem", __FILE__)].each do |built_gem|
     sh("gem push #{built_gem}")
