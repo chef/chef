@@ -88,7 +88,7 @@ module Mixlib
               when WAIT_TIMEOUT
                 # Kill the process
                 if (Time.now - start_wait) > timeout
-                  raise Chef::Exceptions::CommandTimeout, "command timed out:\n#{format_for_exception}"
+                  raise Mixlib::ShellOut::CommandTimeout, "command timed out:\n#{format_for_exception}"
                 end
 
                 consume_output(open_streams, stdout_read, stderr_read)
