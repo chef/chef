@@ -3,10 +3,6 @@ require 'tmpdir'
 require 'tempfile'
 require 'timeout'
 
-IS_WINDOWS = RUBY_PLATFORM =~ /mswin|mingw32|windows/
-LINE_ENDING = IS_WINDOWS ? "\r\n" : "\n"
-ECHO_LC_ALL = IS_WINDOWS ? "echo %LC_ALL%" : "echo $LC_ALL"
-
 describe Mixlib::ShellOut do
   before do
     @shell_cmd = Mixlib::ShellOut.new("apt-get install chef")
@@ -67,8 +63,10 @@ describe Mixlib::ShellOut do
   end
 
   it "computes the uid of the user when a string/symbolic username is given" do
-    @shell_cmd.user = Etc.getlogin
-    @shell_cmd.uid.should == Etc.getpwuid.uid
+    unless windows?
+      @shell_cmd.user = Etc.getlogin
+      @shell_cmd.uid.should == Etc.getpwuid.uid
+    end
   end
 
   it "returns the user-supplied gid when present" do
@@ -77,9 +75,11 @@ describe Mixlib::ShellOut do
   end
 
   it "computes the gid of the user when a string/symbolic groupname is given" do
-    a_group = Etc.getgrent
-    @shell_cmd.group = a_group.name
-    @shell_cmd.gid.should == a_group.gid
+    unless windows?
+      a_group = Etc.getgrent
+      @shell_cmd.group = a_group.name
+      @shell_cmd.gid.should == a_group.gid
+    end
   end
 
   it "has a timeout defaulting to 600 seconds" do
@@ -168,7 +168,7 @@ describe Mixlib::ShellOut do
 
     it "chdir to the cwd directory if given" do
       # /bin should exists on all systems, and is not the default cwd
-      if IS_WINDOWS
+      if windows?
         dir = Dir.tmpdir
         cmd = Mixlib::ShellOut.new('echo %cd%', :cwd => dir)
       else
@@ -309,7 +309,7 @@ describe Mixlib::ShellOut do
       # kinda janky
       cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
       cmd.run_command
-      if !ENV['LC_ALL'] && IS_WINDOWS
+      if !ENV['LC_ALL'] && windows?
         expected = "%LC_ALL%"
       else
         expected = ENV['LC_ALL'].to_s.strip
@@ -348,7 +348,7 @@ describe Mixlib::ShellOut do
     it "runs commands with spaces in the path" do
       Dir.mktmpdir do |dir|
         file = File.open("#{dir}/blah blah.cmd", "w")
-        file.write(IS_WINDOWS ? "@echo blah" : "echo blah")
+        file.write(windows? ? "@echo blah" : "echo blah")
         file.close
         File.chmod(0755, file.path)
 
