@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,9 @@ require 'chef/resource'
 class Chef
   class Resource
     class Link < Chef::Resource
-      
+
+       provides :link, :on_platform  => :all
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :link
@@ -30,8 +32,9 @@ class Chef
         @link_type = :symbolic
         @target_file = name
         @allowed_actions.push(:create, :delete)
+        @provider = Chef::Provider::Link
       end
-      
+
       def to(arg=nil)
         set_or_return(
           :source_file,
@@ -39,7 +42,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def target_file(arg=nil)
         set_or_return(
           :target_file,
@@ -47,7 +50,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def link_type(arg=nil)
         real_arg = arg.kind_of?(String) ? arg.to_sym : arg
         set_or_return(
@@ -56,7 +59,7 @@ class Chef
           :equal_to => [ :symbolic, :hard ]
         )
       end
-      
+
       def group(arg=nil)
         set_or_return(
           :group,
@@ -64,7 +67,7 @@ class Chef
           :regex => Chef::Config[:group_valid_regex]
         )
       end
-      
+
       def owner(arg=nil)
         set_or_return(
           :owner,

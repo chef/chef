@@ -26,7 +26,14 @@ class Chef
   class Provider
     class Link < Chef::Provider
       include Chef::Mixin::ShellOut
-      #include Chef::Mixin::Command
+
+      def file_class
+        @host_os_file ||= if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+          Chef::Win32::File
+        else
+          ::File
+        end
+      end
 
       def negative_complement(big)
         if big > 1073741823 # Fixnum max
@@ -42,19 +49,19 @@ class Chef
         @current_resource.target_file(@new_resource.target_file)
         @current_resource.link_type(@new_resource.link_type)
         if @new_resource.link_type == :symbolic
-          if ::File.exists?(@current_resource.target_file) && ::File.symlink?(@current_resource.target_file)
+          if file_class.exists?(@current_resource.target_file) && file_class.symlink?(@current_resource.target_file)
             @current_resource.to(
-              ::File.expand_path(::File.readlink(@current_resource.target_file))
+              file_class.expand_path(file_class.readlink(@current_resource.target_file))
             )
-            cstats = ::File.lstat(@current_resource.target_file)
+            cstats = file_class.lstat(@current_resource.target_file)
             @current_resource.owner(cstats.uid)
             @current_resource.group(cstats.gid)
           else
             @current_resource.to("")
           end
         elsif @new_resource.link_type == :hard
-          if ::File.exists?(@current_resource.target_file) && ::File.exists?(@new_resource.to)
-            if ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
+          if file_class.exists?(@current_resource.target_file) && file_class.exists?(@new_resource.to)
+            if file_class.stat(@current_resource.target_file).ino == file_class.stat(@new_resource.to).ino
               @current_resource.to(@new_resource.to)
             else
               @current_resource.to("")
@@ -67,18 +74,18 @@ class Chef
       end
 
       def action_create
-        if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
+        if @current_resource.to != file_class.expand_path(@new_resource.to, @new_resource.target_file)
           if @new_resource.link_type == :symbolic
-            unless (::File.symlink?(@new_resource.target_file) && ::File.readlink(@new_resource.target_file) == @new_resource.to)
-              if ::File.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
-                ::File.unlink(@new_resource.target_file)
+            unless (file_class.symlink?(@new_resource.target_file) && file_class.readlink(@new_resource.target_file) == @new_resource.to)
+              if file_class.symlink?(@new_resource.target_file) || file_class.exist?(@new_resource.target_file)
+                file_class.unlink(@new_resource.target_file)
               end
-              ::File.symlink(@new_resource.to,@new_resource.target_file)
+              file_class.symlink(@new_resource.to,@new_resource.target_file)
               Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
               Chef::Log.info("#{@new_resource} created")
             end
           elsif @new_resource.link_type == :hard
-            ::File.link(@new_resource.to, @new_resource.target_file)
+            file_class.link(@new_resource.to, @new_resource.target_file)
             Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
             Chef::Log.info("#{@new_resource} created")
           end
@@ -91,17 +98,17 @@ class Chef
 
       def action_delete
         if @new_resource.link_type == :symbolic
-          if ::File.symlink?(@new_resource.target_file)
-            ::File.delete(@new_resource.target_file)
+          if file_class.symlink?(@new_resource.target_file)
+            file_class.delete(@new_resource.target_file)
             Chef::Log.info("#{@new_resource} deleted")
             @new_resource.updated_by_last_action(true)
-          elsif ::File.exists?(@new_resource.target_file)
+          elsif file_class.exists?(@new_resource.target_file)
             raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a symbolic link."
           end
         elsif @new_resource.link_type == :hard
-          if ::File.exists?(@new_resource.target_file)
-             if ::File.exists?(@new_resource.to) && ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
-               ::File.delete(@new_resource.target_file)
+          if file_class.exists?(@new_resource.target_file)
+             if file_class.exists?(@new_resource.to) && file_class.stat(@current_resource.target_file).ino == file_class.stat(@new_resource.to).ino
+               file_class.delete(@new_resource.target_file)
                Chef::Log.info("#{@new_resource} deleted")
                @new_resource.updated_by_last_action(true)
              else
