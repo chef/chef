@@ -17,10 +17,12 @@
 #
 
 require 'chef/resource'
+require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class Link < Chef::Resource
+      include Chef::Mixin::Securable
 
        provides :link, :on_platform  => :all
 
