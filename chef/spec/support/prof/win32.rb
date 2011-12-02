@@ -24,11 +24,11 @@ module RSpec
       class Profiler
 
         def start
-          #raise 'Not Implemented'
+          GC.start
         end
 
         def stop
-          #raise 'Not Implemented'
+          GC.start
         end
 
         def working_set_size

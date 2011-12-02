@@ -51,6 +51,8 @@ module Matchers
         given_proc.call
       end
 
+      profiler.stop
+
       @final_measure = profiler.send(measure)
       @final_measure > (@initial_measure + @variance)
     end
