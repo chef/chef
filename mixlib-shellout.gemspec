@@ -19,5 +19,5 @@ Gem::Specification.new do |s|
   s.bindir       = "bin"
   s.executables  = []
   s.require_path = 'lib'
-  s.files = %w(LICENSE README.rdoc) + Dir.glob("lib/**/*")
+  s.files = %w(LICENSE README.md) + Dir.glob("lib/**/*")
 end
