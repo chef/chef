@@ -112,6 +112,7 @@ describe Chef::Provider::File do
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     @provider.should_receive(:enforce_ownership_and_permissions)
     File.stub!(:open).and_return(1)
+    File.should_receive(:directory?).with("/tmp").and_return(true)
     File.should_receive(:open).with(@provider.new_resource.path, "w+")
     @provider.action_create
   end
@@ -122,7 +123,8 @@ describe Chef::Provider::File do
     @provider.new_resource.content "foobar"
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
-    @provider.should_receive(:enforce_ownership_and_permissions)
+    File.should_receive(:directory?).with("/tmp").and_return(true)
+    @provider.should_receive(:enforce_ownership_and_permissions).once
     @provider.action_create
     io.string.should == "foobar"
   end
@@ -148,10 +150,10 @@ describe Chef::Provider::File do
   it "should update the atime/mtime on action_touch" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    File.should_receive(:directory?).with("/tmp").and_return(true)
     File.should_receive(:utime).once.and_return(1)
     File.stub!(:open).and_return(1)
-    File.stub!(:chown).and_return(1)
-    File.stub!(:chmod).and_return(1)
+    @provider.should_receive(:enforce_ownership_and_permissions).once
     @provider.action_touch
   end
 
