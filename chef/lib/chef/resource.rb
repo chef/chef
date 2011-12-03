@@ -554,6 +554,7 @@ F
           include Chef::Mixin::FromFile
 
           attr_accessor :run_context
+          attr_reader :action_to_set_default
 
           def node
             self.run_context.node
@@ -561,6 +562,11 @@ F
 
           def actions_to_create
             @actions_to_create
+          end
+
+          define_method(:default_action) do |action_name|
+            actions_to_create.push(action_name)
+            @action_to_set_default = action_name
           end
 
           define_method(:actions) do |*action_names|
@@ -582,6 +588,7 @@ F
           args_run_context = optional_args.shift
           @resource_name = rname.to_sym
           old_init.bind(self).call(name, args_run_context)
+          @action = self.class.action_to_set_default || @action
           allowed_actions.push(self.class.actions_to_create).flatten!
         end
       end
