@@ -74,6 +74,7 @@ require 'chef/provider/service/systemd'
 require 'chef/provider/service/upstart'
 require 'chef/provider/service/windows'
 require 'chef/provider/service/solaris'
+require 'chef/provider/service/macosx'
 
 require 'chef/provider/user/dscl'
 require 'chef/provider/user/pw'
