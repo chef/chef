@@ -31,7 +31,7 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :file
-        @path = ::File.expand_path(name)
+        @path = name.kind_of?(String) ? ::File.expand_path(name) : name
         @backup = 5
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
@@ -63,14 +63,7 @@ class Chef
       end
 
       def path(arg=nil)
-        if arg.kind_of?(String)
-          arg = ::File.expand_path(arg)
-        else
-          unless arg.nil?
-            raise ArgumentError, "Path must be a string! You passed #{arg.inspect}"
-          end
-        end
-
+        arg = ::File.expand_path(arg) if arg.kind_of?(String)
         set_or_return(
           :path,
           arg,
