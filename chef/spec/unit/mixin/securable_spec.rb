@@ -37,6 +37,7 @@ describe Chef::Mixin::Securable do
   end
 
   it "should accept a unix file mode in string form as an octal number" do
+    lambda { @securable.mode "0" }.should_not raise_error(ArgumentError)
     lambda { @securable.mode "0000" }.should_not raise_error(ArgumentError)
     lambda { @securable.mode "0111" }.should_not raise_error(ArgumentError)
     lambda { @securable.mode "0444" }.should_not raise_error(ArgumentError)
@@ -44,6 +45,7 @@ describe Chef::Mixin::Securable do
     lambda { @securable.mode "111" }.should_not raise_error(ArgumentError)
     lambda { @securable.mode "444" }.should_not raise_error(ArgumentError)
     lambda { @securable.mode "7777" }.should_not raise_error(ArgumentError)
+    lambda { @securable.mode "07777" }.should_not raise_error(ArgumentError)
 
     lambda { @securable.mode "-01" }.should raise_error(ArgumentError)
     lambda { @securable.mode "010000" }.should raise_error(ArgumentError)
@@ -59,45 +61,22 @@ describe Chef::Mixin::Securable do
   end
 
   it "should accept a unix file mode in numeric form as a ruby-interpreted integer" do
+    lambda { @securable.mode 0 }.should_not raise_error(ArgumentError)
+    lambda { @securable.mode 0000 }.should_not raise_error(ArgumentError)
+    lambda { @securable.mode 444 }.should_not raise_error(ArgumentError)
     lambda { @securable.mode 0444 }.should_not raise_error(ArgumentError)
     lambda { @securable.mode 07777 }.should_not raise_error(ArgumentError)
 
     lambda { @securable.mode 292 }.should_not raise_error(ArgumentError)
     lambda { @securable.mode 4095 }.should_not raise_error(ArgumentError)
 
+    lambda { @securable.mode 0111 }.should_not raise_error(ArgumentError)
+    lambda { @securable.mode 73 }.should_not raise_error(ArgumentError)
+
     lambda { @securable.mode -01 }.should raise_error(ArgumentError)
     lambda { @securable.mode 010000 }.should raise_error(ArgumentError)
     lambda { @securable.mode -1 }.should raise_error(ArgumentError)
     lambda { @securable.mode 4096 }.should raise_error(ArgumentError)
-
-  end
-
-  it "should only accept a unix file mode with 3 or 4 digits" do
-    lambda { @securable.mode 444 }.should_not raise_error(ArgumentError)
-    lambda { @securable.mode '444'}.should_not raise_error(ArgumentError)
-
-    # string, equals 5 digits
-    lambda { @securable.mode "07777" }.should raise_error(ArgumentError)
-
-    # string, equals 4 digits
-    lambda { @securable.mod "7777"}.should_not raise_error(ArgumentError)
-
-    # octal => 5 digts, interpreted as 4 decimal digits, leading zeros do not matter
-    lambda { @securable.mode 00666}.should_not raise_error(ArgumentError)
-    lambda { @securable.mode 000666}.should_not raise_error(ArgumentError)
-
-    # octal that as decimal is larger than 4 digits (equals 28086 decimal)
-    lambda { @securable.mode 066666}.should raise_error(ArgumentError)
-
-    # equals 0 decimal
-    lambda { @securable.mode 0000 }.should raise_error(ArgumentError)
-
-    # equals 73 decimal
-    lambda { @securable.mode 0111 }.should raise_error(ArgumentError)
-    lambda { @securable.mode 73 }.should raise_error(ArgumentError)
-
-    lambda { @securable.mode "0" }.should raise_error(ArgumentError)
-    lambda { @securable.mode 0 }.should raise_error(ArgumentError)
   end
 
   it "should accept a user name or id for owner" do
