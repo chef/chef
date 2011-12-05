@@ -106,7 +106,7 @@ class Chef
         cookbook_file = Chef::Resource::CookbookFile.new(target_path, run_context)
         cookbook_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
         cookbook_file.source(::File.join(@new_resource.source, relative_source_path))
-        if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/) && @new_resource.files_rights
+        if Chef::Platform.windows? && @new_resource.files_rights
           @new_resource.files_rights.each_pair do |permission, *args|
             cookbook_file.rights(permission, *args)
           end
@@ -130,7 +130,7 @@ class Chef
       def resource_for_directory(path)
         dir = Chef::Resource::Directory.new(path, run_context)
         dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
-        if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+        if Chef::Platform.windows?
           @new_resource.rights.each_pair do |permission, *args|
             dir.rights(permission, *args)
           end

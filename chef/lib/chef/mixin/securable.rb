@@ -47,7 +47,7 @@ class Chef
               end
 
               # Windows does not support the sticky or setuid bits
-              if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+              if Chef::Platform.windows?
                 Integer(m)<=0777 && Integer(m)>=0
               else
                 Integer(m)<=07777 && Integer(m)>=0
@@ -65,7 +65,7 @@ class Chef
       end
 
       # TODO should this be separated into different files?
-      if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
         VALID_RIGHTS = [:read, :write, :full_control, :deny]
 

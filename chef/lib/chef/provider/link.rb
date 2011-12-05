@@ -28,7 +28,7 @@ class Chef
       include Chef::Mixin::ShellOut
 
       def file_class
-        @host_os_file ||= if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+        @host_os_file ||= if Chef::Platform.windows?
           require 'chef/win32/file'
           Chef::Win32::File
         else

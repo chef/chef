@@ -19,6 +19,7 @@
 # limitations under the License.
 
 require 'chef/log'
+require 'chef/platform'
 require 'mixlib/config'
 
 class Chef
@@ -51,7 +52,7 @@ class Chef
     windows_os_regex /mswin|mingw|windows/
 
     def self.platform_specific_path(path)
-      if RbConfig::CONFIG['host_os'] =~ Chef::Config[:windows_os_regex]
+      if Chef::Platform.windows?
         # turns /etc/chef/client.rb into C:\chef\client.rb
         path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])
         # ensure all forward slashes are backslashes

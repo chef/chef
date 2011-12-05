@@ -98,7 +98,7 @@ class Chef
       # determined by the value of `config[:color]`. When output is not to a
       # terminal, colored output is never used
       def color?
-        Chef::Config[:color] && stdout.tty? && (RUBY_PLATFORM !~ /mswin|mingw32|windows/)
+        Chef::Config[:color] && stdout.tty? && !Chef::Platform.windows?
       end
 
       def ask(*args, &block)

@@ -78,7 +78,7 @@ class Chef
         )
       end
 
-      if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+      if Chef::Platform.windows?
         # create a second instance of the 'rights' attribute
         Chef::Mixin::Securable.rights_attribute(:files_rights)
       end

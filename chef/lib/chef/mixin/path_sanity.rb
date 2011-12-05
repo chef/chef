@@ -15,13 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 class Chef
   module Mixin
     module PathSanity
 
       def enforce_path_sanity(env=ENV)
         if Chef::Config[:enforce_path_sanity]
-          path_separator = RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/ ? ';' : ':'
+          path_separator = Chef::Platform.windows? ? ';' : ':'
           existing_paths = env["PATH"].split(path_separator)
           # ensure the Ruby and Gem bindirs are included
           # mainly for 'full-stack' Chef installs
@@ -45,7 +46,7 @@ class Chef
 
       def sane_paths
         @sane_paths ||= begin
-          if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|windows/
+          if Chef::Platform.windows?
             %w[]
           else
             %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
