@@ -54,6 +54,8 @@ Chef::Log.logger = Logger.new(StringIO.new)
 
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
 
+DEV_NULL = (RUBY_PLATFORM =~ /mswin|mingw|windows/) ? 'NUL' : '/dev/null'
+
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)
   Object.send(:const_set, :ARGV, value)
