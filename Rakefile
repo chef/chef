@@ -1,7 +1,7 @@
 require 'rspec/core/rake_task'
 require 'rubygems/package_task'
 
-Dir[File.expand_path("../*gemspec", __FILE__)].each do |gemspec_path|
+Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
   gemspec = eval(IO.read(gemspec_path))
   Gem::PackageTask.new(gemspec).define
 end
@@ -17,7 +17,7 @@ desc "Build it and ship it"
 task :ship => [:clean, :gem] do
   sh("git tag #{Mixlib::ShellOut::VERSION}")
   sh("git push opscode --tags")
-  Dir[File.expand_path("../pkg/*.gem", __FILE__)].each do |built_gem|
+  Dir[File.expand_path("../pkg/*.gem", __FILE__)].reverse.each do |built_gem|
     sh("gem push #{built_gem}")
   end
 end
