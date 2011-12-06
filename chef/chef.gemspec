@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-cli", ">= 1.1.0"
   s.add_dependency "mixlib-log", ">= 1.3.0"
   s.add_dependency "mixlib-authentication", ">= 1.1.0"
-  s.add_dependency "mixlib-shellout" "~> 1.0.0"
+  s.add_dependency "mixlib-shellout", "~> 1.0.0.rc"
   s.add_dependency "ohai", ">= 0.6.0"
 
   s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
