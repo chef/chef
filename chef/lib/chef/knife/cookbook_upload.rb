@@ -75,7 +75,7 @@ class Chef
         version_constraints_to_update = {}
         # Get a list of cookbooks and their versions from the server
         # for checking existence of dependending cookbooks.
-        @server_side_cookbooks = Chef::CookbookVersion.list
+        @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
 
         if config[:all]
           justify_width = cookbook_repo.cookbook_names.map {|name| name.size}.max.to_i + 2

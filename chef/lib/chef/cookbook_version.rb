@@ -875,8 +875,13 @@ class Chef
       chef_server_rest.get_rest("cookbooks/#{name}/#{version}")
     end
 
+    # The API returns only a single version of each cookbook in the result from the cookbooks method
     def self.list
       chef_server_rest.get_rest('cookbooks')
+    end
+
+    def self.list_all_versions
+      chef_server_rest.get_rest('cookbooks?num_versions=all')
     end
 
     ##
