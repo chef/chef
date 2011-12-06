@@ -53,7 +53,7 @@ describe Chef::Exceptions do
     Chef::Exceptions::AttributeNotFound => RuntimeError,
     Chef::Exceptions::InvalidCommandOption => RuntimeError,
     Chef::Exceptions::CommandTimeout => RuntimeError,
-    Chef::Exceptions::ShellCommandFailed => RuntimeError,
+    Mixlib::ShellOut::ShellCommandFailed => RuntimeError,
     Chef::Exceptions::RequestedUIDUnavailable => RuntimeError,
     Chef::Exceptions::InvalidHomeDirectory => ArgumentError,
     Chef::Exceptions::DsclCommandFailed => RuntimeError,
