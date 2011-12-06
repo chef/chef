@@ -64,16 +64,12 @@ describe Mixlib::ShellOut do
 
   it "computes the uid of the user when a string/symbolic username is given" do
     unless windows?
-      if username = Etc.getlogin
-        expected_uid = Etc.getpwuid.uid
-      else
-        user_struct = Etc.getpwent
-        username = user_struct.name
-        expected_uid = user_struct.uid
-      end
+      user_struct = Etc.getpwent
+      username = user_struct.name
+      expected_uid = user_struct.uid
 
-      @shell_cmd.user = Etc.getlogin
-      @shell_cmd.uid.should == Etc.getpwuid.uid
+      @shell_cmd.user = username
+      @shell_cmd.uid.should == expected_uid
     end
   end
 
