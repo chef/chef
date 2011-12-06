@@ -14,7 +14,7 @@ RSpec::Core::RakeTask.new(:spec) do |t|
 end
 
 desc "Build it and ship it"
-task :ship => :gem do
+task :ship => [:clean, :gem] do
   sh("git tag #{Mixlib::ShellOut::VERSION}")
   sh("git push opscode --tags")
   Dir[File.expand_path("../pkg/*.gem", __FILE__)].each do |built_gem|
