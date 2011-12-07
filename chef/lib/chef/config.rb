@@ -53,11 +53,10 @@ class Chef
 
     def self.platform_specific_path(path)
       if Chef::Platform.windows?
-        # turns /etc/chef/client.rb into C:\chef\client.rb
+        # turns /etc/chef/client.rb into C:/chef/client.rb
         path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])
         # ensure all forward slashes are backslashes
-        # has a conditional because ALT_SEPARATOR is not defined on all platforms
-        path.gsub!(File::SEPARATOR, File::ALT_SEPARATOR) unless File::ALT_SEPARATOR == nil
+        path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
       end
       path
     end
