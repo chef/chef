@@ -52,9 +52,18 @@ Chef::Config.solo(false)
 
 Chef::Log.logger = Logger.new(StringIO.new)
 
+def windows?
+  if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    true
+  else
+    false
+  end
+end
+
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
 
-DEV_NULL = (RUBY_PLATFORM =~ /mswin|mingw|windows/) ? 'NUL' : '/dev/null'
+DEV_NULL = windows? ? 'NUL' : '/dev/null'
+TMP = windows? ? ENV['TEMP'].gsub(File::ALT_SEPARATOR, File::SEPARATOR) : '/tmp'
 
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)
