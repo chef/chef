@@ -453,7 +453,11 @@ class Chef
 
         def install_via_gem_command(name, version)
           src = @new_resource.source && "  --source=#{@new_resource.source} --source=http://rubygems.org"
-          shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
+          if version
+            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri -v \"#{version}\"#{src}#{opts}", :env=>nil)
+          else
+            shell_out!("#{gem_binary_path} install #{name} -q --no-rdoc --no-ri #{src}#{opts}", :env=>nil)
+          end
         end
 
         def upgrade_package(name, version)
