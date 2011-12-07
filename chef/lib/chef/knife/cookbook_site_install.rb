@@ -79,7 +79,7 @@ class Chef
 
         downloader = download_cookbook_to(upstream_file)
         clear_existing_files(File.join(@install_path, @cookbook_name))
-        extract_cookbook(upstream_file, @install_path)
+        extract_cookbook(upstream_file, downloader.version)
 
         # TODO: it'd be better to store these outside the cookbook repo and
         # keep them around, e.g., in ~/Library/Caches on OS X.
@@ -109,14 +109,15 @@ class Chef
 
       def parse_name_args!
         if name_args.empty?
-          ui.error("please specify a cookbook to download and install")
+          ui.error("Please specify a cookbook to download and install.")
           exit 1
-        elsif name_args.size > 1
-          ui.error("Installing multiple cookbooks at once is not supported")
-          exit 1
-        else
-          name_args.first
+        elsif name_args.size >= 2
+          unless name_args.last.match(/^(\d+)(\.\d+){1,2}$/) and name_args.size == 2
+            ui.error("Installing multiple cookbooks at once is not supported.")
+            exit 1
+          end
         end
+        name_args.first
       end
 
       def download_cookbook_to(download_path)
@@ -139,9 +140,3 @@ class Chef
     end
   end
 end
-
-
-
-
-
-
