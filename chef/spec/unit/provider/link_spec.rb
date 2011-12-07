@@ -88,7 +88,7 @@ describe Chef::Resource::Link do
 
       describe "and the target doesn't exist" do
         before do
-          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+          File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         end
 
         it "should update the source of the existing link to an empty string" do
@@ -117,16 +117,16 @@ describe Chef::Resource::Link do
 
       describe "the target file and source file both exist" do
         before do
-          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+          File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         end
 
         describe "and the inodes match" do
           before do
             stat = mock("stats")
             stat.stub!(:ino).and_return(1)
-            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
-            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+            File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+            File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
           end
 
           it "should update the source of the existing link to the target file" do
@@ -139,8 +139,8 @@ describe Chef::Resource::Link do
           before do
             stat = mock("stats", :ino => 1)
             stat_two = mock("stats", :ino => 2)
-            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
-            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
+            File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+            File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
           end
 
           it "should set the source of the existing link to an empty string" do
@@ -151,7 +151,7 @@ describe Chef::Resource::Link do
       end
       describe "but the target does not exist" do
         before do
-          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+          File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         end
 
         it "should set the source of the existing link to an empty string" do
@@ -161,7 +161,7 @@ describe Chef::Resource::Link do
       end
       describe "but the source does not exist" do
         before do
-          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
+          File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         end
 
         it "should set the source of the existing link to an empty string" do
