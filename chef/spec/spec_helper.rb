@@ -26,7 +26,6 @@ require 'rubygems'
 require 'rspec/mocks'
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-
 $:.unshift(File.expand_path("../lib", __FILE__))
 $:.unshift(File.dirname(__FILE__))
 
@@ -61,7 +60,6 @@ def windows?
 end
 
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
-
 DEV_NULL = windows? ? 'NUL' : '/dev/null'
 TMP = windows? ? ENV['TEMP'].gsub(File::ALT_SEPARATOR, File::SEPARATOR) : '/tmp'
 
@@ -77,6 +75,29 @@ def with_argv(*argv)
     yield
   ensure
     redefine_argv(original_argv)
+  end
+end
+
+# Sets $VERBOSE for the duration of the block and back to its original value afterwards.
+def with_warnings(flag)
+  old_verbose, $VERBOSE = $VERBOSE, flag
+  yield
+ensure
+  $VERBOSE = old_verbose
+end
+
+def with_constants(constants, &block)
+  saved_constants = {}
+  constants.each do |constant, val|
+    saved_constants[ constant ] = Object.const_get( constant )
+    with_warnings(nil) { Object.const_set( constant, val ) }
+  end
+  begin
+    block.call
+  ensure
+    constants.each do |constant, val|
+      with_warnings(nil) { Object.const_set( constant, saved_constants[ constant ] ) }
+    end
   end
 end
 
