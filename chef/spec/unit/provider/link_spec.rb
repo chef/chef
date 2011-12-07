@@ -20,18 +20,22 @@ require 'ostruct'
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+if Chef::Platform.windows? =~ /mswin|mingw|windows/
+  require 'chef/win32/file' #probably need this in spec_helper
+end
+
 describe Chef::Resource::Link do
   before do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
 
-    @new_resource = Chef::Resource::Link.new("/tmp/fofile-link")
-    @new_resource.to "/tmp/fofile"
+    @new_resource = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
+    @new_resource.to "#{CHEF_SPEC_DATA}/fofile"
 
     @provider = Chef::Provider::Link.new(@new_resource, @run_context)
     File.stub!(:exists?).and_return(true)
-    File.stub!(:symlink?).and_return(true)
-    File.stub!(:readlink).and_return("")
+    @provider.file_class.stub!(:symlink?).and_return(true)
+    @provider.file_class.stub!(:readlink).and_return("")
     File.stub!(:unlink).and_return("")
     File.stub!(:delete).and_return("")
     File.stub!(:symlink).and_return("")
@@ -46,7 +50,7 @@ describe Chef::Resource::Link do
   describe "when determining the current state of the symlink" do
     it "should set the symlink target" do
       @provider.load_current_resource
-      @provider.current_resource.target_file.should == "/tmp/fofile-link"
+      @provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
     end
 
     it "should set the link type" do
@@ -62,14 +66,14 @@ describe Chef::Resource::Link do
 
       describe "and the target exists and is a symlink" do
         before do
-          File.stub!(:exists?).with("/tmp/fofile-link").and_return(true)
-          File.stub!(:symlink?).with("/tmp/fofile-link").and_return(true)
-          File.stub!(:readlink).with("/tmp/fofile-link").and_return("/tmp/fofile")
+          @provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          @provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          @provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
         end
 
         it "should update the source of the existing link with the links target" do
           @provider.load_current_resource
-          @provider.current_resource.to.should == "/tmp/fofile"
+          @provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
         end
         it "should set the owner" do
           @provider.load_current_resource
@@ -84,7 +88,7 @@ describe Chef::Resource::Link do
 
       describe "and the target doesn't exist" do
         before do
-          File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         end
 
         it "should update the source of the existing link to an empty string" do
@@ -96,7 +100,7 @@ describe Chef::Resource::Link do
 
       describe "and the target isn't a symlink" do
         before do
-          File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
+          @provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         end
 
         it "should update the current source of the existing link with an empty string" do
@@ -113,21 +117,21 @@ describe Chef::Resource::Link do
 
       describe "the target file and source file both exist" do
         before do
-          File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
-          File.should_receive(:exists?).with("/tmp/fofile").and_return(true)
+          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         end
 
         describe "and the inodes match" do
           before do
             stat = mock("stats")
             stat.stub!(:ino).and_return(1)
-            File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
-            File.should_receive(:stat).with("/tmp/fofile").and_return(stat)
+            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
           end
 
           it "should update the source of the existing link to the target file" do
             @provider.load_current_resource
-            @provider.current_resource.to.should == "/tmp/fofile"
+            @provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
           end
         end
 
@@ -135,8 +139,8 @@ describe Chef::Resource::Link do
           before do
             stat = mock("stats", :ino => 1)
             stat_two = mock("stats", :ino => 2)
-            File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
-            File.should_receive(:stat).with("/tmp/fofile").and_return(stat_two)
+            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+            @provider.file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
           end
 
           it "should set the source of the existing link to an empty string" do
@@ -147,7 +151,7 @@ describe Chef::Resource::Link do
       end
       describe "but the target does not exist" do
         before do
-          File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         end
 
         it "should set the source of the existing link to an empty string" do
@@ -157,7 +161,7 @@ describe Chef::Resource::Link do
       end
       describe "but the source does not exist" do
         before do
-          File.should_receive(:exists?).with("/tmp/fofile").and_return(false)
+          @provider.file_class.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         end
 
         it "should set the source of the existing link to an empty string" do
@@ -171,8 +175,8 @@ describe Chef::Resource::Link do
 
   context "once the current state of the link is known" do
     before do
-      @current_resource = Chef::Resource::Link.new('/tmp/fofile-link')
-      @current_resource.to "/tmp/fofile"
+      @current_resource = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
+      @current_resource.to "#{CHEF_SPEC_DATA}/fofile"
       @provider.current_resource = @current_resource
     end
 
@@ -187,23 +191,28 @@ describe Chef::Resource::Link do
 
       describe "when the source for the link contains expandable pieces" do
         before do
-          @new_resource.target_file("/tmp/fofile-link")
+          @new_resource.target_file("#{CHEF_SPEC_DATA}/fofile-link")
           @new_resource.to("../foo")
+          @provider.stub!(:enforce_ownership_and_permissions)
+
+           @provider.file_class.stub!(:symlink)
         end
 
         it "should expand the path" do
-          ::File.should_receive(:expand_path).with("../foo", "/tmp/fofile-link").and_return("/tmp/fofile-link")
+          ::File.should_receive(:expand_path).with("../foo", "#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile-link")
           @provider.action_create
         end
       end
 
       describe "when the source for the link doesn't match" do
         before do
-          @new_resource.to("/tmp/lolololol")
+          @new_resource.to("#{CHEF_SPEC_DATA}/lolololol")
+          @provider.stub!(:enforce_ownership_and_permissions)
+          @provider.file_class.stub!(:symlink)
         end
 
         it "should log an appropriate message" do
-          Chef::Log.should_receive(:info).with("link[/tmp/fofile-link] created")
+          Chef::Log.should_receive(:info).with("link[#{CHEF_SPEC_DATA}/fofile-link] created")
           @provider.action_create
         end
 
@@ -220,9 +229,9 @@ describe Chef::Resource::Link do
             @provider.action_create
           end
 
-          it "should create link using ruby builtin link function" do
+          it "should create link using the appropriate link function" do
             @provider.stub!(:enforce_ownership_and_permissions)
-            File.should_receive(:symlink).with("/tmp/lolololol", "/tmp/fofile-link").and_return(true)
+            @provider.file_class.should_receive(:symlink).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
             @provider.action_create
           end
         end
@@ -232,13 +241,13 @@ describe Chef::Resource::Link do
             @new_resource.stub!(:link_type).and_return(:hard)
           end
 
-          it "should use the ruby builtin to create the link" do
-            File.should_receive(:link).with("/tmp/lolololol", "/tmp/fofile-link").and_return(true)
+          it "should use the appropriate link method to create the link" do
+            @provider.file_class.should_receive(:link).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
             @provider.action_create
           end
 
           it "we should not attempt to set owner or group" do
-            File.should_receive(:link).with("/tmp/lolololol", "/tmp/fofile-link")
+            @provider.file_class.should_receive(:link).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link")
             @provider.should_not_receive(:enforce_ownership_and_permissions)
             @provider.action_create
           end
@@ -260,16 +269,16 @@ describe Chef::Resource::Link do
 
         describe "and when the symlink exists" do
           before do
-            File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(true)
+            @provider.file_class.should_receive(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           end
 
           it "should log an appropriate error message" do
-            Chef::Log.should_receive(:info).with("link[/tmp/fofile-link] deleted")
+            Chef::Log.should_receive(:info).with("link[#{CHEF_SPEC_DATA}/fofile-link] deleted")
             @provider.action_delete
           end
 
           it "deletes the link and marks the resource as updated" do
-            File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
+            File.should_receive(:delete).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
             @provider.action_delete
             @new_resource.should be_updated
           end
@@ -277,8 +286,8 @@ describe Chef::Resource::Link do
 
         describe "and when the file is not a symbolic link but does exist" do
           before(:each) do
-            File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
-            File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+            @provider.file_class.should_receive(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+            File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           end
 
           it "should raise a Link error" do
@@ -288,8 +297,8 @@ describe Chef::Resource::Link do
 
         describe "and when the symbolic link and file do not exist" do
           before do
-            File.should_receive(:symlink?).with("/tmp/fofile-link").and_return(false)
-            File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+            @provider.file_class.should_receive(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+            File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
           end
 
           it "should not raise a Link error" do
@@ -305,20 +314,20 @@ describe Chef::Resource::Link do
 
         describe "and when the file exists" do
           before do
-            File.should_receive(:exists?).with("/tmp/fofile-link").and_return(true)
+            File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           end
 
           describe "and the inodes match" do
             before do
               stat = mock("stats")
               stat.stub!(:ino).and_return(1)
-              File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
-              File.should_receive(:stat).with("/tmp/fofile").and_return(stat)
+              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
             end
 
             it "deletes the link and marks the resource updated" do
-              Chef::Log.should_receive(:info).with("link[/tmp/fofile-link] deleted")
-              File.should_receive(:delete).with("/tmp/fofile-link").and_return(true)
+              Chef::Log.should_receive(:info).with("link[#{CHEF_SPEC_DATA}/fofile-link] deleted")
+              File.should_receive(:delete).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
               @provider.action_delete
               @new_resource.should be_updated
             end
@@ -328,8 +337,9 @@ describe Chef::Resource::Link do
             before do
               stat = mock("stats", :ino => 1)
               stat_two = mock("stats", :ino => 2)
-              File.should_receive(:stat).with("/tmp/fofile-link").and_return(stat)
-              File.should_receive(:stat).with("/tmp/fofile").and_return(stat_two)
+
+              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
             end
 
             it "should raise a Link error" do
@@ -341,7 +351,7 @@ describe Chef::Resource::Link do
 
         describe "and when file does not exist" do
           before do
-            File.should_receive(:exists?).with("/tmp/fofile-link").and_return(false)
+            File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
           end
 
           it "should not raise a Link error" do
