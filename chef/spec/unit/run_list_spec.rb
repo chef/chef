@@ -23,9 +23,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 require 'chef/version_class'
 require 'chef/version_constraint'
 
-# dep_selector/gecode on windows is currently a bowl of hurt
-unless RUBY_PLATFORM =~ /mswin|mingw|windows/
-  require 'chef/cookbook_version_selector'
+# dep_selector/gecode on many platforms is currenly a bowel of hurt
+begin
+require 'chef/cookbook_version_selector'
+rescue LoadError
+  STDERR.puts "\n*** dep_selector not installed. marking all unit tests 'pending' that have a transitive dependency on dep_selector. ***\n\n"
 end
 
 describe Chef::RunList do
@@ -308,7 +310,7 @@ describe Chef::RunList do
   end
 
   describe "constrain" do
-    pending "Windows platform support" do
+    pending "pending dep_selector installation" do
       @fake_db = Object.new
 
       def cookbook_maker(name, version, deps)
