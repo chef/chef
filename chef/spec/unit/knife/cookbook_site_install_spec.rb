@@ -77,7 +77,20 @@ describe Chef::Knife::CookbookSiteInstall do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
-    it "should install the specified version if a specific version is given" do
+    it "should return an error if the second argument is a four-digit version" do
+      @knife.name_args = ["getting-started", "0.0.0.1"]
+      @knife.ui.should_receive(:error).with("Installing multiple cookbooks at once is not supported.")
+      lambda { @knife.run }.should raise_error(SystemExit)
+    end
+
+    it "should return an error if the second argument is a one-digit version" do
+      @knife.name_args = ["getting-started", "1"]
+      @knife.ui.should_receive(:error).with("Installing multiple cookbooks at once is not supported.")
+      lambda { @knife.run }.should raise_error(SystemExit)
+    end
+
+
+    it "should install the specified version if second argument is a three-digit version" do
       @knife.name_args = ["getting-started", "0.1.0"]
       @knife.config[:no_deps] = true
       upstream_file = File.join(@install_path, "getting-started.tar.gz")
@@ -85,6 +98,17 @@ describe Chef::Knife::CookbookSiteInstall do
       @knife.should_receive(:extract_cookbook).with(upstream_file, "0.1.0")
       @knife.should_receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
       @repo.should_receive(:merge_updates_from).with("getting-started", "0.1.0")
+      @knife.run
+    end
+
+    it "should install the specified version if second argument is a two-digit version" do
+      @knife.name_args = ["getting-started", "0.1"]
+      @knife.config[:no_deps] = true
+      upstream_file = File.join(@install_path, "getting-started.tar.gz")
+      @knife.should_receive(:download_cookbook_to).with(upstream_file)
+      @knife.should_receive(:extract_cookbook).with(upstream_file, "0.1")
+      @knife.should_receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
+      @repo.should_receive(:merge_updates_from).with("getting-started", "0.1")
       @knife.run
     end
 
