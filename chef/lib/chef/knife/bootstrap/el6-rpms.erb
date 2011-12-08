@@ -1,0 +1,46 @@
+bash -c '
+
+cd /tmp
+wget http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+rpm -Uvh /tmp/epel-release-6-5.noarch.rpm
+rpm -Uvh http://rbel.frameos.org/rbel6
+
+yum install -y "ruby.$(uname -i)" "ruby-devel.$(uname -i)" ruby-shadow dmidecode git
+
+yum install -y rubygem-chef
+
+service ntpd stop
+ntpdate 0.pool.ntp.org
+service ntpd start
+
+(
+cat <<'EOP'
+<%= validation_key %>
+EOP
+) > /tmp/validation.pem
+awk NF /tmp/validation.pem > /etc/chef/validation.pem
+rm /tmp/validation.pem
+
+(
+cat <<'EOP'
+<%= config_content %>
+EOP
+) > /etc/chef/client.rb
+
+<% if @chef_config[:encrypted_data_bag_secret] -%>
+(
+cat <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+) > /tmp/encrypted_data_bag_secret
+awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
+rm /tmp/encrypted_data_bag_secret
+<% end -%>
+
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /etc/chef/first-boot.json
+
+
