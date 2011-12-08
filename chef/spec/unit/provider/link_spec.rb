@@ -20,7 +20,7 @@ require 'ostruct'
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-if Chef::Platform.windows? =~ /mswin|mingw|windows/
+if Chef::Platform.windows?
   require 'chef/win32/file' #probably need this in spec_helper
 end
 
@@ -317,12 +317,16 @@ describe Chef::Resource::Link do
             File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           end
 
-          describe "and the inodes match" do
+          describe "and it appears to be a hardlink" do
             before do
-              stat = mock("stats")
-              stat.stub!(:ino).and_return(1)
-              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
-              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+              if Chef::Platform.windows?
+                @provider.file_class.should_receive(:hardlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+              else
+                stat = mock("stats")
+                stat.stub!(:ino).and_return(1)
+                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+              end
             end
 
             it "deletes the link and marks the resource updated" do
@@ -333,13 +337,16 @@ describe Chef::Resource::Link do
             end
           end
 
-          describe "and the inodes don't match" do
+          describe "and it does not appear to be a hardlink" do
             before do
-              stat = mock("stats", :ino => 1)
-              stat_two = mock("stats", :ino => 2)
-
-              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
-              File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
+              if Chef::Platform.windows?
+                @provider.file_class.should_receive(:hardlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+              else
+                stat = mock("stats", :ino => 1)
+                stat_two = mock("stats", :ino => 2)
+                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
+              end
             end
 
             it "should raise a Link error" do
