@@ -83,6 +83,25 @@ class Chef
           is_symlink
         end
 
+        def hardlink?(file_name)
+          is_hardlink = false
+          if ::File.exists?(file_name)
+            open_file(file_name) do |handle|
+              file_information = BY_HANDLE_FILE_INFORMATION.new
+              success = GetFileInformationByHandle(handle, file_information)
+              if success == 0
+                Chef::Win32::Error.raise!
+              end
+
+              # if number of link > 1, means at least one hard link exists, in addition to the file itself
+              if file_information[:n_number_of_links] > 1
+                is_hardlink = true
+              end
+            end
+          end
+          is_hardlink
+        end
+
         # Returns the path of the of the symbolic link referred to by +file+.
         #
         # Requires Windows Vista or later. On older versions of Windows it

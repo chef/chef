@@ -108,6 +108,33 @@ typedef struct _WIN32_FIND_DATA {
         end
 
 =begin
+typedef struct _BY_HANDLE_FILE_INFORMATION {
+  DWORD    dwFileAttributes;
+  FILETIME ftCreationTime;
+  FILETIME ftLastAccessTime;
+  FILETIME ftLastWriteTime;
+  DWORD    dwVolumeSerialNumber;
+  DWORD    nFileSizeHigh;
+  DWORD    nFileSizeLow;
+  DWORD    nNumberOfLinks;
+  DWORD    nFileIndexHigh;
+  DWORD    nFileIndexLow;
+} BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION;
+=end
+        class BY_HANDLE_FILE_INFORMATION < FFI::Struct
+          layout :dw_file_attributes, :DWORD,
+          :ft_creation_time, FILETIME,
+          :ft_last_access_time, FILETIME,
+          :ft_last_write_time, FILETIME,
+          :dw_volume_serial_number, :DWORD,
+          :n_file_size_high, :DWORD,
+          :n_file_size_low, :DWORD,
+          :n_number_of_links, :DWORD,
+          :n_file_index_high, :DWORD,
+          :n_file_index_low, :DWORD
+        end
+
+=begin
 HANDLE WINAPI CreateFile(
   __in      LPCTSTR lpFileName,
   __in      DWORD dwDesiredAccess,
@@ -143,6 +170,14 @@ DWORD WINAPI GetFinalPathNameByHandle(
 );
 =end
         attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
+
+=begin
+BOOL WINAPI GetFileInformationByHandle(
+  __in   HANDLE hFile,
+  __out  LPBY_HANDLE_FILE_INFORMATION lpFileInformation
+);
+=end
+        attach_function :GetFileInformationByHandle, [:HANDLE, :LPBY_HANDLE_FILE_INFORMATION], :BOOL
 
 =begin
 HANDLE WINAPI FindFirstFile(
