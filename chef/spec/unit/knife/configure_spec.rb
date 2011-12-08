@@ -116,6 +116,6 @@ describe Chef::Knife::Configure do
     client_command.config[:admin].should be_true
     client_command.config[:file].should == "/home/you/.chef/#{Etc.getlogin}.pem"
     client_command.config[:yes].should be_true
-    client_command.config[:no_editor].should be_true
+    client_command.config[:disable_editing].should be_true
   end
 end

@@ -11,8 +11,8 @@ __knife__ __cookbook site__ _sub-command_ _(options)_
 ## INSTALL
 __cookbook site install COOKBOOK [VERSION]__ _(options)_
 
-  * `-D`, `--no-dependencies `:
-    Do not install dependencies automatically
+  * `-D`, `--skip-dependencies `:
+    Skip automatic installation of dependencies.
   * `-o`, `--cookbook-path PATH`:
     Install cookbooks to PATH
   * `-B`, `--branch BRANCH`:
@@ -35,7 +35,7 @@ changes as a separate patch.  When an updated upstream version becomes
 available, you will be able to merge the upstream changes while
 maintaining your local modifications.
 
-Unless _-D_ is specified, the process is applied recursively to all the
+Unless _--skip-dependencies_ is specified, the process is applied recursively to all the
 cookbooks _COOKBOOK_ depends on (via metadata _dependencies_).
 
 ## DOWNLOAD

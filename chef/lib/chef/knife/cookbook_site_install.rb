@@ -34,9 +34,10 @@ class Chef
 
       option :no_deps,
        :short => "-D",
-       :long => "--no-dependencies",
+       :long => "--skip-dependencies",
        :boolean => true,
-       :description => "Do not install dependencies automatically"
+       :default => false,
+       :description => "Skips automatic dependency installation."
 
       option :cookbook_path,
         :short => "-o PATH:PATH",

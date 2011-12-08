@@ -100,11 +100,11 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
-      option :no_host_key_verify,
-        :long => "--no-host-key-verify",
-        :description => "Disable host key verification",
+      option :host_key_verify,
+        :long => "--[no-]host-key-verify",
+        :description => "Verify host key, enabled by default.",
         :boolean => true,
-        :default => false
+        :default => true
 
       def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -180,7 +180,7 @@ class Chef
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
-        ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
+        ssh.config[:host_key_verify] = config[:host_key_verify]
         ssh.config[:on_error] = :raise
         ssh
       end

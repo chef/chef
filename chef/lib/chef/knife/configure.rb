@@ -83,7 +83,7 @@ EOH
           client_create.config[:admin] = true
           client_create.config[:file] = new_client_key
           client_create.config[:yes] = true
-          client_create.config[:no_editor] = true
+          client_create.config[:disable_editing] = true
           client_create.run
         else
           ui.msg("*****")

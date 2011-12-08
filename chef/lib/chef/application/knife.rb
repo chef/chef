@@ -41,16 +41,10 @@ class Chef::Application::Knife < Chef::Application
     :default => 0
 
   option :color,
-    :long         => '--color',
+    :long         => '--[no-]color',
     :boolean      => true,
     :default      => true,
-    :description  => "Use colored output"
-
-  option :no_color,
-    :long         => '--no-color',
-    :boolean      => true,
-    :default      => false,
-    :description  => "Don't use colors in the output"
+    :description  => "Use colored output, defaults to enabled"
 
   option :environment,
     :short        => "-E ENVIRONMENT",
@@ -63,11 +57,12 @@ class Chef::Application::Knife < Chef::Application
     :description  => "Set the editor to use for interactive commands",
     :default      => ENV['EDITOR']
 
-  option :no_editor,
-    :short        => "-n",
-    :long         => "--no-editor",
+  option :disable_editing,
+    :short        => "-d",
+    :long         => "--disable-editing",
     :description  => "Do not open EDITOR, just accept the data as is",
-    :boolean      => true
+    :boolean      => true,
+    :defaut       => false
 
   option :help,
     :short        => "-h",

@@ -146,7 +146,7 @@ class Chef
       def edit_data(data, parse_output=true)
         output = Chef::JSONCompat.to_json_pretty(data)
 
-        if (!config[:no_editor])
+        if (!config[:disable_editing])
           filename = "knife-edit-"
           0.upto(20) { filename += rand(9).to_s }
           filename << ".js"
