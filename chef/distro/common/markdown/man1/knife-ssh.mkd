@@ -21,9 +21,8 @@ __knife__ __ssh QUERY COMMAND__ _(options)_
     The ssh port
   * `-i`, `--identity-file IDENTITY_FILE`:
     The SSH identity file used for authentication
-  * `--no-host-key-verify`:
-    Disable host key verification
-    
+  * `--[no-]host-key-verify`:
+    Verify host key, enabled by default.
 
 ## DESCRIPTION
 

@@ -306,11 +306,11 @@ class Chef
         read_config_file(config[:config_file])
       else
         # ...but do log a message if no config was found.
-        Chef::Config[:color] = config[:color] && !config[:no_color]
+        Chef::Config[:color] = config[:color]
         ui.warn("No knife configuration file found")
       end
 
-      Chef::Config[:color] = config[:color] && !config[:no_color]
+      Chef::Config[:color] = config[:color]
 
       case config[:verbosity]
       when 0

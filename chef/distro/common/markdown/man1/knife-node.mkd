@@ -41,7 +41,7 @@ regular expression literals in scripting languages).
 ## CREATE
 __knife node create__ _name_ _(options)_
 
-Create a new node. Unless the --no-editor option is given, an empty node
+Create a new node. Unless the --disable-editing option is given, an empty node
 object will be created and displayed in your text editor. If the editor
 exits with a successful exit status, the node data will be posted to the
 Chef Server to create the node.
@@ -100,7 +100,7 @@ __knife node show__ _node name_ _(options)_
     Display more, but not all, of the node's data when using the default
     _summary_ format
 
-Displays the node identified by _node name_ on stdout. 
+Displays the node identified by _node name_ on stdout.
 
 ## RUN LIST ITEM FORMAT
 Run list items may be either roles or recipes. When adding a role to a
