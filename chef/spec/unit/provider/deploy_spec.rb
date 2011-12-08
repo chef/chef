@@ -279,6 +279,8 @@ describe Chef::Provider::Deploy do
     @resource.environment "RAILS_ENV" => "production"
     FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/config/database.yml", @expected_release_dir + "/config/database.yml")
     @provider.should_receive(:enforce_ownership)
+
+    STDOUT.stub!(:tty?).and_return(true)
     @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
 																								:command_log_level => :info, :live_stream => STDOUT,
