@@ -85,6 +85,10 @@ describe Chef::Config do
           and_return(@mockfile)
       end
 
+      after do
+        Chef::Config.log_location = STDOUT
+      end
+
       it "should configure itself to use a File object based upon the String" do
         Chef::Config.log_location = "/var/log/chef/client.log"
         Chef::Config.log_location.path.should == "/var/log/chef/client.log"
