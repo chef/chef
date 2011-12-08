@@ -18,6 +18,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
+Chef::Knife::Bootstrap.load_deps
 require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do

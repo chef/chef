@@ -243,9 +243,9 @@ class Chef
         @@chef_config_dir = false
         full_path = Dir.pwd.split(File::SEPARATOR)
         (full_path.length - 1).downto(0) do |i|
-          canidate_directory = File.join(full_path[0..i] + [".chef" ])
-          if File.exist?(canidate_directory) && File.directory?(canidate_directory)
-            @@chef_config_dir = canidate_directory
+          candidate_directory = File.join(full_path[0..i] + [".chef" ])
+          if File.exist?(candidate_directory) && File.directory?(candidate_directory)
+            @@chef_config_dir = candidate_directory
             break
           end
         end
