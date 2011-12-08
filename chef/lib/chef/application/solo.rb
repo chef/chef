@@ -31,7 +31,7 @@ class Chef::Application::Solo < Chef::Application
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specfic_path('/etc/chef/solor.rb'),
+    :default => Chef::Config.platform_specfic_path('/etc/chef/solo.rb'),
     :description => "The configuration file to use"
 
   option :log_level,
