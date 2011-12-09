@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,16 +72,20 @@ describe Chef::Application::Knife do
         @knife.should_receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:client_key].should == File.join(ENV['HOME'], '.chef/client.pem')
+      Chef::Config[:client_key].should == File.join(ENV['HOME'], '.chef/client.pem').gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR)
     end
 
     it "does not expand a full path" do
-      full_path = '/etc/chef/client.pem'
+      full_path = if windows?
+        'C:/chef/client.pem'
+      else
+        '/etc/chef/client.pem'
+      end
       with_argv(*%W{noop knife command -k #{full_path}}) do
         @knife.should_receive(:exit).with(0)
         @knife.run
       end
-      Chef::Config[:client_key].should == '/etc/chef/client.pem'
+      Chef::Config[:client_key].should == full_path
     end
 
   end
