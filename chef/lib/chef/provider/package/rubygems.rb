@@ -74,7 +74,11 @@ class Chef
           # === Returns
           # [Gem::Specification]  an array of Gem::Specification objects
           def installed_versions(gem_dep)
-            gem_source_index.search(gem_dep)
+            if gem_dep.respond_to?(:matching_specs)
+              gem_dep.matching_specs
+            else 
+              gem_source_index.search(gem_dep)
+            end
           end
 
           ##
