@@ -24,7 +24,7 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @node = Chef::Node.new
     @node.name "make_believe"
     @run_context = Chef::RunContext.new(@node, {})
-    @resource = Chef::Resource::File.new("/tmp/madeup.txt")
+    @resource = Chef::Resource::File.new("#{Dir.tmpdir}/madeup.txt")
     @provider = Chef::Provider::File.new(@resource, @run_context)
   end
 
