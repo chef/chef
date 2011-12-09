@@ -197,7 +197,11 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
 
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
     $stdout.stub!(:write)
-    path_to_gem = `which gem`.strip
+    path_to_gem = if windows?
+      `where gem`.split[-1]
+    else
+      `which gem`.strip
+    end
     pending("cant find your gem executable") if path_to_gem.empty?
     gem_env = Chef::Provider::Package::Rubygems::AlternateGemEnvironment.new(path_to_gem)
     expected = ['rspec-core', Gem::Version.new(RSpec::Core::Version::STRING)]
@@ -500,7 +504,7 @@ describe Chef::Provider::Package::Rubygems do
         @provider.action_remove
       end
     end
-    
+
     describe "in an alternate gem environment" do
       it "uninstalls via the gem command" do
         @new_resource.gem_binary('/usr/weird/bin/gem')

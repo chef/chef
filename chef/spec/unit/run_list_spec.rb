@@ -310,7 +310,9 @@ describe Chef::RunList do
   end
 
   describe "constrain" do
-    pending "pending dep_selector installation" do
+
+    pending "=> can't find 'dep_selector' gem...skipping Chef::CookbookVersionSelector related tests" do
+
       @fake_db = Object.new
 
       def cookbook_maker(name, version, deps)

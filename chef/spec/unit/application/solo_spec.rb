@@ -108,20 +108,20 @@ describe Chef::Application::Solo do
 
     describe "when the recipe_url configuration option is specified" do
       before do
-        Chef::Config[:cookbook_path] = "/tmp/chef-solo/cookbooks"
+        Chef::Config[:cookbook_path] = "#{Dir.tmpdir}/chef-solo/cookbooks"
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
         FileUtils.stub!(:mkdir_p).and_return(true)
         @tarfile = StringIO.new("remote_tarball_content")
         @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
 
         @target_file = StringIO.new
-        File.stub!(:open).with("/tmp/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
+        File.stub!(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
 
         Chef::Mixin::Command.stub!(:run_command).and_return(true)
       end
 
       it "should create the recipes path based on the parent of the cookbook path" do
-        FileUtils.should_receive(:mkdir_p).with("/tmp/chef-solo").and_return(true)
+        FileUtils.should_receive(:mkdir_p).with("#{Dir.tmpdir}/chef-solo").and_return(true)
         @app.reconfigure
       end
 
@@ -136,7 +136,7 @@ describe Chef::Application::Solo do
       end
 
       it "should untar the target file to the parent of the cookbook path" do
-        Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvfC /tmp/chef-solo/recipes.tgz /tmp/chef-solo"}).and_return(true)
+        Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvfC #{Dir.tmpdir}/chef-solo/recipes.tgz #{Dir.tmpdir}/chef-solo"}).and_return(true)
         @app.reconfigure
       end
     end

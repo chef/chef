@@ -284,7 +284,10 @@ describe Chef::Knife do
     it "formats connection refused errors nicely" do
       @knife.stub!(:run).and_raise(Errno::ECONNREFUSED.new('y u no shut up'))
       @knife.run_with_pretty_exceptions
-      @stderr.string.should match(%r[ERROR: Network Error: Connection refused - y u no shut up])
+      # Errno::ECONNREFUSED message differs by platform
+      # *nix = Errno::ECONNREFUSED: Connection refused
+      # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
+      @stderr.string.should match(%r[ERROR: Network Error: .* - y u no shut up])
       @stdout.string.should match(%r[Check your knife configuration and network settings])
     end
   end

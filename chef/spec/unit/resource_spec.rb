@@ -340,13 +340,21 @@ describe Chef::Resource do
     end
 
     it "accepts command options for only_if conditionals" do
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).at_least(1).times
       @resource.only_if("true", :cwd => '/tmp')
       @resource.only_if.first.command_opts.should == {:cwd => '/tmp'}
       @resource.run_action(:purr)
     end
 
     it "runs not_if as a command when it is a string" do
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).at_least(1).times
       @resource.not_if "pwd"
+      @resource.run_action(:purr)
+    end
+
+    it "runs not_if as a block when it is a ruby block" do
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_block).at_least(1).times
+      @resource.not_if { puts 'foo' }
       @resource.run_action(:purr)
     end
 

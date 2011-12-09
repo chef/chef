@@ -130,7 +130,7 @@ class Chef
       def resource_for_directory(path)
         dir = Chef::Resource::Directory.new(path, run_context)
         dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
-        if Chef::Platform.windows?
+        if Chef::Platform.windows? && @new_resource.rights
           @new_resource.rights.each_pair do |permission, *args|
             dir.rights(permission, *args)
           end

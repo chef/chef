@@ -18,9 +18,11 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 require 'digest/md5'
+require 'tmpdir'
 
 describe Chef::Provider::RemoteDirectory do
   before do
+    Chef::FileAccessControl.any_instance.stub(:set_all)
     @resource = Chef::Resource::RemoteDirectory.new("/tmp/tafty")
     # in CHEF_SPEC_DATA/cookbooks/openldap/files/default/remotedir
     @resource.source "remotedir"
@@ -79,7 +81,7 @@ describe Chef::Provider::RemoteDirectory do
       @node[:platform] = :just_testing
       @node[:platform_version] = :just_testing
 
-      @destination_dir = Dir.tmpdir + '/remote_directory_test'
+      @destination_dir = Dir.tmpdir << "/remote_directory_test"
       @resource.path(@destination_dir)
     end
 

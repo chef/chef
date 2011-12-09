@@ -17,8 +17,15 @@
 #
 
 require File.expand_path('../../../spec_helper', __FILE__)
+require 'ostruct'
 
 describe Chef::Resource::Conditional do
+  before do
+    Mixlib::ShellOut.any_instance.stub(:run_command).and_return(nil)
+    @status = OpenStruct.new(:success? => true)
+    Mixlib::ShellOut.any_instance.stub(:status).and_return(@status)
+  end
+
   describe "when created as an `only_if`" do
     describe "after running a successful command" do
       before do
@@ -32,6 +39,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a negative/false command" do
       before do
+        @status.send("success?=", false)
         @conditional = Chef::Resource::Conditional.only_if("false")
       end
 
@@ -74,6 +82,7 @@ describe Chef::Resource::Conditional do
 
     describe "after running a failed/false command" do
       before do
+        @status.send("success?=", false)
         @conditional = Chef::Resource::Conditional.not_if("false")
       end
 
