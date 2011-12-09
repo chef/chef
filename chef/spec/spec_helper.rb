@@ -61,7 +61,6 @@ end
 
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
 DEV_NULL = windows? ? 'NUL' : '/dev/null'
-TMP = windows? ? ENV['TEMP'].gsub(File::ALT_SEPARATOR, File::SEPARATOR) : '/tmp'
 
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)
