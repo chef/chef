@@ -91,6 +91,7 @@ describe Chef::Knife::Configure do
   end
 
   it "writes the new data to a config file" do
+    File.stub!(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
     FileUtils.should_receive(:mkdir_p).with("/home/you/.chef")
     config_file = StringIO.new
     ::File.should_receive(:open).with("/home/you/.chef/knife.rb", "w").and_yield config_file
@@ -105,6 +106,7 @@ describe Chef::Knife::Configure do
   end
 
   it "creates a new client when given the --initial option" do
+    File.stub!(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
     Chef::Config[:node_name]  = "webmonkey.example.com"
     client_command = Chef::Knife::ClientCreate.new
     client_command.should_receive(:run)

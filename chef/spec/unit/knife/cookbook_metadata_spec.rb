@@ -77,6 +77,8 @@ describe Chef::Knife::CookbookMetadata do
   describe 'generate_metadata' do
     before(:each) do
       @knife.config[:cookbook_path] = @cookbook_dir
+      File.stub!(:expand_path).with("#{@cookbook_dir}/foobar/metadata.rb").
+                                    and_return("#{@cookbook_dir}/foobar/metadata.rb")
     end
 
     it 'should generate the metadata from metadata.rb if it exists' do
