@@ -27,6 +27,10 @@ class Chef
 
       include Chef::Win32::API::System
 
+      # Ruby implementation of
+      # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
+      # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
+
       WIN_VERSIONS = {
         "Windows 7" => {:major => 6, :minor => 1, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
         "Windows Server 2008 R2" => {:major => 6, :minor => 1, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
