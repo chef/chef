@@ -73,6 +73,8 @@ class Chef
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
+    # Errors originating from calls to the Win32 API
+    class Win32APIError < RuntimeError; end
 
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end

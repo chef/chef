@@ -404,6 +404,14 @@ class Chef
         provider_klass
       end
 
+      def windows?
+        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+          true
+        else
+          false
+        end
+      end
+
       private
 
         def explicit_provider(platform, version, resource_type)

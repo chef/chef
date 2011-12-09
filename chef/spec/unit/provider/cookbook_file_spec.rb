@@ -51,9 +51,9 @@ EXPECTED
   describe "when loading the current file state" do
 
     it "converts windows-y filenames to unix-y ones" do
-      @new_resource.path('\windows\stuff')
+      @new_resource.path('windows\stuff')
       @provider.load_current_resource
-      @new_resource.path.should == '/windows/stuff'
+      @new_resource.path.should == File.expand_path('windows/stuff')
     end
 
     it "sets the current resources path to the same as the new resource" do

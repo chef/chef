@@ -168,7 +168,7 @@ DIRTY
 
     it "commits the changes to the repo and tags the commit" do
       @cookbook_repo.should_receive(:shell_out!).with("git add apache2", :cwd => @repo_path)
-      @cookbook_repo.should_receive(:shell_out!).with("git commit -m 'Import apache2 version 1.2.3' -- apache2", :cwd => @repo_path)
+      @cookbook_repo.should_receive(:shell_out!).with("git commit -m \"Import apache2 version 1.2.3\" -- apache2", :cwd => @repo_path)
       @cookbook_repo.should_receive(:shell_out!).with("git tag -f cookbook-site-imported-apache2-1.2.3", :cwd => @repo_path)
       @cookbook_repo.finalize_updates_to("apache2", "1.2.3").should be_true
     end

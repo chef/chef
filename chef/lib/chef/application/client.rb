@@ -210,7 +210,7 @@ class Chef::Application::Client < Chef::Application
 
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
-    unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+    unless Chef::Platform.windows?
       SELF_PIPE.replace IO.pipe
 
       trap("USR1") do

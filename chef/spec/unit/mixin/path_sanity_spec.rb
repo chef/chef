@@ -35,7 +35,7 @@ describe Chef::Mixin::PathSanity do
       @gem_bindir = '/some/gem/bin'
       Gem.stub!(:bindir).and_return(@gem_bindir)
       RbConfig::CONFIG.stub!(:[]).with('bindir').and_return(@ruby_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('host_os').and_return('darwin11.1.0')
+      Chef::Platform.stub!(:windows?).and_return(false)
     end
 
     it "adds all useful PATHs that are not yet in PATH to PATH" do
@@ -71,7 +71,7 @@ describe Chef::Mixin::PathSanity do
       gem_bindir = 'C:\gems\bin'
       Gem.stub!(:bindir).and_return(gem_bindir)
       RbConfig::CONFIG.stub!(:[]).with('bindir').and_return(ruby_bindir)
-      RbConfig::CONFIG.stub!(:[]).with('host_os').and_return('mswin')
+      Chef::Platform.stub!(:windows?).and_return(true)
       env = {"PATH" => 'C:\Windows\system32;C:\mr\softie'}
       @sanity.enforce_path_sanity(env)
       env["PATH"].should == "C:\\Windows\\system32;C:\\mr\\softie;#{ruby_bindir};#{gem_bindir}"

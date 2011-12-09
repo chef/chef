@@ -117,7 +117,7 @@ describe Chef::Config do
 
     it "should return a windows path on windows systems" do
       path = "/etc/chef/cookbooks"
-      RbConfig::CONFIG.stub!(:[]).with('host_os').and_return('mswin')
+      Chef::Platform.stub!(:windows?).and_return(true)
       ENV.stub!(:[]).with('SYSTEMDRIVE').and_return('C:')
       # match on a regex that looks for the base path with an optional
       # system drive at the beginning (c:)

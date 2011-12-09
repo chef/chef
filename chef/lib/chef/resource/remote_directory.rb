@@ -17,11 +17,16 @@
 #
 
 require 'chef/resource/directory'
+require 'chef/provider/remote_directory'
+require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
-      
+      include Chef::Mixin::Securable
+
+      provides :remote_directory, :on_platforms => :all
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :remote_directory
@@ -38,6 +43,7 @@ class Chef
         @overwrite = true
         @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
+        @provider = Chef::Provider::RemoteDirectory
       end
 
       def source(args=nil)
@@ -70,6 +76,11 @@ class Chef
           arg,
           :regex => Chef::Config[:group_valid_regex]
         )
+      end
+
+      if Chef::Platform.windows?
+        # create a second instance of the 'rights' attribute
+        Chef::Mixin::Securable.rights_attribute(:files_rights)
       end
 
       def files_mode(arg=nil)

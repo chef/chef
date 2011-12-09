@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +18,24 @@
 #
 
 require 'chef/resource'
+require 'chef/provider/file'
+require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class File < Chef::Resource
-      
+      include Chef::Mixin::Securable
+
+      provides :file, :on_platforms => :all
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :file
-        @path = name
+        @path = name.kind_of?(String) ? ::File.expand_path(name) : name
         @backup = 5
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
+        @provider = Chef::Provider::File
       end
 
       def content(arg=nil)
@@ -55,38 +62,8 @@ class Chef
         )
       end
 
-      def group(arg=nil)
-        set_or_return(
-          :group,
-          arg,
-          :regex => Chef::Config[:group_valid_regex]
-        )
-      end
-
-      def mode(arg=nil)
-        set_or_return(
-          :mode,
-          arg,
-          :callbacks => { 
-            "not in valid numeric range" => lambda { |m| 
-              if m.kind_of?(String)
-                m =~ /^0/ || m="0#{m}"
-              end 
-              Integer(m)<=07777 && Integer(m)>=0
-            }
-          }
-        )
-      end
-
-      def owner(arg=nil)
-        set_or_return(
-          :owner,
-          arg,
-          :regex => Chef::Config[:user_valid_regex]
-        )
-      end
-
       def path(arg=nil)
+        arg = ::File.expand_path(arg) if arg.kind_of?(String)
         set_or_return(
           :path,
           arg,
