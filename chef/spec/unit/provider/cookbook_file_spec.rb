@@ -21,6 +21,8 @@ require 'ostruct'
 
 describe Chef::Provider::CookbookFile do
   before do
+    Chef::FileAccessControl.any_instance.stub(:set_all)
+    Chef::FileAccessControl.any_instance.stub(:modified?).and_return(true)
     @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
@@ -53,7 +55,7 @@ EXPECTED
     it "converts windows-y filenames to unix-y ones" do
       @new_resource.path('windows\stuff')
       @provider.load_current_resource
-      @new_resource.path.should == File.expand_path('windows/stuff')
+      @new_resource.path.should == 'windows/stuff'
     end
 
     it "sets the current resources path to the same as the new resource" do
@@ -96,11 +98,7 @@ EXPECTED
       @new_resource.owner(0)
       @new_resource.group(0)
       @new_resource.mode(0400)
-      ::File.should_receive(:stat).with('/tmp/foo').and_return(OpenStruct.new(:owner => 99, :group => 99, :mode => 0100444))
-      File.should_receive(:chmod).with(0400, '/tmp/foo')
-      File.should_receive(:chown).with(0, nil, '/tmp/foo')
-      File.should_receive(:chown).with(nil, 0, '/tmp/foo')
-
+      Chef::FileAccessControl.any_instance.should_receive(:set_all)
       @provider.set_all_access_controls('/tmp/foo')
       @provider.new_resource.should be_updated
     end
@@ -190,7 +188,9 @@ EXPECTED
 
   describe "when the file has the correct content" do
     before do
+      Chef::FileAccessControl.any_instance.stub(:modified?).and_return(false)
       @tempfile = Tempfile.open('cookbook_file_spec')
+      @tempfile.binmode
       @new_resource.path(@target_file = @tempfile.path)
       @tempfile.write(@file_content)
       @tempfile.close
@@ -209,7 +209,6 @@ EXPECTED
 
     it "does not mark the resource as updated by the last action" do
       @provider.load_current_resource
-      @provider.stub!(:set_all_access_controls)
       @provider.action_create
       @new_resource.should_not be_updated
       @new_resource.should_not be_updated_by_last_action
