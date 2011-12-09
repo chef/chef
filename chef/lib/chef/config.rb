@@ -19,7 +19,6 @@
 # limitations under the License.
 
 require 'chef/log'
-require 'chef/platform'
 require 'mixlib/config'
 
 class Chef
@@ -48,11 +47,8 @@ class Chef
       configuration.inspect
     end
 
-    # Regex to determine if running on a windows system
-    windows_os_regex /mswin|mingw|windows/
-
     def self.platform_specific_path(path)
-      if Chef::Platform.windows?
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
         path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])
         # ensure all forward slashes are backslashes
@@ -262,7 +258,7 @@ class Chef
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
-    if RbConfig::CONFIG['host_os'] =~ Chef::Config[:windows_os_regex]
+    if RUBY_PLATFORM =~ /mswin|mingw|windows/
       user_valid_regex [ /^[^"\/\\\[\]\:;|=,+*?<>]+$/ ]
       group_valid_regex [ /^[^"\/\\\[\]\:;|=,+*?<>]+$/ ]
     else
@@ -270,5 +266,7 @@ class Chef
       group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
     end
 
+    # returns a platform specific path to the user home dir
+    user_home (ENV['HOME'] || ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] || ENV['USERPROFILE'])
   end
 end
