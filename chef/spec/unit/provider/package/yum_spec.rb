@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,7 +79,7 @@ describe Chef::Provider::Package::Yum do
         )
         @yum_cache.stub!(:installed_version) do |package_name, arch|
           # nothing installed for package_name/new_package_name
-          nil 
+          nil
         end
         @yum_cache.stub!(:candidate_version) do |package_name, arch|
           if package_name == "testing.noarch" || package_name == "testing.more.noarch"
@@ -128,15 +128,15 @@ describe Chef::Provider::Package::Yum do
         # annoying side effect of the fun stub'ing above
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
-        @provider.new_resource.arch.should == nil 
-        @provider.arch.should == nil 
+        @provider.new_resource.arch.should == nil
+        @provider.arch.should == nil
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
-        @provider.new_resource.arch.should == nil 
-        @provider.arch.should == nil 
+        @provider.new_resource.arch.should == nil
+        @provider.arch.should == nil
       end
 
       it "should not set the arch when no existing package_name or new_package_name+new_arch is found" do
@@ -157,15 +157,15 @@ describe Chef::Provider::Package::Yum do
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
-        @provider.new_resource.arch.should == nil 
-        @provider.arch.should == nil 
+        @provider.new_resource.arch.should == nil
+        @provider.arch.should == nil
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
-        @provider.new_resource.arch.should == nil 
-        @provider.arch.should == nil 
+        @provider.new_resource.arch.should == nil
+        @provider.arch.should == nil
       end
 
       it "should ensure it doesn't clobber an existing arch if passed" do
@@ -176,7 +176,7 @@ describe Chef::Provider::Package::Yum do
         )
          @yum_cache.stub!(:installed_version) do |package_name, arch|
            # nothing installed for package_name/new_package_name
-         nil 
+         nil
         end
         @yum_cache.stub!(:candidate_version) do |package_name, arch|
           if package_name == "testing.noarch"
@@ -191,18 +191,18 @@ describe Chef::Provider::Package::Yum do
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.i386"
-        @provider.new_resource.arch.should == "x86_64" 
+        @provider.new_resource.arch.should == "x86_64"
       end
     end
 
     it "should flush the cache if :before is true" do
-      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => true}) 
+      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => true})
       @yum_cache.should_receive(:reload).once
       @provider.load_current_resource
     end
 
     it "should flush the cache if :before is false" do
-      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => false}) 
+      @new_resource.stub!(:flush_cache).and_return({:after => false, :before => false})
       @yum_cache.should_not_receive(:reload)
       @provider.load_current_resource
     end
@@ -214,7 +214,7 @@ describe Chef::Provider::Package::Yum do
         :reset => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
-        :package_available? => false, 
+        :package_available? => false,
         :version_available? => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
@@ -232,7 +232,7 @@ describe Chef::Provider::Package::Yum do
         :reset => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
-        :package_available? => false, 
+        :package_available? => false,
         :version_available? => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
@@ -252,7 +252,7 @@ describe Chef::Provider::Package::Yum do
         :reset => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
-        :package_available? => false, 
+        :package_available? => false,
         :version_available? => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
@@ -269,7 +269,7 @@ describe Chef::Provider::Package::Yum do
         :reset => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
-        :package_available? => false, 
+        :package_available? => false,
         :version_available? => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
@@ -283,7 +283,7 @@ describe Chef::Provider::Package::Yum do
       @new_resource.action(:purge)
       @provider.load_current_resource
     end
-    
+
     it "should search provides if no package is available - if no match in provides leave the name intact" do
       @yum_cache = mock(
         'Chef::Provider::Yum::YumCache',
@@ -292,7 +292,7 @@ describe Chef::Provider::Package::Yum do
         :reset => true,
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
-        :package_available? => false, 
+        :package_available? => false,
         :version_available? => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
@@ -325,7 +325,6 @@ describe Chef::Provider::Package::Yum do
       @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
       ::File.stub!(:exists?).and_return(true)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-      @provider.load_current_resource
       @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
       @provider.should_receive(:yum_command).with(
         "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
@@ -569,7 +568,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "parses known good epoch strings" do
-      [ 
+      [
         [ "0:3.3", [ 0, "3.3", nil ] ],
         [ "9:1.7.3", [ 9, "1.7.3", nil ] ],
         [ "15:20020927", [ 15, "20020927", nil ] ]
@@ -579,7 +578,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "parses strange epoch strings" do
-      [ 
+      [
         [ ":3.3", [ 0, "3.3", nil ] ],
         [ "-1:1.7.3", [ nil, nil, "1:1.7.3" ] ],
         [ "-:20020927", [ nil, nil, ":20020927" ] ]
@@ -589,7 +588,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "parses known good version strings" do
-      [ 
+      [
         [ "3.3", [ nil, "3.3", nil ] ],
         [ "1.7.3", [ nil, "1.7.3", nil ] ],
         [ "20020927", [ nil, "20020927", nil ] ]
@@ -599,7 +598,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "parses strange version strings" do
-      [ 
+      [
         [ "3..3", [ nil, "3..3", nil ] ],
         [ "0001.7.3", [ nil, "0001.7.3", nil ] ],
         [ "20020927,3", [ nil, "20020927,3", nil ] ]
@@ -609,7 +608,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "parses known good version release strings" do
-      [ 
+      [
         [ "3.3-0.pre3.1.60.el5_5.1", [ nil, "3.3", "0.pre3.1.60.el5_5.1" ] ],
         [ "1.7.3-1jpp.2.el5", [ nil, "1.7.3", "1jpp.2.el5" ] ],
         [ "20020927-46.el5", [ nil, "20020927", "46.el5" ] ]
@@ -619,7 +618,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "parses strange version release strings" do
-      [ 
+      [
         [ "3.3-", [ nil, "3.3", nil ] ],
         [ "-1jpp.2.el5", [ nil, nil, "1jpp.2.el5" ] ],
         [ "-0020020927-46.el5", [ nil, "-0020020927", "46.el5" ] ]
@@ -635,7 +634,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
 
     it "should validate version compare logic for standard examples" do
-      [ 
+      [
         # numeric
         [ "0.0.2", "0.0.1", 1 ],
         [ "0.2.0", "0.1.0", 1 ],
@@ -712,7 +711,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
 
     it "tests isalnum bad input" do
       [ '-', '.', '!', '^', ':', '_' ].each do |t|
-        @rpmutils.isalnum(t).should == false 
+        @rpmutils.isalnum(t).should == false
       end
     end
 
@@ -724,7 +723,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
 
     it "tests isalpha bad input" do
       [ '0', '9', '-', '.', '!', '^', ':', '_' ].each do |t|
-        @rpmutils.isalpha(t).should == false 
+        @rpmutils.isalpha(t).should == false
       end
     end
 
@@ -736,7 +735,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
 
     it "tests isdigit bad input" do
       [ 'A', 'z', '-', '.', '!', '^', ':', '_' ].each do |t|
-        @rpmutils.isdigit(t).should == false 
+        @rpmutils.isdigit(t).should == false
       end
     end
   end
@@ -803,21 +802,21 @@ describe Chef::Provider::Package::Yum::RPMVersion do
     it "should sort based on complete epoch-version-release data" do
       [
         # smaller, larger
-        [ "0:1.6.5-9.36.el5", 
+        [ "0:1.6.5-9.36.el5",
           "1:1.6.5-9.36.el5" ],
-        [ "0:2.3-15.el5", 
+        [ "0:2.3-15.el5",
           "0:3.3-15.el5" ],
-        [ "0:alpha9.8-27.2", 
+        [ "0:alpha9.8-27.2",
           "0:beta9.8-27.2" ],
-        [ "0:0.09-14jpp.3", 
+        [ "0:0.09-14jpp.3",
           "0:0.09-15jpp.3" ],
-        [ "0:0.9.0-0.6.20110211.el5", 
+        [ "0:0.9.0-0.6.20110211.el5",
           "0:0.9.0-0.6.20120211.el5" ],
-        [ "0:1.9.1-4.el5", 
+        [ "0:1.9.1-4.el5",
           "0:1.9.1-5.el5" ],
-        [ "0:1.4.10-7.20090624svn.el5", 
+        [ "0:1.4.10-7.20090624svn.el5",
           "0:1.4.10-7.20090625svn.el5" ],
-        [ "0:2.3.4-2.el5", 
+        [ "0:2.3.4-2.el5",
           "0:2.3.4-2.el6" ]
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMVersion.new(smaller)
@@ -831,19 +830,19 @@ describe Chef::Provider::Package::Yum::RPMVersion do
     it "should sort based on partial epoch-version-release data" do
       [
         # smaller, larger
-        [ ":1.6.5-9.36.el5", 
+        [ ":1.6.5-9.36.el5",
           "1:1.6.5-9.36.el5" ],
-        [ "2.3-15.el5", 
+        [ "2.3-15.el5",
           "3.3-15.el5" ],
-        [ "alpha9.8", 
+        [ "alpha9.8",
           "beta9.8" ],
-        [ "14jpp", 
+        [ "14jpp",
           "15jpp" ],
-        [ "0.9.0-0.6", 
+        [ "0.9.0-0.6",
           "0.9.0-0.7" ],
-        [ "0:1.9", 
+        [ "0:1.9",
           "3:1.9" ],
-        [ "2.3-2.el5", 
+        [ "2.3-2.el5",
           "2.3-2.el6" ]
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMVersion.new(smaller)
@@ -856,11 +855,11 @@ describe Chef::Provider::Package::Yum::RPMVersion do
 
     it "should verify equality of complete epoch-version-release data" do
       [
-        [ "0:1.6.5-9.36.el5", 
+        [ "0:1.6.5-9.36.el5",
           "0:1.6.5-9.36.el5" ],
-        [ "0:2.3-15.el5", 
+        [ "0:2.3-15.el5",
           "0:2.3-15.el5" ],
-        [ "0:alpha9.8-27.2", 
+        [ "0:alpha9.8-27.2",
           "0:alpha9.8-27.2" ]
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMVersion.new(smaller)
@@ -871,11 +870,11 @@ describe Chef::Provider::Package::Yum::RPMVersion do
 
     it "should verify equality of partial epoch-version-release data" do
       [
-        [ ":1.6.5-9.36.el5", 
+        [ ":1.6.5-9.36.el5",
           "0:1.6.5-9.36.el5" ],
-        [ "2.3-15.el5", 
+        [ "2.3-15.el5",
           "2.3-15.el5" ],
-        [ "alpha9.8-3", 
+        [ "alpha9.8-3",
           "alpha9.8-3" ]
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMVersion.new(smaller)
@@ -912,11 +911,11 @@ describe Chef::Provider::Package::Yum::RPMVersion do
 
     it "should verify equality based on partial epoch-version-release data" do
       [
-        [ "0:", 
+        [ "0:",
           "0:1.1.1-1" ],
-        [ "0:1.1.1", 
+        [ "0:1.1.1",
           "0:1.1.1-1" ],
-        [ "0:1.1.1-1", 
+        [ "0:1.1.1-1",
           "0:1.1.1-1" ],
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMVersion.new(smaller)
@@ -1007,15 +1006,15 @@ describe Chef::Provider::Package::Yum::RPMPackage do
   describe "<=>" do
     it "should sort alphabetically based on package name" do
       [
-        [ "a-test", 
+        [ "a-test",
           "b-test" ],
-        [ "B-test", 
+        [ "B-test",
           "a-test" ],
-        [ "A-test", 
+        [ "A-test",
           "B-test" ],
-        [ "Aa-test", 
+        [ "Aa-test",
           "aA-test" ],
-        [ "1test", 
+        [ "1test",
           "2test" ],
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMPackage.new(smaller, "0:0.0.1-1", "x86_64", [])
@@ -1028,11 +1027,11 @@ describe Chef::Provider::Package::Yum::RPMPackage do
 
     it "should sort alphabetically based on package arch" do
       [
-        [ "i386", 
+        [ "i386",
           "x86_64" ],
-        [ "i386", 
+        [ "i386",
           "noarch" ],
-        [ "noarch", 
+        [ "noarch",
           "x86_64" ],
       ].each do |smaller, larger|
         sm = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "0:0.0.1-1", smaller, [])
@@ -1064,15 +1063,15 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
     it "should return true" do
       @rpm_x.available.should be == true
       @rpm_y.available.should be == true
-      @rpm_z.available.should be == false 
+      @rpm_z.available.should be == false
     end
   end
- 
+
   describe "installed" do
     it "should return true" do
-      @rpm_x.installed.should be == false 
+      @rpm_x.installed.should be == false
       @rpm_y.installed.should be == true
-      @rpm_z.installed.should be == true 
+      @rpm_z.installed.should be == true
     end
   end
 
@@ -1147,8 +1146,8 @@ describe Chef::Provider::Package::Yum::RPMDependency do
 
       @rpmdep.name.should == "testing"
       @rpmdep.version.e.should == nil
-      @rpmdep.version.v.should == nil 
-      @rpmdep.version.r.should == nil 
+      @rpmdep.version.v.should == nil
+      @rpmdep.version.r.should == nil
       @rpmdep.flag.should == :==
     end
 
@@ -1157,8 +1156,8 @@ describe Chef::Provider::Package::Yum::RPMDependency do
 
       @rpmdep.name.should == "testing blah >"
       @rpmdep.version.e.should == nil
-      @rpmdep.version.v.should == nil 
-      @rpmdep.version.r.should == nil 
+      @rpmdep.version.v.should == nil
+      @rpmdep.version.r.should == nil
       @rpmdep.flag.should == :==
     end
 
@@ -1172,7 +1171,7 @@ describe Chef::Provider::Package::Yum::RPMDependency do
         [ "<", :< ]
       ].each do |before, after|
         @rpmdep = Chef::Provider::Package::Yum::RPMDependency.parse("testing #{before} 1:1.1-1")
-        @rpmdep.flag.should == after 
+        @rpmdep.flag.should == after
       end
     end
 
@@ -1187,7 +1186,7 @@ describe Chef::Provider::Package::Yum::RPMDependency do
       ].each do |before, after|
         @rpmdep = Chef::Provider::Package::Yum::RPMDependency.parse("testing #{before} 1:1.1-1")
         @rpmdep.name.should == "testing #{before} 1:1.1-1"
-        @rpmdep.flag.should == after 
+        @rpmdep.flag.should == after
       end
     end
   end
@@ -1205,7 +1204,7 @@ describe Chef::Provider::Package::Yum::RPMDependency do
     end
 
     it "should validate dependency satisfaction logic for standard examples" do
-      [ 
+      [
         # names
         [ "test", "test", true ],
         [ "test", "foo", false ],
@@ -1242,7 +1241,7 @@ describe Chef::Provider::Package::Yum::RPMDependency do
      ].each do |prov, req, result|
         @rpmprovide = Chef::Provider::Package::Yum::RPMDependency.parse(prov)
         @rpmrequire = Chef::Provider::Package::Yum::RPMDependency.parse(req)
-       
+
         @rpmprovide.satisfy?(@rpmrequire).should == result
         @rpmrequire.satisfy?(@rpmprovide).should == result
       end
@@ -1291,20 +1290,20 @@ describe Chef::Provider::Package::Yum::RPMDb do
     it "should only accept an RPMDbPackage object" do
       lambda { @rpmdb.push("string") }.should raise_error
     end
-    
+
     it "should add the package to the package db" do
       @rpmdb.push(@rpm_w)
       @rpmdb["test-package-b"].should_not be == nil
     end
 
     it "should add conditionally add the package to the available list" do
-      @rpmdb.available_size.should be == 0 
+      @rpmdb.available_size.should be == 0
       @rpmdb.push(@rpm_v, @rpm_w)
       @rpmdb.available_size.should be == 1
     end
 
     it "should add conditionally add the package to the installed list" do
-      @rpmdb.installed_size.should be == 0 
+      @rpmdb.installed_size.should be == 0
       @rpmdb.push(@rpm_w, @rpm_x)
       @rpmdb.installed_size.should be == 1
     end
@@ -1337,7 +1336,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
 
   describe "lookup" do
     it "should return an Array of RPMPackage objects by index" do
-      @rpmdb << @rpm_w 
+      @rpmdb << @rpm_w
       @rpmdb.lookup("test-package-b").should be_kind_of(Array)
     end
   end
@@ -1378,7 +1377,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
       @rpmdb.size.should_not be == 0
       @rpmdb.lookup_provides("config(test)").should be_kind_of(Array)
       @rpmdb.clear
-      @rpmdb.lookup_provides("config(test)").should be == nil 
+      @rpmdb.lookup_provides("config(test)").should be == nil
       @rpmdb.size.should be == 0
     end
   end
@@ -1394,7 +1393,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
 
   describe "available?" do
     it "should return true if a package is available" do
-      @rpmdb.available?(@rpm_w).should be == false 
+      @rpmdb.available?(@rpm_w).should be == false
       @rpmdb.push(@rpm_v, @rpm_w)
       @rpmdb.available?(@rpm_v).should be == false
       @rpmdb.available?(@rpm_w).should be == true
@@ -1412,7 +1411,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
 
   describe "installed?" do
     it "should return true if a package is installed" do
-      @rpmdb.installed?(@rpm_w).should be == false 
+      @rpmdb.installed?(@rpm_w).should be == false
       @rpmdb.push(@rpm_w, @rpm_x)
       @rpmdb.installed?(@rpm_w).should be == true
       @rpmdb.installed?(@rpm_x).should be == false
@@ -1433,7 +1432,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
 
     it "should return an Array of packages statisfying a RPMDependency" do
       @rpmdb.push(@rpm_v, @rpm_w, @rpm_z)
-      
+
       @rpmrequire = Chef::Provider::Package::Yum::RPMDependency.parse("test-package-a >= 1.6.5")
       x = @rpmdb.whatprovides(@rpmrequire)
       x.should be_kind_of(Array)
@@ -1619,9 +1618,9 @@ EOF
     end
 
     it "should return nil for an unmatched package" do
-      @yc.installed_version(nil, nil).should be == nil 
-      @yc.installed_version("test1", nil).should be == nil 
-      @yc.installed_version("test2", "x86_64").should be == nil 
+      @yc.installed_version(nil, nil).should be == nil
+      @yc.installed_version("test1", nil).should be == nil
+      @yc.installed_version("test2", "x86_64").should be == nil
     end
   end
 
@@ -1643,9 +1642,9 @@ EOF
     end
 
     it "should return nil for an unmatched package" do
-      @yc.available_version(nil, nil).should be == nil 
-      @yc.available_version("test1", nil).should be == nil 
-      @yc.available_version("test2", "x86_64").should be == nil 
+      @yc.available_version(nil, nil).should be == nil
+      @yc.available_version("test1", nil).should be == nil
+      @yc.available_version("test2", "x86_64").should be == nil
     end
   end
 
@@ -1657,24 +1656,24 @@ EOF
     end
 
     it "should return true if our package-version-arch is available" do
-      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "x86_64").should be == true 
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "x86_64").should be == true
     end
 
     it "should return true if our package-version, no arch, is available" do
-      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", nil).should be == true 
-      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2").should be == true 
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", nil).should be == true
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2").should be == true
     end
 
     it "should return false if our package-version-arch isn't available" do
-      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "pretend").should be == false 
-      @yc.version_available?("zisofs-tools", "pretend", "x86_64").should be == false 
-      @yc.version_available?("pretend", "1.0.6-3.2.2", "x86_64").should be == false 
+      @yc.version_available?("zisofs-tools", "1.0.6-3.2.2", "pretend").should be == false
+      @yc.version_available?("zisofs-tools", "pretend", "x86_64").should be == false
+      @yc.version_available?("pretend", "1.0.6-3.2.2", "x86_64").should be == false
     end
 
     it "should return false if our package-version, no arch, isn't available" do
-      @yc.version_available?("zisofs-tools", "pretend", nil).should be == false 
-      @yc.version_available?("zisofs-tools", "pretend").should be == false 
-      @yc.version_available?("pretend", "1.0.6-3.2.2").should be == false 
+      @yc.version_available?("zisofs-tools", "pretend", nil).should be == false
+      @yc.version_available?("zisofs-tools", "pretend").should be == false
+      @yc.version_available?("pretend", "1.0.6-3.2.2").should be == false
     end
   end
 
@@ -1690,14 +1689,14 @@ EOF
 
   describe "package_available?" do
     it "should return true a package name is available" do
-      @yc.package_available?("zisofs-tools").should be == true 
+      @yc.package_available?("zisofs-tools").should be == true
       @yc.package_available?("moo").should be == false
       @yc.package_available?(nil).should be == false
     end
 
     it "should return true a package name + arch is available" do
       @yc.package_available?("zlib-devel.i386").should be == true
-      @yc.package_available?("zisofs-tools.x86_64").should be == true 
+      @yc.package_available?("zisofs-tools.x86_64").should be == true
       @yc.package_available?("znc-test.beta1.x86_64").should be == true
       @yc.package_available?("znc-test.beta1").should be == true
       @yc.package_available?("znc-test.test.beta1").should be == true
