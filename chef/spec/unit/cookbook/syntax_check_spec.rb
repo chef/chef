@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,8 @@
 #   Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
 #     key = cache.generate_key(ruby_file, "chef-test")
 #     fstat = File.stat(ruby_file)
-# 
-#     if cache.lookup_checksum(key, fstat) 
+#
+#     if cache.lookup_checksum(key, fstat)
 #       Chef::Log.info("No change in checksum of #{ruby_file}")
 #     else
 #       Chef::Log.info("Testing #{ruby_file} for syntax errors...")
@@ -34,14 +34,14 @@
 #     end
 #   end
 # end
-# 
+#
 #def test_templates(cookbook_dir)
 #  cache = Chef::ChecksumCache.instance
 #  Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
 #    key = cache.generate_key(erb_file, "chef-test")
 #    fstat = File.stat(erb_file)
 #
-#    if cache.lookup_checksum(key, fstat) 
+#    if cache.lookup_checksum(key, fstat)
 #      Chef::Log.info("No change in checksum of #{erb_file}")
 #    else
 #      Chef::Log.info("Testing template #{erb_file} for syntax errors...")
@@ -65,7 +65,7 @@
 #   result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
 #   exit(1)
 # end
-# 
+#
 # def test_ruby_file(cookbook_dir, ruby_file)
 #   Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
 #   result = shell_out("ruby -c #{ruby_file}")
@@ -76,7 +76,7 @@
 #   result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
 #   exit(1)
 # end
-# 
+#
 
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require "chef/cookbook/syntax_check"
@@ -124,6 +124,7 @@ describe Chef::Cookbook::SyntaxCheck do
 
   describe "when validating cookbooks" do
     before do
+      Chef::Config[:cache_type] = 'Memory'
       @checksum_cache_klass = Class.new(Chef::ChecksumCache)
       @checksum_cache = @checksum_cache_klass.instance
       @checksum_cache.reset!('Memory')
