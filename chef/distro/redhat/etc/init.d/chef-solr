@@ -18,7 +18,7 @@
 # Source function library
 . /etc/init.d/functions
 
-exec="/usr/bin/chef-solr"
+exec="/usr/sbin/chef-solr"
 prog="chef-solr"
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog

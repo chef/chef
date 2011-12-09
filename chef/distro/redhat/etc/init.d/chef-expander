@@ -18,7 +18,7 @@
 # Source function library
 . /etc/init.d/functions
 
-exec="/usr/bin/chef-expander"
+exec="/usr/sbin/chef-expander"
 prog="chef-expander"
 
 [ -f /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
