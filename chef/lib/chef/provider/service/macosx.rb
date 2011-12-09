@@ -17,12 +17,13 @@
 #
 
 require 'chef/provider/service'
-require 'chef/mixin/command'
 
 class Chef
   class Provider
     class Service
       class Macosx < Chef::Provider::Service::Simple
+        include Chef::Mixin::ShellOut
+
         PLIST_DIRS = %w{~/Library/LaunchAgents
                          /Library/LaunchAgents
                          /Library/LaunchDaemons
@@ -53,7 +54,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              run_command(:command => "launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out!("launchctl load -w '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
             end
           end
         end
@@ -65,7 +66,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              run_command(:command => "launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
+              shell_out!("launchctl unload '#{@plist}'", :user => @owner_uid, :group => @owner_gid)
             end
           end
         end
@@ -91,18 +92,12 @@ class Chef
             @owner_uid = ::File.stat(@plist).uid
             @owner_gid = ::File.stat(@plist).gid
 
-            status = popen4("launchctl list", :user => @owner_uid, :group => @owner_gid) do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /(\d+|-)\s+(?:\d+|-)\s+(.*\.?)#{@current_resource.service_name}/
-                  pid = $1
-                  @current_resource.running(!pid.to_i.zero?)
-                end
+            shell_out!("launchctl list", :user => @owner_uid, :group => @owner_gid).stdout.each_line do |line|
+              case line
+              when /(\d+|-)\s+(?:\d+|-)\s+(.*\.?)#{@current_resource.service_name}/
+                pid = $1
+                @current_resource.running(!pid.to_i.zero?)
               end
-            end
-
-            if status.exitstatus > 1
-              raise Chef::Exceptions::Service, "Error determining state of #{@current_resource.service_name}, exit: #{status.exitstatus}"
             end
           else
             @current_resource.running(false)

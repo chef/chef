@@ -22,18 +22,14 @@ describe Chef::Provider::Service::Macosx do
   let(:node) { Chef::Node.new }
   let(:run_context) { Chef::RunContext.new(node, {}) }
   let(:provider) { described_class.new(new_resource, run_context) }
-
-  let(:stdin) { StringIO.new }
-  let(:stderr) { StringIO.new }
   let(:stdout) { StringIO.new }
-  let(:pid) { mock("PID") }
 
   before do
     Dir.stub!(:glob).and_return("/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist", "")
-    provider.stub!(:popen4).
+    provider.stub!(:shell_out!).
              with("launchctl list", {:group => 1001, :user => 101}).
-             and_yield(pid, stdin, stdout, stderr).
-             and_return(mock("Status", :exitstatus => 0))
+             and_return(mock("ouput", :stdout => stdout))
+
     File.stub!(:stat).and_return(mock("stat", :gid => 1001, :uid => 101))
   end
 
@@ -154,9 +150,9 @@ SVC_LIST
         end
 
         it "starts service via launchctl if service found" do
-          provider.should_receive(:run_command).
-                   with({:command => "launchctl load -w '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
-                         :group => 1001, :user => 101}).
+          provider.should_receive(:shell_out!).
+                   with("launchctl load -w '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
+                         :group => 1001, :user => 101).
                    and_return(0)
 
           provider.start_service
@@ -186,9 +182,9 @@ SVC_LIST
         end
 
         it "stops the service via launchctl if service found" do
-          provider.should_receive(:run_command).
-                   with({:command => "launchctl unload '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
-                         :group => 1001, :user => 101}).
+          provider.should_receive(:shell_out!).
+                   with("launchctl unload '/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist'",
+                        :group => 1001, :user => 101).
                    and_return(0)
 
           provider.stop_service
