@@ -108,7 +108,7 @@ class Chef
           end
         elsif @new_resource.link_type == :hard
           if ::File.exists?(@new_resource.target_file)
-             if ::File.exists?(@new_resource.to) && hardlink?(@current_resource.target_file, @new_resource.to)
+             if ::File.exists?(@new_resource.to) && (file_class.stat(@current_resource.target_file).ino == file_class.stat(@new_resource.to).ino)
                ::File.delete(@new_resource.target_file)
                Chef::Log.info("#{@new_resource} deleted")
                @new_resource.updated_by_last_action(true)
@@ -120,13 +120,14 @@ class Chef
       end
     end
 
-    private
-    def hardlink?(target, to)
-      if file_class.respond_to?(:hardlink?)
-        file_class.hardlink?(target)
-      else
-        ::File.stat(target).ino == ::File.stat(to).ino
-      end
-    end
+    # private
+    # def hardlink?(target, to)
+    #   s = file_class()
+    #   if file_class.respond_to?(:hardlink?)
+    #     file_class.hardlink?(target)
+    #   else
+    #     ::File.stat(target).ino == ::File.stat(to).ino
+    #   end
+    # end
   end
 end
