@@ -26,101 +26,10 @@ class Chef
   module Win32
     class File
 
-      class << self
+      # methods used by Chef::Win32::File::Stat also
+      module Helpers
         include Chef::Win32::API::File
         include Chef::Win32::API::Security
-
-        # Creates a symbolic link called +new_name+ for the file or directory
-        # +old_name+.
-        #
-        # This method requires Windows Vista or later to work. Otherwise, it
-        # returns nil as per MRI.
-        #
-        def link(old_name, new_name)
-          # TODO do a check for CreateHardLinkW and
-          # raise NotImplemented exception on older Windows
-          old_name = encode_path(old_name)
-          new_name = encode_path(new_name)
-          unless CreateHardLinkW(new_name, old_name, nil)
-            Chef::Win32::Error.raise!
-          end
-        end
-
-        # Creates a symbolic link called +new_name+ for the file or directory
-        # +old_name+.
-        #
-        # This method requires Windows Vista or later to work. Otherwise, it
-        # returns nil as per MRI.
-        #
-        def symlink(old_name, new_name)
-          # TODO do a check for CreateSymbolicLinkW and
-          # raise NotImplemented exception on older Windows
-          flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
-          old_name = encode_path(old_name)
-          new_name = encode_path(new_name)
-          unless CreateSymbolicLinkW(new_name, old_name, flags)
-            Chef::Win32::Error.raise!
-          end
-        end
-
-        # Return true if the named file is a symbolic link, false otherwise.
-        #
-        # This method requires Windows Vista or later to work. Otherwise, it
-        # always returns false as per MRI.
-        #
-        def symlink?(file_name)
-          is_symlink = false
-          path = encode_path(file_name)
-          if ::File.exists?(file_name)
-            if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
-              find_file(file_name) do |handle, find_data|
-                if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
-                  is_symlink = true
-                end
-              end
-            end
-          end
-          is_symlink
-        end
-
-        def hardlink?(file_name)
-          is_hardlink = false
-          if ::File.exists?(file_name)
-            open_file(file_name) do |handle|
-              file_information = BY_HANDLE_FILE_INFORMATION.new
-              success = GetFileInformationByHandle(handle, file_information)
-              if success == 0
-                Chef::Win32::Error.raise!
-              end
-
-              # if number of link > 1, means at least one hard link exists, in addition to the file itself
-              if file_information[:n_number_of_links] > 1
-                is_hardlink = true
-              end
-            end
-          end
-          is_hardlink
-        end
-
-        # Returns the path of the of the symbolic link referred to by +file+.
-        #
-        # Requires Windows Vista or later. On older versions of Windows it
-        # will raise a NotImplementedError, as per MRI.
-        #
-        def readlink(link_name)
-          # TODO do a check for GetFinalPathNameByHandleW and
-          # raise NotImplemented exception on older Windows
-          open_file(link_name) do |handle|
-            buffer = FFI::MemoryPointer.new(0.chr * MAX_PATH)
-            num_chars = GetFinalPathNameByHandleW(handle, buffer, buffer.size, FILE_NAME_NORMALIZED)
-            if num_chars == 0
-              Chef::Win32::Error.raise! #could be misleading if problem is too small buffer size as GetLastError won't report failure
-            end
-            buffer.read_wstring(num_chars).sub(path_prepender, "")
-          end
-        end
-
-        private
 
         # takes the given path pre-pends "\\?\" and
         # UTF-16LE encodes it.  Used to prepare paths
@@ -167,8 +76,106 @@ class Chef
           end
         end
 
+        def retrieve_file_info(file_name)
+          file_information = nil
+          open_file(file_name) do |handle|
+            file_information = BY_HANDLE_FILE_INFORMATION.new
+            success = GetFileInformationByHandle(handle, file_information)
+            if success == 0
+              Chef::Win32::Error.raise!
+            end
+          end
+          file_information
+        end
       end
+
+      # Creates a symbolic link called +new_name+ for the file or directory
+      # +old_name+.
+      #
+      # This method requires Windows Vista or later to work. Otherwise, it
+      # returns nil as per MRI.
+      #
+      def self.link(old_name, new_name)
+        # TODO do a check for CreateHardLinkW and
+        # raise NotImplemented exception on older Windows
+        old_name = encode_path(old_name)
+        new_name = encode_path(new_name)
+        unless CreateHardLinkW(new_name, old_name, nil)
+          Chef::Win32::Error.raise!
+        end
+      end
+
+      # Creates a symbolic link called +new_name+ for the file or directory
+      # +old_name+.
+      #
+      # This method requires Windows Vista or later to work. Otherwise, it
+      # returns nil as per MRI.
+      #
+      def self.symlink(old_name, new_name)
+        # TODO do a check for CreateSymbolicLinkW and
+        # raise NotImplemented exception on older Windows
+        flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
+        old_name = encode_path(old_name)
+        new_name = encode_path(new_name)
+        unless CreateSymbolicLinkW(new_name, old_name, flags)
+          Chef::Win32::Error.raise!
+        end
+      end
+
+      # Return true if the named file is a symbolic link, false otherwise.
+      #
+      # This method requires Windows Vista or later to work. Otherwise, it
+      # always returns false as per MRI.
+      #
+      def self.symlink?(file_name)
+        is_symlink = false
+        path = encode_path(file_name)
+        if ::File.exists?(file_name)
+          if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
+            find_file(file_name) do |handle, find_data|
+              if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
+                is_symlink = true
+              end
+            end
+          end
+        end
+        is_symlink
+      end
+
+      # Returns the path of the of the symbolic link referred to by +file+.
+      #
+      # Requires Windows Vista or later. On older versions of Windows it
+      # will raise a NotImplementedError, as per MRI.
+      #
+      def self.readlink(link_name)
+        # TODO do a check for GetFinalPathNameByHandleW and
+        # raise NotImplemented exception on older Windows
+        open_file(link_name) do |handle|
+          buffer = FFI::MemoryPointer.new(0.chr * MAX_PATH)
+          num_chars = GetFinalPathNameByHandleW(handle, buffer, buffer.size, FILE_NAME_NORMALIZED)
+          if num_chars == 0
+            Chef::Win32::Error.raise! #could be misleading if problem is too small buffer size as GetLastError won't report failure
+          end
+          buffer.read_wstring(num_chars).sub(path_prepender, "")
+        end
+      end
+
+      def self.info(file_name)
+        Info.new(file_name)
+      end
+
+      # ::File compat
+      class << self
+        alias :stat :info
+      end
+
+      private
+
+      include Chef::Win32::API::File # for the Constants
+      extend Chef::Win32::File::Helpers
 
     end
   end
 end
+
+require 'chef/win32/file/info'
