@@ -315,18 +315,19 @@ describe Chef::Resource::Link do
         describe "and when the file exists" do
           before do
             File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+            @file_class = if windows?
+              Chef::Win32::File
+            else
+              File
+            end
           end
 
           describe "and it appears to be a hardlink" do
             before do
-              if Chef::Platform.windows?
-                @provider.file_class.should_receive(:hardlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-              else
-                stat = mock("stats")
-                stat.stub!(:ino).and_return(1)
-                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
-                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
-              end
+              stat = mock("stats")
+              stat.stub!(:ino).and_return(1)
+              @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+              @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
             end
 
             it "deletes the link and marks the resource updated" do
@@ -339,14 +340,10 @@ describe Chef::Resource::Link do
 
           describe "and it does not appear to be a hardlink" do
             before do
-              if Chef::Platform.windows?
-                @provider.file_class.should_receive(:hardlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
-              else
-                stat = mock("stats", :ino => 1)
-                stat_two = mock("stats", :ino => 2)
-                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
-                File.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
-              end
+              stat = mock("stats", :ino => 1)
+              stat_two = mock("stats", :ino => 2)
+              @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+              @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
             end
 
             it "should raise a Link error" do
