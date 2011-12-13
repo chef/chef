@@ -18,13 +18,20 @@
 #
 
 require 'chef/win32/api'
+require 'chef/win32/api/security'
+require 'chef/win32/api/system'
 
 class Chef
   module Win32
     module API
       module File
-
         extend Chef::Win32::API
+        include Chef::Win32::API::Security
+        include Chef::Win32::API::System
+
+        ###############################################
+        # Win32 API Constants
+        ###############################################
 
         FILE_ATTRIBUTE_READONLY            = 0x00000001
         FILE_ATTRIBUTE_HIDDEN              = 0x00000002
@@ -55,6 +62,12 @@ class Chef
         # TODO add the rest of these CONSTS
         FILE_SHARE_READ = 0x00000001
         OPEN_EXISTING = 3
+
+        ###############################################
+        # Win32 API Bindings
+        ###############################################
+
+        ffi_lib 'kernel32'
 
 =begin
 typedef struct _FILETIME {
@@ -204,6 +217,71 @@ BOOLEAN WINAPI CreateSymbolicLink(
 );
 =end
         attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
+
+
+        ###############################################
+        # Helpers
+        ###############################################
+
+        # takes the given path pre-pends "\\?\" and
+        # UTF-16LE encodes it.  Used to prepare paths
+        # to be passed to the *W vesion of WinAPI File
+        # functions
+        def encode_path(path)
+          path.gsub!(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+          (path_prepender << path).to_wstring
+        end
+
+        def path_prepender
+          "\\\\?\\"
+        end
+
+        # retrieves a file search handle and passes it
+        # to +&block+ along with the find_data.  also
+        # ensures the handle is closed on exit of the block
+        def file_search_handle(path, &block)
+          begin
+            path = encode_path(path)
+            find_data = WIN32_FIND_DATA.new
+            handle = FindFirstFileW(path, find_data)
+            if handle == INVALID_HANDLE_VALUE
+              Chef::Win32::Error.raise!
+            end
+            block.call(handle, find_data)
+          ensure
+            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
+          end
+        end
+
+        # retrieves a file handle and passes it
+        # to +&block+ along with the find_data.  also
+        # ensures the handle is closed on exit of the block
+        def file_handle(path, &block)
+          begin
+            path = encode_path(path)
+            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
+                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nil)
+
+            if handle == INVALID_HANDLE_VALUE
+              Chef::Win32::Error.raise!
+            end
+            block.call(handle)
+          ensure
+            CloseHandle(handle) if handle && handle != INVALID_HANDLE_VALUE
+          end
+        end
+
+        def retrieve_file_info(file_name)
+          file_information = nil
+          file_handle(file_name) do |handle|
+            file_information = BY_HANDLE_FILE_INFORMATION.new
+            success = GetFileInformationByHandle(handle, file_information)
+            if success == 0
+              Chef::Win32::Error.raise!
+            end
+          end
+          file_information
+        end
 
       end
     end
