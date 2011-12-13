@@ -23,11 +23,11 @@ class Chef
   module Win32
     module API
 
-      include FFI::Library
-
       # put shared stuff (like constants) for all raw Win32 API calls
       def self.extended(host)
-        host.ffi_lib 'user32', 'kernel32'
+        host.extend FFI::Library
+        host.extend Macros
+
         host.ffi_convention :stdcall
 
         # Windows-specific type defs (ms-help://MS.MSDNQTR.v90.en/winprog/winprog/windows_data_types.htm):
@@ -214,6 +214,133 @@ class Chef
         #WINAPI: K,      # Calling convention for system functions. WinDef.h: define WINAPI __stdcall
         host.typedef :ushort,  :WORD # 16-bit unsigned integer. The range is 0 through 65535 decimal.
         host.typedef :uint,    :WPARAM    # Message parameter. WinDef.h as follows: host.typedef UINT_PTR WPARAM;
+      end
+
+      module Macros
+
+        ###############################################
+        # winbase.h
+        ###############################################
+
+        def LocalDiscard(pointer)
+          LocalReAlloc(pointer, 0, LMEM_MOVEABLE)
+        end
+
+        ###############################################
+        # windef.h
+        ###############################################
+
+        # Creates a WORD value by concatenating the specified values.
+        #
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632663(v=VS.85).aspx
+        def MAKEWORD(low, high)
+          ((low & 0xff) | (high & 0xff)) << 8
+        end
+
+        # Creates a LONG value by concatenating the specified values.
+        #
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632660(v=vs.85).aspx
+        def MAKELONG(low, high)
+          ((low & 0xffff) | (high & 0xffff)) << 16
+        end
+
+        # Retrieves the low-order word from the specified value.
+        #
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632659(v=VS.85).aspx
+        def LOWORD(l)
+          l & 0xffff
+        end
+
+        # Retrieves the high-order word from the specified 32-bit value.
+        #
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632657(v=VS.85).aspx
+        def HIWORD(l)
+          l >> 16
+        end
+
+        # Retrieves the low-order byte from the specified value.
+        #
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632658(v=VS.85).aspx
+        def LOBYTE(w)
+          w & 0xff
+        end
+
+        # Retrieves the high-order byte from the given 16-bit value.
+        #
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632656(v=VS.85).aspx
+        def HIBYTE(w)
+          w >> 8
+        end
+
+        ###############################################
+        # winerror.h
+        ###############################################
+
+        def IS_ERROR(status)
+          status >> 31 == 1
+        end
+
+        def MAKE_HRESULT(sev, fac, code)
+          sev << 31 | fac << 16 | code
+        end
+
+        def MAKE_SCODE(sev, fac, code)
+          sev << 31 | fac << 16 | code
+        end
+
+        def HRESULT_CODE(hr)
+          hr & 0xFFFF
+        end
+
+        def HRESULT_FACILITY(hr)
+          (hr >> 16) & 0x1fff
+        end
+
+        def HRESULT_FROM_NT(x)
+          x | 0x10000000 # FACILITY_NT_BIT
+        end
+
+        def HRESULT_FROM_WIN32(x)
+          if x <= 0
+            x
+          else
+            (x & 0x0000FFFF) | (7 << 16) | 0x80000000
+          end
+        end
+
+        def HRESULT_SEVERITY(hr)
+          (hr >> 31) & 0x1
+        end
+
+        def FAILED(status)
+          status < 0
+        end
+
+        def SUCCEEDED(status)
+          status >= 0
+        end
+      end
+
+      # Represents a 64-bit unsigned integer value.
+      #
+      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa383742(v=vs.85).aspx
+      def make_uint64(low, high)
+        low + (high * (2**32))
+      end
+
+      # http://blogs.msdn.com/b/oldnewthing/archive/2009/03/06/9461176.aspx
+      # January 1, 1601
+      WIN32_EPOC_MINUS_POSIX_EPOC = 116444736000000000
+
+      # Convert 64-bit FILETIME integer into Time object.
+      #
+      # FILETIME structure contains a 64-bit value representing the number
+      # of 100-nanosecond intervals since January 1, 1601 (UTC).
+      #
+      # http://msdn.microsoft.com/en-us/library/ms724284(VS.85).aspx
+      #
+      def wtime_to_time(wtime)
+        Time.at((wtime - WIN32_EPOC_MINUS_POSIX_EPOC) / 10000000)
       end
     end
   end
