@@ -386,6 +386,21 @@ describe Chef::Provider::User::Dscl do
     end
   end
 
+  describe "when changing the gid" do
+    before do
+      @current_resource = @new_resource.dup
+      @provider.current_resource = @current_resource
+      
+      # This is different from @current_resource
+      @new_resource.gid 2342
+    end
+    
+    it "sets the gid" do
+      @provider.should_receive :dscl_set_gid
+      @provider.manage_user
+    end
+  end
+
   describe "when the user exists and chef is removing it" do
     it "removes the user's home directory when the resource is configured to manage home" do
       @new_resource.supports({ :manage_home => true })
