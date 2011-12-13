@@ -18,11 +18,13 @@
 
 require 'chef/win32/api/process'
 require 'chef/win32/api/psapi'
+require 'chef/win32/api/system'
 require 'chef/win32/error'
 
 class Chef
   module Win32
     class Handle
+      extend Chef::Win32::API::Process
 
       def initialize(handle)
         @handle = handle
@@ -31,19 +33,16 @@ class Chef
 
       attr_reader :handle
 
-      class << self
-        include Chef::Win32::API::Process
+      def self.close_handle_finalizer(handle)
+        proc { close_handle(handle) }
+      end
 
-        def close_handle_finalizer(handle)
-          proc { close_handle(handle) }
-        end
-
-        def close_handle(handle)
-          unless CloseHandle(handle)
-            Chef::Win32::Error.raise!
-          end
+      def self.close_handle(handle)
+        unless CloseHandle(handle)
+          Chef::Win32::Error.raise!
         end
       end
+
     end
   end
 end

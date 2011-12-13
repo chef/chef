@@ -25,6 +25,10 @@ require 'ffi'
 class Chef
   module Win32
     class Process
+      include Chef::Win32::API::Process
+      extend Chef::Win32::API::Process
+      include Chef::Win32::API::PSAPI
+      extend Chef::Win32::API::PSAPI
 
       def initialize(handle)
         @handle = handle
@@ -44,41 +48,37 @@ class Chef
         Process.get_process_memory_info(handle)
       end
 
-      class << self
-        include Chef::Win32::API::Process
-        include Chef::Win32::API::PSAPI
-
-        def get_current_process
-          Process.new(Handle.new(GetCurrentProcess()))
-        end
-
-        def get_process_handle_count(handle)
-          handle_count = FFI::MemoryPointer.new :uint32
-          unless GetProcessHandleCount(handle.handle, handle_count)
-            Chef::Win32::Error.raise!
-          end
-          handle_count.read_uint32
-        end
-
-        def get_process_id(handle)
-          # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights
-          result = GetProcessId(handle.handle)
-          if result == 0
-            Chef::Win32::Error.raise!
-          end
-          result
-        end
-
-          # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
-          # AND the PROCESS_VM_READ right
-        def get_process_memory_info(handle)
-          memory_info = PROCESS_MEMORY_COUNTERS.new
-          unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)
-            Chef::Win32::Error.raise!
-          end
-          memory_info
-        end
+      def self.get_current_process
+        Process.new(Handle.new(GetCurrentProcess()))
       end
+
+      def self.get_process_handle_count(handle)
+        handle_count = FFI::MemoryPointer.new :uint32
+        unless GetProcessHandleCount(handle.handle, handle_count)
+          Chef::Win32::Error.raise!
+        end
+        handle_count.read_uint32
+      end
+
+      def self.get_process_id(handle)
+        # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights
+        result = GetProcessId(handle.handle)
+        if result == 0
+          Chef::Win32::Error.raise!
+        end
+        result
+      end
+
+        # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
+        # AND the PROCESS_VM_READ right
+      def self.get_process_memory_info(handle)
+        memory_info = PROCESS_MEMORY_COUNTERS.new
+        unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)
+          Chef::Win32::Error.raise!
+        end
+        memory_info
+      end
+
     end
   end
 end

@@ -16,15 +16,13 @@
 # limitations under the License.
 #
 
+require 'chef/win32/api'
 require 'chef/win32/api/system'
-require 'chef/win32/error'
-require 'chef/win32/memory'
-require 'chef/win32/unicode'
 
 class Chef
   module Win32
     class Version
-
+      include Chef::Win32::API::Macros
       include Chef::Win32::API::System
 
       # Ruby implementation of
@@ -73,15 +71,21 @@ class Chef
       end
 
       # Server Type checks
-      %w{ core full datacenter }.each do |m|
-        define_method("server_#{m}?") do
-          if @sku
-            !(PRODUCT_TYPE[@sku][:name] =~ /#{m}/i).nil?
-          else
-            false
+      %w{ cluster core datacenter }.each do |m|
+        define_method("#{m}?") do
+          self.class.constants.any? do |c|
+            (self.class.const_get(c) == @sku) &&
+              (c.to_s =~ /#{m}/i )
           end
+          # if @sku
+          #   !(PRODUCT_TYPE[@sku][:name] =~ /#{m}/i).nil?
+          # else
+          #   false
+          # end
         end
       end
+
+      private
 
       def get_version
         version = GetVersion()

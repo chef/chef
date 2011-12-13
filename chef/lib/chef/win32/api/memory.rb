@@ -22,8 +22,11 @@ class Chef
   module Win32
     module API
       module Memory
-
         extend Chef::Win32::API
+
+        ###############################################
+        # Win32 API Constants
+        ###############################################
 
         LMEM_FIXED          = 0x0000
         LMEM_MOVEABLE       = 0x0002
@@ -41,6 +44,12 @@ class Chef
         LMEM_DISCARDED      = 0x4000
         LMEM_LOCKCOUNT      = 0x00FF
 
+        ###############################################
+        # Win32 API Bindings
+        ###############################################
+
+        ffi_lib 'kernel32'
+
 =begin
 HLOCAL WINAPI LocalAlloc(
   __in  UINT uFlags,
@@ -48,27 +57,21 @@ HLOCAL WINAPI LocalAlloc(
 );
 =end
         attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
-=begin
-HLOCAL WINAPI LocalDiscard(
-  [in]  HLOCAL hlocMem
-);
-=end
-        # This is a macro
-        def LocalDiscard(pointer)
-          LocalReAlloc(pointer, 0, LMEM_MOVEABLE)
-        end
+
 =begin
 UINT WINAPI LocalFlags(
   __in  HLOCAL hMem
 );
 =end
         attach_function :LocalFlags, [ :pointer ], :UINT
+
 =begin
 HLOCAL WINAPI LocalFree(
   __in  HLOCAL hMem
 );
 =end
         attach_function :LocalFree, [ :pointer ], :pointer
+
 =begin
 HLOCAL WINAPI LocalReAlloc(
   __in  HLOCAL hMem,
@@ -77,6 +80,7 @@ HLOCAL WINAPI LocalReAlloc(
 );
 =end
         attach_function :LocalReAlloc, [ :pointer, :SIZE_T, :UINT ], :pointer
+
 =begin
 UINT WINAPI LocalSize(
   __in  HLOCAL hMem
@@ -84,13 +88,17 @@ UINT WINAPI LocalSize(
 =end
         attach_function :LocalSize, [ :pointer ], :SIZE_T
 
-        # C memory allocators and movers (memcpy is particularly useful)
+        ###############################################
+        # FFI API Bindings
+        ###############################################
+
         ffi_lib FFI::Library::LIBC
         attach_function :malloc, [:size_t], :pointer
         attach_function :calloc, [:size_t], :pointer
         attach_function :realloc, [:pointer, :size_t], :pointer
         attach_function :free, [:pointer], :void
         attach_function :memcpy, [:pointer, :pointer, :size_t], :pointer
+
       end
     end
   end

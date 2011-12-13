@@ -20,74 +20,12 @@
 require 'chef/win32/api/file'
 require 'chef/win32/api/security'
 require 'chef/win32/error'
-require 'chef/win32/unicode'
 
 class Chef
   module Win32
     class File
-
-      # methods used by Chef::Win32::File::Stat also
-      module Helpers
-        include Chef::Win32::API::File
-        include Chef::Win32::API::Security
-
-        # takes the given path pre-pends "\\?\" and
-        # UTF-16LE encodes it.  Used to prepare paths
-        # to be passed to the *W vesion of WinAPI File
-        # functions
-        def encode_path(path)
-          path.gsub!(::File::SEPARATOR, ::File::ALT_SEPARATOR)
-          (path_prepender << path).to_wstring
-        end
-
-        def path_prepender
-          "\\\\?\\"
-        end
-
-        # retrieves a file search handle and passes it
-        # to +&block+ along with the find_data.  also
-        # ensures the handle is closed on exit of the block
-        def find_file(path, &block)
-          begin
-            path = encode_path(path)
-            find_data = WIN32_FIND_DATA.new
-            handle = FindFirstFileW(path, find_data)
-            if handle == INVALID_HANDLE_VALUE
-              Chef::Win32::Error.raise!
-            end
-            block.call(handle, find_data)
-          ensure
-            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
-          end
-        end
-
-        def open_file(path, &block)
-          begin
-            path = encode_path(path)
-            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nil)
-
-            if handle == INVALID_HANDLE_VALUE
-              Chef::Win32::Error.raise!
-            end
-            block.call(handle)
-          ensure
-            FindClose(handle) if handle && handle != INVALID_HANDLE_VALUE
-          end
-        end
-
-        def retrieve_file_info(file_name)
-          file_information = nil
-          open_file(file_name) do |handle|
-            file_information = BY_HANDLE_FILE_INFORMATION.new
-            success = GetFileInformationByHandle(handle, file_information)
-            if success == 0
-              Chef::Win32::Error.raise!
-            end
-          end
-          file_information
-        end
-      end
+      include Chef::Win32::API::File
+      extend Chef::Win32::API::File
 
       # Creates a symbolic link called +new_name+ for the file or directory
       # +old_name+.
@@ -96,6 +34,7 @@ class Chef
       # returns nil as per MRI.
       #
       def self.link(old_name, new_name)
+        raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
         # TODO do a check for CreateHardLinkW and
         # raise NotImplemented exception on older Windows
         old_name = encode_path(old_name)
@@ -112,6 +51,7 @@ class Chef
       # returns nil as per MRI.
       #
       def self.symlink(old_name, new_name)
+        raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
@@ -132,7 +72,7 @@ class Chef
         path = encode_path(file_name)
         if ::File.exists?(file_name)
           if ((GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0)
-            find_file(file_name) do |handle, find_data|
+            file_search_handle(file_name) do |handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
                 is_symlink = true
               end
@@ -148,9 +88,10 @@ class Chef
       # will raise a NotImplementedError, as per MRI.
       #
       def self.readlink(link_name)
+        raise Errno::ENOENT, link_name unless ::File.exist?(link_name)
         # TODO do a check for GetFinalPathNameByHandleW and
         # raise NotImplemented exception on older Windows
-        open_file(link_name) do |handle|
+        file_handle(link_name) do |handle|
           buffer = FFI::MemoryPointer.new(0.chr * MAX_PATH)
           num_chars = GetFinalPathNameByHandleW(handle, buffer, buffer.size, FILE_NAME_NORMALIZED)
           if num_chars == 0
@@ -168,11 +109,6 @@ class Chef
       class << self
         alias :stat :info
       end
-
-      private
-
-      include Chef::Win32::API::File # for the Constants
-      extend Chef::Win32::File::Helpers
 
     end
   end

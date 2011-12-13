@@ -22,82 +22,80 @@ require 'chef/win32/api/memory'
 class Chef
   module Win32
     class Memory
+      include Chef::Win32::API::Memory
+      extend Chef::Win32::API::Memory
 
-      class << self
-        include Chef::Win32::API::Memory
-
-        # local_alloc(length[, flags]) [BLOCK]
-        # Allocates memory using LocalAlloc
-        # If BLOCK is specified, the memory will be passed
-        # to the block and freed afterwards.
-        def local_alloc(length, flags = LPTR, &block)
-          result = LocalAlloc(flags, length)
-          if result.null?
-            Chef::Win32::Error.raise!
-          end
-          # If a block is passed, handle freeing the memory at the end
-          if block != nil
-            begin
-              yield result
-            ensure
-              local_free(result)
-            end
-          else
-            result
-          end
+      # local_alloc(length[, flags]) [BLOCK]
+      # Allocates memory using LocalAlloc
+      # If BLOCK is specified, the memory will be passed
+      # to the block and freed afterwards.
+      def self.local_alloc(length, flags = LPTR, &block)
+        result = LocalAlloc(flags, length)
+        if result.null?
+          Chef::Win32::Error.raise!
         end
-
-        # local_discard(pointer)
-        # Discard memory.  Equivalent to local_realloc(pointer, 0)
-        def local_discard(pointer)
-          local_realloc(pointer, 0, LMEM_MOVEABLE)
-        end
-
-        # local_flags(pointer)
-        # Get lock count and Windows flags for local_alloc allocated memory.
-        # Use: flags, lock_count = local_flags(pointer)
-        def local_flags(pointer)
-          result = LocalFlags(pointer)
-          if result == LMEM_INVALID_HANDLE
-            Chef::Win32::Error.raise!
+        # If a block is passed, handle freeing the memory at the end
+        if block != nil
+          begin
+            yield result
+          ensure
+            local_free(result)
           end
-          [ result & ~LMEM_LOCKCOUNT, result & LMEM_LOCKCOUNT ]
-        end
-
-        # local_free(pointer)
-        # Free memory allocated using local_alloc
-        def local_free(pointer)
-          result = LocalFree(pointer)
-          if !result.null?
-            Chef::Win32::Error.raise!
-          end
-        end
-
-        # local_realloc(pointer, size[, flags])
-        # Resizes memory allocated using LocalAlloc.
-        def local_realloc(pointer, size, flags = LMEM_MOVEABLE | LMEM_ZEROINIT)
-          result = LocalReAlloc(pointer, size, flags)
-          if result.null?
-            Chef::Win32::Error.raise!
-          end
+        else
           result
         end
-
-        # local_size(pointer)
-        # Gets the size of memory allocated using LocalAlloc.
-        def local_size(pointer)
-          result = LocalSize(pointer)
-          if result == 0
-            Chef::Win32::Error.raise!
-          end
-          result
-        end
-
-        def local_free_finalizer(pointer)
-          proc { local_free(pointer) }
-        end
-
       end
+
+      # local_discard(pointer)
+      # Discard memory.  Equivalent to local_realloc(pointer, 0)
+      def self.local_discard(pointer)
+        local_realloc(pointer, 0, LMEM_MOVEABLE)
+      end
+
+      # local_flags(pointer)
+      # Get lock count and Windows flags for local_alloc allocated memory.
+      # Use: flags, lock_count = local_flags(pointer)
+      def self.local_flags(pointer)
+        result = LocalFlags(pointer)
+        if result == LMEM_INVALID_HANDLE
+          Chef::Win32::Error.raise!
+        end
+        [ result & ~LMEM_LOCKCOUNT, result & LMEM_LOCKCOUNT ]
+      end
+
+      # local_free(pointer)
+      # Free memory allocated using local_alloc
+      def self.local_free(pointer)
+        result = LocalFree(pointer)
+        if !result.null?
+          Chef::Win32::Error.raise!
+        end
+      end
+
+      # local_realloc(pointer, size[, flags])
+      # Resizes memory allocated using LocalAlloc.
+      def self.local_realloc(pointer, size, flags = LMEM_MOVEABLE | LMEM_ZEROINIT)
+        result = LocalReAlloc(pointer, size, flags)
+        if result.null?
+          Chef::Win32::Error.raise!
+        end
+        result
+      end
+
+      # local_size(pointer)
+      # Gets the size of memory allocated using LocalAlloc.
+      def self.local_size(pointer)
+        result = LocalSize(pointer)
+        if result == 0
+          Chef::Win32::Error.raise!
+        end
+        result
+      end
+
+      def self.local_free_finalizer(pointer)
+        proc { local_free(pointer) }
+      end
+
     end
   end
 end

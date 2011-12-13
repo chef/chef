@@ -22,8 +22,11 @@ class Chef
   module Win32
     module API
       module System
-
         extend Chef::Win32::API
+
+        ###############################################
+        # Win32 API Constants
+        ###############################################
 
         # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
 
@@ -65,67 +68,71 @@ class Chef
         # The operating system is Windows 7, Windows Vista, Windows XP Professional, Windows XP Home Edition, or Windows 2000 Professional.
         VER_NT_WORKSTATION = 0x0000001
 
+        # Product Info
+        # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
+        PRODUCT_BUSINESS = 0x00000006 # Business
+        PRODUCT_BUSINESS_N = 0x00000010 # Business N
+        PRODUCT_CLUSTER_SERVER = 0x00000012 # HPC Edition
+        PRODUCT_DATACENTER_SERVER = 0x00000008 # Server Datacenter (full installation)
+        PRODUCT_DATACENTER_SERVER_CORE = 0x0000000C # Server Datacenter (core installation)
+        PRODUCT_DATACENTER_SERVER_CORE_V = 0x00000027 # Server Datacenter without Hyper-V (core installation)
+        PRODUCT_DATACENTER_SERVER_V = 0x00000025 # Server Datacenter without Hyper-V (full installation)
+        PRODUCT_ENTERPRISE = 0x00000004 # Enterprise
+        PRODUCT_ENTERPRISE_E = 0x00000046 # Not supported
+        PRODUCT_ENTERPRISE_N = 0x0000001B # Enterprise N
+        PRODUCT_ENTERPRISE_SERVER = 0x0000000A # Server Enterprise (full installation)
+        PRODUCT_ENTERPRISE_SERVER_CORE = 0x0000000E # Server Enterprise (core installation)
+        PRODUCT_ENTERPRISE_SERVER_CORE_V = 0x00000029 # Server Enterprise without Hyper-V (core installation)
+        PRODUCT_ENTERPRISE_SERVER_IA64 = 0x0000000F # Server Enterprise for Itanium-based Systems
+        PRODUCT_ENTERPRISE_SERVER_V = 0x00000026 # Server Enterprise without Hyper-V (full installation)
+        PRODUCT_HOME_BASIC = 0x00000002 # Home Basic
+        PRODUCT_HOME_BASIC_E = 0x00000043 # Not supported
+        PRODUCT_HOME_BASIC_N = 0x00000005 # Home Basic N
+        PRODUCT_HOME_PREMIUM = 0x00000003 # Home Premium
+        PRODUCT_HOME_PREMIUM_E = 0x00000044 # Not supported
+        PRODUCT_HOME_PREMIUM_N = 0x0000001A # Home Premium N
+        PRODUCT_HYPERV = 0x0000002A # Microsoft Hyper-V Server
+        PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMENT = 0x0000001E # Windows Essential Business Server Management Server
+        PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGING = 0x00000020 # Windows Essential Business Server Messaging Server
+        PRODUCT_MEDIUMBUSINESS_SERVER_SECURITY = 0x0000001F # Windows Essential Business Server Security Server
+        PRODUCT_PROFESSIONAL = 0x00000030 # Professional
+        PRODUCT_PROFESSIONAL_E = 0x00000045 # Not supported
+        PRODUCT_PROFESSIONAL_N = 0x00000031 # Professional N
+        PRODUCT_SERVER_FOR_SMALLBUSINESS = 0x00000018 # Windows Server 2008 for Windows Essential Server Solutions
+        PRODUCT_SERVER_FOR_SMALLBUSINESS_V = 0x00000023 # Windows Server 2008 without Hyper-V for Windows Essential Server Solutions
+        PRODUCT_SERVER_FOUNDATION = 0x00000021 # Server Foundation
+        PRODUCT_HOME_PREMIUM_SERVER = 0x00000022 # Windows Home Server 2011
+        PRODUCT_SB_SOLUTION_SERVER = 0x00000032 # Windows Small Business Server 2011 Essentials
+        PRODUCT_HOME_SERVER = 0x00000013 # Windows Storage Server 2008 R2 Essentials
+        PRODUCT_SMALLBUSINESS_SERVER = 0x00000009 # Windows Small Business Server
+        PRODUCT_SOLUTION_EMBEDDEDSERVER = 0x00000038 # Windows MultiPoint Server
+        PRODUCT_STANDARD_SERVER = 0x00000007 # Server Standard (full installation)
+        PRODUCT_STANDARD_SERVER_CORE = 0x0000000D # Server Standard (core installation)
+        PRODUCT_STANDARD_SERVER_CORE_V = 0x00000028 # Server Standard without Hyper-V (core installation)
+        PRODUCT_STANDARD_SERVER_V = 0x00000024 # Server Standard without Hyper-V (full installation)
+        PRODUCT_STARTER = 0x0000000B # Starter
+        PRODUCT_STARTER_E = 0x00000042 # Not supported
+        PRODUCT_STARTER_N = 0x0000002F # Starter N
+        PRODUCT_STORAGE_ENTERPRISE_SERVER = 0x00000017 # Storage Server Enterprise
+        PRODUCT_STORAGE_EXPRESS_SERVER = 0x00000014 # Storage Server Express
+        PRODUCT_STORAGE_STANDARD_SERVER = 0x00000015 # Storage Server Standard
+        PRODUCT_STORAGE_WORKGROUP_SERVER = 0x00000016 # Storage Server Workgroup
+        PRODUCT_UNDEFINED = 0x00000000 # An unknown product
+        PRODUCT_ULTIMATE = 0x00000001 # Ultimate
+        PRODUCT_ULTIMATE_E = 0x00000047 # Not supported
+        PRODUCT_ULTIMATE_N = 0x0000001C # Ultimate N
+        PRODUCT_WEB_SERVER = 0x00000011 # Web Server (full installation)
+        PRODUCT_WEB_SERVER_CORE = 0x0000001D # Web Server (core installation)
+
         # GetSystemMetrics
         # The build number if the system is Windows Server 2003 R2; otherwise, 0.
         SM_SERVERR2 = 89
 
-        # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
-        # this is what it sounds like...when kittens die
-        PRODUCT_TYPE = {
-          0x00000006 => {:ms_const => 'PRODUCT_BUSINESS', :name => 'Business'},
-          0x00000010 => {:ms_const => 'PRODUCT_BUSINESS_N', :name => 'Business N'},
-          0x00000012 => {:ms_const => 'PRODUCT_CLUSTER_SERVER', :name => 'HPC Edition'},
-          0x00000008 => {:ms_const => 'PRODUCT_DATACENTER_SERVER', :name => 'Server Datacenter (full installation)'},
-          0x0000000C => {:ms_const => 'PRODUCT_DATACENTER_SERVER_CORE', :name => 'Server Datacenter (core installation)'},
-          0x00000027 => {:ms_const => 'PRODUCT_DATACENTER_SERVER_CORE_V', :name => 'Server Datacenter without Hyper-V (core installation)'},
-          0x00000025 => {:ms_const => 'PRODUCT_DATACENTER_SERVER_V', :name => 'Server Datacenter without Hyper-V (full installation)'},
-          0x00000004 => {:ms_const => 'PRODUCT_ENTERPRISE', :name => 'Enterprise'},
-          0x00000046 => {:ms_const => 'PRODUCT_ENTERPRISE_E', :name => 'Not supported'},
-          0x0000001B => {:ms_const => 'PRODUCT_ENTERPRISE_N', :name => 'Enterprise N'},
-          0x0000000A => {:ms_const => 'PRODUCT_ENTERPRISE_SERVER', :name => 'Server Enterprise (full installation)'},
-          0x0000000E => {:ms_const => 'PRODUCT_ENTERPRISE_SERVER_CORE', :name => 'Server Enterprise (core installation)'},
-          0x00000029 => {:ms_const => 'PRODUCT_ENTERPRISE_SERVER_CORE_V', :name => 'Server Enterprise without Hyper-V (core installation)'},
-          0x0000000F => {:ms_const => 'PRODUCT_ENTERPRISE_SERVER_IA64', :name => 'Server Enterprise for Itanium-based Systems'},
-          0x00000026 => {:ms_const => 'PRODUCT_ENTERPRISE_SERVER_V', :name => 'Server Enterprise without Hyper-V (full installation)'},
-          0x00000002 => {:ms_const => 'PRODUCT_HOME_BASIC', :name => 'Home Basic'},
-          0x00000043 => {:ms_const => 'PRODUCT_HOME_BASIC_E', :name => 'Not supported'},
-          0x00000005 => {:ms_const => 'PRODUCT_HOME_BASIC_N', :name => 'Home Basic N'},
-          0x00000003 => {:ms_const => 'PRODUCT_HOME_PREMIUM', :name => 'Home Premium'},
-          0x00000044 => {:ms_const => 'PRODUCT_HOME_PREMIUM_E', :name => 'Not supported'},
-          0x0000001A => {:ms_const => 'PRODUCT_HOME_PREMIUM_N', :name => 'Home Premium N'},
-          0x0000002A => {:ms_const => 'PRODUCT_HYPERV', :name => 'Microsoft Hyper-V Server'},
-          0x0000001E => {:ms_const => 'PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMENT', :name => 'Windows Essential Business Server Management Server'},
-          0x00000020 => {:ms_const => 'PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGING', :name => 'Windows Essential Business Server Messaging Server'},
-          0x0000001F => {:ms_const => 'PRODUCT_MEDIUMBUSINESS_SERVER_SECURITY', :name => 'Windows Essential Business Server Security Server'},
-          0x00000030 => {:ms_const => 'PRODUCT_PROFESSIONAL', :name => 'Professional'},
-          0x00000045 => {:ms_const => 'PRODUCT_PROFESSIONAL_E', :name => 'Not supported'},
-          0x00000031 => {:ms_const => 'PRODUCT_PROFESSIONAL_N', :name => 'Professional N'},
-          0x00000018 => {:ms_const => 'PRODUCT_SERVER_FOR_SMALLBUSINESS', :name => 'Windows Server 2008 for Windows Essential Server Solutions'},
-          0x00000023 => {:ms_const => 'PRODUCT_SERVER_FOR_SMALLBUSINESS_V', :name => 'Windows Server 2008 without Hyper-V for Windows Essential Server Solutions'},
-          0x00000021 => {:ms_const => 'PRODUCT_SERVER_FOUNDATION', :name => 'Server Foundation'},
-          0x00000022 => {:ms_const => 'PRODUCT_HOME_PREMIUM_SERVER', :name => 'Windows Home Server 2011'},
-          0x00000032 => {:ms_const => 'PRODUCT_SB_SOLUTION_SERVER', :name => 'Windows Small Business Server 2011 Essentials'},
-          0x00000013 => {:ms_const => 'PRODUCT_HOME_SERVER', :name => 'Windows Storage Server 2008 R2 Essentials'},
-          0x00000009 => {:ms_const => 'PRODUCT_SMALLBUSINESS_SERVER', :name => 'Windows Small Business Server'},
-          0x00000038 => {:ms_const => 'PRODUCT_SOLUTION_EMBEDDEDSERVER', :name => 'Windows MultiPoint Server'},
-          0x00000007 => {:ms_const => 'PRODUCT_STANDARD_SERVER', :name => 'Server Standard (full installation)'},
-          0x0000000D => {:ms_const => 'PRODUCT_STANDARD_SERVER_CORE', :name => 'Server Standard (core installation)'},
-          0x00000028 => {:ms_const => 'PRODUCT_STANDARD_SERVER_CORE_V', :name => 'Server Standard without Hyper-V (core installation)'},
-          0x00000024 => {:ms_const => 'PRODUCT_STANDARD_SERVER_V', :name => 'Server Standard without Hyper-V (full installation)'},
-          0x0000000B => {:ms_const => 'PRODUCT_STARTER', :name => 'Starter'},
-          0x00000042 => {:ms_const => 'PRODUCT_STARTER_E', :name => 'Not supported'},
-          0x0000002F => {:ms_const => 'PRODUCT_STARTER_N', :name => 'Starter N'},
-          0x00000017 => {:ms_const => 'PRODUCT_STORAGE_ENTERPRISE_SERVER', :name => 'Storage Server Enterprise'},
-          0x00000014 => {:ms_const => 'PRODUCT_STORAGE_EXPRESS_SERVER', :name => 'Storage Server Express'},
-          0x00000015 => {:ms_const => 'PRODUCT_STORAGE_STANDARD_SERVER', :name => 'Storage Server Standard'},
-          0x00000016 => {:ms_const => 'PRODUCT_STORAGE_WORKGROUP_SERVER', :name => 'Storage Server Workgroup'},
-          0x00000000 => {:ms_const => 'PRODUCT_UNDEFINED', :name => 'An unknown product'},
-          0x00000001 => {:ms_const => 'PRODUCT_ULTIMATE', :name => 'Ultimate'},
-          0x00000047 => {:ms_const => 'PRODUCT_ULTIMATE_E', :name => 'Not supported'},
-          0x0000001C => {:ms_const => 'PRODUCT_ULTIMATE_N', :name => 'Ultimate N'},
-          0x00000011 => {:ms_const => 'PRODUCT_WEB_SERVER', :name => 'Web Server (full installation)'},
-          0x0000001D => {:ms_const => 'PRODUCT_WEB_SERVER_CORE', :name => 'Web Server (core installation)'}
-        }
+        ###############################################
+        # Win32 API Bindings
+        ###############################################
+
+        ffi_lib 'kernel32', 'user32'
 
         class OSVERSIONINFOEX < FFI::Struct
           layout :dw_os_version_info_size, :DWORD,
@@ -141,33 +148,11 @@ class Chef
             :w_reserved, :BYTE,
         end
 
-        def MAKEWORD(a, b)
-          ((a & 0xff) | (b & 0xff)) << 8
-        end
-
-        def MAKELONG(a, b)
-          ((a & 0xffff) | (b & 0xffff)) << 16
-        end
-
-        def LOWORD(l)
-          l & 0xffff
-        end
-
-        def HIWORD(l)
-          l >> 16
-        end
-
-        def LOBYTE(w)
-          w & 0xff
-        end
-
-        def HIBYTE(w)
-          w >> 8
-        end
-
-        ffi_lib 'user32', 'kernel32'
-        ffi_convention :stdcall
-
+=begin
+BOOL WINAPI CloseHandle(
+  __in  HANDLE hObject
+);
+=end
         attach_function :CloseHandle, [ :HANDLE ], :BOOL
 
 =begin
