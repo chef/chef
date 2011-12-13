@@ -22,8 +22,11 @@ class Chef
   module Win32
     module API
       module PSAPI
-
         extend Chef::Win32::API
+
+        ###############################################
+        # Win32 API Bindings
+        ###############################################
 
         class PROCESS_MEMORY_COUNTERS < FFI::Struct
           layout :cb, :DWORD,
@@ -38,8 +41,10 @@ class Chef
             :PeakPagefileUsage, :SIZE_T
         end
 
-        ffi_lib 'kernel32', 'psapi'
+        ffi_lib 'psapi'
+
         attach_function :GetProcessMemoryInfo, [ :HANDLE, :pointer, :DWORD ], :BOOL
+
       end
     end
   end

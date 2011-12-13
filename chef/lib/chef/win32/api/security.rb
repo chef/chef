@@ -22,37 +22,11 @@ class Chef
   module Win32
     module API
       module Security
-
         extend Chef::Win32::API
 
-        SE_OBJECT_TYPE = enum :SE_OBJECT_TYPE, [
-             :SE_UNKNOWN_OBJECT_TYPE,
-             :SE_FILE_OBJECT,
-             :SE_SERVICE,
-             :SE_PRINTER,
-             :SE_REGISTRY_KEY,
-             :SE_LMSHARE,
-             :SE_KERNEL_OBJECT,
-             :SE_WINDOW_OBJECT,
-             :SE_DS_OBJECT,
-             :SE_DS_OBJECT_ALL,
-             :SE_PROVIDER_DEFINED_OBJECT,
-             :SE_WMIGUID_OBJECT,
-             :SE_REGISTRY_WOW64_32KEY
-        ]
-
-        SID_NAME_USE = enum :SID_NAME_USE, [
-             :SidTypeUser, 1,
-             :SidTypeGroup,
-             :SidTypeDomain,
-             :SidTypeAlias,
-             :SidTypeWellKnownGroup,
-             :SidTypeDeletedAccount,
-             :SidTypeInvalid,
-             :SidTypeUnknown,
-             :SidTypeComputer,
-             :SidTypeLabel
-        ]
+        ###############################################
+        # Win32 API Constants
+        ###############################################
 
         # ACE_HEADER AceType
         ACCESS_MIN_MS_ACE_TYPE                   = 0x0
@@ -193,6 +167,39 @@ class Chef
 
         MAXDWORD = 0xffffffff
 
+        ###############################################
+        # Win32 API Bindings
+        ###############################################
+
+        SE_OBJECT_TYPE = enum :SE_OBJECT_TYPE, [
+             :SE_UNKNOWN_OBJECT_TYPE,
+             :SE_FILE_OBJECT,
+             :SE_SERVICE,
+             :SE_PRINTER,
+             :SE_REGISTRY_KEY,
+             :SE_LMSHARE,
+             :SE_KERNEL_OBJECT,
+             :SE_WINDOW_OBJECT,
+             :SE_DS_OBJECT,
+             :SE_DS_OBJECT_ALL,
+             :SE_PROVIDER_DEFINED_OBJECT,
+             :SE_WMIGUID_OBJECT,
+             :SE_REGISTRY_WOW64_32KEY
+        ]
+
+        SID_NAME_USE = enum :SID_NAME_USE, [
+             :SidTypeUser, 1,
+             :SidTypeGroup,
+             :SidTypeDomain,
+             :SidTypeAlias,
+             :SidTypeWellKnownGroup,
+             :SidTypeDeletedAccount,
+             :SidTypeInvalid,
+             :SidTypeUnknown,
+             :SidTypeComputer,
+             :SidTypeLabel
+        ]
+
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa379561(v=vs.85).aspx
@@ -233,10 +240,6 @@ class Chef
           end
         end
 
-        #
-        # Windows functions
-        #
-
         ffi_lib "advapi32"
 
         attach_function :AddAce, [ :pointer, :DWORD, :DWORD, :LPVOID, :DWORD ], :BOOL
@@ -273,6 +276,7 @@ class Chef
         attach_function :SetSecurityDescriptorGroup, [ :pointer, :pointer, :BOOL ], :BOOL
         attach_function :SetSecurityDescriptorOwner, [ :pointer, :pointer, :BOOL ], :BOOL
         attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
+
       end
     end
   end
