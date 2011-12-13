@@ -164,7 +164,7 @@ class Chef
           dscl_create_user    if diverged?(:username)
           dscl_create_comment if diverged?(:comment)
           set_uid             if diverged?(:uid)
-          dscl_set_gid        if diverged?(:uid)
+          dscl_set_gid        if diverged?(:gid)
           modify_home         if diverged?(:home)
           dscl_set_shell      if diverged?(:shell)
           modify_password     if diverged?(:password)
