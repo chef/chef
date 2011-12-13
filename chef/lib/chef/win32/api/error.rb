@@ -22,8 +22,11 @@ class Chef
   module Win32
     module API
       module Error
-
         extend Chef::Win32::API
+
+        ###############################################
+        # Win32 API Constants
+        ###############################################
 
         S_OK                      = 0
         NO_ERROR                  = 0
@@ -870,51 +873,12 @@ class Chef
         SEM_NOGPFAULTERRORBOX      = 0x0002
         SEM_NOOPENFILEERRORBOX     = 0x8000
 
-        def IS_ERROR(status)
-          status >> 31 == 1
-        end
+        ###############################################
+        # Win32 API Bindings
+        ###############################################
 
-        def MAKE_HRESULT(sev, fac, code)
-          sev << 31 | fac << 16 | code
-        end
+        ffi_lib 'kernel32', 'user32'
 
-        def MAKE_SCODE(sev, fac, code)
-          sev << 31 | fac << 16 | code
-        end
-
-        def HRESULT_CODE(hr)
-          hr & 0xFFFF
-        end
-
-        def HRESULT_FACILITY(hr)
-          (hr >> 16) & 0x1fff
-        end
-
-        def HRESULT_FROM_NT(x)
-          x | 0x10000000 # FACILITY_NT_BIT
-        end
-
-        def HRESULT_FROM_WIN32(x)
-          if x <= 0
-            x
-          else
-            (x & 0x0000FFFF) | (7 << 16) | 0x80000000
-          end
-        end
-
-        def HRESULT_SEVERITY(hr)
-          (hr >> 31) & 0x1
-        end
-
-        def FAILED(status)
-          status < 0
-        end
-
-        def SUCCEEDED(status)
-          status >= 0
-        end
-
-        # Functions
 =begin
 DWORD WINAPI FormatMessage(
   __in      DWORD dwFlags,
@@ -950,6 +914,7 @@ UINT WINAPI SetErrorMode(
 );
 =end
         attach_function :SetErrorMode, [:UINT], :UINT
+
       end
     end
   end
