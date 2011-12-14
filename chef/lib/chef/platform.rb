@@ -140,6 +140,14 @@ class Chef
               :group => Chef::Provider::Group::Suse
             }
           },
+          :oracle  => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
           :redhat   => {
             :default => {
               :service => Chef::Provider::Service::Redhat,
