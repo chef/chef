@@ -2,6 +2,8 @@ source :rubygems
 
 gemspec
 
+gem "dep_selector", :group => :development, :platform => "ruby"
+
 platforms :mswin, :mingw do
   gem "ffi", "1.0.9"
   gem "rdp-ruby-wmi", "0.3.1"
