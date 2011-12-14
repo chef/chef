@@ -145,7 +145,7 @@ class Chef
             :w_service_pack_minor, :WORD,
             :w_suite_mask, :WORD,
             :w_product_type, :BYTE,
-            :w_reserved, :BYTE,
+            :w_reserved, :BYTE
         end
 
 =begin
