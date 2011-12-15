@@ -65,6 +65,20 @@ class Mash < Hash
     end
   end
 
+  # @param orig<Object> Mash being copied
+  #
+  # @return [Object] A new copied Mash
+  def initialize_copy(orig)
+    super
+    # Handle nested values
+    each do |k,v|
+      if v.kind_of?(Mash) || v.is_a?(Array)
+        self[k] = v.dup
+      end
+    end
+    self
+  end
+
   # @param key<Object> The default value for the mash. Defaults to nil.
   #
   # @details [Alternatives]
