@@ -90,8 +90,8 @@ class Chef
       end
 
       def apply_role_attributes(role)
-        @default_attrs = Chef::Mixin::DeepMerge.merge(@default_attrs, role.default_attributes)
-        @override_attrs = Chef::Mixin::DeepMerge.merge(@override_attrs, role.override_attributes)
+        @default_attrs = Chef::Mixin::DeepMerge.role_merge(@default_attrs, role.default_attributes)
+        @override_attrs = Chef::Mixin::DeepMerge.role_merge(@override_attrs, role.override_attributes)
       end
 
       def applied_role?(role_name)

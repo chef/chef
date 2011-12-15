@@ -28,11 +28,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Mixin::DeepMerge, "deep_merge!" do
   before do
     @dm = Chef::Mixin::DeepMerge
-    #FIELD_KNOCKOUT_PREFIX = Chef::Mixin::DeepMerge::DEFAULT_FIELD_KNOCKOUT_PREFIX
-    @field_ko_prefix = Chef::Mixin::DeepMerge::DEFAULT_FIELD_KNOCKOUT_PREFIX
+    @field_ko_prefix = '!merge'
   end
-  #@dm = Chef::Mixin::DeepMerge
-  
 
   # deep_merge core tests - moving from basic to more complex
 
@@ -231,7 +228,7 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     }.should raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
 
     lambda {
-      @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true, :knockout_prefix => "--"})
+      @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true, :knockout_prefix => @field_ko_prefix})
     }.should raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
 
     lambda {
@@ -277,64 +274,64 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
 
   [nil, ","].each do |ko_split|
     it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+"1", "2", "3"]}}
+      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
       hash_dst = {"property"=>{"bedroom_count"=>["1", "2", "3"]}}
       @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
       hash_dst.should == {"property"=>{"bedroom_count"=>["2", "3"]}}
     end
 
     it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+"1", "2", "3"]}}
+      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
       hash_dst = {"property"=>{"bedroom_count"=>["3"]}}
       @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
       hash_dst.should == {"property"=>{"bedroom_count"=>["3","2"]}}
     end
 
     it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+"1", "2", "3"]}}
+      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
       hash_dst = {"property"=>{"bedroom_count"=>["4"]}}
       @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
       hash_dst.should == {"property"=>{"bedroom_count"=>["4","2","3"]}}
     end
 
     it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+"1", "2", "3"]}}
-      hash_dst = {"property"=>{"bedroom_count"=>[@field_ko_prefix+"1", "4"]}}
+      hash_src = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "2", "3"]}}
+      hash_dst = {"property"=>{"bedroom_count"=>[@field_ko_prefix+":1", "4"]}}
       @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
       hash_dst.should == {"property"=>{"bedroom_count"=>["4","2","3"]}}
     end
 
     it "tests typical params/session style hash with knockout_merge elements" do
-      hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+"1", @field_ko_prefix+"2", "3", "4"]}}
+      hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1", @field_ko_prefix+":2", "3", "4"]}}
       hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
       @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ko_split})
       hash_dst.should == {"amenity"=>{"id"=>["3","4"]}}
     end
   end
 
-  it "tests special params/session style hash with knockout_merge elements in form src: [\"1\",\"2\"] dest:[\"--1,--2\", \"3,4\"]" do
-    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+"1,"+@field_ko_prefix+"2", "3,4"]}}
+  it "tests special params/session style hash with knockout_merge elements in form src: [\"1\",\"2\"] dest:[\"@ko:1,@ko:2\", \"3,4\"]" do
+    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,"+@field_ko_prefix+":2", "3,4"]}}
     hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"amenity"=>{"id"=>["3","4"]}}
   end
 
   it "tests same as previous but without ko_split value, this merge should fail" do
-    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+"1,"+@field_ko_prefix+"2", "3,4"]}}
+    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,"+@field_ko_prefix+":2", "3,4"]}}
     hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>{"id"=>["1","2","3,4"]}}
   end
 
-  it "tests special params/session style hash with knockout_merge elements in form src: [\"1\",\"2\"] dest:[\"--1,--2\", \"3,4\"]" do
-    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+"1,2", "3,4", "--5", "6"]}}
+  it "tests special params/session style hash with knockout_merge elements in form src: [\"1\",\"2\"] dest:[\"@ko:1,@ko:2\", \"3,4\"]" do
+    hash_src = {"amenity"=>{"id"=>[@field_ko_prefix+":1,2", "3,4", @field_ko_prefix+":5", "6"]}}
     hash_dst = {"amenity"=>{"id"=>["1", "2"]}}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"amenity"=>{"id"=>["2","3","4","6"]}}
   end
 
-  it "tests special params/session style hash with knockout_merge elements in form src: [\"--1,--2\", \"3,4\", \"--5\", \"6\"] dest:[\"1,2\", \"3,4\"]" do
-    hash_src = {"amenity"=>{"id"=>["#{@field_ko_prefix}1,#{@field_ko_prefix}2", "3,4", "#{@field_ko_prefix}5", "6"]}}
+  it "tests special params/session style hash with knockout_merge elements in form src: [\"@ko:1,@ko:2\", \"3,4\", \"@ko:5\", \"6\"] dest:[\"1,2\", \"3,4\"]" do
+    hash_src = {"amenity"=>{"id"=>["#{@field_ko_prefix}:1,#{@field_ko_prefix}:2", "3,4", "#{@field_ko_prefix}:5", "6"]}}
     hash_dst = {"amenity"=>{"id"=>["1", "2", "3", "4"]}}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"amenity"=>{"id"=>["3","4","6"]}}
@@ -348,42 +345,42 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"ids"=>["--","227"], "id"=>"230"}}
+    hash_src = {"region"=>{"ids"=>[@field_ko_prefix,"227"], "id"=>"230"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227"], "id"=>"230"}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"ids"=>["--","227", "232", "233"], "id"=>"232"}}
+    hash_src = {"region"=>{"ids"=>[@field_ko_prefix,"227", "232", "233"], "id"=>"232"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227", "232", "233"], "id"=>"232"}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"ids"=>["--,227,232,233"], "id"=>"232"}}
+    hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227,232,233"], "id"=>"232"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227", "232", "233"], "id"=>"232"}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"ids"=>["--,227,232","233"], "id"=>"232"}}
+    hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227,232","233"], "id"=>"232"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227", "232", "233"], "id"=>"232"}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"ids"=>["--,227"], "id"=>"230"}}
+    hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227"], "id"=>"230"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227"], "id"=>"230"}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"ids"=>["--,227"], "id"=>"230"}}
+    hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227"], "id"=>"230"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}, "action"=>"browse", "task"=>"browse", "controller"=>"results", "property_order_by"=>"property_type.descr"}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227"], "id"=>"230"}, "action"=>"browse", "task"=>"browse",
@@ -391,7 +388,7 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"query_uuid"=>"6386333d-389b-ab5c-8943-6f3a2aa914d7", "region"=>{"ids"=>["--,227"], "id"=>"230"}}
+    hash_src = {"query_uuid"=>"6386333d-389b-ab5c-8943-6f3a2aa914d7", "region"=>{"ids"=>["#{@field_ko_prefix},227"], "id"=>"230"}}
     hash_dst = {"query_uuid"=>"6386333d-389b-ab5c-8943-6f3a2aa914d7", "url_regions"=>[], "region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}, "action"=>"browse", "task"=>"browse", "controller"=>"results", "property_order_by"=>"property_type.descr"}
     @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"query_uuid" => "6386333d-389b-ab5c-8943-6f3a2aa914d7", "url_regions"=>[],
@@ -399,70 +396,70 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
       "controller"=>"results", "property_order_by"=>"property_type.descr"}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => "--"}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => @field_ko_prefix}
     hash_dst = {"amenity" => "1"}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => ""}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => ["--"]}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => [@field_ko_prefix]}
     hash_dst = {"amenity" => "1"}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => []}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => "--"}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => @field_ko_prefix}
     hash_dst = {"amenity" => ["1"]}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => ""}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => ["--"]}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => [@field_ko_prefix]}
     hash_dst = {"amenity" => ["1"]}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => []}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => ["--"]}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => [@field_ko_prefix]}
     hash_dst = {"amenity" => "1"}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => []}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => ["--", "2"]}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => [@field_ko_prefix, "2"]}
     hash_dst = {'amenity' => ["1", "3", "7+"]}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => ["2"]}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => ["--", "2"]}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => [@field_ko_prefix, "2"]}
     hash_dst = {'amenity' => "5"}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => ['2']}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => "--"}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => @field_ko_prefix}
     hash_dst = {"amenity"=>{"id"=>["1", "2", "3", "4"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => ""}
   end
 
-  it "tests knock out entire dest hash if \"--\" is passed for source" do
-    hash_src = {'amenity' => ["--"]}
+  it "tests knock out entire dest hash if \"@ko\" is passed for source" do
+    hash_src = {'amenity' => [@field_ko_prefix]}
     hash_dst = {"amenity"=>{"id"=>["1", "2", "3", "4"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => "--", :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'amenity' => []}
   end
 
-  it "tests knock out dest array if \"--\" is passed for source" do
+  it "tests knock out dest array if \"@ko\" is passed for source" do
     hash_src = {"region" => {'ids' => @field_ko_prefix}}
     hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"]}}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
@@ -505,56 +502,56 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "tests edge test: make sure that when we turn off knockout_prefix that all values are processed correctly" do
-    hash_src = {"region" => {'ids' => ["7", "--", "2", "6,8"]}}
+    hash_src = {"region" => {'ids' => ["7", @field_ko_prefix, "2", "6,8"]}}
     hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
     @dm.deep_merge!(hash_src, hash_dst, {:unpack_arrays => ","})
-    hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", "--", "6", "8"], 'id'=>'11'}}
+    hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", @field_ko_prefix, "6", "8"], 'id'=>'11'}}
   end
 
   it "tests edge test 2: make sure that when we turn off source array split that all values are processed correctly" do
-    hash_src = {"region" => {'ids' => ["7", "3", "--", "6,8"]}}
+    hash_src = {"region" => {'ids' => ["7", "3", @field_ko_prefix, "6,8"]}}
     hash_dst = {"region"=>{"ids"=>["1", "2", "3", "4"], 'id'=>'11'}}
     @dm.deep_merge!(hash_src, hash_dst)
-    hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", "--", "6,8"], 'id'=>'11'}}
+    hash_dst.should == {'region' => {'ids' => ["1", "2", "3", "4", "7", @field_ko_prefix, "6,8"], 'id'=>'11'}}
   end
 
-  it "tests Example: src = {'key' => \"--1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
-    hash_src = {"amenity"=>"--1"}
+  it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
+    hash_src = {"amenity"=>@field_ko_prefix+":1"}
     hash_dst = {"amenity"=>"1"}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>""}
   end
 
-  it "tests Example: src = {'key' => \"--1\"}, dst = {'key' => \"2\"} -> merges to {'key' => \"\"}" do
-    hash_src = {"amenity"=>"--1"}
+  it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"2\"} -> merges to {'key' => \"\"}" do
+    hash_src = {"amenity"=>@field_ko_prefix+":1"}
     hash_dst = {"amenity"=>"2"}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>""}
   end
 
-  it "tests Example: src = {'key' => \"--1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
-    hash_src = {"amenity"=>["--1"]}
+  it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
+    hash_src = {"amenity"=>[@field_ko_prefix+":1"]}
     hash_dst = {"amenity"=>"1"}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>[]}
   end
 
-  it "tests Example: src = {'key' => \"--1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
-    hash_src = {"amenity"=>["--1"]}
+  it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
+    hash_src = {"amenity"=>[@field_ko_prefix+":1"]}
     hash_dst = {"amenity"=>["1"]}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>[]}
   end
 
-  it "tests Example: src = {'key' => \"--1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
-    hash_src = {"amenity"=>"--1"}
+  it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
+    hash_src = {"amenity"=>@field_ko_prefix+":1"}
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>""}
   end
 
-  it "tests Example: src = {'key' => \"--1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
-    hash_src = {"amenity"=>"--1"}
+  it "tests Example: src = {'key' => \"@ko:1\"}, dst = {'key' => \"1\"} -> merges to {'key' => \"\"}" do
+    hash_src = {"amenity"=>@field_ko_prefix+":1"}
     hash_dst = {"amenity"=>["1"]}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
     hash_dst.should == {"amenity"=>""}
@@ -582,86 +579,86 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   end
 
   it "tests hashes with knockout values are suppressed" do
-    hash_src = {"amenity"=>{"id"=>["#{@field_ko_prefix}26,#{@field_ko_prefix}27,28"]}}
+    hash_src = {"amenity"=>{"id"=>["#{@field_ko_prefix}:26,#{@field_ko_prefix}:27,28"]}}
     hash_dst = {}
     @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"amenity"=>{"id"=>["28"]}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'ids'=>['--']}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'ids'=>[@field_ko_prefix]}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'ids'=>['227','2','3','3']}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'ids'=>[]}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'ids'=>['--']}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'ids'=>[@field_ko_prefix]}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'ids'=>['227','2','3','3'], 'id' => '3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'ids'=>[], 'id'=>'3'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'ids'=>['--']}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'ids'=>[@field_ko_prefix]}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'muni_city_id' => '2244', 'ids'=>['227','2','3','3'], 'id'=>'3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'muni_city_id' => '2244', 'ids'=>[], 'id'=>'3'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'ids'=>['--'], 'id' => '5'}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'ids'=>[@field_ko_prefix], 'id' => '5'}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'muni_city_id' => '2244', 'ids'=>['227','2','3','3'], 'id'=>'3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'muni_city_id' => '2244', 'ids'=>[], 'id'=>'5'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'ids'=>['--', '227'], 'id' => '5'}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'ids'=>[@field_ko_prefix, '227'], 'id' => '5'}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'muni_city_id' => '2244', 'ids'=>['227','2','3','3'], 'id'=>'3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'muni_city_id' => '2244', 'ids'=>['227'], 'id'=>'5'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'muni_city_id' => '--', 'ids'=>'--', 'id'=>'5'}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'muni_city_id' => @field_ko_prefix, 'ids'=>@field_ko_prefix, 'id'=>'5'}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'muni_city_id' => '2244', 'ids'=>['227','2','3','3'], 'id'=>'3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'muni_city_id' => '', 'ids'=>'', 'id'=>'5'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'muni_city_id' => '--', 'ids'=>['--'], 'id'=>'5'}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'muni_city_id' => @field_ko_prefix, 'ids'=>[@field_ko_prefix], 'id'=>'5'}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'muni_city_id' => '2244', 'ids'=>['227','2','3','3'], 'id'=>'3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'muni_city_id' => '', 'ids'=>[], 'id'=>'5'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src= {'region' =>{'muni_city_id' => '--', 'ids'=>['--','227'], 'id'=>'5'}, 'query_uuid' => 'zzz'}
+    hash_src= {'region' =>{'muni_city_id' => @field_ko_prefix, 'ids'=>[@field_ko_prefix,'227'], 'id'=>'5'}, 'query_uuid' => 'zzz'}
     hash_dst= {'region' =>{'muni_city_id' => '2244', 'ids'=>['227','2','3','3'], 'id'=>'3'}, 'query_uuid' => 'zzz'}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {'region' =>{'muni_city_id' => '', 'ids'=>['227'], 'id'=>'5'}, 'query_uuid' => 'zzz'}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"muni_city_id"=>"--", "id"=>""}
+    hash_src = {"muni_city_id"=>@field_ko_prefix, "id"=>""}
     hash_dst = {"muni_city_id"=>"", "id"=>""}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"muni_city_id"=>"", "id"=>""}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"region"=>{"muni_city_id"=>"--", "id"=>""}}
+    hash_src = {"region"=>{"muni_city_id"=>@field_ko_prefix, "id"=>""}}
     hash_dst = {"region"=>{"muni_city_id"=>"", "id"=>""}}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"muni_city_id"=>"", "id"=>""}}
   end
 
   it "unamed upstream - tbd" do
-    hash_src = {"query_uuid"=>"a0dc3c84-ec7f-6756-bdb0-fff9157438ab", "url_regions"=>[], "region"=>{"muni_city_id"=>"--", "id"=>""}, "property"=>{"property_type_id"=>"", "search_rate_min"=>"", "search_rate_max"=>""}, "task"=>"search", "run_query"=>"Search"}
+    hash_src = {"query_uuid"=>"a0dc3c84-ec7f-6756-bdb0-fff9157438ab", "url_regions"=>[], "region"=>{"muni_city_id"=>@field_ko_prefix, "id"=>""}, "property"=>{"property_type_id"=>"", "search_rate_min"=>"", "search_rate_max"=>""}, "task"=>"search", "run_query"=>"Search"}
     hash_dst = {"query_uuid"=>"a0dc3c84-ec7f-6756-bdb0-fff9157438ab", "url_regions"=>[], "region"=>{"muni_city_id"=>"", "id"=>""}, "property"=>{"property_type_id"=>"", "search_rate_min"=>"", "search_rate_max"=>""}, "task"=>"search", "run_query"=>"Search"}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => '--', :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"query_uuid"=>"a0dc3c84-ec7f-6756-bdb0-fff9157438ab", "url_regions"=>[], "region"=>{"muni_city_id"=>"", "id"=>""}, "property"=>{"property_type_id"=>"", "search_rate_min"=>"", "search_rate_max"=>""}, "task"=>"search", "run_query"=>"Search"}
   end
 
@@ -703,56 +700,87 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
 end # deep_merge!
 
 # Chef specific
-describe Chef::Mixin::DeepMerge, "merge" do
+describe Chef::Mixin::DeepMerge do
   before do
     @dm = Chef::Mixin::DeepMerge
   end
 
-  it "should merge a hash into an empty hash" do
-    hash_dst = {}
-    hash_src = {'id' => '2'}
-    @dm.merge(hash_dst, hash_src).should == hash_src
+  describe "merge" do
+    it "should merge a hash into an empty hash" do
+      hash_dst = {}
+      hash_src = {'id' => '2'}
+      @dm.merge(hash_dst, hash_src).should == hash_src
+    end
+
+    it "should merge a nested hash into an empty hash" do
+      hash_dst = {}
+      hash_src = {'region' => {'id' => ['227', '2']}}
+      @dm.merge(hash_dst, hash_src).should == hash_src
+    end
+
+    it "should overwrite as string value when merging hashes" do
+      hash_dst = {"name" => "value1"}
+      hash_src = {"name" => "value"}
+      @dm.merge(hash_dst, hash_src).should == {"name" => "value"}
+    end
+
+    it "should merge arrays within hashes" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","3"]}
+      @dm.merge(hash_dst, hash_src).should == {"property" => ["2","4","1","3"]}
+    end
+
+    it "should merge deeply nested hashes" do
+      hash_dst = {"property" => {"values" => {"are" => "falling", "can" => "change"}}}
+      hash_src = {"property" => {"values" => {"are" => "stable", "may" => "rise"}}}
+      @dm.merge(hash_dst, hash_src).should == {"property" => {"values" => {"are" => "stable", "can" => "change", "may" => "rise"}}}
+    end
+
+    it "should not modify the source or destination during the merge" do
+      hash_dst = {"property" => ["1","2","3"]}
+      hash_src = {"property" => ["4","5","6"]}
+      ret = @dm.merge(hash_dst, hash_src)
+      hash_dst.should == {"property" => ["1","2","3"]}
+      hash_src.should == {"property" => ["4","5","6"]}
+      ret.should == {"property" => ["1","2","3","4","5","6"]}
+    end
+
+    it "should not knockout matching array value when merging arrays within hashes" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","!merge:4"]}
+      hash_src_no_colon = {"property" => ["1","!merge"]}
+      @dm.merge(hash_dst, hash_src).should == {"property" => ["2", "4", "1", "!merge:4"]}
+      @dm.merge(hash_dst, hash_src_no_colon).should == {"property" => ["2", "4", "1", "!merge"]}
+    end
   end
 
-  it "should merge a nested hash into an empty hash" do
-    hash_dst = {}
-    hash_src = {'region' => {'id' => ['227', '2']}}
-    @dm.merge(hash_dst, hash_src).should == hash_src
-  end
+  describe "role_merge" do
+    it "should knockout matching array value when merging arrays within hashes" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","!merge:4"]}
+      @dm.role_merge(hash_dst, hash_src).should == {"property" => ["2","1"]}
+    end
 
-  it "should overwrite as string value when merging hashes" do
-    hash_dst = {"name" => "value1"}
-    hash_src = {"name" => "value"}
-    @dm.merge(hash_dst, hash_src).should == {"name" => "value"}
-  end
+    it "should knockout all array values when merging arrays within hashes, leaving 2" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["!merge:","1","2"]}
+      hash_src_no_colon = {"property" => ["!merge","1","2"]}
+      @dm.role_merge(hash_dst, hash_src).should == {"property" => ["1","2"]}
+      @dm.role_merge(hash_dst, hash_src_no_colon).should == {"property" => ["1","2"]}
+    end
 
-  it "should merge arrays within hashes" do
-    hash_dst = {"property" => ["2","4"]}
-    hash_src = {"property" => ["1","3"]}
-    @dm.merge(hash_dst, hash_src).should == {"property" => ["2","4","1","3"]}
-  end
+    it "should knockout all array values when merging arrays within hashes, leaving 0" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["!merge:"]}
+      hash_src_no_colon = {"property" => ["!merge"]}
+      @dm.role_merge(hash_dst, hash_src).should == {"property" => []}
+      @dm.role_merge(hash_dst, hash_src_no_colon).should == {"property" => []}
+    end
 
-  it "should merge deeply nested hashes" do
-    hash_dst = {"property" => {"values" => {"are" => "falling", "can" => "change"}}}
-    hash_src = {"property" => {"values" => {"are" => "stable", "may" => "rise"}}}
-    @dm.merge(hash_dst, hash_src).should == {"property" => {"values" => {"are" => "stable", "can" => "change", "may" => "rise"}}}
-  end
-
-  it "should knockout matching array value when merging arrays within hashes" do
-    hash_dst = {"property" => ["2","4"]}
-    hash_src = {"property" => ["1","!merge:4"]}
-    @dm.merge(hash_dst, hash_src).should == {"property" => ["2","1"]}
-  end
-
-  it "should knockout all array values when merging arrays within hashes, leaving 2" do
-    hash_dst = {"property" => ["2","4"]}
-    hash_src = {"property" => ["!merge:","1","2"]}
-    @dm.merge(hash_dst, hash_src).should == {"property" => ["1","2"]}
-  end
-
-  it "should knockout all array values when merging arrays within hashes, leaving 0" do
-    hash_dst = {"property" => ["2","4"]}
-    hash_src = {"property" => ["!merge:"]}
-    @dm.merge(hash_dst, hash_src).should == {"property" => []}
+    it "should knockout matching array value when merging arrays within hashes" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => ["1","!merge:4"]}
+      @dm.role_merge(hash_dst, hash_src).should == {"property" => ["2","1"]}
+    end
   end
 end
