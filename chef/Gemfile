@@ -15,5 +15,8 @@ platforms :mswin, :mingw do
   gem "win32-mutex", "0.3.1"
   gem "win32-process", "0.6.5"
   gem "win32-service", "0.7.2"
+end
+
+platforms :mingw_18 do
   gem "win32-open3", "0.3.2"
 end
