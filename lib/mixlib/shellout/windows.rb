@@ -42,6 +42,7 @@ module Mixlib
         #
         stdout_read, stdout_write = IO.pipe
         stderr_read, stderr_write = IO.pipe
+        stdin_read, stdin_write = IO.pipe
         open_streams = [ stdout_read, stderr_read ]
 
         begin
@@ -55,7 +56,8 @@ module Mixlib
             :command_line => command_line,
             :startup_info => {
               :stdout => stdout_write,
-              :stderr => stderr_write
+              :stderr => stderr_write,
+              :stdin => stdin_read
             },
             :environment => inherit_environment.map { |k,v| "#{k}=#{v}" },
             :close_handles => false
@@ -88,7 +90,7 @@ module Mixlib
               when WAIT_TIMEOUT
                 # Kill the process
                 if (Time.now - start_wait) > timeout
-                  raise Mixlib::ShellOut::CommandTimeout, "command timed out:\n#{format_for_exception}"
+                  raise Chef::Exceptions::CommandTimeout, "command timed out:\n#{format_for_exception}"
                 end
 
                 consume_output(open_streams, stdout_read, stderr_read)
@@ -152,13 +154,33 @@ module Mixlib
         return true
       end
 
-      SHOULD_USE_CMD = /['"<>|&%]|\b(?:assoc|break|call|cd|chcp|chdir|cls|color|copy|ctty|date|del|dir|echo|endlocal|erase|exit|for|ftype|goto|if|lfnfor|lh|lock|md|mkdir|move|path|pause|popd|prompt|pushd|rd|rem|ren|rename|rmdir|set|setlocal|shift|start|time|title|truename|type|unlock|ver|verify|vol)\b/
+      IS_BATCH_FILE = /\.bat|\.cmd$/i
 
       def command_to_run
-        if command =~ SHOULD_USE_CMD
+        if command =~ /^\s*"(.*)"/
+          # If we have quotes, do an exact match
+          candidate = $1
+        else
+          # Otherwise check everything up to the first space
+          candidate = command[0,command.index(/\s/) || command.length].strip
+        end
+
+        # Don't do searching for empty commands.  Let it fail when it runs.
+        if candidate.length == 0
+          return [ nil, command ]
+        end
+
+        # Check if the exe exists directly.  Otherwise, search PATH.
+        exe = find_exe_at_location(candidate)
+        if exe.nil? && exe !~ /[\\\/]/
+          exe = which(command[0,command.index(/\s/) || command.length])
+        end
+
+        if exe.nil? || exe =~ IS_BATCH_FILE
+          # Batch files MUST use cmd; and if we couldn't find the command we're looking for, we assume it must be a cmd builtin.
           [ ENV['COMSPEC'], "cmd /c #{command}" ]
         else
-          [ which(command[0,command.index(/\s/) || command.length]), command ]
+          [ exe, command ]
         end
       end
 
@@ -178,14 +200,23 @@ module Mixlib
         result
       end
 
+      def pathext
+        @pathext ||= ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') + [''] : ['']
+      end
+
       def which(cmd)
-        return cmd if File.executable? cmd
-        exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') + [''] : ['']
         ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-          exts.each { |ext|
-            exe = "#{path}/#{cmd}#{ext}"
-            return exe if File.executable? exe
-          }
+          exe = find_exe_at_location("#{path}/${cmd}")
+          return exe if exe
+        end
+        return nil
+      end
+
+      def find_exe_at_location(path)
+        return path if File.executable? path
+        pathext.each do |ext|
+          exe = "#{path}#{ext}"
+          return exe if File.executable? exe
         end
         return nil
       end
