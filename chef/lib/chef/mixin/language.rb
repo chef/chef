@@ -93,6 +93,8 @@ class Chef
         end
       end
 
+
+
       # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
       # per platform defaults, along with a single base default. Arrays may be passed as hash keys and
       # will be expanded.
@@ -104,13 +106,13 @@ class Chef
       # value:: Whatever the most specific value of the hash is.
       def value_for_platform(platform_hash)
         PlatformDependentValue.new(platform_hash).value_for_node(node)
-      end
+      end 
 
       # Given a list of platforms, returns true if the current recipe is being run on a node with
       # that platform, false otherwise.
       #
       # === Parameters
-      # args:: A list of platforms
+      # args:: A list of platforms. Each platform can be in string or symbol format.
       #
       # === Returns
       # true:: If the current platform is in the list
@@ -119,12 +121,96 @@ class Chef
         has_platform = false
 
         args.flatten.each do |platform|
-          has_platform = true if platform == node[:platform]
+          has_platform = true if platform.to_s == node[:platform]
         end
 
         has_platform
       end
 
+
+
+     # Implementation class for determining platform family dependent values
+      class PlatformFamilyDependentValue
+
+        # Create a platform family dependent value object.
+        # === Arguments
+        # platform_family_hash (Hash) a map of platform families to values. 
+        # like this:
+        #   {
+        #     :rhel => "value for all EL variants"
+        #     :fedora =>  "value for fedora variants fedora and amazon" ,
+	#     [:fedora, :rhel] => "value for all known redhat variants"
+        #     :debian =>  "value for debian variants including debian, ubuntu, mint" ,
+        #     :default => "the default when nothing else matches"
+        #   }
+        # * platform families can be specified as Symbols or Strings
+        # * multiple platform families can be grouped by using an Array as the key
+        # * values for platform families can be any object, with no restrictions. Some examples: 
+	#   - [:stop, :start]
+	#   - "mysql-devel"
+        #   - { :key => "value" }
+        def initialize(platform_family_hash)
+          @values = {}
+	  @values["default"] = nil
+          platform_family_hash.each { |platform_families, value| set(platform_families, value)}
+        end
+
+        def value_for_node(node)
+	  if node.key?(:platform_family)
+            platform_family = node[:platform_family].to_s
+            if @values.key?(platform_family)
+              @values[platform_family]
+	    else
+              @values["default"]
+            end
+	  else
+            @values["default"]
+	  end
+        end
+
+        private
+
+        def set(platform_family, value)
+          if platform_family.to_s == 'default'
+            @values["default"] = value
+          else
+            Array(platform_family).each { |family| @values[family.to_s] = value }
+            value
+          end
+        end
+      end
+
+
+      # Given a hash mapping platform families to values, select a value from the hash. Supports a single
+      # base default if platform family is not in the map. Arrays may be passed as hash keys and will be 
+      # expanded.  
+      #
+      # === Parameters
+      # platform_family_hash:: A hash in the form { platform_family_name => value } 
+      #
+      # === Returns
+      # value:: Whatever the most specific value of the hash is.
+      def value_for_platform_family(platform_family_hash) 
+        PlatformFamilyDependentValue.new(platform_family_hash).value_for_node(node)
+      end
+      
+      # Given a list of platform families, returns true if the current recipe is being run on a 
+      # node within that platform family, false otherwise. 
+      #
+      # === Parameters
+      # args:: A list of platform families. Each platform family can be in string or symbol format.  
+      #
+      # === Returns
+      # true:: if the current node platform family is in the list. 
+      # false:: if the current node platform family is not in the list. 
+      def platform_family?(*args)
+        has_pf = false
+        args.flatten.each do |platform_family|
+	  has_pf = true if platform_family.to_s == node[:platform_family] 
+        end 
+        has_pf
+      end	
+      
       def search(*args, &block)
         # If you pass a block, or have at least the start argument, do raw result parsing
         #
