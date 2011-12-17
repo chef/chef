@@ -190,7 +190,6 @@ EXPECTED
     before do
       Chef::FileAccessControl.any_instance.stub(:modified?).and_return(false)
       @tempfile = Tempfile.open('cookbook_file_spec')
-      @tempfile.binmode
       @new_resource.path(@target_file = @tempfile.path)
       @tempfile.write(@file_content)
       @tempfile.close
