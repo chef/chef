@@ -263,8 +263,10 @@ class Chef
     def decompress_body(response)
       case response[CONTENT_ENCODING]
       when GZIP
+        Chef::Log.debug "decompressing gzip response"
         Zlib::GzipReader.new(StringIO.new(response.body), encoding: "ASCII-8BIT").read
       when DEFLATE
+        Chef::Log.debug "decompressing deflate response"
         Zlib::Inflate.inflate(response.body)
       else
         response.body
@@ -414,8 +416,10 @@ class Chef
 
       inflater = case response[CONTENT_ENCODING]
       when GZIP
+        Chef::Log.debug "decompressing gzip stream"
         Zlib::Inflate.new(Zlib::MAX_WBITS + 16)
       when DEFLATE
+        Chef::Log.debug "decompressing inflate stream"
         Zlib::Inflate.new
       else
         NoopInflater.new
