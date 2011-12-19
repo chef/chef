@@ -20,6 +20,7 @@
 # limitations under the License.
 #
 
+require 'zlib'
 require 'net/https'
 require 'uri'
 require 'chef/json_compat'
@@ -264,7 +265,7 @@ class Chef
       case response[CONTENT_ENCODING]
       when GZIP
         Chef::Log.debug "decompressing gzip response"
-        Zlib::GzipReader.new(StringIO.new(response.body), encoding: "ASCII-8BIT").read
+        Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
       when DEFLATE
         Chef::Log.debug "decompressing deflate response"
         Zlib::Inflate.inflate(response.body)
