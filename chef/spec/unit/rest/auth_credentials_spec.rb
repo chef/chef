@@ -125,7 +125,7 @@ describe Chef::REST::RESTRequest do
     @auth_credentials = Chef::REST::AuthCredentials.new("client-name", CHEF_SPEC_DATA + '/ssl/private_key.pem')
     @url = URI.parse("http://chef.example.com:4000/?q=chef_is_awesome")
     @req_body = '{"json_data":"as_a_string"}'
-    @headers = {"Content-type" =>"application/json", "Accept"=>"application/json"}
+    @headers = {"Content-type" =>"application/json", "Accept"=>"application/json", "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
     @request = Chef::REST::RESTRequest.new(:POST, @url, @req_body, @headers)
   end
 
