@@ -146,41 +146,39 @@ describe Chef::REST do
       @http_client = Net::HTTP.new(@url.host, @url.port)
       Net::HTTP.stub!(:new).and_return(@http_client)
       @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
+
+      @base_headers = { 'Accept' => 'application/json',
+                        'X-Chef-Version' => Chef::VERSION,
+                        'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+      @req_with_body_headers = @base_headers.merge("Content-Type" => "application/json", "Content-Length" => '13')
     end
 
     describe "using the run_request API" do
       it "should build a new HTTP GET request" do
         request = Net::HTTP::Get.new(@url.path)
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(request)
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers).and_return(request)
         @rest.run_request(:GET, @url, {})
       end
 
       it "should build a new HTTP POST request" do
         request = Net::HTTP::Post.new(@url.path)
 
-        Net::HTTP::Post.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, "Content-Length" => '13' }
-        ).and_return(request)
+        Net::HTTP::Post.should_receive(:new).with("/?foo=bar", @req_with_body_headers).and_return(request)
         @rest.run_request(:POST, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
       end
 
       it "should build a new HTTP PUT request" do
         request = Net::HTTP::Put.new(@url.path)
-        Net::HTTP::Put.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Content-Length' => '13' }
-        ).and_return(request)
+        expected_headers = @base_headers.merge("Content-Length" => '13')
+        Net::HTTP::Put.should_receive(:new).with("/?foo=bar", @req_with_body_headers).and_return(request)
         @rest.run_request(:PUT, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
       end
 
       it "should build a new HTTP DELETE request" do
         request = Net::HTTP::Delete.new(@url.path)
-        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(request)
+        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", @base_headers).and_return(request)
         @rest.run_request(:DELETE, @url)
       end
 
@@ -193,7 +191,7 @@ describe Chef::REST do
       end
 
       it "should call read_body without a block if the request is not raw" do
-        @http_response.should_receive(:read_body)
+        @http_response.should_receive(:body)
         @rest.run_request(:GET, @url, {}, nil, false)
       end
 
@@ -258,7 +256,8 @@ describe Chef::REST do
         end
 
         it "should build a new HTTP GET request without the application/json accept header" do
-          Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {'X-Chef-Version' => Chef::VERSION}).and_return(@request_mock)
+          expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+          Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
           @rest.run_request(:GET, @url, {}, false, nil, true)
         end
 
@@ -302,12 +301,15 @@ describe Chef::REST do
       before do
         @request_mock = {}
         Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
+        @base_headers = {"Accept" => "application/json",
+          "X-Chef-Version" => Chef::VERSION,
+          "Accept-Encoding" => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE
+        }
       end
 
       it "should always include the X-Chef-Version header" do
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(@request_mock)
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers).and_return(@request_mock)
         @rest.api_request(:GET, @url, {})
       end
 
@@ -341,42 +343,34 @@ describe Chef::REST do
 
       it "should set the cookie for this request if one exists for the given host:port" do
         Chef::REST::CookieJar.instance["#{@url.host}:#{@url.port}"] = "cookie monster"
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Cookie' => 'cookie monster' }
-        ).and_return(@request_mock)
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers.merge('Cookie' => "cookie monster")).and_return(@request_mock)
         @rest.api_request(:GET, @url, {})
       end
 
       it "should build a new HTTP GET request" do
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(@request_mock)
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers).and_return(@request_mock)
         @rest.api_request(:GET, @url, {})
       end
 
       it "should build a new HTTP POST request" do
         request = Net::HTTP::Post.new(@url.path)
+        expected_headers = @base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
 
-        Net::HTTP::Post.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Content-Length' => '13' }
-        ).and_return(request)
+        Net::HTTP::Post.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request)
         @rest.api_request(:POST, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
       end
 
       it "should build a new HTTP PUT request" do
         request = Net::HTTP::Put.new(@url.path)
-        Net::HTTP::Put.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', "Content-Type" => 'application/json', 'X-Chef-Version' => Chef::VERSION, 'Content-Length' => '13' }
-        ).and_return(request)
+        expected_headers = @base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
+        Net::HTTP::Put.should_receive(:new).with("/?foo=bar",expected_headers).and_return(request)
         @rest.api_request(:PUT, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
       end
 
       it "should build a new HTTP DELETE request" do
-        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar",
-          { 'Accept' => 'application/json', 'X-Chef-Version' => Chef::VERSION }
-        ).and_return(@request_mock)
+        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", @base_headers).and_return(@request_mock)
         @rest.api_request(:DELETE, @url)
       end
 
@@ -453,7 +447,8 @@ describe Chef::REST do
       end
 
       it " build a new HTTP GET request without the application/json accept header" do
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", {'X-Chef-Version' => Chef::VERSION}).and_return(@request_mock)
+        expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
 
