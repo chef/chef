@@ -75,10 +75,9 @@ class Chef
               Chef::Log.info("Reconfiguring with startup parameters")
               reconfigure(startup_parameters)
 
-              # Avoid the "thundering herd" problem
-              splay_length = rand Chef::Config[:splay]
-              Chef::Log.info("Splay sleep for #{splay_length} seconds")
-              sleep_fitfully(splay_length, nap_length)
+              splay = rand Chef::Config[:splay]
+              Chef::Log.debug("Splay sleep #{splay} seconds")
+              sleep splay
 
               # If we've stopped, then bail out now, instead of going on to run Chef
               next if state != RUNNING
