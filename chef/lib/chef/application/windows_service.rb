@@ -28,7 +28,7 @@ require 'win32/daemon'
 
 class Chef
   class Application
-    class WindowsService < Win32::Daemon
+    class WindowsService < ::Win32::Daemon
       include Mixlib::CLI
 
       option :config_file,
