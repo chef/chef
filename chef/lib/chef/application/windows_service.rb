@@ -62,15 +62,9 @@ class Chef
 
       def service_main(*startup_parameters)
 
-        # Sleep for at most this many seconds before checking the state of the service
-        # Tweak this to be more or less responsive (and see 'sleep_fitfully' below)
-        nap_length = 10
-
         while running?
           if state == RUNNING
-
             begin
-
               # Reconfigure each time through to pick up any changes in the client file
               Chef::Log.info("Reconfiguring with startup parameters")
               reconfigure(startup_parameters)
@@ -82,38 +76,32 @@ class Chef
               # If we've stopped, then bail out now, instead of going on to run Chef
               next if state != RUNNING
 
-              @chef_client = Chef::Client.new()
+              @chef_client = Chef::Client.new(@chef_client_json)
               @chef_client_json = nil
 
               @chef_client.run
               @chef_client = nil
 
-              Chef::Log.info("Sleeping between Chef runs for #{Chef::Config[:interval]} seconds")
-              sleep_fitfully(Chef::Config[:interval], nap_length)
-
+              Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
+              client_sleep Chef::Config[:interval]
+            rescue Chef::Application::Wakeup => e
+              Chef::Log.debug("Received Wakeup signal.  Starting run.")
+              next
             rescue SystemExit => e
               raise
-
             rescue Exception => e
               Chef::Log.error("#{e.class}: #{e}")
               Chef::Application.debug_stacktrace(e)
               Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-
-              sleep_fitfully(Chef::Config[:interval], nap_length)
-
+              client_sleep Chef::Config[:interval]
               retry
             ensure
               GC.start
             end
-
           else # PAUSED or IDLE
             sleep 5
           end
         end
-
-        # We've left the loop, the daemon is about to exit.
-        Chef::Log.info("Chef Client Service shutting down")
-
       end
 
       ################################################################################
@@ -142,6 +130,11 @@ class Chef
 
       private
 
+      def apply_config(config_file_path)
+        Chef::Config.from_file(config_file_path)
+        Chef::Config.merge!(config)
+      end
+
       # Lifted from Chef::Application, with addition of optional startup parameters
       # for playing nicely with Windows Services
       def reconfigure(startup_parameters=[])
@@ -153,6 +146,7 @@ class Chef
           Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
         end
 
+        Chef::Config[:interval] ||= 1800
       end
 
       # Lifted from Chef::Application and Chef::Application::Client
@@ -182,49 +176,40 @@ class Chef
 
         parse_options # Operates on ARGV by default
         parse_options startup_parameters
-        Chef::Config.merge!(config)
-
-        # Merge in the configuration from an external file
-        configuration_file = config[:config_file]
 
         begin
-          case configuration_file
+          case config[:config_file]
           when /^(http|https):\/\//
-            Chef::Log.info("Fetching remote configuration file: #{configuration_file}")
-            Chef::REST.new("", nil, nil).fetch(configuration_file) { |f| apply_config(f.path) }
+            Chef::REST.new("", nil, nil).fetch(config[:config_file]) { |f| apply_config(f.path) }
           else
-            # In Chef::Application, the block calls a private method 'apply_config'
-            # It made some assumptions about the priority of configuration parameters from
-            # various sources that aren't applicable in a Windows Service, so we're just
-            # merging in the config file parameters here.  Everything else is handled
-            # in the rest of this 'configure_chef' method.
-            ::File::open(configuration_file) { |f| Chef::Config.from_file(f.path) }
+            ::File::open(config[:config_file]) { |f| apply_config(f.path) }
           end
-
-        rescue SocketError => error
-          Chef::Application.fatal!("Error getting config file #{configuration_file}", 2)
-
-        rescue Exception => error
+        rescue Errno::ENOENT => error
           Chef::Log.warn("*****************************************")
-          Chef::Log.warn("Can not find config file: #{configuration_file}, using defaults.")
-          Chef::Log.warn("#{error.message}")
+          Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
           Chef::Log.warn("*****************************************")
 
           Chef::Config.merge!(config)
+        rescue SocketError => error
+          Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
+        rescue Chef::Exceptions::ConfigurationError => error
+          Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
+        rescue Exception => error
+          Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
         end
-
-
       end
 
       # Since we need to be able to respond to signals between Chef runs, we need to periodically
       # wake up to see if we're still in the running state.  The method returns when it has slept
-      # for +total_sleep_duration+ seconds (but at least +nap_length+ seconds), or when the service
-      # is no longer in the +RUNNING+ state, whichever comes first.
-      def sleep_fitfully(total_sleep_duration, nap_length)
-        naps = [1, total_sleep_duration / nap_length].max # always take at least 1 nap
-        (1..naps).each do
+      # for +sec+ seconds (but at least +10+ seconds), or when the service
+      # is no client_sleep in the +RUNNING+ state, whichever comes first.
+      def client_sleep(sec)
+        chunk_length = 10
+        chunks = sec / chunk_length
+        chunks = 1 if chunks < 1
+        (1..chunks).each do
           return unless state == RUNNING
-          sleep nap_length
+          sleep chunk_length
         end
       end
 
