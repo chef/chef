@@ -47,14 +47,12 @@ class Chef
         :short        => "-s SECONDS",
         :long         => "--splay SECONDS",
         :description  => "The splay time for running at intervals, in seconds",
-        :default      => 10*60, # 10 minutes at most
         :proc         => lambda { |s| s.to_i }
 
       option :interval,
         :short        => "-i SECONDS",
         :long         => "--interval SECONDS",
         :description  => "Set the number of seconds to wait between chef-client runs",
-        :default      => 30*60, # 30 minutes"
         :proc         => lambda { |s| s.to_i }
 
       def service_init
