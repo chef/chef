@@ -105,16 +105,18 @@ class Chef
                       :display_name     => config[:display_name],
                       :description      => config[:description],
                       :binary_path_name => cmd)
-
+          puts "Service '#{config[:name]}' has successfully been 'installed'."
         when 'start'
           # TODO: allow override of startup parameters here?
-          take_action('start', RUNNING)
+          take_action('start', RUNNING) if Win32::Service.exists?(config[:name])
         when 'stop'
-          take_action('stop', STOPPED)
+          take_action('stop', STOPPED) if Win32::Service.exists?(config[:name])
         when 'uninstall', 'delete'
           take_action('stop', STOPPED)
-          Win32::Service.delete(config[:name])
-          puts "Service #{config[:name]} deleted"
+          if Win32::Service.exists?(config[:name])
+            Win32::Service.delete(config[:name])
+            puts "Service #{config[:name]} deleted"
+          end
         when 'pause'
           take_action('pause', PAUSED)
         when 'resume'
@@ -130,12 +132,16 @@ class Chef
       PAUSED = "paused"
 
       def take_action(action=nil, desired_state=nil)
-        if current_state != desired_state
-          Win32::Service.send(action, config[:name])
-          wait_for_state(desired_state)
-          puts "Service #{config[:name]} is now #{current_state}"
+        if Win32::Service.exists?(config[:name])
+          if current_state != desired_state
+            Win32::Service.send(action, config[:name])
+            wait_for_state(desired_state)
+            puts "Service '#{config[:name]}' is now '#{current_state}'."
+          else
+            puts "Service '#{config[:name]}' is already '#{desired_state}'."
+          end
         else
-          puts "Already #{desired_state}"
+          puts "Cannot '#{action}' service '#{config[:name]}', service does not exist."
         end
       end
 
