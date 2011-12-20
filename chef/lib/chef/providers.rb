@@ -89,6 +89,7 @@ require 'chef/provider/group/usermod'
 require 'chef/provider/group/windows'
 
 require 'chef/provider/mount/mount'
+require 'chef/provider/mount/solaris'
 require 'chef/provider/mount/windows'
 
 require 'chef/provider/deploy/revision'
