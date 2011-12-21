@@ -65,6 +65,17 @@ class Chef
             raise NotImplementedError
           end
 
+          ## 
+          # A rubygems specification object containing the list of gemspecs for all
+          # available gems in the gem installation.
+          # Implemented by subclasses
+          # For rubygems >= 1.8.0
+          # === Returns
+          # Gem::Specification
+          def gem_specification
+            raise NotImplementedError
+          end
+
           ##
           # Lists the installed versions of +gem_name+, constrained by the
           # version spec in +gem_dep+
@@ -74,7 +85,11 @@ class Chef
           # === Returns
           # [Gem::Specification]  an array of Gem::Specification objects
           def installed_versions(gem_dep)
-            gem_source_index.search(gem_dep)
+            if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
+              gem_specification.find_all_by_name(gem_dep.name, gem_dep)
+            else
+              gem_source_index.search(gem_dep)
+            end
           end
 
           ##
@@ -203,6 +218,10 @@ class Chef
             Gem.source_index
           end
 
+          def gem_specification
+            Gem::Specification
+          end
+
           def candidate_version_from_remote(gem_dependency, *sources)
             with_gem_sources(*sources) do
               find_newest_remote_version(gem_dependency, *sources)
@@ -244,6 +263,15 @@ class Chef
 
           def gem_source_index
             @source_index ||= Gem::SourceIndex.from_gems_in(*gem_paths.map { |p| p + '/specifications' })
+          end
+
+          def gem_specification
+            # Only once, dirs calls a reset
+            unless @specification
+              Gem::Specification.dirs = gem_paths
+              @specification = Gem::Specification
+            end
+            @specification
           end
 
           ##

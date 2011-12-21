@@ -44,7 +44,11 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   it "determines the installed versions of gems from Gem.source_index" do
     gems = [gemspec('rspec-core', Gem::Version.new('1.2.9')), gemspec('rspec-core', Gem::Version.new('1.3.0'))]
-    Gem.source_index.should_receive(:search).with(Gem::Dependency.new('rspec-core', nil)).and_return(gems)
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
+      Gem::Specification.should_receive(:find_all_by_name).with('rspec-core', Gem::Dependency.new('rspec-core')).and_return(gems)
+    else
+      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('rspec-core', nil)).and_return(gems)
+    end
     @gem_env.installed_versions(Gem::Dependency.new('rspec-core', nil)).should == gems
   end
 
@@ -183,15 +187,26 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   end
 
   it "builds the gems source index from the gem paths" do
-    Gem::SourceIndex.should_receive(:from_gems_in).with('/path/to/gems/specifications', '/another/path/to/gems/specifications')
     @gem_env.stub!(:gem_paths).and_return(['/path/to/gems', '/another/path/to/gems'])
-    @gem_env.gem_source_index
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
+      @gem_env.gem_specification
+      Gem::Specification.dirs.should == [ '/path/to/gems/specifications', '/another/path/to/gems/specifications' ]
+    else
+      Gem::SourceIndex.should_receive(:from_gems_in).with('/path/to/gems/specifications', '/another/path/to/gems/specifications')
+      @gem_env.gem_source_index
+    end
   end
 
   it "determines the installed versions of gems from the source index" do
     gems = [gemspec('rspec', Gem::Version.new('1.2.9')), gemspec('rspec', Gem::Version.new('1.3.0'))]
-    @gem_env.stub!(:gem_source_index).and_return(Gem.source_index)
-    @gem_env.gem_source_index.should_receive(:search).with(Gem::Dependency.new('rspec', nil)).and_return(gems)
+    rspec_dep = Gem::Dependency.new('rspec', nil)
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
+      @gem_env.stub!(:gem_specification).and_return(Gem::Specification)
+      @gem_env.gem_specification.should_receive(:find_all_by_name).with(rspec_dep.name, rspec_dep).and_return(gems)
+    else
+      @gem_env.stub!(:gem_source_index).and_return(Gem.source_index)
+      @gem_env.gem_source_index.should_receive(:search).with(rspec_dep).and_return(gems)
+    end
     @gem_env.installed_versions(Gem::Dependency.new('rspec', nil)).should == gems
   end
 
