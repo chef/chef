@@ -102,6 +102,35 @@ PACMAN
       @provider.candidate_version.should eql("2.2.3-1")
     end
 
+    it "should use pacman.conf to determine valid repo names for package versions" do
+     @pacman_conf = <<-PACMAN_CONF
+[options]
+HoldPkg      = pacman glibc
+Architecture = auto
+
+[customrepo]
+Server = https://my.custom.repo
+
+[core]
+Include = /etc/pacman.d/mirrorlist
+
+[extra]
+Include = /etc/pacman.d/mirrorlist
+
+[community]
+Include = /etc/pacman.d/mirrorlist
+PACMAN_CONF
+
+      ::File.stub!(:exists?).with("/etc/pacman.conf").and_return(true)
+      ::File.stub!(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
+      @stdout.stub!(:each).and_yield("customrepo/nano 1.2.3-4").
+                            and_yield("    My custom package")
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+
+      @provider.load_current_resource
+      @provider.candidate_version.should eql("1.2.3-4")
+    end
+
     it "should raise an exception if pacman fails" do
       @status.should_receive(:exitstatus).and_return(2)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
