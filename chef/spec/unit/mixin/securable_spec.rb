@@ -87,5 +87,9 @@ describe Chef::Mixin::Securable do
       lambda { @securable.owner 123 }.should_not raise_error(ArgumentError)
       lambda { @securable.owner "root*goo" }.should raise_error(ArgumentError)
     end
+
+    it "allows the owner to be specified as #user" do
+      @securable.should respond_to(:user)
+    end
   end
 end

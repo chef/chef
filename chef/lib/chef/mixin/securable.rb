@@ -28,6 +28,8 @@ class Chef
         )
       end
 
+      alias :user :owner
+
       def group(arg=nil)
         set_or_return(
           :group,
