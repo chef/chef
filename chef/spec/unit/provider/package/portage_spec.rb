@@ -87,6 +87,13 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
+
+    it "should return a current resource with a nil version if a category is not specified and multiple packages from the same category are found" do
+      ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/dev-util/git-1.0.1"])
+      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+      @provider.load_current_resource
+      @provider.current_resource.version.should be_nil
+    end
   end
 
   describe "once the state of the package is known" do

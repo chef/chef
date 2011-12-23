@@ -41,9 +41,12 @@ class Chef
             end
           end.compact
 
-          if versions.size > 1 && !category
+          if versions.size > 1
             atoms = versions.map {|v| v.first }.sort
-            raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+            categories = atoms.map {|v| v.split('/')[0] }.uniq
+            if !category && categories.size > 1
+              raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+            end
           elsif versions.size == 1
             @current_resource.version(versions.first.last)
             Chef::Log.debug("#{@new_resource} current version #{$1}")
