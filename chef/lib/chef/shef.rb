@@ -303,7 +303,7 @@ FOOTER
     def config_file_for_shef_mode(environment)
       if config[:config_file]
         config[:config_file]
-      elsif environment
+      elsif environment && ENV['HOME']
         Shef.env = environment
         config_file_to_try = ::File.join(ENV['HOME'], '.chef', environment, 'shef.rb')
         unless ::File.exist?(config_file_to_try)
