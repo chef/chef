@@ -32,7 +32,7 @@ class Chef
       end
 
       def edit_node
-        abort "You specified the --no-editor option, nothing to edit" if config[:no_editor]
+        abort "You specified the --disable_editing option, nothing to edit" if config[:disable_editing]
         assert_editor_set!
 
         updated_node_data = edit_data(view)

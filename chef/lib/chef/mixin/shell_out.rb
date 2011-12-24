@@ -23,7 +23,7 @@ class Chef
     module ShellOut
 
       def shell_out(*command_args)
-        cmd = Chef::ShellOut.new(*command_args)
+        cmd = Mixlib::ShellOut.new(*command_args)
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?
           cmd.live_stream = STDOUT
         end

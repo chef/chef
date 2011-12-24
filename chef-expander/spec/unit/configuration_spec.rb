@@ -29,9 +29,9 @@ describe Expander::Configuration do
     @config.vnode_numbers.should == (816..1023).to_a
   end
 
-  it "raises an invalid config error when then node index is not set" do
+  it "does not raise an invalid config error when then node index is not set" do
     @config.index = nil
-    lambda { @config.validate! }.should raise_error(Expander::Configuration::InvalidConfiguration)
+    @config.index.should == nil
   end
 
   it "raises an invalid config error when the node count is not set" do
@@ -51,11 +51,11 @@ describe Expander::Configuration do
     @config.node_count = nil
     @config.log.stub!(:warn)
     lambda {@config.fail_if_invalid}.should raise_error(SystemExit)
-    stdout.string.should match(/You must specify this node's position in the ring as an integer/)
+    stdout.string.should match(/You must specify the node_count as an integer/)
   end
 
   it "has a setting for solr url defaulting to localhost:8983" do
-    @config.solr_url.should == "http://localhost:8983"
+    @config.solr_url.should == "http://localhost:8983/solr"
   end
 
   it "has a setting for the amqp host to connect to, defaulting to 0.0.0.0" do
@@ -63,7 +63,7 @@ describe Expander::Configuration do
   end
 
   it "has a setting for the amqp port to use, defaulting to 5672" do
-    @config.amqp_port.should == '5672'
+    @config.amqp_port.should == 5672
   end
 
   it "has a setting for the amqp_user, defaulting to 'chef'" do
@@ -115,7 +115,7 @@ describe Expander::Configuration do
   end
 
   it "generates an AMQP configuration hash suitable for passing to Bunny.new or AMQP.start" do
-    @config.amqp_config.should == {:host => '0.0.0.0', :port => '5672', :user => 'chef', :pass => 'testing', :vhost => '/chef'}
+    @config.amqp_config.should == {:host => '0.0.0.0', :port => 5672, :user => 'chef', :pass => 'testing', :vhost => '/chef'}
   end
 
   it "merges another config on top of itself" do

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ require 'rubygems'
 require 'rspec/mocks'
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-
 $:.unshift(File.expand_path("../lib", __FILE__))
 $:.unshift(File.dirname(__FILE__))
 
@@ -40,7 +39,6 @@ require 'chef/applications'
 require 'chef/shef'
 require 'chef/util/file_edit'
 
-
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
 Chef::Config[:log_level] = :fatal
@@ -53,7 +51,16 @@ Chef::Config.solo(false)
 
 Chef::Log.logger = Logger.new(StringIO.new)
 
+def windows?
+  if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    true
+  else
+    false
+  end
+end
+
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
+DEV_NULL = windows? ? 'NUL' : '/dev/null'
 
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)
@@ -70,3 +77,31 @@ def with_argv(*argv)
   end
 end
 
+# Sets $VERBOSE for the duration of the block and back to its original value afterwards.
+def with_warnings(flag)
+  old_verbose, $VERBOSE = $VERBOSE, flag
+  yield
+ensure
+  $VERBOSE = old_verbose
+end
+
+def with_constants(constants, &block)
+  saved_constants = {}
+  constants.each do |constant, val|
+    saved_constants[ constant ] = Object.const_get( constant )
+    with_warnings(nil) { Object.const_set( constant, val ) }
+  end
+  begin
+    block.call
+  ensure
+    constants.each do |constant, val|
+      with_warnings(nil) { Object.const_set( constant, saved_constants[ constant ] ) }
+    end
+  end
+end
+
+# include custom matchers
+Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
+RSpec.configure do |config|
+  config.include(Matchers)
+end

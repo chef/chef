@@ -22,6 +22,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 require 'chef/run_context'
 require 'chef/rest'
+require 'rbconfig'
 
 describe Chef::Client do
   before do
@@ -48,24 +49,6 @@ describe Chef::Client do
 
     @client = Chef::Client.new
     @client.node = @node
-  end
-
-  describe "when enforcing path sanity" do
-    before do
-      Chef::Config[:enforce_path_sanity] = true
-    end
-
-    it "adds all useful PATHs that are not yet in PATH to PATH" do
-      env = {"PATH" => ""}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    end
-
-    it "does not re-add paths that already exist in PATH" do
-      env = {"PATH" => "/usr/bin:/sbin:/bin"}
-      @client.enforce_path_sanity(env)
-      env["PATH"].should == "/usr/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin"
-    end
   end
 
   describe "run" do

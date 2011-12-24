@@ -27,6 +27,8 @@ __knife cookbook show cookbook [version] [part] [filename]__ _(options)_
     the platform to see the file for
   * `-v`, `--platform-version version`:
     the platform version to see the file for
+  * `-w`, `--with-uri`:
+    Show corresponding URIs
 
 show a particular part of a _cookbook_ for the specified _version_. _part_ can be one of:
 
@@ -114,7 +116,7 @@ __knife cookbook create cookbook__ _(options)_
   * `-o`, `--cookbook-path path`:
     the directory where the cookbook will be created
   * `-r`, `--readme-format format`:
-    format of the readme file
+    format of the readme file md, mkd, txt, rdoc
   * `-c`, `--copyright copyright`:
     name of copyright holder
   * `-i`, `--license license`:
@@ -132,12 +134,12 @@ named cookbook.
 * cookbook/libraries
 * cookbook/metadata.rb
 * cookbook/providers
-* cookbook/readme.rdoc
+* cookbook/readme.md
 * cookbook/recipes/default.rb
 * cookbook/resources
 * cookbook/templates/default
 
-supported readme formats are 'rdoc' (default), 'md', 'mkd', 'txt'. the
+supported readme formats are 'md' (default), 'mkd', 'txt', 'rdoc'. the
 readme file will be written with the specified extension and a set of
 helpful starting headers.
 
@@ -158,12 +160,13 @@ specify `-e` or `--email` with the email address of the cookbook's
 maintainer. if this value is not specified, an all-caps string
 `your_email` is used which can easily be changed with find/replace.
 
-the cookbook copyright, license and email settings can be filled in the
+the cookbook copyright, license, email and readme_format settings can be filled in the
 `knife.rb`, for example with default values:
 
     cookbook_copyright "your_company_name"
     cookbook_license "none"
     cookbook_email "your_email"
+    readme_format "md"
 
 
 ## METADATA

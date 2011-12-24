@@ -21,6 +21,7 @@ require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
+require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
 require 'chef/rest'
@@ -32,6 +33,7 @@ class Chef
     Chef::REST::RESTRequest.user_agent = "Chef Knife#{Chef::REST::RESTRequest::UA_COMMON}"
 
     include Mixlib::CLI
+    include Chef::Mixin::PathSanity
     extend Chef::Mixin::ConvertToClassName
     extend Forwardable
 
@@ -241,9 +243,9 @@ class Chef
         @@chef_config_dir = false
         full_path = Dir.pwd.split(File::SEPARATOR)
         (full_path.length - 1).downto(0) do |i|
-          canidate_directory = File.join(full_path[0..i] + [".chef" ])
-          if File.exist?(canidate_directory) && File.directory?(canidate_directory)
-            @@chef_config_dir = canidate_directory
+          candidate_directory = File.join(full_path[0..i] + [".chef" ])
+          if File.exist?(candidate_directory) && File.directory?(candidate_directory)
+            @@chef_config_dir = candidate_directory
             break
           end
         end
@@ -304,11 +306,11 @@ class Chef
         read_config_file(config[:config_file])
       else
         # ...but do log a message if no config was found.
-        Chef::Config[:color] = config[:color] && !config[:no_color]
+        Chef::Config[:color] = config[:color]
         ui.warn("No knife configuration file found")
       end
 
-      Chef::Config[:color] = config[:color] && !config[:no_color]
+      Chef::Config[:color] = config[:color]
 
       case config[:verbosity]
       when 0
@@ -388,6 +390,7 @@ class Chef
       unless self.respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
+      enforce_path_sanity
       run
     rescue Exception => e
       raise if config[:verbosity] == 2

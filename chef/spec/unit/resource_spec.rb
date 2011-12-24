@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -189,12 +190,10 @@ describe Chef::Resource do
   describe "to_hash" do
     it "should convert to a hash" do
       hash = @resource.to_hash
-      expected_keys = [ :only_if, :allowed_actions, :params, :provider,
-                        :updated, :updated_by_last_action, :before, :not_if, :supports,
-                        :delayed_notifications, :immediate_notifications, :noop,
-                        :ignore_failure, :name, :source_line, :action,
-                        :not_if_args, :only_if_args, :retries, :retry_delay
-                      ]
+      expected_keys = [ :allowed_actions, :params, :provider, :updated,
+        :updated_by_last_action, :before, :supports, :delayed_notifications,
+        :immediate_notifications, :noop, :ignore_failure, :name, :source_line,
+        :action, :retries, :retry_delay ]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -318,43 +317,128 @@ describe Chef::Resource do
     end
 
     it "does not run only_if if no only_if command is given" do
-      Chef::Mixin::Command.should_not_receive(:only_if)
+      @resource.not_if.clear
       @resource.run_action(:purr)
     end
 
-    it "runs its only_if with Chef::Mixin::Command.only_if" do
-      @resource.only_if(true)
-      Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
+    it "runs runs an only_if when one is given" do
+      snitch_variable = nil
+      @resource.only_if { snitch_variable = true }
+      @resource.only_if.first.positivity.should == :only_if
+      #Chef::Mixin::Command.should_receive(:only_if).with(true, {}).and_return(false)
+      @resource.run_action(:purr)
+      snitch_variable.should be_true
+    end
+
+    it "runs multiple only_if conditionals" do
+      snitch_var1, snitch_var2 = nil, nil
+      @resource.only_if { snitch_var1 = 1 }
+      @resource.only_if { snitch_var2 = 2 }
+      @resource.run_action(:purr)
+      snitch_var1.should == 1
+      snitch_var2.should == 2
+    end
+
+    it "accepts command options for only_if conditionals" do
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).at_least(1).times
+      @resource.only_if("true", :cwd => '/tmp')
+      @resource.only_if.first.command_opts.should == {:cwd => '/tmp'}
       @resource.run_action(:purr)
     end
 
-    it "changes the working directory to the specified directory for only_if" do
-      @resource.should_receive(:only_if).twice.and_return("/bin/true")
-      @resource.should_receive(:only_if_args).and_return({:cwd => "/tmp"})
-      Chef::Mixin::Command.should_receive(:only_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
+    it "runs not_if as a command when it is a string" do
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_command).at_least(1).times
+      @resource.not_if "pwd"
       @resource.run_action(:purr)
     end
 
-    it "runs its not_if command with Chef::Mixin::Command.not_if" do
-      @resource.should_receive(:not_if).twice.and_return(true)
-      Chef::Mixin::Command.should_receive(:not_if).with(true, {}).and_return(false)
+    it "runs not_if as a block when it is a ruby block" do
+      Chef::Resource::Conditional.any_instance.should_receive(:evaluate_block).at_least(1).times
+      @resource.not_if { puts 'foo' }
       @resource.run_action(:purr)
     end
 
     it "does not run not_if if no not_if command is given" do
-      @resource.should_receive(:not_if).and_return(nil)
       @resource.run_action(:purr)
     end
 
-    it "changes the working directory to the specified directory for only_if" do
-      @resource.should_receive(:not_if).twice.and_return("/bin/true")
-      @resource.should_receive(:not_if_args).and_return({:cwd => "/tmp"})
-      Chef::Mixin::Command.should_receive(:not_if).with("/bin/true", {:cwd => "/tmp"}).and_return(true)
+    it "accepts command options for not_if conditionals" do
+      @resource.not_if("pwd" , :cwd => '/tmp')
+      @resource.not_if.first.command_opts.should == {:cwd => '/tmp'}
+    end
+
+    it "accepts multiple not_if conditionals" do
+      snitch_var1, snitch_var2 = true, true
+      @resource.not_if {snitch_var1 = nil}
+      @resource.not_if {snitch_var2 = false}
       @resource.run_action(:purr)
+      snitch_var1.should be_nil
+      snitch_var2.should be_false
     end
 
   end
 
+  describe "building the platform map" do
+
+    it 'adds mappings for a single platform' do
+      klz = Class.new(Chef::Resource)
+      Chef::Resource.platform_map.should_receive(:set).with(
+        :platform => :autobots, :short_name => :dinobot, :resource => klz
+      )
+      klz.provides :dinobot, :on_platforms => ['autobots']
+    end
+
+    it 'adds mappings for multiple platforms' do
+      klz = Class.new(Chef::Resource)
+      Chef::Resource.platform_map.should_receive(:set).twice
+      klz.provides :energy, :on_platforms => ['autobots','decepticons']
+    end
+
+    it 'adds mappings for all platforms' do
+      klz = Class.new(Chef::Resource)
+      Chef::Resource.platform_map.should_receive(:set).with(
+        :short_name => :tape_deck, :resource => klz
+      )
+      klz.provides :tape_deck
+    end
+
+  end
+
+  describe "lookups from the platform map" do
+
+    before(:each) do
+      @node = Chef::Node.new
+      @node.name("bumblebee")
+      @node.platform("autobots")
+      @node.platform_version("6.1")
+      Object.const_set('Soundwave', Class.new(Chef::Resource))
+      Object.const_set('Grimlock', Class.new(Chef::Resource){ provides :dinobot, :on_platforms => ['autobots'] })
+    end
+
+    after(:each) do
+      Object.send(:remove_const, :Soundwave)
+      Object.send(:remove_const, :Grimlock)
+    end
+
+    describe "resource_for_platform" do
+      it 'return a resource by short_name and platform' do
+        Chef::Resource.resource_for_platform(:dinobot,'autobots','6.1').should eql(Grimlock)
+      end
+      it "returns a resource by short_name if nothing else matches" do
+        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
+      end
+    end
+
+    describe "resource_for_node" do
+      it "returns a resource by short_name and node" do
+        Chef::Resource.resource_for_node(:dinobot, @node).should eql(Grimlock)
+      end
+      it "returns a resource by short_name if nothing else matches" do
+        Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
+      end
+    end
+
+  end
 end
 
 describe Chef::Resource::Notification do

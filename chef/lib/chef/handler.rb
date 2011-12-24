@@ -57,6 +57,27 @@ class Chef
   #
   class Handler
 
+    # The list of currently configured start handlers
+    def self.start_handlers
+      Array(Chef::Config[:start_handlers])
+    end
+
+    # Run the start handlers. This will usually be called by a notification
+    # from Chef::Client
+    def self.run_start_handlers(run_status)
+      Chef::Log.info("Running start handlers")
+      start_handlers.each do |handler|
+        handler.run_report_safely(run_status)
+      end
+      Chef::Log.info("Start handlers complete.")
+    end
+
+    # Wire up a notification to run the start handlers when the chef run
+    # starts.
+    Chef::Client.when_run_starts do |run_status|
+      run_start_handlers(run_status)
+    end
+
     # The list of currently configured report handlers
     def self.report_handlers
       Array(Chef::Config[:report_handlers])

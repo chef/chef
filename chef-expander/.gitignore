@@ -10,3 +10,4 @@ erl_crash.dump
 .idea
 *.rbc
 conf/chef-expander.rb
+Gemfile.lock

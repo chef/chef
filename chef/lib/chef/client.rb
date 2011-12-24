@@ -20,6 +20,7 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
+require 'chef/mixin/path_sanity'
 require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
@@ -36,14 +37,14 @@ require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/version'
 require 'ohai'
+require 'rbconfig'
 
 class Chef
   # == Chef::Client
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
-
-    SANE_PATHS = %w[/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin]
+    include Chef::Mixin::PathSanity
 
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
@@ -311,20 +312,6 @@ class Chef
       @runner = Chef::Runner.new(run_context)
       runner.converge
       true
-    end
-
-    def enforce_path_sanity(env=ENV)
-      if Chef::Config[:enforce_path_sanity] && RUBY_PLATFORM !~ /mswin|mingw32|windows/
-        existing_paths = env["PATH"].split(':')
-        SANE_PATHS.each do |sane_path|
-          unless existing_paths.include?(sane_path)
-            env_path = env["PATH"].dup
-            env_path << ':' unless env["PATH"].empty?
-            env_path << sane_path
-            env["PATH"] = env_path
-          end
-        end
-      end
     end
 
     private

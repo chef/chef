@@ -210,23 +210,11 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
       end
 
-      it "should set the owner if provided" do
-        @resource.owner("adam")
-        @provider.should_receive(:set_owner).and_return(true)
+      it "should set permissions" do
+        @provider.should_receive(:enforce_ownership_and_permissions).and_return(true)
         @provider.action_create
       end
 
-      it "should set the group if provided" do
-        @resource.group("adam")
-        @provider.should_receive(:set_group).and_return(true)
-        @provider.action_create
-      end
-
-      it "should set the mode if provided" do
-        @resource.mode(0676)
-        @provider.should_receive(:set_mode).and_return(true)
-        @provider.action_create
-      end
 
     end
 

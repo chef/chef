@@ -65,6 +65,14 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
+
+      def system(arg=nil)
+        set_or_return(
+          :system,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
     end
   end
 end

@@ -25,6 +25,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'fast_xs', "~> 0.7.3"
   s.add_dependency 'highline', '~> 1.6.1'
 
+  %w(rake rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem }
+
   s.bindir       = "bin"
   s.executables  = %w( chef-expander chef-expander-vnode chef-expanderctl )
   s.require_path = 'lib'

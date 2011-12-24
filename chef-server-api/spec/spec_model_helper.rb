@@ -53,6 +53,22 @@ def make_runlist(*items)
   res
 end
 
+def stub_checksum(checksum, present = true)
+  Chef::Checksum.should_receive(:new).with(checksum).and_return do
+    obj = stub(Chef::Checksum)
+    obj.should_receive(:storage).and_return do
+      storage = stub("storage")
+      if present
+        storage.should_receive(:file_location).and_return("/var/chef/checksums/#{checksum[0..1]}/#{checksum}")
+      else
+        storage.should_receive(:file_location).and_raise(Errno::ENOENT)
+      end
+      storage
+    end
+    obj
+  end
+end
+
 # Take an Array of cookbook_versions,
 # And return a hash like:
 # {

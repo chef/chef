@@ -116,7 +116,7 @@ $(document).ready(function(){
   });
 
   // livequery hidden form for link_to ajax magic
-  $(document.body).delegate('a[method]', 'click', function(e){
+  $(document.body).delegate('a[method]', 'click', function(event){
     var $this = $(this);
     var message = $this.attr('confirm'), method = $this.attr('method');
 

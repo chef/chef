@@ -23,11 +23,15 @@ require 'open3'
 module Chef
   module Expander
 
-    VERSION = "0.10.5"
+    VERSION = "0.10.7"
 
     def self.version
       @rev ||= begin
-        rev = Open3.popen3("git rev-parse HEAD") {|stdin, stdout, stderr| stdout.read }.strip
+        begin
+          rev = Open3.popen3("git rev-parse HEAD") {|stdin, stdout, stderr| stdout.read }.strip
+        rescue Errno::ENOENT
+          rev = ""
+        end
         rev.empty? ? nil : " (#{rev})"
       end
       "#{VERSION}#@rev"

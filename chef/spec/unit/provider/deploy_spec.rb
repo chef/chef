@@ -37,7 +37,31 @@ describe Chef::Provider::Deploy do
     @provider.should respond_to(:action_rollback)
   end
 
+  it "creates deploy_to dir if it does not exist yet" do
+    FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to)
+    FileUtils.should_receive(:mkdir_p).with(@resource.shared_path)
+    ::File.stub!(:directory?).and_return(false)
+    @provider.stub(:copy_cached_repo)
+    @provider.stub(:update_cached_repo)
+    @provider.stub(:symlink)
+    @provider.stub(:migrate)
+    @provider.deploy
+  end
+
+  it "does not create deploy_to dir if it exists" do
+    ::File.stub!(:directory?).and_return(true)
+    FileUtils.should_not_receive(:mkdir_p).with(@resource.deploy_to)
+    FileUtils.should_not_receive(:mkdir_p).with(@resource.shared_path)
+    @provider.stub(:copy_cached_repo)
+    @provider.stub(:update_cached_repo)
+    @provider.stub(:symlink)
+    @provider.stub(:migrate)
+    @provider.deploy
+  end
+
   it "updates and copies the repo, then does a migrate, symlink, restart, restart, cleanup on deploy" do
+    FileUtils.stub(:mkdir_p).with("/my/deploy/dir")
+    FileUtils.stub(:mkdir_p).with("/my/deploy/dir/shared")
     @provider.should_receive(:enforce_ownership).twice
     @provider.should_receive(:update_cached_repo)
     @provider.should_receive(:copy_cached_repo)
@@ -55,13 +79,16 @@ describe Chef::Provider::Deploy do
 
   it "should not deploy if there is already a deploy at release_path, and it is the current release" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir])
+    @provider.stub!(:current_release?).with(@expected_release_dir).and_return(true)
     @provider.should_not_receive(:deploy)
     @provider.action_deploy
   end
 
   it "should call action_rollback if there is already a deploy of this revision at release_path, and it is not the current release" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir, "102021"])
+    @provider.stub!(:current_release?).with(@expected_release_dir).and_return(false)
     @provider.should_receive(:action_rollback)
+    @provider.should_receive(:current_release?)
     @provider.action_deploy
   end
 
@@ -90,6 +117,26 @@ describe Chef::Provider::Deploy do
     @provider.action_force_deploy
   end
 
+  it "dont care by default if error happens on deploy" do
+    @provider.stub!(:all_releases).and_return(['previous_release'])
+    @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub!(:previous_release_path).and_return('previous_release')
+    @provider.should_not_receive(:rollback)
+    lambda { 
+      @provider.action_deploy
+    }.should raise_exception(RuntimeError, "Unexpected error")
+  end
+  
+  it "rollbacks to previous release if error happens on deploy" do
+    @resource.rollback_on_error true
+    @provider.stub!(:all_releases).and_return(['previous_release'])
+    @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
+    @provider.stub!(:previous_release_path).and_return('previous_release')
+    @provider.should_receive(:rollback)
+    lambda { 
+      @provider.action_deploy
+    }.should raise_exception(RuntimeError, "Unexpected error")
+  end
 
   describe "on systems without broken Dir.glob results" do
     it "sets the release path to the penultimate release when one is not specified, symlinks, and rm's the last release on rollback" do
@@ -232,6 +279,8 @@ describe Chef::Provider::Deploy do
     @resource.environment "RAILS_ENV" => "production"
     FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/config/database.yml", @expected_release_dir + "/config/database.yml")
     @provider.should_receive(:enforce_ownership)
+
+    STDOUT.stub!(:tty?).and_return(true)
     @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
 																								:command_log_level => :info, :live_stream => STDOUT,
@@ -248,6 +297,9 @@ describe Chef::Provider::Deploy do
   end
 
   it "symlinks temporary files and logs from the shared dir into the current release" do
+    FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/system")
+    FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/pids")
+    FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/log")
     FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/tmp")
     FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/public")
     FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/config")
@@ -284,13 +336,15 @@ describe Chef::Provider::Deploy do
     it "symlinks files from the shared directory to the current release directory" do
       FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/baz")
       FileUtils.should_receive(:mkdir_p).with(@expected_release_dir + "/qux")
+      FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/foo/bar")
+      FileUtils.stub(:mkdir_p).with(@resource.shared_path + "/baz")
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/foo/bar", @expected_release_dir + "/foo/bar")
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/baz", @expected_release_dir + "/qux/baz")
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/radiohead/in_rainbows.yml", @expected_release_dir + "/awesome")
       @provider.should_receive(:enforce_ownership)
       @provider.link_tempfiles_to_current_release
     end
-
+    
   end
 
   it "does nothing for restart if restart_command is empty" do

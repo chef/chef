@@ -56,7 +56,6 @@ class Chef
     class AttributeNotFound < RuntimeError; end
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
-    class ShellCommandFailed < RuntimeError; end
     class RequestedUIDUnavailable < RuntimeError; end
     class InvalidHomeDirectory < ArgumentError; end
     class DsclCommandFailed < RuntimeError; end
@@ -74,6 +73,8 @@ class Chef
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
+    # Errors originating from calls to the Win32 API
+    class Win32APIError < RuntimeError; end
 
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
@@ -88,6 +89,10 @@ class Chef
     # version constraint should be a string or array, or it doesn't
     # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
+
+    # Backcompat with Chef::ShellOut code:
+    require 'mixlib/shellout/exceptions'
+    class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
 
     class CookbookVersionSelection
 

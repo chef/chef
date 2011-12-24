@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-SSH" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "KNIFE\-SSH" "1" "November 2011" "Chef 0.10.6.beta.2" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-ssh\fR \- Run a command or interactive session on multiple remote hosts
@@ -33,6 +33,18 @@ The ssh username
 \fB\-i\fR, \fB\-\-identity\-file IDENTITY_FILE\fR
 The SSH identity file used for authentication
 .
+.TP
+\fB\-p\fR, \fB\-\-ssh\-port PORT\fR
+The ssh port
+.
+.TP
+\fB\-i\fR, \fB\-\-identity\-file IDENTITY_FILE\fR
+The SSH identity file used for authentication
+.
+.TP
+\fB\-\-no\-host\-key\-verify\fR
+Disable host key verification
+.
 .SH "DESCRIPTION"
 The \fIssh\fR sub\-command opens an ssh session to each of the nodes in the search results of the \fIQUERY\fR\. This sub\-command requires that the net\-ssh\-multi and highline Ruby libraries are installed\. On Debian systems, these are the libnet\-ssh\-multi\-ruby and libhighline\-ruby packages\. They can also be installed as RubyGems (net\-ssh\-multi and highline, respectively)\.
 .
@@ -40,18 +52,11 @@ The \fIssh\fR sub\-command opens an ssh session to each of the nodes in the sear
 \fBknife ssh\fR integrates with several terminal multiplexer programs to provide a more convenient means of managing multiple ssh sessions\. When the \fICOMMAND\fR option matches one of these, \fBknife ssh\fR will create multiple interactive ssh sessions running locally in the terminal multiplexer instead of invoking the command on the remote host\.
 .
 .P
-The available multiplexers are: * \fBinteractive\fR:
+The available multiplexers are:
 .
-.IP "" 4
-.
-.nf
-
-A built\-in multiplexer\. `interactive` supports running commands on a
-subset of the connected hosts in parallel
-.
-.fi
-.
-.IP "" 0
+.TP
+\fBinteractive\fR
+A built\-in multiplexer\. \fBinteractive\fR supports running commands on a subset of the connected hosts in parallel
 .
 .TP
 \fBscreen\fR(1)

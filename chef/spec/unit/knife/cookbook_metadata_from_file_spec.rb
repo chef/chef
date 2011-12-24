@@ -30,6 +30,7 @@ describe Chef::Knife::CookbookMetadataFromFile do
     @knife.stub!(:to_json_pretty).and_return(true)
     @md = Chef::Cookbook::Metadata.new
     Chef::Cookbook::Metadata.stub(:new).and_return(@md)
+    $stdout.stub!(:write)
   end
 
   after do
@@ -62,4 +63,3 @@ describe Chef::Knife::CookbookMetadataFromFile do
 
   end
 end
-

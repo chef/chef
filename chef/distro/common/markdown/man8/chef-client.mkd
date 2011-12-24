@@ -17,6 +17,8 @@ __chef-client__ _(options)_
     Run chef-client periodically, in seconds
   * `-j`, `--json-attributes JSON_ATTRIBS`:
     Load attributes from a JSON file or URL
+  * `-E`, `--environment ENVIRONMENT`:
+    Set the Chef Environment on the node
   * `-l`, `--log_level LEVEL`:
     Set the log level (debug, info, warn, error, fatal)
   * `-L`, `--logfile LOGLOCATION`:
@@ -27,10 +29,18 @@ __chef-client__ _(options)_
     log location(s).
   * `-N`, `--node-name NODE_NAME`:
     The node name for this client
+  * `-K`, `--validation_key KEY_FILE`:
+    Set the validation key file location, used for registering new clients
+  * `-k`, `--client_key KEY_FILE`:
+    Set the client key file location
   * `-s`, `--splay SECONDS`:
     The splay time for running at intervals, in seconds
   * `-u`, `--user USER`:
     User to set privilege to
+  * `-P`, `--pid PIDFILE`:
+    Set the PID file location, defaults to /tmp/chef-client.pid
+  * `--once`:
+    Cancel any interval or splay options, run chef once and exit
   * `-v`, `--version`:
     Show chef version
   * `-h`, `--help`:

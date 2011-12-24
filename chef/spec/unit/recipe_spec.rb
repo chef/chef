@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
 # Author:: Tim Hinderliter (<tim@opscode.com>)
-# Copyright:: Copyright (c) 2008-2010 Opscode, Inc.
+# Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,6 +101,26 @@ describe Chef::Recipe do
         end
         res.resource_name.should eql(:zen_master)
         res.name.should eql("makoto")
+      end
+
+      describe "should locate platform mapped resources" do
+
+        it "locate resource for particular platform" do
+          Object.const_set('ShaunTheSheep', Class.new(Chef::Resource){ provides :laughter, :on_platforms => ["television"] })
+          @node.platform("television")
+          @node.platform_version("123")
+          res = @recipe.laughter "timmy"
+          res.name.should eql("timmy")
+          res.kind_of?(ShaunTheSheep)
+        end
+
+        it "locate a resource for all platforms" do
+          Object.const_set("YourMom", Class.new(Chef::Resource){ provides :love_and_caring })
+          res = @recipe.love_and_caring "mommy"
+          res.name.should eql("mommy")
+          res.kind_of?(YourMom)
+        end
+
       end
     end
 

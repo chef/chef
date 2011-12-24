@@ -16,10 +16,21 @@
 # limitations under the License.
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+require 'ostruct'
 
 describe Chef::Daemon do
   before do
     @original_config = Chef::Config.configuration
+    if windows?
+      mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
+      mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
+      Etc.stub!(:getpwnam).and_return mock_struct
+      Etc.stub!(:getgrnam).and_return mock_struct
+      # mock unimplemented methods
+      Process.stub!(:initgroups).and_return nil
+      Process::GID.stub!(:change_privilege).and_return 11
+      Process::UID.stub!(:change_privilege).and_return 11
+    end
   end
 
   after do

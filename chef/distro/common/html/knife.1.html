@@ -66,6 +66,7 @@
     <a href="#SUB-COMMANDS">SUB-COMMANDS</a>
     <a href="#CONFIGURATION">CONFIGURATION</a>
     <a href="#FILES">FILES</a>
+    <a href="#FORMATS">FORMATS</a>
     <a href="#CHEF-WORKFLOW">CHEF WORKFLOW</a>
     <a href="#EXAMPLES">EXAMPLES</a>
     <a href="#ENVIRONMENT">ENVIRONMENT</a>
@@ -128,15 +129,18 @@ documentation using <code>knife help TOPIC</code>.</p>
 <dt><code>-s</code>, <code>--server-url</code> URL</dt><dd>Chef Server URL, corresponds to <code>Chef::Config</code> <code>chef_server_url</code>.</dd>
 <dt><code>-k</code>, <code>--key</code> KEY</dt><dd>API Client Key, corresponds to <code>Chef::Config</code> <code>client_key</code>.</dd>
 <dt><code>-c</code>, <code>--config</code> CONFIG</dt><dd>The configuration file to use</dd>
+<dt><code>-E</code>, <code>--environment ENVIRONMENT</code></dt><dd>Set the Chef environment</dd>
 <dt><code>-e</code>, <code>--editor</code> EDITOR</dt><dd>Set the editor to use for interactive commands</dd>
-<dt><code>-F</code>, <code>--format</code> FORMAT</dt><dd>Which format to use for output</dd>
-<dt><code>-l</code>, <code>--log_level</code> LEVEL</dt><dd>Set the log level (debug, info, warn, error, fatal), corresponds to <code>Chef::Config</code> <code>log_level</code>.</dd>
-<dt><code>-L</code>, <code>--logfile</code> LOGLOCATION</dt><dd>Set the log file location, defaults to STDOUT, corresponds to <code>Chef::Config</code> <code>log_location</code>.</dd>
+<dt><code>-F</code>, <code>--format</code> FORMAT</dt><dd>Which format to use for output. See FORMATS for details.</dd>
+<dt><code>-V</code>, <code>--verbose</code></dt><dd>More verbose output.  Use twice for max verbosity</dd>
 <dt><code>-n</code>, <code>--no-editor</code></dt><dd>Do not open EDITOR, just accept the data as is</dd>
 <dt><code>-u</code>, <code>--user</code> USER</dt><dd>API Client Username, corresponds to <code>Chef::Config</code> <code>node_name</code>.</dd>
 <dt><code>-p</code>, <code>--print-after</code></dt><dd>Show the data after a destructive operation</dd>
 <dt><code>-v</code>, <code>--version</code></dt><dd>Show chef version</dd>
 <dt><code>-y</code>, <code>--yes</code></dt><dd>Say yes to all prompts for confirmation</dd>
+<dt><code>--defaults</code></dt><dd>Accept default values for all questions</dd>
+<dt class="flush"><code>--color</code></dt><dd>Use colored output</dd>
+<dt><code>--no-color</code></dt><dd>Don't use colors in the output</dd>
 <dt><code>-h</code>, <code>--help</code></dt><dd>Show the available options for a command.</dd>
 </dl>
 
@@ -192,9 +196,9 @@ Specifies the name of the client used to validate new clients.</li>
 Specifies the private key file to use when bootstrapping new hosts.
 See <span class="man-ref">knife-client<span class="s">(1)</span></span> for more information about the validation
 client.</li>
-<li><code>cookbook_copyright</code>, <code>cookbook_email</code>, <code>cookbook_license</code>
+<li><code>cookbook_copyright</code>, <code>cookbook_email</code>, <code>cookbook_license</code>, <code>readme_format</code>
 Used by <code>knife cookbook create</code> sub-command to specify the copyright
-holder, maintainer email and license (respectively) for new cookbooks.
+holder, maintainer email, license and readme format (respectively) for new cookbooks.
 The copyright holder is listed as the maintainer in the cookbook's
 metadata and as the Copyright in the comments of the default recipe. The
 maintainer email is used in the cookbook metadata. The license
@@ -202,7 +206,9 @@ determines what preamble to put in the comment of the default recipe,
 and is listed as the license in the cookbook metadata. Currently
 supported licenses are "apachev2" and "none". Any other values will
 result in an empty license in the metadata (needs to be filled in by the
-author), and no comment preamble in the default recipe.</li>
+author), and no comment preamble in the default recipe. Currently supported
+readme formats are "md", "mkd", "txt", and "rdoc".  Any other value will
+result in an unformatted README.</li>
 </ul>
 
 
@@ -211,6 +217,26 @@ author), and no comment preamble in the default recipe.</li>
 <p><em>~/.chef/knife.rb</em></p>
 
 <p>Ruby DSL configuration file for knife. See <strong>CONFIGURATION</strong>.</p>
+
+<h2 id="FORMATS">FORMATS</h2>
+
+<p>The amount of content displayed and the output format are
+modified by the <code>--format</code> option. If no alternate format is selected,
+the default is summary.</p>
+
+<p>Valid formats are:</p>
+
+<dl>
+<dt class="flush"><code>summary</code></dt><dd>displays the node in a custom, summarized format (default)</dd>
+<dt class="flush"><code>text</code></dt><dd>displays the node data in its entirety using the colorized tree display</dd>
+<dt class="flush"><code>json</code></dt><dd>displays the node in JSON format</dd>
+<dt class="flush"><code>yaml</code></dt><dd>displays the node in YAML format</dd>
+<dt class="flush"><code>pp</code></dt><dd>displays the node using Ruby's pretty printer.</dd>
+</dl>
+
+
+<p>For brevity, only the first character of the format is required, for
+example, -Fj will produce JSON format output.</p>
 
 <h2 id="CHEF-WORKFLOW">CHEF WORKFLOW</h2>
 
@@ -266,12 +292,12 @@ data editing entirely.</dd>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#x6f;&#58;&#x61;&#100;&#97;&#109;&#x40;&#111;&#112;&#x73;&#99;&#111;&#x64;&#101;&#46;&#x63;&#111;&#109;" data-bare-link="true">&#97;&#x64;&#x61;&#x6d;&#64;&#x6f;&#112;&#115;&#99;&#x6f;&#100;&#x65;&#x2e;&#x63;&#111;&#x6d;</a> of Opscode
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#58;&#97;&#100;&#x61;&#x6d;&#x40;&#x6f;&#112;&#115;&#99;&#111;&#100;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#97;&#x64;&#x61;&#x6d;&#64;&#x6f;&#112;&#115;&#x63;&#111;&#x64;&#101;&#46;&#99;&#111;&#109;</a> of Opscode
    (<a href="http://www.opscode.com" data-bare-link="true">http://www.opscode.com</a>), with contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#x3a;&#x6a;&#x6f;&#x73;&#x68;&#117;&#97;&#x40;&#111;&#112;&#x73;&#x63;&#111;&#x64;&#101;&#46;&#99;&#111;&#x6d;" data-bare-link="true">&#106;&#x6f;&#x73;&#x68;&#x75;&#97;&#x40;&#x6f;&#x70;&#x73;&#99;&#x6f;&#x64;&#x65;&#46;&#99;&#111;&#109;</a>.</p>
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#106;&#x6f;&#115;&#104;&#x75;&#97;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#x6a;&#x6f;&#115;&#x68;&#x75;&#97;&#64;&#111;&#x70;&#115;&#99;&#111;&#100;&#101;&#46;&#99;&#x6f;&#x6d;</a>.</p>
 
 <h2 id="LICENSE">LICENSE</h2>
 
@@ -285,8 +311,8 @@ data editing entirely.</dd>
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 0.10.4</li>
-    <li class='tc'>August 2011</li>
+    <li class='tl'>Chef 0.10.6.beta.2</li>
+    <li class='tc'>November 2011</li>
     <li class='tr'>knife(1)</li>
   </ol>
 

@@ -40,13 +40,13 @@ describe Chef::Provider::Package::EasyInstall do
   end
 
   describe "easy_install_binary_path" do
-
     it "should return a Chef::Provider::EasyInstall object" do
       provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
       provider.should be_a_kind_of(Chef::Provider::Package::EasyInstall)
     end
 
     it "should set the current resources package name to the new resources package name" do
+      $stdout.stub!(:write)
       @current_resource.should_receive(:package_name).with(@new_resource.package_name)
       @provider.load_current_resource
     end

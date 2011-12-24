@@ -85,6 +85,10 @@ describe Chef::Config do
           and_return(@mockfile)
       end
 
+      after do
+        Chef::Config.log_location = STDOUT
+      end
+
       it "should configure itself to use a File object based upon the String" do
         Chef::Config.log_location = "/var/log/chef/client.log"
         Chef::Config.log_location.path.should == "/var/log/chef/client.log"
@@ -104,9 +108,34 @@ describe Chef::Config do
     end
   end
 
+   describe "class method: plaform_specific_path" do
+    it "should return given path on non-windows systems" do
+      with_constants :RUBY_PLATFORM => 'x86_64-darwin11.2.0' do
+        path = "/etc/chef/cookbooks"
+        Chef::Config.platform_specific_path(path).should == "/etc/chef/cookbooks"
+      end
+    end
+
+    it "should return a windows path on windows systems" do
+      with_constants :RUBY_PLATFORM => 'i386-mingw32' do
+        path = "/etc/chef/cookbooks"
+        ENV.stub!(:[]).with('SYSTEMDRIVE').and_return('C:')
+        # match on a regex that looks for the base path with an optional
+        # system drive at the beginning (c:)
+        # system drive is not hardcoded b/c it can change and b/c it is not present on linux systems
+        Chef::Config.platform_specific_path(path).should == "C:\\chef\\cookbooks"
+      end
+    end
+  end
+
   describe "default values" do
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
-      Chef::Config[:file_backup_path].should == "/var/chef/backup"
+      backup_path = if windows?
+        "#{ENV['SYSTEMDRIVE']}\\chef\\backup"
+      else
+        "/var/chef/backup"
+      end
+      Chef::Config[:file_backup_path].should == backup_path
     end
 
     it "Chef::Config[:ssl_verify_mode] defaults to :verify_none" do

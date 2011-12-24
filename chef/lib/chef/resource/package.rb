@@ -32,7 +32,7 @@ class Chef
         @source = nil
         @action = :install
         @options = nil
-        @allowed_actions.push(:install, :upgrade, :remove, :purge)
+        @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
       end
 
       def package_name(arg=nil)

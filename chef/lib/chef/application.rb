@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: Mark Mzyk (mmzyk@opscode.com)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,8 +20,10 @@ require 'socket'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/log'
+require 'chef/platform'
 require 'mixlib/cli'
 require 'tmpdir'
+require 'rbconfig'
 
 class Chef::Application
   include Mixlib::CLI
@@ -39,7 +42,7 @@ class Chef::Application
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
 
-    unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+    unless Chef::Platform.windows?
       trap("QUIT") do
         Chef::Log.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
       end
@@ -78,15 +81,18 @@ class Chef::Application
       else
         ::File::open(config[:config_file]) { |f| apply_config(f.path) }
       end
-    rescue SocketError => error
-      Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
-    rescue Exception => error
+    rescue Errno::ENOENT => error
       Chef::Log.warn("*****************************************")
-      Chef::Log.warn("Can not find config file: #{config[:config_file]}, using defaults.")
-      Chef::Log.warn("#{error.message}")
+      Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
       Chef::Log.warn("*****************************************")
 
       Chef::Config.merge!(config)
+    rescue SocketError => error
+      Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
+    rescue Chef::Exceptions::ConfigurationError => error
+      Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
+    rescue Exception => error
+      Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
     end
 
   end

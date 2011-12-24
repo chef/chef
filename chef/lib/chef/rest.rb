@@ -20,6 +20,7 @@
 # limitations under the License.
 #
 
+require 'zlib'
 require 'net/https'
 require 'uri'
 require 'chef/json_compat'
@@ -33,8 +34,20 @@ class Chef
   # Chef's custom REST client with built-in JSON support and RSA signed header
   # authentication.
   class REST
+
+    class NoopInflater
+      def inflate(chunk)
+        chunk
+      end
+    end
+
     attr_reader :auth_credentials
     attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
+
+    CONTENT_ENCODING  = "content-encoding".freeze
+    GZIP              = "gzip".freeze
+    DEFLATE           = "deflate".freeze
+    IDENTITY          = "identity".freeze
 
     # Create a REST client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
@@ -167,9 +180,13 @@ class Chef
     # Will return the body of the response on success.
     def run_request(method, url, headers={}, data=false, limit=nil, raw=false)
       json_body = data ? Chef::JSONCompat.to_json(data) : nil
+      # Force encoding to binary to fix SSL related EOFErrors
+      # cf. http://tickets.opscode.com/browse/CHEF-2363
+      # http://redmine.ruby-lang.org/issues/5233
+      json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
       headers = build_headers(method, url, headers, json_body, raw)
 
-      tf = nil
+      tf, response_body = nil, nil
 
       retriable_rest_request(method, url, json_body, headers) do |rest_request|
 
@@ -177,13 +194,12 @@ class Chef
           if raw
             tf = stream_to_tempfile(url, response)
           else
-            response.read_body
+            response_body = decompress_body(response)
           end
         end
 
         if res.kind_of?(Net::HTTPSuccess)
           if res['content-type'] =~ /json/
-            response_body = res.body.chomp
             Chef::JSONCompat.from_json(response_body)
           else
             if method == :HEAD
@@ -191,7 +207,7 @@ class Chef
             elsif raw
               tf
             else
-              res.body
+              response_body
             end
           end
         elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
@@ -200,7 +216,7 @@ class Chef
           false
         else
           if res['content-type'] =~ /json/
-            exception = Chef::JSONCompat.from_json(res.body)
+            exception = Chef::JSONCompat.from_json(response_body)
             msg = "HTTP Request Returned #{res.code} #{res.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
             Chef::Log.warn(msg)
@@ -213,29 +229,48 @@ class Chef
     # Runs an HTTP request to a JSON API. File Download not supported.
     def api_request(method, url, headers={}, data=false)
       json_body = data ? Chef::JSONCompat.to_json(data) : nil
+      # Force encoding to binary to fix SSL related EOFErrors
+      # cf. http://tickets.opscode.com/browse/CHEF-2363
+      # http://redmine.ruby-lang.org/issues/5233
+      json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
       headers = build_headers(method, url, headers, json_body)
 
       retriable_rest_request(method, url, json_body, headers) do |rest_request|
         response = rest_request.call {|r| r.read_body}
 
+        response_body = decompress_body(response)
+
         if response.kind_of?(Net::HTTPSuccess)
           if response['content-type'] =~ /json/
-            Chef::JSONCompat.from_json(response.body.chomp)
+            Chef::JSONCompat.from_json(response_body.chomp)
           else
             Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
-            response.body
+            response_body
           end
         elsif redirect_location = redirected_to(response)
           follow_redirect {api_request(:GET, create_url(redirect_location))}
         else
           if response['content-type'] =~ /json/
-            exception = Chef::JSONCompat.from_json(response.body)
+            exception = Chef::JSONCompat.from_json(response_body)
             msg = "HTTP Request Returned #{response.code} #{response.message}: "
             msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
             Chef::Log.info(msg)
           end
           response.error!
         end
+      end
+    end
+
+    def decompress_body(response)
+      case response[CONTENT_ENCODING]
+      when GZIP
+        Chef::Log.debug "decompressing gzip response"
+        Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
+      when DEFLATE
+        Chef::Log.debug "decompressing deflate response"
+        Zlib::Inflate.inflate(response.body)
+      else
+        response.body
       end
     end
 
@@ -360,9 +395,11 @@ class Chef
 
     def build_headers(method, url, headers={}, json_body=false, raw=false)
       headers                 = @default_headers.merge(headers)
+      #headers['Accept']       = "application/json" unless raw
       headers['Accept']       = "application/json" unless raw
       headers["Content-Type"] = 'application/json' if json_body
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
+      headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
@@ -370,15 +407,27 @@ class Chef
 
     def stream_to_tempfile(url, response)
       tf = Tempfile.open("chef-rest")
-      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      if Chef::Platform.windows?
         tf.binmode #required for binary files on Windows platforms
       end
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
       size, total = 0, response.header['Content-Length'].to_i
+
+      inflater = case response[CONTENT_ENCODING]
+      when GZIP
+        Chef::Log.debug "decompressing gzip stream"
+        Zlib::Inflate.new(Zlib::MAX_WBITS + 16)
+      when DEFLATE
+        Chef::Log.debug "decompressing inflate stream"
+        Zlib::Inflate.new
+      else
+        NoopInflater.new
+      end
+
       response.read_body do |chunk|
-        tf.write(chunk)
+        tf.write(inflater.inflate(chunk))
         size += chunk.size
       end
       tf.close

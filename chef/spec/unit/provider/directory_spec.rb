@@ -51,9 +51,7 @@ describe Chef::Provider::Directory do
     load_mock_provider
     File.should_receive(:exists?).once.and_return(false)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
-    @directory.should_receive(:set_owner).once.and_return(true)
-    @directory.should_receive(:set_group).once.and_return(true)
-    @directory.should_receive(:set_mode).once.and_return(true)
+    @directory.should_receive(:enforce_ownership_and_permissions)
     @directory.action_create
     @directory.new_resource.should be_updated
   end
@@ -62,9 +60,7 @@ describe Chef::Provider::Directory do
     load_mock_provider
     File.should_receive(:exists?).once.and_return(true)
     Dir.should_not_receive(:mkdir).with(@new_resource.path)
-    @directory.stub!(:set_owner).and_return(true)
-    @directory.stub!(:set_group).and_return(true)
-    @directory.stub!(:set_mode).and_return(true)
+    @directory.should_receive(:enforce_ownership_and_permissions)
     @directory.action_create
   end
 

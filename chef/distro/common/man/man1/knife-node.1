@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-NODE" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "KNIFE\-NODE" "1" "November 2011" "Chef 0.10.6.beta.2" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-node\fR \- Manage the hosts in your infrastructure
@@ -101,27 +101,7 @@ Display the node in a different format\.
 Display more, but not all, of the node\'s data when using the default \fIsummary\fR format
 .
 .P
-Displays the node identified by \fInode name\fR on stdout\. The amount of content displayed and the output format are modified by the \-\-format option\. If no alternate format is selected, the default is summary\. Valid formats are:
-.
-.IP "\(bu" 4
-summary: displays the node in a custom, summarized format (default)
-.
-.IP "\(bu" 4
-text displays the node data in its entirety using the colorized tree display
-.
-.IP "\(bu" 4
-json: displays the node in JSON format
-.
-.IP "\(bu" 4
-yaml: displays the node in YAML format
-.
-.IP "\(bu" 4
-pp displays the node using Ruby\'s pretty printer\.
-.
-.IP "" 0
-.
-.P
-For brevity, only the first character of the format is required, for example, \-Fj will produce JSON format output\.
+Displays the node identified by \fInode name\fR on stdout\.
 .
 .SH "RUN LIST ITEM FORMAT"
 Run list items may be either roles or recipes\. When adding a role to a run list, the correct syntax is "role[ROLE_NAME]"

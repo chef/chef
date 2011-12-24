@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
+# Author:: Mark Mzyk (mmzyk@opscode.com)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -83,6 +84,7 @@ describe Chef::Application do
 
     it "should parse the commandline options" do
       @app.should_receive(:parse_options).and_return(true)
+      @app.config[:config_file] = "/etc/chef/default.rb" #have a config file set, to prevent triggering error block
       @app.configure_chef
     end
 
@@ -120,8 +122,19 @@ describe Chef::Application do
         @app.config[:config_file] = nil
       end
 
-      it "should configure chef::config from a file" do
+      it "should raise a fatal" do
         Chef::Config.should_not_receive(:from_file).with("/etc/chef/default.rb")
+        Chef::Application.should_receive(:fatal!)
+        @app.configure_chef
+      end
+    end
+
+    describe "when the config file is set and not found" do
+      before do
+        @app.config[:config_file] = "/etc/chef/notfound"
+      end
+      it "should use the passed in command line options and defaults" do
+        Chef::Config.should_receive(:merge!)
         @app.configure_chef
       end
     end

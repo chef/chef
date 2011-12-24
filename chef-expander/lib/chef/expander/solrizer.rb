@@ -251,7 +251,7 @@ module Chef
       end
 
       def solr_url
-        'http://127.0.0.1:8983/solr/update'
+        "#{Expander.config.solr_url}/update"
       end
 
       def indexed_object

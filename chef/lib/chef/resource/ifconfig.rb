@@ -1,5 +1,5 @@
 #
-# Author:: Jason K. Jackson (jason.jackson@monster.com)
+# Author:: Jason K. Jackson (jasonjackson@gmail.com)
 # Copyright:: Copyright (c) 2009 Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
@@ -27,7 +27,7 @@ class Chef
         @resource_name = :ifconfig
         @target = name
         @action = :add
-        @allowed_actions.push(:add, :delete)
+        @allowed_actions.push(:add, :delete, :enable, :disable)
         @hwaddr = nil
         @mask = nil
         @inet_addr = nil
@@ -38,6 +38,7 @@ class Chef
         @onboot = nil
         @network = nil
         @bootproto = nil
+        @onparent = nil
       end
 
       def target(arg=nil)
@@ -127,7 +128,16 @@ class Chef
           :kind_of => String
         )
       end
+
+      def onparent(arg=nil)
+        set_or_return(
+          :onparent,
+          arg,
+          :kind_of => String
+        )
+      end
     end
+
   end
 end
 

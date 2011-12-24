@@ -76,13 +76,14 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
-      option :no_host_key_verify,
-        :long => "--no-host-key-verify",
-        :description => "Disable host key verification",
+      option :host_key_verify,
+        :long => "--[no-]host-key-verify",
+        :description => "Verify host key, enabled by default.",
         :boolean => true,
-        :default => false
+        :default => true
 
       def session
+        config[:on_error] ||= :skip
         ssh_error_handler = Proc.new do |server|
           if config[:manual]
             node_name = server.host
@@ -91,8 +92,14 @@ class Chef
               node_name = n if format_for_display(n)[config[:attribute]] == server.host
             end
           end
-          ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
-          $!.backtrace.each { |l| Chef::Log.debug(l) }
+          case config[:on_error]
+          when :skip
+            ui.warn "Failed to connect to #{node_name} -- #{$!.class.name}: #{$!.message}"
+            $!.backtrace.each { |l| Chef::Log.debug(l) }
+          when :raise
+            #Net::SSH::Multi magic to force exception to be re-raised.
+            throw :go, :raise
+          end
         end
 
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
@@ -127,7 +134,7 @@ class Chef
           session_opts[:port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
-          if config[:no_host_key_verify]
+          if !config[:host_key_verify]
             session_opts[:paranoid] = false
             session_opts[:user_known_hosts_file] = "/dev/null"
           end
@@ -265,7 +272,7 @@ class Chef
           end.join(" \\; ")
         end
 
-        tmux_name = "'knife ssh #{@name_args[0]}'"
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
@@ -307,6 +314,14 @@ class Chef
                               "fqdn").strip
       end
 
+      def csshx
+        csshx_cmd = "csshX"
+        session.servers_for.each do |server|
+          csshx_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+        end
+        exec(csshx_cmd)
+      end
+
       def configure_user
         config[:ssh_user] = (config[:ssh_user] ||
                              Chef::Config[:knife][:ssh_user])
@@ -337,6 +352,8 @@ class Chef
           tmux
         when "macterm"
           macterm
+        when "csshx"
+          csshx
         else
           ssh_command(@name_args[1..-1].join(" "))
         end

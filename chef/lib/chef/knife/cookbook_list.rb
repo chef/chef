@@ -40,13 +40,8 @@ class Chef
         num_versions = config[:all_versions] ? "num_versions=all" : "num_versions=1"
         api_endpoint = env ? "/environments/#{env}/cookbooks?#{num_versions}" : "/cookbooks?#{num_versions}"
         cookbook_versions = rest.get_rest(api_endpoint)
-        format_cookbook_list_for_display(cookbook_versions).each do |line|
-          ui.msg(line)
-        end
+        ui.output(format_cookbook_list_for_display(cookbook_versions))
       end
     end
   end
 end
-
-
-

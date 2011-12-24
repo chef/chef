@@ -67,6 +67,7 @@ class Chef
             require 'yaml'
             YAML::dump(data)
           when :pp
+            require 'stringio'
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if data.length == 1 and config[:attribute]
@@ -165,7 +166,13 @@ class Chef
 
         def format_cookbook_list_for_display(item)
           if config[:with_uri]
-            item
+            item.inject({}) do |collected, (cookbook, versions)|
+              collected[cookbook] = Hash.new
+              versions['versions'].each do |ver|
+                collected[cookbook][ver['version']] = ver['url']
+              end
+              collected
+            end
           else
             versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
               collected[cookbook] = versions["versions"].map {|v| v['version']}

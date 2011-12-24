@@ -23,6 +23,9 @@ class Chef
   class Knife
     class CookbookDownload < Knife
 
+      attr_reader :version
+      attr_accessor :cookbook_name
+
       deps do
         require 'chef/cookbook_version'
       end
@@ -40,7 +43,7 @@ class Chef
        :long => "--dir DOWNLOAD_DIRECTORY",
        :description => "The directory to download the cookbook into",
        :default => Dir.pwd
-      
+
       option :force,
        :short => "-f",
        :long => "--force",
@@ -57,11 +60,11 @@ class Chef
           ui.fatal("You must specify a cookbook name")
           exit 1
         elsif @version.nil?
-          determine_version
+          @version = determine_version
         end
-          
+
         ui.info("Downloading #{@cookbook_name} cookbook version #{@version}")
-        
+
         cookbook = rest.get_rest("cookbooks/#{@cookbook_name}/#{@version}")
         manifest = cookbook.manifest
 
@@ -75,7 +78,7 @@ class Chef
             exit
           end
         end
-        
+
         Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
           next unless manifest.has_key?(segment)
           ui.info("Downloading #{segment}")
@@ -109,7 +112,6 @@ class Chef
           versions.sort!
           versions
         end
-        #pp :available_versions => @available_versions
         @available_versions
       end
 
@@ -127,6 +129,7 @@ class Chef
           ui.error("'#{response}' is not a valid value.")
           exit(1)
         end
+        @version
       end
 
     end

@@ -66,19 +66,24 @@ class Chef
 
       alias :info :msg
 
+      # Prints a msg to stderr. Used for warn, error, and fatal.
+      def err(message)
+        stderr.puts message
+      end
+
       # Print a warning message
       def warn(message)
-        msg("#{color('WARNING:', :yellow, :bold)} #{message}")
+        err("#{color('WARNING:', :yellow, :bold)} #{message}")
       end
 
       # Print an error message
       def error(message)
-        msg("#{color('ERROR:', :red, :bold)} #{message}")
+        err("#{color('ERROR:', :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
       def fatal(message)
-        msg("#{color('FATAL:', :red, :bold)} #{message}")
+        err("#{color('FATAL:', :red, :bold)} #{message}")
       end
 
       def color(string, *colors)
@@ -93,7 +98,7 @@ class Chef
       # determined by the value of `config[:color]`. When output is not to a
       # terminal, colored output is never used
       def color?
-        Chef::Config[:color] && stdout.tty? && (RUBY_PLATFORM !~ /mswin|mingw32|windows/)
+        Chef::Config[:color] && stdout.tty? && !Chef::Platform.windows?
       end
 
       def ask(*args, &block)
@@ -141,7 +146,7 @@ class Chef
       def edit_data(data, parse_output=true)
         output = Chef::JSONCompat.to_json_pretty(data)
 
-        if (!config[:no_editor])
+        if (!config[:disable_editing])
           filename = "knife-edit-"
           0.upto(20) { filename += rand(9).to_s }
           filename << ".js"

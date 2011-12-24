@@ -44,6 +44,21 @@ class Chef
       UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +http://opscode.com)"
       DEFAULT_UA = "Chef Client" << UA_COMMON
 
+      USER_AGENT = "User-Agent".freeze
+
+      ACCEPT_ENCODING = "Accept-Encoding".freeze
+      ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3".freeze
+
+      GET     = "get".freeze
+      PUT     = "put".freeze
+      POST    = "post".freeze
+      DELETE  = "delete".freeze
+      HEAD    = "head".freeze
+
+      HTTPS = "https".freeze
+
+      SLASH = "/".freeze
+
       def self.user_agent=(ua)
         @user_agent = ua
       end
@@ -76,7 +91,7 @@ class Chef
       end
 
       def path
-        @url.path.empty? ? "/" : @url.path
+        @url.path.empty? ? SLASH : @url.path
       end
 
       def call
@@ -121,6 +136,7 @@ class Chef
         # TODO: need to set accept somewhere else
         # headers.merge!('Accept' => "application/json") unless raw
         @headers['X-Chef-Version'] = ::Chef::VERSION
+        @headers[ACCEPT_ENCODING] = ENCODING_GZIP_DEFLATE
 
         if @cookies.has_key?("#{host}:#{port}")
           @headers['Cookie'] = @cookies["#{host}:#{port}"]
@@ -146,7 +162,7 @@ class Chef
           pass = Chef::Config["#{url.scheme}_proxy_pass"]
           @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
         end
-        if url.scheme == "https"
+        if url.scheme == HTTPS
           @http_client.use_ssl = true
           if config[:ssl_verify_mode] == :verify_none
             @http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -188,15 +204,15 @@ class Chef
         req_path << "?#{query}" if query
 
         @http_request = case method.to_s.downcase
-        when "get"
+        when GET
           Net::HTTP::Get.new(req_path, headers)
-        when "post"
+        when POST
           Net::HTTP::Post.new(req_path, headers)
-        when "put"
+        when PUT
           Net::HTTP::Put.new(req_path, headers)
-        when "delete"
+        when DELETE
           Net::HTTP::Delete.new(req_path, headers)
-        when "head"
+        when HEAD
           Net::HTTP::Head.new(req_path, headers)
         else
           raise ArgumentError, "You must provide :GET, :PUT, :POST, :DELETE or :HEAD as the method"
@@ -205,7 +221,7 @@ class Chef
         @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
         # Optionally handle HTTP Basic Authentication
         @http_request.basic_auth(url.user, url.password) if url.user
-        @http_request['User-Agent'] = self.class.user_agent
+        @http_request[USER_AGENT] = self.class.user_agent
       end
 
     end
