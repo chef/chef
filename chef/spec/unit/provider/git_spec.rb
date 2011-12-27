@@ -90,7 +90,7 @@ describe Chef::Provider::Git do
     it "converts resource.revision from a tag to a SHA" do
       @resource.revision "v1.0"
       @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:command_log_prepend=>"git[web2.0 app]", :command_log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
@@ -123,7 +123,7 @@ b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
 ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
 SHAS
       @resource.revision ''
-      @provider.should_receive(:shell_out!).with(@git_ls_remote, {:command_log_prepend=>"git[web2.0 app]", :command_log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote, {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end
@@ -137,34 +137,34 @@ SHAS
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = 'git clone  git://github.com/opscode/chef.git /my/deploy/dir'
     @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
-                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT)
+                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.clone
   end
 
   it "compiles a clone command using --depth for shallow cloning" do
     @resource.depth 5
     expected_cmd = 'git clone --depth 5 git://github.com/opscode/chef.git /my/deploy/dir'
-    @provider.should_receive(:shell_out!).with(expected_cmd, {:command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT})
+    @provider.should_receive(:shell_out!).with(expected_cmd, {:log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
   end
 
   it "compiles a clone command with a remote other than ``origin''" do
     @resource.remote "opscode"
     expected_cmd = 'git clone -o opscode git://github.com/opscode/chef.git /my/deploy/dir'
-    @provider.should_receive(:shell_out!).with(expected_cmd, {:command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT})
+    @provider.should_receive(:shell_out!).with(expected_cmd, {:log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
   end
 
   it "runs a checkout command with default options" do
     expected_cmd = 'git checkout -b deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'
-    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.checkout
   end
 
   it "runs an enable_submodule command" do
     @resource.enable_submodules true
     expected_cmd = "git submodule init && git submodule update"
-    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :command_log_level => :info, :command_log_prepend => "git[web2.0 app]", :live_stream => STDOUT)
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.enable_submodules
   end
 
@@ -175,7 +175,7 @@ SHAS
 
   it "runs a sync command with default options" do
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd=> "/my/deploy/dir", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
+    @provider.should_receive(:shell_out!).with(expected_cmd, :cwd=> "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
@@ -184,7 +184,7 @@ SHAS
     @resource.group("thisis")
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
-                                                :user => "whois", :group => "thisis", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
+                                                :user => "whois", :group => "thisis", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
@@ -192,9 +192,9 @@ SHAS
     @resource.remote "opscode"
     conf_tracking_branches =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
                               "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/*"
-    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :command_log_prepend => "git[web2.0 app]", :command_log_level => :debug)
+    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
     fetch_command = "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :command_log_level => :debug, :command_log_prepend => "git[web2.0 app]")
+    @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
   end
 
