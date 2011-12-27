@@ -104,7 +104,7 @@ class Chef
           @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
             Chef::Log.info "#{@new_resource} adding git remote #{remote_name} = #{remote_url}"
             command = "git remote add #{remote_name} #{remote_url}"
-            if shell_out(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info)).exitstatus != 0
+            if shell_out(command, run_options(:cwd => @new_resource.destination, :log_level => :info)).exitstatus != 0
               @new_resource.updated_by_last_action(true)
             end
           end
@@ -121,7 +121,7 @@ class Chef
         Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
         clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{@new_resource.destination}"
-        shell_out!(clone_cmd, run_options(:command_log_level => :info))
+        shell_out!(clone_cmd, run_options(:log_level => :info))
       end
 
       def checkout
@@ -135,7 +135,7 @@ class Chef
         if @new_resource.enable_submodules
           Chef::Log.info "#{@new_resource} enabling git submodules"
           command = "git submodule init && git submodule update"
-          shell_out!(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info))
+          shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :info))
         end
       end
 
@@ -195,9 +195,9 @@ class Chef
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
-        run_opts[:command_log_prepend] = @new_resource.to_s
-        run_opts[:command_log_level] ||= :debug
-        if run_opts[:command_log_level] == :info
+        run_opts[:log_tag] = @new_resource.to_s
+        run_opts[:log_level] ||= :debug
+        if run_opts[:log_level] == :info
           if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
             run_opts[:live_stream] = STDOUT
           end
