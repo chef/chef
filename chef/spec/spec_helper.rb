@@ -41,10 +41,14 @@ require 'chef/util/file_edit'
 
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
+CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
+CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
+
 Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"
 Chef::Config[:cache_options] = { }
 Chef::Config[:persistent_queue] = false
+Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
 
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
@@ -59,7 +63,6 @@ def windows?
   end
 end
 
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
 DEV_NULL = windows? ? 'NUL' : '/dev/null'
 
 def redefine_argv(value)
@@ -100,7 +103,14 @@ def with_constants(constants, &block)
   end
 end
 
-# include custom matchers
+def sha256_checksum(path)
+  Digest::SHA256.hexdigest(File.read(path))
+end
+
+# load shared contexts & examples
+Dir[File.join(File.dirname(__FILE__), 'support', 'shared','**', '*.rb')].sort.each { |lib| require lib }
+
+# load custom matchers
 Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
 RSpec.configure do |config|
   config.include(Matchers)

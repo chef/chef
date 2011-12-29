@@ -129,6 +129,16 @@ describe Chef::Config do
   end
 
   describe "default values" do
+    before(:each) do
+      # reload Chef::Config to ensure defaults are truely active
+      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
+    end
+
+    after(:each) do
+      # reload spec helper to re-set any spec specific Chef::Config values
+      load File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper.rb"))
+    end
+
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
       backup_path = if windows?
         "#{ENV['SYSTEMDRIVE']}\\chef\\backup"
