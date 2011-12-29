@@ -103,7 +103,14 @@ def with_constants(constants, &block)
   end
 end
 
-# include custom matchers
+def sha256_checksum(path)
+  Digest::SHA256.hexdigest(File.read(path))
+end
+
+# load shared contexts & examples
+Dir[File.join(File.dirname(__FILE__), 'support', 'shared','**', '*.rb')].sort.each { |lib| require lib }
+
+# load custom matchers
 Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
 RSpec.configure do |config|
   config.include(Matchers)
