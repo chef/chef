@@ -110,14 +110,14 @@ describe Chef::Config do
 
    describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
-      with_constants :RUBY_PLATFORM => 'x86_64-darwin11.2.0' do
+      platform_mock :unix do
         path = "/etc/chef/cookbooks"
         Chef::Config.platform_specific_path(path).should == "/etc/chef/cookbooks"
       end
     end
 
     it "should return a windows path on windows systems" do
-      with_constants :RUBY_PLATFORM => 'i386-mingw32' do
+      platform_mock :windows do
         path = "/etc/chef/cookbooks"
         ENV.stub!(:[]).with('SYSTEMDRIVE').and_return('C:')
         # match on a regex that looks for the base path with an optional

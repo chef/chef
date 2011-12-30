@@ -22,7 +22,7 @@ require 'ostruct'
 describe Chef::FileAccessControl do
   describe "Unix" do
     before do
-      with_constants :RUBY_PLATFORM => 'x86_64-darwin11.2.0' do
+      platform_mock :unix do
         # we have to re-load the file so the proper
         # platform specific module is mixed in
         load File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "file_access_control.rb")
