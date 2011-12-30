@@ -62,8 +62,6 @@ class Chef
       # TODO should this be separated into different files?
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
-        VALID_RIGHTS = [:read, :write, :full_control, :deny]
-
         # supports params like this:
         #
         #   rights :read, ["Administrators","Everyone"]
@@ -94,7 +92,7 @@ class Chef
               }
               input.merge!(args_hash) if args_hash != nil
 
-              validations = {:permission => { :required => true, :equal_to => VALID_RIGHTS },
+              validations = {:permission => { :required => true, :equal_to => [:read, :write, :full_control, :deny] },
                              :principal => { :required => true, :kind_of => [String, Array] },
                              :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ]},
                              :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
