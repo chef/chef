@@ -104,10 +104,10 @@ class Chef
 
               if (!input.has_key?(:applies_to_children) || input[:applies_to_children] == false)
                 if input[:applies_to_self] == false
-                  raise "'rights' attribute must specify either :applies_to_children or :applies_to_self."
+                  raise ArgumentError, "'rights' attribute must specify either :applies_to_children or :applies_to_self."
                 end
                 if input[:one_level_deep] == true
-                  raise "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
+                  raise ArgumentError, "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
                 end
               end
               rights ||= []
