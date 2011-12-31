@@ -5,6 +5,8 @@ gemspec
 group :development do
   gem 'dep_selector', :platform => "ruby"
   gem 'rake'
+  gem 'sdoc'
+  gem 'ronn'
 end
 
 platforms :mswin, :mingw do
