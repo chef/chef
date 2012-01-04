@@ -25,7 +25,7 @@ describe String do
     it "converts each ASCII-8BIT character to corresponding positive Fixnum" do
       (0..0xff).each do |num|
         ch = num.chr
-	ch.force_encoding('ASCII-8BIT') if ch.respond_to? :force_encoding
+        ch.force_encoding('ASCII-8BIT') if ch.respond_to? :force_encoding
 
         ch.ord.should be_a_kind_of(Fixnum)
         ch.ord.should == num
