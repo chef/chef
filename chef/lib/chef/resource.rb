@@ -21,8 +21,9 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
 require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/command'
+require 'chef/resource/conditional'
 require 'chef/resource_collection'
+require 'chef/resource_platform_map'
 require 'chef/node'
 
 require 'chef/mixin/deprecation'
@@ -70,7 +71,7 @@ F
 
     end
 
-    FORBIDDEN_IVARS = [:@run_context, :@node]
+    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
 
     include Chef::Mixin::CheckHelper
@@ -116,10 +117,8 @@ F
       @ignore_failure = false
       @retries = 0
       @retry_delay = 2
-      @not_if = nil
-      @not_if_args = {}
-      @only_if = nil
-      @only_if_args = {}
+      @not_if = []
+      @only_if = []
       @immediate_notifications = Array.new
       @delayed_notifications = Array.new
       @source_line = nil
@@ -371,24 +370,44 @@ F
       instance_vars
     end
 
-    def only_if(arg=nil, args = {}, &blk)
-      if Kernel.block_given?
-        @only_if = blk
-        @only_if_args = args
-      else
-        @only_if = arg if arg
-        @only_if_args = args if arg
+    # If command is a block, returns true if the block returns true, false if it returns false.
+    # ("Only run this resource if the block is true")
+    #
+    # If the command is not a block, executes the command.  If it returns any status other than
+    # 0, it returns false (clearly, a 0 status code is true)
+    #
+    # === Parameters
+    # command<String>:: A a string to execute.
+    # opts<Hash>:: Options control the execution of the command
+    # block<Proc>:: A ruby block to run. Ignored if a command is given.
+    #
+    # === Evaluation
+    # * evaluates to true if the block is true, or if the command returns 0
+    # * evaluates to false if the block is false, or if the command returns a non-zero exit code.
+    def only_if(command=nil, opts={}, &block)
+      if command || block_given?
+        @only_if << Conditional.only_if(command, opts, &block)
       end
       @only_if
     end
 
-    def not_if(arg=nil, args = {}, &blk)
-      if Kernel.block_given?
-        @not_if = blk
-        @not_if_args = args
-      else
-        @not_if = arg if arg
-        @not_if_args = args if arg
+    # If command is a block, returns false if the block returns true, true if it returns false.
+    # ("Do not run this resource if the block is true")
+    #
+    # If the command is not a block, executes the command.  If it returns a 0 exitstatus, returns false.
+    # ("Do not run this resource if the command returns 0")
+    #
+    # === Parameters
+    # command<String>:: A a string to execute.
+    # opts<Hash>:: Options control the execution of the command
+    # block<Proc>:: A ruby block to run. Ignored if a command is given.
+    #
+    # === Evaluation
+    # * evaluates to true if the block is false, or if the command returns a non-zero exit status.
+    # * evaluates to false if the block is true, or if the command returns a 0 exit status.
+    def not_if(command=nil, opts={}, &block)
+      if command || block_given?
+        @not_if << Conditional.not_if(command, opts, &block)
       end
       @not_if
     end
@@ -405,34 +424,25 @@ F
     end
 
     def run_action(action)
-      Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+      if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
+        # This can be noisy
+        Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
+      end
 
       # ensure that we don't leave @updated_by_last_action set to true
       # on accident
       updated_by_last_action(false)
 
       begin
-        # Check if this resource has an only_if block -- if it does,
-        # evaluate the only_if block and skip the resource if
-        # appropriate.
-        if only_if
-          unless Chef::Mixin::Command.only_if(only_if, only_if_args)
-            Chef::Log.debug("Skipping #{self} due to only_if")
-            return
-          end
+        return if should_skip?
+        # leverage new platform => short_name => resource
+        # which requires explicitly setting provider in
+        # resource class
+        if self.provider
+          provider = self.provider.new(self, self.run_context)
+        else # fall back to old provider resolution
+          provider = Chef::Platform.provider_for_resource(self)
         end
-
-        # Check if this resource has a not_if block -- if it does,
-        # evaluate the not_if block and skip the resource if
-        # appropriate.
-        if not_if
-          unless Chef::Mixin::Command.not_if(not_if, not_if_args)
-            Chef::Log.debug("Skipping #{self} due to not_if")
-            return
-          end
-        end
-
-        provider = Chef::Platform.provider_for_resource(self)
         provider.load_current_resource
         provider.send("action_#{action}")
       rescue => e
@@ -440,9 +450,31 @@ F
           Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
         else
           Chef::Log.error("#{self} (#{defined_at}) has had an error")
-          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.message}")
+          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
           new_exception.set_backtrace(e.backtrace)
           raise new_exception
+        end
+      end
+    end
+
+    # Evaluates not_if and only_if conditionals. Returns a falsey value if any
+    # of the conditionals indicate that this resource should be skipped, i.e.,
+    # if an only_if evaluates to false or a not_if evaluates to true.
+    #
+    # If this resource should be skipped, returns the first conditional that
+    # "fails" its check. Subsequent conditionals are not evaluated, so in
+    # general it's not a good idea to rely on side effects from not_if or
+    # only_if commands/blocks being evaluated.
+    def should_skip?
+      conditionals = only_if + not_if
+      return false if conditionals.empty?
+
+      conditionals.find do |conditional|
+        if conditional.continue?
+          false
+        else
+          Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
+          true
         end
       end
     end
@@ -460,110 +492,178 @@ F
       updated
     end
 
-    class << self
-
-      def json_create(o)
-        resource = self.new(o["instance_vars"]["@name"])
-        o["instance_vars"].each do |k,v|
-          resource.instance_variable_set("@#{k}".to_sym, v)
-        end
-        resource
+    def self.json_create(o)
+      resource = self.new(o["instance_vars"]["@name"])
+      o["instance_vars"].each do |k,v|
+        resource.instance_variable_set("@#{k}".to_sym, v)
       end
+      resource
+    end
 
-      include Chef::Mixin::ConvertToClassName
+    extend Chef::Mixin::ConvertToClassName
 
-      def attribute(attr_name, validation_opts={})
-        # This atrocity is the only way to support 1.8 and 1.9 at the same time
-        # When you're ready to drop 1.8 support, do this:
-        # define_method attr_name.to_sym do |arg=nil|
-        # etc.
-        shim_method=<<-SHIM
-        def #{attr_name}(arg=nil)
-          _set_or_return_#{attr_name}(arg)
-        end
-        SHIM
-        class_eval(shim_method)
-
-        define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
-          set_or_return(attr_name.to_sym, arg, validation_opts)
-        end
+    def self.attribute(attr_name, validation_opts={})
+      # This atrocity is the only way to support 1.8 and 1.9 at the same time
+      # When you're ready to drop 1.8 support, do this:
+      # define_method attr_name.to_sym do |arg=nil|
+      # etc.
+      shim_method=<<-SHIM
+      def #{attr_name}(arg=nil)
+        _set_or_return_#{attr_name}(arg)
       end
-      
-      def build_from_file(cookbook_name, filename, run_context)
-        rname = filename_to_qualified_string(cookbook_name, filename)
+      SHIM
+      class_eval(shim_method)
 
-        # Add log entry if we override an existing light-weight resource.
-        class_name = convert_to_class_name(rname)
-        overriding = Chef::Resource.const_defined?(class_name)
-        Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
+      define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
+        set_or_return(attr_name.to_sym, arg, validation_opts)
+      end
+    end
 
-        new_resource_class = Class.new self do |cls|
+    def self.build_from_file(cookbook_name, filename, run_context)
+      rname = filename_to_qualified_string(cookbook_name, filename)
 
-          # default initialize method that ensures that when initialize is finally
-          # wrapped (see below), super is called in the event that the resource
-          # definer does not implement initialize
-          def initialize(name, run_context)
-            super(name, run_context)
+      # Add log entry if we override an existing light-weight resource.
+      class_name = convert_to_class_name(rname)
+      overriding = Chef::Resource.const_defined?(class_name)
+      Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
+
+      new_resource_class = Class.new self do |cls|
+
+        # default initialize method that ensures that when initialize is finally
+        # wrapped (see below), super is called in the event that the resource
+        # definer does not implement initialize
+        def initialize(name, run_context)
+          super(name, run_context)
+        end
+
+        @actions_to_create = []
+
+        class << cls
+          include Chef::Mixin::FromFile
+
+          attr_accessor :run_context
+
+          def node
+            self.run_context.node
           end
 
-          @actions_to_create = []
-
-          class << cls
-            include Chef::Mixin::FromFile
-            
-            attr_accessor :run_context
-
-            def node
-              self.run_context.node
-            end
-
-            def actions_to_create
-              @actions_to_create
-            end
-
-            define_method(:actions) do |*action_names|
-              actions_to_create.push(*action_names)
-            end
+          def actions_to_create
+            @actions_to_create
           end
 
-          # set the run context in the class instance variable
-          cls.run_context = run_context
-          
-          # load resource definition from file
-          cls.class_from_file(filename)
-
-          # create a new constructor that wraps the old one and adds the actions
-          # specified in the DSL
-          old_init = instance_method(:initialize)
-
-          define_method(:initialize) do |name, *optional_args|
-            args_run_context = optional_args.shift
-            @resource_name = rname.to_sym
-            old_init.bind(self).call(name, args_run_context)
-            allowed_actions.push(self.class.actions_to_create).flatten!
+          define_method(:actions) do |*action_names|
+            actions_to_create.push(*action_names)
           end
         end
 
-        # register new class as a Chef::Resource
-        class_name = convert_to_class_name(rname)
-        Chef::Resource.const_set(class_name, new_resource_class)
-        Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
+        # set the run context in the class instance variable
+        cls.run_context = run_context
 
-        new_resource_class
+        # load resource definition from file
+        cls.class_from_file(filename)
+
+        # create a new constructor that wraps the old one and adds the actions
+        # specified in the DSL
+        old_init = instance_method(:initialize)
+
+        define_method(:initialize) do |name, *optional_args|
+          args_run_context = optional_args.shift
+          @resource_name = rname.to_sym
+          old_init.bind(self).call(name, args_run_context)
+          allowed_actions.push(self.class.actions_to_create).flatten!
+        end
       end
 
-      # Resources that want providers namespaced somewhere other than
-      # Chef::Provider can set the namespace with +provider_base+
-      # Ex:
-      #   class MyResource < Chef::Resource
-      #     provider_base Chef::Provider::Deploy
-      #     # ...other stuff
-      #   end
-      def provider_base(arg=nil)
-        @provider_base ||= arg
-        @provider_base ||= Chef::Provider
-      end
+      # register new class as a Chef::Resource
+      class_name = convert_to_class_name(rname)
+      Chef::Resource.const_set(class_name, new_resource_class)
+      Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
 
+      new_resource_class
+    end
+
+    # Resources that want providers namespaced somewhere other than
+    # Chef::Provider can set the namespace with +provider_base+
+    # Ex:
+    #   class MyResource < Chef::Resource
+    #     provider_base Chef::Provider::Deploy
+    #     # ...other stuff
+    #   end
+    def self.provider_base(arg=nil)
+      @provider_base ||= arg
+      @provider_base ||= Chef::Provider
+    end
+
+    def self.platform_map
+      @@platform_map ||= PlatformMap.new
+    end
+
+    # Maps a short_name (and optionally a platform  and version) to a
+    # Chef::Resource.  This allows finer grained per platform resource
+    # attributes and the end of overloaded resource definitions
+    # (I'm looking at you Chef::Resource::Package)
+    # Ex:
+    #   class WindowsFile < Chef::Resource
+    #     provides :file, :on_platforms => ["windows"]
+    #     # ...other stuff
+    #   end
+    #
+    # TODO: 2011-11-02 schisamo - platform_version support
+    def self.provides(short_name, opts={})
+      short_name_sym = short_name
+      if short_name.kind_of?(String)
+        short_name.downcase!
+        short_name.gsub!(/\s/, "_")
+        short_name_sym = short_name.to_sym
+      end
+      if opts.has_key?(:on_platforms)
+        platforms = [opts[:on_platforms]].flatten
+        platforms.each do |p|
+          p = :default if :all == p.to_sym
+          platform_map.set(
+            :platform => p.to_sym,
+            :short_name => short_name_sym,
+            :resource => self
+          )
+        end
+      else
+        platform_map.set(
+          :short_name => short_name_sym,
+          :resource => self
+        )
+      end
+    end
+
+    # Returns a resource based on a short_name anda platform and version.
+    #
+    #
+    # ==== Parameters
+    # short_name<Symbol>:: short_name of the resource (ie :directory)
+    # platform<Symbol,String>:: platform name
+    # version<String>:: platform version
+    #
+    # === Returns
+    # <Chef::Resource>:: returns the proper Chef::Resource class
+    def self.resource_for_platform(short_name, platform=nil, version=nil)
+      platform_map.get(short_name, platform, version)
+    end
+
+    # Returns a resource based on a short_name and a node's
+    # platform and version.
+    #
+    # ==== Parameters
+    # short_name<Symbol>:: short_name of the resource (ie :directory)
+    # node<Chef::Node>:: Node object to look up platform and version in
+    #
+    # === Returns
+    # <Chef::Resource>:: returns the proper Chef::Resource class
+    def self.resource_for_node(short_name, node)
+      begin
+        platform, version = Chef::Platform.find_platform_and_version(node)
+      rescue ArgumentError
+      end
+      resource = resource_for_platform(short_name, platform, version)
+      resource
     end
 
     private

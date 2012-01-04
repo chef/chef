@@ -21,6 +21,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Git do
 
   before(:each) do
+    STDOUT.stub!(:tty?).and_return(true)
+
     @current_resource = Chef::Resource::Git.new("web2.0 app")
     @current_resource.revision("d35af14d41ae22b19da05d7d03a0bafc321b244c")
 

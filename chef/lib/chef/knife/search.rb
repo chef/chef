@@ -51,7 +51,7 @@ class Chef
         :short => "-R INT",
         :long => "--rows INT",
         :description => "The number of rows to return",
-        :default => 20,
+        :default => 1000,
         :proc => lambda { |i| i.to_i }
 
       option :attribute,

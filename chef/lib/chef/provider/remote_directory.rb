@@ -44,7 +44,6 @@ class Chef
           files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
         end
         purge_unmanaged_files(files_to_purge)
-        Chef::Log.info("#{@new_resource} created")
       end
 
       def action_create_if_missing
@@ -107,6 +106,11 @@ class Chef
         cookbook_file = Chef::Resource::CookbookFile.new(target_path, run_context)
         cookbook_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
         cookbook_file.source(::File.join(@new_resource.source, relative_source_path))
+        if Chef::Platform.windows? && @new_resource.files_rights
+          @new_resource.files_rights.each_pair do |permission, *args|
+            cookbook_file.rights(permission, *args)
+          end
+        end
         cookbook_file.mode(@new_resource.files_mode)    if @new_resource.files_mode
         cookbook_file.group(@new_resource.files_group)  if @new_resource.files_group
         cookbook_file.owner(@new_resource.files_owner)  if @new_resource.files_owner
@@ -126,7 +130,12 @@ class Chef
       def resource_for_directory(path)
         dir = Chef::Resource::Directory.new(path, run_context)
         dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
-        dir.mode(@new_resource.mode)
+        if Chef::Platform.windows? && @new_resource.rights
+          @new_resource.rights.each_pair do |permission, *args|
+            dir.rights(permission, *args)
+          end
+        end
+        dir.mode(@new_resource.mode) if @new_resource.mode
         dir.group(@new_resource.group)
         dir.owner(@new_resource.owner)
         dir.recursive(true)

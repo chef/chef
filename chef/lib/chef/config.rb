@@ -2,6 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: Mark Mzyk (mmzyk@opscode.com)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -46,6 +47,16 @@ class Chef
       configuration.inspect
     end
 
+    def self.platform_specific_path(path)
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        # turns /etc/chef/client.rb into C:/chef/client.rb
+        path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])
+        # ensure all forward slashes are backslashes
+        path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
+      end
+      path
+    end
+
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
     # === Parameters
@@ -85,9 +96,13 @@ class Chef
         location.sync = true
         location
       elsif location.respond_to? :to_str
-        f = File.new(location.to_str, "a")
-        f.sync = true
-        f
+        begin
+          f = File.new(location.to_str, "a")
+          f.sync = true
+        rescue Errno::ENOENT => error
+          raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
+        end
+          f
       end
     end
 
@@ -115,7 +130,8 @@ class Chef
 
     # Where the cookbooks are located. Meaning is somewhat context dependent between
     # knife, chef-client, and chef-solo.
-    cookbook_path [ "/var/chef/cookbooks", "/var/chef/site-cookbooks" ]
+    cookbook_path [ platform_specific_path("/var/chef/cookbooks"),
+                    platform_specific_path("/var/chef/site-cookbooks") ]
 
     # Where files are stored temporarily during uploads
     sandbox_path "/var/chef/sandboxes"
@@ -129,10 +145,10 @@ class Chef
     couchdb_url "http://localhost:5984"
 
     # Where chef's cache files should be stored
-    file_cache_path "/var/chef/cache"
+    file_cache_path platform_specific_path("/var/chef/cache")
 
     # Where backups of chef-managed files should go
-    file_backup_path "/var/chef/backup"
+    file_backup_path platform_specific_path("/var/chef/backup")
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -147,7 +163,8 @@ class Chef
     json_attribs nil
     log_level :info
     log_location STDOUT
-    verbose_logging nil
+    # toggle info level log items that can create a lot of output
+    verbose_logging true
     node_name nil
     node_path "/var/chef/node"
 
@@ -178,12 +195,12 @@ class Chef
 
 
     # Where should chef-solo look for role files?
-    role_path "/var/chef/roles"
+    role_path platform_specific_path("/var/chef/roles")
 
     # Where should chef-solo download recipes from?
     recipe_url nil
 
-    solr_url "http://localhost:8983"
+    solr_url "http://localhost:8983/solr"
     solr_jetty_path "/var/chef/solr-jetty"
     solr_data_path "/var/chef/solr/data"
     solr_home_path "/var/chef/solr"
@@ -200,8 +217,8 @@ class Chef
     # (persist across rabbitmq restarts)
     amqp_consumer_id "default"
 
-    client_key "/etc/chef/client.pem"
-    validation_key "/etc/chef/validation.pem"
+    client_key platform_specific_path("/etc/chef/client.pem")
+    validation_key platform_specific_path("/etc/chef/validation.pem")
     validation_client_name "chef-validator"
     web_ui_client_name "chef-webui"
     web_ui_key "/etc/chef/webui.pem"
@@ -228,17 +245,28 @@ class Chef
     # Exception Handlers
     exception_handlers []
 
+    # Start handlers
+    start_handlers []
+
     # Checksum Cache
     # Uses Moneta on the back-end
     cache_type "BasicFile"
-    cache_options({ :path => "/var/chef/cache/checksums", :skip_expires => true })
+    cache_options({ :path => platform_specific_path("/etc/chef/cache/checksums"), :skip_expires => true })
 
     # Arbitrary knife configuration data
     knife Hash.new
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
-    user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-    group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
+    if RUBY_PLATFORM =~ /mswin|mingw|windows/
+      user_valid_regex [ /^[^"\/\\\[\]\:;|=,+*?<>]+$/ ]
+      group_valid_regex [ /^[^"\/\\\[\]\:;|=,+*?<>]+$/ ]
+    else
+      user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
+    end
+
+    # returns a platform specific path to the user home dir
+    user_home (ENV['HOME'] || ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] || ENV['USERPROFILE'])
   end
 end

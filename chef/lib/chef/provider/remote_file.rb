@@ -63,12 +63,6 @@ class Chef
         end
       end
 
-      def enforce_ownership_and_permissions
-        set_owner if @new_resource.owner
-        set_group if @new_resource.group
-        set_mode  if @new_resource.mode
-      end
-
       def current_resource_matches_target_checksum?
         @new_resource.checksum && @current_resource.checksum && @current_resource.checksum =~ /^#{Regexp.escape(@new_resource.checksum)}/
       end

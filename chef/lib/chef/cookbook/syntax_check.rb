@@ -109,10 +109,10 @@ class Chef
 
       def validate_template(erb_file)
         Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-        result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
+        result = shell_out("erubis -x #{erb_file} | ruby -c")
         result.error!
         true
-      rescue Chef::Exceptions::ShellCommandFailed
+      rescue Mixlib::ShellOut::ShellCommandFailed
         file_relative_path = erb_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
@@ -124,7 +124,7 @@ class Chef
         result = shell_out("ruby -c #{ruby_file}")
         result.error!
         true
-      rescue Chef::Exceptions::ShellCommandFailed
+      rescue Mixlib::ShellOut::ShellCommandFailed
         file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_path+File::Separator)}(.*)/, 1]
         Chef::Log.fatal("Cookbook file #{file_relative_path} has a ruby syntax error:")
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }

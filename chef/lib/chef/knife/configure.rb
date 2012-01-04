@@ -69,7 +69,7 @@ cache_type               'BasicFile'
 cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
 EOH
           unless chef_repo.empty?
-            f.puts "cookbook_path [ '#{chef_repo}/cookbooks', '#{chef_repo}/site-cookbooks' ]"
+            f.puts "cookbook_path [ '#{chef_repo}/cookbooks' ]"
           end
         end
 
@@ -83,7 +83,7 @@ EOH
           client_create.config[:admin] = true
           client_create.config[:file] = new_client_key
           client_create.config[:yes] = true
-          client_create.config[:no_editor] = true
+          client_create.config[:disable_editing] = true
           client_create.run
         else
           ui.msg("*****")
@@ -105,7 +105,7 @@ EOH
       end
 
       def ask_user_for_config_path
-        config[:config_file] ||= ask_question("Where should I put the config file? ", :default => '~/.chef/knife.rb')
+        config[:config_file] ||= ask_question("Where should I put the config file? ", :default => "#{Chef::Config[:user_home]}/.chef/knife.rb")
         # have to use expand path to expand the tilde character to the user's home
         config[:config_file] = File.expand_path(config[:config_file])
         if File.exists?(config[:config_file])

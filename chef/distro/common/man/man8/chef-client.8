@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "CHEF\-CLIENT" "8" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "CHEF\-CLIENT" "8" "November 2011" "Chef 0.10.6.beta.2" "Chef Manual"
 .
 .SH "NAME"
 \fBchef\-client\fR \- Runs a client node connecting to a chef\-server\.
@@ -34,6 +34,10 @@ Run chef\-client periodically, in seconds
 Load attributes from a JSON file or URL
 .
 .TP
+\fB\-E\fR, \fB\-\-environment ENVIRONMENT\fR
+Set the Chef Environment on the node
+.
+.TP
 \fB\-l\fR, \fB\-\-log_level LEVEL\fR
 Set the log level (debug, info, warn, error, fatal)
 .
@@ -50,12 +54,28 @@ Ensures logging goes to STDOUT as well as to other configured log location(s)\.
 The node name for this client
 .
 .TP
+\fB\-K\fR, \fB\-\-validation_key KEY_FILE\fR
+Set the validation key file location, used for registering new clients
+.
+.TP
+\fB\-k\fR, \fB\-\-client_key KEY_FILE\fR
+Set the client key file location
+.
+.TP
 \fB\-s\fR, \fB\-\-splay SECONDS\fR
 The splay time for running at intervals, in seconds
 .
 .TP
 \fB\-u\fR, \fB\-\-user USER\fR
 User to set privilege to
+.
+.TP
+\fB\-P\fR, \fB\-\-pid PIDFILE\fR
+Set the PID file location, defaults to /tmp/chef\-client\.pid
+.
+.TP
+\fB\-\-once\fR
+Cancel any interval or splay options, run chef once and exit
 .
 .TP
 \fB\-v\fR, \fB\-\-version\fR

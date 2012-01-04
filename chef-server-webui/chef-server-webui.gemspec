@@ -18,8 +18,6 @@ Gem::Specification.new do |s|
   s.add_dependency "merb-haml", "~> 1.1.0"
   s.add_dependency "merb-param-protection", "~> 1.1.0"
 
-  s.add_dependency "json", ">= 1.4.4", "<= 1.4.6"
-
   %w{thin haml ruby-openid coderay}.each { |g| s.add_dependency g}
 
   s.bindir       = "bin"

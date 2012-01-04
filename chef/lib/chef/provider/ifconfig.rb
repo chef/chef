@@ -1,6 +1,6 @@
 #
-# Author:: Jason Jackson (jason.jackson@monster.com)
-# Copyright:: Copyright (c) 2009 Jason Jackson
+# Author:: Jason K. Jackson (jasonjackson@gmail.com)
+# Copyright:: Copyright (c) 2009 Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,18 @@ require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
 require 'erb'
+
+#  Recipe example:
+#
+#    int = {Hash with your network settings...}
+#
+#    ifconfig  int['ip'] do 
+#      ignore_failure  true 
+#      device  int['dev'] 
+#      mask    int['mask']  
+#      gateway int['gateway'] 
+#      mtu     int['mtu']
+#    end
 
 class Chef
   class Provider
@@ -88,14 +100,33 @@ class Chef
         generate_config
       end
 
-      def action_delete
-        # check to see if load_current_resource found the interface
-        if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+      def action_enable
+        # check to see if load_current_resource found ifconfig
+        # enables, but does not manage config files
+        unless @current_resource.inet_addr
+          unless @new_resource.device == "lo"
+            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+            command << " netmask #{@new_resource.mask}" if @new_resource.mask
+            command << " metric #{@new_resource.metric}" if @new_resource.metric
+            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+          end
 
           run_command(
             :command => command
           )
+          Chef::Log.info("#{@new_resource} enabled")
+          @new_resource.updated_by_last_action(true)
+        end
+      end
+
+      def action_delete
+        # check to see if load_current_resource found the interface
+        if @current_resource.device
+          command = "ifconfig #{@new_resource.device} down"
+          run_command(
+            :command => command
+          )
+          delete_config
           Chef::Log.info("#{@new_resource} deleted")
           @new_resource.updated_by_last_action(true)
         else
@@ -103,8 +134,21 @@ class Chef
         end
       end
 
-      # This is a little lame of me, as if any of these values aren't filled out it leaves blank lines
-      # in the file.  Can refactor later to have this nice and tight.
+      def action_disable
+        # check to see if load_current_resource found the interface
+        # disables, but leaves config files in place.
+        if @current_resource.device
+          command = "ifconfig #{@new_resource.device} down"
+          run_command(
+            :command => command
+          )
+          Chef::Log.info("#{@new_resource} disabled")
+          @new_resource.updated_by_last_action(true)
+        else
+          Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
+        end
+      end
+
       def generate_config
         b = binding
         case node[:platform]
@@ -117,6 +161,7 @@ class Chef
 <% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
 <% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
 <% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
+<% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
           }
           template = ::ERB.new(content)
           network_file = ::File.new("/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}", "w")
@@ -129,6 +174,22 @@ class Chef
           # template
         end
       end
+
+      def delete_config
+        require 'fileutils'
+        case node[:platform]
+        when "centos","redhat","fedora"
+          ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+          if ::File.exist?(ifcfg_file)
+            FileUtils.rm_f(ifcfg_file, :verbose => false, :force => true)
+          end
+        when "debian","ubuntu"
+          # delete configs
+        when "slackware"
+          # delete configs
+        end
+      end
+
     end
   end
 end

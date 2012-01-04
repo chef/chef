@@ -34,9 +34,10 @@ class Chef
 
       option :no_deps,
        :short => "-D",
-       :long => "--no-dependencies",
+       :long => "--skip-dependencies",
        :boolean => true,
-       :description => "Do not install dependencies automatically"
+       :default => false,
+       :description => "Skips automatic dependency installation."
 
       option :cookbook_path,
         :short => "-o PATH:PATH",
@@ -83,7 +84,7 @@ class Chef
         # TODO: it'd be better to store these outside the cookbook repo and
         # keep them around, e.g., in ~/Library/Caches on OS X.
         ui.info("removing downloaded tarball")
-        shell_out!("rm #{upstream_file}", :cwd => vendor_path)
+        File.unlink(upstream_file)
 
         if @repo.finalize_updates_to(@cookbook_name, downloader.version)
           @repo.reset_to_default_state
@@ -133,10 +134,8 @@ class Chef
 
       def clear_existing_files(cookbook_path)
         ui.info("Removing pre-existing version.")
-        shell_out!("rm -r #{cookbook_path}", :cwd => @install_path) if File.directory?(cookbook_path)
+        FileUtils.rmtree(cookbook_path) if File.directory?(cookbook_path)
       end
-
-
     end
   end
 end

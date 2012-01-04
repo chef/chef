@@ -32,7 +32,9 @@ class Chef
 
       def run
         if config[:with_uri]
-          ui.msg(format_list_for_display(get_cookbook_list))
+          cookbooks = Hash.new
+          get_cookbook_list.each{ |k,v| cookbooks[k] = v['cookbook'] }
+          ui.output(format_for_display(cookbooks))
         else
           ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
         end
@@ -46,7 +48,7 @@ class Chef
         end
         new_start = start + cr["items"].length
         if new_start < cr["total"]
-          get_cookbook_list(items, new_start, cookbook_collection) 
+          get_cookbook_list(items, new_start, cookbook_collection)
         else
           cookbook_collection
         end

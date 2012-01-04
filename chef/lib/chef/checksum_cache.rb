@@ -44,6 +44,7 @@ class Chef
 
       begin
         require "moneta/#{convert_to_snake_case(backend, 'Moneta')}"
+        require 'chef/monkey_patches/moneta'
       rescue LoadError => e
         Chef::Log.fatal("Could not load Moneta back end #{backend.inspect}")
         raise e

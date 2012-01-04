@@ -49,13 +49,13 @@ class Clients < Application
     exists = true 
     if params.has_key?(:inflated_object)
       params[:name] ||= params[:inflated_object].name
-      # We can only get here if we're admin or the validator. Only
-      # allow creating admin clients if we're already an admin.
-      if @auth_user.admin
-        params[:admin] ||= params[:inflated_object].admin
-      else
-        params[:admin] = false
-      end
+      params[:admin] ||= params[:inflated_object].admin
+    end
+
+    # We can only create clients if we're the admin or the validator.
+    # But only allow creating admin clients if we're already an admin.
+    if params[:admin] == true && @auth_user.admin != true
+      raise Forbidden, "You are not allowed to take this action."
     end
 
     begin

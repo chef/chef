@@ -32,7 +32,7 @@ describe Chef::Knife::DataBagFromFile do
     @rest = mock("Chef::REST")
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
-    @knife.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:stdout).and_return(@stdout)
     @db_file = Tempfile.new(["data_bag_from_file_test", ".json"])
     @plain_data = {
         "id" => "item_name",

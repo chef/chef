@@ -1,4 +1,4 @@
-knife-bootrap(1) -- Install Chef Client on a remote host
+knife-bootstrap(1) -- Install Chef Client on a remote host
 ========================================
 
 ## SYNOPSIS
@@ -13,20 +13,24 @@ __knife__ __bootstrap__ _(options)_
     The ssh password
   * `-x`, `--ssh-user USERNAME`:
     The ssh username
+  * `-p`, `--ssh-port PORT`:
+    The ssh port
+  * `--bootstrap-version VERSION`:
+    The version of Chef to install
+  * `--bootstrap-proxy PROXY_URL`:
+    `The proxy server for the node being bootstrapped`
   * `--prerelease`:
     Install pre-release Chef gems
   * `-r`, `--run-list RUN_LIST`:
     Comma separated list of roles/recipes to apply
-  * `-P`, `--ssh-password PASSWORD`:
-    The ssh password
-  * `-x`, `--ssh-user USERNAME`:
-    The ssh username
   * `--template-file TEMPLATE`:
     Full path to location of template to use
   * `--sudo`:
     Execute the bootstrap via sudo
   * `-d`, `--distro DISTRO`:
     Bootstrap a distro using a template
+  * `--[no-]host-key-verify`:
+    Enable host key verification, which is the default behavior.
 
 ## DESCRIPTION
 

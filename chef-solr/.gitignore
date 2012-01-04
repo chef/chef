@@ -7,3 +7,4 @@ solr/work
 solr/solr/data/*
 solr/logs
 solr/clustering
+solr/*.tar.gz

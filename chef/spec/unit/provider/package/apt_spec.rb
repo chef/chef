@@ -291,6 +291,22 @@ SHOWPKG_STDOUT
     end
   end
 
+  describe "when reconfiguring a package" do
+    before(:each) do
+      @provider.stub!(:run_command_with_systems_locale).and_return(true)
+    end
+
+    it "should run dpkg-reconfigure package" do
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "dpkg-reconfigure irssi",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      }).and_return(true)
+      @provider.reconfig_package("irssi", "0.8.12-7")
+    end
+  end
+
   describe "when installing a virtual package" do
     it "should install the package without specifying a version" do
         @provider.is_virtual_package = true

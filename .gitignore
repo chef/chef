@@ -28,12 +28,26 @@ erl_crash.dump
 .idea
 features/data/repo/checksums/
 *.rbc
-.rvmrc
-.bundle
 chef-expander/conf/chef-expander.rb
 chef-expander/spec/fixtures/expander.log
 features/data/cookbooks/transfer_remote_files/metadata.json
 features/data/cookbooks/synchronize_deps/metadata.json
 features/data/cookbooks_not_uploaded_at_feature_start/*/metadata.json
+
 */tags
 *~
+
+# you should check in your Gemfile.lock in applications, and not in gems
+Gemfile.lock
+
+# Do not check in the .bundle directory, or any of the files inside it. Those files are specific to each particular machine, and are used to persist installation options between runs of the bundle install command.
+.bundle
+
+# ignore some common Bundler 'binstubs' directory names
+# http://gembundler.com/man/bundle-exec.1.html
+b/
+binstubs/
+
+# RVM and RBENV ruby version files
+.rbenv-version
+.rvmrc

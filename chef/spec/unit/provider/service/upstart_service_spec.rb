@@ -179,6 +179,7 @@ describe Chef::Provider::Service::Upstart do
 
   describe "enable and disable service" do
     before(:each) do
+      @current_resource = Chef::Resource::Service.new('rsyslog')
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       @provider.current_resource = @current_resource
       Chef::Util::FileEdit.stub!(:new)

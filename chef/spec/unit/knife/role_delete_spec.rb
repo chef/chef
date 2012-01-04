@@ -31,6 +31,8 @@ describe Chef::Knife::RoleDelete do
     @role = Chef::Role.new() 
     @role.stub!(:destroy).and_return(true)
     Chef::Role.stub!(:load).and_return(@role)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -63,6 +65,3 @@ describe Chef::Knife::RoleDelete do
     end
   end
 end
-
-
-

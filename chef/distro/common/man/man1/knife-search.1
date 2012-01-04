@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-SEARCH" "1" "August 2011" "Chef 0.10.4" "Chef Manual"
+.TH "KNIFE\-SEARCH" "1" "November 2011" "Chef 0.10.6.beta.2" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-search\fR \- Find objects on a Chef Server by query
@@ -59,6 +59,9 @@ Search indexes are a feature of the Chef Server and the search sub\-command allo
 .
 .IP "\(bu" 4
 \fIenvironment\fR
+.
+.IP "\(bu" 4
+\fIclients\fR
 .
 .IP "\(bu" 4
 \fIdata bag\fR
@@ -138,7 +141,7 @@ Fuzzy searches allows one to match values based on the Levenshtein Distance algo
 .
 .nf
 
-knife search nodes \'field:term~\'
+knife search INDEX \'field:term~\'
 .
 .fi
 .
@@ -222,7 +225,7 @@ Find the nodes with the fully\-qualified domain name (FQDN) www\.example\.com:
 .
 .nf
 
-knife search nodes \'fqdn:www\.example\.com\'
+knife search node \'fqdn:www\.example\.com\'
 .
 .fi
 .
@@ -235,7 +238,7 @@ Find the nodes running a version of Ubuntu:
 .
 .nf
 
-knife search nodes \'platform:ubuntu*\'
+knife search node \'platform:ubuntu*\'
 .
 .fi
 .
@@ -248,7 +251,7 @@ Find all nodes running CentOS in the production environment:
 .
 .nf
 
-knife search nodes \'chef_environment:production AND platform:centos\'
+knife search node \'chef_environment:production AND platform:centos\'
 .
 .fi
 .

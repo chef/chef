@@ -12,7 +12,7 @@ Feature: Cleanup checksum cache
     Given it includes no recipes
      When I run the chef-client with '-l debug' and the 'client_with_checksum_caching' config
      Then the run should exit '0'
-      And 'stdout' should have 'removing unused checksum cache file .*chef\-file\-\-.*\-chef\-rendered\-template.*'
+      And 'stdout' should have 'Removing unused checksum cache file .*chef\-file\-\-.*\-chef\-rendered\-template.*'
 
       
 # for example:

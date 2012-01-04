@@ -33,6 +33,8 @@ describe Chef::Knife::RoleFromFile do
     @role = Chef::Role.new()
     @role.stub!(:save)
     @knife.loader.stub!(:load_from).and_return(@role)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -54,5 +56,14 @@ describe Chef::Knife::RoleFromFile do
       end
     end
   end
-end
 
+  describe "run with multiple arguments" do
+    it "should load each file" do
+      @knife.name_args = [ "adam.rb", "caleb.rb" ]
+      @knife.loader.should_receive(:load_from).with('roles', 'adam.rb').and_return(@role)
+      @knife.loader.should_receive(:load_from).with('roles', 'caleb.rb').and_return(@role)
+      @knife.run
+    end
+  end
+
+end

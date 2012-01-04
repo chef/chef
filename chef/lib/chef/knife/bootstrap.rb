@@ -81,7 +81,7 @@ class Chef
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
         :description => "Bootstrap a distro using a template",
-        :default => "ubuntu10.04-gems"
+        :default => "chef-full"
 
       option :use_sudo,
         :long => "--sudo",
@@ -100,11 +100,11 @@ class Chef
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
 
-      option :no_host_key_verify,
-        :long => "--no-host-key-verify",
-        :description => "Disable host key verification",
+      option :host_key_verify,
+        :long => "--[no-]host-key-verify",
+        :description => "Verify host key, enabled by default.",
         :boolean => true,
-        :default => false
+        :default => true
 
       def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -113,9 +113,10 @@ class Chef
         else
           bootstrap_files = []
           bootstrap_files << File.join(File.dirname(__FILE__), 'bootstrap', "#{config[:distro]}.erb")
-          bootstrap_files << File.join(Dir.pwd, ".chef", "bootstrap", "#{config[:distro]}.erb")
+          bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{config[:distro]}.erb") if Knife.chef_config_dir
           bootstrap_files << File.join(ENV['HOME'], '.chef', 'bootstrap', "#{config[:distro]}.erb")
           bootstrap_files << Gem.find_files(File.join("chef","knife","bootstrap","#{config[:distro]}.erb"))
+          bootstrap_files.flatten!
         end
 
         template = Array(bootstrap_files).find do |bootstrap_template|
@@ -179,7 +180,8 @@ class Chef
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:identity_file] = config[:identity_file]
         ssh.config[:manual] = true
-        ssh.config[:no_host_key_verify] = config[:no_host_key_verify]
+        ssh.config[:host_key_verify] = config[:host_key_verify]
+        ssh.config[:on_error] = :raise
         ssh
       end
 

@@ -630,7 +630,24 @@ class Chef
       if found_pref
         @manifest_records_by_path[found_pref]
       else
-        raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+        if segment == :files || segment == :templates
+          error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
+          error_locations = [
+            "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
+            "  #{segment}/#{node[:platform]}/#{filename}",
+            "  #{segment}/default/#{filename}",
+          ]
+          error_message << error_locations.join("\n")
+          existing_files = segment_filenames(segment)
+          # Show the files that the cookbook does have. If the user made a typo,
+          # hopefully they'll see it here.
+          unless existing_files.empty?
+            error_message << "\n\nThis cookbook _does_ contain: ['#{existing_files.join("','")}']"
+          end
+          raise Chef::Exceptions::FileNotFound, error_message
+        else
+          raise Chef::Exceptions::FileNotFound, "cookbook #{name} does not contain file #{segment}/#{filename}"
+        end
       end
     end
 
@@ -675,7 +692,7 @@ class Chef
 
       best_pref = preferences.find { |pref| !filenames_by_pref[pref].empty? }
 
-      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/#{dirname}" unless best_pref
+      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/default/#{dirname}" unless best_pref
 
       filenames_by_pref[best_pref]
 
@@ -710,7 +727,7 @@ class Chef
 
       best_pref = preferences.find { |pref| !records_by_pref[pref].empty? }
 
-      raise Chef::Exceptions::FileNotFound, "cookbook #{name} has no directory #{segment}/#{dirname}" unless best_pref
+      raise Chef::Exceptions::FileNotFound, "cookbook #{name} (#{version}) has no directory #{segment}/default/#{dirname}" unless best_pref
 
       records_by_pref[best_pref]
     end
@@ -736,13 +753,24 @@ class Chef
 
         fqdn = node[:fqdn]
 
+        # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
+        search_versions = []
+        parts = version.to_s.split('.')
+
+        parts.size.times do
+          search_versions << parts.join('.')
+          parts.pop
+        end
+
         # Most specific to least specific places to find the path
-        [
-         File.join(segment.to_s, "host-#{fqdn}", path),
-         File.join(segment.to_s, "#{platform}-#{version}", path),
-         File.join(segment.to_s, platform.to_s, path),
-         File.join(segment.to_s, "default", path)
-        ]
+        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
+        search_versions.each do |v|
+          search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
+        end
+        search_path << File.join(segment.to_s, platform.to_s, path)
+        search_path << File.join(segment.to_s, "default", path)
+
+        search_path
       else
         [File.join(segment, path)]
       end
@@ -847,8 +875,13 @@ class Chef
       chef_server_rest.get_rest("cookbooks/#{name}/#{version}")
     end
 
+    # The API returns only a single version of each cookbook in the result from the cookbooks method
     def self.list
       chef_server_rest.get_rest('cookbooks')
+    end
+
+    def self.list_all_versions
+      chef_server_rest.get_rest('cookbooks?num_versions=all')
     end
 
     ##

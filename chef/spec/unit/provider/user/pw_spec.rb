@@ -217,6 +217,9 @@ describe Chef::Provider::User::Pw do
   end
 
   describe "when loading the current state" do
+    before do
+      @provider.new_resource = Chef::Resource::User.new("adam")
+    end
 
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
       File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)

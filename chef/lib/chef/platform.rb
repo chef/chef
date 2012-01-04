@@ -182,6 +182,30 @@ class Chef
             }
           },
           :solaris  => {},
+          :openindiana => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :opensolaris => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
+          :nexentacore => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
           :solaris2 => {
             :default => {
               :service => Chef::Provider::Service::Solaris,
@@ -378,6 +402,14 @@ class Chef
         raise ArgumentError, "Cannot find a provider for #{resource_type} on #{platform} version #{version}" if provider_klass.nil?
 
         provider_klass
+      end
+
+      def windows?
+        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+          true
+        else
+          false
+        end
       end
 
       private

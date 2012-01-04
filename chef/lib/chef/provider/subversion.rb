@@ -26,6 +26,8 @@ class Chef
   class Provider
     class Subversion < Chef::Provider
 
+      SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
+
       include Chef::Mixin::Command
 
       def load_current_resource
@@ -152,14 +154,15 @@ class Chef
       end
 
       def extract_revision_info(svn_info)
-        begin
-          repo_attrs = YAML.load(svn_info)
-        rescue ArgumentError
-          # YAML doesn't appreciate input like "svn: '/tmp/deploydir' is not a working copy\n"
-          return nil
+        repo_attrs = svn_info.lines.inject({}) do |attrs, line|
+          if line =~ SVN_INFO_PATTERN
+            property, value = $1, $2
+            attrs[property] = value
+          end
+          attrs
         end
-        raise "Could not parse `svn info` data: #{svn_info}" unless repo_attrs.kind_of?(Hash)
-        rev = (repo_attrs['Last Changed Rev'] || repo_attrs['Revision']).to_s
+        rev = (repo_attrs['Last Changed Rev'] || repo_attrs['Revision'])
+        raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?
         Chef::Log.debug "#{@new_resource} resolved revision #{@new_resource.revision} to #{rev}"
         rev
       end

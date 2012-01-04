@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ require 'rubygems'
 require 'rspec/mocks'
 
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-
 $:.unshift(File.expand_path("../lib", __FILE__))
 $:.unshift(File.dirname(__FILE__))
 
@@ -40,20 +39,31 @@ require 'chef/applications'
 require 'chef/shef'
 require 'chef/util/file_edit'
 
-
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
+
+CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
+CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"
 Chef::Config[:cache_options] = { }
 Chef::Config[:persistent_queue] = false
+Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
 
 Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
 Chef::Log.logger = Logger.new(StringIO.new)
 
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
+def windows?
+  if RUBY_PLATFORM =~ /mswin|mingw|windows/
+    true
+  else
+    false
+  end
+end
+
+DEV_NULL = windows? ? 'NUL' : '/dev/null'
 
 def redefine_argv(value)
   Object.send(:remove_const, :ARGV)
@@ -70,3 +80,61 @@ def with_argv(*argv)
   end
 end
 
+# Mock global constants!
+
+# Sets $VERBOSE for the duration of the block and back to its original value afterwards.
+#
+# https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/kernel/reporting.rb#L3-30
+def with_warnings(flag)
+  old_verbose, $VERBOSE = $VERBOSE, flag
+  yield
+ensure
+  $VERBOSE = old_verbose
+end
+
+# http://digitaldumptruck.jotabout.com/?p=551
+def with_constants(constants, &block)
+  saved_constants = {}
+  constants.each do |constant, val|
+    saved_constants[ constant ] = Object.const_get( constant )
+    with_warnings(nil) { Object.const_set( constant, val ) }
+  end
+  begin
+    block.call
+  ensure
+    constants.each do |constant, val|
+      with_warnings(nil) { Object.const_set( constant, saved_constants[ constant ] ) }
+    end
+  end
+end
+####################
+
+# makes Chef think it's running on a certain platform..useful for unit testing
+# platform-specific functionality.
+#
+# If a block is given yields to the block with +RUBY_PLATFORM+ set to
+# 'i386-mingw32' (windows) or 'x86_64-darwin11.2.0' (unix).  Usueful for
+# testing code that mixes in platform specific modules like +Chef::Mixin::Securable+
+# or +Chef::FileAccessControl+
+def platform_mock(platform = :unix, &block)
+  Chef::Platform.stub!(:windows?).and_return(platform == :windows ? true : false)
+  ENV['SYSTEMDRIVE'] = (platform == :windows ? 'C:' : nil)
+  if block_given?
+    with_constants :RUBY_PLATFORM => (platform == :windows ? 'i386-mingw32' : 'x86_64-darwin11.2.0') do
+      yield
+    end
+  end
+end
+
+def sha256_checksum(path)
+  Digest::SHA256.hexdigest(File.read(path))
+end
+
+# load shared contexts & examples
+Dir[File.join(File.dirname(__FILE__), 'support', 'shared','**', '*.rb')].sort.each { |lib| require lib }
+
+# load custom matchers
+Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
+RSpec.configure do |config|
+  config.include(Matchers)
+end

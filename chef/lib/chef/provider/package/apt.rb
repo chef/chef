@@ -129,6 +129,16 @@ class Chef
           end
         end
 
+        def reconfig_package(name, version)
+          Chef::Log.info("#{@new_resource} reconfiguring")
+          run_command_with_systems_locale(
+            :command => "dpkg-reconfigure #{name}",
+            :environment => {
+              "DEBIAN_FRONTEND" => "noninteractive"
+            }
+          )
+        end
+
       end
     end
   end

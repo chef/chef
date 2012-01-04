@@ -33,6 +33,8 @@ describe Chef::Knife::NodeFromFile do
     @node = Chef::Node.new()
     @node.stub!(:save)
     @knife.loader.stub!(:load_from).and_return(@node)
+    @stdout = StringIO.new
+    @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
   describe "run" do
@@ -55,5 +57,3 @@ describe Chef::Knife::NodeFromFile do
     end
   end
 end
-
-

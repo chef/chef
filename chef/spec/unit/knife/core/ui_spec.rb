@@ -86,9 +86,15 @@ describe Chef::Knife::UI do
     end
 
     describe "with --with-uri" do
-      it "should return the raw data" do
+      it "should return the URIs" do
+        response = {
+          "cookbook_name"=>{
+            "1.0.0" => "http://url/cookbooks/1.0.0", 
+            "2.0.0" => "http://url/cookbooks/2.0.0", 
+            "3.0.0" => "http://url/cookbooks/3.0.0"}
+        }
         @ui.config[:with_uri] = true
-        @ui.format_cookbook_list_for_display(@item).should == @item
+        @ui.format_cookbook_list_for_display(@item).should == response
       end
     end
   end
