@@ -44,8 +44,7 @@ class Chef
       option :attribute,
         :short => "-a ATTR",
         :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default is fqdn",
-        :default => "fqdn"
+        :description => "The attribute to use for opening the connection - default is fqdn"
 
       option :manual,
         :short => "-m",
@@ -115,7 +114,11 @@ class Chef
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
                    i = format_for_display(item)[config[:attribute]]
-                   r.push(i) unless i.nil?
+                   if i.nil?
+                     ui.msg("\"#{item}\" does not have attribute \"#{config[:attribute]}\"")
+                   else
+                     r.push(i) unless i.nil?
+                   end
                  end
                  r
                end
