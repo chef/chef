@@ -39,7 +39,7 @@ class Chef
         @files_backup = 5
         @files_owner = nil
         @files_group = nil
-        @files_mode = 0644
+        @files_mode = 0644 unless Chef::Platform.windows?
         @overwrite = true
         @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
