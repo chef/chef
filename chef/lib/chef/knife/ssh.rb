@@ -115,7 +115,7 @@ class Chef
                  @action_nodes.each do |item|
                    i = format_for_display(item)[config[:attribute]]
                    if i.nil?
-                     ui.msg("#{item} does not have attribute #{config[:attribute]}")
+                     ui.msg("\"#{item}\" does not have attribute \"#{config[:attribute]}\"")
                    else
                      r.push(i) unless i.nil?
                    end
