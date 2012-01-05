@@ -17,7 +17,8 @@
 #
 
 shared_examples_for "a file resource" do
-  let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir, "#{file_base}*") }
+   # note the stripping of the drive letter from the tmpdir on windows
+  let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
   context "when the target file does not exist" do
     it "creates the file when the :create action is run" do
