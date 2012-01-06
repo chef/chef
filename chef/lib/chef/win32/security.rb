@@ -379,7 +379,7 @@ class Chef
         end
       end
 
-      def self.set_security_descriptor_group(security_descriptor, sid, defaulted = false)
+      def self.set_security_descriptor_owner(security_descriptor, sid, defaulted = false)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         sid = sid.pointer if sid.respond_to?(:pointer)
 
