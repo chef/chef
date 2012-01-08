@@ -98,4 +98,48 @@ describe "Cookbooks Controller" do
       end
     end
   end
+
+  describe "when uploading a cookbook" do
+    before do
+      @cookbook = make_cookbook("cookbook1", "1.0.0")
+    end
+
+    describe "and the cookbook is new" do
+      it "should upload a standard cookbook" do
+        Chef::CookbookVersion.stub!(:cdb_load).and_raise(Chef::Exceptions::CouchDBNotFound)
+        @cookbook.should_receive(:cdb_save).and_return(true)
+        response = put_json("/cookbooks/#{@cookbook.name}/#{@cookbook.version}", @cookbook)
+      end
+
+      it "should upload a frozen cookbook" do
+        @cookbook.freeze_version
+        Chef::CookbookVersion.stub!(:cdb_load).and_raise(Chef::Exceptions::CouchDBNotFound)
+        @cookbook.should_receive(:cdb_save).and_return(true)
+        response = put_json("/#{@cookbook.save_url}", @cookbook)
+      end
+    end
+
+    describe "and the cookbook already exists" do
+      it "should overwrite the existing version" do
+        Chef::CookbookVersion.stub!(:cdb_load).and_return(@cookbook)
+        @cookbook.should_receive(:cdb_save).and_return(true)
+        response = put_json("/#{@cookbook.save_url}", @cookbook)
+      end
+
+      it "should not overwrite a frozen version" do
+        @cookbook.freeze_version
+        Chef::CookbookVersion.stub!(:cdb_load).and_return(@cookbook)
+        lambda do
+          put_json("/#{@cookbook.save_url}", @cookbook)
+        end.should raise_error(Merb::ControllerExceptions::Conflict, /The cookbook (\S+) at version (\S+) is frozen/)
+      end
+
+      it "should overwrite a frozen version if forced" do
+        @cookbook.freeze_version
+        Chef::CookbookVersion.stub!(:cdb_load).and_return(@cookbook)
+        @cookbook.should_receive(:cdb_save).and_return(true)
+        response = put_json("/#{@cookbook.force_save_url}", @cookbook)
+      end
+    end
+  end
 end

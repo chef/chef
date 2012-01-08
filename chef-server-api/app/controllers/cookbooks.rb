@@ -162,13 +162,17 @@ class Cookbooks < Application
     begin
       cookbook = Chef::CookbookVersion.cdb_load(cookbook_name, cookbook_version)
       cookbook.manifest = params['inflated_object'].manifest
+      new_cookbook = false
     rescue Chef::Exceptions::CouchDBNotFound => e
       Chef::Log.debug("Cookbook #{cookbook_name} version #{cookbook_version} does not exist")
       cookbook = params['inflated_object']
+      new_cookbook = true
     end
 
-    if cookbook.frozen_version? && params[:force].nil?
-      raise Conflict, "The cookbook #{cookbook.name} at version #{cookbook.version} is frozen. Use the 'force' option to override."
+    unless new_cookbook
+      if cookbook.frozen_version? && params[:force].nil?
+        raise Conflict, "The cookbook #{cookbook.name} at version #{cookbook.version} is frozen. Use the 'force' option to override."
+      end
     end
 
     cookbook.freeze_version if params["inflated_object"].frozen_version?
