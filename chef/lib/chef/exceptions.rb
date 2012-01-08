@@ -49,6 +49,7 @@ class Chef
     class ConfigurationError < ArgumentError; end
     class RedirectLimitExceeded < RuntimeError; end
     class AmbiguousRunlistSpecification < ArgumentError; end
+    class CookbookFrozen < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError

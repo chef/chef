@@ -81,8 +81,12 @@ class Chef
           justify_width = cookbook_repo.cookbook_names.map {|name| name.size}.max.to_i + 2
           cookbook_repo.each do |cookbook_name, cookbook|
             cookbook.freeze_version if config[:freeze]
-            upload(cookbook, justify_width)
-            version_constraints_to_update[cookbook_name] = cookbook.version
+            begin
+              upload(cookbook, justify_width)
+              version_constraints_to_update[cookbook_name] = cookbook.version
+            rescue Exceptions::CookbookFrozen
+              ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.") if config[:environment]
+            end
           end
         else
           if @name_args.empty?
@@ -100,8 +104,12 @@ class Chef
                 end
               end
               cookbook.freeze_version if config[:freeze]
-              upload(cookbook, justify_width)
-              version_constraints_to_update[cookbook_name] = cookbook.version
+              begin
+                upload(cookbook, justify_width)
+                version_constraints_to_update[cookbook_name] = cookbook.version
+              rescue Exceptions::CookbookFrozen
+                ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.") if config[:environment]
+              end
             rescue Exceptions::CookbookNotFoundInRepo => e
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
@@ -173,6 +181,7 @@ WARNING
         when "409"
           ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
           Log.debug(e)
+          raise Exceptions::CookbookFrozen
         else
           raise
         end
