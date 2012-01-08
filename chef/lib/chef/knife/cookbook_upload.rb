@@ -118,7 +118,10 @@ class Chef
         end
 
         ui.info "upload complete"
-        update_version_constraints(version_constraints_to_update) if config[:environment]
+
+        unless version_constraints_to_update.empty?
+          update_version_constraints(version_constraints_to_update) if config[:environment]
+        end
       end
 
       def cookbook_repo
