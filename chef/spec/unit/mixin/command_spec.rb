@@ -48,6 +48,13 @@ describe Chef::Mixin::Command do
         end
       end
 
+      it "should respect base_shell_environment when defined" do
+        Chef::Config[:base_shell_environment] = {"CHEF" => "1"}
+        popen4("env") do |pid, stdin, stdout, stderr|
+          stdout.read.strip.should == "CHEF=1\nLC_ALL=C"
+        end
+      end
+
       it "should end when the child process reads from STDIN and a block is given" do
         lambda {Timeout.timeout(2) do
             popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
