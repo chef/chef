@@ -73,6 +73,8 @@ class Chef
         assert_environment_valid!
         warn_about_cookbook_shadowing
         version_constraints_to_update = {}
+        upload_failures = 0
+        upload_ok = 0
         # Get a list of cookbooks and their versions from the server
         # for checking existence of dependending cookbooks.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
@@ -83,8 +85,10 @@ class Chef
             cookbook.freeze_version if config[:freeze]
             begin
               upload(cookbook, justify_width)
+              upload_ok += 1
               version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookFrozen
+              upload_failures += 1
               ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.") if config[:environment]
             end
           end
@@ -106,18 +110,29 @@ class Chef
               cookbook.freeze_version if config[:freeze]
               begin
                 upload(cookbook, justify_width)
+                upload_ok += 1
                 version_constraints_to_update[cookbook_name] = cookbook.version
               rescue Exceptions::CookbookFrozen
+                upload_failures += 1
                 ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.") if config[:environment]
               end
             rescue Exceptions::CookbookNotFoundInRepo => e
+              upload_failures += 1
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
             end
           end
         end
 
-        ui.info "upload complete"
+        if upload_failures == 0
+          ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
+        elsif upload_failures > 0 && upload_ok > 0
+          ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""} ok but #{upload_failures} " +
+                  "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
+        elsif upload_failures > 0 && upload_ok == 0
+          ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? "s" : ""}."
+          exit 1
+        end
 
         unless version_constraints_to_update.empty?
           update_version_constraints(version_constraints_to_update) if config[:environment]
