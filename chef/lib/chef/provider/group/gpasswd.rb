@@ -33,19 +33,24 @@ class Chef
         end
 
         def modify_group_members
-          unless @new_resource.members.empty?
             if(@new_resource.append)
-              @new_resource.members.each do |member|
-                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
-                shell_out!("gpasswd -a #{member} #{@new_resource.group_name}")
+              unless @new_resource.members.empty?
+                @new_resource.members.each do |member|
+                  Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
+                  shell_out!("gpasswd -a #{member} #{@new_resource.group_name}")
+                end
+              else
+                Chef::Log.debug("#{@new_resource} not changing group members, the group has no members to add")
               end
             else
-              Chef::Log.debug("#{@new_resource} setting group members to #{@new_resource.members.join(', ')}")
-              shell_out!("gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
+              unless @new_resource.members.empty?
+                Chef::Log.debug("#{@new_resource} setting group members to #{@new_resource.members.join(', ')}")
+                shell_out!("gpasswd -M #{@new_resource.members.join(',')} #{@new_resource.group_name}")
+              else
+                Chef::Log.debug("#{@new_resource} setting group members to: none")
+                shell_out!("gpasswd -M \"\" #{@new_resource.group_name}")
+              end
             end
-          else
-            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members")
-          end
         end
       end
     end
