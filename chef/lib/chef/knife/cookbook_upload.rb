@@ -68,6 +68,15 @@ class Chef
         :description => "Also upload cookbook dependencies"
 
       def run
+        # Sanity check before we load anything from the server
+        unless config[:all]
+          if @name_args.empty?
+            show_usage
+            ui.fatal("You must specify the --all flag or at least one cookbook name")
+            exit 1
+          end
+        end
+
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
 
         assert_environment_valid!
@@ -93,11 +102,6 @@ class Chef
             end
           end
         else
-          if @name_args.empty?
-            show_usage
-            ui.error("You must specify the --all flag or at least one cookbook name")
-            exit 1
-          end
           justify_width = @name_args.map {|name| name.size }.max.to_i + 2
           @name_args.each do |cookbook_name|
             begin
