@@ -58,14 +58,46 @@ shared_examples_for "a securable resource" do
     describe "windows-specific behavior" do
       before(:each) do
         pending "SKIPPED - platform specific test" unless windows?
+        @expected_user_name = 'Administrator'
+        #SID of Administrator is S-1-23-domain-500
+        #domain will vary
+        @expected_group_name = 'Guests'
       end
 
+      it "should set a default owner of Administrators" do
+        #list of window's SIDs http://support.microsoft.com/kb/243330
+        #default set by the resource is:
+        #Administrators, SID S-1-5-32-544
+        #Administrators is the default owner for any object created
+        #by a member of the Administrators group
+        #if nothing is set
+        resource.run_action(:create) 
+        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+        #owner returns the SID of the owner, not the human readable name
+        security_descriptor.owner.to_s.should == 'S-1-5-32-544'
+      end 
+
       it "should set an owner" do
-        pending "TODO WRITE THIS"
+        resource.owner @expected_user_name
+        resource.run_action(:create)
+        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+        #regex has wildcards, b/c domain will vary
+        security_descriptor.owner.to_s.should match  /^S-1-5-21-.*-500$/
+      end
+
+      it "should set a default group of Domain Users" do
+        #default set by the resource is:
+        #Domain Users, SID 1-5-21-domain-513
+        resource.run_action(:create)
+        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+        security_descriptor.group.to_s.should match /^S-1-5-21-.*-513$/
       end
 
       it "should set a group" do
-        pending "TODO WRITE THIS"
+        resource.group @expected_group_name
+        resource.run_action(:create)
+        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+        security_descriptor.group.to_s.should == 'S-1-5-32-546'
       end
 
       it "should set permissions using the windows-only rights attribute" do
