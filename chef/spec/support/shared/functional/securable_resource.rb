@@ -102,12 +102,14 @@ shared_examples_for "a securable resource" do
 
      describe "should set permissions using the windows-only rights attribute" do
 
-        def get_ace(acl, user)
+         def get_ace(user, path)
+          descriptor = get_security_descriptor(path)
+          acl = descriptor.dacl
           wanted_ace = nil
           acl.each do |ace|
             # the acl can have more than one ace - only interested in
             # the one that applies to the test
-            #regex maybe too permissive
+            # regex maybe too permissive
             if ace.sid.account_name.match /.*#{user}.*/
              wanted_ace = ace
             end
@@ -115,32 +117,43 @@ shared_examples_for "a securable resource" do
           wanted_ace
         end
 
-        def get_mask(user, path)
-          descriptor = get_security_descriptor(path)
-          ace = get_ace(descriptor.dacl, user)
-          ace.mask
-        end
 
         it "should set read rights" do
           resource.rights(:read, 'Guest')
           resource.run_action(:create)
-          mask = get_mask('Guest', resource.path)
+          ace = get_ace('Guest', resource.path)
           # :read = FILE_GENERIC_READ | FILE_GENERIC_EXECUTE
-          mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+          ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+          ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
+          ace.flags.should == 0
         end
 
         it "should set write rights" do
           resource.rights(:write, 'Guest')
           resource.run_action(:create)
-          mask = get_mask('Guest', resource.path)
-          mask.should == Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+          ace = get_ace('Guest', resource.path)
+          ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+          ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
+          ace.flags.should == 0
         end
 
         it "should set full control rights" do
           resource.rights(:full_control, 'Guest')
           resource.run_action(:create)
-          mask = get_mask('Guest', resource.path)
-          mask.should == Chef::Win32::API::Security::FILE_ALL_ACCESS
+          ace = get_ace('Guest', resource.path)
+          ace.mask.should == Chef::Win32::API::Security::FILE_ALL_ACCESS
+          ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
+          ace.flags.should == 0
+        end
+
+        it "should set deny rights" do
+          # deny is an ACE with full rights, but is a deny type ace, not an allow type
+          resource.rights(:deny, 'Guest')
+          resource.run_action(:create)
+          ace = get_ace('Guest', resource.path)
+          ace.mask.should == Chef::Win32::API::Security::FILE_ALL_ACCESS
+          ace.type.should == Chef::Win32::API::Security::ACCESS_DENIED_ACE_TYPE
+          ace.flags.should == 0
         end
 
       end
