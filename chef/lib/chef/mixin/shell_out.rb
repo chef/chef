@@ -26,8 +26,8 @@ class Chef
         cmd = Mixlib::ShellOut.new(*command_args)
         class << cmd
           def set_environment
-            ENV.clear if Chef::Config[:base_shell_environment]
-            (Chef::Config[:base_shell_environment] || {}).merge(environment).each do |env_var,value|
+            ENV.clear if Chef::Config[:override_shell_environment]
+            (Chef::Config[:override_shell_environment] || {}).merge(environment).each do |env_var,value|
               ENV[env_var] = value
             end
           end

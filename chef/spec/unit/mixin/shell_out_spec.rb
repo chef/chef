@@ -23,7 +23,7 @@ describe Chef::Mixin::ShellOut do
 
   describe "set_environment" do
     it "should respect base_shell_environment when defined" do
-      Chef::Config[:base_shell_environment] = {"CHEF" => "1"}
+      Chef::Config[:override_shell_environment] = {"CHEF" => "1"}
       shell_out("env").stdout.strip.should == "CHEF=1\nLC_ALL=C"
     end
   end
