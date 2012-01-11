@@ -71,11 +71,11 @@ shared_examples_for "a securable resource" do
         #Administrators is the default owner for any object created
         #by a member of the Administrators group
         #if nothing is set
-        resource.run_action(:create) 
+        resource.run_action(:create)
         security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
         #owner returns the SID of the owner, not the human readable name
         security_descriptor.owner.to_s.should == 'S-1-5-32-544'
-      end 
+      end
 
       it "should set an owner" do
         resource.owner @expected_user_name
@@ -100,8 +100,23 @@ shared_examples_for "a securable resource" do
         security_descriptor.group.to_s.should == 'S-1-5-32-546'
       end
 
-      it "should set permissions using the windows-only rights attribute" do
-        pending "TODO WRITE THIS"
+     describe "should set permissions using the windows-only rights attribute" do
+
+        it "should set read rights" do
+          resource.rights :read, 'Guest'
+          resource.run_action(:create)
+          security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+          acl = security_descriptor.dacl
+          #regex maybe too permissive
+          acl.each do |ace|
+            # the acl can have more than one ace - only interested in
+            # the one that applies to the test
+            if ace.sid.account_name.match /.*Guest.*/
+              # :read = FILE_GENERIC_READ | FILE_GENERIC_EXECUTE
+              ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+            end
+          end
+        end
       end
 
       it "should set permissions in string form as an octal number" do
