@@ -117,6 +117,20 @@ shared_examples_for "a securable resource" do
             end
           end
         end
+
+        it "should set write rights" do
+          resource.rights :write, 'Guest'
+          resource.run_action(:create)
+          security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+          acl = security_descriptor.dacl
+          acl.each do |ace|
+            if ace.sid.account_name.match /.*Guest.*/
+              # :write = FILE_GENERIC_WRITE | FILE_GENERIC_READ | FILE_GENERIC_EXECUTE
+              ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+            end
+          end
+        end
+
       end
 
       it "should set permissions in string form as an octal number" do
