@@ -57,6 +57,11 @@ describe Chef::Resource::Conditional do
       it 'indicates that resource convergence should not continue' do
         @conditional.continue?.should be_false
       end
+
+      it 'should log a warning' do
+        Chef::Log.should_receive(:warn).with("Command 'false' timed out")
+        @conditional.continue?
+      end
     end
 
     describe "after running a block that returns a truthy value" do
@@ -110,6 +115,11 @@ describe Chef::Resource::Conditional do
 
       it 'indicates that resource convergence should continue' do
         @conditional.continue?.should be_true
+      end
+
+      it 'should log a warning' do
+        Chef::Log.should_receive(:warn).with("Command 'false' timed out")
+        @conditional.continue?
       end
     end
 
