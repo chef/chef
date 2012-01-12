@@ -48,6 +48,17 @@ describe Chef::Resource::Conditional do
       end
     end
 
+    describe 'after running a command which timed out' do
+      before do
+        @conditional = Chef::Resource::Conditional.only_if("false")
+        @conditional.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
+      end
+
+      it 'indicates that resource convergence should not continue' do
+        @conditional.continue?.should be_false
+      end
+    end
+
     describe "after running a block that returns a truthy value" do
       before do
         @conditional = Chef::Resource::Conditional.only_if { Object.new }
@@ -87,6 +98,17 @@ describe Chef::Resource::Conditional do
       end
 
       it "indicates that resource convergence should continue" do
+        @conditional.continue?.should be_true
+      end
+    end
+
+    describe 'after running a command which timed out' do
+      before do
+        @conditional = Chef::Resource::Conditional.not_if("false")
+        @conditional.stub(:shell_out).and_raise(Chef::Exceptions::CommandTimeout)
+      end
+
+      it 'indicates that resource convergence should continue' do
         @conditional.continue?.should be_true
       end
     end
