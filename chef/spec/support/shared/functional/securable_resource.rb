@@ -1,5 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: Mark Mzyk (<mmzyk@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -56,6 +57,25 @@ shared_examples_for "a securable resource" do
     end
 
     describe "windows-specific behavior" do
+ def get_security_descriptor(path)
+        Chef::Win32::Security.get_named_security_info(path)
+      end
+
+      def get_ace(user, path)
+          descriptor = get_security_descriptor(path)
+          acl = descriptor.dacl
+          wanted_ace = nil
+          acl.each do |ace|
+            # the acl can have more than one ace - only interested in
+            # the one that applies to the test
+            # regex maybe too permissive
+            if ace.sid.account_name.match /.*#{user}.*/
+             wanted_ace = ace
+            end
+          end
+          wanted_ace
+      end
+
       before(:each) do
         pending "SKIPPED - platform specific test" unless windows?
         @expected_user_name = 'Administrator'
@@ -72,51 +92,35 @@ shared_examples_for "a securable resource" do
         #by a member of the Administrators group
         #if nothing is set
         resource.run_action(:create)
-        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+        descriptor = get_security_descriptor(resource.path)
         #owner returns the SID of the owner, not the human readable name
-        security_descriptor.owner.to_s.should == 'S-1-5-32-544'
+        descriptor.owner.to_s.should == 'S-1-5-32-544'
       end
 
       it "should set an owner" do
         resource.owner @expected_user_name
         resource.run_action(:create)
-        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
+        descriptor = get_security_descriptor(resource.path)
         #regex has wildcards, b/c domain will vary
-        security_descriptor.owner.to_s.should match  /^S-1-5-21-.*-500$/
+        descriptor.owner.to_s.should match  /^S-1-5-21-.*-500$/
       end
 
       it "should set a default group of Domain Users" do
         #default set by the resource is:
         #Domain Users, SID 1-5-21-domain-513
         resource.run_action(:create)
-        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
-        security_descriptor.group.to_s.should match /^S-1-5-21-.*-513$/
+        descriptor = get_security_descriptor(resource.path)
+        descriptor.group.to_s.should match /^S-1-5-21-.*-513$/
       end
 
       it "should set a group" do
         resource.group @expected_group_name
         resource.run_action(:create)
-        security_descriptor = Chef::Win32::Security.get_named_security_info(resource.path)
-        security_descriptor.group.to_s.should == 'S-1-5-32-546'
+        descriptor = get_security_descriptor(resource.path)
+        descriptor.group.to_s.should == 'S-1-5-32-546'
       end
 
-     describe "should set permissions using the windows-only rights attribute" do
-
-         def get_ace(user, path)
-          descriptor = get_security_descriptor(path)
-          acl = descriptor.dacl
-          wanted_ace = nil
-          acl.each do |ace|
-            # the acl can have more than one ace - only interested in
-            # the one that applies to the test
-            # regex maybe too permissive
-            if ace.sid.account_name.match /.*#{user}.*/
-             wanted_ace = ace
-            end
-          end
-          wanted_ace
-        end
-
+      describe "should set permissions using the windows-only rights attribute" do
 
         it "should set read rights" do
           resource.rights(:read, 'Guest')
@@ -158,8 +162,18 @@ shared_examples_for "a securable resource" do
 
       end
 
-      it "should set permissions in string form as an octal number" do
-        pending "TODO WRITE THIS"
+      it "should set permissions in string form as an octal number using mode" do
+        #on windows, mode cannot modify owner and/or group permissons
+        #unless the owner and/or group as appropriate is specified
+        mode_string = '400'
+        owner_string = 'Guest'
+        resource.mode mode_string
+        resource.owner owner_string
+        resource.run_action(:create)
+        ace = get_ace('Guest', resource.path)
+        ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ
+        ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
+        ace.flags.should == 0
       end
 
       it "should set permissions in numeric form as a ruby-interpreted integer" do
