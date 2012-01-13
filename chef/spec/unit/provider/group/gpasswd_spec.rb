@@ -71,13 +71,28 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
       @current_resource = @new_resource.dup
       @provider.current_resource = @new_resource
     end
-    describe "when no group members are specified" do
+
+    describe "when no group members are specified and append is not set" do
       before do
+        @new_resource.append(false)
+        @new_resource.members([])
+      end
+
+      it "logs a message and sets group's members to 'none'" do
+        Chef::Log.should_receive(:debug).with("group[wheel] setting group members to: none")
+        @provider.should_receive(:shell_out!).with("gpasswd -M \"\" wheel")
+        @provider.modify_group_members
+      end
+    end
+
+    describe "when no group members are specified and append is set" do
+      before do
+        @new_resource.append(true)
         @new_resource.members([])
       end
 
       it "logs a message and does not modify group membership" do
-        Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members")
+        Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members to add")
         @provider.should_not_receive(:shell_out!)
         @provider.modify_group_members
       end
