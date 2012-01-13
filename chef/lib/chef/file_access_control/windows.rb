@@ -180,24 +180,31 @@ class Chef
         if !resource.mode.nil?
           acls = [] if acls.nil?
 
+          mode = target_mode
+
           owner = target_owner
           if owner
-            acls += mode_ace(owner, (resource.mode & 0700) >> 6)
-          elsif resource.mode & 0700 != 0
-            raise "Mode #{resource.mode.to_s(8)} includes bits for the owner, but owner is not specified"
+            acls += mode_ace(owner, (mode & 0700) >> 6)
+          elsif mode & 0700 != 0
+            raise "Mode #{mode.to_s(8)} includes bits for the owner, but owner is not specified"
           end
 
           group = target_group
           if group
-            acls += mode_ace(group, (resource.mode & 070) >> 3)
-          elsif resource.mode & 070 != 0
-            raise "Mode #{resource.mode.to_s(8)} includes bits for the group, but group is not specified"
+            acls += mode_ace(group, (mode & 070) >> 3)
+          elsif mode & 070 != 0
+            raise "Mode #{mode.to_s(8)} includes bits for the group, but group is not specified"
           end
 
-          acls += mode_ace(SID.Everyone, (resource.mode & 07))
+          acls += mode_ace(SID.Everyone, (mode & 07))
         end
 
         acls.nil? ? nil : Chef::Win32::Security::ACL.create(acls)
+      end
+
+      def target_mode
+        return nil if resource.mode.nil?
+        (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 007777
       end
 
       def target_group
