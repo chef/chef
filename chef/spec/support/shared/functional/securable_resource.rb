@@ -48,7 +48,7 @@ shared_examples_for "a securable resource" do
         (File.stat(path).mode & 007777).should == (mode_string.oct & 007777)
       end
 
-      it "should set permissions in numeric form as a ruby-interpreted integer" do
+      it "should set permissions in numeric form as a ruby-interpreted octal" do
         mode_integer = 0777
         resource.mode mode_integer
         resource.run_action(:create)
@@ -57,7 +57,7 @@ shared_examples_for "a securable resource" do
     end
 
     describe "windows-specific behavior" do
- def get_security_descriptor(path)
+      def get_security_descriptor(path)
         Chef::Win32::Security.get_named_security_info(path)
       end
 
@@ -176,8 +176,16 @@ shared_examples_for "a securable resource" do
         ace.flags.should == 0
       end
 
-      it "should set permissions in numeric form as a ruby-interpreted integer" do
-        pending "TODO WRITE THIS"
+      it "should set permissions in numeric form as a ruby-interpreted octal using mode" do
+        mode_integer = 0700
+        owner_string = 'Guest'
+        resource.mode mode_integer
+        resource.owner owner_string
+        resource.run_action(:create)
+        ace = get_ace('Guest', resource.path)
+        ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+        ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
+        ace.flags.should == 0
       end
     end
   end
