@@ -134,4 +134,8 @@ describe Expander::Configuration do
     Expander.config.node_count.should == 23
   end
 
+  it "appends /solr to the legacy solr_url" do
+    Expander.config.solr_url = "http://localhost:8983"
+    @config.solr_url.should == "http://localhost:8983/solr"
+  end
 end

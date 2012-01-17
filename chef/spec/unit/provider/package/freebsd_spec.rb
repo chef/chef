@@ -100,14 +100,14 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     it "should return the ports candidate version when given a valid port path" do
       @provider.stub!(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(:stdout => "4.3.6\n")
-      @provider.should_receive(:shell_out!).with("make -V PORTVERSION -f /usr/ports/shells/zsh/Makefile", :env => nil, :returns=>[0,1]).and_return(make_v)
+      @provider.should_receive(:shell_out!).with("make -V PORTVERSION", {:cwd=>"/usr/ports/shells/zsh", :returns=>[0, 1], :env=>nil}).and_return(make_v)
       @provider.ports_candidate_version.should == "4.3.6"
     end
 
     it "should figure out the package name" do
       @provider.stub!(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(:stdout => "zsh-4.3.6_7\n")
-      @provider.should_receive(:shell_out!).with('make -V PKGNAME -f /usr/ports/shells/zsh/Makefile', :env => nil, :returns=>[0,1]).and_return(make_v)
+      @provider.should_receive(:shell_out!).with("make -V PKGNAME", {:cwd=>"/usr/ports/shells/zsh", :env=>nil, :returns=>[0, 1]}).and_return(make_v)
       #@provider.should_receive(:ports_makefile_variable_value).with("PKGNAME").and_return("zsh-4.3.6_7")
       @provider.package_name.should == "zsh"
     end
@@ -120,6 +120,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
       @provider.current_resource = @current_resource
       @provider.stub!(:package_name).and_return("zsh")
       @provider.stub!(:latest_link_name).and_return("zsh")
+      @provider.stub!(:port_path).and_return("/usr/ports/shells/zsh")
     end
 
     it "should run pkg_add -r with the package name" do
@@ -129,8 +130,8 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
     it "should run make install when installing from ports" do
       @new_resource.stub!(:source).and_return("ports")
-      @provider.should_receive(:port_path).and_return("/usr/ports/shells/zsh")
-      @provider.should_receive(:shell_out!).with("make -DBATCH -f /usr/ports/shells/zsh/Makefile install", :timeout => 1200, :env=>nil).and_return(@cmd_result)
+      @provider.should_not_receive(:shell_out!).with("make -DBATCH -f /usr/ports/shells/zsh/Makefile install", :timeout => 1200, :env=>nil)
+      @provider.should_receive(:shell_out!).with("make -DBATCH install", :timeout => 1200, :env=>nil, :cwd => @provider.port_path).and_return(@cmd_result)
       @provider.install_package("zsh", "4.3.6_7")
     end
   end
@@ -187,7 +188,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
     it "should run make install when installing from ports" do
       @new_resource.stub!(:source).and_return("ports")
-      @provider.should_receive(:shell_out!).with("make -DBATCH -f /usr/ports/converters/ruby-iconv/Makefile install", :timeout => 1200, :env=>nil).and_return(@install_result)
+      @provider.should_receive(:shell_out!).with("make -DBATCH install", :timeout => 1200, :env=>nil, :cwd => @provider.port_path).and_return(@install_result)
       @provider.install_package("ruby-iconv", "1.0")
     end
   end

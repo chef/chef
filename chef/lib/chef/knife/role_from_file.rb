@@ -34,11 +34,6 @@ class Chef
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Role, ui)
       end
 
-      option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Upload all roles, rather than just a single role"
-
       def run
         @name_args.each do |arg|
           updated = loader.load_from("roles", arg)

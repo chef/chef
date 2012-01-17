@@ -273,7 +273,6 @@ class Chef
 
         links_info = @new_resource.symlinks.map { |src, dst| "#{src} => #{dst}" }.join(", ")
         @new_resource.symlinks.each do |src, dest|
-          create_dir_unless_exists(::File.join(@new_resource.shared_path, src))
           begin
             FileUtils.ln_sf(::File.join(@new_resource.shared_path, src), ::File.join(release_path, dest))
           rescue => e
