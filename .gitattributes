@@ -1,0 +1,5 @@
+# git config merge.ignore.name 'ignore changes merge driver'
+# git config merge.ignore.driver 'touch %A'
+chef/distro/common/html/* merge=ignore
+chef/distro/common/man/man1/* merge=ignore
+chef/distro/common/man/man8/* merge=ignore
