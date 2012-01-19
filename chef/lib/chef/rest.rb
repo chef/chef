@@ -250,6 +250,9 @@ class Chef
         elsif redirect_location = redirected_to(response)
           follow_redirect {api_request(:GET, create_url(redirect_location))}
         else
+          # have to decompress the body before making an exception for it. But the body could be nil.
+          response.body.replace(decompress_body(response)) if response.body.respond_to?(:replace)
+
           if response['content-type'] =~ /json/
             exception = Chef::JSONCompat.from_json(response_body)
             msg = "HTTP Request Returned #{response.code} #{response.message}: "
