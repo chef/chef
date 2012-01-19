@@ -19,6 +19,7 @@
 #
 
 require 'forwardable'
+require 'chef/platform'
 require 'chef/knife/core/generic_presenter'
 
 class Chef
