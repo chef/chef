@@ -57,6 +57,28 @@ shared_examples_for "a securable resource" do
     end
 
     describe "windows-specific behavior" do
+
+      #Helper methods to help with readablity
+      def allow_type
+        Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
+      end
+
+      def deny_type
+        Chef::Win32::API::Security::ACCESS_DENIED_ACE_TYPE
+      end
+
+      def read_perms
+        Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+      end
+
+      def write_perms
+        Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+      end
+
+      def all_access_perms
+        Chef::Win32::API::Security::FILE_ALL_ACCESS
+      end
+
       def get_security_descriptor(path)
         Chef::Win32::Security.get_named_security_info(path)
       end
@@ -64,16 +86,38 @@ shared_examples_for "a securable resource" do
       def get_ace(user, path)
           descriptor = get_security_descriptor(path)
           acl = descriptor.dacl
-          wanted_ace = nil
+          wanted_ace = []
+
           acl.each do |ace|
             # the acl can have more than one ace - only interested in
             # the one that applies to the test
             # regex maybe too permissive
             if ace.sid.account_name.match /.*#{user}.*/
-             wanted_ace = ace
+             wanted_ace << ace
             end
           end
-          wanted_ace
+
+          if wanted_ace.size == 1
+            wanted_ace.pop
+          else
+            wanted_ace
+          end
+      end
+
+      def extract_ace_properties(aces)
+        hashes = []
+          aces.each do |ace|
+            hashes << { :mask => ace.mask, :type => ace.type, :flags => ace.flags }
+          end
+        hashes
+      end
+
+      RSpec::Matchers.define :have_expected_properties do |mask, type, flags|
+        match do |ace|
+          ace.mask == mask
+          ace.type == type
+          ace.flags == flags
+        end
       end
 
       before(:each) do
@@ -126,28 +170,30 @@ shared_examples_for "a securable resource" do
           resource.rights(:read, 'Guest')
           resource.run_action(:create)
           ace = get_ace('Guest', resource.path)
-          # :read = FILE_GENERIC_READ | FILE_GENERIC_EXECUTE
-          ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
-          ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
-          ace.flags.should == 0
+          mask = read_perms
+          ace_type = allow_type
+          flags = 0
+          ace.should have_expected_properties(mask, ace_type, flags)
         end
 
         it "should set write rights" do
           resource.rights(:write, 'Guest')
           resource.run_action(:create)
           ace = get_ace('Guest', resource.path)
-          ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
-          ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
-          ace.flags.should == 0
+          mask = write_perms
+          ace_type = allow_type
+          flags = 0
+          ace.should have_expected_properties(mask, ace_type, flags)
         end
 
         it "should set full control rights" do
           resource.rights(:full_control, 'Guest')
           resource.run_action(:create)
           ace = get_ace('Guest', resource.path)
-          ace.mask.should == Chef::Win32::API::Security::FILE_ALL_ACCESS
-          ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
-          ace.flags.should == 0
+          mask = all_access_perms
+          ace_type = allow_type
+          flags = 0
+          ace.should have_expected_properties(mask, ace_type, flags)
         end
 
         it "should set deny rights" do
@@ -155,9 +201,55 @@ shared_examples_for "a securable resource" do
           resource.rights(:deny, 'Guest')
           resource.run_action(:create)
           ace = get_ace('Guest', resource.path)
-          ace.mask.should == Chef::Win32::API::Security::FILE_ALL_ACCESS
-          ace.type.should == Chef::Win32::API::Security::ACCESS_DENIED_ACE_TYPE
-          ace.flags.should == 0
+          mask = all_access_perms
+          ace_type = deny_type
+          flags = 0
+          ace.should have_expected_properties(mask, ace_type, flags)
+        end
+
+        it "should set writes cumulatively" do
+          resource.rights(:read, 'Guest')
+          resource.rights(:write, 'Guest')
+          resource.run_action(:create)
+
+          write_ace = { :mask => write_perms, :type => allow_type, :flags => 0 }
+          read_ace = { :mask => read_perms, :type => allow_type, :flags => 0 }
+          expected_aces = [ read_ace, write_ace ]
+
+          aces = get_ace('Guest', resource.path)
+
+          ace_properties = extract_ace_properties(aces)
+          ace_properties.size.should == expected_aces.size
+
+          expected_aces.each do |expected_ace|
+            ace_properties.should include expected_ace
+          end
+        end
+
+        it "should have deny rights trump other writes when set cumulatively" do
+          #when setting deny and any other writes, all of the ACEs are created
+          #but windows knows that deny trumps
+          #the only way to test is that we set all teh aces correctly - by
+          #making sure they are all there. The rest is dependend on windows
+          #behavior
+          resource.rights(:read, 'Guest')
+          resource.rights(:write, 'Guest')
+          resource.rights(:deny, 'Guest')
+          resource.run_action(:create)
+
+          write_ace = { :mask => write_perms, :type => allow_type, :flags => 0 }
+          read_ace = { :mask => read_perms, :type => allow_type, :flags => 0 }
+          deny_ace = { :mask => all_access_perms, :type => deny_type, :flags => 0 }
+          expected_aces = [ read_ace, write_ace, deny_ace]
+
+          aces = get_ace('Guest', resource.path)
+
+          ace_properties = extract_ace_properties(aces)
+          ace_properties.size.should == expected_aces.size
+
+          expected_aces.each do |expected_ace|
+            ace_properties.should include expected_ace
+          end
         end
 
       end
@@ -187,6 +279,7 @@ shared_examples_for "a securable resource" do
         ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
         ace.flags.should == 0
       end
+
     end
   end
 end
