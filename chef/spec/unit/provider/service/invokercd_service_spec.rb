@@ -161,6 +161,7 @@ RUNNING_PS
   end
 
   describe "when restarting a service" do
+
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({:restart => true})
       @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart"}).and_return(0)
@@ -194,4 +195,16 @@ RUNNING_PS
       @provider.reload_service()
     end
   end
+  
+  describe "when the error_on_policy_violation is set to true" do
+    it "should run with flag" do
+      @new_resource.error_on_policy_violation(true)
+      @provider = Chef::Provider::Service::Invokercd.new(@new_resource, @run_context)
+      @provider.load_current_resource
+      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d --disclose-deny #{@new_resource.service_name} start"}).and_return(0)
+      @provider.start_service()
+    end
+  end
+
+     
 end

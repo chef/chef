@@ -108,7 +108,7 @@ describe Chef::Resource::Service do
     }.should raise_error(ArgumentError)
   end
   
-  %w{enabled running}.each do |attrib|
+  %w{enabled running error_on_policy_violation}.each do |attrib|
     it "should accept true for #{attrib}" do
       @resource.send(attrib, true) 
       @resource.send(attrib).should eql(true)
@@ -140,5 +140,6 @@ describe Chef::Resource::Service do
       @resource.supports(support_hash)
       @resource.supports.should == support_hash
     end
+    
   end
 end
