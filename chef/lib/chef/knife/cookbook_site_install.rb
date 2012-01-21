@@ -66,7 +66,7 @@ class Chef
         @cookbook_name = parse_name_args!
         # Check to ensure we have a valid source of cookbooks before continuing
         #
-        @install_path = config[:cookbook_path].first
+        @install_path = File.expand_path(config[:cookbook_path].first)
         ui.info "Installing #@cookbook_name to #{@install_path}"
 
         @repo = CookbookSCMRepo.new(@install_path, ui, config)
