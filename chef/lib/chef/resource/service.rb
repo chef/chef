@@ -40,7 +40,7 @@ class Chef
         @supports = { :restart => false, :reload => false, :status => false }
         @error_on_policy_violation = false
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
-end
+      end
       
       def service_name(arg=nil)
         set_or_return(
