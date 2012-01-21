@@ -129,7 +129,7 @@ class Chef
 
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
-        shell_out!("tar zxvf #{upstream_file}", :cwd => @install_path)
+        shell_out!("tar zxvf '#{upstream_file}'", :cwd => @install_path)
       end
 
       def clear_existing_files(cookbook_path)
