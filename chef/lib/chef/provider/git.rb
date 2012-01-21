@@ -133,8 +133,22 @@ class Chef
 
       def enable_submodules
         if @new_resource.enable_submodules
+          use_recursive_option = false
+          Chef::Log.info "#{@new_resource} determining git version to allow recursive option"
+          command = "git --version"
+          res = shell_out!(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info))
+          if res.stdout =~ /git\s+version\s+(?:(\d+)\.(\d+)(?:\.(\d+))?)/
+            major, minor, revision = $1.to_i, $2.to_i, $3.to_i
+            # we need at least git 1.6.5
+            use_recursive_option = true  if major > 1
+            use_recursive_option = true  if major == 1 && minor > 6
+            use_recursive_option = true  if major == 1 && minor == 6 && revision >= 5
+          end
+          unless use_recursive_option
+            Chef::Log.warn "Git doesn't support recursive submodule update. Please upgrade git to 1.6.5 if you need this option."
+          end
           Chef::Log.info "#{@new_resource} enabling git submodules"
-          command = "git submodule init && git submodule update"
+          command = "git submodule update --init#{ use_recursive_option ? ' --recursive' : '' }"
           shell_out!(command, run_options(:cwd => @new_resource.destination, :command_log_level => :info))
         end
       end
