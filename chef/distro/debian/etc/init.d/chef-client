@@ -88,6 +88,19 @@ reload_server() {
    return $errcode
 }
 
+run_server() {
+  if [ -z "$DAEMONUSER" ] ; then
+     killproc -p $PIDFILE $DAEMON -USR1
+     errcode=$?
+   else
+     start-stop-daemon --stop --signal USR1 --quiet --pidfile $PIDFILE \
+       --user $DAEMONUSER \
+       --exec $DAEMON
+     errcode=$?
+   fi
+   return $errcode
+}
+
 force_stop() {
   [ ! -e "$PIDFILE" ] && return
   if running ; then
@@ -174,9 +187,17 @@ case "$1" in
       log_end_msg $errcode
     fi
     ;;
+  run)
+    if running; then
+      log_daemon_msg "Triggering run of $DESC" "$NAME"
+      errcode=0
+      run_server || errcode=$?
+      log_end_msg $errcode
+    fi
+    ;;
   *)
     N=/etc/init.d/$NAME
-    echo "Usage: $N {start|stop|force-stop|restart|force-reload|status}" >&2
+    echo "Usage: $N {start|stop|force-stop|restart|force-reload|status|run}" >&2
     exit 1
     ;;
 esac

@@ -67,10 +67,24 @@ case "$1" in
     sleep 3
     $0 start
     ;;
+
   status)
     stat_busy "Checking $daemon_name status";
     ck_status $daemon_name
     ;;
+
+  run)
+    stat_busy "Triggering new run of $daemon_name daemon"
+    PID=$(get_pid)
+    [ ! -z "$PID" ] && kill -SIGUSR1 $PID &> /dev/null
+    if [ $? -gt 0 ]; then
+      stat_fail
+      exit 1
+    else
+      stat_done
+    fi
+    ;;
+
   *)
-    echo "usage: $) {start|stop|restart|status}"
+    echo "usage: $) {start|stop|restart|status|run}"
 esac

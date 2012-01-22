@@ -64,6 +64,14 @@ reload() {
     return $retval 
 }
 
+run() {
+    echo -n $"Triggering run of $prog: "
+    killproc -p $pidfile chef-client -USR1
+    retval=$?
+    echo
+    return $retval
+}
+
 force_reload() {
     restart
 }
@@ -103,8 +111,11 @@ case "$1" in
         rh_status_q || exit 0
         restart
         ;;
+    run)
+        $1
+        ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|run}"
         exit 2
 esac
 exit $?
