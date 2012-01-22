@@ -229,7 +229,9 @@ rule(%r{\broles/\S+\.json\Z} => [ proc { |task_name| task_name.sub(/\.[^.]+$/, '
 end
 
 desc "Update roles"
-task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.json')
+task :roles  => FileList[File.join(TOPDIR, 'roles', '**', '*.rb')].pathmap('%X.json') do
+  puts "NEVER GONNA GIVE YOU UP NEVER GONNA LET YOU DOWN. 'rake roles' successful."
+end
 
 desc "Update a specific role"
 task :role, :role_name do |t, args|
