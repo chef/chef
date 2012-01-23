@@ -170,7 +170,7 @@ class Chef
           end.join(" ")
 
           Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-          run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :command_log_level => :info))
+          run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info))
         end
       end
 
@@ -338,9 +338,9 @@ class Chef
         run_opts[:user] = @new_resource.user if @new_resource.user
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = @new_resource.environment if @new_resource.environment
-        run_opts[:command_log_prepend] = @new_resource.to_s
-        run_opts[:command_log_level] ||= :debug
-        if run_opts[:command_log_level] == :info
+        run_opts[:log_tag] = @new_resource.to_s
+        run_opts[:log_level] ||= :debug
+        if run_opts[:log_level] == :info
           if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
             run_opts[:live_stream] = STDOUT
           end

@@ -283,8 +283,8 @@ describe Chef::Provider::Deploy do
     STDOUT.stub!(:tty?).and_return(true)
     @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
-																								:command_log_level => :info, :live_stream => STDOUT,
-																								:command_log_prepend => "deploy[/my/deploy/dir]",
+																								:log_level => :info, :live_stream => STDOUT,
+																								:log_tag => "deploy[/my/deploy/dir]",
                                                 :environment => {"RAILS_ENV"=>"production"})
     @provider.migrate
   end
@@ -354,7 +354,7 @@ describe Chef::Provider::Deploy do
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
-    @provider.should_receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :command_log_prepend => "deploy[/my/deploy/dir]", :command_log_level => :debug)
+    @provider.should_receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
     @provider.restart
   end
 
