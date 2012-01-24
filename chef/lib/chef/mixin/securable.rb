@@ -79,28 +79,44 @@ class Chef
         def self.rights_attribute(name)
           define_method(name) do |*args|
             # Ruby 1.8 compat: default the arguments
-            permission = args.length >= 1 ? args[0] : nil
-            principal = args.length >= 2 ? args[1] : nil
+            permissions = args.length >= 1 ? args[0] : nil
+            principals = args.length >= 2 ? args[1] : nil
             args_hash = args.length >= 3 ? args[2] : nil
             raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
 
             rights = self.instance_variable_get("@#{name.to_s}".to_sym)
-            unless permission == nil
+            unless permissions == nil
               input = {
-                :permission => permission.to_sym,
-                :principal => principal
+                :permissions => permissions,
+                :principals => principals
               }
               input.merge!(args_hash) if args_hash != nil
 
-              validations = {:permission => { :required => true, :equal_to => [:read, :write, :full_control, :deny] },
-                             :principal => { :required => true, :kind_of => [String, Array] },
+              validations = {:permissions => { :required => true },
+                             :principals => { :required => true, :kind_of => [String, Array] },
                              :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ]},
                              :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
                              :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] }
                             }
               validate(input, validations)
 
-              if (!input.has_key?(:applies_to_children) || input[:applies_to_children] == false)
+              [ permissions ].flatten.each do |permission|
+                if permission.is_a?(Integer)
+                  if permission < 0 || permission > 1<<32
+                    raise ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
+                  end
+                elsif !([:full_control, :modify, :read_execute, :read, :write].include?(permission.to_sym))
+                  raise ArgumentError, "permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
+                end
+              end
+
+              [ principals ].flatten.each do |principal|
+                if !principal.is_a?(String)
+                  raise ArgumentError, "principals parameter must be a string or array of strings representing usernames"
+                end
+              end
+
+              if input[:applies_to_children] == false
                 if input[:applies_to_self] == false
                   raise ArgumentError, "'rights' attribute must specify either :applies_to_children or :applies_to_self."
                 end
@@ -121,6 +137,7 @@ class Chef
 
         # create a default 'rights' attribute
         rights_attribute(:rights)
+        rights_attribute(:deny_rights)
 
         def inherits(arg=nil)
           set_or_return(
