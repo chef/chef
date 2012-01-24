@@ -41,7 +41,7 @@ module Moneta
       if ::File.respond_to?(:binread)
         data = ::File.binread(path(key))
       else
-        data = ::File.open(file,"rb") { |f| f.read }
+        data = ::File.open(path(key),"rb") { |f| f.read }
       end
       Marshal.load(data)
     end
