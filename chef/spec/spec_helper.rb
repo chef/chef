@@ -80,55 +80,12 @@ def with_argv(*argv)
   end
 end
 
-# Mock global constants!
-
-# Sets $VERBOSE for the duration of the block and back to its original value afterwards.
-#
-# https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/kernel/reporting.rb#L3-30
-def with_warnings(flag)
-  old_verbose, $VERBOSE = $VERBOSE, flag
-  yield
-ensure
-  $VERBOSE = old_verbose
-end
-
-# http://digitaldumptruck.jotabout.com/?p=551
-def with_constants(constants, &block)
-  saved_constants = {}
-  constants.each do |constant, val|
-    saved_constants[ constant ] = Object.const_get( constant )
-    with_warnings(nil) { Object.const_set( constant, val ) }
-  end
-  begin
-    block.call
-  ensure
-    constants.each do |constant, val|
-      with_warnings(nil) { Object.const_set( constant, saved_constants[ constant ] ) }
-    end
-  end
-end
-####################
-
-# makes Chef think it's running on a certain platform..useful for unit testing
-# platform-specific functionality.
-#
-# If a block is given yields to the block with +RUBY_PLATFORM+ set to
-# 'i386-mingw32' (windows) or 'x86_64-darwin11.2.0' (unix).  Usueful for
-# testing code that mixes in platform specific modules like +Chef::Mixin::Securable+
-# or +Chef::FileAccessControl+
-def platform_mock(platform = :unix, &block)
-  Chef::Platform.stub!(:windows?).and_return(platform == :windows ? true : false)
-  ENV['SYSTEMDRIVE'] = (platform == :windows ? 'C:' : nil)
-  if block_given?
-    with_constants :RUBY_PLATFORM => (platform == :windows ? 'i386-mingw32' : 'x86_64-darwin11.2.0') do
-      yield
-    end
-  end
-end
-
 def sha256_checksum(path)
   Digest::SHA256.hexdigest(File.read(path))
 end
+
+# load mock helpers
+Dir[File.join(File.dirname(__FILE__), 'support', 'mock','**', '*.rb')].sort.each { |lib| require lib }
 
 # load shared contexts & examples
 Dir[File.join(File.dirname(__FILE__), 'support', 'shared','**', '*.rb')].sort.each { |lib| require lib }
