@@ -311,9 +311,35 @@ class Chef
               raise ArgumentError, msg
             end
             @gem_env = AlternateGemEnvironment.new(new_resource.gem_binary)
+          elsif is_omnibus?
+            # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
+            # Default to installing somewhere more functional
+            @gem_env = AlternateGemEnvironment.new(find_gem_by_path)
           else
             @gem_env = CurrentGemEnvironment.new
           end
+        end
+
+        def is_omnibus?
+          if RbConfig::CONFIG['bindir'] == "/opt/opscode/embedded/bin"
+            Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
+            # Omnibus installs to a static path because of linking on unix, find it.
+            true
+          elsif RbConfig::CONFIG['bindir'].sub(/^[\w]:/, '')  == "/opscode/chef/embedded/bin"
+            Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
+            # windows, with the drive letter removed
+            true
+          else
+            false
+          end
+        end
+
+        def find_gem_by_path
+          Chef::Log.debug("#{@new_resource} searching for 'gem' binary in path: #{ENV['PATH']}")
+          separator = ::File::ALT_SEPARATOR ? ::File::ALT_SEPARATOR : ::File::SEPARATOR
+          path_to_first_gem = ENV['PATH'].split(::File::PATH_SEPARATOR).select { |path| ::File.exists?(path + separator + "gem") }.first
+          raise Chef::Exceptions::FileNotFound, "Unable to find 'gem' binary in path: #{ENV['PATH']}" if path_to_first_gem.nil?
+          path_to_first_gem + separator + "gem"
         end
 
         def gem_dependency
