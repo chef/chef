@@ -325,6 +325,32 @@ describe Chef::Provider::Package::Rubygems do
     provider.gem_env.gem_binary_location.should == '/usr/weird/bin/gem'
   end
 
+  it "searches for a gem binary when running on Omnibus on Unix" do
+    platform_mock :unix do
+      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/opt/opscode/embedded/bin")
+      ENV.stub!(:[]).with('PATH').and_return("/usr/bin:/usr/sbin:/opt/opscode/embedded/bin")
+      File.stub!(:exists?).with('/usr/bin/gem').and_return(false)
+      File.stub!(:exists?).with('/usr/sbin/gem').and_return(true)
+      File.stub!(:exists?).with('/opt/opscode/embedded/bin/gem').and_return(true) # should not get here
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      provider.gem_env.gem_binary_location.should == '/usr/sbin/gem'
+    end
+  end
+
+  it "searches for a gem binary when running on Omnibus on Windows" do
+    platform_mock :windows do
+      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("d:/opscode/chef/embedded/bin")
+      ENV.stub!(:[]).with('PATH').and_return('C:\windows\system32;C:\windows;C:\Ruby186\bin;d:\opscode\chef\embedded\bin')
+      File.stub!(:exists?).with('C:\\windows\\system32\\gem').and_return(false)
+      File.stub!(:exists?).with('C:\\windows\\gem').and_return(false)
+      File.stub!(:exists?).with('C:\\Ruby186\\bin\\gem').and_return(true)
+      File.stub!(:exists?).with('d:\\opscode\\chef\\bin\\gem').and_return(false) # should not get here
+      File.stub!(:exists?).with('d:\\opscode\\chef\\embedded\\bin\\gem').and_return(false) # should not get here
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      provider.gem_env.gem_binary_location.should == 'C:\Ruby186\bin\gem'
+    end
+  end
+
   it "smites you when you try to use a hash of install options with an explicit gem binary" do
     @new_resource.gem_binary('/foo/bar')
     @new_resource.options(:fail => :burger)
