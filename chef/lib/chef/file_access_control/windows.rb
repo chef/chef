@@ -42,6 +42,10 @@ class Chef
       # set GENERIC_WRITE, Windows will flip on a whole bunch of other rights
       # on the file when you save the ACL)
       def acls_equal(target_acl, actual_acl)
+        if actual_acl.nil?
+          return target_acl.nil?
+        end
+
         actual_acl = actual_acl.select { |ace| !ace.inherited? }
         # When ACLs apply to children, Windows splits them on the file system into two ACLs:
         # one specific applying to this container, and one generic applying to children.
@@ -126,53 +130,86 @@ class Chef
       def mode_ace(sid, mode)
         mask = 0
         mask |= GENERIC_READ if mode & 4 != 0
-        mask |= GENERIC_WRITE if mode & 2 != 0
+        mask |= (GENERIC_WRITE | DELETE) if mode & 2 != 0
         mask |= GENERIC_EXECUTE if mode & 1 != 0
         return [] if mask == 0
         [ ACE.access_allowed(sid, mask) ]
+      end
+
+      def calculate_mask(permissions)
+        mask = 0
+        [ permissions ].flatten.each do |permission|
+          case permission
+          when :full_control
+            mask |= GENERIC_ALL
+          when :modify
+            mask |= GENERIC_WRITE | GENERIC_READ | GENERIC_EXECUTE | DELETE
+          when :read
+            mask |= GENERIC_READ
+          when :read_execute
+            mask |= GENERIC_READ | GENERIC_EXECUTE
+          when :write
+            mask |= GENERIC_WRITE
+          else
+            # Otherwise, assume it's an integer specifying the actual flags
+            mask |= permission
+          end
+        end
+        mask
+      end
+
+      def calculate_flags(rights)
+        # Handle inheritance flags
+        flags = 0
+        case rights[:applies_to_children]
+        when :containers_only
+          flags |= CONTAINER_INHERIT_ACE
+        when :objects_only
+          flags |= OBJECT_INHERIT_ACE
+        when true
+          flags |= CONTAINER_INHERIT_ACE
+          flags |= OBJECT_INHERIT_ACE
+        when nil
+          flags |= CONTAINER_INHERIT_ACE
+          flags |= OBJECT_INHERIT_ACE
+        end
+
+        if rights[:applies_to_self] == false
+          flags |= INHERIT_ONLY_ACE
+        end
+
+        if rights[:one_level_deep]
+          flags |= NO_PROPAGATE_INHERIT_ACE
+        end
+        flags
       end
 
       def target_dacl
         return nil if resource.rights.nil? && resource.mode.nil?
         acls = nil
 
+        if !resource.deny_rights.nil?
+          acls = [] if acls.nil?
+
+          resource.deny_rights.each do |rights|
+            mask = calculate_mask(rights[:permissions])
+            [ rights[:principals] ].flatten.each do |principal|
+              sid = get_sid(principal)
+              flags = calculate_flags(rights)
+              acls.push ACE.access_denied(sid, mask, flags)
+            end
+          end
+        end
+
         if !resource.rights.nil?
           acls = [] if acls.nil?
 
           resource.rights.each do |rights|
-            permission = rights[:permission]
-            [ rights[:principal] ].flatten.each do |principal|
-
-              # Handle inheritance flags
-              flags = 0
-              case rights[:applies_to_children]
-              when true
-                flags |= CONTAINER_INHERIT_ACE
-                flags |= OBJECT_INHERIT_ACE
-              when :containers_only
-                flags |= CONTAINER_INHERIT_ACE
-              when :objects_only
-                flags |= OBJECT_INHERIT_ACE
-              end
-              if rights[:applies_to_self] == false
-                flags |= INHERIT_ONLY_ACE
-              end
-              if rights[:one_level_deep]
-                flags |= NO_PROPAGATE_INHERIT_ACE
-              end
-
-              # Create ACE
+            mask = calculate_mask(rights[:permissions])
+            [ rights[:principals] ].flatten.each do |principal|
               sid = get_sid(principal)
-              case permission
-              when :deny
-                acls.push ACE.access_denied(sid, GENERIC_ALL, flags)
-              when :read
-                acls.push ACE.access_allowed(sid, GENERIC_READ | GENERIC_EXECUTE, flags)
-              when :write
-                acls.push ACE.access_allowed(sid, GENERIC_WRITE | GENERIC_READ | GENERIC_EXECUTE, flags)
-              when :full_control
-                acls.push ACE.access_allowed(sid, GENERIC_ALL, flags)
-              end
+              flags = calculate_flags(rights)
+              acls.push ACE.access_allowed(sid, mask, flags)
             end
           end
         end
@@ -180,31 +217,24 @@ class Chef
         if !resource.mode.nil?
           acls = [] if acls.nil?
 
-          mode = target_mode
-
           owner = target_owner
           if owner
-            acls += mode_ace(owner, (mode & 0700) >> 6)
-          elsif mode & 0700 != 0
-            raise "Mode #{mode.to_s(8)} includes bits for the owner, but owner is not specified"
+            acls += mode_ace(owner, (resource.mode & 0700) >> 6)
+          elsif resource.mode & 0700 != 0
+            raise "Mode #{resource.mode.to_s(8)} includes bits for the owner, but owner is not specified"
           end
 
           group = target_group
           if group
-            acls += mode_ace(group, (mode & 070) >> 3)
-          elsif mode & 070 != 0
-            raise "Mode #{mode.to_s(8)} includes bits for the group, but group is not specified"
+            acls += mode_ace(group, (resource.mode & 070) >> 3)
+          elsif resource.mode & 070 != 0
+            raise "Mode #{resource.mode.to_s(8)} includes bits for the group, but group is not specified"
           end
 
-          acls += mode_ace(SID.Everyone, (mode & 07))
+          acls += mode_ace(SID.Everyone, (resource.mode & 07))
         end
 
         acls.nil? ? nil : Chef::Win32::Security::ACL.create(acls)
-      end
-
-      def target_mode
-        return nil if resource.mode.nil?
-        (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 007777
       end
 
       def target_group
