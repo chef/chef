@@ -131,10 +131,14 @@ class Chef
         dir = Chef::Resource::Directory.new(path, run_context)
         dir.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
         if Chef::Platform.windows? && @new_resource.rights
-          @new_resource.rights.each do |rights| #rights is a hash
-            permissions = rights.delete(:permission) #delete will return the value or nil if not found
-            principal = rights.delete(:principal)
-            dir.rights(permissions, principal, rights)
+          # rights are only meant to be applied to the toppest-level directory;
+          # Windows will handle inheritance.
+          if path == @new_resource.path
+            @new_resource.rights.each do |rights| #rights is a hash
+              permissions = rights.delete(:permissions) #delete will return the value or nil if not found
+              principals = rights.delete(:principals)
+              dir.rights(permissions, principals, rights)
+            end
           end
         end
         dir.mode(@new_resource.mode) if @new_resource.mode
