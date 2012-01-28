@@ -91,7 +91,7 @@ class Chef
       #
       # === Returns
       # metadata<Chef::Cookbook::Metadata>
-      def initialize(cookbook=nil, maintainer='Your Name', maintainer_email='youremail@example.com', license='Apache v2.0')
+      def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
         @cookbook = cookbook
         @name = cookbook ? cookbook.name : ""
         @long_description = ""
