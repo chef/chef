@@ -495,7 +495,8 @@ class Chef
         "chef_type" => "node",
         "default" => default_attrs,
         "override" => override_attrs,
-        "run_list" => run_list.run_list
+        #Render correctly for run_list items so malformed json does not result
+        "run_list" => run_list.run_list.map { |item| item.to_s }
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result.to_json(*a)

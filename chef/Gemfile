@@ -3,6 +3,7 @@ source :rubygems
 gemspec
 
 gem "dep_selector", :group => :development, :platform => "ruby"
+gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
 platforms :mswin, :mingw do
   gem "ffi", "1.0.9"
