@@ -157,6 +157,7 @@ class Chef
         host.typedef :pointer, :PLONG_PTR # Pointer to a LONG_PTR.
         host.typedef :pointer, :PLONG32 # Pointer to a LONG32.
         host.typedef :pointer, :PLONG64 # Pointer to a LONG64.
+        host.typedef :pointer, :PLUID # Pointer to a LUID.
         host.typedef :pointer, :POINTER_32 # 32-bit pointer. On a 32-bit system, this is a native pointer. On a 64-bit system, this is a truncated 64-bit pointer.
         host.typedef :pointer, :POINTER_64 # 64-bit pointer. On a 64-bit system, this is a native pointer. On a 32-bit system, this is a sign-extended 32-bit pointer.
         host.typedef :pointer, :POINTER_SIGNED # A signed pointer.
@@ -342,6 +343,7 @@ class Chef
       def wtime_to_time(wtime)
         Time.at((wtime - WIN32_EPOC_MINUS_POSIX_EPOC) / 10000000)
       end
+
     end
   end
 end

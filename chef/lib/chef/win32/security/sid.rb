@@ -174,6 +174,22 @@ class Chef
         def self.Replicators
           SID.from_string_sid('S-1-5-32-552')
         end
+
+        # Machine-specific, well-known SIDs
+        # TODO: don't use strings, dummy
+        def self.None
+          SID.from_account("#{::ENV['COMPUTERNAME']}\\None")
+        end
+        def self.Administrator
+          SID.from_account("#{::ENV['COMPUTERNAME']}\\Administrator")
+        end
+        def self.Guest
+          SID.from_account("#{::ENV['COMPUTERNAME']}\\Guest")
+        end
+
+        def self.current_user
+          SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
+        end
       end
     end
   end
