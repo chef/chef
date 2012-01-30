@@ -150,6 +150,32 @@ class Chef
                                      FILE_READ_ATTRIBUTES     |
                                      FILE_EXECUTE             |
                                      SYNCHRONIZE
+        # Access Token Rights (for OpenProcessToken)
+        # Access Rights for Access-Token Objects (used in OpenProcessToken)
+        TOKEN_ASSIGN_PRIMARY = 0x0001
+        TOKEN_DUPLICATE = 0x0002
+        TOKEN_IMPERSONATE = 0x0004
+        TOKEN_QUERY = 0x0008
+        TOKEN_QUERY_SOURCE = 0x0010
+        TOKEN_ADJUST_PRIVILEGES = 0x0020
+        TOKEN_ADJUST_GROUPS = 0x0040
+        TOKEN_ADJUST_DEFAULT = 0x0080
+        TOKEN_ADJUST_SESSIONID = 0x0100
+        TOKEN_READ = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
+        TOKEN_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
+            TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
+            TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
+            TOKEN_ADJUST_SESSIONID)
+
+        # AdjustTokenPrivileges
+        SE_PRIVILEGE_ENABLED_BY_DEFAULT = 0x00000001
+        SE_PRIVILEGE_ENABLED = 0x00000002
+        SE_PRIVILEGE_REMOVED = 0X00000004
+        SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
+        SE_PRIVILEGE_VALID_ATTRIBUTES = SE_PRIVILEGE_ENABLED_BY_DEFAULT |
+                                         SE_PRIVILEGE_ENABLED            |
+                                         SE_PRIVILEGE_REMOVED            |
+                                         SE_PRIVILEGE_USED_FOR_ACCESS
 
         # Minimum size of a SECURITY_DESCRIPTOR.  TODO: this is probably platform dependent.
         # Make it work on 64 bit.
@@ -240,6 +266,33 @@ class Chef
           end
         end
 
+        class LUID < FFI::Struct
+          layout :LowPart, :DWORD,
+                 :HighPart, :LONG
+        end
+
+        class LUID_AND_ATTRIBUTES < FFI::Struct
+          layout :Luid, LUID,
+                 :Attributes, :DWORD
+        end
+
+        class TOKEN_PRIVILEGES < FFI::Struct
+          layout :PrivilegeCount, :DWORD,
+                 :Privileges, LUID_AND_ATTRIBUTES
+
+          def self.size_with_privileges(num_privileges)
+            offset_of(:Privileges) + LUID_AND_ATTRIBUTES.size*num_privileges
+          end
+
+          def size_with_privileges
+            TOKEN_PRIVILEGES.size_with_privileges(self[:PrivilegeCount])
+          end
+
+          def privilege(index)
+            LUID_AND_ATTRIBUTES.new(pointer + offset_of(:Privileges) + (index * LUID_AND_ATTRIBUTES.size))
+          end
+        end
+
         ffi_lib "advapi32"
 
         attach_function :AddAce, [ :pointer, :DWORD, :DWORD, :LPVOID, :DWORD ], :BOOL
@@ -247,6 +300,7 @@ class Chef
         attach_function :AddAccessAllowedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
         attach_function :AddAccessDeniedAce, [ :pointer, :DWORD, :DWORD, :pointer ], :BOOL
         attach_function :AddAccessDeniedAceEx, [ :pointer, :DWORD, :DWORD, :DWORD, :pointer ], :BOOL
+        attach_function :AdjustTokenPrivileges, [ :HANDLE, :BOOL, :pointer, :DWORD, :pointer, :PDWORD ], :BOOL
         attach_function :ConvertSidToStringSidA, [ :pointer, :pointer ], :BOOL
         attach_function :ConvertStringSidToSidW, [ :pointer, :pointer ], :BOOL
         attach_function :DeleteAce, [ :pointer, :DWORD ], :BOOL
@@ -267,7 +321,11 @@ class Chef
         attach_function :IsValidSid, [ :pointer ], :BOOL
         attach_function :LookupAccountNameW, [ :LPCWSTR, :LPCWSTR, :pointer, :LPDWORD, :LPWSTR, :LPDWORD, :pointer ], :BOOL
         attach_function :LookupAccountSidW, [ :LPCWSTR, :pointer, :LPWSTR, :LPDWORD, :LPWSTR, :LPDWORD, :pointer ], :BOOL
+        attach_function :LookupPrivilegeNameW, [ :LPCWSTR, :PLUID, :LPWSTR, :LPDWORD ], :BOOL
+        attach_function :LookupPrivilegeDisplayNameW, [ :LPCWSTR, :LPCWSTR, :LPWSTR, :LPDWORD, :LPDWORD ], :BOOL
+        attach_function :LookupPrivilegeValueW, [ :LPCWSTR, :LPCWSTR, :PLUID ], :BOOL
         attach_function :MakeAbsoluteSD, [ :pointer, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD, :pointer, :LPDWORD], :BOOL
+        attach_function :OpenProcessToken, [ :HANDLE, :DWORD, :PHANDLE ], :BOOL
         attach_function :QuerySecurityAccessMask, [ :DWORD, :LPDWORD ], :void
         attach_function :SetFileSecurityW, [ :LPWSTR, :DWORD, :pointer ], :BOOL
         attach_function :SetNamedSecurityInfoW, [ :LPWSTR, :SE_OBJECT_TYPE, :DWORD, :pointer, :pointer, :pointer, :pointer ], :DWORD

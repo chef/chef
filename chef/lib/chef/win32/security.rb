@@ -19,7 +19,9 @@
 require 'chef/win32/api/security'
 require 'chef/win32/error'
 require 'chef/win32/memory'
+require 'chef/win32/process'
 require 'chef/win32/unicode'
+require 'chef/win32/security/token'
 
 class Chef
   module Win32
@@ -69,6 +71,17 @@ class Chef
         unless AddAccessDeniedAceEx(acl, revision, flags, access_mask, sid)
           Chef::Win32::Error.raise!
         end
+      end
+
+      def self.adjust_token_privileges(token, privileges)
+        token = token.handle if token.respond_to?(:handle)
+        old_privileges_size = FFI::Buffer.new(:long).write_long(privileges.size_with_privileges)
+        old_privileges = TOKEN_PRIVILEGES.new(FFI::Buffer.new(old_privileges_size.length))
+        unless AdjustTokenPrivileges(token.handle, false, privileges, privileges.size_with_privileges, old_privileges, old_privileges_size)
+          Chef::Win32::Error.raise!
+        end
+
+        old_privileges
       end
 
       def self.convert_sid_to_string_sid(sid)
@@ -219,7 +232,7 @@ class Chef
         ACL.new(acl)
       end
 
-      def initialize_security_descriptor(revision = SECURITY_DESCRIPTOR_REVISION)
+      def self.initialize_security_descriptor(revision = SECURITY_DESCRIPTOR_REVISION)
         security_descriptor = FFI::MemoryPointer.new SECURITY_DESCRIPTOR_MIN_LENGTH
         unless InitializeSecurityDescriptor(security_descriptor, revision)
           Chef::Win32::Error.raise!
@@ -285,6 +298,50 @@ class Chef
         [ referenced_domain_name.read_wstring(referenced_domain_name_size.read_long), name.read_wstring(name_size.read_long), use.read_long ]
       end
 
+      def self.lookup_privilege_name(system_name, luid)
+        system_name = system_name.to_wstring if system_name
+        name_size = FFI::Buffer.new(:long).write_long(0)
+        if LookupPrivilegeNameW(system_name, luid, nil, name_size)
+          raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeName, and got no error!"
+        elsif Chef::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
+          Chef::Win32::Error.raise!
+        end
+
+        name = FFI::MemoryPointer.new :char, (name_size.read_long*2)
+        unless LookupPrivilegeNameW(system_name, luid, name, name_size)
+          Chef::Win32::Error.raise!
+        end
+
+        name.read_wstring(name_size.read_long)
+      end
+
+      def self.lookup_privilege_display_name(system_name, name)
+        system_name = system_name.to_wstring if system_name
+        display_name_size = FFI::Buffer.new(:long).write_long(0)
+        language_id = FFI::Buffer.new(:long)
+        if LookupPrivilegeDisplayNameW(system_name, name.to_wstring, nil, display_name_size, language_id)
+          raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupPrivilegeDisplayName, and got no error!"
+        elsif Chef::Win32::Error.get_last_error != ERROR_INSUFFICIENT_BUFFER
+          Chef::Win32::Error.raise!
+        end
+
+        display_name = FFI::MemoryPointer.new :char, (display_name_size.read_long*2)
+        unless LookupPrivilegeDisplayNameW(system_name, name.to_wstring, display_name, display_name_size, language_id)
+          Chef::Win32::Error.raise!
+        end
+
+        [ display_name.read_wstring(display_name_size.read_long), language_id.read_long ]
+      end
+
+      def self.lookup_privilege_value(system_name, name)
+        luid = FFI::Buffer.new(:uint64).write_uint64(0)
+        system_name = system_name.to_wstring if system_name
+        unless LookupPrivilegeValueW(system_name, name.to_wstring, luid)
+          Win32::Error.raise!
+        end
+        luid.read_uint64
+      end
+
       def self.make_absolute_sd(security_descriptor)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
 
@@ -310,6 +367,16 @@ class Chef
         end
 
         [ SecurityDescriptor.new(absolute_sd), SID.new(owner), SID.new(group), ACL.new(dacl), ACL.new(sacl) ]
+      end
+
+      def self.open_process_token(process, desired_access)
+        process = process.handle if process.respond_to?(:handle)
+        process = process.handle if process.respond_to?(:handle)
+        token = FFI::Buffer.new(:ulong)
+        unless OpenProcessToken(process, desired_access, token)
+          Chef::Win32::Error.raise!
+        end
+        Token.new(Handle.new(token.read_ulong))
       end
 
       def self.query_security_access_mask(security_information)
@@ -349,7 +416,7 @@ class Chef
         end
 
         hr = SetNamedSecurityInfoW(path.to_wstring, type, security_information, owner, group, dacl, sacl)
-        if FAILED(hr)
+        if hr != ERROR_SUCCESS
           Chef::Win32::Error.raise!
         end
       end
@@ -398,6 +465,19 @@ class Chef
         end
       end
 
+      def self.with_privileges(*privilege_names)
+        # Set privileges
+        token = open_process_token(Chef::Win32::Process.get_current_process, TOKEN_READ | TOKEN_ADJUST_PRIVILEGES)
+        old_privileges = token.enable_privileges(*privilege_names)
+
+        # Let the caller do their privileged stuff
+        begin
+          yield
+        ensure
+          # Set privileges back to what they were before
+          token.adjust_privileges(old_privileges)
+        end
+      end
     end
   end
 end

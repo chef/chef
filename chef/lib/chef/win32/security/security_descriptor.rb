@@ -66,8 +66,10 @@ class Chef
 
         def sacl
           raise "SACL not present" if !sacl_present?
-          present, acl, defaulted = Chef::Win32::Security.get_security_descriptor_sacl(self)
-          acl
+          Security.with_privileges("SeSecurityPrivilege") do
+            present, acl, defaulted = Chef::Win32::Security.get_security_descriptor_sacl(self)
+            acl
+          end
         end
 
         def sacl_inherits?

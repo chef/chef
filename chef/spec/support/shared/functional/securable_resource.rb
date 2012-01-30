@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 
+# TODO test that these work when you are logged on as a user joined to a domain (rather than local computer)
+# TODO test that you can set users from other domains
+
 shared_examples_for "a securable resource" do
   context "security" do
     describe "unix-specific behavior" do
@@ -120,48 +123,84 @@ shared_examples_for "a securable resource" do
         end
       end
 
+      def descriptor
+        get_security_descriptor(resource.path)
+      end
+
       before(:each) do
         pending "SKIPPED - platform specific test" unless windows?
-        @expected_user_name = 'Administrator'
-        #SID of Administrator is S-1-23-domain-500
-        #domain will vary
-        @expected_group_name = 'Guests'
+        resource.run_action(:delete)
       end
 
-      it "should set a default owner of Administrators" do
-        #list of window's SIDs http://support.microsoft.com/kb/243330
-        #default set by the resource is:
-        #Administrators, SID S-1-5-32-544
-        #Administrators is the default owner for any object created
-        #by a member of the Administrators group
-        #if nothing is set
+      it "sets owner to the current user on create if owner is not specified" do
+        File.exist?(resource.path).should == false
         resource.run_action(:create)
-        descriptor = get_security_descriptor(resource.path)
-        #owner returns the SID of the owner, not the human readable name
-        descriptor.owner.to_s.should == 'S-1-5-32-544'
+        descriptor.owner.should == Chef::Win32::Security::SID.current_user
       end
 
-      it "should set an owner" do
-        resource.owner @expected_user_name
+      it "sets owner when owner is specified", :blah => true do
+        resource.owner 'Guest'
         resource.run_action(:create)
-        descriptor = get_security_descriptor(resource.path)
-        #regex has wildcards, b/c domain will vary
-        descriptor.owner.to_s.should match  /^S-1-5-21-.*-500$/
+        descriptor.owner.should == Chef::Win32::Security::SID.Guest
       end
 
-      it "should set a default group of Domain Users" do
-        #default set by the resource is:
-        #Domain Users, SID 1-5-21-domain-513
+      it "sets owner when owner is specified with a \\" do
+        resource.owner "#{ENV['USERDOMAIN']}\\Guest"
         resource.run_action(:create)
-        descriptor = get_security_descriptor(resource.path)
-        descriptor.group.to_s.should match /^S-1-5-21-.*-513$/
+        descriptor.owner.should == Chef::Win32::Security::SID.Guest
       end
 
-      it "should set a group" do
-        resource.group @expected_group_name
+      it "sets owner when owner is specified with an @" do
+        resource.owner "Guest@#{ENV['USERDOMAIN']}"
         resource.run_action(:create)
-        descriptor = get_security_descriptor(resource.path)
-        descriptor.group.to_s.should == 'S-1-5-32-546'
+        descriptor.owner.should == Chef::Win32::Security::SID.Guest
+      end
+
+      it "leaves owner alone if owner is not specified and resource already exists" do
+        # Set owner to Guest so it's not the same as the current user (which is the default on create)
+        resource.owner 'Guest'
+        resource.run_action(:create)
+        descriptor.owner.should == Chef::Win32::Security::SID.Guest
+
+        resource.owner nil
+        resource.run_action(:create)
+        descriptor.owner.should == Chef::Win32::Security::SID.Guest
+      end
+
+      it "sets group to None on create if group is not specified" do
+        resource.group.should == nil
+        File.exist?(resource.path).should == false
+        resource.run_action(:create)
+        descriptor.group.should == Chef::Win32::Security::SID.None
+      end
+
+      it "sets group when group is specified" do
+        resource.group 'Spelunkers'
+        resource.run_action(:create)
+        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+      end
+
+      it "sets group when group is specified with a \\" do
+        resource.group "#{ENV['COMPUTERNAME']}\\Everyone"
+        resource.run_action(:create)
+        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+      end
+
+      it "sets group when group is specified with an @" do
+        resource.group "Everyone@#{ENV['COMPUTERNAME']}"
+        resource.run_action(:create)
+        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+      end
+
+      it "leaves group alone if group is not specified and resource already exists" do
+        # Set group to Everyone so it's not the default (None)
+        resource.group 'Everyone'
+        resource.run_action(:create)
+        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+
+        resource.group nil
+        resource.run_action(:create)
+        descriptor.owner.should == Chef::Win32::Security::SID.Everyone
       end
 
       describe "should set permissions using the windows-only rights attribute" do
