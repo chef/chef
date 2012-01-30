@@ -168,8 +168,14 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
-        "run_list" => run_list,
-        "env_run_lists" => env_run_lists_without_default
+
+        #Render to_json correctly for run_list items (both run_list and evn_run_lists)
+        #so malformed json does not result
+        "run_list" => run_list.run_list.map { |item| item.to_s },
+        "env_run_lists" => env_run_lists_without_default.inject({}) do |accumulator, (k, v)|
+          accumulator[k] = v.map { |x| x.to_s }
+          accumulator
+        end
       }
       result["_rev"] = couchdb_rev if couchdb_rev
       result

@@ -161,7 +161,7 @@ describe Chef::Role do
     end
   end
 
-  describe "when serialized as JSON" do
+  describe "when serialized as JSON", :json => true do
     before(:each) do
       @role.name('mars_volta')
       @role.description('Great band!')
@@ -192,6 +192,8 @@ describe Chef::Role do
     end
 
     it "should include 'run_list'" do
+      #Activesupport messes with Chef json formatting
+      #This test should pass with and without activesupport
       @serialized_role.should =~ /"run_list":\["recipe\[one\]","recipe\[two\]","role\[a\]"\]/
     end
 
@@ -201,7 +203,9 @@ describe Chef::Role do
         @serialized_role = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@role), :create_additions => false)
       end
 
-      it "includes the per-environment run lists in the " do
+      it "includes the per-environment run lists" do
+        #Activesupport messes with Chef json formatting
+        #This test should pass with and without activesupport
         @serialized_role["env_run_lists"]["production"].should == ['role[monitoring]', 'role[auditing]', 'role[apache]']
         @serialized_role["env_run_lists"]["dev"].should == ["role[nginx]"]
       end
@@ -213,7 +217,7 @@ describe Chef::Role do
     end
   end
 
-  describe "when created from JSON" do
+  describe "when created from JSON", :json => true do
     before(:each) do
       @role.name('mars_volta')
       @role.description('Great band!')

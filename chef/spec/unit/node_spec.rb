@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+require 'ostruct'
 
 describe Chef::Node do
   before(:each) do
@@ -543,7 +544,7 @@ describe Chef::Node do
   end
 
   describe "json" do
-    it "should serialize itself as json" do
+    it "should serialize itself as json", :json => true do
       @node.find_file("test.example.com")
       json = Chef::JSONCompat.to_json(@node)
       json.should =~ /json_class/
@@ -555,7 +556,16 @@ describe Chef::Node do
       json.should =~ /run_list/
     end
 
-    it "should deserialize itself from json" do
+    it 'should serialze valid json with a run list', :json => true do
+      #This test came about because activesupport mucks with Chef json serialization
+      #Test should pass with and without Activesupport
+      @node.run_list << {"type" => "role", "name" => 'Cthulu'}
+      @node.run_list << {"type" => "role", "name" => 'Hastur'}
+      json = Chef::JSONCompat.to_json(@node)
+      json.should =~ /\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/
+    end
+
+    it "should deserialize itself from json", :json => true do
       @node.find_file("test.example.com")
       json = Chef::JSONCompat.to_json(@node)
       serialized_node = Chef::JSONCompat.from_json(json)
