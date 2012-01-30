@@ -76,7 +76,7 @@ class Chef
       def self.adjust_token_privileges(token, privileges)
         token = token.handle if token.respond_to?(:handle)
         old_privileges_size = FFI::Buffer.new(:long).write_long(privileges.size_with_privileges)
-        old_privileges = TOKEN_PRIVILEGES.new(FFI::Buffer.new(old_privileges_size.length))
+        old_privileges = TOKEN_PRIVILEGES.new(FFI::Buffer.new(old_privileges_size.read_long))
         unless AdjustTokenPrivileges(token.handle, false, privileges, privileges.size_with_privileges, old_privileges, old_privileges_size)
           Chef::Win32::Error.raise!
         end
