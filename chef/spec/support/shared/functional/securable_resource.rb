@@ -132,13 +132,13 @@ shared_examples_for "a securable resource" do
         resource.run_action(:delete)
       end
 
-      it "sets owner to the current user on create if owner is not specified" do
+      it "sets owner to Administrators on create if owner is not specified", :blah => true do
         File.exist?(resource.path).should == false
         resource.run_action(:create)
-        descriptor.owner.should == Chef::Win32::Security::SID.current_user
+        descriptor.owner.should == Chef::Win32::Security::SID.Administrators
       end
 
-      it "sets owner when owner is specified", :blah => true do
+      it "sets owner when owner is specified" do
         resource.owner 'Guest'
         resource.run_action(:create)
         descriptor.owner.should == Chef::Win32::Security::SID.Guest
