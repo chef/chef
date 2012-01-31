@@ -311,12 +311,16 @@ class Chef
               raise ArgumentError, msg
             end
             @gem_env = AlternateGemEnvironment.new(new_resource.gem_binary)
+            Chef::Log.debug("#{@new_resource} using gem '#{new_resource.gem_binary}'")
           elsif is_omnibus?
             # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
             # Default to installing somewhere more functional
-            @gem_env = AlternateGemEnvironment.new(find_gem_by_path)
+            gem_location = find_gem_by_path
+            @gem_env = AlternateGemEnvironment.new(gem_location)
+            Chef::Log.debug("#{@new_resource} using gem '#{gem_location}'")
           else
             @gem_env = CurrentGemEnvironment.new
+            Chef::Log.debug("#{@new_resource} using gem from running ruby environment")
           end
         end
 
