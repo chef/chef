@@ -312,7 +312,7 @@ class Chef
             end
             @gem_env = AlternateGemEnvironment.new(new_resource.gem_binary)
             Chef::Log.debug("#{@new_resource} using gem '#{new_resource.gem_binary}'")
-          elsif is_omnibus?
+          elsif is_omnibus? && (!@new_resource.instance_of? Chef::Resource::ChefGem)
             # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
             # Default to installing somewhere more functional
             gem_location = find_gem_by_path

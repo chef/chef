@@ -40,29 +40,13 @@ class Chef
         nil
       end
 
-      def action(arg=nil)
-        if arg
-          action_list = arg.kind_of?(Array) ? arg : [ arg ]
-          action_list = action_list.collect { |a| a.to_sym }
-          action_list.each do |action|
-            validate(
-              {
-                :action => action,
-              },
-              {
-                :action => { :kind_of => Symbol, :equal_to => @allowed_actions },
-              }
-            )
-          end
-
-          # chef_gem actions should run immediately so that the result affects the recipe evaluation
-          action_list.each do |action|
-            self.run_action(action)
-          end
-          @action = action_list
-        else
-          @action
+      def after_created
+        # Chef::Resource.run_action: Caveat: this skips Chef::Runner.run_action, where notifications are handled
+        # Action could be an array of symbols, but probably won't (think install + enable for a package)
+        Array(@action).each do |action|
+          self.run_action(action)
         end
+        Gem.clear_paths
       end
     end
   end
