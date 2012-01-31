@@ -500,6 +500,11 @@ F
       resource
     end
 
+    # Hook to allow a resource to run specific code after creation
+    def after_created
+      nil
+    end
+
     extend Chef::Mixin::ConvertToClassName
 
     def self.attribute(attr_name, validation_opts={})

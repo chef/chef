@@ -70,7 +70,11 @@ class Chef
           resource.source_line = caller[0]
           # Determine whether this resource is being created in the context of an enclosing Provider
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
+          # Evaluate resource attribute DSL
           resource.instance_eval(&block) if block
+
+          # Run optional resource hook
+          resource.after_created
 
           run_context.resource_collection.insert(resource)
           resource
