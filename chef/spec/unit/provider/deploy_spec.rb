@@ -382,6 +382,17 @@ describe Chef::Provider::Deploy do
     @provider.cleanup!
   end
 
+  it "removes all but a certain number of releases when the resource has a keep_releases" do
+    @resource.keep_releases 7
+    all_releases = ["/my/deploy/dir/20040815162342", "/my/deploy/dir/20040700000000",
+                    "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",
+                    "/my/deploy/dir/20040400000000", "/my/deploy/dir/20040300000000",
+                    "/my/deploy/dir/20040200000000", "/my/deploy/dir/20040100000000"].sort!
+    @provider.stub!(:all_releases).and_return(all_releases)
+    FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040100000000")
+    @provider.cleanup!
+  end
+
   it "fires a callback for :release_deleted when deleting an old release" do
     all_releases = ["/my/deploy/dir/20040815162342", "/my/deploy/dir/20040700000000",
                     "/my/deploy/dir/20040600000000", "/my/deploy/dir/20040500000000",

@@ -75,6 +75,7 @@ class Chef
         @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
         @additional_remotes = Hash[]
+        @keep_releases = 5
       end
 
       # where the checked out/cloned code goes
@@ -293,6 +294,14 @@ class Chef
           arg,
           :kind_of => [ Hash ]
         )
+      end
+
+       # The number of old release directories to keep around after cleanup
+      def keep_releases(arg=nil)
+        [set_or_return(
+          :keep_releases,
+          arg,
+          :kind_of => [ Integer ]), 1].max
       end
 
       # An array of paths, relative to your app's root, to be purged from a
