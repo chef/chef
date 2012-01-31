@@ -132,7 +132,7 @@ shared_examples_for "a securable resource" do
         resource.run_action(:delete)
       end
 
-      it "sets owner to Administrators on create if owner is not specified", :blah => true do
+      it "sets owner to Administrators on create if owner is not specified" do
         File.exist?(resource.path).should == false
         resource.run_action(:create)
         descriptor.owner.should == Chef::Win32::Security::SID.Administrators
@@ -142,6 +142,10 @@ shared_examples_for "a securable resource" do
         resource.owner 'Guest'
         resource.run_action(:create)
         descriptor.owner.should == Chef::Win32::Security::SID.Guest
+      end
+
+      it "fails to set owner when owner has invalid characters", :blah => true do
+        lambda { resource.owner 'Lance "The Nose" Glindenberry III' }.should raise_error#(Chef::Exceptions::ValidationFailed)
       end
 
       it "sets owner when owner is specified with a \\" do
@@ -178,6 +182,10 @@ shared_examples_for "a securable resource" do
         resource.group 'Spelunkers'
         resource.run_action(:create)
         descriptor.group.should == Chef::Win32::Security::SID.Everyone
+      end
+
+      it "fails to set group when group has invalid characters" do
+        lambda { resource.group 'Lance "The Nose" Glindenberry III' }.should raise_error(Chef::Exceptions::ValidationFailed)
       end
 
       it "sets group when group is specified with a \\" do

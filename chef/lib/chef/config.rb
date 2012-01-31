@@ -261,8 +261,11 @@ class Chef
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
     if RUBY_PLATFORM =~ /mswin|mingw|windows/
-      user_valid_regex [ /^[^"\/\\\[\]\:;|=,+*?<>]+$/ ]
-      group_valid_regex [ /^[^"\/\\\[\]\:;|=,+*?<>]+$/ ]
+      # From http://technet.microsoft.com/en-us/library/cc776019(WS.10).aspx
+
+      principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
+      user_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
+      group_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
     else
       user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
       group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
