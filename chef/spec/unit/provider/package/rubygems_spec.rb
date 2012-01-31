@@ -307,6 +307,8 @@ describe Chef::Provider::Package::Rubygems do
     @spec_version = @new_resource.version RSpec::Core::Version::STRING
     @run_context = Chef::RunContext.new(@node, {})
 
+    # We choose detect omnibus via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
+    RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/usr/bin/ruby")
     @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
   end
 
