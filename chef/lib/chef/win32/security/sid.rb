@@ -174,6 +174,9 @@ class Chef
         def self.Replicators
           SID.from_string_sid('S-1-5-32-552')
         end
+        def self.Administrators
+          SID.from_string_sid('S-1-5-32-544')
+        end
 
         # Machine-specific, well-known SIDs
         # TODO: don't use strings, dummy
