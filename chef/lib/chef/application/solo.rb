@@ -25,6 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'open-uri'
 require 'fileutils'
+require 'aws/s3'
 
 class Chef::Application::Solo < Chef::Application
 
