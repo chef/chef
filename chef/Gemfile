@@ -2,7 +2,12 @@ source :rubygems
 
 gemspec
 
-gem "dep_selector", :group => :development, :platform => "ruby"
+group :development do
+  gem 'dep_selector', :platform => "ruby"
+  gem 'rake'
+  gem 'sdoc'
+  gem 'ronn'
+end
 
 platforms :mswin, :mingw do
   gem "ffi", "1.0.9"

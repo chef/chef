@@ -82,7 +82,7 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          status = popen4("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}") do |pid, stdin, stdout, stderr|
+          status = popen4("emerge --ignore-default-opts --color n --nospinner --search @#{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             available, installed = parse_emerge(@new_resource.package_name, stdout.read)
             @candidate_version = available
           end
@@ -105,7 +105,7 @@ class Chef
           end
 
           run_command_with_systems_locale(
-            :command => "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
+            :command => "emerge --ignore-default-opts --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
 
@@ -121,7 +121,7 @@ class Chef
           end
 
           run_command_with_systems_locale(
-            :command => "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
+            :command => "emerge --ignore-default-opts --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
           )
         end
 
