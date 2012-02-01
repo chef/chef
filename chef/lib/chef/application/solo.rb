@@ -164,8 +164,19 @@ class Chef::Application::Solo < Chef::Application
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
-        open(Chef::Config[:recipe_url]) do |r|
-          f.write(r.read)
+        if Chef::Config[:recipe_url].start_with? "s3://"
+          AWS::S3::Base.establish_connection!(
+              :access_key_id     => Chef::Config[:aws_key],
+              :secret_access_key => Chef::Config[:aws_secret_key]
+          )
+          AWS::S3::DEFAULT_HOST.replace Chef::Config[:s3_host]
+          s3_uri = URI.parse(Chef::Config[:recipe_url])
+          obj = AWS::S3::S3Object.find s3_uri.path[1..-1], s3_uri.host
+          f.write obj.value
+        else
+          open(Chef::Config[:recipe_url]) do |r|
+            f.write(r.read)
+          end
         end
       end
       Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
