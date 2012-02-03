@@ -76,4 +76,28 @@ describe Chef::Resource::File do
     lambda { @resource.path Hash.new }.should raise_error(ArgumentError)
   end
 
+  describe "when it has a path, owner, group, mode, and checksum" do
+    before do
+      @resource.path("/tmp/foo.txt")
+      @resource.owner("root")
+      @resource.group("wheel")
+      @resource.mode("0644")
+      @resource.checksum("1" * 64)
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:owner].should == "root"
+      state[:group].should == "wheel"
+      state[:mode].should == "0644"
+      state[:checksum].should == "1" * 64
+    end
+
+    it "returns the file path as its identity" do
+      @resource.identity.should == "/tmp/foo.txt"
+    end
+
+  end
+
+
 end

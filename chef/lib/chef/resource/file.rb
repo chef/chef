@@ -26,6 +26,11 @@ class Chef
     class File < Chef::Resource
       include Chef::Mixin::Securable
 
+      identity_attr :path
+
+      # TODO: fix for windows :/
+      state_attrs :checksum, :owner, :group, :mode
+
       provides :file, :on_platforms => :all
 
       def initialize(name, run_context=nil)
@@ -37,6 +42,7 @@ class Chef
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
       end
+
 
       def content(arg=nil)
         set_or_return(
