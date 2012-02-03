@@ -62,6 +62,34 @@ describe Chef::Resource do
     end
   end
 
+  describe "when no identity attribute has been declared" do
+    before do
+      @resource_sans_id = Chef::Resource.new("my-name")
+    end
+
+    # Would rather force identity attributes to be set for everything,
+    # but that's not plausible for back compat reasons.
+    it "uses the name as the identity" do
+      @resource_sans_id.identity.should == "my-name"
+    end
+  end
+
+  describe "when an identity attribute has been declared" do
+    before do
+      @file_resource_class = Class.new(Chef::Resource) do
+        identity_attr :path
+        attr_accessor :path
+      end
+
+      @file_resource = @file_resource_class.new("identity-attr-test")
+      @file_resource.path = "/tmp/foo.txt"
+    end
+
+    it "gives the value of its identity attribute" do
+      @file_resource.identity.should == "/tmp/foo.txt"
+    end
+  end
+
   describe "when declaring state attributes" do
     it "has no state_attrs by default" do
       Chef::Resource.state_attrs.should be_empty

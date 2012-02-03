@@ -169,12 +169,25 @@ F
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
 
+    # Returns a Hash of attribute => value for the state attributes declared in
+    # the resource's class definition.
     def state
       self.class.state_attrs.inject({}) do |state_attrs, attr_name|
         state_attrs[attr_name] = send(attr_name)
         state_attrs
       end
     end
+
+    # Returns the value of the identity attribute, if declared. Falls back to
+    # #name if no identity attribute is declared.
+    def identity
+      if identity_attr = self.class.identity_attr
+        send(identity_attr)
+      else
+        name
+      end
+    end
+
 
     def updated=(true_or_false)
       Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
