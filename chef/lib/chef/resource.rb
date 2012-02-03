@@ -80,6 +80,49 @@ F
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
 
+
+    # Set or return the list of "state attributes" implemented by the Resource
+    # subclass. State attributes are attributes that describe the desired state
+    # of the system, such as file permissions or ownership. In general, state
+    # attributes are attributes that could be populated by examining the state
+    # of the system (e.g., File.stat can tell you the permissions on an
+    # existing file). Contrarily, attributes that are not "state attributes"
+    # usually modify the way Chef itself behaves, for example by providing
+    # additional options for a package manager to use when installing a
+    # package.
+    #
+    # This list is used by the Chef client auditing system to extract
+    # information from resources to describe changes made to the system.
+    def self.state_attrs(*attr_names)
+      @state_attrs ||= []
+      @state_attrs = attr_names unless attr_names.empty?
+
+      # Return *all* state_attrs that this class has, including inherited ones
+      if superclass.respond_to?(:state_attrs)
+        superclass.state_attrs + @state_attrs
+      else
+        @state_attrs
+      end
+    end
+
+    # Set or return the "identity attribute" for this resource class. This is
+    # generally going to be the "name attribute" for this resource. In other
+    # words, the resource type plus this attribute uniquely identify a given
+    # bit of state that chef manages. For a File resource, this would be the
+    # path, for a package resource, it will be the package name. This will show
+    # up in chef-client's audit records as a searchable field.
+    def self.identity_attr(attr_name=nil)
+      @identity_attr ||= nil
+      @identity_attr = attr_name if attr_name
+
+      # If this class doesn't have an identity attr, we'll defer to the superclass:
+      if @identity_attr || !superclass.respond_to?(:identity_attr)
+        @identity_attr
+      else
+        superclass.identity_attr
+      end
+    end
+
     attr_accessor :params
     attr_accessor :provider
     attr_accessor :allowed_actions
@@ -124,6 +167,13 @@ F
       @source_line = nil
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
+    end
+
+    def state
+      self.class.state_attrs.inject({}) do |state_attrs, attr_name|
+        state_attrs[attr_name] = send(attr_name)
+        state_attrs
+      end
     end
 
     def updated=(true_or_false)
