@@ -88,7 +88,8 @@ describe Chef::Mixin::Command do
 
       describe "when a process detaches but doesn't close STDOUT and STDERR [CHEF-584]" do
         it "returns successfully" do
-          lambda {Timeout.timeout(2) do
+          # CHEF-2916 might have added a slight delay here, or our CI infrastructure is burdened. Bumping timeout from 2 => 4 -- btm
+          lambda {Timeout.timeout(4) do
             evil_forker="exit if fork; 10.times { sleep 1}"
             run_command(:command => "ruby -e '#{evil_forker}'")
           end}.should_not raise_error
