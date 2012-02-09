@@ -197,6 +197,8 @@ class Chef
     # Where should chef-solo look for role files?
     role_path platform_specific_path("/var/chef/roles")
 
+    data_bag_path platform_specific_path("/var/chef/data_bags")
+
     # Where should chef-solo download recipes from?
     recipe_url nil
 
