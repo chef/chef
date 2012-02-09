@@ -22,10 +22,12 @@ class Chef
   module Mixin
     module LanguageIncludeRecipe
 
+      @reload = false
+
       def include_recipe(*recipe_names)
         result_recipes = Array.new
         recipe_names.flatten.each do |recipe_name|
-          if node.run_state[:seen_recipes].has_key?(recipe_name)
+          if !@reload && node.run_state[:seen_recipes].has_key?(recipe_name)
             Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
             next
           end
@@ -43,6 +45,11 @@ class Chef
       end
 
       def require_recipe(*args)
+        include_recipe(*args)
+      end
+
+      def reload_recipe(*args)
+        @reload = true
         include_recipe(*args)
       end
 
