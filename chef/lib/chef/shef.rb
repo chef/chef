@@ -144,7 +144,7 @@ module Shef
 
   def self.greeting
     " #{Etc.getlogin}@#{Shef.session.node.fqdn}"
-  rescue NameError
+  rescue NameError, ArgumentError
     ""
   end
 
