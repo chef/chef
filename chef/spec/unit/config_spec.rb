@@ -159,5 +159,9 @@ describe Chef::Config do
     it "Chef::Config[:ssl_ca_file] defaults to nil" do
       Chef::Config[:ssl_ca_file].should be_nil
     end
+
+    it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
+      Chef::Config[:data_bag_path].should == "/var/chef/data_bags"
+    end
   end
 end
