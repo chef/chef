@@ -49,7 +49,7 @@ describe Chef::Mixin::Command do
       end
 
       it "should end when the child process reads from STDIN and a block is given" do
-        lambda {Timeout.timeout(2) do
+        lambda {Timeout.timeout(4) do
             popen4("ruby -e 'while gets; end'", :waitlast => true) do |pid, stdin, stdout, stderr|
               (1..5).each { |i| stdin.puts "#{i}" }
             end
@@ -60,7 +60,7 @@ describe Chef::Mixin::Command do
       describe "when a process detaches but doesn't close STDOUT and STDERR [CHEF-584]" do
 
         it "returns immediately after the first child process exits" do
-          lambda {Timeout.timeout(2) do
+          lambda {Timeout.timeout(4) do
             pid, stdin,stdout,stderr = nil,nil,nil,nil
             evil_forker="exit if fork; 10.times { sleep 1}"
             popen4("ruby -e '#{evil_forker}'") do |pid,stdin,stdout,stderr|
