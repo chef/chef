@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Package
       class Portage < Chef::Provider::Package
-        PACKAGE_NAME_PATTERN = %r{(([^/]+)/)?([^/]+)}
+        PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -32,7 +32,7 @@ class Chef
 
           @current_resource.version(nil)
 
-          _, category_with_slash, category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name).to_a
+          category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
 
           possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| d.sub(%r{/var/db/pkg/}, "") }
           versions = possibilities.map do |entry|
@@ -43,7 +43,10 @@ class Chef
 
           if versions.size > 1
             atoms = versions.map {|v| v.first }.sort
-            raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+            categories = atoms.map {|v| v.split('/')[0] }.uniq
+            if !category && categories.size > 1
+              raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+            end
           elsif versions.size == 1
             @current_resource.version(versions.first.last)
             Chef::Log.debug("#{@new_resource} current version #{$1}")
