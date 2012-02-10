@@ -27,8 +27,26 @@ class Chef
         
         def initialize(new_resource, run_context)
           super
-          @init_command = "/usr/sbin/invoke-rc.d #{@new_resource.service_name}"
+          # cause chef to fail for policy violations
+          if @new_resource.error_on_policy_violation
+            @init_command = "/usr/sbin/invoke-rc.d --disclose-deny #{@new_resource.service_name}"
+          else
+            @init_command = "/usr/sbin/invoke-rc.d #{@new_resource.service_name}"
+          end
+          @policy_command = "/usr/sbin/policy-rc.d #{@new_resource.service_name}"
+          if ::File.exists?("/usr/sbin/policy-rc.d")
+             test_policy()
+          end
         end
+       
+        def test_policy
+          policy_status = run_command(:command => "#{@policy_command} start", :ignore_failure => "true")
+          if policy_status != 0 
+             Chef::Log.warn("#{@policy_command} returned non-zero(#{policy_status}) exit status")
+             Chef::Log.warn("#{@new_resource} will likely fail to start/stop silently")
+          end
+        end 
+
       end
     end
   end
