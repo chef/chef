@@ -71,11 +71,11 @@ describe Chef::Provider::Package::Dpkg do
       end
     end
 
-    it "gets the source package name from dpkg-deb correctly when the package name has `-' or `+' characters" do
-      @stdout = StringIO.new("foo-pkg++2\t1.11.4-1ubuntu1")
+    it "gets the source package name from dpkg-deb correctly when the package name has `-', `+' or `.' characters" do
+      @stdout = StringIO.new("f.o.o-pkg++2\t1.11.4-1ubuntu1")
       @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       @provider.load_current_resource
-      @provider.current_resource.package_name.should == "foo-pkg++2"
+      @provider.current_resource.package_name.should == "f.o.o-pkg++2"
     end
 
     it "should raise an exception if the source is not set but we are installing" do
