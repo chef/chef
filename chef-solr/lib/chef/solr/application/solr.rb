@@ -28,6 +28,8 @@ class Chef
     class Application
       class Solr < Chef::Application
 
+        attr_accessor :logfile
+
         option :config_file,
           :short => "-c CONFIG",
           :long  => "--config CONFIG",
@@ -213,21 +215,22 @@ class Chef
             command << " -jar #{File.join(Chef::Config[:solr_jetty_path], 'start.jar')}"
             Chef::Log.info("Starting Solr with #{command}")
 
-            # Opened earlier before we dropped privileges
-            if @logfile
-              # Don't need it anymore
-              Chef::Log.close
-
-              STDOUT.reopen(@logfile)
-              STDERR.reopen(@logfile)
-            end
+            # Opened earlier before we dropped privileges, don't need it anymore
+            close_and_reopen_log_file if @logfile
 
             Kernel.exec(command)
 
           end
         end
+
+        def close_and_reopen_log_file
+          Chef::Log.close
+
+          STDOUT.reopen(@logfile)
+          STDERR.reopen(@logfile)
+        end
+
       end
     end
   end
 end
-
