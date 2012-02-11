@@ -21,6 +21,7 @@ require File.dirname(__FILE__) + '/lib/chef/solr/version'
 require 'rubygems'
 require 'rake'
 require 'rubygems/package_task'
+require '../chef/tasks/rspec.rb'
 
 spec = eval(File.read(File.dirname(__FILE__) + "/chef-solr.gemspec"))
 
@@ -62,4 +63,4 @@ RDoc::Task.new do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-
+task :default => :spec
