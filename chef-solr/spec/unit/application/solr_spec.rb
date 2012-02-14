@@ -42,23 +42,58 @@ describe Chef::Solr::Application::Solr do
 
   end
 
+  describe 'solr_config_file_path' do
+    it 'should return the default solr config path' do
+      subject.solr_config_file_path.should == '/var/chef/solr/conf/solrconfig.xml'
+    end
+
+    context 'with a custom solr home path' do
+      it 'should return the solr config path' do
+        Chef::Config.stub(:[]).with(:solr_home_path).
+                               and_return('/opt/chef/solr')
+        subject.solr_config_file_path.should == '/opt/chef/solr/conf/solrconfig.xml'
+      end
+    end
+
+  end
+
   describe 'schema_document' do
     before do
       @schema_path = '/opt/chef/solr/conf/schema.xml'
-      @file = stub
       subject.stub :schema_file_path => @schema_path
+      @doc_contents = '<?xml version="1.0" encoding="UTF-8" ?><foo>bar</foo>'
     end
 
     it 'should read the schema file at the correct path' do
       REXML::Document.stub(:new)
-      File.should_receive(:open).with(@schema_path, 'r').and_yield(@file)
+      File.should_receive(:open).with(@schema_path, 'r').
+                                 and_yield(@doc_contents)
       subject.schema_document
     end
 
     it 'should return the schema' do
-      File.stub(:open).and_yield(@file)
-      REXML::Document.should_receive(:new).and_return('foo bar schema')
-      subject.schema_document.should == 'foo bar schema'
+      File.stub(:open).and_yield(@doc_contents)
+      subject.schema_document.should be_a REXML::Document
+    end
+  end
+
+  describe 'config_document' do
+    before do
+      @solr_config_path = '/opt/chef/solr/conf/solrconfig.xml'
+      subject.stub :solr_config_file_path => @solr_config_path
+      @doc_contents = '<?xml version="1.0" encoding="UTF-8" ?><foo>bar</foo>'
+    end
+
+    it 'should read the config file at the correct path' do
+      REXML::Document.stub(:new)
+      File.should_receive(:open).with(@solr_config_path, 'r').
+                                 and_yield(@doc_contents)
+      subject.config_document
+    end
+
+    it 'should return an REXML document' do
+      File.stub(:open).and_yield(@doc_contents)
+      subject.config_document.should be_a REXML::Document
     end
   end
 
@@ -71,6 +106,26 @@ describe Chef::Solr::Application::Solr do
 
       subject.schema_attributes["name"].should == 'chef'
       subject.schema_attributes["version"].should == '1.2'
+    end
+  end
+
+  describe 'solr_main_index_elements' do
+    before do
+      doc_contents = '<?xml version="1.0" encoding="UTF-8" ?>'
+      doc_contents << '<config><mainIndex>'
+      doc_contents << '<maxFieldLength>10000</maxFieldLength>'
+      doc_contents << '</mainIndex></config>'
+      subject.stub(:config_document).
+              and_return(REXML::Document.new(doc_contents))
+    end
+
+    it 'should return a collection of the REXML elements' do
+      subject.solr_main_index_elements.each { |e| e.should be_a REXML::Element }
+    end
+
+    it 'should return the correct elements' do
+      subject.solr_main_index_elements.first.name.should == 'maxFieldLength'
+      subject.solr_main_index_elements.first.text.should == '10000'
     end
   end
 
@@ -88,13 +143,38 @@ describe Chef::Solr::Application::Solr do
     end
   end
 
+  describe 'solr_main_index_max_field_length' do
+    before do
+      @elements = [ REXML::Element.new('useCompoundFile').add_text('false'),
+                    REXML::Element.new('ramBufferSizeMB').add_text('32'),
+                    REXML::Element.new('maxFieldLength').add_text('10000') ]
+      subject.stub :solr_main_index_elements => @elements
+    end
+
+    it 'should return the value of maxFieldLimit as an integer' do
+      subject.solr_main_index_max_field_length.should == 10000
+    end
+
+    context 'if unable to find the maxFieldLimit' do
+      before do
+        elements = @elements.select { |e| e.name != 'maxFieldLength' }
+        subject.stub :solr_main_index_elements => elements
+      end
+
+      it 'should return nil' do
+        subject.solr_main_index_max_field_length.should be_nil
+      end
+    end
+
+  end
+
   describe 'valid_schema_name?' do
     it 'should return true if the schema name matches' do
       subject.stub :solr_schema_name => Chef::Solr::SCHEMA_NAME
       subject.valid_schema_name?.should be_true
     end
 
-    it 'should return false if the schema name does not matche' do
+    it 'should return false if the schema name does not match' do
       subject.stub :solr_schema_name => 'foo'
       subject.valid_schema_name?.should be_false
     end
@@ -106,10 +186,35 @@ describe Chef::Solr::Application::Solr do
       subject.valid_schema_version?.should be_true
     end
 
-    it 'should return false if the version name does not matche' do
+    it 'should return false if the version name does not match' do
       subject.stub :solr_schema_version => '-1.0'
       subject.valid_schema_version?.should be_false
     end
+  end
+
+  describe 'check_value_of_main_index_max_field_length' do
+    it 'should log a warning if it is set to <= 10000' do
+      subject.stub :solr_main_index_max_field_length => 10000
+      pattern = /maxFieldLimit.+set to.+recommended to increase this value/
+      Chef::Log.should_receive(:warn).with(pattern)
+      subject.check_value_of_main_index_max_field_length
+    end
+
+    it 'should not log a warning if it is set to > 10000' do
+      subject.stub :solr_main_index_max_field_length => 10001
+      Chef::Log.should_not_receive(:warn)
+      subject.check_value_of_main_index_max_field_length
+    end
+
+    context 'if it is not set' do
+      it 'should log a warning if it is not set' do
+        subject.stub :solr_main_index_max_field_length => nil
+        Chef::Log.should_receive(:warn).
+                  with(/Unable to determine the maxFieldLimit for the mainIndex/)
+        subject.check_value_of_main_index_max_field_length
+      end
+    end
+
   end
 
   describe 'solr_home_exists?' do
@@ -273,7 +378,7 @@ describe Chef::Solr::Application::Solr do
 
     end
 
-    context 'when schema name and version are valid' do
+    context 'when the schema name and version are valid' do
       before do
         ['name', 'version'].each do |item|
           subject.stub "valid_schema_#{item}?".to_sym => true
@@ -294,13 +399,22 @@ describe Chef::Solr::Application::Solr do
 
     it 'should see if solr is installed' do
       subject.stub :assert_valid_schema!
+      subject.stub :check_value_of_main_index_max_field_length
       subject.should_receive :assert_solr_installed!
       subject.setup_application
     end
 
     it 'should see if the schema is valid' do
       subject.stub :assert_solr_installed!
+      subject.stub :check_value_of_main_index_max_field_length
       subject.should_receive :assert_valid_schema!
+      subject.setup_application
+    end
+
+    it 'should check the maxFieldLimit setting' do
+      subject.stub :assert_solr_installed!
+      subject.stub :assert_valid_schema!
+      subject.should_receive :check_value_of_main_index_max_field_length
       subject.setup_application
     end
 
@@ -308,6 +422,7 @@ describe Chef::Solr::Application::Solr do
       before do
         subject.stub :assert_solr_installed!
         subject.stub :assert_valid_schema!
+        subject.stub :check_value_of_main_index_max_field_length
       end
 
       context 'with -L or --logfile' do
