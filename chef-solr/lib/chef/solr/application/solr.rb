@@ -122,6 +122,9 @@ class Chef
           @schema_file_path ||= File.join(Chef::Config[:solr_home_path], 'conf', 'schema.xml')
         end
 
+        def solr_config_file_path
+          @solr_config_file_path ||= File.join(Chef::Config[:solr_home_path], 'conf', 'solrconfig.xml')
+        end
 
         def schema_document
           @schema_document ||= begin
@@ -131,8 +134,21 @@ class Chef
           end
         end
 
+        def config_document
+          @config_document ||=begin
+            File.open(solr_config_file_path, 'r') do |xmlsux|
+              REXML::Document.new(xmlsux)
+            end
+          end
+        end
+
         def schema_attributes
           @schema_attributes ||= REXML::XPath.first(schema_document, '/schema').attributes
+        end
+
+        def solr_main_index_elements
+          location = '/config/mainIndex/'
+          @solr_main_index_elements ||= REXML::XPath.first(config_document, location).elements
         end
 
         def solr_schema_name
@@ -143,12 +159,34 @@ class Chef
           schema_attributes["version"]
         end
 
+        def solr_main_index_max_field_length
+          @solr_main_index_max_field_length ||=begin
+            field_length_el = solr_main_index_elements.select do |el|
+              el.name == 'maxFieldLength'
+            end
+
+            field_length_el.empty? ? nil : field_length_el.first.text.to_i
+          end
+        end
+
         def valid_schema_name?
           solr_schema_name == Chef::Solr::SCHEMA_NAME
         end
 
         def valid_schema_version?
           solr_schema_version == Chef::Solr::SCHEMA_VERSION
+        end
+
+        def check_value_of_main_index_max_field_length
+          if solr_main_index_max_field_length
+            unless solr_main_index_max_field_length > 10000
+              message  = "The maxFieldLimit for the mainIndex is set to #{solr_main_index_max_field_length}.  "
+              message << "It's recommended to increase this value (in #{solr_config_file_path})."
+              Chef::Log.warn message
+            end
+          else
+            Chef::Log.warn "Unable to determine the maxFieldLimit for the mainIndex (in #{solr_config_file_path})"
+          end
         end
 
         def solr_home_exist?
@@ -187,6 +225,7 @@ class Chef
         def setup_application
           assert_solr_installed!
           assert_valid_schema!
+          check_value_of_main_index_max_field_length
 
           # Need to redirect stdout and stderr so Java process inherits them.
           # If -L wasn't specified, Chef::Config[:log_location] will be an IO
