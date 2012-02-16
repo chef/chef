@@ -58,6 +58,11 @@ describe Chef::Resource::Mdadm do
     @resource.level.should eql(1)
   end
 
+  it "should allow you to set the metadata attribute" do
+    @resource.metadata "1.2"
+    @resource.metadata.should eql("1.2")
+  end
+
   it "should allow you to set the devices attribute" do
     @resource.devices ["/dev/sda", "/dev/sdb"]
     @resource.devices.should eql(["/dev/sda", "/dev/sdb"])
