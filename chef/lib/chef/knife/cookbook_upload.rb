@@ -105,6 +105,7 @@ class Chef
             rescue Exceptions::CookbookNotFoundInRepo => e
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
+              exit 1
             end
           end
         end
@@ -173,6 +174,7 @@ WARNING
         when "409"
           ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
           Log.debug(e)
+          exit 1
         else
           raise
         end
