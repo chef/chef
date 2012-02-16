@@ -45,7 +45,7 @@ class Chef
           # parent directories are also removed from the purge list
           directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
           for i in 0..directories.length-1
-            files_to_purge.delete(File.join(directories[0..i]))
+            files_to_purge.delete(::File.join(directories[0..i]))
           end
         end
         purge_unmanaged_files(files_to_purge)
