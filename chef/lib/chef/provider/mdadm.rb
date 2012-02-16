@@ -26,7 +26,7 @@ class Chef
 
       #include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
-      
+
       def popen4
         raise Exception, "deprecated, bitches"
       end
@@ -51,7 +51,7 @@ class Chef
 
       def action_create
         unless @current_resource.exists
-          command = "yes | mdadm --create #{@new_resource.raid_device} --chunk=#{@new_resource.chunk} --level #{@new_resource.level} --raid-devices #{@new_resource.devices.length} #{@new_resource.devices.join(" ")}"
+          command = "yes | mdadm --create #{@new_resource.raid_device} --chunk=#{@new_resource.chunk} --level #{@new_resource.level} --metadata=#{@new_resource.metadata} --raid-devices #{@new_resource.devices.length} #{@new_resource.devices.join(" ")}"
           Chef::Log.debug("#{@new_resource} mdadm command: #{command}")
           #pid, stdin, stdout, stderr = popen4(command)
           shell_out!(command)
