@@ -290,14 +290,31 @@ class Chef
 
     def configure_chef
       unless config[:config_file]
-        if self.class.chef_config_dir
-          candidate_config = File.expand_path('knife.rb',self.class.chef_config_dir)
-          config[:config_file] = candidate_config if File.exist?(candidate_config)
+        candidate_configs = []
+
+        # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
+        if ENV['KNIFE_HOME']
+          candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
         end
-        # If we haven't set a config yet and $HOME is set, and the home
-        # knife.rb exists, use it:
-        if (!config[:config_file]) && ENV['HOME'] && File.exist?(File.join(ENV['HOME'], '.chef', 'knife.rb'))
-          config[:config_file] = File.join(ENV['HOME'], '.chef', 'knife.rb')
+        # Look for $PWD/knife.rb
+        if Dir.pwd
+          candidate_configs << File.join(Dir.pwd, 'knife.rb')
+        end
+        # Look for $UPWARD/.chef/knife.rb
+        if self.class.chef_config_dir
+          candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
+        end
+        # Look for $HOME/.chef/knife.rb
+        if ENV['HOME']
+          candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
+        end
+
+        candidate_configs.each do | candidate_config |
+          candidate_config = File.expand_path(candidate_config)
+          if File.exist?(candidate_config)
+            config[:config_file] = candidate_config
+            break
+          end
         end
       end
 
