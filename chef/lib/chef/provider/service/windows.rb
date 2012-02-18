@@ -18,12 +18,16 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/service/simple'
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/service'
 end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
+
+  include Chef::Mixin::ShellOut
+
   RUNNING = 'running'
   STOPPED = 'stopped'
   AUTO_START = 'auto start'
@@ -31,7 +35,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   def load_current_resource
     @current_resource = Chef::Resource::Service.new(@new_resource.name)
-    @current_resource.service_name(@new_resource.service_name)    
+    @current_resource.service_name(@new_resource.service_name)
     @current_resource.running(current_state == RUNNING)
     Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
     @current_resource.enabled(start_type == AUTO_START)
