@@ -21,6 +21,10 @@ class Chef
   class Knife
     class CookbookSiteDownload < Knife
 
+      deps do
+        require 'fileutils'
+      end
+
       banner "knife cookbook site download COOKBOOK [VERSION] (options)"
       category "cookbook site"
 
@@ -80,7 +84,7 @@ class Chef
         noauth_rest.sign_on_redirect = false
         tf = noauth_rest.get_rest desired_cookbook_data["file"], true
 
-        FileUtils.cp tf.path, download_location
+        ::FileUtils.cp tf.path, download_location
         ui.info "Cookbook saved: #{download_location}"
       end
 
