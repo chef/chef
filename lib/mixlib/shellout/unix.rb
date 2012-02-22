@@ -185,7 +185,7 @@ module Mixlib
         end
       rescue Errno::EAGAIN
       rescue EOFError
-        open_pipes.delete_at(0)
+        open_pipes.delete(child_stdout)
       end
 
       def read_stderr_to_buffer
@@ -194,7 +194,7 @@ module Mixlib
         end
       rescue Errno::EAGAIN
       rescue EOFError
-        open_pipes.delete_at(1)
+        open_pipes.delete(child_stderr)
       end
 
       def fork_subprocess
