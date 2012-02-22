@@ -337,6 +337,23 @@ describe Mixlib::ShellOut do
       cmd.run_command
       cmd.stdout.should == "true"
     end
+
+    it "doesn't hang when STDOUT is closed before STDERR" do
+      # Regression test:
+      # We need to ensure that stderr is removed from the list of file
+      # descriptors that we attempt to select() on in the case that:
+      # a) STDOUT closes first
+      # b) STDERR closes
+      # c) The program does not exit for some time after (b) occurs.
+      # Otherwise, we will attempt to read from the closed STDOUT pipe over and
+      # over again and generate lots of garbage, which will not be collected
+      # since we have to turn GC off to avoid segv.
+      cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1 STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
+      cmd.run_command
+      unclosed_pipes = cmd.send(:open_pipes)
+      unclosed_pipes.should be_empty
+    end
+
   end
 
   it "formats itself for exception messages" do
