@@ -21,8 +21,6 @@ class Chef
   class Knife
     class CookbookSiteDownload < Knife
 
-      attr_reader :version
-
       banner "knife cookbook site download COOKBOOK [VERSION] (options)"
       category "cookbook site"
 
@@ -36,31 +34,71 @@ class Chef
         :description => "Force download deprecated version"
 
       def run
-        current = noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{name_args[0]}")
-        if current["deprecated"] == true
-          replacement = File.basename(current["replacement"])
-          ui.warn("DEPRECATION: This cookbook has been deprecated. It has been replaced by #{replacement}.")
+        if current_cookbook_deprecated?
+          message = 'DEPRECATION: This cookbook has been deprecated. '
+          message << "It has been replaced by #{replacement_cookbook}."
+          ui.warn message
+
           unless config[:force]
-            ui.warn("Use --force to force download deprecated cookbook.")
+            ui.warn 'Use --force to force download deprecated cookbook.'
             return
           end
         end
-        cookbook_data = if @name_args.length == 1
-                          noauth_rest.get_rest(current["latest_version"])
-                        else
-                          noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
-                        end
 
-        @version = cookbook_data['version']
-        unless config[:file]
-          config[:file] = File.join(Dir.pwd, "#{@name_args[0]}-#{cookbook_data['version']}.tar.gz")
+        download_cookbook
+      end
+
+      private
+      def cookbooks_api_url
+        'http://cookbooks.opscode.com/api/v1/cookbooks'
+      end
+
+      def current_cookbook_data
+        @current_cookbook_data ||= begin
+          noauth_rest.get_rest "#{cookbooks_api_url}/#{@name_args[0]}"
         end
-        ui.info("Downloading #{@name_args[0]} from the cookbooks site at version #{cookbook_data['version']} to #{config[:file]}")
-        noauth_rest.sign_on_redirect = false
-        tf = noauth_rest.get_rest(cookbook_data["file"], true)
+      end
 
-        FileUtils.cp(tf.path, config[:file])
-        ui.info("Cookbook saved: #{config[:file]}")
+      def current_cookbook_deprecated?
+        current_cookbook_data['deprecated'] == true
+      end
+
+      def desired_cookbook_data
+        @desired_cookbook_data ||= begin
+          uri = if @name_args.length == 1
+            current_cookbook_data['latest_version']
+          else
+            specific_cookbook_version_url
+          end
+
+          noauth_rest.get_rest uri
+        end
+      end
+
+      def download_cookbook
+        ui.info "Downloading #{@name_args[0]} from the cookbooks site at version #{version} to #{download_location}"
+        noauth_rest.sign_on_redirect = false
+        tf = noauth_rest.get_rest desired_cookbook_data["file"], true
+
+        FileUtils.cp tf.path, download_location
+        ui.info "Cookbook saved: #{download_location}"
+      end
+
+      def download_location
+        config[:file] ||= File.join Dir.pwd, "#{@name_args[0]}-#{version}.tar.gz"
+        config[:file]
+      end
+
+      def replacement_cookbook
+        replacement = File.basename(current_cookbook_data['replacement'])
+      end
+
+      def specific_cookbook_version_url
+        "#{cookbooks_api_url}/#{@name_args[0]}/versions/#{@name_args[1].gsub('.', '_')}"
+      end
+
+      def version
+        @version = desired_cookbook_data['version']
       end
 
     end
