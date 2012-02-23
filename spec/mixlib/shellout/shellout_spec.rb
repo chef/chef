@@ -348,7 +348,7 @@ describe Mixlib::ShellOut do
       # Otherwise, we will attempt to read from the closed STDOUT pipe over and
       # over again and generate lots of garbage, which will not be collected
       # since we have to turn GC off to avoid segv.
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1 STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
+      cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
       cmd.run_command
       unclosed_pipes = cmd.send(:open_pipes)
       unclosed_pipes.should be_empty
