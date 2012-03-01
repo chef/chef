@@ -46,6 +46,18 @@ describe Chef::Knife::Ssh do
       end
     end
 
+    context "when knife[:ssh_identity_file] is set and frozen" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_identity_file] = "~/.ssh/aws.rsa".freeze
+      end
+
+      it "uses the ssh_identity_file" do
+        @knife.run
+        @knife.config[:identity_file].should == "~/.ssh/aws.rsa"
+      end
+    end
+
     context "when -i is provided" do
       before do
         setup_knife(['-i ~/.ssh/aws.rsa', '*:*', 'uptime'])
@@ -82,6 +94,18 @@ describe Chef::Knife::Ssh do
       before do
         setup_knife(['*:*', 'uptime'])
         Chef::Config[:knife][:ssh_user] = "ubuntu"
+      end
+
+      it "uses the ssh_user" do
+        @knife.run
+        @knife.config[:ssh_user].should == "ubuntu"
+      end
+    end
+
+    context "when knife[:ssh_user] is set and frozen" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_user] = "ubuntu".freeze
       end
 
       it "uses the ssh_user" do
