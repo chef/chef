@@ -23,6 +23,7 @@ require 'tiny_server'
 describe Chef::Knife::Ssh do
 
   before(:all) do
+    Chef::Knife::Ssh.load_deps
     Thin::Logging.silent = true
     @server = TinyServer::Manager.new
     @server.start
@@ -133,7 +134,7 @@ describe Chef::Knife::Ssh do
       end
     end
 
-    context "when knife[:ssh_attribte] is not provided]" do
+    context "when knife[:ssh_attribute] is not provided]" do
       before do
         setup_knife(['*:*', 'uptime'])
         Chef::Config[:knife][:ssh_attribute] = nil
