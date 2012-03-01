@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
 
   %w(rdoc sdoc ronn rake rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
 
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "< 2.9.0" }
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.8.0" }
 
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife shef )
