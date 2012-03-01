@@ -23,11 +23,14 @@ describe Chef::Resource::Directory do
 
   let(:directory_base) { "directory_spec" }
 
-  let!(:resource) do
+  def create_resource
     Chef::Resource::Directory.new(path)
   end
 
+  let!(:resource) do
+  	create_resource
+  end
+
   it_behaves_like "a directory resource"
-  it_behaves_like "a securable resource"
 
 end

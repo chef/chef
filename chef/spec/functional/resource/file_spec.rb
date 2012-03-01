@@ -24,14 +24,17 @@ describe Chef::Resource::File do
   let(:file_base) { "file_spec" }
   let(:expected_content) { "Don't fear the ruby." }
 
-  let!(:resource) do
+  def create_resource
     resource = Chef::Resource::File.new(path)
     resource.content(expected_content)
     resource
   end
 
+  let!(:resource) do
+    create_resource
+  end
+
   it_behaves_like "a file resource"
-  it_behaves_like "a securable resource"
 
   context "when the target file does not exist" do
     it "it creates the file when the :touch action is run" do

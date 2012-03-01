@@ -109,6 +109,17 @@ shared_examples_for "a file resource" do
       File.should_not exist(path)
     end
   end
+
+  # Set up the context for security tests
+  def allowed_acl(sid, expected_perms)
+    [ ACE.access_allowed(sid, expected_perms[:specific]) ]
+  end
+
+  def denied_acl(sid, expected_perms)
+    [ ACE.access_denied(sid, expected_perms[:specific]) ]
+  end
+
+  it_behaves_like "a securable resource"
 end
 
 shared_context Chef::Resource::File  do
