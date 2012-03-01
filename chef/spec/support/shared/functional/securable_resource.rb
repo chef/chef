@@ -309,6 +309,32 @@ shared_examples_for "a securable resource" do
 
           explicit_aces.should == [ ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_WRITE | Security::FILE_GENERIC_EXECUTE | Security::DELETE) ]
         end
+
+        it "respects the owner, group and everyone bits of mode" do
+          resource.mode 0754
+          resource.owner 'Guest'
+          resource.group 'Administrators'
+          resource.run_action(:create)
+
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_WRITE | Security::FILE_GENERIC_EXECUTE | Security::DELETE),
+            ACE.access_allowed(SID.Administrators, Security::FILE_GENERIC_READ | Security::FILE_GENERIC_EXECUTE),
+            ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_READ)
+          ]
+        end
+
+        it "respects the individual read, write and execute bits of mode" do
+          resource.mode 0421
+          resource.owner 'Guest'
+          resource.group 'Administrators'
+          resource.run_action(:create)
+
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, Security::FILE_GENERIC_READ),
+            ACE.access_allowed(SID.Administrators, Security::FILE_GENERIC_WRITE | Security::DELETE),
+            ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_EXECUTE)
+          ]
+        end
       end
 
     end
