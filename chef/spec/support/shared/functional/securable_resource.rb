@@ -21,6 +21,9 @@
 # TODO test that you can set users from other domains
 
 shared_examples_for "a securable resource" do
+  SID = Chef::Win32::Security::SID
+  ACE = Chef::Win32::Security::ACE
+
   context "security" do
     describe "unix-specific behavior" do
       before(:each) do
@@ -71,14 +74,22 @@ shared_examples_for "a securable resource" do
       end
 
       def read_perms
+        Chef::Win32::API::Security::FILE_GENERIC_READ
+      end
+
+      def read_execute_perms
         Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
       end
 
       def write_perms
-        Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
+        Chef::Win32::API::Security::FILE_GENERIC_WRITE
       end
 
-      def all_access_perms
+      def modify_perms
+        Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::Win32::API::Security::DELETE
+      end
+
+      def full_control_perms
         Chef::Win32::API::Security::FILE_ALL_ACCESS
       end
 
@@ -86,25 +97,8 @@ shared_examples_for "a securable resource" do
         Chef::Win32::Security.get_named_security_info(path)
       end
 
-      def get_ace(user, path)
-          descriptor = get_security_descriptor(path)
-          acl = descriptor.dacl
-          wanted_ace = []
-
-          acl.each do |ace|
-            # the acl can have more than one ace - only interested in
-            # the one that applies to the test
-            # regex maybe too permissive
-            if ace.sid.account_name.match /.*#{user}.*/
-             wanted_ace << ace
-            end
-          end
-
-          if wanted_ace.size == 1
-            wanted_ace.pop
-          else
-            wanted_ace
-          end
+      def explicit_aces
+        descriptor.dacl.select { |ace| ace.explicit? }
       end
 
       def extract_ace_properties(aces)
@@ -144,7 +138,7 @@ shared_examples_for "a securable resource" do
         descriptor.owner.should == Chef::Win32::Security::SID.Guest
       end
 
-      it "fails to set owner when owner has invalid characters", :blah => true do
+      it "fails to set owner when owner has invalid characters" do
         lambda { resource.owner 'Lance "The Nose" Glindenberry III' }.should raise_error#(Chef::Exceptions::ValidationFailed)
       end
 
@@ -154,34 +148,29 @@ shared_examples_for "a securable resource" do
         descriptor.owner.should == Chef::Win32::Security::SID.Guest
       end
 
-      it "sets owner when owner is specified with an @" do
-        resource.owner "Guest@#{ENV['USERDOMAIN']}"
-        resource.run_action(:create)
-        descriptor.owner.should == Chef::Win32::Security::SID.Guest
-      end
-
       it "leaves owner alone if owner is not specified and resource already exists" do
         # Set owner to Guest so it's not the same as the current user (which is the default on create)
+        resource.owner.should == nil
         resource.owner 'Guest'
         resource.run_action(:create)
-        descriptor.owner.should == Chef::Win32::Security::SID.Guest
+        descriptor.owner.should == SID.Guest
 
         resource.owner nil
         resource.run_action(:create)
-        descriptor.owner.should == Chef::Win32::Security::SID.Guest
+        descriptor.owner.should == SID.Guest
       end
 
       it "sets group to None on create if group is not specified" do
         resource.group.should == nil
         File.exist?(resource.path).should == false
         resource.run_action(:create)
-        descriptor.group.should == Chef::Win32::Security::SID.None
+        descriptor.group.should == SID.None
       end
 
       it "sets group when group is specified" do
-        resource.group 'Spelunkers'
+        resource.group 'Everyone'
         resource.run_action(:create)
-        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+        descriptor.group.should == SID.Everyone
       end
 
       it "fails to set group when group has invalid characters" do
@@ -189,114 +178,106 @@ shared_examples_for "a securable resource" do
       end
 
       it "sets group when group is specified with a \\" do
-        resource.group "#{ENV['COMPUTERNAME']}\\Everyone"
-        resource.run_action(:create)
-        descriptor.group.should == Chef::Win32::Security::SID.Everyone
-      end
-
-      it "sets group when group is specified with an @" do
-        resource.group "Everyone@#{ENV['COMPUTERNAME']}"
-        resource.run_action(:create)
-        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+        pending "Need to find a group containing a backslash that is on most peoples' machines" do
+          resource.group "#{ENV['COMPUTERNAME']}\\Administrators"
+          resource.run_action(:create)
+          descriptor.group.should == SID.Everyone
+        end
       end
 
       it "leaves group alone if group is not specified and resource already exists" do
         # Set group to Everyone so it's not the default (None)
         resource.group 'Everyone'
         resource.run_action(:create)
-        descriptor.group.should == Chef::Win32::Security::SID.Everyone
+        descriptor.group.should == SID.Everyone
 
         resource.group nil
         resource.run_action(:create)
-        descriptor.owner.should == Chef::Win32::Security::SID.Everyone
+        descriptor.group.should == SID.Everyone
       end
 
       describe "should set permissions using the windows-only rights attribute" do
 
-        it "should set read rights" do
+        it "correctly sets :read rights", :blah => true do
           resource.rights(:read, 'Guest')
           resource.run_action(:create)
-          ace = get_ace('Guest', resource.path)
-          mask = read_perms
-          ace_type = allow_type
-          flags = 0
-          ace.should have_expected_properties(mask, ace_type, flags)
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, read_perms)
+          ]
         end
 
-        it "should set write rights" do
+        it "correctly sets :read_execute rights" do
+          resource.rights(:read_execute, 'Guest')
+          resource.run_action(:create)
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, read_execute_perms)
+          ]
+        end
+
+        it "correctly sets :write rights" do
           resource.rights(:write, 'Guest')
           resource.run_action(:create)
-          ace = get_ace('Guest', resource.path)
-          mask = write_perms
-          ace_type = allow_type
-          flags = 0
-          ace.should have_expected_properties(mask, ace_type, flags)
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, write_perms)
+          ]
         end
 
-        it "should set full control rights" do
+        it "correctly sets :modify rights" do
+          resource.rights(:modify, 'Guest')
+          resource.run_action(:create)
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, modify_perms)
+          ]
+        end
+
+        it "correctly sets :full_control rights" do
           resource.rights(:full_control, 'Guest')
           resource.run_action(:create)
-          ace = get_ace('Guest', resource.path)
-          mask = all_access_perms
-          ace_type = allow_type
-          flags = 0
-          ace.should have_expected_properties(mask, ace_type, flags)
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Guest, full_control_perms)
+          ]
         end
 
-        it "should set deny rights" do
+        it "correctly sets deny_rights", :blah => true do
           # deny is an ACE with full rights, but is a deny type ace, not an allow type
-          resource.rights(:deny, 'Guest')
+          resource.deny_rights(:full_control, 'Guest')
           resource.run_action(:create)
-          ace = get_ace('Guest', resource.path)
-          mask = all_access_perms
-          ace_type = deny_type
-          flags = 0
-          ace.should have_expected_properties(mask, ace_type, flags)
+          explicit_aces.should == [
+            ACE.access_denied(SID.Guest, full_control_perms)
+          ]
         end
 
-        it "should set writes cumulatively" do
-          resource.rights(:read, 'Guest')
-          resource.rights(:write, 'Guest')
+        it "Sets multiple rights" do
+          resource.rights(:read, 'Everyone')
+          resource.rights(:modify, 'Guest')
           resource.run_action(:create)
 
-          write_ace = { :mask => write_perms, :type => allow_type, :flags => 0 }
-          read_ace = { :mask => read_perms, :type => allow_type, :flags => 0 }
-          expected_aces = [ read_ace, write_ace ]
-
-          aces = get_ace('Guest', resource.path)
-
-          ace_properties = extract_ace_properties(aces)
-          ace_properties.size.should == expected_aces.size
-
-          expected_aces.each do |expected_ace|
-            ace_properties.should include expected_ace
-          end
+          explicit_aces.should == [
+            ACE.access_allowed(SID.Everyone, read_perms),
+            ACE.access_allowed(SID.Guest, modify_perms)
+          ]
         end
 
-        it "should have deny rights trump other writes when set cumulatively" do
-          #when setting deny and any other writes, all of the ACEs are created
-          #but windows knows that deny trumps
-          #the only way to test is that we set all teh aces correctly - by
-          #making sure they are all there. The rest is dependend on windows
-          #behavior
-          resource.rights(:read, 'Guest')
-          resource.rights(:write, 'Guest')
-          resource.rights(:deny, 'Guest')
+        it "Sets deny_rights ahead of rights" do
+          resource.rights(:read, 'Everyone')
+          resource.deny_rights(:modify, 'Guest')
           resource.run_action(:create)
 
-          write_ace = { :mask => write_perms, :type => allow_type, :flags => 0 }
-          read_ace = { :mask => read_perms, :type => allow_type, :flags => 0 }
-          deny_ace = { :mask => all_access_perms, :type => deny_type, :flags => 0 }
-          expected_aces = [ read_ace, write_ace, deny_ace]
+          explicit_aces.should == [
+            ACE.access_denied(SID.Guest, modify_perms),
+            ACE.access_allowed(SID.Everyone, read_perms)
+          ]
+        end
 
-          aces = get_ace('Guest', resource.path)
+        it "Sets deny_rights ahead of rights when specified in reverse order" do
+          resource.deny_rights(:modify, 'Guest')
+          resource.rights(:read, 'Everyone')
+          resource.run_action(:create)
 
-          ace_properties = extract_ace_properties(aces)
-          ace_properties.size.should == expected_aces.size
-
-          expected_aces.each do |expected_ace|
-            ace_properties.should include expected_ace
-          end
+          explicit_aces.should == [
+            ACE.access_denied(SID.Guest, modify_perms),
+            ACE.access_allowed(SID.Everyone, read_perms)
+          ]
         end
 
       end
@@ -304,27 +285,23 @@ shared_examples_for "a securable resource" do
       it "should set permissions in string form as an octal number using mode" do
         #on windows, mode cannot modify owner and/or group permissons
         #unless the owner and/or group as appropriate is specified
-        mode_string = '400'
-        owner_string = 'Guest'
-        resource.mode mode_string
-        resource.owner owner_string
+        resource.mode '400'
+        resource.owner 'Guest'
         resource.run_action(:create)
-        ace = get_ace('Guest', resource.path)
-        ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ
-        ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
-        ace.flags.should == 0
+
+        explicit_aces.should == [
+          ACE.access_allowed(SID.Guest, Chef::Win32::API::Security::FILE_GENERIC_READ)
+        ]
       end
 
       it "should set permissions in numeric form as a ruby-interpreted octal using mode" do
-        mode_integer = 0700
-        owner_string = 'Guest'
-        resource.mode mode_integer
-        resource.owner owner_string
+        resource.mode 0700
+        resource.owner 'Guest'
         resource.run_action(:create)
-        ace = get_ace('Guest', resource.path)
-        ace.mask.should == Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE
-        ace.type.should == Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE
-        ace.flags.should == 0
+
+        explicit_aces.should == [
+          ACE.access_allowed(SID.Guest, Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::Win32::API::Security::DELETE)
+        ]
       end
 
     end
