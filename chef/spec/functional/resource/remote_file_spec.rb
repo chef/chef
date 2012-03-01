@@ -25,12 +25,15 @@ describe Chef::Resource::RemoteFile do
   let(:source) { 'http://opscode-chef-spec-data.s3.amazonaws.com/integration/remote_file/nyan_cat.png' }
   let(:expected_content) { IO.read(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png')) }
 
-  let!(:resource) do
+  def create_resource
     resource = Chef::Resource::RemoteFile.new(path)
     resource.source(source)
     resource
   end
 
+  let!(:resource) do
+    create_resource
+  end
+
   it_behaves_like "a file resource"
-  it_behaves_like "a securable resource"
 end

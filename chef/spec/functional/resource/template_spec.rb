@@ -31,7 +31,7 @@ describe Chef::Resource::Template do
     node
   end
 
-  let!(:resource) do
+  def create_resource
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_repo) }
     cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo))
@@ -42,8 +42,11 @@ describe Chef::Resource::Template do
     resource
   end
 
+  let!(:resource) do
+    create_resource
+  end
+
   it_behaves_like "a file resource"
-  it_behaves_like "a securable resource"
 
   context "when the target file does not exist" do
     it "creates the template with the rendered content using the variable attribute when the :create action is run" do

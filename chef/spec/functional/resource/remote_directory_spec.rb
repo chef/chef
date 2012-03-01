@@ -23,7 +23,7 @@ describe Chef::Resource::RemoteDirectory do
 
   let(:directory_base) { "directory_spec" }
 
-  let!(:resource) do
+  def create_resource
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_repo) }
     node = Chef::Node.new
@@ -36,8 +36,11 @@ describe Chef::Resource::RemoteDirectory do
     resource
   end
 
+  let!(:resource) do
+    create_resource
+  end
+
   it_behaves_like "a directory resource"
-  it_behaves_like "a securable resource"
 
   context "when creating the remote directory" do
     it "transfers the directory with all contents" do
