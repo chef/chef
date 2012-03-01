@@ -86,7 +86,7 @@ shared_examples_for "a securable resource" do
       end
 
       def modify_perms
-        Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::Win32::API::Security::DELETE
+        Chef::Win32::API::Security::FILE_GENERIC_READ | Chef::Win32::API::Security::FILE_GENERIC_WRITE | Chef::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::Win32::API::Security::DELETE
       end
 
       def full_control_perms
@@ -282,7 +282,7 @@ shared_examples_for "a securable resource" do
 
       end
 
-      it "should set permissions in string form as an octal number using mode" do
+      it "should set permissions in string form as an octal number using" do
         #on windows, mode cannot modify owner and/or group permissons
         #unless the owner and/or group as appropriate is specified
         resource.mode '400'
