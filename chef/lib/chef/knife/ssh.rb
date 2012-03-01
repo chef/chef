@@ -323,15 +323,19 @@ class Chef
         exec(csshx_cmd)
       end
 
+      def get_stripped_unfrozen_value(value)
+        return nil if value.nil?
+        value.strip
+      end
+
       def configure_user
-        config[:ssh_user] = (config[:ssh_user] ||
+        config[:ssh_user] = get_stripped_unfrozen_value(config[:ssh_user] ||
                              Chef::Config[:knife][:ssh_user])
-        config[:ssh_user].strip! unless config[:ssh_user].nil?
       end
 
       def configure_identity_file
-        config[:identity_file] = (config[:identity_file] || Chef::Config[:knife][:ssh_identity_file])
-        config[:identity_file].strip! unless config[:identity_file].nil?
+        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] || 
+                             Chef::Config[:knife][:ssh_identity_file])
       end
 
       def run
