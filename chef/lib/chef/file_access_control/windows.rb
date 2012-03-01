@@ -185,7 +185,7 @@ class Chef
       end
 
       def target_dacl
-        return nil if resource.rights.nil? && resource.mode.nil?
+        return nil if resource.rights.nil? && resource.deny_rights.nil? && resource.mode.nil?
         acls = nil
 
         if !resource.deny_rights.nil?
