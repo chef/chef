@@ -28,6 +28,14 @@ class Chef
         @resource_name = :apt_package
         @provider = Chef::Provider::Package::Apt
       end
+
+      def force_yes(arg=nil)
+        set_or_return(
+          :force_yes,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
       
     end
   end
