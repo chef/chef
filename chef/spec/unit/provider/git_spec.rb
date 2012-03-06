@@ -135,7 +135,17 @@ SHAS
   it "runs a clone command with default git options" do
     @resource.user "deployNinja"
     @resource.ssh_wrapper "do_it_this_way.sh"
-    expected_cmd = 'git clone  git://github.com/opscode/chef.git /my/deploy/dir'
+    expected_cmd = "git clone  'git://github.com/opscode/chef.git' '/my/deploy/dir'"
+    @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
+                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
+    @provider.clone
+  end
+
+  it "runs a clone command with escaped destination" do
+    @resource.user "deployNinja"
+    @resource.destination "/Application Support/with/space"
+    @resource.ssh_wrapper "do_it_this_way.sh"
+    expected_cmd = "git clone  'git://github.com/opscode/chef.git' '/Application Support/with/space'"
     @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
                                                 :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.clone
@@ -143,14 +153,14 @@ SHAS
 
   it "compiles a clone command using --depth for shallow cloning" do
     @resource.depth 5
-    expected_cmd = 'git clone --depth 5 git://github.com/opscode/chef.git /my/deploy/dir'
+    expected_cmd = "git clone --depth 5 'git://github.com/opscode/chef.git' '/my/deploy/dir'"
     @provider.should_receive(:shell_out!).with(expected_cmd, {:log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
   end
 
   it "compiles a clone command with a remote other than ``origin''" do
     @resource.remote "opscode"
-    expected_cmd = 'git clone -o opscode git://github.com/opscode/chef.git /my/deploy/dir'
+    expected_cmd = "git clone -o opscode 'git://github.com/opscode/chef.git' '/my/deploy/dir'"
     @provider.should_receive(:shell_out!).with(expected_cmd, {:log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
   end
