@@ -79,6 +79,11 @@ EXPECTED
     it "starts chef in the configured environment" do
       @context.start_chef.should == '/usr/bin/chef-client -j /etc/chef/first-boot.json -E prodtastic'
     end
+
+    it "uses alternate chef-client location if specified" do
+      @context.start_chef('/usr/local/bin/chef-client').should == '/usr/local/bin/chef-client -j /etc/chef/first-boot.json -E prodtastic'
+    end
+
   end
 
   describe "when installing a prerelease version of chef" do
