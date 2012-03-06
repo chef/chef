@@ -346,8 +346,10 @@ F
       end << ">"
     end
 
-    # Serialize this object as a hash
-    def to_json(*a)
+    # as_json does most of the to_json heavy lifted. It exists here in case activesupport
+    # is loaded. activesupport will call as_json and skip over to_json. This ensure
+    # json is encoded as expected
+    def as_json(*a)
       safe_ivars = instance_variables.map { |ivar| ivar.to_sym } - FORBIDDEN_IVARS
       instance_vars = Hash.new
       safe_ivars.each do |iv|
@@ -357,6 +359,11 @@ F
         'json_class' => self.class.name,
         'instance_vars' => instance_vars
       }
+    end
+
+    # Serialize this object as a hash
+    def to_json(*a)
+      results = as_json
       results.to_json(*a)
     end
 
