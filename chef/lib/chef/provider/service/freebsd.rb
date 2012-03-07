@@ -104,6 +104,34 @@ class Chef
           @current_resource
         end
 
+        def start_service
+          if @new_resource.start_command
+            super
+          else
+            run_command(:command => "#{@init_command} faststart")
+          end
+        end
+
+        def stop_service
+          if @new_resource.stop_command
+            super
+          else
+            run_command(:command => "#{@init_command} faststop")
+          end
+        end
+
+        def restart_service
+          if @new_resource.restart_command
+            super
+          elsif @new_resource.supports[:restart]
+            run_command(:command => "#{@init_command} fastrestart")
+          else
+            stop_service
+            sleep 1
+            start_service
+          end
+        end
+
         def read_rc_conf
           ::File.open("/etc/rc.conf", 'r') { |file| file.readlines }
         end
