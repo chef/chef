@@ -30,16 +30,13 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     @provider = Chef::Provider::Service::Simple.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
-    @status = mock("Status", :exitstatus => 0)
-    @provider.stub!(:popen4).and_return(@status)
-    @stdin = StringIO.new
     @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
 aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
 NOMOCKINGSTRINGSPLZ
-    @stderr = StringIO.new
-    @pid = mock("PID")
+    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+    @provider.stub!(:shell_out!).and_return(@status)
   end
   
   it "should create a current resource with the name of the new resource" do
@@ -63,33 +60,36 @@ NOMOCKINGSTRINGSPLZ
   end
 
   describe "when we have a 'ps' attribute" do
-    it "should popen4 the node's ps command" do
-      @provider.should_receive(:popen4).with(@node[:command][:ps]).and_return(@status)
+    it "should shell_out! the node's ps command" do
+      @provider.should_receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
     end
 
     it "should read stdout of the ps command" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub!(:shell_out!).and_return(@status)
       @stdout.should_receive(:each_line).and_return(true)
       @provider.load_current_resource
     end
 
     it "should set running to true if the regex matches the output" do
-      @stdout.stub!(:each_line).and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 chef").
-                                and_yield("aj        7842  5057  0 21:26 pts/2    00:00:06 poos")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
+aj        7842  5057  0 21:26 pts/2    00:00:06 chef
+aj        7842  5057  0 21:26 pts/2    00:00:06 poos
+NOMOCKINGSTRINGSPLZ
+      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @provider.stub!(:shell_out!).and_return(@status)
       @provider.load_current_resource 
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the regex doesn't match" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.stub!(:shell_out!).and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
-      @status.stub!(:exitstatus).and_return(-1)
+      @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
   end
@@ -103,7 +103,7 @@ NOMOCKINGSTRINGSPLZ
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.stub!(:start_command).and_return("#{@new_resource.start_command}")
-      @provider.should_receive(:run_command).with({:command => "#{@new_resource.start_command}"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("#{@new_resource.start_command}")
       @provider.start_service()
     end
 
@@ -115,7 +115,7 @@ NOMOCKINGSTRINGSPLZ
   describe "when stopping a service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/themadness stop")
-      @provider.should_receive(:run_command).with({:command => "/etc/init.d/themadness stop"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/etc/init.d/themadness stop")
       @provider.stop_service()
     end
 
@@ -127,7 +127,7 @@ NOMOCKINGSTRINGSPLZ
   describe Chef::Provider::Service::Simple, "restart_service" do
     it "should call the restart command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/foo restart")
-      @provider.should_receive(:run_command).with({:command => "/etc/init.d/foo restart"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/etc/init.d/foo restart")
       @provider.restart_service()
     end
 
@@ -142,7 +142,7 @@ NOMOCKINGSTRINGSPLZ
   describe Chef::Provider::Service::Simple, "reload_service" do
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
-      @provider.should_receive(:run_command).with({:command => "kill -9 1"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("kill -9 1")
       @provider.reload_service()
     end
   end

@@ -150,7 +150,7 @@ PS_SAMPLE
     describe "when starting the service" do
       it "should call the start command if one is specified" do
         @new_resource.start_command("/etc/rc.d/chef startyousillysally")
-        @provider.should_receive(:run_command).with({:command => "/etc/rc.d/chef startyousillysally"}).and_return(0)
+        @provider.should_receive(:shell_out!).with("/etc/rc.d/chef startyousillysally")
         @provider.load_current_resource
         @provider.start_service()
       end
@@ -165,7 +165,7 @@ PS_SAMPLE
     describe Chef::Provider::Service::Init, "stop_service" do
       it "should call the stop command if one is specified" do
         @new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
-        @provider.should_receive(:run_command).with({:command => "/etc/init.d/chef itoldyoutostop"}).and_return(0)
+        @provider.should_receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop")
         @provider.load_current_resource
         @provider.stop_service()
       end
@@ -187,7 +187,7 @@ PS_SAMPLE
 
       it "should call the restart_command if one has been specified" do
         @new_resource.restart_command("/etc/init.d/chef restartinafire")
-        @provider.should_receive(:run_command).with({:command => "/etc/init.d/chef restartinafire"}).and_return(0)
+        @provider.should_receive(:shell_out!).with("/etc/init.d/chef restartinafire")
         @provider.load_current_resource
         @provider.restart_service()
       end

@@ -29,8 +29,8 @@ describe Chef::Provider::Service::Gentoo do
     
     @provider = Chef::Provider::Service::Gentoo.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
-    @provider.stub!(:run_command).with(:command => "/etc/init.d/chef status").and_return(true)
+    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+    @provider.stub!(:shell_out).and_return(@status)
     File.stub!(:exists?).with("/etc/init.d/chef").and_return(true)
     File.stub!(:exists?).with("/sbin/rc-update").and_return(true)
     File.stub!(:exists?).with("/etc/runlevels/default/chef").and_return(false)
