@@ -44,7 +44,12 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   it "runs chef with the first-boot.json in the _default environment" do
-    @context.start_chef.should == "/usr/bin/chef-client -j /etc/chef/first-boot.json -E _default"
+    @context.start_chef.should == "chef-client -j /etc/chef/first-boot.json -E _default"
+  end
+
+  it "it runs chef-client from another path when specified" do
+    @chef_config[:chef_client_path] = '/usr/local/bin/chef-client'
+    @context.start_chef.should == "/usr/local/bin/chef-client -j /etc/chef/first-boot.json -E _default"
   end
 
   it "reads the validation key" do
@@ -77,7 +82,7 @@ EXPECTED
     end
 
     it "starts chef in the configured environment" do
-      @context.start_chef.should == '/usr/bin/chef-client -j /etc/chef/first-boot.json -E prodtastic'
+      @context.start_chef.should == 'chef-client -j /etc/chef/first-boot.json -E prodtastic'
     end
   end
 

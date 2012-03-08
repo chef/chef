@@ -80,7 +80,9 @@ CONFIG
         end
 
         def start_chef
-          s = "/usr/bin/chef-client -j /etc/chef/first-boot.json"
+          # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
+          client_path = @chef_config[:chef_client_path] || 'chef-client'
+          s = "#{client_path} -j /etc/chef/first-boot.json"
           s << " -E #{bootstrap_environment}" if chef_version.to_f != 0.9 # only use the -E option on Chef 0.10+
           s
         end
