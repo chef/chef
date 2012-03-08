@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/service'
 require 'chef/mixin/command'
 
@@ -23,6 +24,8 @@ class Chef
   class Provider
     class Service
       class Freebsd < Chef::Provider::Service::Init
+
+        include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
@@ -40,22 +43,22 @@ class Chef
 
           if @new_resource.supports[:status]
             begin
-              if run_command(:command => "#{@init_command} status") == 0
+              if shell_out("#{@init_command} status").exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
-            rescue Chef::Exceptions::Exec
+            rescue Mixlib::ShellOut::ShellCommandFailed
               @current_resource.running false
               nil
             end
 
           elsif @new_resource.status_command
             begin
-              if run_command(:command => @new_resource.status_command) == 0
+              if shell_out(@new_resource.status_command).exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
-            rescue Chef::Exceptions::Exec
+            rescue Mixlib::ShellOut::ShellCommandFailed
               @current_resource.running false
               nil
             end
@@ -67,21 +70,20 @@ class Chef
               raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'ps' attribute"
             end
 
-            status = popen4(node[:command][:ps]) do |pid, stdin, stdout, stderr|
-              r = Regexp.new(@new_resource.pattern)
-              Chef::Log.debug("#{@new_resource} attempting to match #{@new_resource.pattern} (#{r}) against process table")
-              stdout.each_line do |line|
+            r = Regexp.new(@new_resource.pattern)
+            Chef::Log.debug("#{@new_resource} attempting to match #{@new_resource.pattern} (#{r}) against process table")
+
+            begin
+              shell_out!(node[:command][:ps]).stdout.each_line do |line|
                 if r.match(line)
                   @current_resource.running true
                   break
                 end
               end
               @current_resource.running false unless @current_resource.running
-            end
-            unless status.exitstatus == 0
-              raise Chef::Exceptions::Service, "Command #{node[:command][:ps]} failed"
-            else
               Chef::Log.debug("#{@new_resource} #{node[:command][:ps]} exited and parsed successfully, process running: #{@current_resource.running}")
+            rescue Mixlib::ShellOut::ShellCommandFailed
+              raise Chef::Exceptions::Service, "Command #{node[:command][:ps]} failed"
             end
           end
 
@@ -108,7 +110,7 @@ class Chef
           if @new_resource.start_command
             super
           else
-            run_command(:command => "#{@init_command} faststart")
+            shell_out!("#{@init_command} faststart")
           end
         end
 
@@ -116,7 +118,7 @@ class Chef
           if @new_resource.stop_command
             super
           else
-            run_command(:command => "#{@init_command} faststop")
+            shell_out!("#{@init_command} faststop")
           end
         end
 
@@ -124,7 +126,7 @@ class Chef
           if @new_resource.restart_command
             super
           elsif @new_resource.supports[:restart]
-            run_command(:command => "#{@init_command} fastrestart")
+            shell_out!("#{@init_command} fastrestart")
           else
             stop_service
             sleep 1
