@@ -41,51 +41,7 @@ class Chef
           end
           Chef::Log.debug("#{@current_resource} found at #{@init_command}")
 
-          if @new_resource.supports[:status]
-            begin
-              if shell_out("#{@init_command} status").exitstatus == 0
-                @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
-              end
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              @current_resource.running false
-              nil
-            end
-
-          elsif @new_resource.status_command
-            begin
-              if shell_out(@new_resource.status_command).exitstatus == 0
-                @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
-              end
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              @current_resource.running false
-              nil
-            end
-
-          else
-            Chef::Log.debug("#{@new_resource} does not support status and you have not specified a status command, falling back to process table inspection")
-
-            if node[:command][:ps].nil? or node[:command][:ps].empty?
-              raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'ps' attribute"
-            end
-
-            r = Regexp.new(@new_resource.pattern)
-            Chef::Log.debug("#{@new_resource} attempting to match #{@new_resource.pattern} (#{r}) against process table")
-
-            begin
-              shell_out!(node[:command][:ps]).stdout.each_line do |line|
-                if r.match(line)
-                  @current_resource.running true
-                  break
-                end
-              end
-              @current_resource.running false unless @current_resource.running
-              Chef::Log.debug("#{@new_resource} #{node[:command][:ps]} exited and parsed successfully, process running: #{@current_resource.running}")
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              raise Chef::Exceptions::Service, "Command #{node[:command][:ps]} failed"
-            end
-          end
+          determine_current_status!
 
           if ::File.exists?("/etc/rc.conf")
             read_rc_conf.each do |line|
