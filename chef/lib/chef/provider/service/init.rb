@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
@@ -24,7 +25,9 @@ class Chef
   class Provider
     class Service
       class Init < Chef::Provider::Service::Simple
-        
+
+        include Chef::Mixin::ShellOut
+
         def initialize(new_resource, run_context)
           super
           @init_command = "/etc/init.d/#{@new_resource.service_name}"
@@ -34,7 +37,7 @@ class Chef
           if @new_resource.start_command
             super
           else
-            run_command(:command => "#{@init_command} start")
+            shell_out!("#{@init_command} start")
           end
         end
 
@@ -42,7 +45,7 @@ class Chef
           if @new_resource.stop_command
             super
           else
-            run_command(:command => "#{@init_command} stop")
+            shell_out!("#{@init_command} stop")
           end
         end
 
@@ -50,7 +53,7 @@ class Chef
           if @new_resource.restart_command
             super
           elsif @new_resource.supports[:restart]
-            run_command(:command => "#{@init_command} restart")
+            shell_out!("#{@init_command} restart")
           else
             stop_service
             sleep 1
@@ -62,7 +65,7 @@ class Chef
           if @new_resource.reload_command
             super
           elsif @new_resource.supports[:reload]
-            run_command(:command => "#{@init_command} reload")
+            shell_out!("#{@init_command} reload")
           end
         end
       end

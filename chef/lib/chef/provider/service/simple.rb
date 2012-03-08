@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/service'
 require 'chef/mixin/command'
 
@@ -23,6 +24,9 @@ class Chef
   class Provider
     class Service
       class Simple < Chef::Provider::Service
+
+        include Chef::Mixin::ShellOut
+
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
@@ -30,11 +34,11 @@ class Chef
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
             begin
-              if run_command(:command => @new_resource.status_command) == 0
+              if shell_out(@new_resource.status_command).exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
-            rescue Chef::Exceptions::Exec
+            rescue Mixlib::ShellOut::ShellCommandFailed
               @current_resource.running false
               nil
             end
@@ -43,11 +47,11 @@ class Chef
             Chef::Log.debug("#{@new_resource} supports status, running")
 
             begin
-              if run_command(:command => "#{@init_command} status") == 0
+              if shell_out("#{@init_command} status").exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
-            rescue Chef::Exceptions::Exec
+            rescue Mixlib::ShellOut::ShellCommandFailed
               @current_resource.running false
               nil
             end
@@ -56,21 +60,20 @@ class Chef
             if ps_cmd.nil? or ps_cmd.empty?
               raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
             end
-            status = popen4(ps_cmd) do |pid, stdin, stdout, stderr|
-              r = Regexp.new(@new_resource.pattern)
-              Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
-              stdout.each_line do |line|
+
+            r = Regexp.new(@new_resource.pattern)
+            Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
+            begin
+              shell_out!(ps_cmd).stdout.each_line do |line|
                 if r.match(line)
                   @current_resource.running true
                   break
                 end
               end
               @current_resource.running false unless @current_resource.running
-            end
-            unless status.exitstatus == 0
-              raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
-            else
               Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
+            rescue Mixlib::ShellOut::ShellCommandFailed
+              raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
             end
           end
 
@@ -79,7 +82,7 @@ class Chef
 
         def start_service
           if @new_resource.start_command
-            run_command(:command => @new_resource.start_command)
+            shell_out!(@new_resource.start_command)
           else
             raise Chef::Exceptions::Service, "#{self.to_s} requires that start_command to be set"
           end
@@ -87,7 +90,7 @@ class Chef
 
         def stop_service
           if @new_resource.stop_command
-            run_command(:command => @new_resource.stop_command)
+            shell_out!(@new_resource.stop_command)
           else
             raise Chef::Exceptions::Service, "#{self.to_s} requires that stop_command to be set"
           end
@@ -95,7 +98,7 @@ class Chef
 
         def restart_service
           if @new_resource.restart_command
-            run_command(:command => @new_resource.restart_command)
+            shell_out!(@new_resource.restart_command)
           else
             stop_service
             sleep 1
@@ -105,7 +108,7 @@ class Chef
 
         def reload_service
           if @new_resource.reload_command
-            run_command(:command => @new_resource.reload_command)
+            shell_out!(@new_resource.reload_command)
           else
             raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
           end

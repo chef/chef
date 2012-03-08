@@ -215,7 +215,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call the start command if one is specified" do
       @new_resource.stub!(:start_command).and_return("/sbin/rsyslog startyousillysally")
-      @provider.should_receive(:run_command).with({:command => "/sbin/rsyslog startyousillysally"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/sbin/rsyslog startyousillysally")
       @provider.start_service()
     end
 
@@ -233,7 +233,7 @@ describe Chef::Provider::Service::Upstart do
     it "should call the restart command if one is specified" do
       @current_resource.stub!(:running).and_return(true)
       @new_resource.stub!(:restart_command).and_return("/sbin/rsyslog restartyousillysally")
-      @provider.should_receive(:run_command).with({:command => "/sbin/rsyslog restartyousillysally"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/sbin/rsyslog restartyousillysally")
       @provider.restart_service()
     end
 
@@ -252,7 +252,7 @@ describe Chef::Provider::Service::Upstart do
     it "should call the reload command if one is specified" do
       @current_resource.stub!(:running).and_return(true)
       @new_resource.stub!(:reload_command).and_return("/sbin/rsyslog reloadyousillysally")
-      @provider.should_receive(:run_command).with({:command => "/sbin/rsyslog reloadyousillysally"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/sbin/rsyslog reloadyousillysally")
       @provider.reload_service()
     end
 
@@ -265,7 +265,7 @@ describe Chef::Provider::Service::Upstart do
     it "should call the stop command if one is specified" do
       @current_resource.stub!(:running).and_return(true)
       @new_resource.stub!(:stop_command).and_return("/sbin/rsyslog stopyousillysally")
-      @provider.should_receive(:run_command).with({:command => "/sbin/rsyslog stopyousillysally"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/sbin/rsyslog stopyousillysally")
       @provider.stop_service()
     end
 
