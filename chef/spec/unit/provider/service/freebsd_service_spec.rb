@@ -151,6 +151,52 @@ PS_SAMPLE
       @provider.load_current_resource.should eql(@current_resource)
     end
 
+    describe "when starting the service" do
+      it "should call the start command if one is specified" do
+        @new_resource.start_command("/etc/rc.d/chef startyousillysally")
+        @provider.should_receive(:run_command).with({:command => "/etc/rc.d/chef startyousillysally"}).and_return(0)
+        @provider.load_current_resource
+        @provider.start_service()
+      end
+
+      it "should call '/usr/local/etc/rc.d/service_name faststart' if no start command is specified" do
+        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/#{@new_resource.service_name} faststart"}).and_return(0)
+        @provider.load_current_resource
+        @provider.start_service()
+      end
+    end
+
+    describe Chef::Provider::Service::Init, "stop_service" do
+      it "should call the stop command if one is specified" do
+        @new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
+        @provider.should_receive(:run_command).with({:command => "/etc/init.d/chef itoldyoutostop"}).and_return(0)
+        @provider.load_current_resource
+        @provider.stop_service()
+      end
+
+      it "should call '/usr/local/etc/rc.d/service_name faststop' if no stop command is specified" do
+        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/#{@new_resource.service_name} faststop"}).and_return(0)
+        @provider.load_current_resource
+        @provider.stop_service()
+      end
+    end
+
+    describe "when restarting a service" do
+      it "should call 'restart' on the service_name if the resource supports it" do
+        @new_resource.supports({:restart => true})
+        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/#{@new_resource.service_name} fastrestart"}).and_return(0)
+        @provider.load_current_resource
+        @provider.restart_service()
+      end
+
+      it "should call the restart_command if one has been specified" do
+        @new_resource.restart_command("/etc/init.d/chef restartinafire")
+        @provider.should_receive(:run_command).with({:command => "/etc/init.d/chef restartinafire"}).and_return(0)
+        @provider.load_current_resource
+        @provider.restart_service()
+      end
+    end
+
   end
 
   describe Chef::Provider::Service::Freebsd, "enable_service" do
