@@ -389,7 +389,7 @@ class Chef
     private
 
     def redirected_to(response)
-      if response.kind_of?(Net::HTTPFound) || response.kind_of?(Net::HTTPMovedPermanently)
+      if response.kind_of?(Net::HTTPFound) || response.kind_of?(Net::HTTPMovedPermanently) || response.kind_of?(Net::HTTPSeeOther)
         response['location']
       else
         nil
