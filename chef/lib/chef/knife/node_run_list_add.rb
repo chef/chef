@@ -27,7 +27,7 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list add [NODE] [ENTRY] (options)"
+      banner "knife node run_list add [NODE] [ENTRY[,ENTRY]] (options)"
 
       option :after,
         :short => "-a ITEM",
@@ -36,9 +36,17 @@ class Chef
 
       def run
         node = Chef::Node.load(@name_args[0])
-        entry = @name_args[1]
+        if @name_args.size > 2
+          # Check for nested lists and create a single plain one
+          entries = @name_args[1..-1].map do |entry|
+            entry.split(',').map { |e| e.strip }
+          end.flatten
+        else
+          # Convert to array and remove the extra spaces
+          entries = @name_args[1].split(',').map { |e| e.strip }
+        end
 
-        add_to_run_list(node, entry, config[:after])
+        add_to_run_list(node, entries, config[:after])
 
         node.save
 
@@ -47,18 +55,18 @@ class Chef
         output(format_for_display(node))
       end
 
-      def add_to_run_list(node, new_value, after=nil)
+      def add_to_run_list(node, entries, after=nil)
         if after
           nlist = []
           node.run_list.each do |entry|
             nlist << entry
             if entry == after
-              nlist << new_value
+              entries.each { |e| nlist << e }
             end
           end
           node.run_list.reset!(nlist)
         else
-          node.run_list << new_value
+          entries.each { |e| node.run_list << e }
         end
       end
 
