@@ -30,6 +30,48 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
+
+          determine_current_status!
+
+          @current_resource
+        end
+
+        def start_service
+          if @new_resource.start_command
+            shell_out!(@new_resource.start_command)
+          else
+            raise Chef::Exceptions::Service, "#{self.to_s} requires that start_command to be set"
+          end
+        end
+
+        def stop_service
+          if @new_resource.stop_command
+            shell_out!(@new_resource.stop_command)
+          else
+            raise Chef::Exceptions::Service, "#{self.to_s} requires that stop_command to be set"
+          end
+        end
+
+        def restart_service
+          if @new_resource.restart_command
+            shell_out!(@new_resource.restart_command)
+          else
+            stop_service
+            sleep 1
+            start_service
+          end
+        end
+
+        def reload_service
+          if @new_resource.reload_command
+            shell_out!(@new_resource.reload_command)
+          else
+            raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
+          end
+        end
+
+      protected
+        def determine_current_status!
           if @new_resource.status_command
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
@@ -75,42 +117,6 @@ class Chef
             rescue Mixlib::ShellOut::ShellCommandFailed
               raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
             end
-          end
-
-          @current_resource
-        end
-
-        def start_service
-          if @new_resource.start_command
-            shell_out!(@new_resource.start_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that start_command to be set"
-          end
-        end
-
-        def stop_service
-          if @new_resource.stop_command
-            shell_out!(@new_resource.stop_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that stop_command to be set"
-          end
-        end
-
-        def restart_service
-          if @new_resource.restart_command
-            shell_out!(@new_resource.restart_command)
-          else
-            stop_service
-            sleep 1
-            start_service
-          end
-        end
-
-        def reload_service
-          if @new_resource.reload_command
-            shell_out!(@new_resource.reload_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
           end
         end
 
