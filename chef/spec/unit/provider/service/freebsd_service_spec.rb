@@ -36,16 +36,13 @@ describe Chef::Provider::Service::Freebsd do
   
   describe "load_current_resource" do
     before(:each) do
-      @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:popen4).and_return(@status)
-      @stdin = nil
       @stdout = StringIO.new(<<-PS_SAMPLE)
 413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
 539  ??  Is     0:00.14 /usr/sbin/sshd
 545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
 PS_SAMPLE
-      @stderr = nil
-      @pid = nil
+      @status = mock(:stdout => @stdout, :exitstatus => 0)
+      @provider.stub!(:shell_out!).with(@node[:command][:ps]).and_return(@status)
 
       ::File.stub!(:exists?).and_return(false)
       ::File.stub!(:exists?).with("/usr/local/etc/rc.d/apache22").and_return(true)
@@ -72,18 +69,18 @@ PS_SAMPLE
       end
 
       it "should run '/etc/init.d/service_name status'" do
-        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"})
+        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
         @provider.load_current_resource
       end
   
       it "should set running to true if the the status command returns 0" do
-        @provider.stub!(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"}).and_return(0)
+        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
       it "should set running to false if the status command returns anything except 0" do
-        @provider.stub!(:run_command).with({:command => "/usr/local/etc/rc.d/apache22 status"}).and_raise(Chef::Exceptions::Exec)
+        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
@@ -95,7 +92,7 @@ PS_SAMPLE
       end
 
       it "should run the services status command if one has been specified" do
-        @provider.should_receive(:run_command).with({:command => "/bin/chefhasmonkeypants status"})
+        @provider.should_receive(:shell_out).with("/bin/chefhasmonkeypants status").and_return(@status)
         @provider.load_current_resource
       end
     
@@ -116,13 +113,13 @@ PS_SAMPLE
         @node[:command] = {:ps => "ps -ax"}
       end
 
-      it "should popen4 the node's ps command" do
-        @provider.should_receive(:popen4).with(@node[:command][:ps]).and_return(@status)
+      it "should shell_out! the node's ps command" do
+        @provider.should_receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
         @provider.load_current_resource
       end
 
       it "should read stdout of the ps command" do
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.stub!(:shell_out!).and_return(@status)
         @stdout.should_receive(:each_line).and_return(true)
         @provider.load_current_resource
       end
@@ -130,19 +127,18 @@ PS_SAMPLE
       it "should set running to true if the regex matches the output" do
         @stdout.stub!(:each_line).and_yield("555  ??  Ss     0:05.16 /usr/sbin/cron -s").
                                   and_yield(" 9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT")
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource 
         @current_resource.running.should be_true
       end
 
       it "should set running to false if the regex doesn't match" do
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.stub!(:shell_out!).and_return(@status)
         @provider.load_current_resource
         @current_resource.running.should be_false
       end
 
       it "should raise an exception if ps fails" do
-        @status.stub!(:exitstatus).and_return(-1)
+        @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
         lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
       end
     end
@@ -160,7 +156,7 @@ PS_SAMPLE
       end
 
       it "should call '/usr/local/etc/rc.d/service_name faststart' if no start command is specified" do
-        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/#{@new_resource.service_name} faststart"}).and_return(0)
+        @provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/#{@new_resource.service_name} faststart")
         @provider.load_current_resource
         @provider.start_service()
       end
@@ -175,7 +171,7 @@ PS_SAMPLE
       end
 
       it "should call '/usr/local/etc/rc.d/service_name faststop' if no stop command is specified" do
-        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/#{@new_resource.service_name} faststop"}).and_return(0)
+        @provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/#{@new_resource.service_name} faststop")
         @provider.load_current_resource
         @provider.stop_service()
       end
@@ -184,7 +180,7 @@ PS_SAMPLE
     describe "when restarting a service" do
       it "should call 'restart' on the service_name if the resource supports it" do
         @new_resource.supports({:restart => true})
-        @provider.should_receive(:run_command).with({:command => "/usr/local/etc/rc.d/#{@new_resource.service_name} fastrestart"}).and_return(0)
+        @provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/#{@new_resource.service_name} fastrestart")
         @provider.load_current_resource
         @provider.restart_service()
       end
