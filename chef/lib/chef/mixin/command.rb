@@ -27,6 +27,7 @@ class Chef
     module Command
       extend self
 
+      # NOTE: run_command is deprecated in favor of using Chef::Shellout which now comes from the mixlib-shellout gem. NOTE #
 
       if RUBY_PLATFORM =~ /mswin|mingw32|windows/
         require 'chef/mixin/command/windows'
