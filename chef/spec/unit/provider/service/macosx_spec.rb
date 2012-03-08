@@ -25,7 +25,7 @@ describe Chef::Provider::Service::Macosx do
   let(:stdout) { StringIO.new }
 
   before do
-    Dir.stub!(:glob).and_return("/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist", "")
+    Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist", ""])
     provider.stub!(:shell_out!).
              with("launchctl list", {:group => 1001, :user => 101}).
              and_return(mock("ouput", :stdout => stdout))
@@ -92,7 +92,7 @@ SVC_LIST
 
           context "and plist for service is not available" do
             before do
-              Dir.stub!(:glob).and_return("")
+              Dir.stub!(:glob).and_return([""])
               provider.load_current_resource
             end
 
@@ -103,7 +103,7 @@ SVC_LIST
 
           context "and plist for service is available" do
             before do
-              Dir.stub!(:glob).and_return("/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist", "")
+              Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist", ""])
               provider.load_current_resource
             end
 
@@ -114,8 +114,8 @@ SVC_LIST
 
           context "and several plists match service name" do
             before do
-              Dir.stub!(:glob).and_return("/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist",
-                                          "/Users/wtf/something.plist")
+              Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist",
+                                           "/Users/wtf/something.plist"])
             end
 
             it "throws exception" do
