@@ -21,6 +21,7 @@ class Chef
       QUALIFIED_RECIPE             = %r{^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$}
       QUALIFIED_ROLE               = %r{^role\[([^\]]+)\]$}
       VERSIONED_UNQUALIFIED_RECIPE = %r{^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$}
+      FALSE_FRIEND                 = %r{[\[\]]}
 
       attr_reader :name, :type, :version
 
@@ -51,6 +52,12 @@ class Chef
             @type = :recipe
             @name = match[1]
             @version = match[3] if match[3]
+          elsif match = FALSE_FRIEND.match(item)
+            # Recipe[recipe_name]
+            # roles[role_name]
+            name = match[1]
+            raise ArgumentError, "Unable to create #{self.class} from #{item.class}:#{item.inspect}: must be recipe[#{name}] or role[#{name}]"
+
           else
             # recipe_name
             @type = :recipe
