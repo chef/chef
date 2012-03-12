@@ -26,6 +26,7 @@ class Chef
       include Chef::Mixin::Command
 
       CRON_PATTERN = /([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s(.*)/
+      CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -80,7 +81,7 @@ class Chef
       end
 
       def compare_cron
-        [ :minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment ].any? do |cron_var|
+        CRON_ATTRIBUTES.any? do |cron_var|
           !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
         end
       end
@@ -179,7 +180,7 @@ class Chef
 
       def set_environment_var(attr_name, attr_value)
         method_name = attr_name.downcase.to_sym
-        if @current_resource.respond_to?(method_name)
+        if CRON_ATTRIBUTES.include?(method_name)
           @current_resource.send(method_name, attr_value)
         else
           @current_resource.environment(@current_resource.environment.merge(attr_name => attr_value))
