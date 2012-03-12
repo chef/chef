@@ -82,12 +82,6 @@ class Chef
         @current_resource
       end
 
-      def compare_cron
-        [ :minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home ].any? do |cron_var|
-          !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
-        end
-      end
-
       def write_crontab(crontab)
         tempcron = Tempfile.new("chef-cron")
         tempcron << crontab
@@ -183,18 +177,6 @@ class Chef
           Chef::Log.info("#{@new_resource} deleted crontab entry")
         end
       end
-
-      private
-
-      def set_environment_var(attr_name, attr_value)
-        method_name = attr_name.downcase.to_sym
-        if @current_resource.respond_to?(method_name)
-          @current_resource.send(method_name, attr_value)
-        else
-          @current_resource.environment(@current_resource.environment.merge(attr_name => attr_value))
-        end
-      end
-
     end
   end
 end
