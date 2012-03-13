@@ -390,11 +390,10 @@ class Chef
     private
 
     def redirected_to(response)
-      if response.kind_of?(Net::HTTPFound) || response.kind_of?(Net::HTTPMovedPermanently)
-        response['location']
-      else
-        nil
-      end
+      return nil  unless response.kind_of?(Net::HTTPRedirection)
+      # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
+      return nil  if response.kind_of?(Net::HTTPNotModified)
+      response['location']
     end
 
     def build_headers(method, url, headers={}, json_body=false, raw=false)
