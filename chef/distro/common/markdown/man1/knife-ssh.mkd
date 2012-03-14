@@ -19,8 +19,6 @@ __knife__ __ssh QUERY COMMAND__ _(options)_
     The SSH identity file used for authentication
   * `-p`, `--ssh-port PORT`:
     The ssh port
-  * `-i`, `--identity-file IDENTITY_FILE`:
-    The SSH identity file used for authentication
   * `--[no-]host-key-verify`:
     Verify host key, enabled by default.
 
