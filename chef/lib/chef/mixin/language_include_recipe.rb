@@ -25,7 +25,7 @@ class Chef
       def include_recipe(*recipe_names)
         result_recipes = Array.new
         recipe_names.flatten.each do |recipe_name|
-          if node.run_state[:seen_recipes].has_key?(recipe_name)
+          if node.run_state[:seen_recipes].has_key?(recipe_name) or node.run_state[:seen_recipes].has_key?(recipe_name + "::default")
             Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
             next
           end
