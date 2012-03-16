@@ -87,8 +87,9 @@ describe Chef::Provider::Mount::Mount do
       lambda { @provider.load_current_resource();@provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
     end
 
-    it "does not expect the device to exist when it is tmpfs" do
-      @new_resource.device("tmpfs")
+    it "does not expect the device to exist for tmpfs" do
+      @new_resource.fstype("tmpfs")
+      @new_resource.device("whatever")
       lambda { @provider.load_current_resource() }.should_not raise_error
     end
 
