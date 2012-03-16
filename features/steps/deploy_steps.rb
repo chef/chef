@@ -11,11 +11,27 @@ def gem_installed?(gem_name, version)
   `#{cmd}`=~ /true/ ? true : false
 end
 
-
 Given /^I have a clone of the rails app in the data\/tmp dir$/ do
   cmd = "git clone #{datadir}/myapp.bundle #{tmpdir}/gitrepo/myapp"
   `#{cmd}`
 end
+
+When /^I make changes and do commit in rails app repo$/ do
+  cmd = <<-CMD
+    cd #{tmpdir}/gitrepo/myapp &&
+    git checkout -qb master &&
+    echo 1 >> test_file &&
+    git add test_file &&
+    git commit -m "Modified file"
+  CMD
+
+  `#{cmd}`
+end
+
+And /^current release revision should be "(.*)"$/ do |revision|
+  File.readlink("#{tmpdir}/deploy/current").split("/").last.should == revision
+end
+
 
 Given /^that I have '(.*)' '(.*)' installed$/ do |gem_name, version|
   unless gem_installed?(gem_name, version)
