@@ -44,7 +44,7 @@ describe Chef::Provider::Git do
       @exitstatus = mock("exitstatus")
     end
 
-    it "sets the current revison to nil if the deploy dir does not exist" do
+    it "sets the current revision to nil if the deploy dir does not exist" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.git").and_return(false)
       @provider.find_current_revision.should be_nil
     end
