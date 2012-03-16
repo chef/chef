@@ -2,7 +2,7 @@ bash -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
 if [ ! -f /usr/bin/chef-client ]; then
-  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
   rpm -Uvh epel-release-5-4.noarch.rpm
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://rpm.aegisco.com/aegisco/rhel/aegisco-rhel.rpm
   rpm -Uvh aegisco-rhel.rpm
