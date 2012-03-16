@@ -27,13 +27,13 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list remove [NODE] [ENTRY] (options)"
+      banner "knife node run_list remove [NODE] [ENTRIES] (options)"
 
       def run
         node = Chef::Node.load(@name_args[0])
-        entry = @name_args[1]
+        entries = @name_args[1].split(',')
 
-        node.run_list.remove(entry)
+        entries.each { |e| node.run_list.remove(e) }
 
         node.save
 
