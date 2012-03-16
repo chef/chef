@@ -61,11 +61,7 @@ target node (FQDN). The following distros are supported:
 * ubuntu10.04-apt
 
 The gems installations will use RubyGems 1.3.6 and Chef installed as a
-gem. The apt installation will use the Opscode APT repository. The
-RubyGems installation requires installing gems with native extensions,
-so development related packages (ruby-dev, build-essential) are
-installed. These are not installed with the apt installation, as native
-extensions are already compiled in the required packages.
+gem. The apt installation will use the Opscode APT repository.
 
 In addition to handling the software installation, these bootstrap
 templates do the following:
