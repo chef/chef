@@ -42,6 +42,10 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action)
+      # Try to resolve lazy/forward references in notifications again to handle
+      # the case where the resource was defined lazily (ie. in a ruby_block)
+      resource.resolve_notification_references
+
       resource.run_action(action)
 
       # Execute any immediate and queue up any delayed notifications
