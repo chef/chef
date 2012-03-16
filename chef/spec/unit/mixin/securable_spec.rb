@@ -112,8 +112,8 @@ describe Chef::Mixin::Securable do
       end
     end
 
-    it "should not accept a group name or id for group with spaces and backslashes" do
-      lambda { @securable.group 'test\ group' }.should raise_error(ArgumentError)
+    it "should not accept a group name or id for group with spaces and multiple backslashes" do
+      lambda { @securable.group 'test\ \group' }.should raise_error(ArgumentError)
     end
 
     it "should accept a unix file mode in string form as an octal number" do
@@ -159,12 +159,22 @@ describe Chef::Mixin::Securable do
       lambda { @securable.mode 4096 }.should raise_error(ArgumentError)
     end
 
-    it "should allow you to specify :read, :deny, :full_control and :write rights" do
-      lambda { @securable.rights :read, "The Dude" }.should_not raise_error(ArgumentError)
-      lambda { @securable.rights :deny, "The Dude" }.should_not raise_error(ArgumentError)
+    it "should allow you to specify :full_control, :modify, :read_execute, :read, and :write rights" do
       lambda { @securable.rights :full_control, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :modify, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read_execute, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude" }.should_not raise_error(ArgumentError)
       lambda { @securable.rights :write, "The Dude" }.should_not raise_error(ArgumentError)
       lambda { @securable.rights :to_party, "The Dude" }.should raise_error(ArgumentError)
+    end
+
+    it "should allow you to specify :full_control, :modify, :read_execute, :read, and :write deny_rights" do
+      lambda { @securable.deny_rights :full_control, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.deny_rights :modify, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.deny_rights :read_execute, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.deny_rights :read, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.deny_rights :write, "The Dude" }.should_not raise_error(ArgumentError)
+      lambda { @securable.deny_rights :to_party, "The Dude" }.should raise_error(ArgumentError)
     end
 
     it "should accept a principal as a string or an array" do
@@ -193,24 +203,32 @@ describe Chef::Mixin::Securable do
       lambda { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => 'poop' }.should raise_error(ArgumentError)
     end
 
-    it "should allow multiple rights declarations" do
+    it "should allow multiple rights and deny_rights declarations" do
       @securable.rights :read, "The Dude"
-      @securable.rights :deny, "The Dude"
+      @securable.deny_rights :full_control, "The Dude"
       @securable.rights :full_control, "The Dude"
       @securable.rights :write, "The Dude"
-      @securable.rights.size.should == 4
+      @securable.deny_rights :read, "The Dude"
+      @securable.rights.size.should == 3
+      @securable.deny_rights.size.should == 2
     end
 
-    it "should allow you to specify whether the permission applies_to_self only if you specified it applies_to_children" do
+    it "should allow you to specify whether the permission applies_to_self only if you specified applies_to_children" do
       lambda { @securable.rights :read, "The Dude", :applies_to_children => true, :applies_to_self => true }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :applies_to_children => true, :applies_to_self => false }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :applies_to_children => false, :applies_to_self => true }.should_not raise_error(ArgumentError)
       lambda { @securable.rights :read, "The Dude", :applies_to_children => false, :applies_to_self => false }.should raise_error(ArgumentError)
-      lambda { @securable.rights :read, "The Dude", :applies_to_self => false }.should raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :applies_to_self => true }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :applies_to_self => false }.should_not raise_error(ArgumentError)
     end
 
-    it "should allow you to specify whether the permission applies one_level_deep only if you specified it applies_to_children" do
+    it "should allow you to specify whether the permission applies one_level_deep only if you specified applies_to_children" do
       lambda { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => true }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :applies_to_children => true, :one_level_deep => false }.should_not raise_error(ArgumentError)
       lambda { @securable.rights :read, "The Dude", :applies_to_children => false, :one_level_deep => true }.should raise_error(ArgumentError)
-      lambda { @securable.rights :read, "The Dude", :one_level_deep => true }.should raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :applies_to_children => false, :one_level_deep => false }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :one_level_deep => true }.should_not raise_error(ArgumentError)
+      lambda { @securable.rights :read, "The Dude", :one_level_deep => false }.should_not raise_error(ArgumentError)
     end
 
     it "should allow you to specify whether the permissions inherit with true/false" do
