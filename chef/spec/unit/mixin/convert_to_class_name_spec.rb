@@ -43,5 +43,8 @@ describe Chef::Mixin::ConvertToClassName do
   it "removes the base classes without explicitly naming them and returns snake case" do
     @convert.snake_case_basename("NameSpaced::Class::ExtraWin").should == "extra_win"
   end
-  
+
+  it "interprets non-alphanumeric characters in snake case as word boundaries" do
+    @convert.convert_to_class_name("now_camelized_without-hyphen").should == "NowCamelizedWithoutHyphen"
+  end
 end
