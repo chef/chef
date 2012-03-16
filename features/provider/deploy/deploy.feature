@@ -58,9 +58,7 @@ Feature: Deploy
       And a file named 'deploy/current/app/before_symlink_was_here.txt' should exist
       And a file named 'deploy/current/tmp/restart.txt' should exist
 
-  @chef-1816 @known_issue
-  Scenario: Deploy twice and rollback once
-    Given I haven't yet fixed CHEF-1816, this test should be pending
+  Scenario: Deploy twice and rollback once using timestamped based deploy
     Given a test git repo in the temp directory
       And a validated node
       And it includes the recipe 'deploy::deploy_commit1'
@@ -77,6 +75,25 @@ Feature: Deploy
       And I run the chef-client
      Then the run should exit '0'
      Then there should be 'one' release
+
+  Scenario: Make changes, commit them, deploy again using revision based strategy and do rollback
+    Given a validated node
+      And it includes the recipe 'deploy::revision_deploy'
+      And I have a clone of the rails app in the data/tmp dir
+      And that I have 'rails' '2.3.4' installed
+      And that I have 'sqlite3-ruby' '1.2.5' installed
+      And I run the chef-client
+     Then the run should exit '0'
+     When I make changes and do commit in rails app repo
+      And I run the chef-client
+     Then the run should exit '0'
+      And there should be 'two' releases
+     When I remove 'recipe[deploy::revision_deploy]' from the node's run list
+      And I add 'deploy::revision_rollback' to the node's run list
+      And I run the chef-client
+     Then the run should exit '0'
+      And current release revision should be "61e5cb77acb7400667df009ffef01306dcca4a07"
+      And there should be 'one' release
 
   Scenario: Deploy an app twice using the idempotent revision deploy strategy
     Given a validated node

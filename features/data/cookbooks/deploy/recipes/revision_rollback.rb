@@ -1,7 +1,8 @@
 #
-# Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2009 Daniel DeLeo
-# License:: Apache License, Version 2.0
+# Cookbook Name:: deploy
+# Recipe:: default
+#
+# Copyright 2009, Opscode
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +17,12 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
-    class Deploy
-      class Timestamped < Chef::Provider::Deploy
-        
-        protected
-        
-        def release_slug
-          Time.now.utc.strftime("%Y%m%d%H%M%S")
-        end
-      end
-    end
-  end
+deploy_revision "#{node[:tmpdir]}/deploy" do
+  repo "#{node[:tmpdir]}/gitrepo/myapp/"
+  environment "RAILS_ENV" => "production"
+  revision "HEAD"
+  action :rollback
+  migration_command "rake db:migrate --trace"
+  migrate true
+  restart_command "touch tmp/restart.txt"
 end
