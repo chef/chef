@@ -32,6 +32,8 @@ describe Chef::Knife::CookbookSiteInstall do
     @knife.stub!(:stdout).and_return(@stdout)
 
     #Assume all external commands would have succeed. :(
+    File.stub!(:unlink)
+    File.stub!(:rmtree)
     @knife.stub!(:shell_out!).and_return(true)
 
     #CookbookSiteDownload Stup
@@ -46,13 +48,10 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     #Stubs for CookbookSCMRepo
-    @repo = {}
+    @repo = stub(:sanity_check => true, :reset_to_default_state => true,
+                 :prepare_to_import => true, :finalize_updates_to => true,
+                 :merge_updates_from => true)
     Chef::Knife::CookbookSCMRepo.stub!(:new).and_return(@repo)
-    @repo.stub!(:sanity_check).and_return(true)
-    @repo.stub!(:reset_to_default_state).and_return(true)
-    @repo.stub!(:prepare_to_import).and_return(true)
-    @repo.stub!(:finalize_updates_to).and_return(true)
-    @repo.stub!(:merge_updates_from).and_return(true)
   end
 
 
@@ -60,7 +59,6 @@ describe Chef::Knife::CookbookSiteInstall do
 
     it "should return an error if a cookbook name is not provided" do
       @knife.name_args = []
-
       @knife.ui.should_receive(:error).with("Please specify a cookbook to download and install.")
       lambda { @knife.run }.should raise_error(SystemExit)
     end
