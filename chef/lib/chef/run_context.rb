@@ -60,20 +60,34 @@ class Chef
       load_attributes
       load_resource_definitions
 
+      Chef::Log.info "Restricted recipes: #{Chef::Config[:restricted_recipes].inspect}" unless Chef::Config[:restricted_recipes].empty?
+      Chef::Log.info "Allowed recipes: #{Chef::Config[:allowed_recipes].inspect}" unless Chef::Config[:allowed_recipes].empty?
+
       # Precendence rules state that roles' attributes come after
       # cookbooks. Now we've loaded attributes from cookbooks with
       # load_attributes, apply the expansion attributes (loaded from
       # roles) to the node.
       @node.apply_expansion_attributes(run_list_expansion)
-
       run_list_expansion.recipes.each do |recipe|
         # TODO: timh/cw, 5-14-2010: It's distasteful to be including
         # the DSL in a class outside the context of the DSL
-        include_recipe(recipe)
+        begin
+          if(Chef::Config[:allowed_recipes].empty? || Chef::Config[:allowed_recipes].include?(recipe))
+            include_recipe(recipe)
+          else
+            raise Chef::Exceptions::RestrictedRecipe.new(recipe)
+          end
+        rescue Chef::Exceptions::RestrictedRecipe => e
+          if(e.recipe_name == recipe)
+            msg = 'Restricted recipe has been removed from run list:'
+          else
+            msg = 'Recipe removed from run list due to restricted recipe dependency.'
+          end
+          Chef::Log.warn msg << " #{recipe} -> Not Loaded"
+        end
       end
     end
-
-
+    
     private
 
     def load_libraries

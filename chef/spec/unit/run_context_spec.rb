@@ -60,4 +60,92 @@ describe Chef::RunContext do
     end
   end
 
+  describe "after loading the cookbooks" do
+    before do
+      @run_context = nil
+    end
+
+    describe "after setting allowed recipes to 'partials'" do
+      before do
+        Chef::Config[:allowed_recipes] = 'partials'
+        @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+        @run_context.load(@node.run_list.expand('_default'))
+      end
+
+      after do
+        Chef::Config[:allowed_recipes] = nil
+      end
+
+      it "should only show 'partials' from the run list in the runnable recipes list" do
+        @run_context.node.run_state[:runnable_recipes].should include('partials')
+        @run_context.node.run_list.run_list_items.each do |item|
+          next if %w(partials partials::default).include?(item.name)
+          @run_context.node.run_state[:runnable_recipes].should_not include(item.name)
+        end
+      end
+
+      it "should show 'partials::default' dependency in the runnable recipes list" do
+        @run_context.node.run_state[:runnable_recipes].should include('partials::breaker')
+      end
+    end
+
+    describe "after setting the restricted recipes to 'partials'" do
+      before do
+        Chef::Config[:restricted_recipes] = 'partials'
+        @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+        @run_context.load(@node.run_list.expand('_default'))
+      end
+
+      after do
+        Chef::Config[:restricted_recipes] = nil
+      end
+
+      it "should show all recipes from the run list except 'partials'" do
+        @run_context.node.run_state[:runnable_recipes].should_not include('partials')
+        @run_context.node.run_list.run_list_items.each do |item|
+          next if %w(partials partials::default).include?(item.name)
+          @run_context.node.run_state[:runnable_recipes].should include(item.name)
+        end
+      end
+    end
+
+    describe "after setting the restricted recipes to 'partials::breaker'" do
+      before do
+        Chef::Config[:restricted_recipes] = 'partials::breaker'
+        @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+        @run_context.load(@node.run_list.expand('_default'))
+      end
+
+      after do
+        Chef::Config[:restricted_recipes] = nil
+      end
+
+      it "should not show 'partials' in runnable recipes due to dependency on 'partials::breaker'" do
+        @run_context.node.run_state[:runnable_recipes].should_not include('partials')
+        @run_context.node.run_list.run_list_items.each do |item|
+          next if %w(partials partials::default).include?(item.name)
+          @run_context.node.run_state[:runnable_recipes].should include(item.name)
+        end
+      end
+    end
+
+    describe "after setting the allowed recipes to test and partials and restricted recipes to 'partials'" do
+      before do
+        Chef::Config[:restricted_recipes] = 'partials'
+        Chef::Config[:allowed_recipes] = 'test,partials'
+        @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+        @run_context.load(@node.run_list.expand('_default'))
+      end
+
+      after do
+        Chef::Config[:restricted_recipes] = nil
+        Chef::Config[:allowed_recipes] = nil
+      end
+
+      it "should only show 'test' in runnable recipes" do
+        @run_context.node.run_state[:runnable_recipes].should eql ['test']
+      end
+    end
+  end
+
 end

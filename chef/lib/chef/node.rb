@@ -170,6 +170,7 @@ class Chef
 
       @run_state = {
         :template_cache => Hash.new,
+        :runnable_recipes => Array.new,
         :seen_recipes => Hash.new,
         :seen_attributes => Hash.new
       }

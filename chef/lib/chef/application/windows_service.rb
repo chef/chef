@@ -55,6 +55,39 @@ class Chef
         :description  => "Set the number of seconds to wait between chef-client runs",
         :proc         => lambda { |s| s.to_i }
 
+      option :restricted_recipes,
+        :short        => '-r RECIPE_NAME,RECIPE_NAME,...',
+        :long         => '--restricted-recipes RECIPE_NAME,RECIPE_NAME,...',
+        :description  => 'Disable recipe(s) from being run',
+        :proc         => lambda{|recipes|
+          recipes = recipes.to_s.split(',').compact
+          recipes.map{|r| 
+            [r, r.include?('::') ? nil : "#{r}::default"]
+          }.flatten.compact
+        }
+
+      option :allowed_recipes,
+        :short        => '-a RECIPE_NAME,RECIPE_NAME,...',
+        :long         => '--allowed-recipes RECIPE_NAME,RECIPE_NAME,...',
+        :description  => 'Allow only specified recipes in run list',
+        :proc         => lambda{|recipes|
+          recipes = recipes.to_s.split(',').compact
+          recipes.map{|r| 
+            [r, r.include?('::') ? nil : "#{r}::default"]
+          }.flatten.compact
+        }
+
+      option :override_runlist,
+        :short        => '-o RECIPE_NAME,ROLE,...',
+        :long         => '--override-runlist RECIPE_NAME,ROLE,...',
+        :description  => 'Replace runlist with specified recipes',
+        :proc         => lambda{|items| 
+          items = items.to_s.split(',')
+          items.compact.map{|item|
+            item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
+          }
+        }
+
       def service_init
         reconfigure
         Chef::Log.info("Chef Client Service initialized")

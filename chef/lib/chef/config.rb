@@ -85,6 +85,42 @@ class Chef
         c[:daemonize] = v
       end
     end
+    
+    # Override the config dispatch to split provided recipes into Array
+    #
+    # === Parameters
+    # recipes<String>:: String of comma delimited recipes
+    #
+    config_attr_writer :allowed_recipes do |recipes|
+      recipes = recipes.is_a?(Array) ? recipes : recipes.to_s.split(',').compact
+      recipes.map{|r| 
+        [r, r.include?('::') ? nil : "#{r}::default"]
+      }.flatten.compact
+    end
+
+    # Override the config dispatch to split provided recipes into Array
+    #
+    # === Parameters
+    # recipes<String>:: String of comma delimited recipes
+    #
+    config_attr_writer :restricted_recipes do |recipes|
+      recipes = recipes.is_a?(Array) ? recipes : recipes.to_s.split(',').compact
+      recipes.map{|r| 
+        [r, r.include?('::') ? nil : "#{r}::default"]
+      }.flatten.compact
+    end
+
+    # Override the config dispatch to split provided recipes into Array
+    #
+    # === Parameters
+    # recipes<String>:: String of comma delimited recipes
+    #
+    config_attr_writer :override_runlist do |items|
+      items = items.to_s.split(',') unless items.is_a?(Array)
+      items.compact.map{|item|
+        item.is_a?(Chef::RunList::RunListItem) ? item : Chef::RunList::RunListItem.new(item)
+      }
+    end
 
     # Override the config dispatch to set the value of log_location configuration option
     #
@@ -168,6 +204,10 @@ class Chef
     node_name nil
     node_path "/var/chef/node"
 
+    allowed_recipes nil
+    restricted_recipes nil
+    override_runlist nil
+    
     pid_file nil
 
     chef_server_url   "http://localhost:4000"

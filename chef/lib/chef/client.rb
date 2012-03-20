@@ -124,7 +124,7 @@ class Chef
     attr_reader :run_status
 
     # Creates a new Chef::Client.
-    def initialize(json_attribs=nil)
+    def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs
       @node = nil
       @run_status = nil
@@ -193,6 +193,7 @@ class Chef
         run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
       end
       run_status.run_context = run_context
+
       run_context.load(@run_list_expansion)
       assert_cookbook_path_not_empty(run_context)
       run_context
@@ -201,6 +202,7 @@ class Chef
     def save_updated_node
       unless Chef::Config[:solo]
         Chef::Log.debug("Saving the current state of node #{node_name}")
+        @node.run_list(*@original_runlist) if @original_runlist
         @node.save
       end
     end
@@ -246,6 +248,15 @@ class Chef
       # determine which versions of cookbooks to use.
       @node.reset_defaults_and_overrides
       @node.consume_external_attrs(ohai.data, @json_attribs)
+
+      if(Chef::Config[:override_runlist].size > 0)
+        @original_runlist = @node.run_list.run_list_items.dup
+        @node.run_list(*Chef::Config[:override_runlist])
+        Chef::Log.info "Run List override has been provided."
+        Chef::Log.info "Original Run List: [#{@original_runlist.join(', ')}]"
+        Chef::Log.info "Overridden Run List: [#{@node.run_list}]"
+      end
+
       if Chef::Config[:solo]
         @run_list_expansion = @node.expand!('disk')
       else
