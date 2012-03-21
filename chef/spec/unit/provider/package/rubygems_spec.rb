@@ -487,6 +487,25 @@ describe Chef::Provider::Package::Rubygems do
         @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
         @provider.action_install.should be_true
       end
+
+      it "installs the gem from file by shelling out to gem install" do
+        @new_resource.gem_binary('/usr/weird/bin/gem')
+        @new_resource.source(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @new_resource.version('>= 0')
+        @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
+        @provider.action_install.should be_true
+      end
+
+      it "installs the gem from file by shelling out to gem install when the package is a path and the source is nil" do
+        @new_resource = Chef::Resource::GemPackage.new(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
+        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+        @provider.current_resource = @current_resource
+        @new_resource.gem_binary('/usr/weird/bin/gem')
+        @new_resource.version('>= 0')
+        @new_resource.source.should == CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
+        @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
+        @provider.action_install.should be_true
+      end
     end
 
   end
