@@ -116,7 +116,7 @@ $(document).ready(function(){
   });
 
   // livequery hidden form for link_to ajax magic
-  $(document.body).delegate('a[method]', 'click', function(event){
+  $(document.body).delegate('a[method]', 'click', function(e){
     var $this = $(this);
     var message = $this.attr('confirm'), method = $this.attr('method');
 
@@ -125,12 +125,12 @@ $(document).ready(function(){
     }
 
     if (message && !confirm(message)) {
-      event.preventDefault();
+      e.preventDefault(e);
       return;
     }
 
     if (method === 'post' || method === 'put' || method === 'delete') {
-      event.preventDefault();
+      e.preventDefault(e);
       var form = $("<form/>").attr('method', 'post').attr('action', this.href).attr('style', 'display: none');
       if (method !== "post") {
           form.append($('<input type="hidden" name="_method"/>').attr('value', method));
