@@ -70,7 +70,9 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 	describe "when manipulating a resource" do
 	
 		it "run pkgin and install the package" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
+			out = OpenStruct.new(:stdout => nil)
+      @provider.should_receive(:shell_out!).with("pkg_info -E \"varnish*\"", {:env => nil, :returns=>[0,1]}).and_return(@shell_out)
+      @provider.should_receive(:shell_out!).with("pkgin -y install varnish-2.1.5nb2", {:env=>nil}).and_return(out)
       @provider.load_current_resource
       @provider.install_package("varnish", "2.1.5nb2")
 		end

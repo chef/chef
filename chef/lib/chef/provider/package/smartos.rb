@@ -64,7 +64,7 @@ class Chef
         def install_package(name, version)
 					Chef::Log.debug("#{@new_resource} installing package #{name}-#{version}")
 					package = "#{name}-#{version}"
-          run_command_with_systems_locale(:command => "pkgin -y install #{package}")
+          out = shell_out!("pkgin -y install #{package}", :env => nil)
         end
 
 				def upgrade_package(name, version)
@@ -75,7 +75,7 @@ class Chef
 				def remove_package(name, version)
 					Chef::Log.debug("#{@new_resource} removing package #{name}-#{version}")
 					package = "#{name}-#{version}"
-					run_command_with_systems_locale(:command => "pkgin -y remove #{package}")
+          out = shell_out!("pkgin -y remove #{package}", :env => nil)
 				end
 
       end
