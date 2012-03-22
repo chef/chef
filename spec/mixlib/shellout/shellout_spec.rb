@@ -4,62 +4,60 @@ require 'tempfile'
 require 'timeout'
 
 describe Mixlib::ShellOut do
-  before do
-    @shell_cmd = Mixlib::ShellOut.new("apt-get install chef")
-  end
+  let(:shell_cmd) { Mixlib::ShellOut.new("apt-get install chef") }
 
   it "has a command" do
-    @shell_cmd.command.should == "apt-get install chef"
+    shell_cmd.command.should == "apt-get install chef"
   end
 
   it "defaults to not setting a working directory" do
-    @shell_cmd.cwd.should == nil
+    shell_cmd.cwd.should == nil
   end
 
   it "has a user to run the command as" do
-    @shell_cmd.user.should be_nil
+    shell_cmd.user.should be_nil
   end
 
   it "sets the user to run the command as" do
-    @shell_cmd.user = 'root'
-    @shell_cmd.user.should == 'root'
+    shell_cmd.user = 'root'
+    shell_cmd.user.should == 'root'
   end
 
   it "has a group to run the command as" do
-    @shell_cmd.group.should be_nil
+    shell_cmd.group.should be_nil
   end
 
   it "sets the group to run the command as" do
-    @shell_cmd.group = 'wheel'
-    @shell_cmd.group.should == 'wheel'
+    shell_cmd.group = 'wheel'
+    shell_cmd.group.should == 'wheel'
   end
 
   it "has a set of environment variables to set before running the command" do
-    @shell_cmd.environment.should == {"LC_ALL" => "C"}
+    shell_cmd.environment.should == {"LC_ALL" => "C"}
   end
 
   it "has a umask" do
-    @shell_cmd.umask.should be_nil
+    shell_cmd.umask.should be_nil
   end
 
   it "sets the umask using an octal integer" do
-    @shell_cmd.umask = 007777
-    @shell_cmd.umask.should == 007777
+    shell_cmd.umask = 007777
+    shell_cmd.umask.should == 007777
   end
 
   it "sets the umask using a decimal integer" do
-    @shell_cmd.umask = 2925
-    @shell_cmd.umask.should == 005555
+    shell_cmd.umask = 2925
+    shell_cmd.umask.should == 005555
   end
 
   it "sets the umask using a string representation of an integer" do
-    @shell_cmd.umask = '7777'
-    @shell_cmd.umask.should == 007777
+    shell_cmd.umask = '7777'
+    shell_cmd.umask.should == 007777
   end
 
   it "returns the user-supplied uid when present" do
-    @shell_cmd.user = 0
-    @shell_cmd.uid.should == 0
+    shell_cmd.user = 0
+    shell_cmd.uid.should == 0
   end
 
   it "computes the uid of the user when a string/symbolic username is given" do
@@ -68,21 +66,21 @@ describe Mixlib::ShellOut do
       username = user_struct.name
       expected_uid = user_struct.uid
 
-      @shell_cmd.user = username
-      @shell_cmd.uid.should == expected_uid
+      shell_cmd.user = username
+      shell_cmd.uid.should == expected_uid
     end
   end
 
   it "returns the user-supplied gid when present" do
-    @shell_cmd.group = 0
-    @shell_cmd.gid.should == 0
+    shell_cmd.group = 0
+    shell_cmd.gid.should == 0
   end
 
   it "computes the gid of the user when a string/symbolic groupname is given" do
     unless windows?
       a_group = Etc.getgrent
-      @shell_cmd.group = a_group.name
-      @shell_cmd.gid.should == a_group.gid
+      shell_cmd.group = a_group.name
+      shell_cmd.gid.should == a_group.gid
     end
   end
 
@@ -91,77 +89,75 @@ describe Mixlib::ShellOut do
   end
 
   it "sets the read timeout" do
-    @shell_cmd.timeout = 10
-    @shell_cmd.timeout.should == 10
+    shell_cmd.timeout = 10
+    shell_cmd.timeout.should == 10
   end
 
   it "has a list of valid exit codes which is just 0 by default" do
-    @shell_cmd.valid_exit_codes.should == [0]
+    shell_cmd.valid_exit_codes.should == [0]
   end
 
   it "sets the list of valid exit codes" do
-    @shell_cmd.valid_exit_codes = [0,23,42]
-    @shell_cmd.valid_exit_codes.should == [0,23,42]
+    shell_cmd.valid_exit_codes = [0,23,42]
+    shell_cmd.valid_exit_codes.should == [0,23,42]
   end
 
   it "defaults to not having a live stream" do
-    @shell_cmd.live_stream.should be_nil
+    shell_cmd.live_stream.should be_nil
   end
 
   it "sets a live stream" do
     stream = StringIO.new
-    @shell_cmd.live_stream = stream
-    @shell_cmd.live_stream.should == stream
+    shell_cmd.live_stream = stream
+    shell_cmd.live_stream.should == stream
   end
 
   context "when initialized with a hash of options" do
-    before do
-      @opts = { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
+      let(:options) { { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
                 :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42],
-                :live_stream => StringIO.new}
-      @shell_cmd = Mixlib::ShellOut.new("brew install couchdb", @opts)
-    end
+                :live_stream => StringIO.new} }
+      let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
 
     it "sets the working dir as specified in the options" do
-      @shell_cmd.cwd.should == '/tmp'
+      shell_cmd.cwd.should == '/tmp'
     end
 
     it "sets the user as specified in the options" do
-      @shell_cmd.user.should == 'toor'
+      shell_cmd.user.should == 'toor'
     end
 
     it "sets the group as specified in the options" do
-      @shell_cmd.group.should == 'wheel'
+      shell_cmd.group.should == 'wheel'
     end
 
     it "sets the umask as specified in the options" do
-      @shell_cmd.umask.should == 002222
+      shell_cmd.umask.should == 002222
     end
 
     it "sets the timout as specified in the options" do
-      @shell_cmd.timeout.should == 5
+      shell_cmd.timeout.should == 5
     end
 
     it "merges the environment with the default environment settings" do
-      @shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
+      shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
     end
 
     it "also accepts :env to set the enviroment for brevity's sake" do
-      @shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :env => {'RUBY_OPTS'=>'-w'})
-      @shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
+      shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :env => {'RUBY_OPTS'=>'-w'})
+      shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
     end
 
     it "does not set any environment settings when given :environment => nil" do
-      @shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :environment => nil)
-      @shell_cmd.environment.should == {}
+      shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :environment => nil)
+      shell_cmd.environment.should == {}
     end
 
     it "sets the list of acceptable return values" do
-      @shell_cmd.valid_exit_codes.should == [0,1,42]
+      shell_cmd.valid_exit_codes.should == [0,1,42]
     end
 
     it "sets the live stream specified in the options" do
-      @shell_cmd.live_stream.should == @opts[:live_stream]
+      shell_cmd.live_stream.should == options[:live_stream]
     end
 
     it "raises an error when given an invalid option" do
@@ -185,41 +181,35 @@ describe Mixlib::ShellOut do
   end
 
   context "when initialized with an array of command+args and an options hash" do
-    before do
-      @opts = {:cwd => '/tmp', :user => 'nobody'}
-      @shell_cmd = Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}, @opts)
-    end
+    let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
+    let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}, options) }
 
     it "sets the command to the array of command and args" do
-      @shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
+      shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
     end
 
     it "evaluates the options" do
-      @shell_cmd.cwd.should == '/tmp'
-      @shell_cmd.user.should == 'nobody'
+      shell_cmd.cwd.should == '/tmp'
+      shell_cmd.user.should == 'nobody'
     end
   end
 
   context "when initialized with an array of command+args and no options" do
-    before do
-      @shell_cmd = Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'})
-    end
+    let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}) }
 
     it "sets the command to the array of command+args" do
-      @shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
+      shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
     end
 
   end
 
   context "when created with a live stream" do
-    before do
-      @stream = StringIO.new
-      @shell_cmd = Mixlib::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => @stream)
-    end
+    let(:stream) { StringIO.new }
+    let(:shell_cmd) { Mixlib::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => stream) }
 
     it "copies the subprocess' stdout to the live stream" do
-      @shell_cmd.run_command
-      @stream.string.should == "hello#{LINE_ENDING}"
+      shell_cmd.run_command
+      stream.string.should == "hello#{LINE_ENDING}"
     end
   end
 
