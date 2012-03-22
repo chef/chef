@@ -4,119 +4,161 @@ require 'tempfile'
 require 'timeout'
 
 describe Mixlib::ShellOut do
-  let(:shell_cmd) { Mixlib::ShellOut.new("apt-get install chef") }
+  subject { shell_cmd }
+  let(:shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
 
-  it "has a command" do
-    shell_cmd.command.should == "apt-get install chef"
-  end
+  context 'when instantiating a new ShellOut object' do
+    it "should set the command" do
+      subject.command.should eql("apt-get install chef")
+    end
 
-  it "defaults to not setting a working directory" do
-    shell_cmd.cwd.should == nil
-  end
+    context 'with default settings' do
+      its(:cwd) { should be_nil }
+      its(:user) { should be_nil }
+      its(:group) { should be_nil }
+      its(:umask) { should be_nil }
+      its(:timeout) { should eql(600) }
+      its(:valid_exit_codes) { should eql([0]) }
+      its(:live_stream) { should be_nil }
 
-  it "has a user to run the command as" do
-    shell_cmd.user.should be_nil
-  end
-
-  it "sets the user to run the command as" do
-    shell_cmd.user = 'root'
-    shell_cmd.user.should == 'root'
-  end
-
-  it "has a group to run the command as" do
-    shell_cmd.group.should be_nil
-  end
-
-  it "sets the group to run the command as" do
-    shell_cmd.group = 'wheel'
-    shell_cmd.group.should == 'wheel'
-  end
-
-  it "has a set of environment variables to set before running the command" do
-    shell_cmd.environment.should == {"LC_ALL" => "C"}
-  end
-
-  it "has a umask" do
-    shell_cmd.umask.should be_nil
-  end
-
-  it "sets the umask using an octal integer" do
-    shell_cmd.umask = 007777
-    shell_cmd.umask.should == 007777
-  end
-
-  it "sets the umask using a decimal integer" do
-    shell_cmd.umask = 2925
-    shell_cmd.umask.should == 005555
-  end
-
-  it "sets the umask using a string representation of an integer" do
-    shell_cmd.umask = '7777'
-    shell_cmd.umask.should == 007777
-  end
-
-  it "returns the user-supplied uid when present" do
-    shell_cmd.user = 0
-    shell_cmd.uid.should == 0
-  end
-
-  it "computes the uid of the user when a string/symbolic username is given" do
-    unless windows?
-      user_struct = Etc.getpwent
-      username = user_struct.name
-      expected_uid = user_struct.uid
-
-      shell_cmd.user = username
-      shell_cmd.uid.should == expected_uid
+      it "should set default environmental variables" do
+        shell_cmd.environment.should == {"LC_ALL" => "C"}
+      end
     end
   end
 
-  it "returns the user-supplied gid when present" do
-    shell_cmd.group = 0
-    shell_cmd.gid.should == 0
-  end
 
-  it "computes the gid of the user when a string/symbolic groupname is given" do
-    unless windows?
-      a_group = Etc.getgrent
-      shell_cmd.group = a_group.name
-      shell_cmd.gid.should == a_group.gid
+  context 'when setting accessors' do
+    subject { shell_cmd.send(accessor) }
+
+    let(:shell_cmd) { blank_shell_cmd.tap(&with_overrides) }
+    let(:blank_shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
+    let(:with_overrides) { lambda { |shell_cmd| shell_cmd.send("#{accessor}=", value) } }
+
+    context 'when setting user' do
+      let(:accessor) { :user }
+      let(:value) { 'root' }
+
+      it "should set the user" do
+        should eql(value)
+      end
+
+      context 'with an integer value for user' do
+        let(:value) { 0 }
+        it "should use the user-supplied uid" do
+          shell_cmd.uid.should eql(value)
+        end
+      end
+
+      context 'with string value for user' do
+        let(:value) { username }
+
+        let(:username) { user_info.name }
+        let(:expected_uid) { user_info.uid }
+        let(:user_info) { Etc.getpwent }
+
+        it "should compute the uid of the user" do
+          # This should use metadata filtering instead
+          unless windows?
+            shell_cmd.uid.should eql(expected_uid)
+          end
+        end
+      end
+
     end
-  end
 
-  it "has a timeout defaulting to 600 seconds" do
-    Mixlib::ShellOut.new('foo').timeout.should == 600
-  end
+    context 'when setting group' do
+      let(:accessor) { :group }
+      let(:value) { 'wheel' }
 
-  it "sets the read timeout" do
-    shell_cmd.timeout = 10
-    shell_cmd.timeout.should == 10
-  end
+      it "should set the group" do
+        should eql(value)
+      end
 
-  it "has a list of valid exit codes which is just 0 by default" do
-    shell_cmd.valid_exit_codes.should == [0]
-  end
+      context 'with integer value for group' do
+        let(:value) { 0 }
+        it "should use the user-supplied gid" do
+          shell_cmd.gid.should eql(value)
+        end
+      end
 
-  it "sets the list of valid exit codes" do
-    shell_cmd.valid_exit_codes = [0,23,42]
-    shell_cmd.valid_exit_codes.should == [0,23,42]
-  end
+      context 'with string value for group' do
+        let(:value) { groupname }
+        let(:groupname) { group_info.name }
+        let(:expected_gid) { group_info.gid }
+        let(:group_info) { Etc.getgrent }
 
-  it "defaults to not having a live stream" do
-    shell_cmd.live_stream.should be_nil
-  end
+        it "should compute the gid of the user" do
+          # This should use metadata filtering instead
+          unless windows?
+            shell_cmd.gid.should eql(expected_gid)
+          end
+        end
+      end
+    end
 
-  it "sets a live stream" do
-    stream = StringIO.new
-    shell_cmd.live_stream = stream
-    shell_cmd.live_stream.should == stream
+    context 'when setting the umask' do
+      let(:accessor) { :umask }
+
+      context 'with octal integer' do
+        let(:value) { 007555}
+
+        it 'should set the umask' do
+          should eql(value)
+        end
+      end
+
+      context 'with decimal integer' do
+        let(:value) { 2925 }
+
+        it 'should sets the umask' do
+          should eql(005555)
+        end
+      end
+
+      context 'with string' do
+        let(:value) { '7777' }
+
+        it 'should sets the umask' do
+          should eql(007777)
+        end
+      end
+    end
+
+    context 'when setting read timeout' do
+      let(:accessor) { :timeout }
+      let(:value) { 10 }
+
+      it 'should set the read timeout' do
+        should eql(value)
+      end
+    end
+
+    context 'when setting valid exit codes' do
+      let(:accessor) { :valid_exit_codes }
+      let(:value) { [0, 23, 42] }
+
+      it "should set the valid exit codes" do
+        should eql(value)
+      end
+    end
+
+    context 'when setting a live stream' do
+      let(:accessor) { :live_stream }
+      let(:value) { stream }
+      let(:stream) { StringIO.new }
+
+      it "should set the live stream" do
+        should eql(value)
+      end
+    end
   end
 
   context "when initialized with a hash of options" do
-      let(:options) { { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
-                :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42],
-                :live_stream => StringIO.new} }
-      let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
+    let(:options) { { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
+      :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42],
+      :live_stream => StringIO.new} }
+    let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
 
     it "sets the working dir as specified in the options" do
       shell_cmd.cwd.should == '/tmp'
