@@ -347,10 +347,14 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "runs commands with backslashes in them" do
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "\\"\\\\"'})
-        cmd.run_command
-        cmd.stdout.should == "\"\\"
+      context 'with backslashes' do
+        subject { stdout }
+        let(:backslashes) { %q{\\"\\\\} }
+        let(:cmd) { "ruby -e 'print \"#{backslashes}\"'" }
+
+        it 'should execute' do
+          should eql("\"\\")
+        end
       end
 
       it "runs commands with stdout pipes" do
