@@ -288,6 +288,7 @@ describe Mixlib::ShellOut do
     end
 
     context "when running different types of command" do
+      let(:shell_cmd) { Mixlib::ShellOut.new(cmd) }
       let(:executed_cmd) { shell_cmd.tap(&:run_command) }
       let(:stdout) { executed_cmd.stdout }
       let(:chomped_stdout) { stdout.chomp }
@@ -322,13 +323,17 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "runs commands with lots of long arguments" do
+      context 'with lots of long arguments' do
+        subject { chomped_stdout }
+
         # This number was chosen because it seems to be an actual maximum
         # in Windows--somewhere around 6-7K of command line
-        echotext = 10000.upto(11340).map { |x| x.to_s }.join(' ')
-        cmd = Mixlib::ShellOut.new("echo #{echotext}")
-        cmd.run_command
-        cmd.stdout.chomp.should == echotext
+        let(:echotext) { 10000.upto(11340).map(&:to_s).join(' ') }
+        let(:cmd) { "echo #{echotext}" }
+
+        it "should execute" do
+          should eql(echotext)
+        end
       end
 
       it "runs commands with quotes and special characters in quotes" do
