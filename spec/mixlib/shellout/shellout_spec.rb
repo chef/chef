@@ -331,15 +331,20 @@ describe Mixlib::ShellOut do
         let(:echotext) { 10000.upto(11340).map(&:to_s).join(' ') }
         let(:cmd) { "echo #{echotext}" }
 
-        it "should execute" do
+        it 'should execute' do
           should eql(echotext)
         end
       end
 
-      it "runs commands with quotes and special characters in quotes" do
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "<>&|&&||;"'})
-        cmd.run_command
-        cmd.stdout.should == "<>&|&&||;"
+      context 'with special characters' do
+        subject { stdout }
+
+        let(:special_characters) { '<>&|&&||;' }
+        let(:cmd) { "ruby -e 'print \"#{special_characters}\"'" }
+
+        it 'should execute' do
+          should eql(special_characters)
+        end
       end
 
       it "runs commands with backslashes in them" do
