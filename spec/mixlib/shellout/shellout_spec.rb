@@ -4,7 +4,7 @@ describe Mixlib::ShellOut do
   subject { shell_cmd }
   let(:shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
 
-  context 'when instantiating a new ShellOut object' do
+  context 'when instantiating' do
     it "should set the command" do
       subject.command.should eql("apt-get install chef")
     end
@@ -22,275 +22,277 @@ describe Mixlib::ShellOut do
         shell_cmd.environment.should == {"LC_ALL" => "C"}
       end
     end
-  end
 
-  context 'when setting accessors' do
-    subject { shell_cmd.send(accessor) }
+    context 'when setting accessors' do
+      subject { shell_cmd.send(accessor) }
 
-    let(:shell_cmd) { blank_shell_cmd.tap(&with_overrides) }
-    let(:blank_shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
-    let(:with_overrides) { lambda { |shell_cmd| shell_cmd.send("#{accessor}=", value) } }
+      let(:shell_cmd) { blank_shell_cmd.tap(&with_overrides) }
+      let(:blank_shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
+      let(:with_overrides) { lambda { |shell_cmd| shell_cmd.send("#{accessor}=", value) } }
 
-    context 'when setting user' do
-      let(:accessor) { :user }
-      let(:value) { 'root' }
+      context 'when setting user' do
+        let(:accessor) { :user }
+        let(:value) { 'root' }
 
-      it "should set the user" do
-        should eql(value)
+        it "should set the user" do
+          should eql(value)
+        end
+
+        context 'with an integer value for user' do
+          let(:value) { 0 }
+          it "should use the user-supplied uid" do
+            shell_cmd.uid.should eql(value)
+          end
+        end
+
+        context 'with string value for user' do
+          let(:value) { username }
+
+          let(:username) { user_info.name }
+          let(:expected_uid) { user_info.uid }
+          let(:user_info) { Etc.getpwent }
+
+          it "should compute the uid of the user", :unix_only => true do
+            shell_cmd.uid.should eql(expected_uid)
+          end
+        end
+
       end
 
-      context 'with an integer value for user' do
-        let(:value) { 0 }
-        it "should use the user-supplied uid" do
-          shell_cmd.uid.should eql(value)
+      context 'when setting group' do
+        let(:accessor) { :group }
+        let(:value) { 'wheel' }
+
+        it "should set the group" do
+          should eql(value)
+        end
+
+        context 'with integer value for group' do
+          let(:value) { 0 }
+          it "should use the user-supplied gid" do
+            shell_cmd.gid.should eql(value)
+          end
+        end
+
+        context 'with string value for group' do
+          let(:value) { groupname }
+          let(:groupname) { group_info.name }
+          let(:expected_gid) { group_info.gid }
+          let(:group_info) { Etc.getgrent }
+
+          it "should compute the gid of the user", :skip_windows => true do
+            shell_cmd.gid.should eql(expected_gid)
+          end
         end
       end
 
-      context 'with string value for user' do
-        let(:value) { username }
+      context 'when setting the umask' do
+        let(:accessor) { :umask }
 
-        let(:username) { user_info.name }
-        let(:expected_uid) { user_info.uid }
-        let(:user_info) { Etc.getpwent }
+        context 'with octal integer' do
+          let(:value) { 007555}
 
-        it "should compute the uid of the user", :skip_windows => true do
-          shell_cmd.uid.should eql(expected_uid)
+          it 'should set the umask' do
+            should eql(value)
+          end
+        end
+
+        context 'with decimal integer' do
+          let(:value) { 2925 }
+
+          it 'should sets the umask' do
+            should eql(005555)
+          end
+        end
+
+        context 'with string' do
+          let(:value) { '7777' }
+
+          it 'should sets the umask' do
+            should eql(007777)
+          end
         end
       end
 
-    end
+      context 'when setting read timeout' do
+        let(:accessor) { :timeout }
+        let(:value) { 10 }
 
-    context 'when setting group' do
-      let(:accessor) { :group }
-      let(:value) { 'wheel' }
-
-      it "should set the group" do
-        should eql(value)
-      end
-
-      context 'with integer value for group' do
-        let(:value) { 0 }
-        it "should use the user-supplied gid" do
-          shell_cmd.gid.should eql(value)
-        end
-      end
-
-      context 'with string value for group' do
-        let(:value) { groupname }
-        let(:groupname) { group_info.name }
-        let(:expected_gid) { group_info.gid }
-        let(:group_info) { Etc.getgrent }
-
-        it "should compute the gid of the user", :skip_windows => true do
-          shell_cmd.gid.should eql(expected_gid)
-        end
-      end
-    end
-
-    context 'when setting the umask' do
-      let(:accessor) { :umask }
-
-      context 'with octal integer' do
-        let(:value) { 007555}
-
-        it 'should set the umask' do
+        it 'should set the read timeout' do
           should eql(value)
         end
       end
 
-      context 'with decimal integer' do
-        let(:value) { 2925 }
+      context 'when setting valid exit codes' do
+        let(:accessor) { :valid_exit_codes }
+        let(:value) { [0, 23, 42] }
 
-        it 'should sets the umask' do
-          should eql(005555)
+        it "should set the valid exit codes" do
+          should eql(value)
         end
       end
 
-      context 'with string' do
-        let(:value) { '7777' }
+      context 'when setting a live stream' do
+        let(:accessor) { :live_stream }
+        let(:value) { stream }
+        let(:stream) { StringIO.new }
 
-        it 'should sets the umask' do
-          should eql(007777)
+        it "should set the live stream" do
+          should eql(value)
         end
       end
     end
 
-    context 'when setting read timeout' do
-      let(:accessor) { :timeout }
-      let(:value) { 10 }
+    context "with options hash" do
+      let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
+      let(:options) { {
+        :cwd => cwd,
+        :user => user,
+        :group => group,
+        :umask => umask,
+        :timeout => timeout,
+        :environment => environment,
+        :returns => valid_exit_codes,
+        :live_stream => stream } }
 
-      it 'should set the read timeout' do
-        should eql(value)
-      end
-    end
+        let(:cwd) { '/tmp' }
+        let(:user) { 'toor' }
+        let(:group) { 'wheel' }
+        let(:umask) { '2222' }
+        let(:timeout) { 5 }
+        let(:environment) { { 'RUBY_OPTS' => '-w' } }
+        let(:valid_exit_codes) { [ 0, 1, 42 ] }
+        let(:stream) { StringIO.new }
 
-    context 'when setting valid exit codes' do
-      let(:accessor) { :valid_exit_codes }
-      let(:value) { [0, 23, 42] }
+        it "should set the working directory" do
+          shell_cmd.cwd.should eql(cwd)
+        end
 
-      it "should set the valid exit codes" do
-        should eql(value)
-      end
-    end
+        it "should set the user" do
+          shell_cmd.user.should eql(user)
+        end
 
-    context 'when setting a live stream' do
-      let(:accessor) { :live_stream }
-      let(:value) { stream }
-      let(:stream) { StringIO.new }
+        it "should set the group" do
+          shell_cmd.group.should eql(group)
+        end
 
-      it "should set the live stream" do
-        should eql(value)
-      end
-    end
-  end
+        it "should set the umask" do
+          shell_cmd.umask.should eql(002222)
+        end
 
-  context "when initialized with a hash of options" do
-    let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
-    let(:options) { {
-      :cwd => cwd,
-      :user => user,
-      :group => group,
-      :umask => umask,
-      :timeout => timeout,
-      :environment => environment,
-      :returns => valid_exit_codes,
-      :live_stream => stream } }
+        it "should set the timout" do
+          shell_cmd.timeout.should eql(timeout)
+        end
 
-    let(:cwd) { '/tmp' }
-    let(:user) { 'toor' }
-    let(:group) { 'wheel' }
-    let(:umask) { '2222' }
-    let(:timeout) { 5 }
-    let(:environment) { { 'RUBY_OPTS' => '-w' } }
-    let(:valid_exit_codes) { [ 0, 1, 42 ] }
-    let(:stream) { StringIO.new }
-
-    it "should set the working directory" do
-      shell_cmd.cwd.should eql(cwd)
-    end
-
-    it "should set the user" do
-      shell_cmd.user.should eql(user)
-    end
-
-    it "should set the group" do
-      shell_cmd.group.should eql(group)
-    end
-
-    it "sets the umask as specified in the options" do
-      shell_cmd.umask.should eql(002222)
-    end
-
-    it "sets the timout as specified in the options" do
-      shell_cmd.timeout.should eql(timeout)
-    end
-
-    it "merges the environment with the default environment settings" do
-      shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
-    end
-
-    context 'when setting custom environments' do
-      context 'when setting the :env option' do
-        let(:options) { { :env => environment } }
-
-        it "should set the enviroment" do
+        it "should add environment settings to the default" do
           shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
         end
-      end
 
-      context 'when :environment is set to nil' do
-        let(:options) { { :environment => nil } }
+        context 'when setting custom environments' do
+          context 'when setting the :env option' do
+            let(:options) { { :env => environment } }
 
-        it "should not set any environment" do
-          shell_cmd.environment.should == {}
+            it "should also set the enviroment" do
+              shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
+            end
+          end
+
+          context 'when :environment is set to nil' do
+            let(:options) { { :environment => nil } }
+
+            it "should not set any environment" do
+              shell_cmd.environment.should == {}
+            end
+          end
+
+          context 'when :env is set to nil' do
+            let(:options) { { :env => nil } }
+
+            it "should not set any environment" do
+              shell_cmd.environment.should eql({})
+            end
+          end
+        end
+
+        it "should set valid exit codes" do
+          shell_cmd.valid_exit_codes.should eql(valid_exit_codes)
+        end
+
+        it "should set the live stream" do
+          shell_cmd.live_stream.should eql(stream)
+        end
+
+        context 'with an invalid option' do
+          let(:options) { { :frab => :job } }
+          let(:invalid_option_exception) { Mixlib::ShellOut::InvalidCommandOption }
+          let(:exception_message) { "option ':frab' is not a valid option for Mixlib::ShellOut" }
+
+          it "should raise InvalidCommandOPtion" do
+            lambda { shell_cmd }.should raise_error(invalid_option_exception, exception_message)
+          end
+        end
+
+        context 'when setting cwd' do
+          subject { File.expand_path(output) }
+          let(:output) { shell_cmd.tap(&:run_command).stdout.chomp }
+          let(:fully_qualified_cwd) { File.expand_path(cwd) }
+          let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :cwd => cwd) }
+
+          context 'when running under Unix', :unix_only => true do
+            let(:cwd) { '/bin' }
+            let(:cmd) { 'pwd' }
+
+            it "should chdir to the working directory" do
+              should eql(fully_qualified_cwd)
+            end
+          end
+
+          context 'when running under Windows', :windows_only => true do
+            let(:cwd) { Dir.tmpdir }
+            let(:cmd) { 'echo %cd%' }
+
+            it "should chdir to the working directory" do
+              should eql(fully_qualified_cwd)
+            end
+          end
+        end
+    end
+
+    context "with array of command and args" do
+      context 'without options' do
+        let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}) }
+
+        it "should set the command to the array of command and args" do
+          shell_cmd.command.should eql(['ruby', '-e', %q{'puts "hello"'}])
         end
       end
 
-      context 'when :env is set to nil' do
-        let(:options) { { :env => nil } }
+      context 'with options' do
+        let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}, options) }
+        let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
 
-        it "should not set any environment" do
-          shell_cmd.environment.should eql({})
+        it "should set the command to the array of command and args" do
+          shell_cmd.command.should eql(['ruby', '-e', %q{'puts "hello"'}])
+        end
+
+        it "should evaluate the options" do
+          shell_cmd.cwd.should == '/tmp'
+          shell_cmd.user.should == 'nobody'
         end
       end
     end
 
-    it "should set valid exit codes" do
-      shell_cmd.valid_exit_codes.should eql(valid_exit_codes)
-    end
+    context "with a live stream" do
+      let(:stream) { StringIO.new }
+      let(:shell_cmd) { Mixlib::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => stream) }
 
-    it "sets the live stream specified in the options" do
-      shell_cmd.live_stream.should eql(stream)
-    end
-
-    context 'with an invalid option' do
-      let(:options) { { :frab => :job } }
-      let(:invalid_option_exception) { Mixlib::ShellOut::InvalidCommandOption }
-      let(:exception_message) { "option ':frab' is not a valid option for Mixlib::ShellOut" }
-
-      it "raises an error when given an invalid option" do
-        lambda { shell_cmd }.should raise_error(invalid_option_exception, exception_message)
-      end
-    end
-
-    context 'when setting cwd' do
-      subject { File.expand_path(output) }
-      let(:output) { shell_cmd.tap(&:run_command).stdout.chomp }
-      let(:fully_qualified_cwd) { File.expand_path(cwd) }
-      let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :cwd => cwd) }
-
-      context 'when running under Unix', :unix_only => true do
-        let(:cwd) { '/bin' }
-        let(:cmd) { 'pwd' }
-
-        it "should chdir to the working directory" do
-          should eql(fully_qualified_cwd)
-        end
-      end
-
-      context 'when running under Windows', :windows_only => true do
-        let(:cwd) { Dir.tmpdir }
-        let(:cmd) { 'echo %cd%' }
-
-        it "should chdir to the working directory" do
-          should eql(fully_qualified_cwd)
-        end
+      it "should copy the child's stdout to the live stream" do
+        shell_cmd.run_command
+        stream.string.should eql("hello#{LINE_ENDING}")
       end
     end
   end
 
-  context "when initialized with an array of command+args and an options hash" do
-    let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
-    let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}, options) }
-
-    it "sets the command to the array of command and args" do
-      shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
-    end
-
-    it "evaluates the options" do
-      shell_cmd.cwd.should == '/tmp'
-      shell_cmd.user.should == 'nobody'
-    end
-  end
-
-  context "when initialized with an array of command+args and no options" do
-    let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}) }
-
-    it "sets the command to the array of command+args" do
-      shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
-    end
-
-  end
-
-  context "when created with a live stream" do
-    let(:stream) { StringIO.new }
-    let(:shell_cmd) { Mixlib::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => stream) }
-
-    it "copies the subprocess' stdout to the live stream" do
-      shell_cmd.run_command
-      stream.string.should == "hello#{LINE_ENDING}"
-    end
-  end
 
   describe "handling various subprocess behaviors" do
     it "collects all of STDOUT and STDERR" do
