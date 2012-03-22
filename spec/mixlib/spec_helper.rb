@@ -1,5 +1,6 @@
 $:.unshift File.expand_path("../../../lib", __FILE__)
 require 'mixlib/shellout'
+require 'ap'
 
 def windows?
   if RUBY_PLATFORM =~ /mswin|mingw|windows/
