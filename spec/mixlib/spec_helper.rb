@@ -16,3 +16,10 @@ else
   LINE_ENDING = "\n"
   ECHO_LC_ALL = "echo $LC_ALL"
 end
+
+RSpec.configure do |config|
+  config.mock_with :rspec
+  config.filter_run :focus => true
+  config.filter_run_excluding :external => true
+  config.run_all_when_everything_filtered = true
+end
