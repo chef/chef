@@ -80,7 +80,7 @@ describe Mixlib::ShellOut do
           let(:expected_gid) { group_info.gid }
           let(:group_info) { Etc.getgrent }
 
-          it "should compute the gid of the user", :skip_windows => true do
+          it "should compute the gid of the user", :unix_only => true do
             shell_cmd.gid.should eql(expected_gid)
           end
         end
