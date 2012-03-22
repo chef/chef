@@ -149,70 +149,118 @@ describe Mixlib::ShellOut do
   end
 
   context "when initialized with a hash of options" do
-    let(:options) { { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
-      :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42],
-      :live_stream => StringIO.new} }
     let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
+    let(:options) { {
+      :cwd => cwd,
+      :user => user,
+      :group => group,
+      :umask => umask,
+      :timeout => timeout,
+      :environment => environment,
+      :returns => valid_exit_codes,
+      :live_stream => stream } }
 
-    it "sets the working dir as specified in the options" do
-      shell_cmd.cwd.should == '/tmp'
+    let(:cwd) { '/tmp' }
+    let(:user) { 'toor' }
+    let(:group) { 'wheel' }
+    let(:umask) { '2222' }
+    let(:timeout) { 5 }
+    let(:environment) { { 'RUBY_OPTS' => '-w' } }
+    let(:valid_exit_codes) { [ 0, 1, 42 ] }
+    let(:stream) { StringIO.new }
+
+
+    it "should set the working directory" do
+      shell_cmd.cwd.should eql(cwd)
     end
 
-    it "sets the user as specified in the options" do
-      shell_cmd.user.should == 'toor'
+    it "should set the user" do
+      shell_cmd.user.should eql(user)
     end
 
-    it "sets the group as specified in the options" do
-      shell_cmd.group.should == 'wheel'
+    it "should set the group" do
+      shell_cmd.group.should eql(group)
     end
 
     it "sets the umask as specified in the options" do
-      shell_cmd.umask.should == 002222
+      shell_cmd.umask.should eql(002222)
     end
 
     it "sets the timout as specified in the options" do
-      shell_cmd.timeout.should == 5
+      shell_cmd.timeout.should eql(timeout)
     end
 
     it "merges the environment with the default environment settings" do
-      shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
+      shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
     end
 
-    it "also accepts :env to set the enviroment for brevity's sake" do
-      shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :env => {'RUBY_OPTS'=>'-w'})
-      shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
+    context 'when setting custom environments' do
+      context 'when setting the :env option' do
+        let(:options) { { :env => environment } }
+
+        it "should set the enviroment" do
+          shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
+        end
+      end
+
+      context 'when :environment is set to nil' do
+        let(:options) { { :environment => nil } }
+
+        it "should not set any environment" do
+          shell_cmd.environment.should == {}
+        end
+      end
+
+      context 'when :env is set to nil' do
+        let(:options) { { :env => nil } }
+
+        it "should not set any environment" do
+          shell_cmd.environment.should eql({})
+        end
+      end
     end
 
-    it "does not set any environment settings when given :environment => nil" do
-      shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :environment => nil)
-      shell_cmd.environment.should == {}
-    end
-
-    it "sets the list of acceptable return values" do
-      shell_cmd.valid_exit_codes.should == [0,1,42]
+    it "should set valid exit codes" do
+      shell_cmd.valid_exit_codes.should eql(valid_exit_codes)
     end
 
     it "sets the live stream specified in the options" do
-      shell_cmd.live_stream.should == options[:live_stream]
+      shell_cmd.live_stream.should eql(stream)
     end
 
-    it "raises an error when given an invalid option" do
-      klass = Mixlib::ShellOut::InvalidCommandOption
-      msg   = "option ':frab' is not a valid option for Mixlib::ShellOut"
-      lambda { Mixlib::ShellOut.new("foo", :frab => :jab) }.should raise_error(klass, msg)
-    end
+    context 'with an invalid option' do
+      let(:options) { { :frab => :job } }
+      let(:invalid_option_exception) { Mixlib::ShellOut::InvalidCommandOption }
+      let(:exception_message) { "option ':frab' is not a valid option for Mixlib::ShellOut" }
 
-    it "chdir to the cwd directory if given" do
-      # /bin should exists on all systems, and is not the default cwd
-      if windows?
-        dir = Dir.tmpdir
-        cmd = Mixlib::ShellOut.new('echo %cd%', :cwd => dir)
-      else
-        dir = "/bin"
-        cmd = Mixlib::ShellOut.new('pwd', :cwd => dir)
+      it "raises an error when given an invalid option" do
+        lambda { shell_cmd }.should raise_error(invalid_option_exception, exception_message)
       end
-      cmd.run_command
-      File.expand_path(cmd.stdout.chomp).should == File.expand_path(dir)
+    end
+
+    context 'when setting cwd' do
+      subject { File.expand_path(output) }
+      let(:output) { shell_cmd.tap(&:run_command).stdout.chomp }
+      let(:fully_qualified_cwd) { File.expand_path(cwd) }
+      let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :cwd => cwd) }
+
+      context 'when running under Unix', :unix_only => true do
+        let(:cwd) { '/bin' }
+        let(:cmd) { 'pwd' }
+
+        it "should chdir to the working directory" do
+          should eql(fully_qualified_cwd)
+        end
+      end
+
+      context 'when running under Windows', :windows_only => true do
+        let(:cwd) { Dir.tmpdir }
+        let(:cmd) { 'echo %cd%' }
+
+        it "should chdir to the working directory" do
+          should eql(fully_qualified_cwd)
+        end
+      end
     end
   end
 
