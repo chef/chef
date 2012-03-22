@@ -24,7 +24,6 @@ describe Mixlib::ShellOut do
     end
   end
 
-
   context 'when setting accessors' do
     subject { shell_cmd.send(accessor) }
 
@@ -165,7 +164,6 @@ describe Mixlib::ShellOut do
     let(:environment) { { 'RUBY_OPTS' => '-w' } }
     let(:valid_exit_codes) { [ 0, 1, 42 ] }
     let(:stream) { StringIO.new }
-
 
     it "should set the working directory" do
       shell_cmd.cwd.should eql(cwd)
