@@ -287,17 +287,38 @@ describe Mixlib::ShellOut do
       end
     end
 
-    describe "running different types of command" do
-      it "runs commands with spaces in the path" do
-        Dir.mktmpdir do |dir|
-          file = File.open("#{dir}/blah blah.cmd", "w")
-          file.write(windows? ? "@echo blah" : "echo blah")
-          file.close
-          File.chmod(0755, file.path)
+    context "when running different types of command" do
+      let(:executed_cmd) { shell_cmd.tap(&:run_command) }
+      let(:stdout) { executed_cmd.stdout }
+      let(:chomped_stdout) { stdout.chomp }
 
-          cmd = Mixlib::ShellOut.new("\"#{file.path}\"")
-          cmd.run_command
-          cmd.stdout.chomp.should == "blah"
+      context 'with spaces in the path' do
+        subject { chomped_stdout }
+        let(:shell_cmd) { Mixlib::ShellOut.new(script_name) }
+
+        let(:script) { open_file.tap(&write_file).tap(&:close).tap(&make_executable) }
+        let(:dir) { Dir.mktmpdir }
+        let(:file_name) { "#{dir}/blah blah.cmd" }
+        let(:script_name) { "\"#{script.path}\"" }
+
+        let(:open_file) { File.open(file_name, 'w') }
+        let(:write_file) { lambda { |f| f.write(script_content) } }
+        let(:make_executable) { lambda { |f| File.chmod(0755, f.path) } }
+
+        context 'when running under Unix', :unix_only => true do
+          let(:script_content) { 'echo blah' }
+
+          it 'should execute' do
+            should eql('blah')
+          end
+        end
+
+        context 'when running under Windows', :windows_only => true do
+          let(:script_content) { '@echo blah' }
+
+          it 'should execute' do
+            should eql('blah')
+          end
         end
       end
 
@@ -364,7 +385,6 @@ describe Mixlib::ShellOut do
       end
     end
   end
-
 
   describe "handling various subprocess behaviors" do
     it "collects all of STDOUT and STDERR" do
@@ -496,7 +516,6 @@ describe Mixlib::ShellOut do
       unclosed_pipes = cmd.send(:open_pipes)
       unclosed_pipes.should be_empty
     end
-
   end
 
   it "formats itself for exception messages" do
@@ -550,5 +569,4 @@ describe Mixlib::ShellOut do
       lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
   end
-
 end
