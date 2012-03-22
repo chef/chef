@@ -57,11 +57,8 @@ describe Mixlib::ShellOut do
         let(:expected_uid) { user_info.uid }
         let(:user_info) { Etc.getpwent }
 
-        it "should compute the uid of the user" do
-          # This should use metadata filtering instead
-          unless windows?
-            shell_cmd.uid.should eql(expected_uid)
-          end
+        it "should compute the uid of the user", :skip_windows => true do
+          shell_cmd.uid.should eql(expected_uid)
         end
       end
 
@@ -88,11 +85,8 @@ describe Mixlib::ShellOut do
         let(:expected_gid) { group_info.gid }
         let(:group_info) { Etc.getgrent }
 
-        it "should compute the gid of the user" do
-          # This should use metadata filtering instead
-          unless windows?
-            shell_cmd.gid.should eql(expected_gid)
-          end
+        it "should compute the gid of the user", :skip_windows => true do
+          shell_cmd.gid.should eql(expected_gid)
         end
       end
     end

@@ -3,14 +3,10 @@ require 'mixlib/shellout'
 require 'ap'
 
 def windows?
-  if RUBY_PLATFORM =~ /mswin|mingw|windows/
-    true
-  else
-    false
-  end
+  !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
-if RUBY_PLATFORM =~ /mswin|mingw|windows/
+if windows?
   LINE_ENDING = "\r\n"
   ECHO_LC_ALL = "echo %LC_ALL%"
 else
@@ -22,5 +18,6 @@ RSpec.configure do |config|
   config.mock_with :rspec
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
+  config.filter_run_excluding :skip_windows => true if windows?
   config.run_all_when_everything_filtered = true
 end
