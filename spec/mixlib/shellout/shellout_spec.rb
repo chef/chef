@@ -561,11 +561,16 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "returns empty strings from commands that have no output" do
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'exit 0'})
-        cmd.run_command
-        cmd.stdout.should == ''
-        cmd.stderr.should == ''
+      context 'with subprocess that returns nothing' do
+        let(:cmd) { ruby_eval.call('exit 0') }
+
+        it 'should return an empty string for stdout' do
+          stdout.should eql('')
+        end
+
+        it 'should return an empty string for stderr' do
+          stderr.should eql('')
+        end
       end
 
       it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
