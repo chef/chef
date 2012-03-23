@@ -257,6 +257,7 @@ describe Mixlib::ShellOut do
     let(:stdout) { executed_cmd.stdout }
     let(:stderr) { executed_cmd.stderr }
     let(:chomped_stdout) { stdout.chomp }
+    let(:stripped_stdout) { stdout.strip }
     let(:exit_status) { executed_cmd.status.exitstatus }
 
     let(:dir) { Dir.mktmpdir }
@@ -286,6 +287,37 @@ describe Mixlib::ShellOut do
           should eql(fully_qualified_cwd)
         end
       end
+    end
+
+    context 'when handling locale' do
+      subject { stripped_stdout }
+      let(:cmd) { ECHO_LC_ALL }
+
+      it "should use the C locale by default" do
+        should eql('C')
+      end
+
+      context 'with locale' do
+        let(:locale) { 'es' }
+        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :environment => {"LC_ALL" => locale}) }
+
+        it "should use the requested locale" do
+          should eql(locale)
+        end
+      end
+
+      it "does not set any locale when the user gives LC_ALL => nil" do
+        # kinda janky
+        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
+        cmd.run_command
+        if !ENV['LC_ALL'] && windows?
+          expected = "%LC_ALL%"
+        else
+          expected = ENV['LC_ALL'].to_s.strip
+        end
+        cmd.stdout.strip.should == expected
+      end
+
     end
 
     context "with a live stream" do
@@ -632,29 +664,6 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "uses the C locale by default" do
-        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL)
-        cmd.run_command
-        cmd.stdout.strip.should == 'C'
-      end
-
-      it "does not set any locale when the user gives LC_ALL => nil" do
-        # kinda janky
-        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
-        cmd.run_command
-        if !ENV['LC_ALL'] && windows?
-          expected = "%LC_ALL%"
-        else
-          expected = ENV['LC_ALL'].to_s.strip
-        end
-        cmd.stdout.strip.should == expected
-      end
-
-      it "uses the requested locale" do
-        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => 'es'})
-        cmd.run_command
-        cmd.stdout.strip.should == 'es'
-      end
 
       it "recovers the error message when exec fails" do
         cmd = Mixlib::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
