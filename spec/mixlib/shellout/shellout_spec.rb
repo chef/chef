@@ -296,6 +296,8 @@ describe Mixlib::ShellOut do
 
       let(:dir) { Dir.mktmpdir }
       let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
+      let(:dump_file) { "#{dir}/out.txt" }
+      let(:dump_file_content) { stdout; IO.read(dump_file) }
 
       context 'with spaces in the path' do
         subject { chomped_stdout }
@@ -375,8 +377,6 @@ describe Mixlib::ShellOut do
       end
 
       context 'with file pipes' do
-        let(:dump_file) { "#{dir}/out.txt" }
-        let(:dump_file_content) { stdout; IO.read(dump_file) }
         let(:code) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
         let(:cmd) { ruby_eval.call(code) + " > #{dump_file}" }
 
@@ -393,12 +393,16 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "runs commands with stdout and stderr file pipes" do
-        Dir.mktmpdir do |dir|
-          cmd = Mixlib::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' > #{dir}/blah.txt 2>&1")
-          cmd.run_command
-          cmd.stdout.should == ""
-          IO.read("#{dir}/blah.txt").should == "truefalse"
+      context 'with stdout and stderr file pipes' do
+        let(:code) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
+        let(:cmd) { ruby_eval.call(code) + " > #{dump_file} 2>&1" }
+
+        it 'should execute' do
+          stdout.should eql('')
+        end
+
+        it 'should write to file pipe' do
+          dump_file_content.should eql('truefalse')
         end
       end
 
