@@ -416,7 +416,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with ||' do
-        let(:exit_status) { executed_cmd.status.exit_status }
+        let(:exit_status) { executed_cmd.status.exitstatus }
         let(:cmd) { ruby_eval.call('print "foo"; exit 1') + ' || ' + ruby_eval.call('print "bar"') }
 
         it 'should execute' do
