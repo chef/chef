@@ -439,22 +439,35 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 42"', :returns => 42)
-        cmd.run_command
-        lambda {cmd.error!}.should_not raise_error
-      end
+      context 'with valid exit codes' do
+        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :returns => valid_exit_codes) }
+        let(:cmd) { ruby_eval.call("exit #{exit_code}" ) }
 
-      it "raises an error if the command does not return a value in the list of valid_exit_codes" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
-        cmd.run_command
-        lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-      end
+        context 'when exiting with valid code' do
+          let(:valid_exit_codes) { 42 }
+          let(:exit_code) { 42 }
 
-      it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 0"', :returns => 42)
-        cmd.run_command
-        lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          it "should raise InvalidCommandResult" do
+            lambda { executed_cmd.error! }.should_not raise_error
+          end
+        end
+
+        context 'when exiting with invalid code' do
+          let(:valid_exit_codes) { [ 0, 1, 42 ] }
+          let(:exit_code) { 2 }
+          it "should raise InvalidCommandResult" do
+            lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          end
+        end
+
+        context 'when exiting with invalid code 0' do
+          let(:valid_exit_codes) { 42 }
+          let(:exit_code) { 0 }
+
+          it "should raise InvalidCommandResult" do
+            lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          end
+        end
       end
 
       it "includes output with exceptions from #error!" do
