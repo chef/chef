@@ -33,9 +33,10 @@ class Chef
         # platform_hash (Hash) a hash of the same structure as Chef::Platform,
         # like this:
         #   {
-        #     :debian => {:default => 'the value for all debian'}
-        #     [:centos, :redhat, :fedora] => {:default => "value for all EL variants"}
+        #     :debian => {:default => 'the value for all debian'},
+        #     [:centos, :redhat, :fedora] => {:default => "value for all EL variants"},
         #     :ubuntu => { :default => "default for ubuntu", '10.04' => "value for 10.04 only"},
+        #     :scientific => { /6\.\d+/ => "value for all 6.x variants" },
         #     :default => "the default when nothing else matches"
         #   }
         # * platforms can be specified as Symbols or Strings
@@ -53,6 +54,8 @@ class Chef
           platform, version = node[:platform].to_s, node[:platform_version].to_s
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
+          elsif @values.key?(platform) && @values[platform].find { |k,v| version =~ Regexp.new(k) }
+            @values[platform].find { |k,v| version =~ Regexp.new(k) }[1]
           elsif @values.key?(platform) && @values[platform].key?("default")
             @values[platform]["default"]
           elsif @values.key?("default")

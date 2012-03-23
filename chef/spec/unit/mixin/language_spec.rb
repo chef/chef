@@ -101,6 +101,27 @@ describe Chef::Mixin::Language do
     end
   end
 
+  describe "when platform versions includes a regex" do
+    before(:each) do
+      @platform_hash["scientific"] = { 
+        /6\.\d+/ => "scientific-6.x", 
+        "default" => "no-match" 
+      }
+    end
+
+    it "returns a platform specific value if the current platform version matches the regex" do
+      @node[:platform] = "scientific"
+      @node[:platform_version] = "6.2"
+      @language.value_for_platform(@platform_hash).should == "scientific-6.x"
+    end
+
+    it "returns a default value for the current platform if the regex is not matched" do
+      @node[:platform] = "scientific"
+      @node[:platform_version] = "5.7"
+      @language.value_for_platform(@platform_hash).should == "no-match"
+    end
+  end
+
   describe "when checking platform?" do 
     before(:each) do
       @language = LanguageTester.new
