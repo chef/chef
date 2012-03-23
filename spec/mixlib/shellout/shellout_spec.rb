@@ -655,6 +655,7 @@ describe Mixlib::ShellOut do
           should be_empty
         end
       end
+
       context 'with subprocess writing lots of data to both stdout and stderr' do
         let(:cmd) { ruby_eval.call(chatty) }
         let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
@@ -716,19 +717,25 @@ describe Mixlib::ShellOut do
           end
         end
       end
+    end
 
+    describe "#format_for_exception" do
+      let(:ruby_code) { %q{STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"} }
+      let(:cmd) { ruby_eval.call(ruby_code) }
+      let(:exception_output) { executed_cmd.format_for_exception.split("\n") }
+      let(:expected_output) { [
+        %q{---- Begin output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
+        %q{STDOUT: msg_in_stdout},
+        %q{STDERR: msg_in_stderr},
+        %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
+        "Ran ruby -e 'STDERR.puts \"msg_in_stderr\"; puts \"msg_in_stdout\"' returned 0"
+      ] }
+
+      it "should format exception messages" do
+        exception_output.each_with_index do |output_line, i|
+          output_line.should eql(expected_output[i])
+        end
+      end
     end
   end
-
-
-  it "formats itself for exception messages" do
-    cmd = Mixlib::ShellOut.new %q{ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"'}
-    cmd.run_command
-    cmd.format_for_exception.split("\n")[0].should == %q{---- Begin output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
-    cmd.format_for_exception.split("\n")[1].should == %q{STDOUT: msg_in_stdout}
-    cmd.format_for_exception.split("\n")[2].should == %q{STDERR: msg_in_stderr}
-    cmd.format_for_exception.split("\n")[3].should == %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
-  end
-
-
 end
