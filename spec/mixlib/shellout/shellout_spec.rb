@@ -674,10 +674,12 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context 'when execution fails' do
+        let(:cmd) { "fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" }
 
-      it "recovers the error message when exec fails" do
-        cmd = Mixlib::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-        lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
+        it "should recover the error message" do
+          lambda { executed_cmd }.should raise_error(Errno::ENOENT)
+        end
       end
 
       it "closes stdin on the child process so it knows not to wait for any input" do
