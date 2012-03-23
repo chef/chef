@@ -252,9 +252,19 @@ describe Mixlib::ShellOut do
   end
 
   context 'when executing the command' do
+    let(:shell_cmd) { Mixlib::ShellOut.new(cmd) }
+    let(:executed_cmd) { shell_cmd.tap(&:run_command) }
+    let(:stdout) { executed_cmd.stdout }
+    let(:stderr) { executed_cmd.stderr }
+    let(:chomped_stdout) { stdout.chomp }
+
+    let(:dir) { Dir.mktmpdir }
+    let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
+    let(:dump_file) { "#{dir}/out.txt" }
+    let(:dump_file_content) { stdout; IO.read(dump_file) }
+
     context 'with a current working directory' do
-      subject { File.expand_path(output) }
-      let(:output) { shell_cmd.tap(&:run_command).stdout.chomp }
+      subject { File.expand_path(chomped_stdout) }
       let(:fully_qualified_cwd) { File.expand_path(cwd) }
       let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :cwd => cwd) }
 
@@ -288,17 +298,6 @@ describe Mixlib::ShellOut do
     end
 
     context "when running different types of command" do
-      let(:shell_cmd) { Mixlib::ShellOut.new(cmd) }
-      let(:executed_cmd) { shell_cmd.tap(&:run_command) }
-      let(:stdout) { executed_cmd.stdout }
-      let(:stderr) { executed_cmd.stderr }
-      let(:chomped_stdout) { stdout.chomp }
-
-      let(:dir) { Dir.mktmpdir }
-      let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
-      let(:dump_file) { "#{dir}/out.txt" }
-      let(:dump_file_content) { stdout; IO.read(dump_file) }
-
       context 'with spaces in the path' do
         subject { chomped_stdout }
         let(:shell_cmd) { Mixlib::ShellOut.new(script_name) }
@@ -426,6 +425,48 @@ describe Mixlib::ShellOut do
         it 'should exit with code 0' do
           exit_status.should eql(0)
         end
+      end
+    end
+
+    context "when handling process exit codes" do
+      it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
+        cmd.run_command
+        lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      end
+
+      it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 42"', :returns => 42)
+        cmd.run_command
+        lambda {cmd.error!}.should_not raise_error
+      end
+
+      it "raises an error if the command does not return a value in the list of valid_exit_codes" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
+        cmd.run_command
+        lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      end
+
+      it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 0"', :returns => 42)
+        cmd.run_command
+        lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      end
+
+      it "includes output with exceptions from #error!" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
+        cmd.run_command
+        begin
+          cmd.error!
+        rescue Mixlib::ShellOut::ShellCommandFailed => e
+          e.message.should match(Regexp.escape(cmd.format_for_exception))
+        end
+      end
+
+      it "errors out when told the result is invalid" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
+        cmd.run_command
+        lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
     end
   end
@@ -572,45 +613,4 @@ describe Mixlib::ShellOut do
   end
 
 
-  describe "handling process exit codes" do
-    it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
-      cmd.run_command
-      lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-
-    it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 42"', :returns => 42)
-      cmd.run_command
-      lambda {cmd.error!}.should_not raise_error
-    end
-
-    it "raises an error if the command does not return a value in the list of valid_exit_codes" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
-      cmd.run_command
-      lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-
-    it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 0"', :returns => 42)
-      cmd.run_command
-      lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-
-    it "includes output with exceptions from #error!" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
-      cmd.run_command
-      begin
-        cmd.error!
-      rescue Mixlib::ShellOut::ShellCommandFailed => e
-        e.message.should match(Regexp.escape(cmd.format_for_exception))
-      end
-    end
-
-    it "errors out when told the result is invalid" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
-      cmd.run_command
-      lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-  end
 end
