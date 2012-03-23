@@ -291,14 +291,17 @@ describe Mixlib::ShellOut do
       let(:shell_cmd) { Mixlib::ShellOut.new(cmd) }
       let(:executed_cmd) { shell_cmd.tap(&:run_command) }
       let(:stdout) { executed_cmd.stdout }
+      let(:stderr) { executed_cmd.stderr }
       let(:chomped_stdout) { stdout.chomp }
+
+      let(:dir) { Dir.mktmpdir }
+      let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
 
       context 'with spaces in the path' do
         subject { chomped_stdout }
         let(:shell_cmd) { Mixlib::ShellOut.new(script_name) }
 
         let(:script) { open_file.tap(&write_file).tap(&:close).tap(&make_executable) }
-        let(:dir) { Dir.mktmpdir }
         let(:file_name) { "#{dir}/blah blah.cmd" }
         let(:script_name) { "\"#{script.path}\"" }
 
@@ -350,19 +353,24 @@ describe Mixlib::ShellOut do
       context 'with backslashes' do
         subject { stdout }
         let(:backslashes) { %q{\\"\\\\} }
-        let(:cmd) { "ruby -e 'print \"#{backslashes}\"'" }
+        let(:cmd) { ruby_eval.call("print \"#{backslashes}\"") }
 
         it 'should execute' do
           should eql("\"\\")
         end
       end
 
-      it "runs commands with stdout pipes" do
-        Dir.mktmpdir do |dir|
-          cmd = Mixlib::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' | ruby -e 'print STDIN.read.length'")
-          cmd.run_command
-          cmd.stdout.should == "4"
-          cmd.stderr.should == "false"
+      context 'with pipes' do
+        let(:input_script) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
+        let(:output_script) { "print STDIN.read.length" }
+        let(:cmd) { ruby_eval.call(input_script) + " | " + ruby_eval.call(output_script) }
+
+        it 'should execute' do
+          stdout.should eql('4')
+        end
+
+        it 'should handle stderr' do
+          stderr.should eql('false')
         end
       end
 
