@@ -433,9 +433,18 @@ describe Mixlib::ShellOut do
 
       context 'with nonzero exit status' do
         let(:exit_code) { 2 }
+        let(:exception_message_format) { Regexp.escape(executed_cmd.format_for_exception) }
 
         it "should raise InvalidCommandResult" do
           lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        end
+
+        it "includes output with exceptions from #error!" do
+          begin
+            executed_cmd.error!
+          rescue Mixlib::ShellOut::ShellCommandFailed => e
+            e.message.should match(exception_message_format)
+          end
         end
       end
 
@@ -467,16 +476,6 @@ describe Mixlib::ShellOut do
           it "should raise InvalidCommandResult" do
             lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
           end
-        end
-      end
-
-      it "includes output with exceptions from #error!" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
-        cmd.run_command
-        begin
-          cmd.error!
-        rescue Mixlib::ShellOut::ShellCommandFailed => e
-          e.message.should match(Regexp.escape(cmd.format_for_exception))
         end
       end
 
