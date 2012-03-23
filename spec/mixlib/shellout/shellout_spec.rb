@@ -429,10 +429,14 @@ describe Mixlib::ShellOut do
     end
 
     context "when handling process exit codes" do
-      it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
-        cmd.run_command
-        lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      let(:cmd) { ruby_eval.call("exit #{exit_code}") }
+
+      context 'with nonzero exit status' do
+        let(:exit_code) { 2 }
+
+        it "should raise InvalidCommandResult" do
+          lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        end
       end
 
       it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
