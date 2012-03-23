@@ -306,18 +306,28 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "does not set any locale when the user gives LC_ALL => nil" do
-        # kinda janky
-        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
-        cmd.run_command
-        if !ENV['LC_ALL'] && windows?
-          expected = "%LC_ALL%"
-        else
-          expected = ENV['LC_ALL'].to_s.strip
-        end
-        cmd.stdout.strip.should == expected
-      end
+      context 'with LC_ALL set to nil' do
+        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :environment => {"LC_ALL" => nil}) }
 
+        context 'when running under Unix', :unix_only => true do
+          let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
+
+          it "should use the parent process's locale" do
+            should eql(parent_locale)
+          end
+        end
+
+        context 'when running under Windows', :windows_only => true do
+          # FIXME: I don't understand the original:
+          # https://github.com/opscode/mixlib-shellout/blob/7a1fd26ab7c74023e044bfa306dff3d6b1de3d99/spec/mixlib/shellout/shellout_spec.rb#L316
+          # Is it saying that under Windows, ENV['LC_ALL'] can have something, otherwise if blank, it will be '%LC_ALL%'?
+          let(:parent_locale) { (ENV['LC_ALL'] || '%LC_ALL%').to_s.strip }
+
+          it "should use the parent process's locale" do
+            should eql(parent_locale)
+          end
+        end
+      end
     end
 
     context "with a live stream" do
