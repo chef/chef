@@ -552,11 +552,13 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "reads all of the output when the subprocess produces more than $buffersize of output" do
-        chatty = "ruby -e \"print('X' * 16 * 1024); print('.' * 1024)\""
-        cmd = Mixlib::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should match(/X{16384}\.{1024}/)
+      context 'with subprocess that exceeds buffersize' do
+        let(:chatty) { 'print("X" * 16 * 1024); print("." * 1024)' }
+        let(:cmd) { ruby_eval.call(chatty) }
+
+        it "should still reads all of the output" do
+          stdout.should match(/X{16384}\.{1024}/)
+        end
       end
 
       it "returns empty strings from commands that have no output" do
