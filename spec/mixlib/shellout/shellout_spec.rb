@@ -1,12 +1,26 @@
 require 'spec_helper'
 
 describe Mixlib::ShellOut do
-  subject { shell_cmd }
-  let(:shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
+  let(:shell_cmd) { options ? shell_cmd_with_options : shell_cmd_without_options }
+  let(:executed_cmd) { shell_cmd.tap(&:run_command) }
+  let(:stdout) { executed_cmd.stdout }
+  let(:stderr) { executed_cmd.stderr }
+  let(:chomped_stdout) { stdout.chomp }
+  let(:stripped_stdout) { stdout.strip }
+  let(:exit_status) { executed_cmd.status.exitstatus }
+
+  let(:shell_cmd_without_options) { Mixlib::ShellOut.new(cmd) }
+  let(:shell_cmd_with_options) { Mixlib::ShellOut.new(cmd, options) }
+  let(:cmd) { ruby_eval.call(ruby_code) }
+  let(:ruby_code) { raise 'define let(:ruby_code)' }
+  let(:options) { nil }
 
   context 'when instantiating' do
+    subject { shell_cmd }
+    let(:cmd) { 'apt-get install chef' }
+
     it "should set the command" do
-      subject.command.should eql("apt-get install chef")
+      subject.command.should eql(cmd)
     end
 
     context 'with default settings' do
@@ -144,7 +158,7 @@ describe Mixlib::ShellOut do
     end
 
     context "with options hash" do
-      let(:shell_cmd) { Mixlib::ShellOut.new("brew install couchdb", options) }
+      let(:cmd) { 'brew install couchdb' }
       let(:options) { { :cwd => cwd, :user => user, :group => group, :umask => umask,
         :timeout => timeout, :environment => environment, :returns => valid_exit_codes, :live_stream => stream } }
 
@@ -227,42 +241,32 @@ describe Mixlib::ShellOut do
     end
 
     context "with array of command and args" do
+      let(:cmd) { [ 'ruby', '-e', %q{'puts "hello"'} ] }
+
       context 'without options' do
-        let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}) }
+        let(:options) { nil }
 
         it "should set the command to the array of command and args" do
-          shell_cmd.command.should eql(['ruby', '-e', %q{'puts "hello"'}])
+          shell_cmd.command.should eql(cmd)
         end
       end
 
       context 'with options' do
-        let(:shell_cmd) { Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}, options) }
         let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
 
         it "should set the command to the array of command and args" do
-          shell_cmd.command.should eql(['ruby', '-e', %q{'puts "hello"'}])
+          shell_cmd.command.should eql(cmd)
         end
 
         it "should evaluate the options" do
-          shell_cmd.cwd.should == '/tmp'
-          shell_cmd.user.should == 'nobody'
+          shell_cmd.cwd.should eql('/tmp')
+          shell_cmd.user.should eql('nobody')
         end
       end
     end
   end
 
   context 'when executing the command' do
-    let(:shell_cmd) { Mixlib::ShellOut.new(cmd) }
-    let(:executed_cmd) { shell_cmd.tap(&:run_command) }
-    let(:stdout) { executed_cmd.stdout }
-    let(:stderr) { executed_cmd.stderr }
-    let(:chomped_stdout) { stdout.chomp }
-    let(:stripped_stdout) { stdout.strip }
-    let(:exit_status) { executed_cmd.status.exitstatus }
-
-    let(:cmd) { ruby_eval.call(ruby_code) }
-    let(:ruby_code) { raise 'define let(:ruby_code)' }
-
     let(:dir) { Dir.mktmpdir }
     let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
     let(:dump_file) { "#{dir}/out.txt" }
@@ -271,7 +275,7 @@ describe Mixlib::ShellOut do
     context 'with a current working directory' do
       subject { File.expand_path(chomped_stdout) }
       let(:fully_qualified_cwd) { File.expand_path(cwd) }
-      let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :cwd => cwd) }
+      let(:options) { { :cwd => cwd } }
 
       context 'when running under Unix', :unix_only => true do
         let(:cwd) { '/bin' }
@@ -295,14 +299,17 @@ describe Mixlib::ShellOut do
     context 'when handling locale' do
       subject { stripped_stdout }
       let(:cmd) { ECHO_LC_ALL }
+      let(:options) { { :environment => { 'LC_ALL' => locale } } }
 
-      it "should use the C locale by default" do
-        should eql('C')
+      context 'without specifying environment' do
+        let(:options) { nil }
+        it "should use the C locale by default" do
+          should eql('C')
+        end
       end
 
       context 'with locale' do
         let(:locale) { 'es' }
-        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :environment => {"LC_ALL" => locale}) }
 
         it "should use the requested locale" do
           should eql(locale)
@@ -310,7 +317,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with LC_ALL set to nil' do
-        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :environment => {"LC_ALL" => nil}) }
+        let(:locale) { nil }
 
         context 'when running under Unix', :unix_only => true do
           let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
@@ -333,7 +340,8 @@ describe Mixlib::ShellOut do
 
     context "with a live stream" do
       let(:stream) { StringIO.new }
-      let(:shell_cmd) { Mixlib::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => stream) }
+      let(:ruby_code) { 'puts "hello"' }
+      let(:options) { { :live_stream => stream } }
 
       it "should copy the child's stdout to the live stream" do
         shell_cmd.run_command
@@ -344,7 +352,7 @@ describe Mixlib::ShellOut do
     context "when running different types of command" do
       context 'with spaces in the path' do
         subject { chomped_stdout }
-        let(:shell_cmd) { Mixlib::ShellOut.new(script_name) }
+        let(:cmd) { script_name }
 
         let(:script) { open_file.tap(&write_file).tap(&:close).tap(&make_executable) }
         let(:file_name) { "#{dir}/blah blah.cmd" }
@@ -508,8 +516,8 @@ describe Mixlib::ShellOut do
       end
 
       context 'with valid exit codes' do
-        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :returns => valid_exit_codes) }
         let(:cmd) { ruby_eval.call("exit #{exit_code}" ) }
+        let(:options) { { :returns => valid_exit_codes } }
 
         context 'when exiting with valid code' do
           let(:valid_exit_codes) { 42 }
@@ -586,8 +594,8 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that takes longer than timeout' do
-        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :timeout => 0.1) }
         let(:cmd) { ruby_eval.call('sleep 2') }
+        let(:options) { { :timeout => 0.1 } }
 
         it "should raise CommandTimeout" do
           lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
@@ -623,8 +631,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that closes stderr and continues writing to stdout' do
-        let(:half_and_half) { "STDERR.close; sleep 0.5; STDOUT.puts :win" }
-        let(:cmd) { ruby_eval.call(half_and_half) }
+        let(:ruby_code) { "STDERR.close; sleep 0.5; STDOUT.puts :win" }
 
         it 'should not hang or lose outupt' do
           stdout.should eql("win#{LINE_ENDING}")
@@ -658,6 +665,7 @@ describe Mixlib::ShellOut do
 
         context 'when writing to STDOUT first' do
           let(:ruby_code) { %q{puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000} }
+
           it "should not deadlock" do
             stdout.should eql(expected_output_with.call('f'))
             stderr.should eql(expected_output_with.call('u'))
@@ -666,6 +674,7 @@ describe Mixlib::ShellOut do
 
         context 'when writing to STDERR first' do
           let(:ruby_code) { %q{STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000} }
+
           it "should not deadlock" do
             stdout.should eql(expected_output_with.call('f'))
             stderr.should eql(expected_output_with.call('u'))
