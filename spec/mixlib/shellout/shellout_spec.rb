@@ -682,10 +682,17 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "closes stdin on the child process so it knows not to wait for any input" do
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'print STDIN.eof?.to_s'})
-        cmd.run_command
-        cmd.stdout.should == "true"
+      context 'without input data' do
+        context 'with subprocess that expects stdin' do
+          let(:ruby_code) { %q{print STDIN.eof?.to_s} }
+          let(:cmd) { ruby_eval.call(ruby_code) }
+
+          # If we don't have anything to send to the subprocess, we need to close
+          # stdin so that the subprocess won't wait for input.
+          it 'should close stdin' do
+            stdout.should eql("true")
+          end
+        end
       end
 
       it "doesn't hang when STDOUT is closed before STDERR" do
