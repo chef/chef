@@ -257,6 +257,7 @@ describe Mixlib::ShellOut do
     let(:stdout) { executed_cmd.stdout }
     let(:stderr) { executed_cmd.stderr }
     let(:chomped_stdout) { stdout.chomp }
+    let(:exit_status) { executed_cmd.status.exitstatus }
 
     let(:dir) { Dir.mktmpdir }
     let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
@@ -415,7 +416,6 @@ describe Mixlib::ShellOut do
       end
 
       context 'with ||' do
-        let(:exit_status) { executed_cmd.status.exitstatus }
         let(:cmd) { ruby_eval.call('print "foo"; exit 1') + ' || ' + ruby_eval.call('print "bar"') }
 
         it 'should execute' do
@@ -430,6 +430,18 @@ describe Mixlib::ShellOut do
 
     context "when handling process exit codes" do
       let(:cmd) { ruby_eval.call("exit #{exit_code}") }
+
+      context 'with normal exit status' do
+        let(:exit_code) { 0 }
+
+        it "should not raise error" do
+          lambda { executed_cmd.error! }.should_not raise_error
+        end
+
+        it "should set the exit status of the command" do
+          exit_status.should eql(exit_code)
+        end
+      end
 
       context 'with nonzero exit status' do
         let(:exit_code) { 2 }
@@ -446,6 +458,10 @@ describe Mixlib::ShellOut do
             e.message.should match(exception_message_format)
           end
         end
+
+        it "should set the exit status of the command" do
+          exit_status.should eql(exit_code)
+        end
       end
 
       context 'with valid exit codes' do
@@ -459,13 +475,22 @@ describe Mixlib::ShellOut do
           it "should not raise error" do
             lambda { executed_cmd.error! }.should_not raise_error
           end
+
+          it "should set the exit status of the command" do
+            exit_status.should eql(exit_code)
+          end
         end
 
         context 'when exiting with invalid code' do
           let(:valid_exit_codes) { [ 0, 1, 42 ] }
           let(:exit_code) { 2 }
+
           it "should raise ShellCommandFailed" do
             lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          end
+
+          it "should set the exit status of the command" do
+            exit_status.should eql(exit_code)
           end
         end
 
@@ -476,11 +501,16 @@ describe Mixlib::ShellOut do
           it "should raise ShellCommandFailed" do
             lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
           end
+
+          it "should set the exit status of the command" do
+            exit_status.should eql(exit_code)
+          end
         end
       end
 
       describe "#invalid!" do
         let(:exit_code) { 0 }
+
         it "should raise ShellCommandFailed" do
           lambda { executed_cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
@@ -499,12 +529,6 @@ describe Mixlib::ShellOut do
           stderr.should eql("hello#{LINE_ENDING}")
           stdout.should eql("world#{LINE_ENDING}")
         end
-      end
-
-      it "collects the exit status of the command" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
-        status = cmd.run_command.status
-        status.exitstatus.should == 0
       end
 
       it "does not hang if a process forks but does not close stdout and stderr" do
