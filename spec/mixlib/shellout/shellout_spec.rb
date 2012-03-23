@@ -435,7 +435,7 @@ describe Mixlib::ShellOut do
         let(:exit_code) { 2 }
         let(:exception_message_format) { Regexp.escape(executed_cmd.format_for_exception) }
 
-        it "should raise InvalidCommandResult" do
+        it "should raise ShellCommandFailed" do
           lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
 
@@ -456,7 +456,7 @@ describe Mixlib::ShellOut do
           let(:valid_exit_codes) { 42 }
           let(:exit_code) { 42 }
 
-          it "should raise InvalidCommandResult" do
+          it "should not raise error" do
             lambda { executed_cmd.error! }.should_not raise_error
           end
         end
@@ -464,7 +464,7 @@ describe Mixlib::ShellOut do
         context 'when exiting with invalid code' do
           let(:valid_exit_codes) { [ 0, 1, 42 ] }
           let(:exit_code) { 2 }
-          it "should raise InvalidCommandResult" do
+          it "should raise ShellCommandFailed" do
             lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
           end
         end
@@ -473,16 +473,17 @@ describe Mixlib::ShellOut do
           let(:valid_exit_codes) { 42 }
           let(:exit_code) { 0 }
 
-          it "should raise InvalidCommandResult" do
+          it "should raise ShellCommandFailed" do
             lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
           end
         end
       end
 
-      it "errors out when told the result is invalid" do
-        cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
-        cmd.run_command
-        lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+      describe "#invalid!" do
+        let(:exit_code) { 0 }
+        it "should raise ShellCommandFailed" do
+          lambda { executed_cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        end
       end
     end
   end
