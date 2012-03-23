@@ -591,20 +591,25 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
-        chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
-        cmd = Mixlib::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
-        cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
-      end
+      context 'with subprocess writing lots of data to both stdout and stderr' do
+        let(:cmd) { ruby_eval.call(chatty) }
+        let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
 
-      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
-        chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
-        cmd = Mixlib::ShellOut.new(chatty)
-        cmd.run_command
-        cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
-        cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
+        context 'when writing to STDOUT first' do
+          let(:chatty) { %q{puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000} }
+          it "should not deadlock" do
+            stdout.should eql(expected_output_with.call('f'))
+            stderr.should eql(expected_output_with.call('u'))
+          end
+        end
+
+        context 'when writing to STDERR first' do
+          let(:chatty) { %q{STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000} }
+          it "should not deadlock" do
+            stdout.should eql(expected_output_with.call('f'))
+            stderr.should eql(expected_output_with.call('u'))
+          end
+        end
       end
 
       it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
