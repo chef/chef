@@ -612,11 +612,14 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
-        stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
-        cmd = Mixlib::ShellOut.new(stop_and_go)
-        cmd.run_command
-        cmd.stdout.should == "before#{LINE_ENDING}after#{LINE_ENDING}"
+      context 'when subprocess writes, pauses, then continues writing' do
+        subject { stdout }
+        let(:stop_and_go) { %q{puts "before"; sleep 0.5; puts "after"} }
+        let(:cmd) { ruby_eval.call(stop_and_go) }
+
+        it 'should not hang or lose output' do
+          should eql("before#{LINE_ENDING}after#{LINE_ENDING}")
+        end
       end
 
       it "doesn't hang or lose output when a process pauses before writing" do
