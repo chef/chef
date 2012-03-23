@@ -318,9 +318,7 @@ describe Mixlib::ShellOut do
         end
 
         context 'when running under Windows', :windows_only => true do
-          # FIXME: I don't understand the original:
-          # https://github.com/opscode/mixlib-shellout/blob/7a1fd26ab7c74023e044bfa306dff3d6b1de3d99/spec/mixlib/shellout/shellout_spec.rb#L316
-          # Is it saying that under Windows, ENV['LC_ALL'] can have something, otherwise if blank, it will be '%LC_ALL%'?
+          # On windows, if an environmental variable is not set, it returns the key
           let(:parent_locale) { (ENV['LC_ALL'] || '%LC_ALL%').to_s.strip }
 
           it "should use the parent process's locale" do
