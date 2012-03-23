@@ -622,11 +622,14 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "doesn't hang or lose output when a process pauses before writing" do
-        late_arrival = %q{ruby -e 'sleep 0.5;puts "missed_the_bus"'}
-        cmd = Mixlib::ShellOut.new(late_arrival)
-        cmd.run_command
-        cmd.stdout.should == "missed_the_bus#{LINE_ENDING}"
+      context 'when subprocess pauses before writing' do
+        subject { stdout }
+        let(:late_arrival) { 'sleep 0.5; puts "missed_the_bus"' }
+        let(:cmd) { ruby_eval.call(late_arrival) }
+
+        it 'should not hang or lose output' do
+          should eql("missed_the_bus#{LINE_ENDING}")
+        end
       end
 
       it "uses the C locale by default" do
