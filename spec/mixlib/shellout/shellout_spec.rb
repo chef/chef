@@ -531,13 +531,16 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "does not hang if a process forks but does not close stdout and stderr" do
-        evil_forker="exit if fork; 10.times { sleep 1}"
-        cmd = Mixlib::ShellOut.new("ruby -e '#{evil_forker}'")
-
-        lambda {Timeout.timeout(2) do
-          cmd.run_command
-        end}.should_not raise_error
+      context 'with forking subprocess that does not close stdout and stderr' do
+        let(:evil_forker) { "exit if fork; 10.times { sleep 1 }" }
+        let(:cmd) { ruby_eval.call(evil_forker) }
+        it "should not hang" do
+          proc do
+            Timeout.timeout(2) do
+              executed_cmd
+            end
+          end.should_not raise_error
+        end
       end
 
       it "times out when a process takes longer than the specified timeout" do
