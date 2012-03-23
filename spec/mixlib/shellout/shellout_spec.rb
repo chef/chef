@@ -573,11 +573,22 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
-        halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
-        cmd = Mixlib::ShellOut.new(halfandhalf)
-        cmd.run_command
-        cmd.stderr.should == "win#{LINE_ENDING}"
+      context 'with subprocess that closes stdout and continues writing to stderr' do
+        let(:half_and_half) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
+        let(:cmd) { ruby_eval.call(half_and_half) }
+
+        it 'should not hang or lose outupt' do
+          stderr.should eql("win#{LINE_ENDING}")
+        end
+      end
+
+      context 'with subprocess that closes stderr and continues writing to stdout' do
+        let(:half_and_half) { "STDERR.close; sleep 0.5; STDOUT.puts :win" }
+        let(:cmd) { ruby_eval.call(half_and_half) }
+
+        it 'should not hang or lose outupt' do
+          stdout.should eql("win#{LINE_ENDING}")
+        end
       end
 
       it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
