@@ -415,11 +415,17 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "runs commands with ||" do
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "foo"; exit 1' || ruby -e 'print "bar"'})
-        cmd.run_command
-        cmd.status.exitstatus.should == 0
-        cmd.stdout.should == "foobar"
+      context 'with ||' do
+        let(:exit_status) { executed_cmd.status.exit_status }
+        let(:cmd) { ruby_eval.call('print "foo"; exit 1') + ' || ' + ruby_eval.call('print "bar"') }
+
+        it 'should execute' do
+          stdout.should eql('foobar')
+        end
+
+        it 'should exit with code 0' do
+          exit_status.should eql(0)
+        end
       end
     end
   end
