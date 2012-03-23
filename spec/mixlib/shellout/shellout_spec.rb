@@ -486,139 +486,145 @@ describe Mixlib::ShellOut do
         end
       end
     end
-  end
 
-  describe "handling various subprocess behaviors" do
-    it "collects all of STDOUT and STDERR" do
-      twotime = %q{ruby -e 'STDERR.puts :hello; STDOUT.puts :world'}
-      cmd = Mixlib::ShellOut.new(twotime)
-      cmd.run_command
-      cmd.stderr.should == "hello#{LINE_ENDING}"
-      cmd.stdout.should == "world#{LINE_ENDING}"
-    end
+    context "when handling the subprocess" do
+      context 'with STDOUT and STDERR' do
+        let(:two_time) { 'STDERR.puts :hello; STDOUT.puts :world' }
+        let(:cmd) { ruby_eval.call(two_time) }
 
-    it "collects the exit status of the command" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
-      status = cmd.run_command.status
-      status.exitstatus.should == 0
-    end
-
-    it "does not hang if a process forks but does not close stdout and stderr" do
-      evil_forker="exit if fork; 10.times { sleep 1}"
-      cmd = Mixlib::ShellOut.new("ruby -e '#{evil_forker}'")
-
-      lambda {Timeout.timeout(2) do
-        cmd.run_command
-      end}.should_not raise_error
-    end
-
-    it "times out when a process takes longer than the specified timeout" do
-      cmd = Mixlib::ShellOut.new("ruby -e \"sleep 2\"", :timeout => 0.1)
-      lambda {cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
-    end
-
-    it "reads all of the output when the subprocess produces more than $buffersize of output" do
-      chatty = "ruby -e \"print('X' * 16 * 1024); print('.' * 1024)\""
-      cmd = Mixlib::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should match(/X{16384}\.{1024}/)
-    end
-
-    it "returns empty strings from commands that have no output" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'exit 0'})
-      cmd.run_command
-      cmd.stdout.should == ''
-      cmd.stderr.should == ''
-    end
-
-    it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
-      halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
-      cmd = Mixlib::ShellOut.new(halfandhalf)
-      cmd.run_command
-      cmd.stderr.should == "win#{LINE_ENDING}"
-    end
-
-    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
-      chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
-      cmd = Mixlib::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
-      cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
-    end
-
-    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
-      chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
-      cmd = Mixlib::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
-      cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
-    end
-
-    it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
-      stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
-      cmd = Mixlib::ShellOut.new(stop_and_go)
-      cmd.run_command
-      cmd.stdout.should == "before#{LINE_ENDING}after#{LINE_ENDING}"
-    end
-
-    it "doesn't hang or lose output when a process pauses before writing" do
-      late_arrival = %q{ruby -e 'sleep 0.5;puts "missed_the_bus"'}
-      cmd = Mixlib::ShellOut.new(late_arrival)
-      cmd.run_command
-      cmd.stdout.should == "missed_the_bus#{LINE_ENDING}"
-    end
-
-    it "uses the C locale by default" do
-      cmd = Mixlib::ShellOut.new(ECHO_LC_ALL)
-      cmd.run_command
-      cmd.stdout.strip.should == 'C'
-    end
-
-    it "does not set any locale when the user gives LC_ALL => nil" do
-      # kinda janky
-      cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
-      cmd.run_command
-      if !ENV['LC_ALL'] && windows?
-        expected = "%LC_ALL%"
-      else
-        expected = ENV['LC_ALL'].to_s.strip
+        # We could separate this into two examples, but we want to make
+        # sure that stderr and stdout gets collected without stepping
+        # on each other.
+        it "should collect all of STDOUT and STDERR" do
+          stderr.should eql("hello#{LINE_ENDING}")
+          stdout.should eql("world#{LINE_ENDING}")
+        end
       end
-      cmd.stdout.strip.should == expected
-    end
 
-    it "uses the requested locale" do
-      cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => 'es'})
-      cmd.run_command
-      cmd.stdout.strip.should == 'es'
-    end
+      it "collects the exit status of the command" do
+        cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
+        status = cmd.run_command.status
+        status.exitstatus.should == 0
+      end
 
-    it "recovers the error message when exec fails" do
-      cmd = Mixlib::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-      lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
-    end
+      it "does not hang if a process forks but does not close stdout and stderr" do
+        evil_forker="exit if fork; 10.times { sleep 1}"
+        cmd = Mixlib::ShellOut.new("ruby -e '#{evil_forker}'")
 
-    it "closes stdin on the child process so it knows not to wait for any input" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'print STDIN.eof?.to_s'})
-      cmd.run_command
-      cmd.stdout.should == "true"
-    end
+        lambda {Timeout.timeout(2) do
+          cmd.run_command
+        end}.should_not raise_error
+      end
 
-    it "doesn't hang when STDOUT is closed before STDERR" do
-      # Regression test:
-      # We need to ensure that stderr is removed from the list of file
-      # descriptors that we attempt to select() on in the case that:
-      # a) STDOUT closes first
-      # b) STDERR closes
-      # c) The program does not exit for some time after (b) occurs.
-      # Otherwise, we will attempt to read from the closed STDOUT pipe over and
-      # over again and generate lots of garbage, which will not be collected
-      # since we have to turn GC off to avoid segv.
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
-      cmd.run_command
-      unclosed_pipes = cmd.send(:open_pipes)
-      unclosed_pipes.should be_empty
+      it "times out when a process takes longer than the specified timeout" do
+        cmd = Mixlib::ShellOut.new("ruby -e \"sleep 2\"", :timeout => 0.1)
+        lambda {cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+      end
+
+      it "reads all of the output when the subprocess produces more than $buffersize of output" do
+        chatty = "ruby -e \"print('X' * 16 * 1024); print('.' * 1024)\""
+        cmd = Mixlib::ShellOut.new(chatty)
+        cmd.run_command
+        cmd.stdout.should match(/X{16384}\.{1024}/)
+      end
+
+      it "returns empty strings from commands that have no output" do
+        cmd = Mixlib::ShellOut.new(%q{ruby -e 'exit 0'})
+        cmd.run_command
+        cmd.stdout.should == ''
+        cmd.stderr.should == ''
+      end
+
+      it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
+        halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
+        cmd = Mixlib::ShellOut.new(halfandhalf)
+        cmd.run_command
+        cmd.stderr.should == "win#{LINE_ENDING}"
+      end
+
+      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
+        chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
+        cmd = Mixlib::ShellOut.new(chatty)
+        cmd.run_command
+        cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
+        cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
+      end
+
+      it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
+        chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
+        cmd = Mixlib::ShellOut.new(chatty)
+        cmd.run_command
+        cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
+        cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
+      end
+
+      it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
+        stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
+        cmd = Mixlib::ShellOut.new(stop_and_go)
+        cmd.run_command
+        cmd.stdout.should == "before#{LINE_ENDING}after#{LINE_ENDING}"
+      end
+
+      it "doesn't hang or lose output when a process pauses before writing" do
+        late_arrival = %q{ruby -e 'sleep 0.5;puts "missed_the_bus"'}
+        cmd = Mixlib::ShellOut.new(late_arrival)
+        cmd.run_command
+        cmd.stdout.should == "missed_the_bus#{LINE_ENDING}"
+      end
+
+      it "uses the C locale by default" do
+        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL)
+        cmd.run_command
+        cmd.stdout.strip.should == 'C'
+      end
+
+      it "does not set any locale when the user gives LC_ALL => nil" do
+        # kinda janky
+        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
+        cmd.run_command
+        if !ENV['LC_ALL'] && windows?
+          expected = "%LC_ALL%"
+        else
+          expected = ENV['LC_ALL'].to_s.strip
+        end
+        cmd.stdout.strip.should == expected
+      end
+
+      it "uses the requested locale" do
+        cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => 'es'})
+        cmd.run_command
+        cmd.stdout.strip.should == 'es'
+      end
+
+      it "recovers the error message when exec fails" do
+        cmd = Mixlib::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+        lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
+      end
+
+      it "closes stdin on the child process so it knows not to wait for any input" do
+        cmd = Mixlib::ShellOut.new(%q{ruby -e 'print STDIN.eof?.to_s'})
+        cmd.run_command
+        cmd.stdout.should == "true"
+      end
+
+      it "doesn't hang when STDOUT is closed before STDERR" do
+        # Regression test:
+        # We need to ensure that stderr is removed from the list of file
+        # descriptors that we attempt to select() on in the case that:
+        # a) STDOUT closes first
+        # b) STDERR closes
+        # c) The program does not exit for some time after (b) occurs.
+        # Otherwise, we will attempt to read from the closed STDOUT pipe over and
+        # over again and generate lots of garbage, which will not be collected
+        # since we have to turn GC off to avoid segv.
+        cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
+        cmd.run_command
+        unclosed_pipes = cmd.send(:open_pipes)
+        unclosed_pipes.should be_empty
+      end
     end
   end
+
 
   it "formats itself for exception messages" do
     cmd = Mixlib::ShellOut.new %q{ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"'}
