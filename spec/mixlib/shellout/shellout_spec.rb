@@ -633,6 +633,28 @@ describe Mixlib::ShellOut do
         end
       end
 
+      # Regression test:
+      #
+      # We need to ensure that stderr is removed from the list of file
+      # descriptors that we attempt to select() on in the case that:
+      #
+      # a) STDOUT closes first
+      # b) STDERR closes
+      # c) The program does not exit for some time after (b) occurs.
+      #
+      # Otherwise, we will attempt to read from the closed STDOUT pipe over and
+      # over again and generate lots of garbage, which will not be collected
+      # since we have to turn GC off to avoid segv.
+      context 'with subprocess that closes STDOUT before closing STDERR' do
+        subject { unclosed_pipes }
+        let(:ruby_code) {  %q{STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit} }
+        let(:cmd) { ruby_eval.call(ruby_code) }
+        let(:unclosed_pipes) { executed_cmd.send(:open_pipes) }
+
+        it 'should not hang' do
+          should be_empty
+        end
+      end
       context 'with subprocess writing lots of data to both stdout and stderr' do
         let(:cmd) { ruby_eval.call(chatty) }
         let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
@@ -695,21 +717,6 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "doesn't hang when STDOUT is closed before STDERR" do
-        # Regression test:
-        # We need to ensure that stderr is removed from the list of file
-        # descriptors that we attempt to select() on in the case that:
-        # a) STDOUT closes first
-        # b) STDERR closes
-        # c) The program does not exit for some time after (b) occurs.
-        # Otherwise, we will attempt to read from the closed STDOUT pipe over and
-        # over again and generate lots of garbage, which will not be collected
-        # since we have to turn GC off to avoid segv.
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
-        cmd.run_command
-        unclosed_pipes = cmd.send(:open_pipes)
-        unclosed_pipes.should be_empty
-      end
     end
   end
 
