@@ -85,7 +85,12 @@ class Chef
           begin
             @candidate_version = ports_candidate_version
           rescue
-            @candidate_version = file_candidate_version
+            if @new_resource.source =~ /^\//
+              @candidate_version = file_candidate_version
+            else
+              # FreeBSD package symlinks take care of the version
+              @candidate_version = "0.0.0"
+            end
           end
           Chef::Log.debug("#{@new_resource} ports candidate version is #{@candidate_version}") if @candidate_version
 
@@ -115,7 +120,11 @@ class Chef
             when /^ports$/
               shell_out!("make -DBATCH install", :timeout => 1200, :env => nil, :cwd => port_path).status
             when /^http/, /^ftp/
-              shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+              if @new_resource.source =~ /\/$/
+                shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+              else
+                shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }).status
+              end
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             when /^\//
               shell_out!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
