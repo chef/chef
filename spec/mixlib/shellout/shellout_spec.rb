@@ -406,10 +406,13 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "runs commands with &&" , :hi => true do
-        cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "foo"' && ruby -e 'print "bar"'})
-        cmd.run_command
-        cmd.stdout.should == "foobar"
+      context 'with &&' do
+        subject { stdout }
+        let(:cmd) { ruby_eval.call('print "foo"') + ' && ' + ruby_eval.call('print "bar"') }
+
+        it 'should execute' do
+          should eql('foobar')
+        end
       end
 
       it "runs commands with ||" do
