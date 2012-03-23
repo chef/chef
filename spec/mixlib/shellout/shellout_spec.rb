@@ -260,6 +260,9 @@ describe Mixlib::ShellOut do
     let(:stripped_stdout) { stdout.strip }
     let(:exit_status) { executed_cmd.status.exitstatus }
 
+    let(:cmd) { ruby_eval.call(ruby_code) }
+    let(:ruby_code) { raise 'define let(:ruby_code)' }
+
     let(:dir) { Dir.mktmpdir }
     let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
     let(:dump_file) { "#{dir}/out.txt" }
@@ -385,7 +388,7 @@ describe Mixlib::ShellOut do
         subject { stdout }
 
         let(:special_characters) { '<>&|&&||;' }
-        let(:cmd) { "ruby -e 'print \"#{special_characters}\"'" }
+        let(:ruby_code) { "print \"#{special_characters}\"" }
 
         it 'should execute' do
           should eql(special_characters)
@@ -559,8 +562,7 @@ describe Mixlib::ShellOut do
 
     context "when handling the subprocess" do
       context 'with STDOUT and STDERR' do
-        let(:two_time) { 'STDERR.puts :hello; STDOUT.puts :world' }
-        let(:cmd) { ruby_eval.call(two_time) }
+        let(:ruby_code) { 'STDERR.puts :hello; STDOUT.puts :world' }
 
         # We could separate this into two examples, but we want to make
         # sure that stderr and stdout gets collected without stepping
@@ -572,8 +574,8 @@ describe Mixlib::ShellOut do
       end
 
       context 'with forking subprocess that does not close stdout and stderr' do
-        let(:evil_forker) { "exit if fork; 10.times { sleep 1 }" }
-        let(:cmd) { ruby_eval.call(evil_forker) }
+        let(:ruby_code) { "exit if fork; 10.times { sleep 1 }" }
+
         it "should not hang" do
           proc do
             Timeout.timeout(2) do
@@ -593,8 +595,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that exceeds buffersize' do
-        let(:chatty) { 'print("X" * 16 * 1024); print("." * 1024)' }
-        let(:cmd) { ruby_eval.call(chatty) }
+        let(:ruby_code) { 'print("X" * 16 * 1024); print("." * 1024)' }
 
         it "should still reads all of the output" do
           stdout.should match(/X{16384}\.{1024}/)
@@ -602,7 +603,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that returns nothing' do
-        let(:cmd) { ruby_eval.call('exit 0') }
+        let(:ruby_code) { 'exit 0' }
 
         it 'should return an empty string for stdout' do
           stdout.should eql('')
@@ -614,8 +615,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess that closes stdout and continues writing to stderr' do
-        let(:half_and_half) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
-        let(:cmd) { ruby_eval.call(half_and_half) }
+        let(:ruby_code) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
 
         it 'should not hang or lose outupt' do
           stderr.should eql("win#{LINE_ENDING}")
@@ -646,7 +646,6 @@ describe Mixlib::ShellOut do
       context 'with subprocess that closes STDOUT before closing STDERR' do
         subject { unclosed_pipes }
         let(:ruby_code) {  %q{STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit} }
-        let(:cmd) { ruby_eval.call(ruby_code) }
         let(:unclosed_pipes) { executed_cmd.send(:open_pipes) }
 
         it 'should not hang' do
@@ -655,11 +654,10 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess writing lots of data to both stdout and stderr' do
-        let(:cmd) { ruby_eval.call(chatty) }
         let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
 
         context 'when writing to STDOUT first' do
-          let(:chatty) { %q{puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000} }
+          let(:ruby_code) { %q{puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000} }
           it "should not deadlock" do
             stdout.should eql(expected_output_with.call('f'))
             stderr.should eql(expected_output_with.call('u'))
@@ -667,7 +665,7 @@ describe Mixlib::ShellOut do
         end
 
         context 'when writing to STDERR first' do
-          let(:chatty) { %q{STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000} }
+          let(:ruby_code) { %q{STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000} }
           it "should not deadlock" do
             stdout.should eql(expected_output_with.call('f'))
             stderr.should eql(expected_output_with.call('u'))
@@ -677,8 +675,7 @@ describe Mixlib::ShellOut do
 
       context 'when subprocess writes, pauses, then continues writing' do
         subject { stdout }
-        let(:stop_and_go) { %q{puts "before"; sleep 0.5; puts "after"} }
-        let(:cmd) { ruby_eval.call(stop_and_go) }
+        let(:ruby_code) { %q{puts "before"; sleep 0.5; puts "after"} }
 
         it 'should not hang or lose output' do
           should eql("before#{LINE_ENDING}after#{LINE_ENDING}")
@@ -687,8 +684,7 @@ describe Mixlib::ShellOut do
 
       context 'when subprocess pauses before writing' do
         subject { stdout }
-        let(:late_arrival) { 'sleep 0.5; puts "missed_the_bus"' }
-        let(:cmd) { ruby_eval.call(late_arrival) }
+        let(:ruby_code) { 'sleep 0.5; puts "missed_the_bus"' }
 
         it 'should not hang or lose output' do
           should eql("missed_the_bus#{LINE_ENDING}")
@@ -706,7 +702,6 @@ describe Mixlib::ShellOut do
       context 'without input data' do
         context 'with subprocess that expects stdin' do
           let(:ruby_code) { %q{print STDIN.eof?.to_s} }
-          let(:cmd) { ruby_eval.call(ruby_code) }
 
           # If we don't have anything to send to the subprocess, we need to close
           # stdin so that the subprocess won't wait for input.
@@ -719,7 +714,6 @@ describe Mixlib::ShellOut do
 
     describe "#format_for_exception" do
       let(:ruby_code) { %q{STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"} }
-      let(:cmd) { ruby_eval.call(ruby_code) }
       let(:exception_output) { executed_cmd.format_for_exception.split("\n") }
       let(:expected_output) { [
         %q{---- Begin output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
