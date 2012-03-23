@@ -374,13 +374,22 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "runs commands with stdout file pipes" do
-        Dir.mktmpdir do |dir|
-          cmd = Mixlib::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' > #{dir}/blah.txt")
-          cmd.run_command
-          cmd.stdout.should == ""
-          cmd.stderr.should == "false"
-          IO.read("#{dir}/blah.txt").should == "true"
+      context 'with file pipes' do
+        let(:dump_file) { "#{dir}/out.txt" }
+        let(:dump_file_content) { stdout; IO.read(dump_file) }
+        let(:code) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
+        let(:cmd) { ruby_eval.call(code) + " > #{dump_file}" }
+
+        it 'should execute' do
+          stdout.should eql('')
+        end
+
+        it 'should handle stderr' do
+          stderr.should eql('false')
+        end
+
+        it 'should write to file pipe' do
+          dump_file_content.should eql('true')
         end
       end
 
