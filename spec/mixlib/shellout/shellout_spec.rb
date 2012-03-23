@@ -543,9 +543,13 @@ describe Mixlib::ShellOut do
         end
       end
 
-      it "times out when a process takes longer than the specified timeout" do
-        cmd = Mixlib::ShellOut.new("ruby -e \"sleep 2\"", :timeout => 0.1)
-        lambda {cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
+      context 'with subprocess that takes longer than timeout' do
+        let(:shell_cmd) { Mixlib::ShellOut.new(cmd, :timeout => 0.1) }
+        let(:cmd) { ruby_eval.call('sleep 2') }
+
+        it "should raise CommandTimeout" do
+          lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+        end
       end
 
       it "reads all of the output when the subprocess produces more than $buffersize of output" do
