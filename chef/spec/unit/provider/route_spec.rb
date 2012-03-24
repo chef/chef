@@ -21,7 +21,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Route do
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @cookbook_collection = Chef::CookbookCollection.new([])
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
 
     @new_resource = Chef::Resource::Route.new('0.0.0.0')
 
@@ -137,6 +138,20 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "config_file_contents for action_delete" do
     it "should return an empty string" do
       @provider.config_file_contents(:delete).should match(/^$/)
+    end
+  end
+
+  describe Chef::Provider::Route, "generate_config method" do
+    %w[ centos redhat fedora ].each do |platform|
+      it "should write a route file on #{platform} platform" do
+        @node[:platform] = platform
+
+        route_file = StringIO.new
+        File.should_receive(:new).and_return(route_file)
+        @run_context.resource_collection << @new_resource
+
+        @provider.generate_config
+      end
     end
   end
 end

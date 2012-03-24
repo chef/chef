@@ -130,7 +130,7 @@ class Chef::Provider::Route < Chef::Provider
     def generate_config
       conf = Hash.new
       case node[:platform]
-      when ("centos" || "redhat" || "fedora")
+      when "centos", "redhat", "fedora"
         # walk the collection
         run_context.resource_collection.each do |resource|
           if resource.is_a? Chef::Resource::Route
