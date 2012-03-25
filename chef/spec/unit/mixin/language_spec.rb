@@ -28,76 +28,88 @@ describe Chef::Mixin::Language do
     @language = LanguageTester.new
     @node = Hash.new
     @language.stub!(:node).and_return(@node)
-    @platform_hash = {}
-    %w{openbsd freebsd}.each do |x|
-      @platform_hash[x] = {
-        "default" => x,
-        "1.2.3" => "#{x}-1.2.3"
-      }
+  end
+
+  describe "#value_for_platform" do
+    before(:each) do
+      @platform_hash = {}
+      %w{openbsd freebsd}.each do |x|
+        @platform_hash[x] = {
+          "default" => x,
+          "1.2.3" => "#{x}-1.2.3"
+        }
+      end
+      @platform_hash["default"] = "default"
     end
-    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"} 
-    @platform_hash["default"] = "default"
 
-    @platform_family_hash = { 
-      "debian" => "debian value", 
-      [:rhel, :fedora] => "redhatty value", 
-      "suse" => "suse value", 
-      :default => "default value"
-    }
-  end
+    it "returns a default value when there is no known platform" do
+      @node = Hash.new
+      @language.value_for_platform(@platform_hash).should == "default"
+    end
+  	  
+    it "returns a default value when the current platform doesn't match" do
+      @node[:platform] = "not-a-known-platform"
+      @language.value_for_platform(@platform_hash).should == "default"
+    end
+  	  
+    it "returns a value based on the current platform" do
+      @node[:platform] = "openbsd"
+      @language.value_for_platform(@platform_hash).should == "openbsd"
+    end
 
-  it "returns a default value when there is no known platform" do
-    @node = Hash.new
-    @language.value_for_platform(@platform_hash).should == "default"
-  end
-
-  it "returns a default value when there is no known platform family" do 
-    @language.value_for_platform_family(@platform_family_hash).should == "default value" 
-  end
-	  
-  it "returns a default value when the current platform doesn't match" do
-    @node[:platform] = "not-a-known-platform"
-    @language.value_for_platform(@platform_hash).should == "default"
-  end
-
-  it "returns a default value when current platform_family doesn't match" do 
-    @node[:platform_family] = "ultra-derived-linux"
-    @language.value_for_platform_family(@platform_family_hash).should == "default value" 
-  end
-	  
-  it "returns a value based on the current platform" do
-    @node[:platform] = "openbsd"
-    @language.value_for_platform(@platform_hash).should == "openbsd"
-  end
-
-  it "returns a value based on the current platform family" do 
-    @node[:platform_family] = "debian"
-    @language.value_for_platform_family(@platform_family_hash).should == "debian value" 
-  end
-
-  it "returns a version-specific value based on the current platform" do
-    @node[:platform] = "openbsd"
-    @node[:platform_version] = "1.2.3"
-    @language.value_for_platform(@platform_hash).should == "openbsd-1.2.3"
-  end
-
-  it "returns a value based on the current platform if version not found" do
-    @node[:platform] = "openbsd"
-    @node[:platform_version] = "0.0.0"
-    @language.value_for_platform(@platform_hash).should == "openbsd"
-  end
-
-  describe "when platform versions is an array" do
     it "returns a version-specific value based on the current platform" do
-      @node[:platform] = "debian"
-      @node[:platform_version] = "6"
-      @language.value_for_platform(@platform_hash).should == "debian-5/6"
+      @node[:platform] = "openbsd"
+      @node[:platform_version] = "1.2.3"
+      @language.value_for_platform(@platform_hash).should == "openbsd-1.2.3"
     end
 
     it "returns a value based on the current platform if version not found" do
-      @node[:platform] = "debian"
+      @node[:platform] = "openbsd"
       @node[:platform_version] = "0.0.0"
-      @language.value_for_platform(@platform_hash).should == "debian"
+      @language.value_for_platform(@platform_hash).should == "openbsd"
+    end
+
+    context "when platform versions is an array" do
+      before(:each) do
+        @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
+      end
+
+      it "returns a version-specific value based on the current platform" do
+        @node[:platform] = "debian"
+        @node[:platform_version] = "6"
+        @language.value_for_platform(@platform_hash).should == "debian-5/6"
+      end
+
+      it "returns a value based on the current platform if version not found" do
+        @node[:platform] = "debian"
+        @node[:platform_version] = "0.0.0"
+        @language.value_for_platform(@platform_hash).should == "debian"
+      end
+    end
+  end
+
+  describe "#value_for_platform_family" do
+    before(:each) do
+      @platform_family_hash = { 
+        "debian" => "debian value", 
+        [:rhel, :fedora] => "redhatty value", 
+        "suse" => "suse value", 
+        :default => "default value"
+      }
+    end
+
+    it "returns a default value when there is no known platform family" do 
+      @language.value_for_platform_family(@platform_family_hash).should == "default value" 
+    end
+
+    it "returns a default value when current platform_family doesn't match" do 
+      @node[:platform_family] = "ultra-derived-linux"
+      @language.value_for_platform_family(@platform_family_hash).should == "default value" 
+    end
+
+    it "returns a value based on the current platform family" do 
+      @node[:platform_family] = "debian"
+      @language.value_for_platform_family(@platform_family_hash).should == "debian value" 
     end
   end
 
