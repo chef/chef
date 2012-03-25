@@ -69,6 +69,235 @@ describe Chef::Mixin::Language do
       @language.value_for_platform(@platform_hash).should == "openbsd"
     end
 
+    context "when platform version is a version constraint in '[OP] VERSION' format" do
+      let(:platform) { "debian" }
+      let(:platform_specific_value) { :platform_specific_value }
+      let(:default_value) { :default_value }
+      before(:each) { @node[:platform] = platform }
+
+      context "and version constraint is '5.0' where the [OP] is omitted" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "5.0" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is 5.0" do
+          @node[:platform_version] = "5.0"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is not 5.0" do
+          @node[:platform_version] = "5.1"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "and version constraint is '= 5.0'" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "= 5.0" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is 5.0" do
+          @node[:platform_version] = "5.0"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is not 5.0" do
+          @node[:platform_version] = "5.1"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "and version constraint is '> 5.0'" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "> 5.0" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is greater than 5.0" do
+          @node[:platform_version] = "5.5"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is less than 5.0 or equal to 5.0" do
+          @node[:platform_version] = "4.10"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+
+        it "returns the default value if the current platform version is equal to 5.0" do
+          @node[:platform_version] = "5.0"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "and version constraint is '< 5.0'" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "< 5.0" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is less than 5.0" do
+          @node[:platform_version] = "4.10"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is greater than 5.0" do
+          @node[:platform_version] = "5.1"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+
+        it "returns the default value if the current platform version is equal to 5.0" do
+          @node[:platform_version] = "5.0"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "and version constraint is '>= 5.0'" do
+        before(:each) do
+          @platform_hash[platform] = {
+            ">= 5.0" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is greater than 5.0" do
+          @node[:platform_version] = "5.5"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the platform specific value if the current platform version is equal to 5.0" do
+          @node[:platform_version] = "5.0"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is less than 5.0" do
+          @node[:platform_version] = "4.0"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "and version constraint is '<= 5.0'" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "<= 5.0" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is less than 5.0" do
+          @node[:platform_version] = "4.9"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the platform specific value if the current platform version is equal to 5.0" do
+          @node[:platform_version] = "5.0"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is greater than 5.0" do
+          @node[:platform_version] = "5.1"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "and version constraint is '~> 5.5'" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "~> 5.5" => platform_specific_value,
+            "default" => default_value
+          }
+        end
+
+        it "returns the platform specific value if the current platform version is greater than 5.5 but less than 6.0" do
+          @node[:platform_version] = "5.6"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the platform specific value if the current platform version is equal to 5.5 but less than 6.0" do
+          @node[:platform_version] = "5.5"
+          @language.value_for_platform(@platform_hash).should == platform_specific_value
+        end
+
+        it "returns the default value if the current platform version is less than 5.5" do
+          @node[:platform_version] = "5.4"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+
+        it "returns the default value if the current platform version is greater than 6.0" do
+          @node[:platform_version] = "6.1"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+
+        it "returns the default value if the current platform version is equal to 6.0" do
+          @node[:platform_version] = "6.0"
+          @language.value_for_platform(@platform_hash).should == default_value
+        end
+      end
+
+      context "when current platform version doesn't satisfy any version constraints" do
+        let(:all_platform_default_value) { :all_platform_default_value }
+
+        before(:each) do
+          @platform_hash = Hash.new
+          @platform_hash["default"] = all_platform_default_value
+        end
+
+        context "and a platform specific default is specified" do
+          before(:each) do
+            @platform_hash[platform] = {
+              "= 5.5" => platform_specific_value,
+              "default" => default_value
+            }
+          end
+
+          it "returns the platform specific default" do
+            @node[:platform_version] = "6.0"
+            @language.value_for_platform(@platform_hash).should == default_value
+          end
+        end
+
+        context "and no platform specific default is specified" do
+          before(:each) do
+            @platform_hash[platform] = {
+              "= 5.5" => platform_specific_value
+            }
+          end
+
+          it "returns the default value for all platforms" do
+            @node[:platform_version] = "6.0"
+            @language.value_for_platform(@platform_hash).should == all_platform_default_value
+          end
+        end
+      end
+
+      context "when multiple version constraints are specified which could satisfy a platform version" do
+        before(:each) do
+          @platform_hash[platform] = {
+            "= 5.5" => nil,
+            ">= 5.0" => nil,
+            "default" => nil
+          }
+        end
+
+        it "raises a Chef::Exceptions::VersionConstraintConflict exception" do
+          @node[:platform_version] = "5.5"
+
+          lambda {
+            @language.value_for_platform(@platform_hash)
+          }.should raise_error(Chef::Exceptions::VersionConstraintConflict)
+        end
+      end
+    end
+
     context "when platform versions is an array" do
       before(:each) do
         @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
