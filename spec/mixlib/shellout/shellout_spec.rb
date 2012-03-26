@@ -672,6 +672,15 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context 'with subprocess that closes stdin and continues writing to stdout' do
+        let(:ruby_code) { "STDIN.close; sleep 0.5; STDOUT.puts :win" }
+        let(:options) { { :input => "Random data #{rand(100000)}" } }
+
+        it 'should not hang or lose outupt' do
+          stdout.should eql("win#{LINE_ENDING}")
+        end
+      end
+
       context 'with subprocess that closes stdout and continues writing to stderr' do
         let(:ruby_code) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
 
