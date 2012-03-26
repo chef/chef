@@ -593,6 +593,19 @@ describe Mixlib::ShellOut do
           it "should set the exit status of the command" do
             exit_status.should eql(exit_code)
           end
+
+          context 'with input data' do
+            let(:options) { { :returns => valid_exit_codes, :input => input } }
+            let(:input) { "Random data #{rand(1000000)}" }
+
+            it "should raise ShellCommandFailed" do
+              lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+            end
+
+            it "should set the exit status of the command" do
+              exit_status.should eql(exit_code)
+            end
+          end
         end
 
         context 'when exiting with invalid code 0' do
