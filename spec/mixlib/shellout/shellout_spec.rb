@@ -801,6 +801,15 @@ describe Mixlib::ShellOut do
         it "should recover the error message" do
           lambda { executed_cmd }.should raise_error(Errno::ENOENT)
         end
+
+        context 'with input' do
+          let(:options) { {:input => input } }
+          let(:input) { "Random input #{rand(1000000)}" }
+
+          it "should recover the error message" do
+            lambda { executed_cmd }.should raise_error(Errno::ENOENT)
+          end
+        end
       end
 
       context 'without input data' do
