@@ -365,6 +365,19 @@ describe Mixlib::ShellOut do
       end
     end
 
+    # FIXME: Add Windows support
+    context "with an input", :unix_only => true do
+      subject { stdout }
+
+      let(:input) { 'hello' }
+      let(:ruby_code) { 'STDIN.sync = true; STDOUT.sync = true; puts gets' }
+      let(:options) { { :input => input } }
+
+      it "should copy the input to the child's stdin" do
+        should eql("hello#{LINE_ENDING}")
+      end
+    end
+
     context "when running different types of command" do
       context 'with spaces in the path' do
         subject { chomped_stdout }

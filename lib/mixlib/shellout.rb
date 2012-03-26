@@ -256,7 +256,6 @@ module Mixlib
 
     private
 
-    # FIXME: This can be done better
     def parse_options(opts)
       opts.each do |option, setting|
         case option.to_s
