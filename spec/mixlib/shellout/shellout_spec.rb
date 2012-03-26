@@ -719,6 +719,18 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context 'with subprocess reading lots of data from stdin' do
+        subject { stdout.to_i }
+        let(:ruby_code) { 'STDOUT.print gets.size' }
+        let(:options) { { :input => input } }
+        let(:input) { 'f' * 20_000 }
+        let(:input_size) { input.size }
+
+        it 'should not hang' do
+          should eql(input_size)
+        end
+      end
+
       context 'with subprocess writing lots of data to both stdout and stderr' do
         let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
 
