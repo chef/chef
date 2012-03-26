@@ -156,6 +156,16 @@ describe Mixlib::ShellOut do
           should eql(value)
         end
       end
+
+      context 'when setting an input' do
+        let(:accessor) { :input }
+        let(:value) { "Random content #{rand(1000000)}" }
+        let(:stream) { StringIO.new }
+
+        it "should set the input" do
+          should eql(value)
+        end
+      end
     end
 
     context "with options hash" do
