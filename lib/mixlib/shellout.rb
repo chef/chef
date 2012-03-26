@@ -55,6 +55,11 @@ module Mixlib
     # the command's output will be echoed to STDOUT.
     attr_accessor :live_stream
 
+    # ShellOut will push data from :input down the stdin of the subprocss.
+    # Normally set via options passed to new.
+    # Default: nil
+    attr_accessor :input
+
     # If a logger is set, ShellOut will log a message before it executes the
     # command.
     attr_accessor :logger

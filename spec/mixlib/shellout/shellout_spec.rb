@@ -31,6 +31,7 @@ describe Mixlib::ShellOut do
       its(:timeout) { should eql(600) }
       its(:valid_exit_codes) { should eql([0]) }
       its(:live_stream) { should be_nil }
+      its(:input) { should be_nil }
 
       it "should set default environmental variables" do
         shell_cmd.environment.should == {"LC_ALL" => "C"}
