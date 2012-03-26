@@ -145,6 +145,7 @@ module Mixlib
     def initialize(*command_args)
       @stdout, @stderr = '', ''
       @live_stream = nil
+      @input = nil
       @log_level = :debug
       @log_tag = nil
       @environment = DEFAULT_ENVIRONMENT
@@ -255,6 +256,7 @@ module Mixlib
 
     private
 
+    # FIXME: This can be done better
     def parse_options(opts)
       opts.each do |option, setting|
         case option.to_s
@@ -272,6 +274,8 @@ module Mixlib
           self.valid_exit_codes = Array(setting)
         when 'live_stream'
           self.live_stream = setting
+        when 'input'
+          self.input = setting
         when 'logger'
           self.logger = setting
         when 'log_level'

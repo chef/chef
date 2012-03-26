@@ -160,7 +160,6 @@ describe Mixlib::ShellOut do
       context 'when setting an input' do
         let(:accessor) { :input }
         let(:value) { "Random content #{rand(1000000)}" }
-        let(:stream) { StringIO.new }
 
         it "should set the input" do
           should eql(value)
@@ -171,7 +170,8 @@ describe Mixlib::ShellOut do
     context "with options hash" do
       let(:cmd) { 'brew install couchdb' }
       let(:options) { { :cwd => cwd, :user => user, :group => group, :umask => umask,
-        :timeout => timeout, :environment => environment, :returns => valid_exit_codes, :live_stream => stream } }
+        :timeout => timeout, :environment => environment, :returns => valid_exit_codes,
+        :live_stream => stream, :input => input } }
 
       let(:cwd) { '/tmp' }
       let(:user) { 'toor' }
@@ -181,6 +181,7 @@ describe Mixlib::ShellOut do
       let(:environment) { { 'RUBY_OPTS' => '-w' } }
       let(:valid_exit_codes) { [ 0, 1, 42 ] }
       let(:stream) { StringIO.new }
+      let(:input) { 1.upto(10).map { "Data #{rand(100000)}" }.join("\n") }
 
       it "should set the working directory" do
         shell_cmd.cwd.should eql(cwd)
@@ -238,6 +239,10 @@ describe Mixlib::ShellOut do
 
       it "should set the live stream" do
         shell_cmd.live_stream.should eql(stream)
+      end
+
+      it "should set the input" do
+        shell_cmd.input.should eql(input)
       end
 
       context 'with an invalid option' do
