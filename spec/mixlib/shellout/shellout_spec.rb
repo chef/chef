@@ -790,6 +790,19 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context 'when subprocess closes prematurely' do
+        context 'with input data' do
+          let(:ruby_code) { 'bad_ruby { [ } ]' }
+          let(:options) { { :input => input } }
+          let(:input) { [ 'f' * 20_000, 'u' * 20_000, 'f' * 20_000, 'u' * 20_000 ].join(LINE_ENDING) }
+
+          # Should the exception be handled?
+          it 'should raise error' do
+            lambda { executed_cmd }.should raise_error(Errno::EPIPE)
+          end
+        end
+      end
+
       context 'when subprocess writes, pauses, then continues writing' do
         subject { stdout }
         let(:ruby_code) { %q{puts "before"; sleep 0.5; puts "after"} }
