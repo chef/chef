@@ -753,6 +753,30 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context 'with subprocess piping lots of data through stdin, stdout, and stderr' do
+        let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
+        let(:ruby_code) { 'while(input = gets) do ( input[0] == "f" ? STDOUT : STDERR ).puts input; end' }
+        let(:options) { { :input => input } }
+
+        context 'when writing to STDOUT first' do
+          let(:input) { [ 'f' * 20_000, 'u' * 20_000, 'f' * 20_000, 'u' * 20_000 ].join(LINE_ENDING) }
+
+          it "should not deadlock" do
+            stdout.should eql(expected_output_with.call('f'))
+            stderr.should eql(expected_output_with.call('u'))
+          end
+        end
+
+        context 'when writing to STDERR first' do
+          let(:input) { [ 'u' * 20_000, 'f' * 20_000, 'u' * 20_000, 'f' * 20_000 ].join(LINE_ENDING) }
+
+          it "should not deadlock" do
+            stdout.should eql(expected_output_with.call('f'))
+            stderr.should eql(expected_output_with.call('u'))
+          end
+        end
+      end
+
       context 'when subprocess writes, pauses, then continues writing' do
         subject { stdout }
         let(:ruby_code) { %q{puts "before"; sleep 0.5; puts "after"} }
