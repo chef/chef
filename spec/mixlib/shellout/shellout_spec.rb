@@ -427,7 +427,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'with file pipes' do
+      context 'with stdout and stderr file pipes' do
         let(:code) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
         let(:cmd) { ruby_eval.call(code) + " > #{dump_file}" }
 
@@ -441,6 +441,27 @@ describe Mixlib::ShellOut do
 
         it 'should write to file pipe' do
           dump_file_content.should eql('true')
+        end
+      end
+
+      context 'with stdin file pipe' do
+        let(:code) { "STDIN.sync = true; STDOUT.sync = true; STDERR.sync = true; print gets; STDERR.print false" }
+        let(:cmd) { ruby_eval.call(code) + " < #{dump_file_path}" }
+        let(:file_content) { "Random content #{rand(100000)}" }
+
+        let(:dump_file_path) { dump_file.path }
+        let(:dump_file) { open_file.tap(&write_file).tap(&:close) }
+        let(:file_name) { "#{dir}/input" }
+
+        let(:open_file) { File.open(file_name, 'w') }
+        let(:write_file) { lambda { |f| f.write(file_content) } }
+
+        it 'should execute' do
+          stdout.should eql(file_content)
+        end
+
+        it 'should handle stderr' do
+          stderr.should eql('false')
         end
       end
 
