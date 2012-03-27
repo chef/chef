@@ -146,6 +146,82 @@ describe Chef::RunContext do
         @run_context.node.run_state[:runnable_recipes].should eql ['test']
       end
     end
+
+    describe "after setting the restricted recipes on the node" do
+      before do
+        @node[:restricted_recipes] = 'partials'
+        @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+        @run_context.load(@node.run_list.expand('_default'))
+      end
+
+      after do
+        Chef::Config[:restricted_recipes] = nil
+      end
+
+      it "should have set Chef::Config[:restricted_recipes]" do
+        Chef::Config[:restricted_recipes].sort.should eql %w(partials partials::default).sort
+      end
+
+      it "should not include partials within runnable recipes" do
+        @run_context.node.run_state[:runnable_recipes].should_not include('partials')
+        @run_context.node.run_state[:runnable_recipes].should_not include('partials::default')
+      end
+    end
+    
+    describe "after setting the allowed recipes on the node" do
+      before do
+        @node[:allowed_recipes] = 'test::one'
+        @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+        @run_context.load(@node.run_list.expand('_default'))
+      end
+
+      after do
+        Chef::Config[:allowed_recipes] = nil
+      end
+
+      it "should have set Chef::Config[:allowed_recipes]" do
+        Chef::Config[:allowed_recipes].should eql ['test::one']
+      end
+
+      it "should only include test::one within runnable recipes" do
+        @run_context.node.run_state[:runnable_recipes].should eql ['test::one']
+      end
+    end
   end
+
+  describe "when restricted recipes have already been set" do
+    before do
+      Chef::Config[:restricted_recipes] = 'test::one'
+      @node[:restricted_recipes] = 'partials'
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+      @run_context.load(@node.run_list.expand('_default'))
+    end
+    
+    after do
+      Chef::Config[:restricted_recipes] = nil
+    end
+
+    it "should give precedence to current config value and ignore node attribute" do
+      Chef::Config[:restricted_recipes].should eql ['test::one']
+    end
+  end
+  
+  describe "when allowed recipes have already been set" do
+    before do
+      Chef::Config[:allowed_recipes] = 'test::one'
+      @node[:allowed_recipes] = 'partials'
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+      @run_context.load(@node.run_list.expand('_default'))
+    end
+    
+    after do
+      Chef::Config[:allowed_recipes] = nil
+    end
+
+    it "should give precedence to current config value and ignore node attribute" do
+      Chef::Config[:allowed_recipes].should eql ['test::one']
+    end
+  end
+
 
 end
