@@ -59,15 +59,16 @@ class Chef
       load_lwrp_resources
       load_attributes
       load_resource_definitions
-
-      Chef::Log.info "Restricted recipes: #{Chef::Config[:restricted_recipes].inspect}" unless Chef::Config[:restricted_recipes].empty?
-      Chef::Log.info "Allowed recipes: #{Chef::Config[:allowed_recipes].inspect}" unless Chef::Config[:allowed_recipes].empty?
-
       # Precendence rules state that roles' attributes come after
       # cookbooks. Now we've loaded attributes from cookbooks with
       # load_attributes, apply the expansion attributes (loaded from
       # roles) to the node.
       @node.apply_expansion_attributes(run_list_expansion)
+
+      assign_recipe_restrictions
+      Chef::Log.info "Restricted recipes: #{Chef::Config[:restricted_recipes].inspect}" unless Chef::Config[:restricted_recipes].empty?
+      Chef::Log.info "Allowed recipes: #{Chef::Config[:allowed_recipes].inspect}" unless Chef::Config[:allowed_recipes].empty?
+
       run_list_expansion.recipes.each do |recipe|
         # TODO: timh/cw, 5-14-2010: It's distasteful to be including
         # the DSL in a class outside the context of the DSL
@@ -89,6 +90,22 @@ class Chef
     end
     
     private
+
+    # Assign resticted/allowed recipes if the node provides them
+    # NOTE: Will not override currently set values as the CLI
+    #   has precedence
+    def assign_recipe_restrictions
+      if(node[:restricted_recipes] && Chef::Config[:restricted_recipes].empty?)
+        Chef::Config[:restricted_recipes] = node[:restricted_recipes]
+      else
+        Chef::Log.warn "Restricted recipes set via node attributes have been overriden by the command line."
+      end
+      if(node[:allowed_recipes] && Chef::Config[:allowed_recipes].empty?)
+        Chef::Config[:allowed_recipes] = node[:allowed_recipes]
+      else
+        Chef::Log.warn "Allowed recipes set via node attributes have been overriden by the command line."
+      end
+    end
 
     def load_libraries
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
