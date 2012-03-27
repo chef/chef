@@ -767,12 +767,14 @@ describe Mixlib::ShellOut do
       end
 
       context 'with subprocess piping lots of data through stdin, stdout, and stderr' do
-        let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
-        let(:ruby_code) { 'while(input = gets) do ( input[0] == "f" ? STDOUT : STDERR ).puts input; end' }
+        let(:multiplier) { 20_000 }
+        let(:expected_output_with) { lambda { |chr| (chr * multiplier) + "#{LINE_ENDING}" + (chr * multiplier) + "#{LINE_ENDING}" } }
+        # Use regex to work across Ruby versions
+        let(:ruby_code) { 'while(input = gets) do ( input =~ /^f/ ? STDOUT : STDERR ).puts input; end' }
         let(:options) { { :input => input } }
 
         context 'when writing to STDOUT first' do
-          let(:input) { [ 'f' * 20_000, 'u' * 20_000, 'f' * 20_000, 'u' * 20_000 ].join(LINE_ENDING) }
+          let(:input) { [ 'f' * multiplier, 'u' * multiplier, 'f' * multiplier, 'u' * multiplier ].join(LINE_ENDING) }
 
           it "should not deadlock" do
             stdout.should eql(expected_output_with.call('f'))
@@ -781,7 +783,7 @@ describe Mixlib::ShellOut do
         end
 
         context 'when writing to STDERR first' do
-          let(:input) { [ 'u' * 20_000, 'f' * 20_000, 'u' * 20_000, 'f' * 20_000 ].join(LINE_ENDING) }
+          let(:input) { [ 'u' * multiplier, 'f' * multiplier, 'u' * multiplier, 'f' * multiplier ].join(LINE_ENDING) }
 
           it "should not deadlock" do
             stdout.should eql(expected_output_with.call('f'))
