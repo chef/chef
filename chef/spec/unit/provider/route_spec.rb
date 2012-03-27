@@ -139,4 +139,19 @@ describe Chef::Provider::Route do
       @provider.config_file_contents(:delete).should match(/^$/)
     end
   end
+
+  describe Chef::Provider::Route, "generate_config method" do
+    it "should put all routes for a device in a route config file" do
+      @node[:platform] = 'centos'
+
+      route_file = StringIO.new
+      File.should_receive(:new).and_return(route_file)
+      @run_context.resource_collection << Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
+      @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
+      @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
+
+      @provider.generate_config
+      route_file.string.split("\n").should have(3).items
+    end
+  end
 end

@@ -143,11 +143,11 @@ class Chef::Provider::Route < Chef::Provider
 
             conf[dev] = String.new if conf[dev].nil?
             if resource.action == :add
-              conf[dev] = config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
+              conf[dev] << config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
             else
               # need to do this for the case when the last route on an int
               # is removed
-              conf[dev] = config_file_contents(:delete)
+              conf[dev] << config_file_contents(:delete)
             end
           end
         end
