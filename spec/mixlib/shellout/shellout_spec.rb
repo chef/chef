@@ -821,6 +821,18 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context 'when subprocess pauses before writing' do
+        subject { stdout.to_i }
+        let(:ruby_code) { 'sleep 0.5; print gets.size ' }
+        let(:input) { 'c' * 1024 }
+        let(:input_size) { input.size }
+        let(:options) { { :input => input } }
+
+        it 'should not hang or lose output' do
+          should eql(input_size)
+        end
+      end
+
       context 'when execution fails' do
         let(:cmd) { "fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" }
 
