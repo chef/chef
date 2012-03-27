@@ -68,8 +68,7 @@ describe Chef::CookbookLoader do
 
   describe "load_cookbooks" do
     it "should find all the cookbooks in the cookbook path" do
-      Chef::Config.cookbook_path = []
-			Chef::Config.cookbook_path << File.expand_path(File.join(CHEF_SPEC_DATA, "hidden-cookbooks"))
+      Chef::Config.cookbook_path << File.expand_path(File.join(CHEF_SPEC_DATA, "hidden-cookbooks"))
       @cookbook_loader.load_cookbooks
       @cookbook_loader.should have_key(:openldap)
       @cookbook_loader.should have_key(:apache2)
