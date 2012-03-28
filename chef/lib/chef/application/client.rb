@@ -142,6 +142,17 @@ class Chef::Application::Client < Chef::Application
     :proc         => lambda {|v| puts "Chef: #{::Chef::VERSION}"},
     :exit         => 0
 
+  option :override_runlist,
+    :short        => "-o RunlistItem,RunlistItem...",
+    :long         => "-override-runlist RunlistItem,RunlistItem...",
+    :description  => "Replace current run list with specified items",
+    :proc         => lambda{|items|
+      items = items.split(',')
+      items.compact.map{|item|
+        Chef::RunList::RunListItem.new(item)
+      }
+    }
+
   attr_reader :chef_client_json
 
   def initialize
@@ -234,7 +245,10 @@ class Chef::Application::Client < Chef::Application
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end
-        @chef_client = Chef::Client.new(@chef_client_json)
+        @chef_client = Chef::Client.new(
+          @chef_client_json, 
+          :override_runlist => config[:override_runlist]
+        )
         @chef_client_json = nil
 
         @chef_client.run
