@@ -124,12 +124,14 @@ class Chef
     attr_reader :run_status
 
     # Creates a new Chef::Client.
-    def initialize(json_attribs=nil)
+    def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs
       @node = nil
       @run_status = nil
       @runner = nil
       @ohai = Ohai::System.new
+      @override_runlist = args.delete(:override_runlist)
+      runlist_override_sanity_check!
     end
 
     # Do a full run for this Chef::Client.  Calls:
@@ -193,6 +195,7 @@ class Chef
         run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
       end
       run_status.run_context = run_context
+
       run_context.load(@run_list_expansion)
       assert_cookbook_path_not_empty(run_context)
       run_context
@@ -201,6 +204,10 @@ class Chef
     def save_updated_node
       unless Chef::Config[:solo]
         Chef::Log.debug("Saving the current state of node #{node_name}")
+        if(@original_runlist)
+          @node.run_list(*@original_original)
+          @node[:runlist_override_history] = {Time.now.to_i => @override_runlist.inspect}
+        end
         @node.save
       end
     end
@@ -246,6 +253,16 @@ class Chef
       # determine which versions of cookbooks to use.
       @node.reset_defaults_and_overrides
       @node.consume_external_attrs(ohai.data, @json_attribs)
+
+      unless(@override_runlist.empty?)
+        @original_runlist = @node.run_list.run_list_items.dup
+        runlist_override_sanity_check!
+        @node.run_list(*@override_runlist)
+        Chef::Log.warn "Run List override has been provided."
+        Chef::Log.warn "Original Run List: [#{@original_runlist.join(', ')}]"
+        Chef::Log.warn "Overridden Run List: [#{@node.run_list}]"
+      end
+
       if Chef::Config[:solo]
         @run_list_expansion = @node.expand!('disk')
       else
@@ -315,6 +332,19 @@ class Chef
     end
 
     private
+
+    # Ensures runlist override contains RunListItem instances
+    def runlist_override_sanity_check!
+      @override_runlist = @override_runlist.split(',') if @override_runlist.is_a?(String)
+      @override_runlist = [@override_runlist].flatten.compact
+      @override_runlist.map! do |item|
+        if(item.is_a?(Chef::RunList::RunListItem))
+          item
+        else
+          Chef::RunList::RunListItem.new(item)
+        end
+      end
+    end
 
     def directory_not_empty?(path)
       File.exists?(path) && (Dir.entries(path).size > 2)

@@ -179,4 +179,38 @@ describe Chef::Client do
       @node[:recipes].should include("cookbook1")
     end
   end
+
+  describe "when a run list override is provided" do
+    before do
+      @node = Chef::Node.new(@hostname)
+      @node.name(@fqdn)
+      @node.chef_environment("_default")
+      @node[:platform] = "example-platform"
+      @node[:platform_version] = "example-platform-1.0"
+
+      @client = Chef::Client.new(nil, :override_runlist => 'role[test_role]')
+      @client.node = @node
+    end
+
+    it "should override the run list" do
+      @node.run_list << "role[role_containing_cookbook1]"
+
+      override_role = Chef::Role.new
+      override_role.name 'test_role'
+      override_role.run_list << 'cookbook1'
+
+      Chef::Node.should_receive(:find_or_create).and_return(@node)
+      mock_chef_rest = mock("Chef::REST")
+      mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
+      Chef::REST.should_receive(:new).and_return(mock_chef_rest)
+
+      @client.build_node
+      
+      @node[:roles].should_not be_nil
+      @node[:roles].should eql(['test_role'])
+      @node[:recipes].should eql(['cookbook1'])
+
+    end
+  end
+
 end
