@@ -736,7 +736,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'with subprocess reading lots of data from stdin' do
+      context 'with subprocess reading lots of data from stdin', :unix_only => true do
         subject { stdout.to_i }
         let(:ruby_code) { 'STDOUT.print gets.size' }
         let(:options) { { :input => input } }
@@ -770,7 +770,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'with subprocess piping lots of data through stdin, stdout, and stderr' do
+      context 'with subprocess piping lots of data through stdin, stdout, and stderr', :unix_only => true do
         let(:multiplier) { 20_000 }
         let(:expected_output_with) { lambda { |chr| (chr * multiplier) + "#{LINE_ENDING}" + (chr * multiplier) + "#{LINE_ENDING}" } }
         # Use regex to work across Ruby versions
@@ -827,7 +827,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'when subprocess pauses before writing' do
+      context 'when subprocess pauses before reading from stdin', :unix_only => true do
         subject { stdout.to_i }
         let(:ruby_code) { 'sleep 0.5; print gets.size ' }
         let(:input) { 'c' * 1024 }
@@ -846,7 +846,7 @@ describe Mixlib::ShellOut do
           lambda { executed_cmd }.should raise_error(Errno::ENOENT)
         end
 
-        context 'with input' do
+        context 'with input', :unix_only => true do
           let(:options) { {:input => input } }
           let(:input) { "Random input #{rand(1000000)}" }
 
@@ -856,7 +856,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'without input data' do
+      context 'without input data', :unix_only => true do
         context 'with subprocess that expects stdin' do
           let(:ruby_code) { %q{print STDIN.eof?.to_s} }
 
