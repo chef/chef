@@ -15,6 +15,11 @@ describe Mixlib::ShellOut do
   let(:ruby_code) { raise 'define let(:ruby_code)' }
   let(:options) { nil }
 
+  # On some testing environments, we have gems that creates a deprecation notice sent
+  # out on STDERR. To fix that, we disable gems on Ruby 1.9.2
+  let(:ruby_eval) { lambda { |code| "ruby #{disable_gems} -e '#{code}'" } }
+  let(:disable_gems) { ( ruby_19? ? '--disable-gems' : '') }
+
   context 'when instantiating' do
     subject { shell_cmd }
     let(:cmd) { 'apt-get install chef' }
@@ -284,7 +289,6 @@ describe Mixlib::ShellOut do
 
   context 'when executing the command' do
     let(:dir) { Dir.mktmpdir }
-    let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
     let(:dump_file) { "#{dir}/out.txt" }
     let(:dump_file_content) { stdout; IO.read(dump_file) }
 
@@ -869,11 +873,11 @@ describe Mixlib::ShellOut do
       let(:ruby_code) { %q{STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"} }
       let(:exception_output) { executed_cmd.format_for_exception.split("\n") }
       let(:expected_output) { [
-        %q{---- Begin output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
+        "---- Begin output of #{cmd} ----",
         %q{STDOUT: msg_in_stdout},
         %q{STDERR: msg_in_stderr},
-        %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
-        "Ran ruby -e 'STDERR.puts \"msg_in_stderr\"; puts \"msg_in_stdout\"' returned 0"
+        "---- End output of #{cmd} ----",
+        "Ran #{cmd} returned 0"
       ] }
 
       it "should format exception messages" do
