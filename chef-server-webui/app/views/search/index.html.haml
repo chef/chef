@@ -1,8 +1,0 @@
-.block#block-forms
-  .content
-    %h2.title Search Indexes
-    .inner
-      - @search_indexes.sort{ |a,b| a.to_s <=> b.to_s}.each do |index|
-        %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => url(:search, { :id => index[0]})}
-          .group.label= text_field :name => "q", :label => "Query (i.e. attribute:value, leave empty to search all) "
-          .group= submit "Search #{index[0]}"

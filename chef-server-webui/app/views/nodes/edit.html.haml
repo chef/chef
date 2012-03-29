@@ -1,7 +1,0 @@
-.block#block-tables
-  .content
-    %h2.title= "Node #{h @node.name}"
-    .inner
-      = partial('navigation', :active => 'edit')
-  = partial('form', :header => "Edit Node #{@node.name}", :form_id => 'edit_node', :submit_name => "Save Node", :submit_id => "edit_node_button", :form_for => 'edit', :form_url => url(:node, @node.name) )
-
