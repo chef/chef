@@ -1,27 +1,38 @@
-$:.push File.expand_path("../lib", __FILE__)
-require "chef-server-webui/version"
+source 'https://rubygems.org'
 
-source :rubygems
+gem 'rails', '3.2.2'
 
-gem "haml"
-gem "ruby-openid"
-gem "coderay"
+# Bundle edge Rails instead:
+# gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-merb_gems_version = "1.1.3"
-gem "merb-core", merb_gems_version
-gem "merb-assets", merb_gems_version
-gem "merb-haml", merb_gems_version
-gem "merb-helpers", merb_gems_version
-gem "merb-param-protection", merb_gems_version
+gem 'sqlite3'
 
-gem "chef", ChefServerWebui::VERSION, :require => false # load individual parts as needed
-gem "chef-solr", ChefServerWebui::VERSION, :require => false
 
-group(:dev) do
-  gem "thin"
-  gem "pry"
+# Gems used only for assets and not required
+# in production environments by default.
+group :assets do
+  gem 'sass-rails',   '~> 3.2.3'
+  gem 'coffee-rails', '~> 3.2.1'
+
+  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
+  # gem 'therubyracer'
+
+  gem 'uglifier', '>= 1.0.3'
 end
 
-group(:prod) do
-  gem "unicorn", "~> 2.0.0"
-end
+gem 'jquery-rails'
+
+# To use ActiveModel has_secure_password
+# gem 'bcrypt-ruby', '~> 3.0.0'
+
+# To use Jbuilder templates for JSON
+# gem 'jbuilder'
+
+# Use unicorn as the app server
+# gem 'unicorn'
+
+# Deploy with Capistrano
+# gem 'capistrano'
+
+# To use debugger
+# gem 'ruby-debug19', :require => 'ruby-debug'
