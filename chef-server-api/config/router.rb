@@ -92,7 +92,7 @@ Merb::Router.prepare do
 
   match("/cookbooks/:cookbook_name/:cookbook_version/files/:checksum",
         :cookbook_name => /[\w\.]+/,
-        :cookbook_version => /(\d+\.\d+\.\d+|_latest)/
+        :cookbook_version => /\d+\.\d+\.\d+|_latest/
         ).to(
              :controller => "cookbooks",
              :action => "show_file"
