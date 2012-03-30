@@ -178,7 +178,11 @@ module Mixlib
 
         if exe.nil? || exe =~ IS_BATCH_FILE
           # Batch files MUST use cmd; and if we couldn't find the command we're looking for, we assume it must be a cmd builtin.
-          [ ENV['COMSPEC'], "cmd /c #{command}" ]
+          #
+          # cmd does not parse multiple quotes well unless the whole thing is wrapped up in quotes.
+          # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4837859
+          # http://ss64.com/nt/syntax-esc.html
+          [ ENV['COMSPEC'], "cmd /c \"#{command}\"" ]
         else
           [ exe, command ]
         end

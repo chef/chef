@@ -383,17 +383,18 @@ describe Mixlib::ShellOut do
     end
 
     context "when running different types of command" do
+      let(:script) { open_file.tap(&write_file).tap(&:close).tap(&make_executable) }
+      let(:file_name) { "#{dir}/Setup Script.cmd" }
+      let(:script_name) { "\"#{script.path}\"" }
+
+      let(:open_file) { File.open(file_name, 'w') }
+      let(:write_file) { lambda { |f| f.write(script_content) } }
+      let(:make_executable) { lambda { |f| File.chmod(0755, f.path) } }
+
       context 'with spaces in the path' do
         subject { chomped_stdout }
         let(:cmd) { script_name }
 
-        let(:script) { open_file.tap(&write_file).tap(&:close).tap(&make_executable) }
-        let(:file_name) { "#{dir}/blah blah.cmd" }
-        let(:script_name) { "\"#{script.path}\"" }
-
-        let(:open_file) { File.open(file_name, 'w') }
-        let(:write_file) { lambda { |f| f.write(script_content) } }
-        let(:make_executable) { lambda { |f| File.chmod(0755, f.path) } }
 
         context 'when running under Unix', :unix_only => true do
           let(:script_content) { 'echo blah' }
@@ -404,13 +405,25 @@ describe Mixlib::ShellOut do
         end
 
         context 'when running under Windows', :windows_only => true do
-          let(:script_content) { '@echo blah' }
+          let(:cmd) { "#{script_name} #{argument}" }
+          let(:script_content) { '@echo %1' }
+          let(:argument) { rand(10000).to_s }
 
           it 'should execute' do
-            should eql('blah')
+            should eql(argument)
+          end
+          context 'with multiple quotes in the command and args' do
+            context 'when using a batch file' do
+              let(:argument) { "\"Random #{rand(10000)}\"" }
+
+              it 'should execute' do
+                should eql(argument)
+              end
+            end
           end
         end
       end
+
 
       context 'with lots of long arguments' do
         subject { chomped_stdout }
@@ -435,6 +448,7 @@ describe Mixlib::ShellOut do
           should eql(special_characters)
         end
       end
+
 
       context 'with backslashes' do
         subject { stdout }
