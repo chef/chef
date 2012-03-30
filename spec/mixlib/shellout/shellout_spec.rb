@@ -412,12 +412,30 @@ describe Mixlib::ShellOut do
           it 'should execute' do
             should eql(argument)
           end
+
           context 'with multiple quotes in the command and args' do
             context 'when using a batch file' do
               let(:argument) { "\"Random #{rand(10000)}\"" }
 
               it 'should execute' do
                 should eql(argument)
+              end
+            end
+
+            context 'when not using a batch file' do
+              let(:watch) { lambda { |a| ap a } }
+              let(:cmd) { "#{executable_file_name} #{script_name}" }
+
+              let(:executable_file_name) { "\"#{dir}/Ruby Parser.exe\"".tap(&make_executable!) }
+              let(:make_executable!) { lambda { |filename| Mixlib::ShellOut.new("copy \"#{full_path_to_ruby}\" #{filename}").run_command } }
+              let(:script_content) { "print \"#{expected_output}\"" }
+              let(:expected_output) { "Random #{rand(10000)}" }
+
+              let(:full_path_to_ruby) { ENV['PATH'].split(';').map(&try_ruby).reject(&:nil?).first }
+              let(:try_ruby) { lambda { |path| "#{path}\\ruby.exe" if File.executable? "#{path}\\ruby.exe" } }
+
+              it 'should execute' do
+                should eql(expected_output)
               end
             end
           end
