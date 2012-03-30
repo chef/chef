@@ -26,12 +26,13 @@ describe "Cookbooks Controller" do
     Merb.logger.set_log(StringIO.new)
   end
 
+  MAXMAJOR=25
   describe "when several versions of multiple cookbooks exist" do
     before do
       @cookbook_a_versions = (0...7).map { |i| "1.0.#{i}"}
-      @cookbook_b_versions = (0...3).map { |i| "2.0.#{i}" }
+      @cookbook_b_versions = (0...3).map { |i| "#{MAXMAJOR}.0.#{i}" }
       Chef::CookbookVersion.stub!(:cdb_list).and_return("cookbook-a" => @cookbook_a_versions, "cookbook-b" => @cookbook_b_versions)
-      Chef::CookbookVersion.stub!(:cdb_list_latest).and_return('cookbook-a' => '1.0.6', 'cookbook-b' => '2.0.2')
+      Chef::CookbookVersion.stub!(:cdb_list_latest).and_return('cookbook-a' => '1.0.6', 'cookbook-b' => '#{MAXMAJOR}.0.2')
       Chef::CookbookVersion.stub!(:cdb_by_name).with('cookbook-a').and_return("cookbook-a" => @cookbook_a_versions)
     end
 
@@ -52,15 +53,16 @@ describe "Cookbooks Controller" do
         get_json('/cookbooks/cookbook-a').should == expected
       end
 
+      cookbook_version = "#{MAXMAJOR}.0.3"
       it "downloads a file from a cookbook" do
-        cookbook = make_cookbook("cookbook-a", "2.0.3")
+        cookbook = make_cookbook("cookbook-a", "#{cookbook_version}")
         cookbook.checksums["1234"] = nil
         stub_checksum("1234")
-        Chef::CookbookVersion.should_receive(:cdb_load).with("cookbook-a", "2.0.3").and_return(cookbook)
+        Chef::CookbookVersion.should_receive(:cdb_load).with("cookbook-a", "#{cookbook_version}").and_return(cookbook)
         expected = {}
         expected_cookbook_a_data = @cookbook_a_versions.map {|v| {"url" => "#{root_url}/cookbooks/cookbook-a/#{v}", "version" => v}}.reverse
         expected['cookbook-a'] = {"url" => "#{root_url}/cookbooks/cookbook-a", "versions" => expected_cookbook_a_data}
-        response = get("/cookbooks/cookbook-a/2.0.3/files/1234") do |controller|
+        response = get("/cookbooks/cookbook-a/#{cookbook_version}/files/1234") do |controller|
           stub_authentication(controller)
           controller.should_receive(:send_file).with("/var/chef/checksums/12/1234").and_return("file-content")
         end
@@ -69,15 +71,15 @@ describe "Cookbooks Controller" do
       end
 
       it "gets an error in case of missing file on download" do
-        cookbook = make_cookbook("cookbook-a", "2.0.3")
+        cookbook = make_cookbook("cookbook-a", "#{cookbook_version}")
         cookbook.checksums["1234"] = nil
         stub_checksum("1234", false)
-        Chef::CookbookVersion.should_receive(:cdb_load).with("cookbook-a", "2.0.3").and_return(cookbook)
+        Chef::CookbookVersion.should_receive(:cdb_load).with("cookbook-a", "#{cookbook_version}").and_return(cookbook)
         expected = {}
         expected_cookbook_a_data = @cookbook_a_versions.map {|v| {"url" => "#{root_url}/cookbooks/cookbook-a/#{v}", "version" => v}}.reverse
         expected['cookbook-a'] = {"url" => "#{root_url}/cookbooks/cookbook-a", "versions" => expected_cookbook_a_data}
         lambda do
-          response = get("/cookbooks/cookbook-a/2.0.3/files/1234") do |controller|
+          response = get("/cookbooks/cookbook-a/#{cookbook_version}/files/1234") do |controller|
             stub_authentication(controller)
           end
         end.should raise_error(Merb::ControllerExceptions::InternalServerError, /File with checksum 1234 not found in the repository/)
