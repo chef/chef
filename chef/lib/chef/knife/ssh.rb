@@ -130,6 +130,7 @@ class Chef
           hostspec = config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
           session_opts = {}
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
+          session_opts[:keys_only] = true if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
           session_opts[:port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
