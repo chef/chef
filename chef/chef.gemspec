@@ -28,7 +28,9 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.1.0"
   %w{erubis moneta highline uuidtools}.each { |gem| s.add_dependency gem }
 
-  %w(rdoc sdoc ronn rake rspec-core rspec-expectations rspec-mocks rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+  %w(rdoc sdoc ronn rake rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "< 2.9.0" }
 
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife shef )
