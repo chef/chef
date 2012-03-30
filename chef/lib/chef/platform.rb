@@ -232,6 +232,14 @@ class Chef
               :group => Chef::Provider::Group::Usermod
             }
           },
+          :smartos => {
+            :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::SmartOS,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            }
+          },
           :netbsd => {
             :default => {
               :group => Chef::Provider::Group::Usermod
