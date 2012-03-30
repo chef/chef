@@ -759,12 +759,15 @@ describe Mixlib::ShellOut do
       # over again and generate lots of garbage, which will not be collected
       # since we have to turn GC off to avoid segv.
       context 'with subprocess that closes STDOUT before closing STDERR' do
-        subject { unclosed_pipes }
         let(:ruby_code) {  %q{STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit} }
         let(:unclosed_pipes) { executed_cmd.send(:open_pipes) }
 
         it 'should not hang' do
-          should be_empty
+          stdout.should_not be_empty
+        end
+
+        it 'should close all pipes', :unix_only => true do
+          unclosed_pipes.should be_empty
         end
       end
 
@@ -828,7 +831,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'when subprocess closes prematurely' do
+      context 'when subprocess closes prematurely', :unix_only => true do
         context 'with input data' do
           let(:ruby_code) { 'bad_ruby { [ } ]' }
           let(:options) { { :input => input } }
@@ -874,18 +877,22 @@ describe Mixlib::ShellOut do
       context 'when execution fails' do
         let(:cmd) { "fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" }
 
-        it "should recover the error message" do
-          lambda { executed_cmd }.should raise_error(Errno::ENOENT)
-        end
-
-        context 'with input', :unix_only => true do
-          let(:options) { {:input => input } }
-          let(:input) { "Random input #{rand(1000000)}" }
-
+        context 'when running under Unix', :unix_only => true do
           it "should recover the error message" do
             lambda { executed_cmd }.should raise_error(Errno::ENOENT)
           end
+
+          context 'with input' do
+            let(:options) { {:input => input } }
+            let(:input) { "Random input #{rand(1000000)}" }
+
+            it "should recover the error message" do
+              lambda { executed_cmd }.should raise_error(Errno::ENOENT)
+            end
+          end
         end
+
+        pending 'when running under Windows', :windows_only => true
       end
 
       context 'without input data', :unix_only => true do
