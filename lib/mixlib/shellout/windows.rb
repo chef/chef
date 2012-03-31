@@ -156,25 +156,15 @@ module Mixlib
 
       IS_BATCH_FILE = /\.bat"?$|\.cmd"?$/i
 
-      def command_to_run
-        if command =~ /^\s*"(.*)"/
-          # If we have quotes, do an exact match
-          candidate = $1
-        else
-          # Otherwise check everything up to the first space
-          candidate = command[0,command.index(/\s/) || command.length].strip
-        end
+      def command_to_run(command)
+        candidate = candidate_executable_for_command(command)
 
         # Don't do searching for empty commands.  Let it fail when it runs.
-        if candidate.length == 0
-          return [ nil, command ]
-        end
+        return [ nil, command ] if candidate.length == 0
 
         # Check if the exe exists directly.  Otherwise, search PATH.
         exe = find_exe_at_location(candidate)
-        if exe.nil? && exe !~ /[\\\/]/
-          exe = which(command[0,command.index(/\s/) || command.length])
-        end
+        exe = which(unquoted_executable_path(command)) if exe.nil? && exe !~ /[\\\/]/
 
         if exe.nil? || exe =~ IS_BATCH_FILE
           # Batch files MUST use cmd; and if we couldn't find the command we're looking for, we assume it must be a cmd builtin.
@@ -187,6 +177,21 @@ module Mixlib
           [ exe, command ]
         end
       end
+
+      def unquoted_executable_path(command)
+        command[0,command.index(/\s/) || command.length]
+      end
+
+      def candidate_executable_for_command(command)
+        if command =~ /^\s*"(.*?)"/
+          # If we have quotes, do an exact match
+          $1
+        else
+          # Otherwise check everything up to the first space
+          unquoted_executable_path(command).strip
+        end
+      end
+
 
       def inherit_environment
         result = {}
