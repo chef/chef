@@ -38,8 +38,9 @@ describe Mixlib::ShellOut::Windows, :windows_only => true do
       let(:stubbed_shell_out) { fail NotImplemented, 'Must declare let(:stubbed_shell_out)' }
       let(:shell_out) { Mixlib::ShellOut.new(cmd) }
 
-      let(:with_valid_exe_at_location) { lambda { |s| s.stub!(:find_exe_at_location).and_return(executable_path) } }
-      let(:with_invalid_exe_at_location) { lambda { |s| s.stub!(:find_exe_at_location).and_return(nil) } }
+      let(:utils) { Mixlib::ShellOut::Windows::Utils }
+      let(:with_valid_exe_at_location) { lambda { |s| utils.stub!(:find_executable).and_return(executable_path) } }
+      let(:with_invalid_exe_at_location) { lambda { |s| utils.stub!(:find_executable).and_return(nil) } }
 
       context 'with empty command' do
         let(:stubbed_shell_out) { shell_out }

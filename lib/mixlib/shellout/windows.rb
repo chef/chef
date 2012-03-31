@@ -166,8 +166,8 @@ module Mixlib
         return [ nil, command ] if candidate.length == 0
 
         # Check if the exe exists directly.  Otherwise, search PATH.
-        exe = find_exe_at_location(candidate)
-        exe = which(unquoted_executable_path(command)) if exe.nil? && exe !~ /[\\\/]/
+        exe = Utils.find_executable(candidate)
+        exe = Utils.which(unquoted_executable_path(command)) if exe.nil? && exe !~ /[\\\/]/
 
         if exe.nil? || exe =~ IS_BATCH_FILE
           # Batch files MUST use cmd; and if we couldn't find the command we're looking for, we assume it must be a cmd builtin.
@@ -195,7 +195,6 @@ module Mixlib
         end
       end
 
-
       def inherit_environment
         result = {}
         ENV.each_pair do |k,v|
@@ -212,25 +211,32 @@ module Mixlib
         result
       end
 
-      def pathext
-        @pathext ||= ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') + [''] : ['']
-      end
-
-      def which(cmd)
-        ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-          exe = find_exe_at_location("#{path}/${cmd}")
-          return exe if exe
+      module Utils
+        def self.pathext
+          @pathext ||= ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') + [''] : ['']
         end
-        return nil
-      end
 
-      def find_exe_at_location(path)
-        return path if File.executable? path
-        pathext.each do |ext|
-          exe = "#{path}#{ext}"
-          return exe if File.executable? exe
+        # which() mimicks the Unix which command
+        def self.which(cmd)
+          ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+            exe = find_executable("#{path}/${cmd}")
+            return exe if exe
+          end
+          return nil
         end
-        return nil
+
+        # Windows has a different notion of what "executable" means
+        # The OS will search through valid the extensions and look
+        # for a binary there.
+        def self.find_executable(path)
+          return path if File.executable? path
+
+          pathext.each do |ext|
+            exe = "#{path}#{ext}"
+            return exe if File.executable? exe
+          end
+          return nil
+        end
       end
     end # class
   end
