@@ -1,487 +1,742 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-require 'tmpdir'
-require 'tempfile'
-require 'timeout'
+require 'spec_helper'
 
 describe Mixlib::ShellOut do
-  before do
-    @shell_cmd = Mixlib::ShellOut.new("apt-get install chef")
-  end
+  let(:shell_cmd) { options ? shell_cmd_with_options : shell_cmd_without_options }
+  let(:executed_cmd) { shell_cmd.tap(&:run_command) }
+  let(:stdout) { executed_cmd.stdout }
+  let(:stderr) { executed_cmd.stderr }
+  let(:chomped_stdout) { stdout.chomp }
+  let(:stripped_stdout) { stdout.strip }
+  let(:exit_status) { executed_cmd.status.exitstatus }
 
-  it "has a command" do
-    @shell_cmd.command.should == "apt-get install chef"
-  end
+  let(:shell_cmd_without_options) { Mixlib::ShellOut.new(cmd) }
+  let(:shell_cmd_with_options) { Mixlib::ShellOut.new(cmd, options) }
+  let(:cmd) { ruby_eval.call(ruby_code) }
+  let(:ruby_code) { raise 'define let(:ruby_code)' }
+  let(:options) { nil }
 
-  it "defaults to not setting a working directory" do
-    @shell_cmd.cwd.should == nil
-  end
+  context 'when instantiating' do
+    subject { shell_cmd }
+    let(:cmd) { 'apt-get install chef' }
 
-  it "has a user to run the command as" do
-    @shell_cmd.user.should be_nil
-  end
-
-  it "sets the user to run the command as" do
-    @shell_cmd.user = 'root'
-    @shell_cmd.user.should == 'root'
-  end
-
-  it "has a group to run the command as" do
-    @shell_cmd.group.should be_nil
-  end
-
-  it "sets the group to run the command as" do
-    @shell_cmd.group = 'wheel'
-    @shell_cmd.group.should == 'wheel'
-  end
-
-  it "has a set of environment variables to set before running the command" do
-    @shell_cmd.environment.should == {"LC_ALL" => "C"}
-  end
-
-  it "has a umask" do
-    @shell_cmd.umask.should be_nil
-  end
-
-  it "sets the umask using an octal integer" do
-    @shell_cmd.umask = 007777
-    @shell_cmd.umask.should == 007777
-  end
-
-  it "sets the umask using a decimal integer" do
-    @shell_cmd.umask = 2925
-    @shell_cmd.umask.should == 005555
-  end
-
-  it "sets the umask using a string representation of an integer" do
-    @shell_cmd.umask = '7777'
-    @shell_cmd.umask.should == 007777
-  end
-
-  it "returns the user-supplied uid when present" do
-    @shell_cmd.user = 0
-    @shell_cmd.uid.should == 0
-  end
-
-  it "computes the uid of the user when a string/symbolic username is given" do
-    unless windows?
-      user_struct = Etc.getpwent
-      username = user_struct.name
-      expected_uid = user_struct.uid
-
-      @shell_cmd.user = username
-      @shell_cmd.uid.should == expected_uid
-    end
-  end
-
-  it "returns the user-supplied gid when present" do
-    @shell_cmd.group = 0
-    @shell_cmd.gid.should == 0
-  end
-
-  it "computes the gid of the user when a string/symbolic groupname is given" do
-    unless windows?
-      a_group = Etc.getgrent
-      @shell_cmd.group = a_group.name
-      @shell_cmd.gid.should == a_group.gid
-    end
-  end
-
-  it "has a timeout defaulting to 600 seconds" do
-    Mixlib::ShellOut.new('foo').timeout.should == 600
-  end
-
-  it "sets the read timeout" do
-    @shell_cmd.timeout = 10
-    @shell_cmd.timeout.should == 10
-  end
-
-  it "has a list of valid exit codes which is just 0 by default" do
-    @shell_cmd.valid_exit_codes.should == [0]
-  end
-
-  it "sets the list of valid exit codes" do
-    @shell_cmd.valid_exit_codes = [0,23,42]
-    @shell_cmd.valid_exit_codes.should == [0,23,42]
-  end
-
-  it "defaults to not having a live stream" do
-    @shell_cmd.live_stream.should be_nil
-  end
-
-  it "sets a live stream" do
-    stream = StringIO.new
-    @shell_cmd.live_stream = stream
-    @shell_cmd.live_stream.should == stream
-  end
-
-  context "when initialized with a hash of options" do
-    before do
-      @opts = { :cwd => '/tmp', :user => 'toor', :group => 'wheel', :umask => '2222',
-                :timeout => 5, :environment => {'RUBY_OPTS' => '-w'}, :returns => [0,1,42],
-                :live_stream => StringIO.new}
-      @shell_cmd = Mixlib::ShellOut.new("brew install couchdb", @opts)
+    it "should set the command" do
+      subject.command.should eql(cmd)
     end
 
-    it "sets the working dir as specified in the options" do
-      @shell_cmd.cwd.should == '/tmp'
-    end
+    context 'with default settings' do
+      its(:cwd) { should be_nil }
+      its(:user) { should be_nil }
+      its(:group) { should be_nil }
+      its(:umask) { should be_nil }
+      its(:timeout) { should eql(600) }
+      its(:valid_exit_codes) { should eql([0]) }
+      its(:live_stream) { should be_nil }
 
-    it "sets the user as specified in the options" do
-      @shell_cmd.user.should == 'toor'
-    end
-
-    it "sets the group as specified in the options" do
-      @shell_cmd.group.should == 'wheel'
-    end
-
-    it "sets the umask as specified in the options" do
-      @shell_cmd.umask.should == 002222
-    end
-
-    it "sets the timout as specified in the options" do
-      @shell_cmd.timeout.should == 5
-    end
-
-    it "merges the environment with the default environment settings" do
-      @shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
-    end
-
-    it "also accepts :env to set the enviroment for brevity's sake" do
-      @shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :env => {'RUBY_OPTS'=>'-w'})
-      @shell_cmd.environment.should == {'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'}
-    end
-
-    it "does not set any environment settings when given :environment => nil" do
-      @shell_cmd = Mixlib::ShellOut.new("brew install couchdb", :environment => nil)
-      @shell_cmd.environment.should == {}
-    end
-
-    it "sets the list of acceptable return values" do
-      @shell_cmd.valid_exit_codes.should == [0,1,42]
-    end
-
-    it "sets the live stream specified in the options" do
-      @shell_cmd.live_stream.should == @opts[:live_stream]
-    end
-
-    it "raises an error when given an invalid option" do
-      klass = Mixlib::ShellOut::InvalidCommandOption
-      msg   = "option ':frab' is not a valid option for Mixlib::ShellOut"
-      lambda { Mixlib::ShellOut.new("foo", :frab => :jab) }.should raise_error(klass, msg)
-    end
-
-    it "chdir to the cwd directory if given" do
-      # /bin should exists on all systems, and is not the default cwd
-      if windows?
-        dir = Dir.tmpdir
-        cmd = Mixlib::ShellOut.new('echo %cd%', :cwd => dir)
-      else
-        dir = "/bin"
-        cmd = Mixlib::ShellOut.new('pwd', :cwd => dir)
+      it "should set default environmental variables" do
+        shell_cmd.environment.should == {"LC_ALL" => "C"}
       end
-      cmd.run_command
-      File.expand_path(cmd.stdout.chomp).should == File.expand_path(dir)
-    end
-  end
-
-  context "when initialized with an array of command+args and an options hash" do
-    before do
-      @opts = {:cwd => '/tmp', :user => 'nobody'}
-      @shell_cmd = Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'}, @opts)
     end
 
-    it "sets the command to the array of command and args" do
-      @shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
-    end
+    context 'when setting accessors' do
+      subject { shell_cmd.send(accessor) }
 
-    it "evaluates the options" do
-      @shell_cmd.cwd.should == '/tmp'
-      @shell_cmd.user.should == 'nobody'
-    end
-  end
+      let(:shell_cmd) { blank_shell_cmd.tap(&with_overrides) }
+      let(:blank_shell_cmd) { Mixlib::ShellOut.new('apt-get install chef') }
+      let(:with_overrides) { lambda { |shell_cmd| shell_cmd.send("#{accessor}=", value) } }
 
-  context "when initialized with an array of command+args and no options" do
-    before do
-      @shell_cmd = Mixlib::ShellOut.new('ruby', '-e', %q{'puts "hello"'})
-    end
+      context 'when setting user' do
+        let(:accessor) { :user }
+        let(:value) { 'root' }
 
-    it "sets the command to the array of command+args" do
-      @shell_cmd.command.should == ['ruby', '-e', %q{'puts "hello"'}]
-    end
+        it "should set the user" do
+          should eql(value)
+        end
 
-  end
+        context 'with an integer value for user' do
+          let(:value) { 0 }
+          it "should use the user-supplied uid" do
+            shell_cmd.uid.should eql(value)
+          end
+        end
 
-  context "when created with a live stream" do
-    before do
-      @stream = StringIO.new
-      @shell_cmd = Mixlib::ShellOut.new(%q{ruby -e 'puts "hello"'}, :live_stream => @stream)
-    end
+        context 'with string value for user' do
+          let(:value) { username }
 
-    it "copies the subprocess' stdout to the live stream" do
-      @shell_cmd.run_command
-      @stream.string.should == "hello#{LINE_ENDING}"
-    end
-  end
+          let(:username) { user_info.name }
+          let(:expected_uid) { user_info.uid }
+          let(:user_info) { Etc.getpwent }
 
-  describe "handling various subprocess behaviors" do
-    it "collects all of STDOUT and STDERR" do
-      twotime = %q{ruby -e 'STDERR.puts :hello; STDOUT.puts :world'}
-      cmd = Mixlib::ShellOut.new(twotime)
-      cmd.run_command
-      cmd.stderr.should == "hello#{LINE_ENDING}"
-      cmd.stdout.should == "world#{LINE_ENDING}"
-    end
+          it "should compute the uid of the user", :unix_only => true do
+            shell_cmd.uid.should eql(expected_uid)
+          end
+        end
 
-    it "collects the exit status of the command" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
-      status = cmd.run_command.status
-      status.exitstatus.should == 0
-    end
-
-    it "does not hang if a process forks but does not close stdout and stderr" do
-      evil_forker="exit if fork; 10.times { sleep 1}"
-      cmd = Mixlib::ShellOut.new("ruby -e '#{evil_forker}'")
-
-      lambda {Timeout.timeout(2) do
-        cmd.run_command
-      end}.should_not raise_error
-    end
-
-    it "times out when a process takes longer than the specified timeout" do
-      cmd = Mixlib::ShellOut.new("ruby -e \"sleep 2\"", :timeout => 0.1)
-      lambda {cmd.run_command}.should raise_error(Mixlib::ShellOut::CommandTimeout)
-    end
-
-    it "reads all of the output when the subprocess produces more than $buffersize of output" do
-      chatty = "ruby -e \"print('X' * 16 * 1024); print('.' * 1024)\""
-      cmd = Mixlib::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should match(/X{16384}\.{1024}/)
-    end
-
-    it "returns empty strings from commands that have no output" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'exit 0'})
-      cmd.run_command
-      cmd.stdout.should == ''
-      cmd.stderr.should == ''
-    end
-
-    it "doesn't hang or lose output when a process closes one of stdout/stderr and continues writing to the other" do
-      halfandhalf = %q{ruby -e 'STDOUT.close;sleep 0.5;STDERR.puts :win'}
-      cmd = Mixlib::ShellOut.new(halfandhalf)
-      cmd.run_command
-      cmd.stderr.should == "win#{LINE_ENDING}"
-    end
-
-    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr" do
-      chatty = %q{ruby -e "puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000"}
-      cmd = Mixlib::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
-      cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
-    end
-
-    it "does not deadlock when the subprocess writes lots of data to both stdout and stderr (part2)" do
-      chatty = %q{ruby -e "STDERR.puts 'u' * 20_000; puts 'f' * 20_000;STDERR.puts 'u' * 20_000; puts 'f' * 20_000"}
-      cmd = Mixlib::ShellOut.new(chatty)
-      cmd.run_command
-      cmd.stdout.should == ('f' * 20_000) + "#{LINE_ENDING}" + ('f' * 20_000) + "#{LINE_ENDING}"
-      cmd.stderr.should == ('u' * 20_000) + "#{LINE_ENDING}" + ('u' * 20_000) + "#{LINE_ENDING}"
-    end
-
-    it "doesn't hang or lose output when a process writes, pauses, then continues writing" do
-      stop_and_go = %q{ruby -e 'puts "before";sleep 0.5;puts"after"'}
-      cmd = Mixlib::ShellOut.new(stop_and_go)
-      cmd.run_command
-      cmd.stdout.should == "before#{LINE_ENDING}after#{LINE_ENDING}"
-    end
-
-    it "doesn't hang or lose output when a process pauses before writing" do
-      late_arrival = %q{ruby -e 'sleep 0.5;puts "missed_the_bus"'}
-      cmd = Mixlib::ShellOut.new(late_arrival)
-      cmd.run_command
-      cmd.stdout.should == "missed_the_bus#{LINE_ENDING}"
-    end
-
-    it "uses the C locale by default" do
-      cmd = Mixlib::ShellOut.new(ECHO_LC_ALL)
-      cmd.run_command
-      cmd.stdout.strip.should == 'C'
-    end
-
-    it "does not set any locale when the user gives LC_ALL => nil" do
-      # kinda janky
-      cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => nil})
-      cmd.run_command
-      if !ENV['LC_ALL'] && windows?
-        expected = "%LC_ALL%"
-      else
-        expected = ENV['LC_ALL'].to_s.strip
       end
-      cmd.stdout.strip.should == expected
+
+      context 'when setting group' do
+        let(:accessor) { :group }
+        let(:value) { 'wheel' }
+
+        it "should set the group" do
+          should eql(value)
+        end
+
+        context 'with integer value for group' do
+          let(:value) { 0 }
+          it "should use the user-supplied gid" do
+            shell_cmd.gid.should eql(value)
+          end
+        end
+
+        context 'with string value for group' do
+          let(:value) { groupname }
+          let(:groupname) { group_info.name }
+          let(:expected_gid) { group_info.gid }
+          let(:group_info) { Etc.getgrent }
+
+          it "should compute the gid of the user", :unix_only => true do
+            shell_cmd.gid.should eql(expected_gid)
+          end
+        end
+      end
+
+      context 'when setting the umask' do
+        let(:accessor) { :umask }
+
+        context 'with octal integer' do
+          let(:value) { 007555}
+
+          it 'should set the umask' do
+            should eql(value)
+          end
+        end
+
+        context 'with decimal integer' do
+          let(:value) { 2925 }
+
+          it 'should sets the umask' do
+            should eql(005555)
+          end
+        end
+
+        context 'with string' do
+          let(:value) { '7777' }
+
+          it 'should sets the umask' do
+            should eql(007777)
+          end
+        end
+      end
+
+      context 'when setting read timeout' do
+        let(:accessor) { :timeout }
+        let(:value) { 10 }
+
+        it 'should set the read timeout' do
+          should eql(value)
+        end
+      end
+
+      context 'when setting valid exit codes' do
+        let(:accessor) { :valid_exit_codes }
+        let(:value) { [0, 23, 42] }
+
+        it "should set the valid exit codes" do
+          should eql(value)
+        end
+      end
+
+      context 'when setting a live stream' do
+        let(:accessor) { :live_stream }
+        let(:value) { stream }
+        let(:stream) { StringIO.new }
+
+        it "should set the live stream" do
+          should eql(value)
+        end
+      end
     end
 
-    it "uses the requested locale" do
-      cmd = Mixlib::ShellOut.new(ECHO_LC_ALL, :environment => {"LC_ALL" => 'es'})
-      cmd.run_command
-      cmd.stdout.strip.should == 'es'
+    context "with options hash" do
+      let(:cmd) { 'brew install couchdb' }
+      let(:options) { { :cwd => cwd, :user => user, :group => group, :umask => umask,
+        :timeout => timeout, :environment => environment, :returns => valid_exit_codes, :live_stream => stream } }
+
+      let(:cwd) { '/tmp' }
+      let(:user) { 'toor' }
+      let(:group) { 'wheel' }
+      let(:umask) { '2222' }
+      let(:timeout) { 5 }
+      let(:environment) { { 'RUBY_OPTS' => '-w' } }
+      let(:valid_exit_codes) { [ 0, 1, 42 ] }
+      let(:stream) { StringIO.new }
+
+      it "should set the working directory" do
+        shell_cmd.cwd.should eql(cwd)
+      end
+
+      it "should set the user" do
+        shell_cmd.user.should eql(user)
+      end
+
+      it "should set the group" do
+        shell_cmd.group.should eql(group)
+      end
+
+      it "should set the umask" do
+        shell_cmd.umask.should eql(002222)
+      end
+
+      it "should set the timout" do
+        shell_cmd.timeout.should eql(timeout)
+      end
+
+      it "should add environment settings to the default" do
+        shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
+      end
+
+      context 'when setting custom environments' do
+        context 'when setting the :env option' do
+          let(:options) { { :env => environment } }
+
+          it "should also set the enviroment" do
+            shell_cmd.environment.should eql({'LC_ALL' => 'C', 'RUBY_OPTS' => '-w'})
+          end
+        end
+
+        context 'when :environment is set to nil' do
+          let(:options) { { :environment => nil } }
+
+          it "should not set any environment" do
+            shell_cmd.environment.should == {}
+          end
+        end
+
+        context 'when :env is set to nil' do
+          let(:options) { { :env => nil } }
+
+          it "should not set any environment" do
+            shell_cmd.environment.should eql({})
+          end
+        end
+      end
+
+      it "should set valid exit codes" do
+        shell_cmd.valid_exit_codes.should eql(valid_exit_codes)
+      end
+
+      it "should set the live stream" do
+        shell_cmd.live_stream.should eql(stream)
+      end
+
+      context 'with an invalid option' do
+        let(:options) { { :frab => :job } }
+        let(:invalid_option_exception) { Mixlib::ShellOut::InvalidCommandOption }
+        let(:exception_message) { "option ':frab' is not a valid option for Mixlib::ShellOut" }
+
+        it "should raise InvalidCommandOPtion" do
+          lambda { shell_cmd }.should raise_error(invalid_option_exception, exception_message)
+        end
+      end
     end
 
-    it "recovers the error message when exec fails" do
-      cmd = Mixlib::ShellOut.new("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
-      lambda {cmd.run_command}.should raise_error(Errno::ENOENT)
+    context "with array of command and args" do
+      let(:cmd) { [ 'ruby', '-e', %q{'puts "hello"'} ] }
+
+      context 'without options' do
+        let(:options) { nil }
+
+        it "should set the command to the array of command and args" do
+          shell_cmd.command.should eql(cmd)
+        end
+      end
+
+      context 'with options' do
+        let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
+
+        it "should set the command to the array of command and args" do
+          shell_cmd.command.should eql(cmd)
+        end
+
+        it "should evaluate the options" do
+          shell_cmd.cwd.should eql('/tmp')
+          shell_cmd.user.should eql('nobody')
+        end
+      end
+    end
+  end
+
+  context 'when executing the command' do
+    let(:dir) { Dir.mktmpdir }
+    let(:ruby_eval) { lambda { |code| "ruby -e '#{code}'" } }
+    let(:dump_file) { "#{dir}/out.txt" }
+    let(:dump_file_content) { stdout; IO.read(dump_file) }
+
+    context 'with a current working directory' do
+      subject { File.expand_path(chomped_stdout) }
+      let(:fully_qualified_cwd) { File.expand_path(cwd) }
+      let(:options) { { :cwd => cwd } }
+
+      context 'when running under Unix', :unix_only => true do
+        let(:cwd) { '/bin' }
+        let(:cmd) { 'pwd' }
+
+        it "should chdir to the working directory" do
+          should eql(fully_qualified_cwd)
+        end
+      end
+
+      context 'when running under Windows', :windows_only => true do
+        let(:cwd) { Dir.tmpdir }
+        let(:cmd) { 'echo %cd%' }
+
+        it "should chdir to the working directory" do
+          should eql(fully_qualified_cwd)
+        end
+      end
     end
 
-    it "closes stdin on the child process so it knows not to wait for any input" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'print STDIN.eof?.to_s'})
-      cmd.run_command
-      cmd.stdout.should == "true"
+    context 'when handling locale' do
+      subject { stripped_stdout }
+      let(:cmd) { ECHO_LC_ALL }
+      let(:options) { { :environment => { 'LC_ALL' => locale } } }
+
+      context 'without specifying environment' do
+        let(:options) { nil }
+        it "should use the C locale by default" do
+          should eql('C')
+        end
+      end
+
+      context 'with locale' do
+        let(:locale) { 'es' }
+
+        it "should use the requested locale" do
+          should eql(locale)
+        end
+      end
+
+      context 'with LC_ALL set to nil' do
+        let(:locale) { nil }
+
+        context 'when running under Unix', :unix_only => true do
+          let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
+
+          it "should use the parent process's locale" do
+            should eql(parent_locale)
+          end
+        end
+
+        context 'when running under Windows', :windows_only => true do
+          # On windows, if an environmental variable is not set, it returns the key
+          let(:parent_locale) { (ENV['LC_ALL'] || '%LC_ALL%').to_s.strip }
+
+          it "should use the parent process's locale" do
+            should eql(parent_locale)
+          end
+        end
+      end
     end
 
-    it "doesn't hang when STDOUT is closed before STDERR" do
+    context "with a live stream" do
+      let(:stream) { StringIO.new }
+      let(:ruby_code) { 'puts "hello"' }
+      let(:options) { { :live_stream => stream } }
+
+      it "should copy the child's stdout to the live stream" do
+        shell_cmd.run_command
+        stream.string.should eql("hello#{LINE_ENDING}")
+      end
+    end
+
+    context "when running different types of command" do
+      context 'with spaces in the path' do
+        subject { chomped_stdout }
+        let(:cmd) { script_name }
+
+        let(:script) { open_file.tap(&write_file).tap(&:close).tap(&make_executable) }
+        let(:file_name) { "#{dir}/blah blah.cmd" }
+        let(:script_name) { "\"#{script.path}\"" }
+
+        let(:open_file) { File.open(file_name, 'w') }
+        let(:write_file) { lambda { |f| f.write(script_content) } }
+        let(:make_executable) { lambda { |f| File.chmod(0755, f.path) } }
+
+        context 'when running under Unix', :unix_only => true do
+          let(:script_content) { 'echo blah' }
+
+          it 'should execute' do
+            should eql('blah')
+          end
+        end
+
+        context 'when running under Windows', :windows_only => true do
+          let(:script_content) { '@echo blah' }
+
+          it 'should execute' do
+            should eql('blah')
+          end
+        end
+      end
+
+      context 'with lots of long arguments' do
+        subject { chomped_stdout }
+
+        # This number was chosen because it seems to be an actual maximum
+        # in Windows--somewhere around 6-7K of command line
+        let(:echotext) { 10000.upto(11340).map(&:to_s).join(' ') }
+        let(:cmd) { "echo #{echotext}" }
+
+        it 'should execute' do
+          should eql(echotext)
+        end
+      end
+
+      context 'with special characters' do
+        subject { stdout }
+
+        let(:special_characters) { '<>&|&&||;' }
+        let(:ruby_code) { "print \"#{special_characters}\"" }
+
+        it 'should execute' do
+          should eql(special_characters)
+        end
+      end
+
+      context 'with backslashes' do
+        subject { stdout }
+        let(:backslashes) { %q{\\"\\\\} }
+        let(:cmd) { ruby_eval.call("print \"#{backslashes}\"") }
+
+        it 'should execute' do
+          should eql("\"\\")
+        end
+      end
+
+      context 'with pipes' do
+        let(:input_script) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
+        let(:output_script) { "print STDIN.read.length" }
+        let(:cmd) { ruby_eval.call(input_script) + " | " + ruby_eval.call(output_script) }
+
+        it 'should execute' do
+          stdout.should eql('4')
+        end
+
+        it 'should handle stderr' do
+          stderr.should eql('false')
+        end
+      end
+
+      context 'with file pipes' do
+        let(:code) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
+        let(:cmd) { ruby_eval.call(code) + " > #{dump_file}" }
+
+        it 'should execute' do
+          stdout.should eql('')
+        end
+
+        it 'should handle stderr' do
+          stderr.should eql('false')
+        end
+
+        it 'should write to file pipe' do
+          dump_file_content.should eql('true')
+        end
+      end
+
+      context 'with stdout and stderr file pipes' do
+        let(:code) { "STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false" }
+        let(:cmd) { ruby_eval.call(code) + " > #{dump_file} 2>&1" }
+
+        it 'should execute' do
+          stdout.should eql('')
+        end
+
+        it 'should write to file pipe' do
+          dump_file_content.should eql('truefalse')
+        end
+      end
+
+      context 'with &&' do
+        subject { stdout }
+        let(:cmd) { ruby_eval.call('print "foo"') + ' && ' + ruby_eval.call('print "bar"') }
+
+        it 'should execute' do
+          should eql('foobar')
+        end
+      end
+
+      context 'with ||' do
+        let(:cmd) { ruby_eval.call('print "foo"; exit 1') + ' || ' + ruby_eval.call('print "bar"') }
+
+        it 'should execute' do
+          stdout.should eql('foobar')
+        end
+
+        it 'should exit with code 0' do
+          exit_status.should eql(0)
+        end
+      end
+    end
+
+    context "when handling process exit codes" do
+      let(:cmd) { ruby_eval.call("exit #{exit_code}") }
+
+      context 'with normal exit status' do
+        let(:exit_code) { 0 }
+
+        it "should not raise error" do
+          lambda { executed_cmd.error! }.should_not raise_error
+        end
+
+        it "should set the exit status of the command" do
+          exit_status.should eql(exit_code)
+        end
+      end
+
+      context 'with nonzero exit status' do
+        let(:exit_code) { 2 }
+        let(:exception_message_format) { Regexp.escape(executed_cmd.format_for_exception) }
+
+        it "should raise ShellCommandFailed" do
+          lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        end
+
+        it "includes output with exceptions from #error!" do
+          begin
+            executed_cmd.error!
+          rescue Mixlib::ShellOut::ShellCommandFailed => e
+            e.message.should match(exception_message_format)
+          end
+        end
+
+        it "should set the exit status of the command" do
+          exit_status.should eql(exit_code)
+        end
+      end
+
+      context 'with valid exit codes' do
+        let(:cmd) { ruby_eval.call("exit #{exit_code}" ) }
+        let(:options) { { :returns => valid_exit_codes } }
+
+        context 'when exiting with valid code' do
+          let(:valid_exit_codes) { 42 }
+          let(:exit_code) { 42 }
+
+          it "should not raise error" do
+            lambda { executed_cmd.error! }.should_not raise_error
+          end
+
+          it "should set the exit status of the command" do
+            exit_status.should eql(exit_code)
+          end
+        end
+
+        context 'when exiting with invalid code' do
+          let(:valid_exit_codes) { [ 0, 1, 42 ] }
+          let(:exit_code) { 2 }
+
+          it "should raise ShellCommandFailed" do
+            lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          end
+
+          it "should set the exit status of the command" do
+            exit_status.should eql(exit_code)
+          end
+        end
+
+        context 'when exiting with invalid code 0' do
+          let(:valid_exit_codes) { 42 }
+          let(:exit_code) { 0 }
+
+          it "should raise ShellCommandFailed" do
+            lambda { executed_cmd.error! }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+          end
+
+          it "should set the exit status of the command" do
+            exit_status.should eql(exit_code)
+          end
+        end
+      end
+
+      describe "#invalid!" do
+        let(:exit_code) { 0 }
+
+        it "should raise ShellCommandFailed" do
+          lambda { executed_cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
+        end
+      end
+    end
+
+    context "when handling the subprocess" do
+      context 'with STDOUT and STDERR' do
+        let(:ruby_code) { 'STDERR.puts :hello; STDOUT.puts :world' }
+
+        # We could separate this into two examples, but we want to make
+        # sure that stderr and stdout gets collected without stepping
+        # on each other.
+        it "should collect all of STDOUT and STDERR" do
+          stderr.should eql("hello#{LINE_ENDING}")
+          stdout.should eql("world#{LINE_ENDING}")
+        end
+      end
+
+      context 'with forking subprocess that does not close stdout and stderr' do
+        let(:ruby_code) { "exit if fork; 10.times { sleep 1 }" }
+
+        it "should not hang" do
+          proc do
+            Timeout.timeout(2) do
+              executed_cmd
+            end
+          end.should_not raise_error
+        end
+      end
+
+      context 'with subprocess that takes longer than timeout' do
+        let(:cmd) { ruby_eval.call('sleep 2') }
+        let(:options) { { :timeout => 0.1 } }
+
+        it "should raise CommandTimeout" do
+          lambda { executed_cmd }.should raise_error(Mixlib::ShellOut::CommandTimeout)
+        end
+      end
+
+      context 'with subprocess that exceeds buffersize' do
+        let(:ruby_code) { 'print("X" * 16 * 1024); print("." * 1024)' }
+
+        it "should still reads all of the output" do
+          stdout.should match(/X{16384}\.{1024}/)
+        end
+      end
+
+      context 'with subprocess that returns nothing' do
+        let(:ruby_code) { 'exit 0' }
+
+        it 'should return an empty string for stdout' do
+          stdout.should eql('')
+        end
+
+        it 'should return an empty string for stderr' do
+          stderr.should eql('')
+        end
+      end
+
+      context 'with subprocess that closes stdout and continues writing to stderr' do
+        let(:ruby_code) { "STDOUT.close; sleep 0.5; STDERR.puts :win" }
+
+        it 'should not hang or lose outupt' do
+          stderr.should eql("win#{LINE_ENDING}")
+        end
+      end
+
+      context 'with subprocess that closes stderr and continues writing to stdout' do
+        let(:ruby_code) { "STDERR.close; sleep 0.5; STDOUT.puts :win" }
+
+        it 'should not hang or lose outupt' do
+          stdout.should eql("win#{LINE_ENDING}")
+        end
+      end
+
       # Regression test:
+      #
       # We need to ensure that stderr is removed from the list of file
       # descriptors that we attempt to select() on in the case that:
+      #
       # a) STDOUT closes first
       # b) STDERR closes
       # c) The program does not exit for some time after (b) occurs.
+      #
       # Otherwise, we will attempt to read from the closed STDOUT pipe over and
       # over again and generate lots of garbage, which will not be collected
       # since we have to turn GC off to avoid segv.
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit'})
-      cmd.run_command
-      unclosed_pipes = cmd.send(:open_pipes)
-      unclosed_pipes.should be_empty
-    end
+      context 'with subprocess that closes STDOUT before closing STDERR' do
+        subject { unclosed_pipes }
+        let(:ruby_code) {  %q{STDOUT.puts "F" * 4096; STDOUT.close; sleep 0.1; STDERR.puts "foo"; STDERR.close; sleep 0.1; exit} }
+        let(:unclosed_pipes) { executed_cmd.send(:open_pipes) }
 
-  end
+        it 'should not hang' do
+          should be_empty
+        end
+      end
 
-  it "formats itself for exception messages" do
-    cmd = Mixlib::ShellOut.new %q{ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"'}
-    cmd.run_command
-    cmd.format_for_exception.split("\n")[0].should == %q{---- Begin output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
-    cmd.format_for_exception.split("\n")[1].should == %q{STDOUT: msg_in_stdout}
-    cmd.format_for_exception.split("\n")[2].should == %q{STDERR: msg_in_stderr}
-    cmd.format_for_exception.split("\n")[3].should == %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----}
-  end
+      context 'with subprocess writing lots of data to both stdout and stderr' do
+        let(:expected_output_with) { lambda { |chr| (chr * 20_000) + "#{LINE_ENDING}" + (chr * 20_000) + "#{LINE_ENDING}" } }
 
-  describe "running different types of command" do
-    it "runs commands with spaces in the path" do
-      Dir.mktmpdir do |dir|
-        file = File.open("#{dir}/blah blah.cmd", "w")
-        file.write(windows? ? "@echo blah" : "echo blah")
-        file.close
-        File.chmod(0755, file.path)
+        context 'when writing to STDOUT first' do
+          let(:ruby_code) { %q{puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000} }
 
-        cmd = Mixlib::ShellOut.new("\"#{file.path}\"")
-        cmd.run_command
-        cmd.stdout.chomp.should == "blah"
+          it "should not deadlock" do
+            stdout.should eql(expected_output_with.call('f'))
+            stderr.should eql(expected_output_with.call('u'))
+          end
+        end
+
+        context 'when writing to STDERR first' do
+          let(:ruby_code) { %q{STDERR.puts "u" * 20_000; puts "f" * 20_000; STDERR.puts "u" * 20_000; puts "f" * 20_000} }
+
+          it "should not deadlock" do
+            stdout.should eql(expected_output_with.call('f'))
+            stderr.should eql(expected_output_with.call('u'))
+          end
+        end
+      end
+
+      context 'when subprocess writes, pauses, then continues writing' do
+        subject { stdout }
+        let(:ruby_code) { %q{puts "before"; sleep 0.5; puts "after"} }
+
+        it 'should not hang or lose output' do
+          should eql("before#{LINE_ENDING}after#{LINE_ENDING}")
+        end
+      end
+
+      context 'when subprocess pauses before writing' do
+        subject { stdout }
+        let(:ruby_code) { 'sleep 0.5; puts "missed_the_bus"' }
+
+        it 'should not hang or lose output' do
+          should eql("missed_the_bus#{LINE_ENDING}")
+        end
+      end
+
+      context 'when execution fails' do
+        let(:cmd) { "fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" }
+
+        it "should recover the error message" do
+          lambda { executed_cmd }.should raise_error(Errno::ENOENT)
+        end
+      end
+
+      context 'without input data' do
+        context 'with subprocess that expects stdin' do
+          let(:ruby_code) { %q{print STDIN.eof?.to_s} }
+
+          # If we don't have anything to send to the subprocess, we need to close
+          # stdin so that the subprocess won't wait for input.
+          it 'should close stdin' do
+            stdout.should eql("true")
+          end
+        end
       end
     end
 
-    it "runs commands with lots of long arguments" do
-      # This number was chosen because it seems to be an actual maximum
-      # in Windows--somewhere around 6-7K of command line
-      echotext = 10000.upto(11340).map { |x| x.to_s }.join(' ')
-      cmd = Mixlib::ShellOut.new("echo #{echotext}")
-      cmd.run_command
-      cmd.stdout.chomp.should == echotext
-    end
+    describe "#format_for_exception" do
+      let(:ruby_code) { %q{STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"} }
+      let(:exception_output) { executed_cmd.format_for_exception.split("\n") }
+      let(:expected_output) { [
+        %q{---- Begin output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
+        %q{STDOUT: msg_in_stdout},
+        %q{STDERR: msg_in_stderr},
+        %q{---- End output of ruby -e 'STDERR.puts "msg_in_stderr"; puts "msg_in_stdout"' ----},
+        "Ran ruby -e 'STDERR.puts \"msg_in_stderr\"; puts \"msg_in_stdout\"' returned 0"
+      ] }
 
-    it "runs commands with quotes and special characters in quotes" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "<>&|&&||;"'})
-      cmd.run_command
-      cmd.stdout.should == "<>&|&&||;"
-    end
-
-    it "runs commands with backslashes in them" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "\\"\\\\"'})
-      cmd.run_command
-      cmd.stdout.should == "\"\\"
-    end
-
-    it "runs commands with stdout pipes" do
-      Dir.mktmpdir do |dir|
-        cmd = Mixlib::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' | ruby -e 'print STDIN.read.length'")
-        cmd.run_command
-        cmd.stdout.should == "4"
-        cmd.stderr.should == "false"
+      it "should format exception messages" do
+        exception_output.each_with_index do |output_line, i|
+          output_line.should eql(expected_output[i])
+        end
       end
-    end
-
-    it "runs commands with stdout file pipes" do
-      Dir.mktmpdir do |dir|
-        cmd = Mixlib::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' > #{dir}/blah.txt")
-        cmd.run_command
-        cmd.stdout.should == ""
-        cmd.stderr.should == "false"
-        IO.read("#{dir}/blah.txt").should == "true"
-      end
-    end
-
-    it "runs commands with stdout and stderr file pipes" do
-      Dir.mktmpdir do |dir|
-        cmd = Mixlib::ShellOut.new("ruby -e 'STDOUT.sync = true; STDERR.sync = true; print true; STDERR.print false' > #{dir}/blah.txt 2>&1")
-        cmd.run_command
-        cmd.stdout.should == ""
-        IO.read("#{dir}/blah.txt").should == "truefalse"
-      end
-    end
-
-    it "runs commands with &&" , :hi => true do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "foo"' && ruby -e 'print "bar"'})
-      cmd.run_command
-      cmd.stdout.should == "foobar"
-    end
-
-    it "runs commands with ||" do
-      cmd = Mixlib::ShellOut.new(%q{ruby -e 'print "foo"; exit 1' || ruby -e 'print "bar"'})
-      cmd.run_command
-      cmd.status.exitstatus.should == 0
-      cmd.stdout.should == "foobar"
     end
   end
-
-  describe "handling process exit codes" do
-    it "raises a InvalidCommandResult error if the exitstatus is nonzero" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
-      cmd.run_command
-      lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-
-    it "does not raise an error if the command returns a value in the list of valid_exit_codes" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 42"', :returns => 42)
-      cmd.run_command
-      lambda {cmd.error!}.should_not raise_error
-    end
-
-    it "raises an error if the command does not return a value in the list of valid_exit_codes" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 2"', :returns => [ 0, 1, 42 ])
-      cmd.run_command
-      lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-
-    it "raises an error if the command returns 0 and the list of valid_exit_codes does not contain 0" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 0"', :returns => 42)
-      cmd.run_command
-      lambda {cmd.error!}.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-
-    it "includes output with exceptions from #error!" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 2"')
-      cmd.run_command
-      begin
-        cmd.error!
-      rescue Mixlib::ShellOut::ShellCommandFailed => e
-        e.message.should match(Regexp.escape(cmd.format_for_exception))
-      end
-    end
-
-    it "errors out when told the result is invalid" do
-      cmd = Mixlib::ShellOut.new('ruby -e "exit 0"')
-      cmd.run_command
-      lambda { cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
-    end
-  end
-
 end
