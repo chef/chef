@@ -117,6 +117,31 @@ describe Mixlib::ShellOut::Windows, :windows_only => true do
       context 'with valid executable at location' do
         let(:stubbed_shell_out) { shell_out.tap(&with_valid_exe_at_location) }
 
+        context 'with executable path' do
+          let(:cmd) { "#{executable_path}" }
+          let(:executable_path) { 'C:\RUBY192\bin\ruby.exe' }
+
+          it 'should use specified executable' do
+            should eql([executable_path, cmd])
+          end
+
+          context 'with arguments' do
+            let(:cmd) { "#{executable_path} arguments" }
+
+            it 'should use specified executable' do
+              should eql([executable_path, cmd])
+            end
+          end
+
+          context 'with quoted arguments' do
+            let(:cmd) { "#{executable_path} -e \"print 'fee fie foe fum'\"" }
+
+            it 'should use specified executable' do
+              should eql([executable_path, cmd])
+            end
+          end
+        end
+
         # Examples taken from: https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4825574
         context 'with executable path enclosed in double quotes' do
           let(:cmd) { "#{executable_path}" }
