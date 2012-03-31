@@ -20,6 +20,16 @@ describe Mixlib::ShellOut::Windows, :windows_only => true do
       with_candidate('valid .cmd file', :candidate => 'autoexec.cmd') { should be_true }
       with_candidate('valid quoted .bat file', :candidate => '"C:\Program Files\autoexec.bat"') { should be_true }
       with_candidate('valid quoted .cmd file', :candidate => '"C:\Program Files\autoexec.cmd"') { should be_true }
+
+      with_candidate('invalid .bat file', :candidate => 'autoexecbat') { should_not be_true }
+      with_candidate('invalid .cmd file', :candidate => 'autoexeccmd') { should_not be_true }
+      with_candidate('bat in filename', :candidate => 'abattoir.exe') { should_not be_true }
+      with_candidate('cmd in filename', :candidate => 'parse_cmd.exe') { should_not be_true }
+
+      with_candidate('invalid quoted .bat file', :candidate => '"C:\Program Files\autoexecbat"') { should_not be_true }
+      with_candidate('invalid quoted .cmd file', :candidate => '"C:\Program Files\autoexeccmd"') { should_not be_true }
+      with_candidate('quoted bat in filename', :candidate => '"C:\Program Files\abattoir.exe"') { should_not be_true }
+      with_candidate('quoted cmd in filename', :candidate => '"C:\Program Files\parse_cmd.exe"') { should_not be_true }
     end
 
     describe '#command_to_run' do
