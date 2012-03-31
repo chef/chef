@@ -5,6 +5,23 @@ describe Mixlib::ShellOut::Windows, :windows_only => true do
   # Caveat: Private API methods are subject to change without notice.
   # Monkeypatch at your own risk.
   context 'for private API methods' do
+
+    describe '::IS_BATCH_FILE' do
+      subject { candidate =~ Mixlib::ShellOut::Windows::IS_BATCH_FILE }
+
+      def self.with_candidate(_context, _options = {}, &example)
+        context "with #{_context}" do
+          let(:candidate) { _options[:candidate] }
+          it(&example)
+        end
+      end
+
+      with_candidate('valid .bat file', :candidate => 'autoexec.bat') { should be_true }
+      with_candidate('valid .cmd file', :candidate => 'autoexec.cmd') { should be_true }
+      with_candidate('valid quoted .bat file', :candidate => '"C:\Program Files\autoexec.bat"') { should be_true }
+      with_candidate('valid quoted .cmd file', :candidate => '"C:\Program Files\autoexec.cmd"') { should be_true }
+    end
+
     describe '#command_to_run' do
       subject { stubbed_shell_out.send(:command_to_run, cmd) }
 
