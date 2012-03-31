@@ -41,6 +41,15 @@ describe Mixlib::ShellOut::Windows, :windows_only => true do
       let(:with_valid_exe_at_location) { lambda { |s| s.stub!(:find_exe_at_location).and_return(executable_path) } }
       let(:with_invalid_exe_at_location) { lambda { |s| s.stub!(:find_exe_at_location).and_return(nil) } }
 
+      context 'with empty command' do
+        let(:stubbed_shell_out) { shell_out }
+        let(:cmd) { ' ' }
+
+        it 'should return with a nil executable' do
+          should eql([nil, cmd])
+        end
+      end
+
       context 'with batch files' do
         let(:stubbed_shell_out) { shell_out.tap(&with_valid_exe_at_location) }
         let(:cmd_invocation) { "cmd /c \"#{cmd}\"" }
