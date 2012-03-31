@@ -217,9 +217,12 @@ module Mixlib
         end
 
         # which() mimicks the Unix which command
+        # FIXME: it is not working
         def self.which(cmd)
+          return nil # noop
+
           ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-            exe = find_executable("#{path}/${cmd}")
+            exe = find_executable("#{path}/${cmd}") # This looks like it got disabled
             return exe if exe
           end
           return nil
