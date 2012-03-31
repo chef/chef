@@ -369,8 +369,7 @@ describe Mixlib::ShellOut do
       end
     end
 
-    # FIXME: Add Windows support
-    context "with an input", :unix_only => true do
+    context "with an input" do
       subject { stdout }
 
       let(:input) { 'hello' }
@@ -771,7 +770,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'with subprocess reading lots of data from stdin', :unix_only => true do
+      context 'with subprocess reading lots of data from stdin' do
         subject { stdout.to_i }
         let(:ruby_code) { 'STDOUT.print gets.size' }
         let(:options) { { :input => input } }
@@ -805,11 +804,13 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'with subprocess piping lots of data through stdin, stdout, and stderr', :unix_only => true do
-        let(:multiplier) { 20_000 }
-        let(:expected_output_with) { lambda { |chr| (chr * multiplier) + "#{LINE_ENDING}" + (chr * multiplier) + "#{LINE_ENDING}" } }
+      context 'with subprocess piping lots of data through stdin, stdout, and stderr' do
+        let(:multiplier) { 20 }
+        let(:expected_output_with) { lambda { |chr| (chr * multiplier) + (chr * multiplier) } }
+
         # Use regex to work across Ruby versions
-        let(:ruby_code) { 'while(input = gets) do ( input =~ /^f/ ? STDOUT : STDERR ).puts input; end' }
+        let(:ruby_code) { "STDOUT.sync = STDERR.sync = true; while(input = gets) do ( input =~ /^f/ ? STDOUT : STDERR ).print input.chomp; end" }
+
         let(:options) { { :input => input } }
 
         context 'when writing to STDOUT first' do
@@ -862,7 +863,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'when subprocess pauses before reading from stdin', :unix_only => true do
+      context 'when subprocess pauses before reading from stdin' do
         subject { stdout.to_i }
         let(:ruby_code) { 'sleep 0.5; print gets.size ' }
         let(:input) { 'c' * 1024 }
@@ -895,7 +896,7 @@ describe Mixlib::ShellOut do
         pending 'when running under Windows', :windows_only => true
       end
 
-      context 'without input data', :unix_only => true do
+      context 'without input data' do
         context 'with subprocess that expects stdin' do
           let(:ruby_code) { %q{print STDIN.eof?.to_s} }
 

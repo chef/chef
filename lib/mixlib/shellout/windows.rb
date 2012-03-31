@@ -72,6 +72,11 @@ module Mixlib
           #
           process = Process.create(create_process_args)
           begin
+            # Start pushing data into input
+            stdin_write << input if input
+
+            # Close pipe to kick things off
+            stdin_write.close
 
             #
             # Wait for the process to finish, consuming output as we go
