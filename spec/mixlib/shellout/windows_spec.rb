@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Mixlib::ShellOut::Windows, :windows_only => true do
+describe 'Mixlib::ShellOut::Windows', :windows_only => true do
 
   # Caveat: Private API methods are subject to change without notice.
   # Monkeypatch at your own risk.
