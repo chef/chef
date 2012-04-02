@@ -231,8 +231,41 @@ module Mixlib
         # api: semi-private
         # If there are special characters parsable by cmd.exe (such as file redirection), then
         # this method should return true.
+        #
+        # This parser is based on
+        # https://github.com/ruby/ruby/blob/9073db5cb1d3173aff62be5b48d00f0fb2890991/win32/win32.c#L1437
         def self.should_run_under_cmd?(command)
-          !!(command =~ /[%&|<>{}@^]/)
+          return true if command =~ /^@/
+
+          quote = nil
+          env = false
+          env_first_char = false
+
+          command.dup.each_char do |c|
+            case c
+            when "'", '"'
+              if (!quote)
+                quote = c
+              elsif quote == c
+                quote = nil
+              end
+              next
+            when '>', '<', '|', '&', "\n"
+              return true unless quote
+            when '%'
+              return true if env
+              env = env_first_char = true
+              next
+            else
+              next unless env
+              if env_first_char
+                env_first_char = false
+                env = false and next if c !~ /[A-Za-z_]/
+              end
+              env = false if c !~ /[A-Za-z1-9_]/
+            end
+          end
+          return false
         end
 
         def self.pathext

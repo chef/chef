@@ -13,22 +13,50 @@ describe 'Mixlib::ShellOut::Windows', :windows_only => true do
         end
       end
 
-      with_command(%q{ruby -e 'prints "foobar"'}) { should_not be_true }
+      context 'when unquoted' do
+        with_command(%q{ruby -e 'prints "foobar"'}) { should_not be_true }
 
-      # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4825574
-      with_command(%q{"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\gacutil.exe" /i "C:\Program Files (x86)\NUnit 2.6\bin\framework\nunit.framework.dll"}) { should_not be_true }
+        # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4825574
+        with_command(%q{"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\gacutil.exe" /i "C:\Program Files (x86)\NUnit 2.6\bin\framework\nunit.framework.dll"}) { should_not be_true }
 
-      with_command(%q{ruby -e 'exit 1' | ruby -e 'exit 0'}) { should be_true }
-      with_command(%q{ruby -e 'exit 1' > out.txt}) { should be_true }
-      with_command(%q{ruby -e 'exit 1' > out.txt 2>&1}) { should be_true }
-      with_command(%q{ruby -e 'exit 1' < in.txt}) { should be_true }
-      with_command(%q{ruby -e 'exit 1' || ruby -e 'exit 0'}) { should be_true }
-      with_command(%q{ruby -e 'exit 1' && ruby -e 'exit 0'}) { should be_true }
-      with_command(%q{@echo TRUE}) { should be_true }
-      with_command(%q{echo %PATH%}) { should be_true }
+        with_command(%q{ruby -e 'exit 1' | ruby -e 'exit 0'}) { should be_true }
+        with_command(%q{ruby -e 'exit 1' > out.txt}) { should be_true }
+        with_command(%q{ruby -e 'exit 1' > out.txt 2>&1}) { should be_true }
+        with_command(%q{ruby -e 'exit 1' < in.txt}) { should be_true }
+        with_command(%q{ruby -e 'exit 1' || ruby -e 'exit 0'}) { should be_true }
+        with_command(%q{ruby -e 'exit 1' && ruby -e 'exit 0'}) { should be_true }
+        with_command(%q{@echo TRUE}) { should be_true }
 
-      # TODO: It would be awesome if it can detect quoted special characters
-      with_command(%q{echo "ruby -e 'exit 1' || ruby -e 'exit 0'"}) { should be_true }
+        with_command(%q{echo %PATH%}) { should be_true }
+        with_command(%q{run.exe %A}) { should be_false }
+        with_command(%q{run.exe B%}) { should be_false }
+        with_command(%q{run.exe %A B%}) { should be_false }
+        with_command(%q{run.exe %A B% %PATH%}) { should be_true }
+        with_command(%q{run.exe %A B% %_PATH%}) { should be_true }
+        with_command(%q{run.exe %A B% %PATH_EXT%}) { should be_true }
+        with_command(%q{run.exe %A B% %1%}) { should be_false }
+        with_command(%q{run.exe %A B% %PATH1%}) { should be_true }
+        with_command(%q{run.exe %A B% %_PATH1%}) { should be_true }
+      end
+
+      context 'when quoted' do
+        with_command(%q{run.exe "ruby -e 'exit 1' || ruby -e 'exit 0'"}) { should be_false }
+        with_command(%q{run.exe "ruby -e 'exit 1' > out.txt"}) { should be_false }
+        with_command(%q{run.exe "ruby -e 'exit 1' > out.txt 2>&1"}) { should be_false }
+        with_command(%q{run.exe "ruby -e 'exit 1' < in.txt"}) { should be_false }
+        with_command(%q{run.exe "ruby -e 'exit 1' || ruby -e 'exit 0'"}) { should be_false }
+        with_command(%q{run.exe "ruby -e 'exit 1' && ruby -e 'exit 0'"}) { should be_false }
+        with_command(%q{run.exe "%PATH%"}) { should be_true }
+        with_command(%q{run.exe "%A"}) { should be_false }
+        with_command(%q{run.exe "B%"}) { should be_false }
+        with_command(%q{run.exe "%A B%"}) { should be_false }
+        with_command(%q{run.exe "%A B% %PATH%"}) { should be_true }
+        with_command(%q{run.exe "%A B% %_PATH%"}) { should be_true }
+        with_command(%q{run.exe "%A B% %PATH_EXT%"}) { should be_true }
+        with_command(%q{run.exe "%A B% %1%"}) { should be_false }
+        with_command(%q{run.exe "%A B% %PATH1%"}) { should be_true }
+        with_command(%q{run.exe "%A B% %_PATH1%"}) { should be_true }
+      end
     end
   end
 
