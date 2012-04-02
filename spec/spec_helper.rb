@@ -8,6 +8,8 @@ require 'timeout'
 
 require 'ap'
 
+WATCH = lambda { |x| ap x } unless defined?(WATCH)
+
 # Load everything from spec/support
 # Do not change the gsub.
 Dir["spec/support/**/*.rb"].map { |f| f.gsub(%r{.rb$}, '') }.each { |f| require f }

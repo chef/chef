@@ -2,6 +2,36 @@ require 'spec_helper'
 
 describe 'Mixlib::ShellOut::Windows', :windows_only => true do
 
+  describe 'Utils' do
+    describe '.should_run_under_cmd?' do
+      subject { Mixlib::ShellOut::Windows::Utils.should_run_under_cmd?(command) }
+
+      def self.with_command(_command, &example)
+        context "with command: #{_command}" do
+          let(:command) { _command }
+          it(&example)
+        end
+      end
+
+      with_command(%q{ruby -e 'prints "foobar"'}) { should_not be_true }
+
+      # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4825574
+      with_command(%q{"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\NETFX 4.0 Tools\gacutil.exe" /i "C:\Program Files (x86)\NUnit 2.6\bin\framework\nunit.framework.dll"}) { should_not be_true }
+
+      with_command(%q{ruby -e 'exit 1' | ruby -e 'exit 0'}) { should be_true }
+      with_command(%q{ruby -e 'exit 1' > out.txt}) { should be_true }
+      with_command(%q{ruby -e 'exit 1' > out.txt 2>&1}) { should be_true }
+      with_command(%q{ruby -e 'exit 1' < in.txt}) { should be_true }
+      with_command(%q{ruby -e 'exit 1' || ruby -e 'exit 0'}) { should be_true }
+      with_command(%q{ruby -e 'exit 1' && ruby -e 'exit 0'}) { should be_true }
+      with_command(%q{@echo TRUE}) { should be_true }
+      with_command(%q{echo %PATH%}) { should be_true }
+
+      # TODO: It would be awesome if it can detect quoted special characters
+      with_command(%q{echo "ruby -e 'exit 1' || ruby -e 'exit 0'"}) { should be_true }
+    end
+  end
+
   # Caveat: Private API methods are subject to change without notice.
   # Monkeypatch at your own risk.
   context 'for private API methods' do

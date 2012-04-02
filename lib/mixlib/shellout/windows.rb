@@ -165,6 +165,8 @@ module Mixlib
       IS_BATCH_FILE = /\.bat"?$|\.cmd"?$/i
 
       def command_to_run(command)
+        return _run_under_cmd(command) if Utils.should_run_under_cmd?(command)
+
         candidate = candidate_executable_for_command(command)
 
         # Don't do searching for empty commands.  Let it fail when it runs.
@@ -174,16 +176,25 @@ module Mixlib
         exe = Utils.find_executable(candidate)
         exe = Utils.which(unquoted_executable_path(command)) if exe.nil? && exe !~ /[\\\/]/
 
+        # Batch files MUST use cmd; and if we couldn't find the command we're looking for,
+        # we assume it must be a cmd builtin.
         if exe.nil? || exe =~ IS_BATCH_FILE
-          # Batch files MUST use cmd; and if we couldn't find the command we're looking for, we assume it must be a cmd builtin.
-          #
-          # cmd does not parse multiple quotes well unless the whole thing is wrapped up in quotes.
-          # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4837859
-          # http://ss64.com/nt/syntax-esc.html
-          [ ENV['COMSPEC'], "cmd /c \"#{command}\"" ]
+          _run_under_cmd(command)
         else
-          [ exe, command ]
+          _run_directly(command, exe)
         end
+      end
+
+
+      # cmd does not parse multiple quotes well unless the whole thing is wrapped up in quotes.
+      # https://github.com/opscode/mixlib-shellout/pull/2#issuecomment-4837859
+      # http://ss64.com/nt/syntax-esc.html
+      def _run_under_cmd(command)
+        [ ENV['COMSPEC'], "cmd /c \"#{command}\"" ]
+      end
+
+      def _run_directly(command, exe)
+        [ exe, command ]
       end
 
       def unquoted_executable_path(command)
@@ -217,6 +228,13 @@ module Mixlib
       end
 
       module Utils
+        # api: semi-private
+        # If there are special characters parsable by cmd.exe (such as file redirection), then
+        # this method should return true.
+        def self.should_run_under_cmd?(command)
+          !!(command =~ /[%&|<>{}@^]/)
+        end
+
         def self.pathext
           @pathext ||= ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') + [''] : ['']
         end
@@ -224,10 +242,8 @@ module Mixlib
         # which() mimicks the Unix which command
         # FIXME: it is not working
         def self.which(cmd)
-          return nil # noop
-
           ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-            exe = find_executable("#{path}/${cmd}") # This looks like it got disabled
+            exe = find_executable("#{path}/#{cmd}")
             return exe if exe
           end
           return nil
