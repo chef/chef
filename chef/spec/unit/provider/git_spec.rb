@@ -173,7 +173,7 @@ SHAS
 
   it "runs an enable_submodule command" do
     @resource.enable_submodules true
-    expected_cmd = "git submodule init && git submodule update"
+    expected_cmd = "git submodule update --init --recursive"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.enable_submodules
   end
