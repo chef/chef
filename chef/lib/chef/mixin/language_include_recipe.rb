@@ -29,15 +29,29 @@ class Chef
             Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
             next
           end
-
-          Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
           node.run_state[:seen_recipes][recipe_name] = true
+          begin
+            if(Chef::Config[:restricted_recipes].include?(recipe_name))
+              raise Chef::Exceptions::RestrictedRecipe.new(recipe_name)
+            end
 
-          cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+            Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
-          run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
-          cookbook = run_context.cookbook_collection[cookbook_name]
-          result_recipes << cookbook.load_recipe(recipe_short_name, run_context)
+            cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+            
+            run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
+            cookbook = run_context.cookbook_collection[cookbook_name]
+            result_recipes << cookbook.load_recipe(recipe_short_name, run_context)
+            node.run_state[:runnable_recipes] << recipe_name
+          rescue Chef::Exceptions::RestrictedRecipe => e
+            if(e.recipe_name == recipe_name)
+              msg = 'Restricted recipe encountered:'
+            else
+              msg = "Restricted recipe dependency found. (#{recipe_name} depends on #{e.recipe_name})."
+            end
+            Chef::Log.warn msg << " #{recipe_name} -> Not Loaded"
+            raise e
+          end
         end
         result_recipes
       end
@@ -49,4 +63,3 @@ class Chef
     end
   end
 end
-      

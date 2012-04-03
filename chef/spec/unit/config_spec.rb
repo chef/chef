@@ -45,6 +45,166 @@ describe Chef::Config do
     end
   end
 
+  describe "config attribute writer: allowed_recipes" do
+    describe "when provided with a comma delimited string of recipes" do
+      before do
+        Chef::Config.allowed_recipes = 'test,test::non_default'
+      end
+
+      it "should return the same object via method or key" do
+        Chef::Config.allowed_recipes.should equal Chef::Config[:allowed_recipes]
+      end
+
+      it "should convert to an array" do
+        Chef::Config.allowed_recipes.should be_an Array
+      end
+
+      it "should add entry for `test::default` automatically" do
+        Chef::Config.allowed_recipes.should include 'test::default'
+      end
+
+      it "should contain the correct recipe list" do
+        %w(test test::default test::non_default).each do |name|
+          Chef::Config.allowed_recipes.should include name
+        end
+      end
+    end
+
+    describe "when provided with an array of recipes" do
+      before do
+        Chef::Config.allowed_recipes = ['test', 'test::non_default']
+      end
+
+      it "should return the same object via method or key" do
+        Chef::Config.allowed_recipes.should equal Chef::Config[:allowed_recipes]
+      end
+
+      it "should provide an array" do
+        Chef::Config.allowed_recipes.should be_an Array
+      end
+
+      it "should add entry for `test::default` automatically" do
+        Chef::Config.allowed_recipes.should include 'test::default'
+      end
+
+      it "should contain the correct recipe list" do
+        %w(test test::default test::non_default).each do |name|
+          Chef::Config.allowed_recipes.should include name
+        end
+      end
+    end
+  end
+
+  describe "config attribute writer: restricted_recipes" do
+    describe "when provided with a comma delimited string of recipes" do
+      before do
+        Chef::Config.restricted_recipes = 'test,test::non_default'
+      end
+      
+      it "should return the same object via method or key" do
+        Chef::Config.restricted_recipes.should equal Chef::Config[:restricted_recipes]
+      end
+
+      it "should convert to an array" do
+        Chef::Config.restricted_recipes.should be_an Array
+      end
+
+      it "should add entry for `test::default` automatically" do
+        Chef::Config.restricted_recipes.should include 'test::default'
+      end
+
+      it "should contain the correct recipe list" do
+        %w(test test::default test::non_default).each do |name|
+          Chef::Config.restricted_recipes.should include name
+        end
+      end
+    end
+
+    describe "when provided with an array of recipes" do
+      before do
+        Chef::Config.restricted_recipes = ['test', 'test::non_default']
+      end
+
+      it "should return the same object via method or key" do
+        Chef::Config.restricted_recipes.should equal Chef::Config[:restricted_recipes]
+      end
+      
+      it "should provide an array" do
+        Chef::Config.restricted_recipes.should be_an Array
+      end
+
+      it "should add entry for `test::default` automatically" do
+        Chef::Config.restricted_recipes.should include 'test::default'
+      end
+
+      it "should contain the correct recipe list" do
+        %w(test test::default test::non_default).each do |name|
+          Chef::Config.restricted_recipes.should include name
+        end
+      end
+    end
+  end
+
+  describe "config attribute writer: override_runlist" do
+    describe "when provided with a comma delimited list of items" do
+      before do
+        Chef::Config.override_runlist = 'role[test-role],my_book::tester'
+      end
+      
+      it "should return the same object via method or key" do
+        Chef::Config.restricted_recipes.should equal Chef::Config[:restricted_recipes]
+      end
+
+      it "should convert string to an array" do
+        Chef::Config.override_runlist.should be_an Array
+      end
+
+      it "should be an array of RunListItems" do
+        Chef::Config.override_runlist.each do |item|
+          item.should be_a Chef::RunList::RunListItem
+        end
+      end
+
+      it "should provide an array with one role and one recipe" do
+        Chef::Config.override_runlist.detect{|item| 
+          item.type == :recipe && item.name == 'my_book::tester'
+        }.should_not be_nil
+        Chef::Config.override_runlist.detect{|item|
+          item.type == :role && item.name == 'test-role'
+        }.should_not be_nil
+      end
+    end
+
+    describe "when provided with an array of items" do
+      before do
+        Chef::Config.override_runlist = [
+          'role[test-role]', 
+          Chef::RunList::RunListItem.new('my_book::tester')
+        ]
+      end
+
+      it "should return the same object via method or key" do
+        Chef::Config.restricted_recipes.should equal Chef::Config[:restricted_recipes]
+      end
+
+      it "should return an array" do
+        Chef::Config.override_runlist.should be_an Array
+      end
+
+      it "should contain only RunListItem instances" do
+        Chef::Config.override_runlist.detect{|item|
+          item.class != Chef::RunList::RunListItem
+        }.should be_nil
+      end
+
+      it "should convert string entries to RunListItem instances" do
+        Chef::Config.override_runlist.detect{|item|
+          item.type == :role && item.name == 'test-role'
+        }.should_not be_nil
+      end
+    end
+  end
+
   describe "class method: manage_secret_key" do
     before do
       Chef::FileCache.stub!(:load).and_return(true)
