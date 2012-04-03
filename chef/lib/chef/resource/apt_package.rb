@@ -27,8 +27,17 @@ class Chef
         super
         @resource_name = :apt_package
         @provider = Chef::Provider::Package::Apt
+        @default_release = nil
       end
-      
+
+      def default_release(arg=nil)
+        set_or_return(
+          :default_release,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
     end
   end
 end
