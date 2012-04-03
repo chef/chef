@@ -135,6 +135,7 @@ class Chef
       def enable_submodules
         if @new_resource.enable_submodules
           Chef::Log.info "#{@new_resource} enabling git submodules"
+          # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
           command = "git submodule update --init --recursive"
           shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :info))
         end
