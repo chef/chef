@@ -66,7 +66,7 @@ class Chef
         @cookbook_name = parse_name_args!
         # Check to ensure we have a valid source of cookbooks before continuing
         #
-        @install_path = config[:cookbook_path].first
+        @install_path = File.expand_path(config[:cookbook_path].first)
         ui.info "Installing #@cookbook_name to #{@install_path}"
 
         @repo = CookbookSCMRepo.new(@install_path, ui, config)
@@ -129,7 +129,7 @@ class Chef
 
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
-        shell_out!("tar zxvf #{upstream_file}", :cwd => @install_path)
+        shell_out!("tar zxvf '#{upstream_file}'", :cwd => @install_path)
       end
 
       def clear_existing_files(cookbook_path)
