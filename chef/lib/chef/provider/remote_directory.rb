@@ -40,8 +40,13 @@ class Chef
         )
         files_to_transfer.each do |cookbook_file_relative_path|
           create_cookbook_file(cookbook_file_relative_path)
-          files_to_purge.delete(::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)))
+          # the file is removed from the purge list
           files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
+          # parent directories are also removed from the purge list
+          directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
+          for i in 0..directories.length-1
+            files_to_purge.delete(::File.join(directories[0..i]))
+          end
         end
         purge_unmanaged_files(files_to_purge)
       end

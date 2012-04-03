@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require ::File.expand_path(::File.join(::File.dirname(__FILE__), "..", "..", "spec_helper"))
 require 'digest/md5'
 require 'tmpdir'
 
@@ -28,7 +28,7 @@ describe Chef::Provider::RemoteDirectory do
     @resource.source "remotedir"
     @resource.cookbook('openldap')
 
-    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    @cookbook_repo = ::File.expand_path(::File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
@@ -89,12 +89,12 @@ describe Chef::Provider::RemoteDirectory do
 
     it "transfers the directory with all contents" do
       @provider.action_create
-      File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
-      File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
-      File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt').should be_true
-      File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt').should be_true
-      File.exist?(@destination_dir + '/remotesubdir/.a_dotfile').should be_true
-      File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir').should be_true
+      ::File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
+      ::File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
+      ::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt').should be_true
+      ::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt').should be_true
+      ::File.exist?(@destination_dir + '/remotesubdir/.a_dotfile').should be_true
+      ::File.exist?(@destination_dir + '/.a_dotdir/.a_dotfile_in_a_dotdir').should be_true
     end
 
     describe "only if it is missing" do
@@ -123,13 +123,13 @@ describe Chef::Provider::RemoteDirectory do
         FileUtils.touch(@destination_dir + '/remotesubdir/marked_for_death_again.txt')
         @provider.action_create
 
-        File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
-        File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
-        File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt').should be_true
-        File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt').should be_true
+        ::File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
+        ::File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
+        ::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt').should be_true
+        ::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file2.txt').should be_true
 
-        File.exist?(@destination_dir + '/marked_for_death.txt').should be_false
-        File.exist?(@destination_dir + '/remotesubdir/marked_for_death_again.txt').should be_false
+        ::File.exist?(@destination_dir + '/marked_for_death.txt').should be_false
+        ::File.exist?(@destination_dir + '/remotesubdir/marked_for_death_again.txt').should be_false
       end
 
       it "removes files in subdirectories before files above" do
@@ -154,13 +154,13 @@ describe Chef::Provider::RemoteDirectory do
 
       it "leaves modifications alone" do
         @provider.action_create
-        File.open(@destination_dir + '/remote_dir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
-        File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
-        file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))
-        subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
+        ::File.open(@destination_dir + '/remote_dir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
+        ::File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
+        file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))
+        subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
         @provider.action_create
-        file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
-        subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true
+        file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
+        subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true
       end
     end
 
