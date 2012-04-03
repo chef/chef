@@ -37,7 +37,7 @@ describe Chef::Resource::AptPackage, "initialize" do
   end
 
   it "should support default_release" do
-    @resource.default_release = "lenny-backports"
+    @resource.default_release("lenny-backports")
     @resource.default_release.should eql("lenny-backports")
   end
 end
