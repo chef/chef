@@ -179,6 +179,17 @@ SHOWPKG_STDOUT
       @provider.should_receive(:shell_out!).with("apt-cache showpkg mp3-decoder").and_return(showpkg)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
+
+    it "should run apt-cache policy with the default_release option, if there is one and provider is explicitly defined" do
+      @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
+      @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
+
+      @new_resource.stub!(:default_release).and_return("lenny-backports")
+      @new_resource.stub!(:provider).and_return("Chef::Provider::Package::Apt")
+      @provider.should_receive(:shell_out!).with("apt-cache -o APT::Default-Release=lenny-backports policy irssi").and_return(@shell_out)
+      @provider.load_current_resource
+    end
+
   end
 
   describe "install_package" do
