@@ -55,17 +55,8 @@ class Chef
               cron_found = true
               @cron_exists = true
               next
-            when /^MAILTO=(\S*)/
-              @current_resource.mailto($1) if cron_found
-              next
-            when /^PATH=(\S*)/
-              @current_resource.path($1) if cron_found
-              next
-            when /^SHELL=(\S*)/
-              @current_resource.shell($1) if cron_found
-              next
-            when /^HOME=(\S*)/
-              @current_resource.home($1) if cron_found
+            when /^(\S*)=(\S*)/
+              set_environment_var($1, $2) if cron_found
               next
             when CRON_PATTERN
               if cron_found
@@ -89,12 +80,6 @@ class Chef
         end
 
         @current_resource
-      end
-
-      def compare_cron
-        [ :minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home ].any? do |cron_var|
-          !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
-        end
       end
 
       def write_crontab(crontab)
@@ -121,6 +106,10 @@ class Chef
         [ :mailto, :path, :shell, :home ].each do |v|
           newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
         end
+        @new_resource.environment.each do |name, value|
+          newcron << "#{name}=#{value}\n"
+        end
+
         newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
 
         if @cron_exists
@@ -188,7 +177,6 @@ class Chef
           Chef::Log.info("#{@new_resource} deleted crontab entry")
         end
       end
-
     end
   end
 end

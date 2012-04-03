@@ -38,6 +38,7 @@ class Chef
         @path = nil
         @shell = nil
         @home = nil
+        @environment = {}
       end
 
       def minute(arg=nil)
@@ -170,6 +171,14 @@ class Chef
           :user,
           arg,
           :kind_of => String
+        )
+      end
+
+      def environment(arg=nil)
+        set_or_return(
+          :environment,
+          arg,
+          :kind_of => Hash
         )
       end
       

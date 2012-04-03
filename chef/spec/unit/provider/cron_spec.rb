@@ -74,6 +74,21 @@ CRON
         @provider.load_current_resource
       }.should_not raise_error
     end
+
+    it "should parse and load generic and standard environment variables from cron entry" do
+      @stdout = StringIO.new(<<-CRON)
+# Chef Name: cronhole some stuff
+MAILTO=warn@example.com
+TEST=lol
+FLAG=1
+* 5 * * * /bin/true
+CRON
+      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      resource = @provider.load_current_resource
+
+      resource.mailto.should == "warn@example.com"
+      resource.environment.should eql({"TEST" => "lol", "FLAG" => "1"})
+    end
   end
 
   describe "when the current crontab state is known" do
@@ -88,7 +103,7 @@ CRON
 
 
     describe Chef::Provider::Cron, "compare_cron" do
-      %w{ minute hour day month weekday command mailto path shell home }.each do |attribute|
+      %w{ minute hour day month weekday command mailto path shell home environment }.each do |attribute|
         it "should return true if #{attribute} doesn't match" do
           @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
           @current_resource.should_receive(attribute).once.and_return(false)
@@ -187,6 +202,7 @@ CRON
           resource.shell nil
           resource.home nil
           resource.command "/bin/true"
+          resource.environment "TEST"=>"LOL"
 
           provider = Chef::Provider::Cron.new(resource, @run_context)
           provider.current_resource = @current_resource
@@ -202,6 +218,7 @@ CRON
           provider.cron_exists = true
           provider.should_receive(:compare_cron).once.and_return(true)
           provider.action_create
+          @stdin.string.should include("TEST=LOL")
         end
       end
     end
