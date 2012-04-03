@@ -111,9 +111,12 @@ class Chef
         if name_args.empty?
           ui.error("please specify a cookbook to download and install")
           exit 1
-        elsif name_args.size > 1
-          ui.error("Installing multiple cookbooks at once is not supported")
-          exit 1
+        elsif name_args.size >= 2
+          unless name_args.last.match(/^[0-9]/)
+            ui.error("Installing multiple cookbooks at once is not supported")
+            exit 1
+          end
+          name_args.first
         else
           name_args.first
         end
