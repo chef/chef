@@ -23,7 +23,11 @@ describe Chef::Knife::CookbookSiteInstall do
     require 'chef/knife/core/cookbook_scm_repo'
     @knife = Chef::Knife::CookbookSiteInstall.new
     @knife.config = {}
-    @install_path = "/var/tmp/chef"
+    if Chef::Platform.windows?
+      @install_path = "C:\tmp\chef"
+    else 
+      @install_path = "/var/tmp/chef"
+    end
     @knife.config[:cookbook_path] = [ @install_path ]
 
     @stdout = StringIO.new
