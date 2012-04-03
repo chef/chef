@@ -21,6 +21,7 @@
 # limitations under the License.
 #
 require 'chef/exceptions'
+require 'chef/log'
 require 'mixlib/authentication/signedheaderauth'
 
 class Chef
