@@ -44,8 +44,7 @@ class Chef
       option :attribute,
         :short => "-a ATTR",
         :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default is fqdn",
-        :default => "fqdn"
+        :description => "The attribute to use for opening the connection - default is fqdn"
 
       option :manual,
         :short => "-m",
