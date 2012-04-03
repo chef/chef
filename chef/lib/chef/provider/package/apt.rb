@@ -37,6 +37,14 @@ class Chef
           @current_resource
         end
 
+        def force_yes
+          if @new_resource.respond_to?("force_yes")
+            @new_resource.force_yes
+          else
+            false
+          end
+        end
+
         def check_package_state(package)
           Chef::Log.debug("#{@new_resource} checking package status for #{package}")
           installed = false
@@ -85,8 +93,13 @@ class Chef
         def install_package(name, version)
           package_name = "#{name}=#{version}"
           package_name = name if @is_virtual_package
+          if force_yes
+            force_yes_flag = "--force-yes"
+          else
+            force_yes_flag = ""
+          end
           run_command_with_systems_locale(
-            :command => "apt-get -q -y#{expand_options(@new_resource.options)} install #{package_name}",
+            :command => "apt-get -q -y#{expand_options(@new_resource.options)} install #{package_name} #{force_yes_flag}",
             :environment => {
               "DEBIAN_FRONTEND" => "noninteractive"
             }
