@@ -74,6 +74,9 @@ class Chef
 
       def evaluate_command
         shell_out(@command, @command_opts).status.success?
+      rescue Chef::Exceptions::CommandTimeout
+        Chef::Log.warn "Command '#{@command}' timed out"
+        false
       end
 
       def evaluate_block
