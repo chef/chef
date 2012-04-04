@@ -72,7 +72,7 @@ describe Mixlib::ShellOut do
           let(:expected_uid) { user_info.uid }
           let(:user_info) { Etc.getpwent }
 
-          it "should compute the uid of the user", :unix_only => true do
+          it "should compute the uid of the user", :unix_only do
             shell_cmd.uid.should eql(expected_uid)
           end
         end
@@ -100,7 +100,7 @@ describe Mixlib::ShellOut do
           let(:expected_gid) { group_info.gid }
           let(:group_info) { Etc.getgrent }
 
-          it "should compute the gid of the user", :unix_only => true do
+          it "should compute the gid of the user", :unix_only do
             shell_cmd.gid.should eql(expected_gid)
           end
         end
@@ -297,7 +297,7 @@ describe Mixlib::ShellOut do
       let(:fully_qualified_cwd) { File.expand_path(cwd) }
       let(:options) { { :cwd => cwd } }
 
-      context 'when running under Unix', :unix_only => true do
+      context 'when running under Unix', :unix_only do
         let(:cwd) { '/bin' }
         let(:cmd) { 'pwd' }
 
@@ -306,7 +306,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'when running under Windows', :windows_only => true do
+      context 'when running under Windows', :windows_only do
         let(:cwd) { Dir.tmpdir }
         let(:cmd) { 'echo %cd%' }
 
@@ -339,7 +339,7 @@ describe Mixlib::ShellOut do
       context 'with LC_ALL set to nil' do
         let(:locale) { nil }
 
-        context 'when running under Unix', :unix_only => true do
+        context 'when running under Unix', :unix_only do
           let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
 
           it "should use the parent process's locale" do
@@ -347,7 +347,7 @@ describe Mixlib::ShellOut do
           end
         end
 
-        context 'when running under Windows', :windows_only => true do
+        context 'when running under Windows', :windows_only do
           # On windows, if an environmental variable is not set, it returns the key
           let(:parent_locale) { (ENV['LC_ALL'] || '%LC_ALL%').to_s.strip }
 
@@ -395,7 +395,7 @@ describe Mixlib::ShellOut do
         let(:cmd) { script_name }
 
 
-        context 'when running under Unix', :unix_only => true do
+        context 'when running under Unix', :unix_only do
           let(:script_content) { 'echo blah' }
 
           it 'should execute' do
@@ -403,7 +403,7 @@ describe Mixlib::ShellOut do
           end
         end
 
-        context 'when running under Windows', :windows_only => true do
+        context 'when running under Windows', :windows_only do
           let(:cmd) { "#{script_name} #{argument}" }
           let(:script_content) { '@echo %1' }
           let(:argument) { rand(10000).to_s }
@@ -765,7 +765,7 @@ describe Mixlib::ShellOut do
           stdout.should_not be_empty
         end
 
-        it 'should close all pipes', :unix_only => true do
+        it 'should close all pipes', :unix_only do
           unclosed_pipes.should be_empty
         end
       end
@@ -832,7 +832,7 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context 'when subprocess closes prematurely', :unix_only => true do
+      context 'when subprocess closes prematurely', :unix_only do
         context 'with input data' do
           let(:ruby_code) { 'bad_ruby { [ } ]' }
           let(:options) { { :input => input } }
@@ -878,7 +878,7 @@ describe Mixlib::ShellOut do
       context 'when execution fails' do
         let(:cmd) { "fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" }
 
-        context 'when running under Unix', :unix_only => true do
+        context 'when running under Unix', :unix_only do
           it "should recover the error message" do
             lambda { executed_cmd }.should raise_error(Errno::ENOENT)
           end
@@ -893,7 +893,7 @@ describe Mixlib::ShellOut do
           end
         end
 
-        pending 'when running under Windows', :windows_only => true
+        pending 'when running under Windows', :windows_only
       end
 
       context 'without input data' do
