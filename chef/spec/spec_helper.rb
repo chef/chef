@@ -14,7 +14,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# If you need to add anything in here, don't.
+# Add it to one of the files in spec/support
 
 # Abuse ruby's constant lookup to avoid undefined constant errors
 module Shef
@@ -41,6 +43,9 @@ require 'chef/util/file_edit'
 
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
+# Explicitly require spec helpers that need to load first
+require 'spec/support/platform_helpers'
+
 # Autoloads support files
 # Excludes support/platforms by default
 # Do not change the gsub.
@@ -48,49 +53,6 @@ Dir["spec/support/**/*.rb"].
   reject { |f| f =~ %r{^spec/support/platforms} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
   each { |f| require f }
-
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
-CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
-
-Chef::Config[:log_level] = :fatal
-Chef::Config[:cache_type] = "Memory"
-Chef::Config[:cache_options] = { }
-Chef::Config[:persistent_queue] = false
-Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-
-Chef::Log.level(Chef::Config.log_level)
-Chef::Config.solo(false)
-
-Chef::Log.logger = Logger.new(StringIO.new)
-
-def windows?
-  if RUBY_PLATFORM =~ /mswin|mingw|windows/
-    true
-  else
-    false
-  end
-end
-
-DEV_NULL = windows? ? 'NUL' : '/dev/null'
-
-def redefine_argv(value)
-  Object.send(:remove_const, :ARGV)
-  Object.send(:const_set, :ARGV, value)
-end
-
-def with_argv(*argv)
-  original_argv = ARGV
-  redefine_argv(argv.flatten)
-  begin
-    yield
-  ensure
-    redefine_argv(original_argv)
-  end
-end
-
-def sha256_checksum(path)
-  Digest::SHA256.hexdigest(File.read(path))
-end
 
 RSpec.configure do |config|
   config.include(Matchers)
