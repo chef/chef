@@ -41,6 +41,14 @@ require 'chef/util/file_edit'
 
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
+# Autoloads support files
+# Excludes support/platforms by default
+# Do not change the gsub.
+Dir["spec/support/**/*.rb"].
+  reject { |f| f =~ %r{^spec/support/platforms} }.
+  map { |f| f.gsub(%r{.rb$}, '') }.
+  each { |f| require f }
+
 CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
 
@@ -84,14 +92,6 @@ def sha256_checksum(path)
   Digest::SHA256.hexdigest(File.read(path))
 end
 
-# load mock helpers
-Dir[File.join(File.dirname(__FILE__), 'support', 'mock','**', '*.rb')].sort.each { |lib| require lib }
-
-# load shared contexts & examples
-Dir[File.join(File.dirname(__FILE__), 'support', 'shared','**', '*.rb')].sort.each { |lib| require lib }
-
-# load custom matchers
-Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
 RSpec.configure do |config|
   config.include(Matchers)
 end
