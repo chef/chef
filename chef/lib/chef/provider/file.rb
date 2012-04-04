@@ -25,6 +25,30 @@ require 'etc'
 require 'fileutils'
 
 class Chef
+
+################################################################################
+# WHY RUN STUFF
+################################################################################
+
+  class Resource
+    class File < Chef::Resource
+      def run_action(action)
+        if self.provider
+          provider = self.provider.new(self, self.run_context)
+        else # fall back to old provider resolution
+          provider = Chef::Platform.provider_for_resource(self)
+        end
+        provider.load_current_resource
+        provider.send("action_#{action}")
+        provider.converge_actions.converge!
+      end
+    end
+  end
+
+################################################################################
+# END WHY RUN STUFF
+################################################################################
+
   class Provider
     class File < Chef::Provider
       include Chef::Mixin::Checksum
@@ -42,7 +66,51 @@ class Chef
 
       private :negative_complement, :octal_mode
 
+################################################################################
+# WHY RUN STUFF
+################################################################################
+
+      class ConvergeActions
+        def initialize
+          @actions = []
+        end
+
+        def add_action(description, &block)
+          @actions << [description, block]
+        end
+
+        def converge!
+          @actions.each do |description, block|
+            puts "* " * 40
+            puts "converging"
+
+            # TODO: probably should get this out of the run context instead of making it really global?
+            if Chef::Config[:why_run]
+              puts description
+            else
+              block.call
+            end
+            puts "* " * 40
+            puts ""
+          end
+        end
+      end
+
+      def converge_actions
+        @converge_actions ||= ConvergeActions.new
+      end
+
+      def converge_by(description, &block)
+        converge_actions.add_action(description, &block)
+      end
+
+
+################################################################################
+# END WHY RUN STUFF
+################################################################################
+
       def load_current_resource
+        # TODO: assert parent directory exists.
         @current_resource = Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
@@ -57,21 +125,26 @@ class Chef
       # Set the content of the file, assuming it is not set correctly already.
       def set_content
         unless compare_content
-          backup @new_resource.path if ::File.exists?(@new_resource.path)
-          ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
-          Chef::Log.info("#{@new_resource} contents updated")
-          @new_resource.updated_by_last_action(true)
+          converge_by("Would update content in file #{@new_resource.path}") do
+            backup @new_resource.path if ::File.exists?(@new_resource.path)
+            ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
+            Chef::Log.info("#{@new_resource} contents updated")
+            @new_resource.updated_by_last_action(true)
+          end
         end
       end
 
       def action_create
-        assert_enclosing_directory_exists!
-        unless ::File.exists?(@new_resource.path)
-          ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+        if !::File.exists?(@new_resource.path)
+          converge_by("Would create new file #{@new_resource.path}") do
+            ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
+            @new_resource.updated_by_last_action(true)
+            Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+          end
+        elsif @new_resource.content.nil?
+          # nothing to do
         else
-          set_content unless @new_resource.content.nil?
+          set_content
         end
         enforce_ownership_and_permissions
       end
