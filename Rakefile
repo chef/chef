@@ -144,11 +144,11 @@ def start_chef_webui(type="normal")
   else # child
     case type
     when "normal"
-      puts "Starting chef webui for development with './chef-server/bin/chef-server-webui -a thin -l debug -N'"
-      exec("./chef-server-webui/bin/chef-server-webui -a thin -l debug -N")
+      puts "Starting chef webui for development with './chef-server/bin/chef-server-webui'"
+      exec("./chef-server-webui/bin/chef-server-webui")
     when "features"
-      puts "Starting chef server webui for features with #{["./chef-server/bin/chef-server-webui -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N"].join(' ')}"
-      exec("./chef-server-webui/bin/chef-server-webui -a thin -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")} -l debug -N")
+      puts "Starting chef server webui for features with #{["./chef-server/bin/chef-server-webui -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")}"].join(' ')}"
+      exec("./chef-server-webui/bin/chef-server-webui -C #{File.join(File.dirname(__FILE__), "features", "data", "config", "server.rb")}")
     end
   end
 end

@@ -33,16 +33,22 @@ end
 require 'chef'
 require 'chef-server-webui'
 
-if ARGV[0] && ARGV[0] =~ /^[^-]/
-  ARGV.push "-H"
+# Run the server unless console or script runner requested
+unless %w[c console r runner].any? { |o| ARGV.index(o) }
+  ARGV.unshift "server"
 end
-unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
-  ARGV.push *%w[thin]
-end
-unless %w[-p --port].any? { |o| ARGV.index(o) }
+
+# Default to port 4040 if not specified
+unless %w[-p --port c console].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-p 4040]
 end
 
+# Configure Rails environment
+if index = ARGV.index("-e")
+  ENV['RAILS_ENV'] = ARGV[index+1]
+end
+
+# Load custom config
 if index = ARGV.index("-C")
   config = ARGV[index+1]
   ARGV.delete("-C")
@@ -54,22 +60,11 @@ else
   )
 end
 
+# Configure Chef
 Chef::Log.init(Chef::Config[:log_location])
 Chef::Log.level = Chef::Config[:log_level]
 
-# Change to the application's path if there is no config.ru file in current dir.
-# This allows us to run script/rails server from other directories, but still get
-# the main config.ru and properly set the tmp directory.
-Dir.chdir(File.join(File.dirname(__FILE__), '..'))
-
+# Boot Rails
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
-
-require 'rails/commands/server'
-Rails::Server.new.tap { |server|
-  # We need to require application after the server sets environment,
-  # otherwise the --environment option given to the server won't propagate.
-  require APP_PATH
-  Dir.chdir(Rails.application.root)
-  server.start
-}
+require 'rails/commands'
