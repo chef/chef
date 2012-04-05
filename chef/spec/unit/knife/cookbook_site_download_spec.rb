@@ -112,6 +112,11 @@ describe Chef::Knife::CookbookSiteDownload do
           end
         end
 
+        it 'should provide an accessor to the version' do
+          FileUtils.stub(:cp).and_return(true)
+          @knife.version.should == @version
+          @knife.run
+        end
       end
 
       context 'downloading a cookbook of a specific version' do
