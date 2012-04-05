@@ -36,7 +36,7 @@ class DatabagsController < ApplicationController
       redirect_to databags_url, :notice => "Created Databag #{@databag.name}"
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not create databag" }
+      flash[:error] = "Could not create databag"
       render :new
     end
   end
@@ -46,7 +46,7 @@ class DatabagsController < ApplicationController
                   Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
                 rescue => e
                   Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                  @_message = { :error => "Could not list databags" }
+                  flash[:error] = "Could not list databags"
                   {}
                 end
   end
@@ -61,7 +61,7 @@ class DatabagsController < ApplicationController
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => "Could not load databag"}
+      flash[:error] = "Could not load databag"
       render :index
     end
   end
@@ -74,7 +74,7 @@ class DatabagsController < ApplicationController
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @databags = Chef::DataBag.list
-      @_message =  { :error => "Could not delete databag"}
+      flash[:error] = "Could not delete databag"
       render :index
     end
   end

@@ -110,7 +110,7 @@ class OpenidConsumerController < ApplicationController
         return "OpenID transaction cancelled."
       else
     end
-    redirect openid_consumer_url
+    redirect_to openid_consumer_url
   end
 
   def logout

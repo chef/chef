@@ -29,7 +29,7 @@ class ClientsController < ApplicationController
       @clients_list = Chef::ApiClient.list().keys.sort
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = {:error => "Could not list clients"}
+      flash[:error] = "Could not list clients"
       @clients_list = []
     end
     respond_with @clients_list
@@ -41,7 +41,7 @@ class ClientsController < ApplicationController
                 @client = Chef::ApiClient.load(params[:id])
               rescue => e
                 Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                @_message = { :error => "Could not load client #{params[:id]}"}
+                flash[:error] = "Could not load client #{params[:id]}"
                 Chef::ApiClient.new
               end
     respond_with @client
@@ -53,7 +53,7 @@ class ClientsController < ApplicationController
                 Chef::ApiClient.load(params[:id])
               rescue => e
                 Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                @_message = { :error => "Could not load client #{params[:id]}"}
+                flash[:error] = "Could not load client #{params[:id]}"
                 Chef::ApiClient.new
               end
     respond_with @client
@@ -74,12 +74,12 @@ class ClientsController < ApplicationController
       @client.admin(str_to_bool(params[:admin])) if params[:admin]
       response = @client.create
       @private_key = OpenSSL::PKey::RSA.new(response["private_key"])
-      @_message = { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
+      flash[:notice] = "Created Client #{@client.name}. Please copy the following private key as the client's validation key."
       @client = Chef::ApiClient.load(params[:name])
       render :show
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not create client" }
+      flash[:error] = "Could not create client"
       render :new
     end
   end
@@ -94,11 +94,11 @@ class ClientsController < ApplicationController
       end
       params[:admin] ? @client.admin(true) : @client.admin(false)
       @client.save
-      @_message = @private_key.nil? ? { :notice => "Updated Client" } : { :notice => "Created Client #{@client.name}. Please copy the following private key as the client's validation key." }
+      flash[:notice] = @private_key.nil? ? "Updated Client" : "Created Client #{@client.name}. Please copy the following private key as the client's validation key."
       render :show
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not update client" }
+      flash[:error] = "Could not update client"
       render :edit
     end
   end
@@ -111,7 +111,7 @@ class ClientsController < ApplicationController
       redirect_to clients_url, :notice => "Client #{params[:id]} deleted successfully"
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = {:error => "Could not delete client #{params[:id]}" }
+      flash[:error] = "Could not delete client #{params[:id]}"
       @clients_list = Chef::ApiClient.list()
       render :index
     end

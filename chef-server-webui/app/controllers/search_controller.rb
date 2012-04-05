@@ -29,7 +29,7 @@ class SearchController < ApplicationController
                         @s.list_indexes
                       rescue => e
                         Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                        @_message = {:error => "Could not list search indexes"}
+                        flash[:error] = "Could not list search indexes"
                         {}
                       end
   end
@@ -51,7 +51,7 @@ class SearchController < ApplicationController
       @results
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Unable to find the #{params[:id]}. (#{$!})" }
+      flash[:error] = "Unable to find the #{params[:id]}. (#{$!})"
       @search_indexes = @s.list_indexes
       render :index
     end

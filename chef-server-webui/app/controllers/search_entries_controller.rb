@@ -17,9 +17,6 @@
 # limitations under the License.
 #
 
-#require 'chef/search'
-#require 'chef/queue'
-
 class SearchEntriesController < ApplicationController
 
   respond_to :html

@@ -30,7 +30,7 @@ class EnvironmentsController < ApplicationController
                           Chef::Environment.list
                         rescue => e
                           Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                          @_message = "Could not list environments"
+                          flash[:error] = "Could not list environments"
                           {}
                         end
   end
@@ -118,7 +118,7 @@ class EnvironmentsController < ApplicationController
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @environment_list = Chef::Environment.list()
-      @_message = {:error => "Could not delete environment #{params[:id]}: #{e.message}"}
+      flash[:error] = "Could not delete environment #{params[:id]}: #{e.message}"
       render :index
     end
   end
@@ -136,7 +136,7 @@ class EnvironmentsController < ApplicationController
                    end
                  rescue => e
                    Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                   @_message = "Could not load cookbooks for environment #{params[:environment_id]}"
+                   flash[:error] = "Could not load cookbooks for environment #{params[:environment_id]}"
                    {}
                  end
   end
@@ -150,7 +150,7 @@ class EnvironmentsController < ApplicationController
                r.get_rest("/environments/#{params[:environment_id]}/nodes").keys.sort
              rescue => e
                Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-               @_message = "Could not load nodes for environment #{params[:environment_id]}"
+               flash[:error] = "Could not load nodes for environment #{params[:environment_id]}"
                []
              end
   end
@@ -180,7 +180,7 @@ class EnvironmentsController < ApplicationController
       Chef::Environment.load(params[:id])
     rescue Net::HTTPServerException => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = "Could not load environment #{params[:id]}"
+      flash[:error] = "Could not load environment #{params[:id]}"
       @environment = Chef::Environment.new
       false
     end
