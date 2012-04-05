@@ -37,7 +37,7 @@ class NodesController < ApplicationController
       @node_list = node_hash.keys.sort
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = {:error => "Could not list nodes"}
+      flash[:error] = "Could not list nodes"
       @node_hash = {}
     end
   end
@@ -47,7 +47,7 @@ class NodesController < ApplicationController
       @node =Chef::Node.load(params[:id])
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = {:error => "Could not load node #{params[:id]}"}
+      flash[:error] = "Could not load node #{params[:id]}"
       @node = Chef::Node.new
     end
   end
@@ -63,7 +63,7 @@ class NodesController < ApplicationController
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @node_list = Chef::Node.list()
-      @_message = {:error => "Could not load available recipes, roles, or the run list"}
+      flash[:error] = "Could not load available recipes, roles, or the run list"
       render :index
     end
   end
@@ -81,7 +81,7 @@ class NodesController < ApplicationController
       @available_recipes = []
       @available_roles = []
       @run_list = []
-      @_message = {:error => "Could not load node #{params[:id]}"}
+      flash[:error] = "Could not load node #{params[:id]}"
     end
   end
 
@@ -114,7 +114,7 @@ class NodesController < ApplicationController
       @node.run_list.reset!(params[:for_node] ? params[:for_node] : [])
       @node.normal_attrs = Chef::JSONCompat.from_json(params[:attributes])
       @node.save
-      @_message = { :notice => "Updated Node" }
+      flash[:notice] = "Updated Node"
       render :show
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")

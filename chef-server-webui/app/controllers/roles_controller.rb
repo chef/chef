@@ -31,7 +31,7 @@ class RolesController < ApplicationController
                    Chef::Role.list()
                   rescue => e
                     Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-                    @_message = {:error => "Could not list roles"}
+                    flash[:error] = "Could not list roles"
                     {}
                   end
   end
@@ -42,7 +42,7 @@ class RolesController < ApplicationController
               Chef::Role.load(params[:id])
             rescue => e
               Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-              @_message = {:error => "Could not load role #{params[:id]}."}
+              flash[:error] = "Could not load role #{params[:id]}."
               Chef::Role.new
             end
 

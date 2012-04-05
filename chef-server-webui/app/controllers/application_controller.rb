@@ -77,7 +77,7 @@ class ApplicationController < ActionController::Base
   def redirect_back_or_default(default)
     loc = session[:return_to] || default
     session[:return_to] = nil
-    redirect loc
+    redirect_to loc
   end
 
   def access_denied

@@ -29,7 +29,7 @@ class DatabagItemsController < ApplicationController
       @default_data = @databag_item.raw_data
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not load the databag item" }
+      flash[:error] = "Could not load the databag item"
     end
   end
 
@@ -43,7 +43,7 @@ class DatabagItemsController < ApplicationController
       redirect_to databag_databag_items_url(params[:databag_id], @databag_item.name), :notice => "Updated Databag Item #{@databag_item.name}"
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not update the databag item" }
+      flash[:error] = "Could not update the databag item"
       @databag_item = Chef::DataBagItem.load(params[:databag_id], params[:id])
       @default_data = @databag_item
       render :edit
@@ -64,7 +64,7 @@ class DatabagItemsController < ApplicationController
       redirect_to(databag_databag_items_url(@databag_name), :notice => "Databag item created successfully" )
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      @_message = { :error => "Could not create databag item" }
+      flash[:error] = "Could not create databag item"
       render :new
     end
   end
@@ -81,7 +81,7 @@ class DatabagItemsController < ApplicationController
       display @databag_item
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      redirect_to databag_databag_items_url, :error => "Could not show the databag item"
+      redirect_to databag_databag_items_url(@databag_name), :error => "Could not show the databag item"
     end
   end
 
@@ -89,10 +89,10 @@ class DatabagItemsController < ApplicationController
     begin
       @databag_item = Chef::DataBagItem.new
       @databag_item.destroy(databag_id, item_id)
-      redirect_to databag_databag_items_url, :notice => "Databag item deleted successfully"
+      redirect_to databag_databag_items_url(databag_id), :notice => "Databag item deleted successfully"
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      redirect_to databag_databag_items_url, :error => "Could not delete databag item"
+      redirect_to databag_databag_items_url(databag_id), :error => "Could not delete databag item"
     end
   end
 

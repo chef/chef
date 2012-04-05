@@ -35,7 +35,7 @@ class StatusController < ApplicationController
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @status = {}
-      @_message = {:error => "Could not list status"}
+      flash[:error] = "Could not list status"
     end
   end
 
