@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 
 require 'chef/data_bag_item'
 require 'chef/encrypted_data_bag_item'

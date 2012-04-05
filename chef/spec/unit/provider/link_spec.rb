@@ -18,7 +18,7 @@
 
 require 'ostruct'
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 
 if Chef::Platform.windows?
   require 'chef/win32/file' #probably need this in spec_helper

@@ -78,7 +78,7 @@
 # end
 #
 
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'spec_helper'
 require "chef/cookbook/syntax_check"
 
 describe Chef::Cookbook::SyntaxCheck do

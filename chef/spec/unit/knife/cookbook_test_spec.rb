@@ -18,8 +18,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
-
+require 'spec_helper'
 Chef::Knife::CookbookTest.load_deps
 
 describe Chef::Knife::CookbookTest do
