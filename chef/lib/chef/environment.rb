@@ -435,7 +435,7 @@ class Chef
       begin
         Chef::VersionConstraint.new version
         true
-      rescue ArgumentError
+      rescue Chef::Exceptions::InvalidVersionConstraint, Chef::Exceptions::InvalidCookbookVersion
         false
       end
     end
