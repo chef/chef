@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
+require 'spec_helper'
 
 describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
   before do

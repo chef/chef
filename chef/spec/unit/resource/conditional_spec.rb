@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path('../../../spec_helper', __FILE__)
+require 'spec_helper'
 require 'ostruct'
 
 describe Chef::Resource::Conditional do

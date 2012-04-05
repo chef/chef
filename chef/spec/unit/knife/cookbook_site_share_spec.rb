@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 
 require 'chef/cookbook_uploader'
 require 'chef/cookbook_site_streaming_uploader'

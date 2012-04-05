@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require 'stringio'
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 
 describe Chef::Provider::Template do
   before(:each) do

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 require 'chef/node/attribute'
 
 describe Chef::Node::Attribute do 

@@ -18,7 +18,7 @@
 
 ShellCmdResult = Struct.new(:stdout, :stderr, :exitstatus)
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
+require 'spec_helper'
 require 'ostruct'
 
 describe Chef::Provider::User::Dscl do
