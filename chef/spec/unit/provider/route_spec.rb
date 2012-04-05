@@ -164,6 +164,9 @@ describe Chef::Provider::Route do
 
       @provider.generate_config
       route_file.string.split("\n").should have(3).items
+      route_file.string.should match(/^192.168.1.0\/24 via 192.168.0.1$/)
+      route_file.string.should match(/^192.168.2.0\/24 via 192.168.0.1$/)
+      route_file.string.should match(/^192.168.3.0\/24 via 192.168.0.1$/)
     end
   end
 end
