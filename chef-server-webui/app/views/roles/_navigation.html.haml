@@ -1,0 +1,9 @@
+.secondary-navigation
+  %ul
+    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', roles_path)
+    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', new_role_path)
+    - if active != 'create' && active != 'index'
+      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', role_path(@role.name))
+      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', edit_role_path(@role.name))
+      %li= link_to('Delete', role_path(@role.name), :method => "delete", :confirm => "Really delete Role #{@role.name}? There is no undo.")
+  .clear

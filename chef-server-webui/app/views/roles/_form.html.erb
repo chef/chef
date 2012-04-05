@@ -1,0 +1,92 @@
+<div class="content roleFormContainer">
+  <%= form_tag form_url, :method => method, :id => form_id, :class => 'form roleForm' do %>
+    <% unless form_for == 'edit' %>
+      <div class="group form">
+        <label class="label" for="role_name">Name</label>
+        <%= text_field_tag "name", params.has_key?(:name) ? h(params[:name]) : @role.name, :id => "role_name", :class => "text_field" %>
+        <span class="description">The name of the Role</span>
+      </div>
+    <% end %>
+
+    <div class="group form">
+      <label class="label" for="role_description">Description</label>
+      <%= text_area_tag "description", params.has_key?(:description) ? h(params[:description]) : @role.description, :class => "text_area", :id => "role_description" %>
+      <span class="description">A description of this Role</span>
+    </div>
+
+    <div class="group form" id="run_list_editor_container">
+      <div id="availableRunListItemContainer" class="runListEditorColumn">
+        <div id="available_roles_container" class="runListItemListContainer">
+          <div class="runListEditorLabel">Available Roles</div>
+          <div class="sortable runListAvailableItemContainer">
+            <ul id="availableRoles" class="connectedSortable runListAvailableItemList" data-role-list='<%= @available_roles.to_json -%>'>
+              <% @available_roles.each do |role| %>
+                <li id="role[<%=h(role)  -%>]" class="ui-state-highlight runListItem"><%= h(role) -%></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+        <div id="available_recipes_container" class="runListItemListContainer">
+          <div class="runListEditorLabel">Available Recipes</div>
+          <div class="sortable runListAvailableItemContainer">
+            <div class="spinner">
+              <%= image_tag('indicator.gif') -%>
+            </div>
+            <ul id="role" class="connectedSortable runListAvailableItemList availableRecipes">
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="run_list_container" class="runListEditorColumn">
+        <div class="runListItemListContainer">
+          <div id="environmentRunListSelector" data-initial-env="<%=h @current_env -%>">
+            <div class="runListEditorLabel">
+              <span id="selectedRunListEditorLabel">
+                <% if @current_env == '_default' -%>
+                  Default Run List
+                <% else -%>
+                  Run List for <%= @current_env -%>
+                <% end -%>
+              </span>
+              <span id="environment_run_list_selection_control">
+                <%= select_tag :environment, options_from_collection_for_select([['noop','Other Environments']].concat(@environments.map {|e| [e,e]}), :first, :last), :id => 'activeEnvironment'%>
+              </span>
+            </div>
+          </div>
+          <% @run_lists.each do |environment, run_list| %>
+            <%= render('run_lists', :environment => environment, :run_list => run_list)%>
+          <% end %>
+        </div>
+      </div>
+      <div id="current_run_list_display_container" class="runListEditorColumn">
+        <div class="runListItemListContainer">
+          <div class="runListEditorLabel activeRunListLabel">Active Run List for <%= h(@current_env) -%></div>
+          <div class="sortable activeRunListContainer">
+            <% if @current_env != "_default"  && @role.env_run_lists[@current_env].nil? %>
+              <div id="activeRunListName">using <%= @role.active_run_list_for(@current_env).gsub('_default', 'default') -%> run list</div>
+            <% end %>
+            <ul class="runListItemList" id="active_run_list">
+              <% @role.run_list_for(@current_env).each do |item| %>
+                <li class="displayRunListItem"><%= h(item) -%></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group form attrEditor">
+      <label class="label">Default and Override Attributes</label>
+      <%= render 'layouts/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json%>
+      <span class="description">
+        A JSON hash for default attributes for nodes of this role. These attributes will be applied according to the attribute precedence rules.
+      </span>
+    </div>
+
+    <div class="group">
+      <div class="actions-bar">
+        <%= submit_tag submit_name, :id => submit_id, :class => 'button' %>
+      </div>
+    </div>
+  <% end =%>
+</div>

@@ -1,0 +1,9 @@
+.secondary-navigation
+  %ul
+    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', environments_path)
+    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', new_environment_path)
+    - if active != 'create' && active != 'index'
+      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', environment_path(@environment.name))
+      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', edit_environment_path(@environment.name))
+      %li= link_to('Delete', environment_path(@environment.name), :method => "delete", :confirm => "Really delete Environment #{@environment.name}? There is no undo.")
+  .clear

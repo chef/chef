@@ -1,0 +1,27 @@
+.block#block-forms
+  .content
+    %h2.title Create New User
+    .inner
+      = render('navigation', :active => 'create')
+    .content
+      .inner
+        %form.form{ :method => "get", "accept-charset" => "UTF-8", :action => users_create_path }
+          %table.table
+            %tr
+              %td= "Username"
+              %td= text_field_tag :name
+            %tr
+              %td= "Password"
+              %td= password_field_tag :password
+            %tr
+              %td= "Confirm Password"
+              %td= password_field_tag :password2
+            %tr
+              %td= "Admin"
+              %td= check_box_tag "admin", "1"
+            %tr
+              %td= "OpenID (optional)"
+              %td= text_field_tag :openid
+
+          .group.navform
+            .button= submit_tag "Create"

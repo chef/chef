@@ -1,0 +1,12 @@
+.content
+  .inner
+    %div.group.form
+      %label.label Name
+      = text_field_tag "name", params.has_key?(:id) ? h(params[:id]) : @databag.name, :id => "databag_name", :class => "text_field"
+      %span.description The name of the Databag
+
+    = form_tag form_url, :method => :post, :id => form_id, :class => 'form' do
+      %div.group
+        .actions-bar
+          .actions= submit_tag submit_name, :id => submit_id, :class => 'button'
+

@@ -1,0 +1,8 @@
+- @entries.each do |result|
+  .search_result
+    %h3= "#{h result[:index_name]} (#{h result[:id]})"
+    %table
+      - result.each do |k, v|
+        %tr.attr_group
+          %td.attr_name= k
+          %td.attr_value= v.kind_of?(Array) ? v.join(",") : v

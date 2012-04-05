@@ -1,0 +1,29 @@
+.block#block-tables
+  .content
+    %h2.title
+      Node List
+    .inner
+      = render('navigation', :active => 'index')
+    .content
+      .inner
+        %table.table
+          %tr
+            %th.first{:colspan => 2} Name
+            %th &nbsp;
+            %th.last &nbsp;
+          - even = false
+          - if @node_list.empty?
+            - if session[:environment]
+              %td{:colspan => 4}= "The environment #{session[:environment]} has no nodes"
+            - else
+              %td{:colspan => 4}= "You have no nodes - try connecting one, or creating or editing a #{link_to('node', url(:nodes))}"
+          - else
+            - @node_list.each do |node|
+              %tr{:class => even ? "even": "odd" }
+                %td{:colspan => 2}= link_to node, node_path(node)
+                %td
+                  = link_to('Edit', edit_node_path(node))
+                  |
+                  = link_to('Delete', node_path(node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
+                - even = (not even)
+
