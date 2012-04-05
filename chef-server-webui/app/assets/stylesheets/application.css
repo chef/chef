@@ -9,5 +9,13 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
- *= require_tree .
+ *
+ *= require base
+ *= require themes/djime-cerulean/style
+ *= require chef
+ *= require facebox/facebox
+ *= require jquery-ui-1.7.1.custom
+ *= require jquery.treeTable
+ *= require jsonedit_main
+ *= require jquery.suggest
 */

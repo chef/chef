@@ -10,6 +10,19 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require jquery
+//= require jquery-1.5.2.min
 //= require jquery_ujs
-//= require_tree .
+//= require jquery.jeditable.mini
+//= require jquery.localscroll
+//= require jquery.scrollTo
+//= require jquery.tools.min
+//= require facebox/facebox
+//= require jquery-ui-1.7.1.custom.min
+//= require jquery.treeTable.min
+//= require chef
+//= require drop_down_menu
+//= require jquery.suggest
+
+//= require json
+//= require yetii-min
+//= require jsonedit_main
