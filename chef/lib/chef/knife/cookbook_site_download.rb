@@ -52,6 +52,10 @@ class Chef
         download_cookbook
       end
 
+      def version
+        @version = desired_cookbook_data['version']
+      end
+
       private
       def cookbooks_api_url
         'http://cookbooks.opscode.com/api/v1/cookbooks'
@@ -100,11 +104,6 @@ class Chef
       def specific_cookbook_version_url
         "#{cookbooks_api_url}/#{@name_args[0]}/versions/#{@name_args[1].gsub('.', '_')}"
       end
-
-      def version
-        @version = desired_cookbook_data['version']
-      end
-
     end
   end
 end
