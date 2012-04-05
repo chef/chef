@@ -1,0 +1,6 @@
+.block#block-tables
+  .content
+    %h2.title= "Client: #{h @client.name}"
+    .inner
+      = render('navigation', :active => 'edit')
+  = render('form', :header => "Edit Client #{@client.name}", :form_id => 'edit_client', :submit_name => "Save Client", :submit_id => "edit_client_button", :form_for => 'edit', :form_url => client_path(@client.name) )

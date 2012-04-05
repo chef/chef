@@ -1,0 +1,6 @@
+.block#block-tables
+  .content
+    %h2.title= "Node"
+    .inner
+      = render('navigation', :active => 'create')
+  = render('form', :header => "Create new Node", :form_id => 'create_node', :submit_name => "Create Node", :submit_id => "create_node_button", :form_for => 'create', :form_url => nodes_path)

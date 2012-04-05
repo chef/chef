@@ -1,0 +1,24 @@
+.content
+  .inner
+    - if form_for != "edit"
+      %div.group.form
+        %label.label Name
+        = text_field_tag "name", params.has_key?(:name) ? h(params[:name]) : @client.name, :id => "client_name", :class => "text_field"
+        %span.description The name of the Client
+
+    - if form_for == "edit"
+      %div.group.form
+        %label.label Private Key
+        = check_box_tag "regen_private_key", "1", false, :class => 'checkbox'
+        = label_tag "regen_private_key", "Regenerate Private Key (Existing one will no longer work!)"
+        %br/
+
+    %div.group.form
+      %label.label Admin
+      = check_box_tag "admin", "true", @client.admin, :id => "client_admin"
+      = label_tag "client_admin", "Whether or not the Client is an admin"
+
+    = form_tag form_url, :method => :post, :id => form_id, :class => 'form' do
+      %div.group
+        .actions-bar
+          .actions= submit_tag submit_name, :id => submit_id, :class => 'button'

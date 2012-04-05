@@ -1,0 +1,6 @@
+.block#block-tables
+  .content
+    %h2.title= "Role"
+    .inner
+      = render('navigation', :active => 'create')
+  = render('form', :header => "Create new Role", :form_id => 'create_role', :submit_name => "Create Role", :submit_id => "create_role_button", :method => :post, :form_for => 'create', :form_url => roles_path)

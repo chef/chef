@@ -1,0 +1,13 @@
+.block#block-tables
+  .content
+    %h2.title Search Results
+    .inner
+      - @results.each do |result|
+        %table.table.search{:width => '400px'}
+          %tr
+            %th.first Name
+            %th.last
+          - @results.each do |result|
+            - result.each do |o|
+              %tr
+                %td= link_to(o.name, send("#{@type.to_sym}_path", determine_name(@type.to_sym, o)))

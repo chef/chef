@@ -1,0 +1,64 @@
+.block#block-tables
+  .content
+    %h2.title= "Node #{h @node.name}"
+    .inner
+      = render('navigation', :active => 'show')
+
+      .content
+        .inner
+          .left
+            %h3 Environment: #{@node.chef_environment}
+            %h3 Run List
+            %table.table
+              %thead
+                %tr
+                  %th.first Position
+                  %th Name
+                  %th Version
+                  %th.last Type
+              %tbody
+                - if @node.run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This node has no roles or recipes applied.
+                - else
+                  -@node.run_list.each_with_index do |run_list_item, i|
+                    %tr
+                      %td.position= i
+                      %td= run_list_item.name
+                      %td= run_list_item.version
+                      %td= run_list_item.type
+          .left.accordion
+            %h3.head= link_to("Recipes", "#")
+            - recipes = @node.run_list.expand(@node.chef_environment, 'server').recipes
+            %div
+              %span.description.form.help
+                This is the list of recipes, fully expanded, as they will be applied to the node in question.  
+              %table#recipes.table
+                %tr
+                  %th.first Position
+                  %th.last Name
+                - if recipes.empty?
+                  %tr
+                    %td{:colspan => 2} This node has no recipes applied.
+                - else
+                  - recipes.each_with_index do |recipe, i|
+                    %tr
+                      %td.position= i
+                      %td= recipe
+            
+          .left
+            %h3 Tags 
+            %table#recipes.table
+              %tr
+                %th.first Tags
+                %th.last &nbsp;
+              %tr
+                - if (@node.attribute?(:tags) == false) || @node[:tags].empty?
+                  %td{:colspan => 2} This node has no tags applied.
+                - else
+                  %td{:colspan => 2}= @node[:tags].join(", ")
+            
+          .left
+            %h3 Attributes
+            = build_tree('attrs', @node)
+

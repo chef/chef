@@ -1,0 +1,6 @@
+.block#block-tables
+  .content
+    %h2.title= "Databag: #{params[:id]}"
+    .inner
+      = render('navigation', :active => 'edit')
+  = render('form', :header => "Edit Databag", :form_id => 'edit_databag', :submit_name => "Edit Databag", :submit_id => "edit_databag_button", :form_for => 'edit', :form_url => databag_path(params[:id]))

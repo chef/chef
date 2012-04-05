@@ -1,0 +1,56 @@
+.block#block-tables
+  .content
+    %h2.title= "Role #{h @role.name}"
+    .inner
+      = render("navigation", :active => "show")
+      .content
+        .inner
+          .left
+            %h3 Description
+            = @role.description
+
+          .left
+            %h3
+              = "Run List for Environment \"#{@current_env}\""
+              = @env_run_list_exists ? "" : "(_default)"
+            %table.table
+              %tr
+                %th.first Position
+                %th Name
+                %th Version
+                %th.last Type
+                - if @run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This role does not include any roles or recipes.
+                - else
+                  -@run_list.each_with_index do |run_list_item, i|
+                    %tr
+                      %td.position= i
+                      %td= run_list_item.name 
+                      %td= run_list_item.version 
+                      %td= run_list_item.type 
+          .left.accordion
+            %h3.head= link_to("Recipes", "#")
+            %div
+              %span.description.form.help
+                This is the list of recipes, fully expanded, as they will be applied by the role in question.  
+              %table#recipes.table
+                %tr
+                  %th.first Position
+                  %th.last Name
+                - if @run_list.empty?
+                  %tr
+                    %td{:colspan => 2} This role applies no recipes.
+                - else
+                  - @recipes.each_with_index do |recipe, i|
+                    %tr
+                      %td.position= i
+                      %td= recipe
+          .left 
+            %h3 Default Attributes
+            = build_tree('defattrs', @role.default_attributes)
+
+          .left 
+            %h3 Override Attributes
+            = build_tree('overattrs', @role.override_attributes)
+

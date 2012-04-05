@@ -1,0 +1,26 @@
+.block#block-tables
+  .content
+    %h2.title Environments
+    .inner
+      = render('navigation', :active => 'index')
+    .content
+      .inner
+        %table.table
+          %tr
+            %th.first{:colspan => 2} Name
+            %th &nbsp;
+            %th.last &nbsp;
+          - even = false;
+          - @environment_list.each do |env|
+            %tr{ :class => even ? "even" : "odd" }
+              %td{:colspan => 2}= link_to(env[0], environment_path(env[0]))
+              %td
+                - if session[:environment] != env[0]
+                  = link_to('Select', environment_select_path(env[0]))
+                - else
+                  Select
+                |
+                = link_to('Edit', edit_environment_path(env[0]))
+                |
+                = link_to('Delete', environment_path(env[0]), :method => "delete", :confirm => "Really delete Environment #{env[0]}?  there is no undo.")
+              - even = (not even)

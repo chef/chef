@@ -1,0 +1,21 @@
+.block#block-tables
+  .content
+    %h2.title Roles
+    .inner
+      = render('navigation', :active => 'index')
+    .content
+      .inner
+        %table.table
+          %tr
+            %th.first{:colspan => 2} Name
+            %th &nbsp;
+            %th.last &nbsp;
+          - even = false;
+          - @role_list.each do |role|
+            %tr{ :class => even ? "even" : "odd" }
+              %td{:colspan => 2}= link_to(role[0], role_path(role[0]))
+              %td
+                = link_to('Edit', edit_role_path(role[0]))
+                |
+                = link_to('Delete', role_path(role[0]), :method => "delete", :confirm => "Really delete Role #{role[0]}?  there is no undo.")
+              - even = (not even)
