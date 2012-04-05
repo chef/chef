@@ -24,8 +24,6 @@ describe Chef::Provider::Route do
     @cookbook_collection = Chef::CookbookCollection.new([])
     @run_context = Chef::RunContext.new(@node, @cookbook_collection)
 
-    @new_resource = Chef::Resource::Route.new('0.0.0.0')
-
     @new_resource = Chef::Resource::Route.new('10.0.0.10')
     @new_resource.gateway "10.0.0.9"
     @current_resource = Chef::Resource::Route.new('10.0.0.10')
@@ -147,7 +145,8 @@ describe Chef::Provider::Route do
         @node[:platform] = platform
 
         route_file = StringIO.new
-        File.should_receive(:new).and_return(route_file)
+        File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
+        Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
 
         @provider.generate_config
