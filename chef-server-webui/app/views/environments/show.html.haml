@@ -2,7 +2,7 @@
   .content
     %h2.title= "Environment #{h @environment.name}"
     .inner
-      = partial("navigation", :active => "show")
+      = render("navigation", :active => "show")
       .content
         .inner
           .left
@@ -26,11 +26,11 @@
                   %tr
                     %td= name
                     %td= versions
-                    
-          .left 
+
+          .left
             %h3 Default Attributes
             = build_tree('defattrs', @environment.default_attributes)
 
-          .left 
+          .left
             %h3 Override Attributes
             = build_tree('overattrs', @environment.override_attributes)

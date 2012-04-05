@@ -1,9 +1,9 @@
 .secondary-navigation
   %ul
-    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', url(:databags))
-    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', url(:new_databag))
+    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', databags_path)
+    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', new_databag_path)
     - if active != 'create' && active != 'index'
-      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', url(:databag, @databag_name))
-      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', url(:edit_databag, @databag_name))
-      %li= link_to('Delete', url(:databag, @databag_name), :method => "delete", :confirm => "Really delete Databag #{@databag_name}? There is no undo.")
+      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', databag_path(@databag_name))
+      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', edit_databag_path(@databag_name))
+      %li= link_to('Delete', databag_path(@databag_name), :method => "delete", :confirm => "Really delete Databag #{@databag_name}? There is no undo.")
   .clear

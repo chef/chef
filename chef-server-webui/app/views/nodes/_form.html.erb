@@ -1,16 +1,16 @@
 <div class="content nodeFormContainer">
-    <%= form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do -%>
+    <%= form_tag form_url, :method => :post, :id => form_id, :class => 'form' do %>
     <% unless form_for == 'edit' %>
       <div class="group form">
         <label class="label" for="node_name">Name</label>
-        <%= text_field :id => "node_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @node.name %>
+        <%= text_field_tag "name", params.has_key?(:name) ? h(params[:name]) : @node.name, :id => "node_name", :class => "text_field" %>
         <span class="description">The name of the Node</span>
       </div>
     <% end %>
 
     <div>
       <label class="label" for="nodeEnvironment">Environment:</label>
-      <%= select :chef_environment, :collection => @environments, :id => 'nodeEnvironment', :selected => @env %>
+      <%= select_tag :chef_environment, options_from_collection_for_select(@environments, :to_s, :to_s), :id => 'nodeEnvironment', :selected => @env %>
       <br />
       <span class="description">The node's environment</span>
     </div>
@@ -54,7 +54,7 @@
 
     <div class="group form attrEditor">
       <label class="label">Attributes</label>
-      <%= partial 'layout/jsonedit', :json => @node.normal_attrs.to_json %>
+      <%= render 'layouts/jsonedit', :json => @node.normal_attrs.to_json %>
       <span class="description">
         A JSON hash for default attributes for nodes of this node.  These attributes will only be applied if the node does not already have a value for the attributes.
       </span>
@@ -62,7 +62,7 @@
 
     <div class="group">
       <div class="actions-bar">
-        <%= submit(submit_name, :id => submit_id, :class => 'button') -%>
+        <%= submit_tag submit_name, :id => submit_id, :class => 'button' -%>
       </div>
     </div>
   <% end =%>

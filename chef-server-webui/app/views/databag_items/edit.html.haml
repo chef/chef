@@ -2,5 +2,5 @@
   .content
     %h2.title= "Databag Item"
     .inner
-      = partial('navigation', :active => 'edit')
-  = partial('form', :header => "Edit Databag Item", :form_id => 'edit_databag_item', :submit_name => "Edit Databag Item", :submit_id => "edit_databag_item_button", :form_for => 'edit', :form_url => url(:databag_databag_item, :databag_id=>params[:databag_id], :id=>params[:id]))
+      = render('navigation', :active => 'edit')
+  = render('form', :header => "Edit Databag Item", :form_id => 'edit_databag_item', :submit_name => "Edit Databag Item", :submit_id => "edit_databag_item_button", :form_for => 'edit', :form_url => databag_databag_item_path(params[:databag_id], params[:id]))

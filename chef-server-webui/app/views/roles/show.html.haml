@@ -2,7 +2,7 @@
   .content
     %h2.title= "Role #{h @role.name}"
     .inner
-      = partial("navigation", :active => "show")
+      = render("navigation", :active => "show")
       .content
         .inner
           .left

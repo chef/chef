@@ -1,5 +1,5 @@
 <div class="content environmentFormContainer">
-  <%= form(:action => form_url, :method => (method || :post), :id => form_id, :class => 'form') do -%>
+  <%= form_tag form_url, :method => (method || :post), :id => form_id, :class => 'form' do %>
     <% unless form_for == 'edit' %>
       <div class="group form">
         <label class="label" for="environment_name">Name</label>
@@ -7,14 +7,14 @@
           <span class="inline_error_message">The environment name contains illegal characters. The following characters are allowed: a-z, A-Z, 0-9, _, and -.</span>
         <% end %>
 
-        <%= text_field :id => "environment_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @environment.name %>
+        <%= text_field_tag "name", params.has_key?(:name) ? h(params[:name]) : @environment.name, :id => "environment_name", :class => "text_field" %>
         <span class="description">The name of the Environment</span>
       </div>
     <% end %>
 
     <div class="group form">
       <label class="label" for="environment_description">Description</label>
-      <%= text_area(params.has_key?(:description) ? h(params[:description]) : @environment.description, :name => "description", :class => "text_area", :id => "environment_description") %>
+      <%= text_area_tag "description", params.has_key?(:description) ? h(params[:description]) : @environment.description, :class => "text_area", :id => "environment_description" %>
       <span class="description">A description of this Environment</span>
     </div>
 
@@ -69,7 +69,7 @@
 
     <div class="group form attrEditor">
       <label class="label">Environment Default and Override Attributes</label>
-      <%= partial 'layout/jsonedit', :json => { :defaults => @environment.default_attributes, :overrides => @environment.override_attributes }.to_json%>
+      <%= render 'layouts/jsonedit', :json => { :defaults => @environment.default_attributes, :overrides => @environment.override_attributes }.to_json %>
       <span class="description">
         A JSON hash for attributes of this environment. These attributes will be applied according to the attribute precedence rules.
       </span>
@@ -77,7 +77,7 @@
 
     <div class="group">
       <div class="actions-bar">
-        <%= submit(submit_name, :id => submit_id, :class => 'button') -%>
+        <%= submit_tag submit_name, :id => submit_id, :class => 'button' %>
       </div>
     </div>
   <% end =%>

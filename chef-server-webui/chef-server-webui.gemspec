@@ -12,13 +12,15 @@ Gem::Specification.new do |s|
   s.email = "chef@opscode.com"
   s.homepage = "http://wiki.opscode.com/display/chef"
 
-  s.add_dependency "merb-core", "~> 1.1.0"
-  s.add_dependency "merb-assets", "~> 1.1.0"
-  s.add_dependency "merb-helpers", "~> 1.1.0"
-  s.add_dependency "merb-haml", "~> 1.1.0"
-  s.add_dependency "merb-param-protection", "~> 1.1.0"
+  s.add_dependency "chef"
+  s.add_dependency "thin"
+  s.add_dependency "rails", "3.2.2"
+  s.add_dependency "jquery-rails"
+  s.add_dependency "haml-rails"
+  s.add_dependency "ruby-openid"
+  s.add_dependency "coderay"
 
-  %w{thin haml ruby-openid coderay}.each { |g| s.add_dependency g}
+  s.add_development_dependency "rspec-rails"
 
   s.bindir       = "bin"
   s.executables  = %w( chef-server-webui )

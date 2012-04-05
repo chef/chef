@@ -2,12 +2,12 @@
   <div class="content">
     <h2 class="title">Environment <%= params[:id] %></h2>
     <div class="inner">
-      <%= partial "environments/navigation", :environment => @environment, :active => 'create'%>
+      <%= render "environments/navigation", :environment => @environment, :active => 'create'%>
     </div>
-    <%= partial 'environments/form',  :environment => @environment,
+    <%= render 'environments/form',  :environment => @environment,
                                       :route => :environments,
                                       :method => :post,
-                                      :form_url => url(:environments),
+                                      :form_url => environments_path,
                                       :form_id => 'create_environment',
                                       :form_for => 'create',
                                       :submit_name => "Create Environment",

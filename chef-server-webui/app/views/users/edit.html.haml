@@ -2,5 +2,5 @@
   .content
     %h2.title= "Edit user: #{h @user.name}"
     .inner
-      = partial('navigation', :active => 'edit')
-  = partial('form', :header => "Edit User #{@user.name}", :form_id => 'edit_user', :submit_name => "Save User", :submit_id => "edit_user_button", :form_for => 'edit', :form_url => url(:users_update, @user.name) )
+      = render('navigation', :active => 'edit')
+  = render('form', :header => "Edit User #{@user.name}", :form_id => 'edit_user', :submit_name => "Save User", :submit_id => "edit_user_button", :form_for => 'edit', :form_url => users_update_path(@user.name) )

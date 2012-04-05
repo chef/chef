@@ -1,51 +1,7 @@
-require File.dirname(__FILE__) + '/lib/chef-server-webui/version'
+#!/usr/bin/env rake
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
-require 'rubygems'
-require 'rake/gempackagetask'
+require File.expand_path('../config/application', __FILE__)
 
-begin
-  require 'merb-core'
-  require 'merb-core/tasks/merb'
-rescue LoadError
-  STDERR.puts "merb is not installed, merb rake tasks will not be available."
-end
-
-GEM_NAME = "chef-server-webui"
-AUTHOR = "Opscode"
-EMAIL = "chef@opscode.com"
-HOMEPAGE = "http://wiki.opscode.com/display/chef"
-SUMMARY = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
-
-spec = eval(File.read("chef-server-webui.gemspec"))
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
-end
-
-desc "Install the gem"
-task :install => :package do
-  sh %{gem install pkg/#{GEM_NAME}-#{ChefServerWebui::VERSION} --no-rdoc --no-ri}
-end
-
-desc "Uninstall the gem"
-task :uninstall do
-  sh %{gem uninstall #{GEM_NAME} -x -v #{ChefServerWebui::VERSION} }
-end
-
-desc "Create a gemspec file"
-task :gemspec do
-  File.open("#{GEM_NAME}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
-  end
-end
-
-desc "Create a new Balsamiq Mockups project"
-task :new_mockup, :name do |t, args|
-  if args[:name].nil?
-    puts "You must supply a name for your mockups project directory: `rake new_mockup[project-name]`"
-    exit
-  end
-  src = "mockups/base-mockup/."
-  dest =  "mockups/#{args[:name]}"
-  FileUtils.cp_r src, dest
-end
+ChefServerWebui::Application.load_tasks

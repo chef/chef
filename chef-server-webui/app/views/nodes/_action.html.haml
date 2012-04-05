@@ -9,5 +9,5 @@
               %td.action_when= rk.to_s
               %td
                 - resource_hash[rk].each do |resource|
-                  = partial(:resource, :resource => resource)
+                  = render(:resource, :resource => resource)
                   

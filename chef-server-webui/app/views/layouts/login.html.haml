@@ -1,0 +1,32 @@
+!!! XML
+!!! 5
+%html
+  %head
+    %meta{ "http-equiv" => "content-type", :content => "text/html; charset=utf-8" }
+    %title Chef Server
+    = stylesheet_link_tag "application", :media => "all"
+    = javascript_include_tag "application"
+
+  %body
+    #container
+      #header
+        %h1= link_to "Chef Server", top_path
+      #wrapper
+        #main.loginPage
+          - unless flash.empty?
+            .block#block-messages
+              .content
+                %h2.title Messages
+                .inner
+                  .flash
+                    - flash.each do |type, msg|
+                      %div{:class => "message #{type}"}
+                        %p= msg
+          = yield
+          #footer
+            .block
+              %p= raw("Version #{chef_version} &mdash; Copyright &copy; 2009-#{Time.now.year} Opscode")
+        #sidebar
+          .block.notice#sidebar_block_notice= yield :sidebar_block_notice
+          .block#sidebar_block= yield :sidebar_block
+        .clear

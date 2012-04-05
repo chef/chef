@@ -11,4 +11,4 @@
     .inner
       .accordion
         - cookbook_parts.each do |(part, type)|
-          = partial('cookbook_content', :cookbook_part => part, :type => type)
+          = render('cookbook_content', :cookbook_part => part, :type => type)

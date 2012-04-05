@@ -2,5 +2,5 @@
   .content
     %h2.title= "Databag"
     .inner
-      = partial('navigation', :active => 'create')
-  = partial('form', :header => "Create new Databag", :form_id => 'create_databag', :submit_name => "Create Databag", :submit_id => "create_databag_button", :form_for => 'create', :form_url => url(:databags))
+      = render('navigation', :active => 'create')
+  = render('form', :header => "Create new Databag", :form_id => 'create_databag', :submit_name => "Create Databag", :submit_id => "create_databag_button", :form_for => 'create', :form_url => databags_path)

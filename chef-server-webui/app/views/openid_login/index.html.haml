@@ -1,5 +1,4 @@
 #login-form
-  %form{ :method => "get", :action => url(:openid_login_submit) }
+  %form{ :method => "get", :action => openid_login_submit_path }
     %input{ :type => "text", :name => "username" }/
     %input{ :type => "submit", :value => "Log In"}/
-    
