@@ -24,9 +24,9 @@ describe Chef::Knife::CookbookSiteInstall do
     @knife = Chef::Knife::CookbookSiteInstall.new
     @knife.config = {}
     if Chef::Platform.windows?
-      @install_path = "C:\tmp\chef"
+      @install_path = 'C:/tmp/chef'
     else 
-      @install_path = "/var/tmp/chef"
+      @install_path = '/var/tmp/chef'
     end
     @knife.config[:cookbook_path] = [ @install_path ]
 
