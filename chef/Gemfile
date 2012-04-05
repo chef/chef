@@ -5,6 +5,11 @@ gemspec
 gem "dep_selector", :group => :development, :platform => "ruby"
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
+group(:test) do
+  gem 'awesome_print'
+  gem 'pry'
+end
+
 platforms :mswin, :mingw do
   gem "ffi", "1.0.9"
   gem "rdp-ruby-wmi", "0.3.1"

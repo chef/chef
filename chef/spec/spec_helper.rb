@@ -24,6 +24,9 @@ module Shef
   IRB = nil unless defined? IRB
 end
 
+# Ruby 1.9 Compat
+$:.unshift File.expand_path("../..", __FILE__)
+
 require 'rubygems'
 require 'rspec/mocks'
 
@@ -41,6 +44,9 @@ require 'chef/applications'
 require 'chef/shef'
 require 'chef/util/file_edit'
 
+require 'ap'
+require 'pry' if ENV['DEBUG']
+
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
 # Explicitly require spec helpers that need to load first
@@ -56,4 +62,13 @@ Dir["spec/support/**/*.rb"].
 
 RSpec.configure do |config|
   config.include(Matchers)
+  config.filter_run :focus => true
+  config.filter_run_excluding :external => true
+
+  # Add jruby filters here
+  config.filter_run_excluding :windows_only => true unless windows?
+  config.filter_run_excluding :unix_only => true unless unix?
+
+  config.run_all_when_everything_filtered = true
+  config.treat_symbols_as_metadata_keys_with_true_values = true
 end
