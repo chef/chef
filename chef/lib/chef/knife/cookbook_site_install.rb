@@ -17,6 +17,7 @@
 #
 
 require 'chef/knife'
+require 'shellwords'
 
 class Chef
   class Knife
