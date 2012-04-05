@@ -31,14 +31,13 @@ describe Chef::Provider::Service::Invokercd, "load_current_resource" do
     @provider = Chef::Provider::Service::Invokercd.new(@new_resource, @run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
-    @status = mock("Status", :exitstatus => 0)
-    @provider.stub!(:popen4).and_return(@status)
-    @stdin, @stderr, @pid = nil,nil,nil
     @stdout = StringIO.new(<<-PS)
 aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
 aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
 aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 PS
+    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+    @provider.stub!(:shell_out!).and_return(@status)
   end
   
   it "should create a current resource with the name of the new resource" do
@@ -57,18 +56,25 @@ PS
     end
 
     it "should run '/usr/sbin/invoke-rc.d service_name status'" do
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@current_resource.service_name} status"})
+      @provider.should_receive(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
     end
   
     it "should set running to true if the the status command returns 0" do
-      @provider.stub!(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@current_resource.service_name} status"}).and_return(0)
+      @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      @provider.stub!(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@current_resource.service_name} status"}).and_raise(Chef::Exceptions::Exec)
+      @status.stub!(:exitstatus).and_return(1)
+      @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
+      @provider.load_current_resource
+      @current_resource.running.should be_false
+    end
+
+    it "should set running to false if the status command raises" do
+      @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
@@ -80,7 +86,7 @@ PS
     end
 
     it "should run the services status command if one has been specified" do
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d chefhasmonkeypants status"})
+      @provider.should_receive(:shell_out).with("/usr/sbin/invoke-rc.d chefhasmonkeypants status").and_return(@status)
       @provider.load_current_resource
     end
     
@@ -103,8 +109,9 @@ PS
 
 
   describe "when we have a 'ps' attribute" do
-    it "should popen4 the node's ps command" do
-      @provider.should_receive(:popen4).with(@node[:command][:ps]).and_return(@status)
+    it "should shell_out! the node's ps command" do
+      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @provider.should_receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
     end
 
@@ -113,19 +120,21 @@ PS
 aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @provider.should_receive(:shell_out!).and_return(@status)
       @provider.load_current_resource 
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the regex doesn't match" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+      @provider.should_receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
-      @status.stub!(:exitstatus).and_return(-1)
+      @provider.should_receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
   end
@@ -137,12 +146,12 @@ RUNNING_PS
   describe "when starting the service" do
     it "should call the start command if one is specified" do
       @new_resource.start_command("/usr/sbin/invoke-rc.d chef startyousillysally")
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d chef startyousillysally"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef startyousillysally")
       @provider.start_service()
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name start' if no start command is specified" do
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@new_resource.service_name} start"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start")
       @provider.start_service()
     end 
   end
@@ -150,12 +159,12 @@ RUNNING_PS
   describe Chef::Provider::Service::Invokercd, "stop_service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/usr/sbin/invoke-rc.d chef itoldyoutostop")
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d chef itoldyoutostop"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef itoldyoutostop")
       @provider.stop_service()
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name stop' if no stop command is specified" do
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop")
       @provider.stop_service()
     end
   end
@@ -163,13 +172,13 @@ RUNNING_PS
   describe "when restarting a service" do
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({:restart => true})
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart")
       @provider.restart_service()
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/usr/sbin/invoke-rc.d chef restartinafire")
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire")
       @provider.restart_service()
     end
 
@@ -184,13 +193,13 @@ RUNNING_PS
   describe "when reloading a service" do
     it "should call 'reload' on the service if it supports it" do
       @new_resource.supports({:reload => true})
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d chef reload"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef reload")
       @provider.reload_service()
     end
 
     it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/usr/sbin/invoke-rc.d chef lollerpants")
-      @provider.should_receive(:run_command).with({:command => "/usr/sbin/invoke-rc.d chef lollerpants"}).and_return(0)
+      @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef lollerpants")
       @provider.reload_service()
     end
   end
