@@ -22,15 +22,16 @@ class Chef
   module Mixin
     module EnforceOwnershipAndPermissions
 
+      def access_controls
+        @access_controls ||= Chef::FileAccessControl.new(current_resource, new_resource)
+      end
+
       # will set the proper user, group and
       # permissions using a platform specific
       # version of Chef::FileAccessControl
-      def enforce_ownership_and_permissions(path=nil)
-        if path.nil? and new_resource.respond_to?(:path)
-          path = new_resource.path
-        end
-        access_controls = Chef::FileAccessControl.new(new_resource, path)
+      def enforce_ownership_and_permissions
         access_controls.set_all
+        # TODO: revisit this after implementing updated/notifies for why-run
         new_resource.updated_by_last_action(access_controls.modified?)
       end
 

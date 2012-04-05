@@ -32,6 +32,18 @@ class Chef
         set_mode unless resource.instance_of?(Chef::Resource::Link)
       end
 
+      def requires_changes?
+        should_update_mode? || should_update_owner? || should_update_group?
+      end
+
+      def describe_changes
+        changes = []
+        changes << "would change mode to '0#{target_mode.to_s(8)}'" if should_update_mode?
+        changes << "would change owner to '#{resource.owner}'" if should_update_owner?
+        changes << "would change group to '#{resource.group}'" if should_update_group?
+        changes
+      end
+
       # Workaround the fact that Ruby's Etc module doesn't believe in negative
       # uids, so negative uids show up as the diminished radix complement of
       # a uint. For example, a uid of -2 is reported as 4294967294
@@ -43,7 +55,7 @@ class Chef
         end
       end
 
-      def target_uid
+      def uid_from_resource(resource) 
         return nil if resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
@@ -57,15 +69,35 @@ class Chef
         raise Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?"
       end
 
+      def target_uid
+        uid_from_resource(resource)
+      end
+
+      def current_uid
+        uid_from_resource(current_resource)
+      end
+
+      def should_update_owner?
+        target_uid != current_uid
+      end
+
       def set_owner
-        if (uid = target_uid) && (uid != stat.uid)
-          chown(uid, nil, file)
-          Chef::Log.info("#{log_string} owner changed to #{uid}")
+        if should_update_owner?
+          chown(target_uid, nil, file)
+          Chef::Log.info("#{log_string} owner changed to #{target_uid}")
           modified
         end
       end
 
       def target_gid
+        gid_from_resource(resource)
+      end
+
+      def current_gid
+        gid_from_resource(current_resource)
+      end
+
+      def gid_from_resource(resource)
         return nil if resource.group.nil?
         if resource.group.kind_of?(String)
           diminished_radix_complement( Etc.getgrnam(resource.group).gid )
@@ -79,25 +111,41 @@ class Chef
         raise Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?"
       end
 
+      def should_update_group?
+        target_gid != current_gid
+      end
+
       def set_group
-        if (gid = target_gid) && (gid != stat.gid)
-          chown(nil, gid, file)
-          Chef::Log.info("#{log_string} group changed to #{gid}")
+        if should_update_group?
+          chown(nil, target_gid, file)
+          Chef::Log.info("#{log_string} group changed to #{target_gid}")
           modified
         end
       end
 
+      def mode_from_resource(res)
+        return nil if res.mode.nil?
+        (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
+      end
       # TODO rename this to a more generic target_permissions
       def target_mode
-        return nil if resource.mode.nil?
-        (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 007777
+        mode_from_resource(resource)
+      end
+
+      def current_mode
+        mode_from_resource(current_resource)
+      end
+
+      def should_update_mode?
+        current_mode != target_mode
       end
 
       # TODO rename this to a more generic set_permissions
       def set_mode
-        if (mode = target_mode) && (mode != (stat.mode & 007777))
+        if should_update_mode?
           File.chmod(target_mode, file)
-          Chef::Log.info("#{log_string} mode changed to #{mode.to_s(8)}")
+          Chef::Log.info("#{log_string} mode changed to #{target_mode.to_s(8)}")
+
           modified
         end
       end
