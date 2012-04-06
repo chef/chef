@@ -95,7 +95,8 @@ describe Chef::Provider::File do
     @provider.new_resource.content "foobar"
     @provider.should_receive(:backup)
     File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
-    lambda { @provider.set_content }.should_not raise_error
+    @provider.set_content
+    lambda { @provider.send(:converge_actions).converge! }.should_not raise_error
     io.string.should == "foobar"
   end
 
@@ -110,11 +111,11 @@ describe Chef::Provider::File do
   it "should create the file if it is missing, then set the attributes on action_create" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    @provider.should_receive(:enforce_ownership_and_permissions)
+    @provider.access_controls.should_receive(:set_all)
     File.stub!(:open).and_return(1)
-    File.should_receive(:directory?).with("/tmp").and_return(true)
+    #File.should_receive(:directory?).with("/tmp").and_return(true)
     File.should_receive(:open).with(@provider.new_resource.path, "w+")
-    @provider.action_create
+    @provider.run_action(:create)
   end
 
   it "should create the file with the proper content if it is missing, then set attributes on action_create" do
@@ -123,9 +124,10 @@ describe Chef::Provider::File do
     @provider.new_resource.content "foobar"
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
-    File.should_receive(:directory?).with("/tmp").and_return(true)
-    @provider.should_receive(:enforce_ownership_and_permissions).once
-    @provider.action_create
+    #File.should_receive(:directory?).with("/tmp").and_return(true)
+    #@provider.should_receive(:enforce_ownership_and_permissions).once
+    @provider.access_controls.should_receive(:set_all)
+    @provider.run_action(:create)
     io.string.should == "foobar"
   end
 
@@ -136,7 +138,7 @@ describe Chef::Provider::File do
     File.should_receive("exists?").with(@provider.new_resource.path).and_return(true)
     File.should_receive("writable?").with(@provider.new_resource.path).and_return(true)
     File.should_receive(:delete).with(@provider.new_resource.path).and_return(true)
-    @provider.action_delete
+    @provider.run_action(:delete)
   end
 
   it "should not raise an error if it cannot delete the file because it does not exist" do
@@ -150,11 +152,11 @@ describe Chef::Provider::File do
   it "should update the atime/mtime on action_touch" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    File.should_receive(:directory?).with("/tmp").and_return(true)
+    #File.should_receive(:directory?).with("/tmp").and_return(true)
     File.should_receive(:utime).once.and_return(1)
     File.stub!(:open).and_return(1)
-    @provider.should_receive(:enforce_ownership_and_permissions).once
-    @provider.action_touch
+    @provider.access_controls.should_receive(:set_all).once
+    @provider.run_action(:touch)
   end
 
   it "should keep 1 backup copy if specified" do
@@ -240,6 +242,7 @@ describe Chef::Provider::File do
     end
 
     it "raises a specific error describing the problem" do
+      pending "this logic will be moved to the new assertions system, is currently non-functional"
       lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
     end
   end

@@ -49,7 +49,7 @@ class Chef
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
         if @new_resource.content && ::File.exist?(@new_resource.path)
-          @current_resource.checksum = checksum(@new_resource.path)
+          @current_resource.checksum(checksum(@new_resource.path))
         end
         @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         @acl_scanner.set_all!
@@ -63,7 +63,8 @@ class Chef
       # Set the content of the file, assuming it is not set correctly already.
       def set_content
         unless compare_content
-          converge_by("Would update content in file #{@new_resource.path}") do
+          description = "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
+          converge_by(description) do
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
             Chef::Log.info("#{@new_resource} contents updated")
@@ -74,17 +75,23 @@ class Chef
 
       def action_create
         if !::File.exists?(@new_resource.path)
-          converge_by("Would create new file #{@new_resource.path}") do
+          description = "Would create new file #{@new_resource.path}"
+          description << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
+          converge_by(description) do
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
+            access_controls.set_all
             @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
-        elsif @new_resource.content.nil?
-          # nothing to do
         else
-          set_content
+          set_content unless @new_resource.content.nil?
+
+          if access_controls.requires_changes?
+            converge_by(access_controls.describe_changes) do
+              access_controls.set_all
+            end
+          end
         end
-        enforce_ownership_and_permissions
       end
 
       def action_create_if_missing
@@ -98,10 +105,12 @@ class Chef
       def action_delete
         if ::File.exists?(@new_resource.path)
           if ::File.writable?(@new_resource.path)
-            backup unless ::File.symlink?(@new_resource.path)
-            ::File.delete(@new_resource.path)
-            Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
-            @new_resource.updated_by_last_action(true)
+            converge_by("would delete file #{@new_resource.path}") do 
+              backup unless ::File.symlink?(@new_resource.path)
+              ::File.delete(@new_resource.path)
+              Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
+              @new_resource.updated_by_last_action(true) 
+            end
           else
             raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
           end
@@ -153,6 +162,11 @@ class Chef
           msg = "Cannot create a file at #{@new_resource.path} because the enclosing directory (#{enclosing_dir}) does not exist"
           raise Chef::Exceptions::EnclosingDirectoryDoesNotExist, msg
         end
+      end
+
+      def short_cksum(checksum)
+        return "none" if checksum.nil?
+        checksum.slice(0,6)
       end
 
       def new_resource_content_checksum
