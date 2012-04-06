@@ -32,6 +32,11 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:release_path).and_return(@expected_release_dir)
   end
 
+  it "loads scm resource" do
+    @provider.scm_provider.should_receive(:load_current_resource)
+    @provider.load_current_resource
+  end
+
   it "supports :deploy and :rollback actions" do
     @provider.should respond_to(:action_deploy)
     @provider.should respond_to(:action_rollback)
@@ -239,7 +244,6 @@ describe Chef::Provider::Deploy do
   end
 
   it "syncs the cached copy of the repo" do
-    @provider.scm_provider.should_receive(:load_current_resource)
     @provider.scm_provider.should_receive(:action_sync)
     @provider.update_cached_repo
   end

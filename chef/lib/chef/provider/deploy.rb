@@ -42,6 +42,7 @@ class Chef
       end
 
       def load_current_resource
+        @scm_provider.load_current_resource
         @release_path = @new_resource.deploy_to + "/releases/#{release_slug}"
       end
 
@@ -205,7 +206,6 @@ class Chef
       end
 
       def update_cached_repo
-        @scm_provider.load_current_resource
         if @new_resource.svn_force_export
           svn_force_export
         else
