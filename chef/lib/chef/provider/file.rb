@@ -23,31 +23,9 @@ require 'chef/mixin/checksum'
 require 'chef/provider'
 require 'etc'
 require 'fileutils'
+require 'chef/scan_access_control'
 
 class Chef
-
-################################################################################
-# WHY RUN STUFF
-################################################################################
-
-  class Resource
-    class File < Chef::Resource
-      def run_action(action)
-        if self.provider
-          provider = self.provider.new(self, self.run_context)
-        else # fall back to old provider resolution
-          provider = Chef::Platform.provider_for_resource(self)
-        end
-        provider.load_current_resource
-        provider.send("action_#{action}")
-        provider.converge_actions.converge!
-      end
-    end
-  end
-
-################################################################################
-# END WHY RUN STUFF
-################################################################################
 
   class Provider
     class File < Chef::Provider
@@ -65,56 +43,16 @@ class Chef
       end
 
       private :negative_complement, :octal_mode
-
-################################################################################
-# WHY RUN STUFF
-################################################################################
-
-      class ConvergeActions
-        def initialize
-          @actions = []
-        end
-
-        def add_action(description, &block)
-          @actions << [description, block]
-        end
-
-        def converge!
-          @actions.each do |description, block|
-            puts "* " * 40
-            puts "converging"
-
-            # TODO: probably should get this out of the run context instead of making it really global?
-            if Chef::Config[:why_run]
-              puts description
-            else
-              block.call
-            end
-            puts "* " * 40
-            puts ""
-          end
-        end
-      end
-
-      def converge_actions
-        @converge_actions ||= ConvergeActions.new
-      end
-
-      def converge_by(description, &block)
-        converge_actions.add_action(description, &block)
-      end
-
-
-################################################################################
-# END WHY RUN STUFF
-################################################################################
-
       def load_current_resource
         # TODO: assert parent directory exists.
         @current_resource = Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        @current_resource
+        if @new_resource.content && ::File.exist?(@new_resource.path)
+          @current_resource.checksum = checksum(@new_resource.path)
+        end
+        @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
+        @acl_scanner.set_all!
       end
 
       # Compare the content of a file.  Returns true if they are the same, false if they are not.

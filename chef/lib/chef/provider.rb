@@ -25,6 +25,33 @@ require 'chef/mixin/enforce_ownership_and_permissions'
 class Chef
   class Provider
 
+    class ConvergeActions
+      attr_reader :actions
+
+      def initialize
+        @actions = []
+      end
+
+      def add_action(descriptions, &block)
+        @actions << [descriptions, block]
+      end
+
+      def converge!
+        @actions.each do |descriptions, block|
+          # TODO: probably should get this out of the run context instead of making it really global?
+          if Chef::Config[:why_run]
+            # TODO: legit logging here
+            Array(descriptions).each do |description|
+              puts "WHY RUN: #{description}"
+            end
+          else
+            block.call
+          end
+        end
+      end
+    end
+
+
     include Chef::Mixin::RecipeDefinitionDSLCore
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
@@ -34,6 +61,7 @@ class Chef
       @new_resource = new_resource
       @current_resource = nil
       @run_context = run_context
+      @converge_actions = nil
     end
 
     def node
@@ -58,7 +86,24 @@ class Chef
       true
     end
 
+    def run_action(action)
+      # TODO: it would be preferable to get the action to be executed in the
+      # constructor...
+      load_current_resource
+      send("action_#{action}")
+      converge_actions.converge!
+    end
+
     protected
+
+    def converge_actions
+      @converge_actions ||= ConvergeActions.new
+    end
+
+    def converge_by(descriptions, &block)
+      converge_actions.add_action(descriptions, &block)
+    end
+
 
     def recipe_eval(&block)
       # This block has new resource definitions within it, which

@@ -450,8 +450,7 @@ F
         else # fall back to old provider resolution
           provider = Chef::Platform.provider_for_resource(self)
         end
-        provider.load_current_resource
-        provider.send("action_#{action}")
+        provider.run_action(action)
       rescue => e
         if ignore_failure
           Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")

@@ -18,6 +18,19 @@
 
 require 'spec_helper'
 
+class ConvergeActionDemonstrator < Chef::Provider
+  attr_reader :system_state_altered
+
+  def load_current_resource
+  end
+
+  def action_foo
+    converge_by("running a state changing action") do
+      @system_state_altered = true
+    end
+  end
+end
+
 describe Chef::Provider do
   before(:each) do
     @cookbook_collection = Chef::CookbookCollection.new([])
@@ -61,4 +74,22 @@ describe Chef::Provider do
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
   end
+
+  context "when converge actions have been added to the queue" do
+    before do
+      @provider = ConvergeActionDemonstrator.new(@resource, @run_context)
+    end
+
+    it "queues up converge actions" do
+      @provider.action_foo
+      @provider.send(:converge_actions).should have(1).actions
+    end
+
+    it "executes pending converge actions to converge the system" do
+      @provider.run_action(:foo)
+      @provider.instance_variable_get(:@system_state_altered).should be_true
+    end
+
+  end
+
 end
