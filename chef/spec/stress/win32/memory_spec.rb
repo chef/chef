@@ -18,5 +18,5 @@
 
 require 'spec_helper'
 
-describe Chef::Win32::Memory do
+describe 'Chef::Win32::Memory', :windows_only do
 end
