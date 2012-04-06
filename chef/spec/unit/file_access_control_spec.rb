@@ -104,16 +104,16 @@ describe Chef::FileAccessControl do
       @fac.should_update_owner?.should be_true
     end
 
-    it "includes updating ownership in it's list of desired changes" do
+    it "includes updating ownership in its list of desired changes" do
       resource = Chef::Resource::File.new("a file")
       resource.owner(2342)
+      @current_resource.owner(100)
       fac = Chef::FileAccessControl.new(@current_resource, resource)
-      fac.describe_changes.should == ["would change owner to '2342'"]
+      fac.describe_changes.should == ["would change owner from '100' to '2342'"]
     end
 
     it "sets the file's owner as specified in the resource when the current owner is incorrect" do
       @resource.owner(2342)
-      #@fac.stub!(:stat).and_return(OpenStruct.new(:uid => 1234))
       File.should_receive(:chown).with(2342, nil, '/tmp/different_file.txt')
       @fac.set_owner
       @fac.should be_modified
@@ -127,7 +127,7 @@ describe Chef::FileAccessControl do
       @fac.should_not be_modified
     end
 
-    it "doesn't want to update a file's owner when it's alread correct" do
+    it "doesn't want to update a file's owner when it's already correct" do
       @resource.owner(2342)
       @current_resource.owner(2342)
       @fac.should_update_owner?.should be_false
@@ -174,15 +174,15 @@ describe Chef::FileAccessControl do
     it "includes updating the group in the list of changes" do
       resource = Chef::Resource::File.new('crab')
       resource.group(2342)
+      @current_resource.group(815)
       fac = Chef::FileAccessControl.new(@current_resource, resource)
-      fac.describe_changes.should == ["would change group to '2342'"]
+      fac.describe_changes.should == ["would change group from '815' to '2342'"]
     end
 
     it "sets the file's group as specified in the resource when the group is not correct" do
       @resource.group(2342)
       @current_resource.group(815)
 
-      #@fac.stub!(:stat).and_return(OpenStruct.new(:gid => 815))
       File.should_receive(:chown).with(nil, 2342, '/tmp/different_file.txt')
       @fac.set_group
       @fac.should be_modified
@@ -234,8 +234,9 @@ describe Chef::FileAccessControl do
     it "includes changing the mode in the list of desired changes" do
       resource = Chef::Resource::File.new('blahblah')
       resource.mode("0750")
+      @current_resource.mode("0444")
       fac = Chef::FileAccessControl.new(@current_resource, resource)
-      fac.describe_changes.should == ["would change mode to '0750'"]
+      fac.describe_changes.should == ["would change mode from '0444' to '0750'"]
     end
 
     it "sets the file's mode as specified in the resource when the current modes are incorrect" do
