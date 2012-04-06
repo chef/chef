@@ -121,6 +121,7 @@ describe Chef::IndexQueue::Indexable do
       @publisher.stub!(:amqp_client).and_return(@amqp_client)
       @queue = FauxQueue.new
       @publisher.should_receive(:queue_for_object).with("0000000-1111-2222-3333-444444444444").and_yield(@queue)
+      Chef::Config[:persistent_queue] = false
     end
 
     it "adds items to the index" do
