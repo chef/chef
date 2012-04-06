@@ -17,9 +17,9 @@
 #
 
 require 'spec_helper'
-require 'chef/win32/file'
+require 'chef/win32/file' if windows?
 
-describe Chef::Win32::File do
+describe 'Chef::Win32::File', :windows_only do
   before(:each) do
     @path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs"))
   end
