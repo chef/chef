@@ -82,7 +82,7 @@ class Chef
         @current_resource
       end
 
-      def compare_cron
+      def cron_different?
         CRON_ATTRIBUTES.any? do |cron_var|
           !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
         end
@@ -103,7 +103,7 @@ class Chef
         newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
 
         if @cron_exists
-          unless compare_cron
+          unless cron_different?
             Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
             return
           end

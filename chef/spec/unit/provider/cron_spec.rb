@@ -234,7 +234,7 @@ CRONTAB
     end
   end
 
-  describe "compare_crontab" do
+  describe "cron_different?" do
     before :each do
       @current_resource = Chef::Resource::Cron.new("cronhole some stuff")
       @current_resource.user "root"
@@ -246,17 +246,17 @@ CRONTAB
     [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home].each do |attribute|
       it "should return true if #{attribute} doesn't match" do
         @new_resource.send(attribute, "something_else")
-        @provider.compare_cron.should eql(true)
+        @provider.cron_different?.should eql(true)
       end
     end
 
     it "should return true if environment doesn't match" do
       @new_resource.environment "FOO" => "something_else"
-      @provider.compare_cron.should eql(true)
+      @provider.cron_different?.should eql(true)
     end
 
     it "should return false if the objects are identical" do
-      @provider.compare_cron.should == false
+      @provider.cron_different?.should == false
     end
   end
 
@@ -380,7 +380,7 @@ TEST=LOL
     context "when there is a crontab with a matching but different section" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:compare_cron).and_return(true)
+        @provider.stub!(:cron_different?).and_return(true)
         @stdout = StringIO.new(<<-CRONTAB)
 0 2 * * * /some/other/command
 
@@ -447,7 +447,7 @@ TEST=LOL
     context "when there is a crontab with a matching section with no crontab line in it" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:compare_cron).and_return(true)
+        @provider.stub!(:cron_different?).and_return(true)
         @stdout = StringIO.new
         @provider.stub!(:popen4).with("crontab -l -u #{@new_resource.user}").and_yield(@pid, StringIO.new, @stdout, StringIO.new).and_return(@status)
         @provider.stub!(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_yield(@pid, @stdin, StringIO.new, StringIO.new).and_return(@status)
@@ -536,7 +536,7 @@ HOME=/home/foo
     context "when there is a crontab with a matching and identical section" do
       before :each do
         @provider.cron_exists = true
-        @provider.stub!(:compare_cron).and_return(false)
+        @provider.stub!(:cron_different?).and_return(false)
       end
 
       it "should not update the crontab" do
