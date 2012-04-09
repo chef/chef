@@ -28,8 +28,6 @@ class Chef
       class Solaris < Chef::Provider::Cron
       include Chef::Mixin::Command
 
-      CRON_PATTERN = /([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s(.*)/
-
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
         @cron_exists = false
@@ -51,14 +49,14 @@ class Chef
           crontab_lines.each do |line|
             case line.chomp
             when "# Chef Name: #{@new_resource.name}"
-              Chef::Log.debug("#{@new_resource} found cron '#{@new_resource.name}'")
+              Chef::Log.debug("Found cron '#{@new_resource.name}'")
               cron_found = true
               @cron_exists = true
               next
             when /^(\S*)=(\S*)/
               set_environment_var($1, $2) if cron_found
               next
-            when CRON_PATTERN
+            when Cron::CRON_PATTERN
               if cron_found
                 @current_resource.minute($1)
                 @current_resource.hour($2)
@@ -70,12 +68,13 @@ class Chef
               end
               next
             else
+              cron_found=false # We've got a Chef comment with no following crontab line
               next
             end
           end
-          Chef::Log.debug("#{@new_resource} cron '#{@new_resource.name}' not found") unless @cron_exists
+          Chef::Log.debug("Cron '#{@new_resource.name}' not found") unless @cron_exists
         elsif status.exitstatus == 1
-          Chef::Log.debug("#{@new_resource} cron empty for '#{@new_resource.user}'")
+          Chef::Log.debug("Cron empty for '#{@new_resource.user}'")
           @cron_empty = true
         end
 
@@ -88,11 +87,6 @@ class Chef
         tempcron.flush
         tempcron.chmod(0644)
         status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
-        if(status == 0)
-          @new_resource.updated_by_last_action(true)
-        else
-          @new_resource.updated_by_last_action(false)
-        end
         tempcron.close!
         return status
       end
@@ -113,8 +107,8 @@ class Chef
         newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
 
         if @cron_exists
-          unless compare_cron
-            Chef::Log.debug("#{@new_resource} skipping existing cron entry '#{@new_resource.name}'")
+          unless cron_different?
+            Chef::Log.debug("Skipping existing cron entry '#{@new_resource.name}'")
             return
           end
           status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -123,21 +117,30 @@ class Chef
               when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
-              when CRON_PATTERN
+              when Cron::ENV_PATTERN
+                crontab << line unless cron_found
+                next
+              when Cron::CRON_PATTERN
                 if cron_found
                   cron_found = false
                   crontab << newcron
                   next
                 end
               else
-                next if cron_found
+                if cron_found # We've got a Chef comment with no following crontab line
+                  crontab << newcron
+                  cron_found = false
+                end
               end
               crontab << line
             end
+            # Handle edge case where the Chef comment is the last line in the current crontab
+            crontab << newcron if cron_found
           end
 
           status = write_crontab(crontab)
           Chef::Log.info("#{@new_resource} updated crontab entry")
+          @new_resource.updated_by_last_action(true)
         else
           unless @cron_empty
             status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
@@ -148,6 +151,7 @@ class Chef
           crontab << newcron
           status = write_crontab(crontab)
           Chef::Log.info("#{@new_resource} added crontab entry")
+          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -161,13 +165,16 @@ class Chef
               when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
-              when CRON_PATTERN
+              when Cron::ENV_PATTERN
+                next if cron_found
+              when Cron::CRON_PATTERN
                 if cron_found
                   cron_found = false
                   next
                 end
               else
-                next if cron_found
+                # We've got a Chef comment with no following crontab line
+                cron_found = false
               end
               crontab << line
             end
@@ -175,6 +182,7 @@ class Chef
 
           status = write_crontab(crontab)
           Chef::Log.info("#{@new_resource} deleted crontab entry")
+          @new_resource.updated_by_last_action(true)
         end
       end
     end
