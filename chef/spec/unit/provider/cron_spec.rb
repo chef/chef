@@ -140,11 +140,6 @@ CRONTAB
         cron.command.should == '/bin/true param1 param2'
       end
 
-      it "should report the match" do
-        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
-        @provider.load_current_resource
-      end
-
       it "should parse and load generic and standard environment variables from cron entry" do
         @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
 # Chef Name: cronhole some stuff
@@ -153,10 +148,31 @@ TEST=lol
 FLAG=1
 * 5 * * * /bin/true
 CRONTAB
-        resource = @provider.load_current_resource
+        cron = @provider.load_current_resource
 
-        resource.mailto.should == "warn@example.com"
-        resource.environment.should == {"TEST" => "lol", "FLAG" => "1"}
+        cron.mailto.should == "warn@example.com"
+        cron.environment.should == {"TEST" => "lol", "FLAG" => "1"}
+      end
+
+      it "should not break with variabels that match the cron resource internals" do
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+# Chef Name: cronhole some stuff
+MINUTE=40
+HOUR=midnight
+TEST=lol
+ENVIRONMENT=production
+* 5 * * * /bin/true
+CRONTAB
+        cron = @provider.load_current_resource
+
+        cron.minute.should == '*'
+        cron.hour.should == '5'
+        cron.environment.should == {"MINUTE" => "40", "HOUR" => "midnight", "TEST" => "lol", "ENVIRONMENT" => "production"}
+      end
+
+      it "should report the match" do
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
+        @provider.load_current_resource
       end
     end
 
