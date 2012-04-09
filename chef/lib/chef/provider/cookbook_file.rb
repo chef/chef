@@ -45,7 +45,7 @@ class Chef
           Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           @new_resource.updated_by_last_action(true)
         else
-          set_all_access_controls(@new_resource.path)
+          set_all_access_controls
         end
         @new_resource.updated_by_last_action?
       end
@@ -76,12 +76,15 @@ class Chef
       # set its file access control settings.
       def stage_file_to_tmpdir(staging_file_location)
         FileUtils.cp(file_cache_location, staging_file_location)
-        set_all_access_controls(staging_file_location)
+        set_all_access_controls
       end
 
-      def set_all_access_controls(file)
-        access_controls = Chef::FileAccessControl.new(@new_resource, file)
-        access_controls.set_all
+      def set_all_access_controls
+        if access_controls.requires_changes?
+          converge_by(access_controls.describe_change_reasons, access_controls.describe_changes) do 
+            access_controls.set_all
+          end
+        end
         @new_resource.updated_by_last_action(access_controls.modified?)
       end
 

@@ -33,6 +33,9 @@ class Chef
         super
         @candidate_version = nil
       end
+      
+      def load_current_resource
+      end
 
       def action_install
         # If we specified a version, and it's not the current version, move to the specified version
@@ -50,17 +53,18 @@ class Chef
           raise(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
         end
 
-
         # We need to make sure we handle the preseed file
         if @new_resource.response_file
-          preseed_package(@new_resource.package_name, install_version)
+          if preseed_file = get_preseed_file(@new_resource.package_name, candidate_version)
+            converge_by("would preseed package #{@new_resource.package_name}") do  
+              preseed_package(preseed_file)
+            end 
+          end
         end
-
-        status = install_package(@new_resource.package_name, install_version)
-        if status
+        converge_by("would install package #{@new_resource.package_name}") do
+          install_package(@new_resource.package_name, install_version)
           @new_resource.updated_by_last_action(true)
         end
-        Chef::Log.info("#{@new_resource} installed version #{install_version}")
       end
 
       def action_upgrade
@@ -72,20 +76,24 @@ class Chef
         elsif @current_resource.version == candidate_version
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         else
-          orig_version = @current_resource.version || "uninstalled"
-          status = upgrade_package(@new_resource.package_name, candidate_version)
-          if status
-            @new_resource.updated_by_last_action(true)
+          converge_by("would upgrade package #{@new_resource.package_name}") do
+            orig_version = @current_resource.version || "uninstalled"
+            status = upgrade_package(@new_resource.package_name, candidate_version)
+            if status
+              @new_resource.updated_by_last_action(true)
+            end
+            Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
           end
-          Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
         end
       end
 
       def action_remove
         if removing_package?
-          remove_package(@current_resource.package_name, @new_resource.version)
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} removed")
+          converge_by("would remove package #{@current_resource.package_name}") do
+            remove_package(@current_resource.package_name, @new_resource.version)
+            @new_resource.updated_by_last_action(true)
+            Chef::Log.info("#{@new_resource} removed")
+          end
         else
           Chef::Log.debug("#{@new_resource} package does not exist - nothing to do")
         end
@@ -105,9 +113,11 @@ class Chef
 
       def action_purge
         if removing_package?
-          purge_package(@current_resource.package_name, @new_resource.version)
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} purged")
+          converge_by("would purge package #{@current_resource.package_name}") do
+            purge_package(@current_resource.package_name, @new_resource.version)
+            @new_resource.updated_by_last_action(true)
+            Chef::Log.info("#{@new_resource} purged")
+          end
         end
       end
 
@@ -122,15 +132,16 @@ class Chef
           return
         end
 
-        status = preseed_package(@new_resource.package_name, @current_resource.version)
-        unless status then
+        if preseed_file = get_preseed_file(@new_resource.package_name, @current_resource.version)
+          converge_by("would reconfigure package #{@new_resource.package_name}") do
+            preseed_package(preseed_file)
+            status = reconfig_package(@new_resource.package_name, @current_resource.version)
+            @new_resource.updated_by_last_action(true) if status
+            Chef::Log.info("#{@new_resource} reconfigured")
+          end
+        else
           Chef::Log.debug("#{@new_resource} preseeding has not changed - nothing to do")
-          return
         end
-
-        status = reconfig_package(@new_resource.package_name, @current_resource.version)
-        @new_resource.updated_by_last_action(true) if status
-        Chef::Log.info("#{@new_resource} reconfigured")
       end
 
       def install_package(name, version)
