@@ -326,7 +326,8 @@ class Chef
 
       def configure_attribute
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
-                              config[:attribute]).strip
+                              config[:attribute] ||
+                              "fqdn").strip
       end
 
       def csshx
