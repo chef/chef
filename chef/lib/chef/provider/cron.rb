@@ -26,8 +26,9 @@ class Chef
       include Chef::Mixin::Command
 
       CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s(.*)/
+      ENV_PATTERN = /\A(\S+)=(\S*)/
+
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
-      ENV_PATTERN = /\A[A-Z]+=/
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -49,7 +50,7 @@ class Chef
               cron_found = true
               @cron_exists = true
               next
-            when /^(\S*)=(\S*)/
+            when ENV_PATTERN
               set_environment_var($1, $2) if cron_found
               next
             when CRON_PATTERN
@@ -173,9 +174,8 @@ class Chef
       private
 
       def set_environment_var(attr_name, attr_value)
-        method_name = attr_name.downcase.to_sym
-        if CRON_ATTRIBUTES.include?(method_name)
-          @current_resource.send(method_name, attr_value)
+        if %w(MAILTO PATH SHELL HOME).include?(attr_name)
+          @current_resource.send(attr_name.downcase.to_sym, attr_value)
         else
           @current_resource.environment(@current_resource.environment.merge(attr_name => attr_value))
         end
