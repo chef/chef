@@ -28,7 +28,6 @@ describe Chef::Provider::Cron do
     @new_resource.command "/bin/true"
 
     @provider = Chef::Provider::Cron.new(@new_resource, @run_context)
-    @provider.current_resource = @current_resource
   end
 
   describe "when examining the current system state" do
@@ -125,6 +124,34 @@ CRONTAB
         cron.command.should == '/bin/true param1 param2'
       end
 
+      it "should pull env vars out" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+MAILTO=foo@example.com
+SHELL=/bin/foosh
+PATH=/bin:/foo
+HOME=/home/foo
+* 5 * 1 * /bin/true param1 param2
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+CRONTAB
+        cron = @provider.load_current_resource
+        cron.mailto.should == 'foo@example.com'
+        cron.shell.should == '/bin/foosh'
+        cron.path.should == '/bin:/foo'
+        cron.home.should == '/home/foo'
+        cron.minute.should == '*'
+        cron.hour.should == '5'
+        cron.day.should == '*'
+        cron.month.should == '1'
+        cron.weekday.should == '*'
+        cron.command.should == '/bin/true param1 param2'
+      end
+
       it "should report the match" do
         Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         @provider.load_current_resource
@@ -143,6 +170,66 @@ CRONTAB
 
         resource.mailto.should == "warn@example.com"
         resource.environment.should == {"TEST" => "lol", "FLAG" => "1"}
+      end
+    end
+
+    context "with a matching entry without a crontab line" do
+      before :each do
+        @stdout = StringIO.new(<<-CRONTAB)
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+CRONTAB
+        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      end
+
+      it "should set cron_exists and leave current_resource values at defaults" do
+        cron = @provider.load_current_resource
+        @provider.cron_exists.should == true
+        cron.minute.should == '*'
+        cron.hour.should == '*'
+        cron.day.should == '*'
+        cron.month.should == '*'
+        cron.weekday.should == '*'
+        cron.command.should == nil
+      end
+
+      it "should not pick up a commented out crontab line" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+#* 5 * 1 * /bin/true param1 param2
+CRONTAB
+        cron = @provider.load_current_resource
+        @provider.cron_exists.should == true
+        cron.minute.should == '*'
+        cron.hour.should == '*'
+        cron.day.should == '*'
+        cron.month.should == '*'
+        cron.weekday.should == '*'
+        cron.command.should == nil
+      end
+
+      it "should not pick up a later crontab entry" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+#* 5 * 1 * /bin/true param1 param2
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+CRONTAB
+        cron = @provider.load_current_resource
+        @provider.cron_exists.should == true
+        cron.minute.should == '*'
+        cron.hour.should == '*'
+        cron.day.should == '*'
+        cron.month.should == '*'
+        cron.weekday.should == '*'
+        cron.command.should == nil
       end
     end
   end
@@ -357,6 +444,95 @@ TEST=LOL
       end
     end
 
+    context "when there is a crontab with a matching section with no crontab line in it" do
+      before :each do
+        @provider.cron_exists = true
+        @provider.stub!(:compare_cron).and_return(true)
+        @stdout = StringIO.new
+        @provider.stub!(:popen4).with("crontab -l -u #{@new_resource.user}").and_yield(@pid, StringIO.new, @stdout, StringIO.new).and_return(@status)
+        @provider.stub!(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_yield(@pid, @stdin, StringIO.new, StringIO.new).and_return(@status)
+      end
+
+      it "should add the crontab to the entry" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+        CRONTAB
+        @provider.action_create
+        @stdin.string.should == <<-ENDCRON
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+30 * * * * /bin/true
+        ENDCRON
+      end
+
+      it "should not blat any following entries" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+#30 * * * * /bin/true
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        CRONTAB
+        @provider.action_create
+        @stdin.string.should == <<-ENDCRON
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+30 * * * * /bin/true
+#30 * * * * /bin/true
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        ENDCRON
+
+      end
+
+      it "should handle env vars with no crontab" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+MAILTO=bar@example.com
+PATH=/usr/bin:/my/custom/path
+SHELL=/bin/barsh
+HOME=/home/foo
+
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        CRONTAB
+        @new_resource.mailto 'foo@example.com'
+        @new_resource.path '/usr/bin:/my/custom/path'
+        @new_resource.shell '/bin/foosh'
+        @new_resource.home '/home/foo'
+        @provider.action_create
+        @stdin.string.should == <<-ENDCRON
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+MAILTO=foo@example.com
+PATH=/usr/bin:/my/custom/path
+SHELL=/bin/foosh
+HOME=/home/foo
+30 * * * * /bin/true
+
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        ENDCRON
+      end
+
+    end
+
     context "when there is a crontab with a matching and identical section" do
       before :each do
         @provider.cron_exists = true
@@ -462,6 +638,77 @@ FOO=test
       it "should log the action" do
         Chef::Log.should_receive(:info).with("#{@new_resource} deleted crontab entry")
         @provider.action_delete
+      end
+    end
+
+    context "when the crontab has a matching section with no crontab line" do
+      before :each do
+        @provider.cron_exists = true
+        @status = mock("Status", :exitstatus => 0)
+        @stdout = StringIO.new
+        @stdin = StringIO.new
+        @provider.stub!(:popen4).with("crontab -l -u #{@new_resource.user}").and_yield(@pid, StringIO.new, @stdout, StringIO.new).and_return(@status)
+        @provider.stub!(:popen4).with("crontab -u #{@new_resource.user} -", :waitlast => true).and_yield(@pid, @stdin, StringIO.new, StringIO.new).and_return(@status)
+      end
+
+      it "should remove the section" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+        CRONTAB
+        @provider.action_delete
+        @stdin.string.should == <<-ENDCRON
+0 2 * * * /some/other/command
+
+        ENDCRON
+      end
+
+      it "should not blat following sections" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+#30 * * 3 * /bin/true
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        CRONTAB
+        @provider.action_delete
+        @stdin.string.should == <<-ENDCRON
+0 2 * * * /some/other/command
+
+#30 * * 3 * /bin/true
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        ENDCRON
+      end
+
+      it "should remove any envvars with the section" do
+        @stdout.string = <<-CRONTAB
+0 2 * * * /some/other/command
+
+# Chef Name: cronhole some stuff
+MAILTO=foo@example.com
+#30 * * 3 * /bin/true
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        CRONTAB
+        @provider.action_delete
+        @stdin.string.should == <<-ENDCRON
+0 2 * * * /some/other/command
+
+#30 * * 3 * /bin/true
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+        ENDCRON
       end
     end
   end
