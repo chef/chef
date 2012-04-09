@@ -25,8 +25,9 @@ class Chef
     class Cron < Chef::Provider
       include Chef::Mixin::Command
 
-      CRON_PATTERN = /([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s(.*)/
+      CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s(.*)/
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
+      ENV_PATTERN = /\A[A-Z]+=/
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -68,6 +69,7 @@ class Chef
               end
               next
             else
+              cron_found=false # We've got a Chef comment with no following crontab line
               next
             end
           end
@@ -111,6 +113,9 @@ class Chef
               when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
+              when ENV_PATTERN
+                crontab << line unless cron_found
+                next
               when CRON_PATTERN
                 if cron_found
                   cron_found = false
@@ -118,10 +123,15 @@ class Chef
                   next
                 end
               else
-                next if cron_found
+                if cron_found # We've got a Chef comment with no following crontab line
+                  crontab << newcron
+                  cron_found = false
+                end
               end
               crontab << line
             end
+            # Handle edge case where the Chef comment is the last line in the current crontab
+            crontab << newcron if cron_found
           end
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
@@ -156,13 +166,16 @@ class Chef
               when "# Chef Name: #{@new_resource.name}"
                 cron_found = true
                 next
+              when ENV_PATTERN
+                next if cron_found
               when CRON_PATTERN
                 if cron_found
                   cron_found = false
                   next
                 end
               else
-                next if cron_found
+                # We've got a Chef comment with no following crontab line
+                cron_found = false
               end
               crontab << line
             end
