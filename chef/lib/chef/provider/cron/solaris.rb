@@ -26,31 +26,31 @@ class Chef
     class Cron
       class Solaris < Chef::Provider::Cron
 
-      private
+        private
 
-      def read_crontab
-        crontab = nil
-        status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
-          crontab = stdout.read
+        def read_crontab
+          crontab = nil
+          status = popen4("crontab -l #{@new_resource.user}") do |pid, stdin, stdout, stderr|
+            crontab = stdout.read
+          end
+          if status.exitstatus > 1
+            raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
+          end
+          crontab
         end
-        if status.exitstatus > 1
-          raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
-        end
-        crontab
-      end
 
-      def write_crontab(crontab)
-        tempcron = Tempfile.new("chef-cron")
-        tempcron << crontab
-        tempcron.flush
-        tempcron.chmod(0644)
-        status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
-        tempcron.close!
-        if status.exitstatus > 0
-          raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
+        def write_crontab(crontab)
+          tempcron = Tempfile.new("chef-cron")
+          tempcron << crontab
+          tempcron.flush
+          tempcron.chmod(0644)
+          status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
+          tempcron.close!
+          if status.exitstatus > 0
+            raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
+          end
         end
       end
     end
   end
-end
 end
