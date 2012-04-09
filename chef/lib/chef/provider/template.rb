@@ -40,13 +40,17 @@ class Chef
           rendered(rendered_template)
           if ::File.exist?(@new_resource.path) && content_matches?
             Chef::Log.debug("#{@new_resource} content has not changed.")
-            set_all_access_controls(@new_resource.path)
+            set_all_access_controls
           else
-            backup
-            set_all_access_controls(rendered_template.path)
-            FileUtils.mv(rendered_template.path, @new_resource.path)
-            Chef::Log.info("#{@new_resource} updated content")
-            @new_resource.updated_by_last_action(true)
+            action_message = content_matches? ? "Would create #{@new_resource}" :
+              "Would update #{@current_resource}"
+            converge_by(action_message) do
+              backup
+              set_all_access_controls
+              FileUtils.mv(rendered_template.path, @new_resource.path)
+              Chef::Log.info("#{@new_resource} updated content")
+              @new_resource.updated_by_last_action(true)
+            end
           end
         end
       end
@@ -69,7 +73,7 @@ class Chef
           end
         end
       end
-      
+
       def resource_cookbook
         @new_resource.cookbook || @new_resource.cookbook_name
       end
@@ -84,9 +88,12 @@ class Chef
         @current_resource.checksum == @new_resource.checksum
       end
 
-      def set_all_access_controls(file)
-        access_controls = Chef::FileAccessControl.new(@new_resource, file)
-        access_controls.set_all
+      def set_all_access_controls
+        if access_controls.requires_changes?
+          converge_by(access_controls.describe_change_reasons, access_controls.describe_changes) do 
+            access_controls.set_all
+          end
+        end
         @new_resource.updated_by_last_action(access_controls.modified?)
       end
 

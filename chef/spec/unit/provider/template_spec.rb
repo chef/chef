@@ -64,7 +64,7 @@ describe Chef::Provider::Template do
       it "creates the template with the rendered content" do
         @node[:slappiness] = "a warm gun"
         @provider.should_receive(:backup)
-        @provider.action_create
+        @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
       end
 
@@ -72,14 +72,14 @@ describe Chef::Provider::Template do
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
-        @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
-        @provider.action_create
+        @provider.should_receive(:set_all_access_controls) 
+        @provider.run_action(:create)
       end
 
       it "creates the template with the rendered content for the create if missing action" do
         @node[:slappiness] = "happiness"
         @provider.should_receive(:backup)
-        @provider.action_create_if_missing
+        @provider.run_action(:create_if_missing)
         IO.read(@rendered_file_location).should == "slappiness is happiness"
       end
     end
@@ -92,7 +92,7 @@ describe Chef::Provider::Template do
       it "overwrites the file with the updated content when the create action is run" do
         @node[:slappiness] = "a warm gun"
         @provider.should_receive(:backup)
-        @provider.action_create
+        @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
       end
 
@@ -101,20 +101,21 @@ describe Chef::Provider::Template do
         @resource.group("wheel")
         @resource.mode(00644)
         @provider.should_receive(:backup)
-        @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
-        @provider.action_create
+        @provider.should_receive(:set_all_access_controls)
+        @provider.run_action(:create)
       end
 
       it "doesn't overwrite the file when the create if missing action is run" do
         @node[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
-        @provider.action_create_if_missing
+        @provider.run_action(:create_if_missing)
         IO.read(@rendered_file_location).should == "blargh"
       end
     end
 
     describe "when the target has the correct content" do
       before do
+        Chef::ChecksumCache.instance.reset!
         File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
       end
@@ -123,14 +124,14 @@ describe Chef::Provider::Template do
         @node[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "does not backup the original or overwrite it on create if missing" do
         @node[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "sets the file access controls if they have diverged" do
@@ -138,9 +139,9 @@ describe Chef::Provider::Template do
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
-        @provider.should_receive(:set_all_access_controls).with(an_instance_of(String))
+        @provider.should_receive(:set_all_access_controls)
         @provider.should_receive(:backup)
-        @provider.action_create
+        @provider.run_action(:create)
       end
     end
 
