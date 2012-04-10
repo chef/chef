@@ -32,7 +32,7 @@ class Chef
         super
         @candidate_version = nil
       end
-      
+
       def load_current_resource
 
       end
@@ -73,7 +73,6 @@ class Chef
         end
         converge_by("would install package #{@new_resource.package_name}") do
           install_package(@new_resource.package_name, install_version)
-          @new_resource.updated_by_last_action(true)
         end
       end
 
@@ -86,9 +85,6 @@ class Chef
           converge_by("would upgrade package #{@new_resource.package_name}") do
             orig_version = @current_resource.version || "uninstalled"
             status = upgrade_package(@new_resource.package_name, candidate_version)
-            if status
-              @new_resource.updated_by_last_action(true)
-            end
             Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
           end
         end
@@ -98,7 +94,6 @@ class Chef
         if removing_package?
           converge_by("would remove package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
-            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} removed")
           end
         else
@@ -122,7 +117,6 @@ class Chef
         if removing_package?
           converge_by("would purge package #{@current_resource.package_name}") do
             purge_package(@current_resource.package_name, @new_resource.version)
-            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} purged")
           end
         end
@@ -143,7 +137,6 @@ class Chef
           converge_by("would reconfigure package #{@new_resource.package_name}") do
             preseed_package(preseed_file)
             status = reconfig_package(@new_resource.package_name, @current_resource.version)
-            @new_resource.updated_by_last_action(true) if status
             Chef::Log.info("#{@new_resource} reconfigured")
           end
         else

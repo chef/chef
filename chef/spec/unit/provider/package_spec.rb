@@ -65,6 +65,7 @@ describe Chef::Provider::Package do
         @provider.candidate_version
       ).and_return(true)
       @provider.run_action(:install)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should install the package at the version specified if it is not already installed" do
@@ -74,6 +75,7 @@ describe Chef::Provider::Package do
         @new_resource.version
       ).and_return(true)
       @provider.run_action(:install)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should install the package at the version specified if a different version is installed" do
@@ -84,12 +86,14 @@ describe Chef::Provider::Package do
         @new_resource.version
       ).and_return(true)
       @provider.run_action(:install)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not install the package if it is already installed and no version is specified" do
       @current_resource.stub!(:version).and_return("1.0")
       @provider.should_not_receive(:install_package)
       @provider.run_action(:install)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should not install the package if it is already installed at the version specified" do
@@ -97,6 +101,7 @@ describe Chef::Provider::Package do
       @new_resource.stub!(:version).and_return("1.0")
       @provider.should_not_receive(:install_package)
       @provider.run_action(:install)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should call the candidate_version accessor only once if the package is already installed and no version is specified" do
@@ -142,6 +147,7 @@ describe Chef::Provider::Package do
         @provider.candidate_version
       ).and_return(true)
       @provider.run_action(:upgrade)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should set the resource to updated if it installs the package" do
@@ -153,12 +159,14 @@ describe Chef::Provider::Package do
       @current_resource.version "1.0"
       @provider.should_not_receive(:upgrade_package)
       @provider.run_action(:upgrade)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should print the word 'uninstalled' if there was no original version" do
       @current_resource.stub!(:version).and_return(nil)
       Chef::Log.should_receive(:info).with("package[emacs] upgraded from uninstalled to 1.0")
       @provider.run_action(:upgrade)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should raise a Chef::Exceptions::Package if current version and candidate are nil" do
@@ -172,6 +180,7 @@ describe Chef::Provider::Package do
       @provider.candidate_version = nil
       @provider.should_not_receive(:upgrade_package)
       @provider.run_action(:upgrade)
+      @new_resource.should_not be_updated_by_last_action
     end
   end
 
@@ -186,6 +195,7 @@ describe Chef::Provider::Package do
       @provider.should_receive(:remove_package).with('emacs', nil)
       @provider.run_action(:remove)
       @new_resource.should be_updated
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should remove the package at a specific version if it is installed at that version" do
@@ -193,6 +203,7 @@ describe Chef::Provider::Package do
       @provider.should be_removing_package
       @provider.should_receive(:remove_package).with('emacs', '1.4.2')
       @provider.run_action(:remove)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not remove the package at a specific version if it is not installed at that version" do
@@ -200,12 +211,14 @@ describe Chef::Provider::Package do
       @provider.should_not be_removing_package
       @provider.should_not_receive(:remove_package)
       @provider.run_action(:remove)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should not remove the package if it is not installed" do
       @provider.should_not_receive(:remove_package)
       @current_resource.stub!(:version).and_return(nil)
       @provider.run_action(:remove)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should set the resource to updated if it removes the package" do
@@ -226,6 +239,7 @@ describe Chef::Provider::Package do
       @provider.should_receive(:purge_package).with('emacs', nil)
       @provider.run_action(:purge)
       @new_resource.should be_updated
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should purge the package at a specific version if it is installed at that version" do
@@ -233,6 +247,7 @@ describe Chef::Provider::Package do
       @provider.should be_removing_package
       @provider.should_receive(:purge_package).with('emacs', '1.4.2')
       @provider.run_action(:purge)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not purge the package at a specific version if it is not installed at that version" do
@@ -240,6 +255,7 @@ describe Chef::Provider::Package do
       @provider.should_not be_removing_package
       @provider.should_not_receive(:purge_package)
       @provider.run_action(:purge)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should not purge the package if it is not installed" do
@@ -248,6 +264,7 @@ describe Chef::Provider::Package do
 
       @provider.should_not_receive(:purge_package)
       @provider.run_action(:purge)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should set the resource to updated if it purges the package" do
@@ -272,6 +289,7 @@ describe Chef::Provider::Package do
       @provider.should_receive(:reconfig_package)
       @provider.run_action(:reconfig)
       @new_resource.should be_updated
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should debug log and not reconfigure the package if the package is not installed" do
@@ -279,6 +297,7 @@ describe Chef::Provider::Package do
       Chef::Log.should_receive(:debug).with("package[emacs] is NOT installed - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
+      @new_resource.should_not be_updated_by_last_action
     end 
 
     it "should debug log and not reconfigure the package if no response_file is given" do
@@ -287,6 +306,7 @@ describe Chef::Provider::Package do
       Chef::Log.should_receive(:debug).with("package[emacs] no response_file provided - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
+      @new_resource.should_not be_updated_by_last_action
     end
 
     it "should debug log and not reconfigure the package if the response_file has not changed" do
@@ -297,6 +317,7 @@ describe Chef::Provider::Package do
       Chef::Log.should_receive(:debug).with("package[emacs] preseeding has not changed - nothing to do")
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
+      @new_resource.should_not be_updated_by_last_action
     end
   end
 
