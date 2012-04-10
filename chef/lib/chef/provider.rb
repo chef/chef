@@ -21,37 +21,10 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/mixin/enforce_ownership_and_permissions'
-
+require 'chef/mixin/why_run'
 class Chef
   class Provider
-
-    class ConvergeActions
-      attr_reader :actions
-
-      def initialize
-        @actions = []
-      end
-
-      def add_action(descriptions, &block)
-        @actions << [descriptions, block]
-      end
-
-      def converge!
-        @actions.each do |descriptions, block|
-          # TODO: probably should get this out of the run context instead of making it really global?
-          if Chef::Config[:why_run]
-            # TODO: legit logging here
-            Array(descriptions).each do |description|
-              puts "WHY RUN: #{description}"
-            end
-          else
-            block.call
-          end
-        end
-      end
-    end
-
-
+    include Chef::Mixin::WhyRun
     include Chef::Mixin::RecipeDefinitionDSLCore
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
@@ -81,6 +54,9 @@ class Chef
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end
 
+    def define_resource_requirements
+    end
+
     def action_nothing
       Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
       true
@@ -90,8 +66,14 @@ class Chef
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
       load_current_resource
+      define_resource_requirements
+      requirements.run(action)
       send("action_#{action}")
       converge_actions.converge!
+    end
+
+    def requirements
+      @requirements ||= ResourceRequirements.new
     end
 
     protected
