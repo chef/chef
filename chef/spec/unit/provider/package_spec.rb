@@ -99,34 +99,28 @@ describe Chef::Provider::Package do
       @provider.run_action(:install)
     end
 
-    it "should call the candidate_version accessor if the package is not currently installed" do
-      @provider.should_receive(:candidate_version).and_return(true)
-      @provider.run_action(:install)
-    end
-
-    it "should not call the candidate_version accessor if the package is already installed and no version is specified" do
+    it "should call the candidate_version accessor only once if the package is already installed and no version is specified" do
       @current_resource.stub!(:version).and_return("1.0")
-      @provider.should_not_receive(:candidate_version)
+      @provider.stub!(:candidate_version).and_return("1.0")
       @provider.run_action(:install)
     end
 
-    it "should not call the candidate_version accessor if the package is already installed at the version specified" do
+    it "should call the candidate_version accessor only once if the package is already installed at the version specified" do
       @current_resource.stub!(:version).and_return("1.0")
       @new_resource.stub!(:version).and_return("1.0")
-      @provider.should_not_receive(:candidate_version)
       @provider.run_action(:install)
     end
 
-    it "should not call the candidate_version accessor if the package is not installed new package's version is specified" do
+    it "should call the candidate_version accessor only once if the package is not installed new package's version is specified" do
       @new_resource.stub!(:version).and_return("1.0")
-      @provider.should_not_receive(:candidate_version)
+      @provider.should_receive(:candidate_version).once
       @provider.run_action(:install)
     end
 
-    it "should not call the candidate_version accessor if the package at the version specified is a different version than installed" do
+    it "should call the candidate_version accessor only once if the package at the version specified is a different version than installed" do
       @new_resource.stub!(:version).and_return("1.0")
       @current_resource.stub!(:version).and_return("0.99")
-      @provider.should_not_receive(:candidate_version)
+      @provider.should_receive(:candidate_version).once
       @provider.run_action(:install)
     end
 

@@ -28,13 +28,27 @@ class Chef
       include Chef::Mixin::Command
 
       attr_accessor :candidate_version
-
       def initialize(new_resource, run_context)
         super
         @candidate_version = nil
       end
       
       def load_current_resource
+
+      end
+
+      def define_resource_requirements
+        requirements.assert(:install) do |a| 
+          a.assertion { !(candidate_version.nil? && @new_resource.version.nil?) }
+          a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
+          a.whyrun("Package #{@new_resource.package_name} does not exist in a currently configured repository. Attempting to install it will fail unless it's provided by a previously configured package repo.")
+        end
+
+        requirements.assert(:upgrade) do |a|
+          # Can't upgrade what we don't have
+          a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) } 
+          a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
+        end
       end
 
       def action_install
@@ -49,13 +63,9 @@ class Chef
           return
         end
 
-        unless install_version
-          raise(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
-        end
-
         # We need to make sure we handle the preseed file
         if @new_resource.response_file
-          if preseed_file = get_preseed_file(@new_resource.package_name, candidate_version)
+          if preseed_file = get_preseed_file(@new_resource.package_name, install_version)
             converge_by("would preseed package #{@new_resource.package_name}") do  
               preseed_package(preseed_file)
             end 
@@ -68,10 +78,7 @@ class Chef
       end
 
       def action_upgrade
-        # Can't upgrade what we don't have
-        if @current_resource.version.nil? && candidate_version.nil?
-          raise(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
-        elsif candidate_version.nil?
+        if candidate_version.nil?
           Chef::Log.debug("#{@new_resource} no candidate version - nothing to do")
         elsif @current_resource.version == candidate_version
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
