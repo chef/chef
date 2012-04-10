@@ -93,7 +93,6 @@ class Chef
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
             Chef::Log.info("#{@new_resource} contents updated")
-            @new_resource.updated_by_last_action(true)
           end
         end
       end
@@ -105,7 +104,6 @@ class Chef
           converge_by(description) do
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
             access_controls.set_all
-            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
         else
@@ -133,17 +131,17 @@ class Chef
             backup unless ::File.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
             Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
-            @new_resource.updated_by_last_action(true) 
           end
         end
       end
 
       def action_touch
         action_create
-        time = Time.now
-        ::File.utime(time, time, @new_resource.path)
-        Chef::Log.info("#{@new_resource} updated atime and mtime to #{time}")
-        @new_resource.updated_by_last_action(true)
+        converge_by("would update utime on file #{@new_resource.path}") do
+          time = Time.now
+          ::File.utime(time, time, @new_resource.path)
+          Chef::Log.info("#{@new_resource} updated atime and mtime to #{time}")
+        end
       end
 
       def backup(file=nil)
