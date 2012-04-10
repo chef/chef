@@ -43,8 +43,8 @@ class Chef
       end
 
       private :negative_complement, :octal_mode
+
       def load_current_resource
-        # TODO: assert parent directory exists.
         @current_resource = Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
@@ -53,6 +53,31 @@ class Chef
         end
         @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         @acl_scanner.set_all!
+
+      end
+
+      def define_resource_requirements
+        requirements.assert(:create, :create_if_missing, :touch) do |a|
+          # Make sure the parent dir exists, or else fail.
+          # for why run, print a message explaining the potential error.
+          parent_directory = ::File.dirname(@new_resource.path)
+
+          a.assertion { ::File.directory?(parent_directory) }
+          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist, cannot create #{@new_resource.path}")
+          a.whyrun("Assuming directory #{parent_directory} would have been created")
+        end
+
+        # Make sure the file is deletable if it exists. Otherwise, fail.
+        requirements.assert(:delete) do |a|
+          a.assertion do
+            if ::File.exists?(@new_resource.path) 
+              ::File.writable?(@new_resource.path)
+            else
+              true
+            end
+          end
+          a.failure_message("File #{@new_resource.path} exists but is not writeable so it cannot be deleted")
+        end
       end
 
       # Compare the content of a file.  Returns true if they are the same, false if they are not.
@@ -104,15 +129,11 @@ class Chef
 
       def action_delete
         if ::File.exists?(@new_resource.path)
-          if ::File.writable?(@new_resource.path)
-            converge_by("would delete file #{@new_resource.path}") do 
-              backup unless ::File.symlink?(@new_resource.path)
-              ::File.delete(@new_resource.path)
-              Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
-              @new_resource.updated_by_last_action(true) 
-            end
-          else
-            raise "Cannot delete #{@new_resource} at #{@new_resource_path}!"
+          converge_by("would delete file #{@new_resource.path}") do 
+            backup unless ::File.symlink?(@new_resource.path)
+            ::File.delete(@new_resource.path)
+            Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
+            @new_resource.updated_by_last_action(true) 
           end
         end
       end

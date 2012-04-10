@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'ostruct'
 
 require 'spec_helper'
 
@@ -76,7 +75,7 @@ describe Chef::Provider::File do
 
     ::File.stub!(:symlink?).and_return(true)
     @provider.should_not_receive(:backup)
-    @provider.action_delete
+    @provider.run_action(:delete)
   end
 
   it "should compare the current content with the requested content" do
@@ -132,21 +131,19 @@ describe Chef::Provider::File do
   end
 
   it "should delete the file if it exists and is writable on action_delete" do
-    @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     @provider.stub!(:backup).and_return(true)
-    File.should_receive("exists?").with(@provider.new_resource.path).and_return(true)
+    File.should_receive("exists?").exactly(2).times.with(@provider.new_resource.path).and_return(true)
     File.should_receive("writable?").with(@provider.new_resource.path).and_return(true)
     File.should_receive(:delete).with(@provider.new_resource.path).and_return(true)
     @provider.run_action(:delete)
   end
 
   it "should not raise an error if it cannot delete the file because it does not exist" do
-    @provider.load_current_resource
-    @provider.stub!(:backup).and_return(true)
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    File.should_receive("exists?").with(@provider.new_resource.path).and_return(false)
-    lambda { @provider.action_delete }.should_not raise_error()
+    @provider.stub!(:backup).and_return(true)
+    File.should_receive("exists?").exactly(2).times.with(@provider.new_resource.path).and_return(false)
+    lambda { @provider.run_action(:delete) }.should_not raise_error()
   end
 
   it "should update the atime/mtime on action_touch" do
@@ -242,8 +239,7 @@ describe Chef::Provider::File do
     end
 
     it "raises a specific error describing the problem" do
-      pending "this logic will be moved to the new assertions system, is currently non-functional"
-      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      lambda {@provider.run_action(:create)}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
     end
   end
 
