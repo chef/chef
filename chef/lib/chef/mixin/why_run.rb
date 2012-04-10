@@ -31,6 +31,10 @@ class Chef
           @actions << [descriptions, block]
         end
 
+        def empty?
+          @actions.empty?
+        end
+
         def converge!
           @actions.each do |descriptions, block|
             # TODO: probably should get this out of the run context instead of making it really global?

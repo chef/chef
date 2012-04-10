@@ -70,6 +70,7 @@ class Chef
       requirements.run(action)
       send("action_#{action}")
       converge_actions.converge!
+      new_resource.updated_by_last_action(true) unless converge_actions.empty?
     end
 
     def requirements

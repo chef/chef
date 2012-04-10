@@ -75,6 +75,18 @@ describe Chef::Provider do
     @provider.send(:recipe_eval, &snitch)
   end
 
+  context "when no converge actions are queued" do
+    before do
+      @provider.stub!(:load_current_resource)
+    end
+
+    it "does not mark the new resource as updated" do
+      @provider.run_action(:nothing)
+      @resource.should_not be_updated
+      @resource.should_not be_updated_by_last_action
+    end
+  end
+
   context "when converge actions have been added to the queue" do
     before do
       @provider = ConvergeActionDemonstrator.new(@resource, @run_context)
@@ -88,6 +100,12 @@ describe Chef::Provider do
     it "executes pending converge actions to converge the system" do
       @provider.run_action(:foo)
       @provider.instance_variable_get(:@system_state_altered).should be_true
+    end
+
+    it "marks the resource as updated" do
+      @provider.run_action(:foo)
+      @resource.should be_updated
+      @resource.should be_updated_by_last_action
     end
 
   end
