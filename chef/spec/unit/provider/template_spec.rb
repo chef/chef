@@ -66,6 +66,7 @@ describe Chef::Provider::Template do
         @provider.should_receive(:backup)
         @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
+        @resource.should be_updated_by_last_action
       end
 
       it "should set the file access control as specified in the resource" do
@@ -74,6 +75,7 @@ describe Chef::Provider::Template do
         @resource.mode(00644)
         @provider.should_receive(:set_all_access_controls) 
         @provider.run_action(:create)
+        @resource.should be_updated_by_last_action
       end
 
       it "creates the template with the rendered content for the create if missing action" do
@@ -81,6 +83,7 @@ describe Chef::Provider::Template do
         @provider.should_receive(:backup)
         @provider.run_action(:create_if_missing)
         IO.read(@rendered_file_location).should == "slappiness is happiness"
+        @resource.should be_updated_by_last_action
       end
     end
 
@@ -94,6 +97,7 @@ describe Chef::Provider::Template do
         @provider.should_receive(:backup)
         @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
+        @resource.should be_updated_by_last_action
       end
 
       it "should set the file access control as specified in the resource" do
@@ -103,6 +107,7 @@ describe Chef::Provider::Template do
         @provider.should_receive(:backup)
         @provider.should_receive(:set_all_access_controls)
         @provider.run_action(:create)
+        @resource.should be_updated_by_last_action
       end
 
       it "doesn't overwrite the file when the create if missing action is run" do
@@ -110,6 +115,7 @@ describe Chef::Provider::Template do
         @provider.should_not_receive(:backup)
         @provider.run_action(:create_if_missing)
         IO.read(@rendered_file_location).should == "blargh"
+        @resource.should_not be_updated_by_last_action
       end
     end
 
@@ -125,6 +131,7 @@ describe Chef::Provider::Template do
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
         @provider.run_action(:create)
+        @resource.should_not be_updated_by_last_action
       end
 
       it "does not backup the original or overwrite it on create if missing" do
@@ -132,6 +139,7 @@ describe Chef::Provider::Template do
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
         @provider.run_action(:create)
+        @resource.should_not be_updated_by_last_action
       end
 
       it "sets the file access controls if they have diverged" do
@@ -142,6 +150,7 @@ describe Chef::Provider::Template do
         @provider.should_receive(:set_all_access_controls)
         @provider.should_receive(:backup)
         @provider.run_action(:create)
+        @resource.should be_updated_by_last_action
       end
     end
 

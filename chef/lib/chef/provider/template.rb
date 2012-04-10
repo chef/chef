@@ -49,7 +49,6 @@ class Chef
               set_all_access_controls
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
-              @new_resource.updated_by_last_action(true)
             end
           end
         end
@@ -94,7 +93,6 @@ class Chef
             access_controls.set_all
           end
         end
-        @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
       private
