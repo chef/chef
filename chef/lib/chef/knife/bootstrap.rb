@@ -105,6 +105,13 @@ class Chef
         :description => "Comma separated list of roles/recipes to apply",
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
+      
+      option :first_boot_attributes,
+        :short => "-j JSON_ATTRIBS",
+        :long => "--json-attributes",
+        :description => "A JSON string to be added to the first run of chef-client",
+        :proc => lambda { |o| JSON.parse(o) },
+        :default => {}
 
       option :host_key_verify,
         :long => "--[no-]host-key-verify",

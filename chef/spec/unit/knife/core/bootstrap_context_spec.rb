@@ -104,6 +104,25 @@ EXPECTED
       @context.bootstrap_version_string.should == '--version 123.45.678'
     end
   end
+  
+  describe "when JSON attributes are given" do
+    before do
+      conf = @config.dup
+      conf[:first_boot_attributes] = {:baz => :quux}
+      @context = Chef::Knife::Core::BootstrapContext.new(conf, @run_list, @chef_config)
+    end
 
+    it "adds the attributes to first_boot" do
+      @context.first_boot.to_json.should == {:baz => :quux, :run_list => @run_list}.to_json
+    end
+  end
+  
+  describe "when JSON attributes are NOT given" do
+    it "sets first_boot equal to run_list" do
+      @context.first_boot.to_json.should == {:run_list => @run_list}.to_json
+    end
+  end
+  
+  
 end
 

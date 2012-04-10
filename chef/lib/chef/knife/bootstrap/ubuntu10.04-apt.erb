@@ -43,7 +43,7 @@ echo 'https_proxy "knife_config[:bootstrap_proxy]"' >> /etc/chef/client.rb
 
 (
 cat <<'EOP'
-<%= { "run_list" => @run_list }.to_json %>
+<%= first_boot.to_json %>
 EOP
 ) > /etc/chef/first-boot.json
 
