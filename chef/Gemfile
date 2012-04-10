@@ -5,7 +5,7 @@ gemspec
 gem "dep_selector", :group => :development, :platform => "ruby"
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
-group(:test) do
+group(:development, :test) do
   gem 'rack'
   gem 'thin'
   gem 'awesome_print'
