@@ -21,9 +21,8 @@
 # TODO test that you can set users from other domains
 
 shared_examples_for "a securable resource" do
-  describe "on Unix" do
+  context "on Unix", :unix_only do
     before(:each) do
-      pending "SKIPPED - platform specific test" if windows?
       require 'etc'
       @expected_user_name = 'nobody'
       @expected_group_name = 'nobody'
@@ -31,13 +30,13 @@ shared_examples_for "a securable resource" do
       @expected_gid = Etc.getgrnam(@expected_group_name).gid
     end
 
-    it "should set an owner" do
+    it "should set an owner", :requires_root do
       resource.owner @expected_user_name
       resource.run_action(:create)
       File.stat(path).uid.should == @expected_uid
     end
 
-    it "should set a group" do
+    it "should set a group", :requires_root do
       resource.group @expected_group_name
       resource.run_action(:create)
       File.stat(path).gid.should == @expected_gid
@@ -58,7 +57,7 @@ shared_examples_for "a securable resource" do
     end
   end
 
-  describe "on Windows" do
+  context "on Windows", :windows_only do
 
     if windows?
       SID = Chef::Win32::Security::SID
@@ -130,7 +129,6 @@ shared_examples_for "a securable resource" do
     end
 
     before(:each) do
-      pending "SKIPPED - platform specific test" unless windows?
       resource.run_action(:delete)
     end
 
@@ -276,7 +274,7 @@ shared_examples_for "a securable resource" do
 
     end
 
-    describe "with a mode attribute" do
+    context "with a mode attribute" do
       if windows?
         Security = Chef::Win32::API::Security
       end
