@@ -82,16 +82,17 @@ class Chef
           @current_resource.version(current_installed_version)
           Chef::Log.debug("#{@new_resource} current version is #{@current_resource.version}") if @current_resource.version
 
-          begin
+          case @new_resource.source
+          when /^ports$/
             @candidate_version = ports_candidate_version
-          rescue
-            if @new_resource.source =~ /^\//
-              @candidate_version = file_candidate_version
-            else
-              # FreeBSD package symlinks take care of the version
-              @candidate_version = "0.0.0"
-            end
+          when /^http/, /^ftp/
+            @candidate_version = "0.0.0"
+          when /^\//
+            @candidate_version = file_candidate_version
+          else
+            raise Chef::Exceptions::Package, "Couldn't find a candidate version."
           end
+
           Chef::Log.debug("#{@new_resource} ports candidate version is #{@candidate_version}") if @candidate_version
 
           @current_resource
@@ -103,13 +104,13 @@ class Chef
 
         # The name of the package (without the version number) as understood by pkg_add and pkg_info
         def package_name
-          begin
+          if File.exists?("#{port_path}/Makefile")
             if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
               $1
             else
               raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
             end
-          rescue
+          else
             @new_resource.package_name
           end
         end
