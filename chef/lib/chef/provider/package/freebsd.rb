@@ -104,7 +104,7 @@ class Chef
 
         # The name of the package (without the version number) as understood by pkg_add and pkg_info
         def package_name
-          if File.exists?("#{port_path}/Makefile")
+          if ::File.exist?("/usr/ports/Makefile")
             if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
               $1
             else
