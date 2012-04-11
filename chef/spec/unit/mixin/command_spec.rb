@@ -74,6 +74,18 @@ describe Chef::Mixin::Command do
   describe "run_command", :unix_only do
     include Chef::Mixin::Command
 
+    let(:output) { StringIO.new }
+    let(:logger) { Chef::Log.logger = Logger.new(output)  }
+
+    it 'should emit a deprecation notice.' do
+      logger
+      Chef::Log.stub!(:level).and_return(:warn)
+
+      run_command(:command => "sh -c 'echo hello world'")
+
+      output.string.should =~ /DEPRECATION: Chef::Mixin::Command is deprecated/
+    end
+
     it "logs the command's stderr and stdout output if the command failed" do
       Chef::Log.stub!(:level).and_return(:debug)
       begin

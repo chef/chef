@@ -56,6 +56,7 @@ class Chef
       # === Returns
       # Returns the exit status of args[:command]
       def run_command(args={})         
+        Chef::Log.warn("DEPRECATION: Chef::Mixin::Command is deprecated. Use Chef::Mixin::ShellOut instead.")
         command_output = ""
         
         args[:ignore_failure] ||= false
