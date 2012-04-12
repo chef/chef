@@ -30,19 +30,19 @@ class Chef
             useradd << universal_options
             useradd << useradd_options
           end
-          run_command(:command => command)
+          shell_out(command)
         end
         
         def manage_user
           command = compile_command("usermod") { |u| u << universal_options }
-          run_command(:command => command)
+          shell_out(command)
         end
         
         def remove_user
           command = "userdel"
           command << " -r" if managing_home_dir?
           command << " #{@new_resource.username}"
-          run_command(:command => command)
+          shell_out(command)
         end
         
         def check_lock
@@ -80,11 +80,11 @@ class Chef
         end
         
         def lock_user
-          run_command(:command => "usermod -L #{@new_resource.username}")
+          shell_out("usermod -L #{@new_resource.username}")
         end
         
         def unlock_user
-          run_command(:command => "usermod -U #{@new_resource.username}")
+          shell_out("usermod -U #{@new_resource.username}")
         end
 
         def compile_command(base_command)

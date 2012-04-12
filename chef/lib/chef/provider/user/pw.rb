@@ -31,21 +31,21 @@ class Chef
         def create_user
           command = "pw useradd"
           command << set_options
-          run_command(:command => command)
+          shell_out(command)
           modify_password
         end
         
         def manage_user
           command = "pw usermod"
           command << set_options
-          run_command(:command => command)
+          shell_out(command)
           modify_password
         end
         
         def remove_user
           command = "pw userdel #{@new_resource.username}"
           command << " -r" if @new_resource.supports[:manage_home]
-          run_command(:command => command)
+          shell_out(command)
         end
         
         def check_lock
@@ -59,11 +59,11 @@ class Chef
         end
         
         def lock_user
-          run_command(:command => "pw lock #{@new_resource.username}")
+          shell_out("pw lock #{@new_resource.username}")
         end
         
         def unlock_user
-          run_command(:command => "pw unlock #{@new_resource.username}")
+          shell_out("pw unlock #{@new_resource.username}")
         end
         
         def set_options

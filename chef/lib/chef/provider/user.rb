@@ -26,6 +26,7 @@ class Chef
     class User < Chef::Provider
       
       include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
       
       attr_accessor :user_exists, :locked
       

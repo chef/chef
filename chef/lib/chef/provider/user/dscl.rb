@@ -24,7 +24,6 @@ class Chef
   class Provider
     class User
       class Dscl < Chef::Provider::User
-        include Chef::Mixin::ShellOut
         
         NFS_HOME_DIRECTORY        = %r{^NFSHomeDirectory: (.*)$}
         AUTHENTICATION_AUTHORITY  = %r{^AuthenticationAuthority: (.*)$}
