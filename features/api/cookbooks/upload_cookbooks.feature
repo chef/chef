@@ -30,7 +30,7 @@ Feature: CRUD cookbooks
 
   Scenario: Should not be able to create a cookbook with non-X.Y.Z version
     Given I am an administrator
-     When I create a versioned cookbook named 'testcookbook_valid' versioned '1.0' with 'testcookbook_valid'
+     When I create a versioned cookbook named 'testcookbook_valid' versioned '1.0.1.2' with 'testcookbook_valid'
      Then I should get a '404 "Not Found"' exception
 
   Scenario: Should not be able to create a cookbook if none of its contained files have been uploaded
