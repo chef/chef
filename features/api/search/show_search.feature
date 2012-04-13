@@ -128,8 +128,7 @@ Feature: Search data via the REST API
       And the search index has been committed
      When I authenticate as 'bobo'
       And I 'GET' the path '/search/client?q=*:*'
-     Then the inflated responses key 'rows' item '0' should be a kind of 'Chef::ApiClient'
-      And the inflated responses key 'rows' item '0' should respond to 'name' with 'isis'
+     Then a 'Chef::ApiClient' with item name 'isis' should be in the search result
 
   Scenario: Search for a type of object that does not exist
     Given I am an administrator

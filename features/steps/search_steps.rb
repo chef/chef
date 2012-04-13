@@ -10,6 +10,26 @@ Then "there should be '$expected_count' total search results" do |expected_count
   inflated_response["total"].should == expected_count
 end
 
+Then "a '$result_item_klass' with item name '$result_item_name' should be in the search result" do |result_item_klass, result_item_name|
+  inflated_response.should respond_to(:[])
+  inflated_response.should have_key("rows")
+
+  found_match = false
+  expected_klass = eval(result_item_klass)
+
+  inflated_response['rows'].each do |item|
+    next unless item.name == result_item_name
+    found_match = true
+    item.should be_a_kind_of(expected_klass)
+  end
+
+  unless found_match
+    msg = "expected to find a #{result_item_klass} with item name #{result_item_name} in the inflated response but it's not there\n"
+    msg << "actual inflated response is #{inflated_response.inspect}"
+    raise msg
+  end
+end
+
 Then "a '$result_item_klass' with id '$result_item_id' should be in the search result" do |result_item_klass, result_item_id|
   inflated_response.should respond_to(:[])
   inflated_response.should have_key("rows")
