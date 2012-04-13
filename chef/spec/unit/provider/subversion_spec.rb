@@ -20,36 +20,34 @@
 require 'spec_helper'
 
 describe Chef::Provider::Subversion do
+  include SpecHelpers::Provider
 
-  before do
-    @resource = Chef::Resource::Subversion.new("my app")
-    @resource.repository "http://svn.example.org/trunk/"
-    @resource.destination "/my/deploy/dir"
-    @resource.revision "12345"
-    @resource.svn_arguments(false)
-    @resource.svn_info_args(false)
-    @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
-    @provider = Chef::Provider::Subversion.new(@resource, @run_context)
+  let(:resource) { Chef::Resource::Subversion.new('my app').tap(&with_attributes.call(resource_attributes)) }
+  let(:provider) { Chef::Provider::Subversion.new(resource, run_context) }
+
+  let(:resource_attributes) do
+    { :repository => "http://svn.example.org/trunk/",
+      :destination => "/my/deploy/dir",
+      :revision => "12345",
+      :svn_arguments => false,
+      :svn_info_args => false }
   end
 
   it "converts resource attributes to options for run_command and popen4" do
-    @provider.run_options.should == {}
-    @resource.user 'deployninja'
-    @provider.run_options.should == {:user => "deployninja"}
+    provider.run_options.should == {}
+    resource.user 'deployninja'
+    provider.run_options.should == {:user => "deployninja"}
   end
 
   context "determining the revision of the currently deployed code" do
 
-    before do
-      @stdout = mock("stdout")
-      @stderr = mock("stderr")
-      @exitstatus = mock("exitstatus")
-    end
+    let(:stdout) { mock("stdout") }
+    let(:stderr) { mock("stderr") }
+    let(:exitstatus) { mock("exitstatus") }
 
     it "sets the revision to nil if there isn't any deployed code yet" do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
-      @provider.find_current_revision.should be_nil
+      provider.find_current_revision.should be_nil
     end
 
     it "determines the current revision if there's a checkout with svn data available" do
@@ -65,14 +63,14 @@ describe Chef::Provider::Subversion do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
       ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
-      @stdout.stub!(:string).and_return(example_svn_info)
-      @stderr.stub!(:string).and_return("")
-      @exitstatus.stub!(:exitstatus).and_return(0)
+      stdout.stub!(:string).and_return(example_svn_info)
+      stderr.stub!(:string).and_return("")
+      exitstatus.stub!(:exitstatus).and_return(0)
       expected_command = ["svn info", {:cwd=>"/my/deploy/dir"}]
-      @provider.should_receive(:popen4).with(*expected_command).
-                                        and_yield("no-pid", "no-stdin", @stdout,@stderr).
-                                        and_return(@exitstatus)
-      @provider.find_current_revision.should eql("11410")
+      provider.should_receive(:popen4).with(*expected_command).
+                                       and_yield("no-pid", "no-stdin", stdout,stderr).
+                                       and_return(exitstatus)
+      provider.find_current_revision.should eql("11410")
     end
 
     it "gives nil as the current revision if the deploy dir isn't a SVN working copy" do
@@ -80,41 +78,41 @@ describe Chef::Provider::Subversion do
       ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
       ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
-      @stdout.stub!(:string).and_return(example_svn_info)
-      @stderr.stub!(:string).and_return("")
-      @exitstatus.stub!(:exitstatus).and_return(1)
-      @provider.should_receive(:popen4).and_yield("no-pid", "no-stdin", @stdout,@stderr).
-                                        and_return(@exitstatus)
-      @provider.find_current_revision.should be_nil
+      stdout.stub!(:string).and_return(example_svn_info)
+      stderr.stub!(:string).and_return("")
+      exitstatus.stub!(:exitstatus).and_return(1)
+      provider.should_receive(:popen4).and_yield("no-pid", "no-stdin", stdout, stderr).
+                                        and_return(exitstatus)
+      provider.find_current_revision.should be_nil
     end
 
     it "finds the current revision when loading the current resource state" do
       # note: the test is kinda janky, but it provides regression coverage for CHEF-2092
-      @resource.instance_variable_set(:@action, :sync)
-      @provider.should_receive(:find_current_revision).and_return("12345")
-      @provider.load_current_resource
-      @provider.current_resource.revision.should == "12345"
+      resource.instance_variable_set(:@action, :sync)
+      provider.should_receive(:find_current_revision).and_return("12345")
+      provider.load_current_resource
+      provider.current_resource.revision.should == "12345"
     end
   end
 
   it "creates the current_resource object and sets its revision to the current deployment's revision as long as we're not exporting" do
-    @provider.stub!(:find_current_revision).and_return("11410")
-    @provider.new_resource.instance_variable_set :@action, [:checkout]
-    @provider.load_current_resource
-    @provider.current_resource.name.should eql(@resource.name)
-    @provider.current_resource.revision.should eql("11410")
+    provider.stub!(:find_current_revision).and_return("11410")
+    provider.new_resource.instance_variable_set :@action, [:checkout]
+    provider.load_current_resource
+    provider.current_resource.name.should eql(resource.name)
+    provider.current_resource.revision.should eql("11410")
   end
 
   context "resolving revisions to an integer" do
-
     before do
-      @stdout = mock("stdout")
-      @stderr = mock("stderr")
-      @resource.svn_info_args "--no-auth-cache"
+      resource.svn_info_args "--no-auth-cache"
     end
 
+    let(:stdout) { mock("stdout") }
+    let(:stderr) { mock("stderr") }
+
     it "returns the revision number as is if it's already an integer" do
-      @provider.revision_int.should eql("12345")
+      provider.revision_int.should eql("12345")
     end
 
     it "queries the server and resolves the revision if it's not an integer (i.e. 'HEAD')" do
@@ -129,153 +127,153 @@ describe Chef::Provider::Subversion do
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
       exitstatus = mock("exitstatus")
       exitstatus.stub!(:exitstatus).and_return(0)
-      @resource.revision "HEAD"
-      @stdout.stub!(:string).and_return(example_svn_info)
-      @stderr.stub!(:string).and_return("")
+      resource.revision "HEAD"
+      stdout.stub!(:string).and_return(example_svn_info)
+      stderr.stub!(:string).and_return("")
       expected_command = ["svn info http://svn.example.org/trunk/ --no-auth-cache  -rHEAD", {:cwd=>Dir.tmpdir}]
-      @provider.should_receive(:popen4).with(*expected_command).
-                                        and_yield("no-pid","no-stdin",@stdout,@stderr).
-                                        and_return(exitstatus)
-      @provider.revision_int.should eql("11410")
+      provider.should_receive(:popen4).with(*expected_command).
+                                       and_yield("no-pid","no-stdin", stdout, stderr).
+                                       and_return(exitstatus)
+      provider.revision_int.should eql("11410")
     end
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
       example_svn_info =  "some random crap from an error message\n"
       exitstatus = mock("exitstatus")
       exitstatus.stub!(:exitstatus).and_return(0)
-      @resource.revision "HEAD"
-      @stdout.stub!(:string).and_return(example_svn_info)
-      @stderr.stub!(:string).and_return("")
-      @provider.should_receive(:popen4).and_yield("no-pid","no-stdin",@stdout,@stderr).
-                                        and_return(exitstatus)
-      lambda {@provider.revision_int}.should raise_error(RuntimeError, "Could not parse `svn info` data: some random crap from an error message")
+      resource.revision "HEAD"
+      stdout.stub!(:string).and_return(example_svn_info)
+      stderr.stub!(:string).and_return("")
+      provider.should_receive(:popen4).and_yield("no-pid","no-stdin", stdout, stderr).
+                                       and_return(exitstatus)
+      lambda { provider.revision_int }.should raise_error(RuntimeError, "Could not parse `svn info` data: some random crap from an error message")
 
     end
 
     it "responds to :revision_slug as an alias for revision_sha" do
-      @provider.should respond_to(:revision_slug)
+      provider.should respond_to(:revision_slug)
     end
 
   end
 
   it "generates a checkout command with default options" do
-    @provider.checkout_command.should eql("svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    provider.checkout_command.should eql("svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a checkout command with authentication" do
-    @resource.svn_username "deployNinja"
-    @resource.svn_password "vanish!"
-    @provider.checkout_command.should eql("svn checkout -q --username deployNinja --password vanish!  " +
+    resource.svn_username "deployNinja"
+    resource.svn_password "vanish!"
+    provider.checkout_command.should eql("svn checkout -q --username deployNinja --password vanish!  " +
                                           "-r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a checkout command with arbitrary options" do
-    @resource.svn_arguments "--no-auth-cache"
-    @provider.checkout_command.should eql("svn checkout --no-auth-cache -q  -r12345 "+
+    resource.svn_arguments "--no-auth-cache"
+    provider.checkout_command.should eql("svn checkout --no-auth-cache -q  -r12345 "+
                                           "http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "generates a sync command with default options" do
-    @provider.sync_command.should eql("svn update -q  -r12345 /my/deploy/dir")
+    provider.sync_command.should eql("svn update -q  -r12345 /my/deploy/dir")
   end
 
   it "generates an export command with default options" do
-    @provider.export_command.should eql("svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
+    provider.export_command.should eql("svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir")
   end
 
   it "doesn't try to find the current revision when loading the resource if running an export" do
-    @provider.new_resource.instance_variable_set :@action, [:export]
-    @provider.should_not_receive(:find_current_revision)
-    @provider.load_current_resource
+    provider.new_resource.instance_variable_set :@action, [:export]
+    provider.should_not_receive(:find_current_revision)
+    provider.load_current_resource
   end
 
   it "doesn't try to find the current revision when loading the resource if running a force export" do
-    @provider.new_resource.instance_variable_set :@action, [:force_export]
-    @provider.should_not_receive(:find_current_revision)
-    @provider.load_current_resource
+    provider.new_resource.instance_variable_set :@action, [:force_export]
+    provider.should_not_receive(:find_current_revision)
+    provider.load_current_resource
   end
 
   it "runs an export with the --force option" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:shell_out).with(expected_cmd, {})
-    @provider.action_force_export
+    provider.should_receive(:shell_out).with(expected_cmd, {})
+    provider.action_force_export
   end
 
   it "runs the checkout command for action_checkout" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:shell_out).with(expected_cmd, {})
-    @provider.action_checkout
-    @resource.should be_updated
+    provider.should_receive(:shell_out).with(expected_cmd, {})
+    provider.action_checkout
+    resource.should be_updated
   end
 
   it "raises an error if the svn checkout command would fail because the enclosing directory doesn't exist" do
-    lambda {@provider.action_sync}.should raise_error(Chef::Exceptions::MissingParentDirectory)
+    lambda { provider.action_sync }.should raise_error(Chef::Exceptions::MissingParentDirectory)
   end
 
   it "should not checkout if the destination exists or is a non empty directory" do
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
-    @provider.should_not_receive(:checkout_command)
-    @provider.action_checkout
-    @resource.should_not be_updated
+    provider.should_not_receive(:checkout_command)
+    provider.action_checkout
+    resource.should_not be_updated
   end
 
   it "runs commands with the user and group specified in the resource" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-    @resource.user "whois"
-    @resource.group "thisis"
+    resource.user "whois"
+    resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:shell_out).with(expected_cmd, :user => "whois", :group => "thisis")
-    @provider.action_checkout
-    @resource.should be_updated
+    provider.should_receive(:shell_out).with(expected_cmd, :user => "whois", :group => "thisis")
+    provider.action_checkout
+    resource.should be_updated
   end
 
   it "does a checkout for action_sync if there's no deploy dir" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
-    @provider.should_receive(:action_checkout)
-    @provider.action_sync
-    @resource.should be_updated
+    provider.should_receive(:action_checkout)
+    provider.action_sync
+    resource.should be_updated
   end
 
   it "does a checkout for action_sync if the deploy dir exists but is empty" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
-    @provider.should_receive(:action_checkout)
-    @provider.action_sync
-    @resource.should be_updated
+    provider.should_receive(:action_checkout)
+    provider.action_sync
+    resource.should be_updated
   end
 
   it "runs the sync_command on action_sync if the deploy dir exists and isn't empty" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-    @provider.stub!(:find_current_revision).and_return("11410")
-    @provider.stub!(:current_revision_matches_target_revision?).and_return(false)
+    provider.stub!(:find_current_revision).and_return("11410")
+    provider.stub!(:current_revision_matches_target_revision?).and_return(false)
     expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
-    @provider.should_receive(:shell_out).with(expected_cmd, {})
-    @provider.action_sync
-    @resource.should be_updated
+    provider.should_receive(:shell_out).with(expected_cmd, {})
+    provider.action_sync
+    resource.should be_updated
   end
 
   it "does not fetch any updates if the remote revision matches the current revision" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
     #::File.stub!(:directory?).with("/my/deploy").and_return(true)
-    @provider.stub!(:find_current_revision).and_return('12345')
-    @provider.stub!(:current_revision_matches_target_revision?).and_return(true)
-    @provider.action_sync
-    @resource.should_not be_updated
+    provider.stub!(:find_current_revision).and_return('12345')
+    provider.stub!(:current_revision_matches_target_revision?).and_return(true)
+    provider.action_sync
+    resource.should_not be_updated
   end
 
   it "runs the export_command on action_export" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    @provider.should_receive(:shell_out).with(expected_cmd, {})
-    @provider.action_export
-    @resource.should be_updated
+    provider.should_receive(:shell_out).with(expected_cmd, {})
+    provider.action_export
+    resource.should be_updated
   end
 
 end
