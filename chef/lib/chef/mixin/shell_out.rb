@@ -42,7 +42,7 @@ class Chef
       end
 
       def shell_out_with_systems_locale!(command, args={})
-        shell_out command, with_systems_locale(args)
+        shell_out! command, with_systems_locale(args)
       end
 
       DEPRECATED_OPTIONS =

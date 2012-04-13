@@ -76,7 +76,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
 
             begin
-              if shell_out(@new_resource.status_command).exitstatus == 0
+              if shell_out!(@new_resource.status_command).exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
@@ -89,7 +89,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} supports status, running")
 
             begin
-              if shell_out("#{@init_command} status").exitstatus == 0
+              if shell_out!("#{@init_command} status").exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end

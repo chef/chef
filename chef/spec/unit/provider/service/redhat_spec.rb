@@ -42,7 +42,7 @@ describe "load_current_resource" do
   it "sets the current enabled status to true if the service is enabled for any run level" do
     chkconfig = OpenStruct.new(:stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:on   6:off")
     status = mock("Status", :exitstatus => 0, :stdout => chkconfig)
-    @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+    @provider.should_receive(:shell_out!).with("/sbin/service chef status").and_return(status)
     @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
     @provider.load_current_resource
     @current_resource.enabled.should be_true
@@ -51,7 +51,7 @@ describe "load_current_resource" do
   it "sets the current enabled status to false if the regex does not match" do
     chkconfig = OpenStruct.new(:stdout => "chef    0:off   1:off   2:off   3:off   4:off   5:off   6:off")
     status = mock("Status", :exitstatus => 0, :stdout => chkconfig)
-    @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+    @provider.should_receive(:shell_out!).with("/sbin/service chef status").and_return(status)
     @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
     @provider.load_current_resource.should eql(@current_resource)
     @current_resource.enabled.should be_false

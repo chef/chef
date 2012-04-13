@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/provider'
 
 class Chef
   class Provider
     class Service < Chef::Provider
-
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       def initialize(new_resource, run_context)
         super

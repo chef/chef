@@ -69,18 +69,18 @@ PS_SAMPLE
       end
 
       it "should run '/etc/init.d/service_name status'" do
-        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
         @provider.load_current_resource
       end
   
       it "should set running to true if the the status command returns 0" do
-        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
       it "should set running to false if the status command returns anything except 0" do
-        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        @provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/apache22 status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
@@ -92,7 +92,7 @@ PS_SAMPLE
       end
 
       it "should run the services status command if one has been specified" do
-        @provider.should_receive(:shell_out).with("/bin/chefhasmonkeypants status").and_return(@status)
+        @provider.should_receive(:shell_out!).with("/bin/chefhasmonkeypants status").and_return(@status)
         @provider.load_current_resource
       end
     

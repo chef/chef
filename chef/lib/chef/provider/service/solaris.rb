@@ -23,6 +23,7 @@ class Chef
   class Provider
     class Service
       class Solaris < Chef::Provider::Service
+        include Chef::Mixin::Command
 
         def initialize(new_resource, run_context=nil)
           super
@@ -41,12 +42,12 @@ class Chef
         end
 
         def enable_service
-          run_command(:command => "#{@init_command} enable #{@new_resource.service_name}")
+          shell_out!("#{@init_command} enable #{@new_resource.service_name}")
           return service_status.enabled
         end
 
         def disable_service
-          run_command(:command => "#{@init_command} disable #{@new_resource.service_name}")
+          shell_out!("#{@init_command} disable #{@new_resource.service_name}")
           return service_status.enabled
         end
 
@@ -54,7 +55,7 @@ class Chef
         alias_method :start_service, :enable_service
 
         def reload_service
-          run_command(:command => "#{@init_command} refresh #{@new_resource.service_name}")
+          shell_out!("#{@init_command} refresh #{@new_resource.service_name}")
         end
 
         def restart_service

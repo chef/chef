@@ -127,8 +127,8 @@ describe Chef::Provider::Service::Upstart do
       end
     end
 
-    it "should set running to false if it catches a Chef::Exceptions::Exec" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
+    it "should set running to false if it catches a Mixlib::ShellOut::ShellCommandFailed" do
+      @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @current_resource.should_receive(:running).with(false)
       @provider.load_current_resource
     end
@@ -159,13 +159,14 @@ describe Chef::Provider::Service::Upstart do
       end
 
       it "should run the services status command if one has been specified" do
-        @provider.stub!(:run_command_with_systems_locale).with({:command => "/bin/chefhasmonkeypants status"}).and_return(0)
+        @provider.stub!(:shell_out_with_systems_locale!).with("/bin/chefhasmonkeypants status").and_return(0)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
-      it "should set running to false if it catches a Chef::Exceptions::Exec when using a status command" do
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
+      it "should set running to false if it catches a Mixlib::ShellOut::ShellCommandFailed when using a status command" do
+        @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
@@ -220,13 +221,13 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should call '/sbin/start service_name' if no start command is specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
       @provider.start_service()
     end
 
     it "should not call '/sbin/start service_name' if it is already running" do
       @current_resource.stub!(:running).and_return(true)
-      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_not_receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
       @provider.start_service()
     end
 
@@ -248,13 +249,13 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call '/sbin/restart service_name' if no restart command is specified" do
       @current_resource.stub!(:running).and_return(true)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/restart #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/restart #{@new_resource.service_name}").and_return(0)
       @provider.restart_service()
     end
 
     it "should call '/sbin/start service_name' if restart_service is called for a stopped service" do
       @current_resource.stub!(:running).and_return(false)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/start #{@new_resource.service_name}").and_return(0)
       @provider.restart_service()
     end
 
@@ -267,7 +268,7 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call '/sbin/reload service_name' if no reload command is specified" do
       @current_resource.stub!(:running).and_return(true)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/reload #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/reload #{@new_resource.service_name}").and_return(0)
       @provider.reload_service()
     end
 
@@ -280,13 +281,13 @@ describe Chef::Provider::Service::Upstart do
 
     it "should call '/sbin/stop service_name' if no stop command is specified" do
       @current_resource.stub!(:running).and_return(true)
-      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/stop #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(0)
       @provider.stop_service()
     end
 
     it "should not call '/sbin/stop service_name' if it is already stopped" do
       @current_resource.stub!(:running).and_return(false)
-      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/sbin/stop #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_not_receive(:shell_out_with_systems_locale!).with("/sbin/stop #{@new_resource.service_name}").and_return(0)
       @provider.stop_service()
     end
   end

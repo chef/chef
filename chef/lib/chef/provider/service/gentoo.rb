@@ -44,10 +44,10 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
   end
   
   def enable_service()
-    run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
+    shell_out!("/sbin/rc-update add #{@new_resource.service_name} default")
   end
   
   def disable_service()
-    run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
+    shell_out!("/sbin/rc-update del #{@new_resource.service_name} default")
   end
 end

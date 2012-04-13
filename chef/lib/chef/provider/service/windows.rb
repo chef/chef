@@ -26,8 +26,6 @@ end
 
 class Chef::Provider::Service::Windows < Chef::Provider::Service
 
-  include Chef::Mixin::ShellOut
-
   RUNNING = 'running'
   STOPPED = 'stopped'
   AUTO_START = 'auto start'

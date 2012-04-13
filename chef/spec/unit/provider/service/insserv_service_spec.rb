@@ -59,15 +59,15 @@ describe Chef::Provider::Service::Insserv do
 
   describe "enable_service" do
     it "should call insserv and create the default links" do
-      @provider.should_receive(:run_command).with({:command=>"/sbin/insserv -r -f #{@new_resource.service_name}"})
-      @provider.should_receive(:run_command).with({:command=>"/sbin/insserv -d -f #{@new_resource.service_name}"})
+      @provider.should_receive(:shell_out!).with("/sbin/insserv -r -f #{@new_resource.service_name}")
+      @provider.should_receive(:shell_out!).with("/sbin/insserv -d -f #{@new_resource.service_name}")
       @provider.enable_service
     end
   end
   
   describe "disable_service" do
     it "should call insserv and remove the links" do
-      @provider.should_receive(:run_command).with({:command=>"/sbin/insserv -r -f #{@new_resource.service_name}"})
+      @provider.should_receive(:shell_out!).with("/sbin/insserv -r -f #{@new_resource.service_name}")
       @provider.disable_service
     end
   end

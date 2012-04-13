@@ -39,12 +39,12 @@ class Chef
         end
 
         def enable_service()
-          run_command(:command => "/sbin/insserv -r -f #{@new_resource.service_name}")
-          run_command(:command => "/sbin/insserv -d -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -r -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -d -f #{@new_resource.service_name}")
         end
 
         def disable_service()
-          run_command(:command => "/sbin/insserv -r -f #{@new_resource.service_name}")
+          shell_out!("/sbin/insserv -r -f #{@new_resource.service_name}")
         end
       end
     end

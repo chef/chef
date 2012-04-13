@@ -89,13 +89,13 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm enable chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable chef"})
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm enable chef")
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.enable_service.should be_true
       end
 
       it "should call svcadm enable chef for start_service" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable chef"})
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm enable chef")
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.start_service.should be_true
       end
@@ -110,13 +110,13 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm disable chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable chef"})
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable chef")
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.disable_service.should be_false
       end
 
       it "should call svcadm disable chef for stop_service" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable chef"})
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable chef")
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.stop_service.should be_false
       end
@@ -130,7 +130,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm refresh chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm refresh chef"}).and_return(@status)
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm refresh chef").and_return(@status)
         @provider.reload_service.should be_true
       end
 

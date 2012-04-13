@@ -22,7 +22,6 @@ class Chef
   class Provider
     class Service
       class Macosx < Chef::Provider::Service::Simple
-        include Chef::Mixin::ShellOut
 
         PLIST_DIRS = %w{~/Library/LaunchAgents
                          /Library/LaunchAgents
