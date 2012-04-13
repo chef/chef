@@ -32,15 +32,22 @@ class Chef
       end
 
       def shell_out!(*command_args)
-        cmd= shell_out(*command_args)
+        cmd = shell_out(*command_args)
         cmd.error!
         cmd
+      end
+
+      def shell_out_with_systems_locale(command, args={})
+        shell_out command, with_systems_locale(args)
+      end
+
+      def shell_out_with_systems_locale!(command, args={})
+        shell_out command, with_systems_locale(args)
       end
 
       DEPRECATED_OPTIONS =
         [ [:command_log_level,   :log_level],
           [:command_log_prepend, :log_tag] ]
-
       # CHEF-3090: Deprecate command_log_level and command_log_prepend
       # Patterned after https://github.com/opscode/chef/commit/e1509990b559984b43e428d4d801c394e970f432
       def run_command_compatible_options(command_args)
@@ -64,6 +71,14 @@ class Chef
       def deprecate_option(old_option, new_option)
         Chef::Log.logger.warn "DEPRECATION: Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
       end
+
+      def with_systems_locale(args={})
+        args[:environment] ||= {}
+        args[:environment]["LC_ALL"] = ENV["LC_ALL"]
+        return args
+      end
+
+
     end
   end
 end
