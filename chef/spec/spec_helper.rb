@@ -44,6 +44,9 @@ require 'chef/applications'
 require 'chef/shef'
 require 'chef/util/file_edit'
 
+# Metaprogramming Tools
+require 'active_support/concern'
+
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
 require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))

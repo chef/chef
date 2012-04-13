@@ -20,13 +20,8 @@
 require 'spec_helper'
 
 describe Chef::Provider::User::Useradd do
-  # Takes a Hash-like object and sets attributes with provided values
-  # Example:
-  #   Chef::Resource::User.new('adam', run_context).tap(&with_attributes.call({ :comment => 'Adam Jacob' })
-  let(:with_attributes) { lambda { |attrs| lambda { |r| attrs.each { |a,v| r.send(a,v) } } } }
+  include SpecHelpers::Provider
 
-  let(:node) { Chef::Node.new }
-  let(:run_context) { Chef::RunContext.new(node, {}) }
   let(:new_resource) { Chef::Resource::User.new('adam', run_context).tap(&with_attributes.call(new_resource_attributes)) }
   let(:current_resource) { Chef::Resource::User.new('adam', run_context).tap(&with_attributes.call(current_resource_attributes)) }
   let(:provider) { Chef::Provider::User::Useradd.new(new_resource, run_context).tap(&with_attributes.call(provider_attributes)) }
