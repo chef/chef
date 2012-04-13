@@ -43,7 +43,7 @@ class Chef
       def action_checkout
         assert_target_directory_valid!
         if target_dir_non_existant_or_empty?
-          run_command(run_options(:command => checkout_command))
+          shell_out(checkout_command, run_options)
           @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory - nothing to do"
@@ -53,7 +53,7 @@ class Chef
       def action_export
         assert_target_directory_valid!
         if target_dir_non_existant_or_empty?
-          run_command(run_options(:command => export_command))
+          shell_out(export_command, run_options)
           @new_resource.updated_by_last_action(true)
         else
           Chef::Log.debug "#{@new_resource} export destination #{@new_resource.destination} already exists or is a non-empty directory - nothing to do"
@@ -62,7 +62,7 @@ class Chef
 
       def action_force_export
         assert_target_directory_valid!
-        run_command(run_options(:command => export_command))
+        shell_out(export_command, run_options)
         @new_resource.updated_by_last_action(true)
       end
 
@@ -72,7 +72,7 @@ class Chef
           current_rev = find_current_revision
           Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
-            run_command(run_options(:command => sync_command))
+            shell_out(sync_command, run_options)
             Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
             @new_resource.updated_by_last_action(true)
           end
