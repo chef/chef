@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'pathname'
 require 'chef/provider/user'
 
 class Chef
@@ -124,7 +125,11 @@ class Chef
         end
 
         def updating_home?
-          @current_resource.home != @new_resource.home && @new_resource.home
+          # will return false if paths are equivalent
+          # Pathname#cleanpath does a better job than ::File::expand_path (on both unix and windows)
+          # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
+          # ::File.expand_path("\\tmp") => "C:/tmp"
+          @new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(@new_resource.home).cleanpath
         end
 
         def managing_home_dir?
