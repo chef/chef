@@ -50,3 +50,9 @@ def make_tmpname(prefix_suffix, n)
   path << "-#{n}" if n
   path << suffix
 end
+
+# Debugging Tools
+
+# Example
+#   some_value.tap(&WATCH)
+WATCH=lambda { |x| ap x } unless defined?(WATCH)
