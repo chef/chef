@@ -66,7 +66,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
       @provider.groupadd_options.should == ""
     end
 
-    ["centos", "redhat", "scientific", "fedora"].each do |os|
+    ["centos", "redhat", "scientific", "fedora", "debian", "ubuntu", "mint"].each do |os|
       it "should set groupadd -r for #{os}" do
         @new_resource.system(true)
         @node.automatic_attrs[:platform] = os
