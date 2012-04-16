@@ -44,8 +44,9 @@ require 'chef/applications'
 require 'chef/shef'
 require 'chef/util/file_edit'
 
-require 'ap'
-require 'pry' if ENV['DEBUG']
+# If you want to load anything into the testing environment
+# without versioning it, add it to spec/support/local_gems.rb
+require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
 
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
 
