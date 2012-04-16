@@ -9,9 +9,10 @@ module SpecHelpers
         let(:node) { Chef::Node.new.tap(&with_attributes.call(node_attributes)) }
         let(:node_attributes) { { :command= => { :ps => ps_command } } }
         let(:ps_command) { 'ps -ef' }
+        let(:service_name) { 'chef' }
 
         let(:new_resource) { current_resource }
-        let(:current_resource) { Chef::Resource::Service.new("chef") }
+        let(:current_resource) { Chef::Resource::Service.new(service_name) }
         let(:provider) { described_class.new(new_resource, run_context) }
         let(:stdout) { ps_without_service_running }
         let(:status) { mock("Status", :exitstatus => 0, :stdout => stdout) }
