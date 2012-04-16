@@ -19,131 +19,121 @@
 require 'spec_helper'
 
 describe Chef::Provider::Service::Simple, "load_current_resource" do
+  include SpecHelpers::Providers::Service
+
   before(:each) do
-    @node = Chef::Node.new
-    @node[:command] = {:ps => "ps -ef"}
-    @run_context = Chef::RunContext.new(@node, {})
-
-    @new_resource = Chef::Resource::Service.new("chef")
-    @current_resource = Chef::Resource::Service.new("chef")
-
-    @provider = Chef::Provider::Service::Simple.new(@new_resource, @run_context)
-    Chef::Resource::Service.stub!(:new).and_return(@current_resource)
-
-    @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
-aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
-aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
-aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
-NOMOCKINGSTRINGSPLZ
-    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-    @provider.stub!(:shell_out!).and_return(@status)
+    provider.stub!(:shell_out!).and_return(status)
   end
-  
+
   it "should create a current resource with the name of the new resource" do
-    Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
-    @provider.load_current_resource
+    Chef::Resource::Service.should_receive(:new).and_return(current_resource)
+    provider.load_current_resource
   end
 
   it "should set the current resources service name to the new resources service name" do
-    @current_resource.should_receive(:service_name).with(@new_resource.service_name)
-    @provider.load_current_resource
+    provider.load_current_resource
+    current_resource.service_name.should == 'chef'
   end
 
-  it "should set running to false if the node has a nil ps attribute" do
-    @node[:command] = {:ps => nil}
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+  context 'when node has a nil :ps attribute' do
+    let(:ps_command) { nil }
+
+    it "should set running to false" do
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    end
   end
 
-  it "should set running to false if the node has an empty ps attribute" do
-    @node[:command] = {:ps => ""}
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+  context 'when node has an empty :ps attribute' do
+    let(:ps_command) { '' }
+
+    it "should set running to false if the node has an empty ps attribute" do
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    end
   end
 
-  describe "when we have a 'ps' attribute" do
+  context 'when node has a :ps attribute' do
     it "should shell_out! the node's ps command" do
-      @provider.should_receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
-      @provider.load_current_resource
+      provider.should_receive(:shell_out!).with(ps_command).and_return(status)
+      provider.load_current_resource
     end
 
     it "should read stdout of the ps command" do
-      @provider.stub!(:shell_out!).and_return(@status)
-      @stdout.should_receive(:each_line).and_return(true)
-      @provider.load_current_resource
+      provider.stub!(:shell_out!).and_return(status)
+      stdout.should_receive(:each_line).and_return(true)
+      provider.load_current_resource
     end
 
-    it "should set running to true if the regex matches the output" do
-      @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
-aj        7842  5057  0 21:26 pts/2    00:00:06 chef
-aj        7842  5057  0 21:26 pts/2    00:00:06 poos
-NOMOCKINGSTRINGSPLZ
-      @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
-      @provider.stub!(:shell_out!).and_return(@status)
-      @provider.load_current_resource 
-      @current_resource.running.should be_true
+    context 'with process output with running process' do
+      let(:stdout) { ps_with_service_running }
+
+      it "should set running to true if the regex matches the output" do
+        Chef::Resource::Service.stub!(:new).and_return(current_resource)
+        provider.load_current_resource
+        current_resource.running.should be_true
+      end
     end
 
     it "should set running to false if the regex doesn't match" do
-      @provider.stub!(:shell_out!).and_return(@status)
-      @provider.load_current_resource
-      @current_resource.running.should be_false
+      Chef::Resource::Service.stub!(:new).and_return(current_resource)
+      provider.load_current_resource
+      current_resource.running.should be_false
     end
 
     it "should raise an exception if ps fails" do
-      @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+      provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
   it "should return the current resource" do
-    @provider.load_current_resource.should eql(@current_resource)
+    Chef::Resource::Service.stub!(:new).and_return(current_resource)
+    provider.load_current_resource.should eql(current_resource)
   end
 
-
-
-  describe "when starting the service" do
+  describe "#start_service" do
     it "should call the start command if one is specified" do
-      @new_resource.stub!(:start_command).and_return("#{@new_resource.start_command}")
-      @provider.should_receive(:shell_out!).with("#{@new_resource.start_command}")
-      @provider.start_service()
+      new_resource.stub!(:start_command).and_return("#{new_resource.start_command}")
+      provider.should_receive(:shell_out!).with("#{new_resource.start_command}")
+      provider.start_service()
     end
 
     it "should raise an exception if no start command is specified" do
-      lambda { @provider.start_service() }.should raise_error(Chef::Exceptions::Service)
-    end 
+      lambda { provider.start_service() }.should raise_error(Chef::Exceptions::Service)
+    end
   end
 
-  describe "when stopping a service" do
+  describe "#stop_service" do
     it "should call the stop command if one is specified" do
-      @new_resource.stop_command("/etc/init.d/themadness stop")
-      @provider.should_receive(:shell_out!).with("/etc/init.d/themadness stop")
-      @provider.stop_service()
+      new_resource.stop_command("/etc/init.d/themadness stop")
+      provider.should_receive(:shell_out!).with("/etc/init.d/themadness stop")
+      provider.stop_service()
     end
 
     it "should raise an exception if no stop command is specified" do
-      lambda { @provider.stop_service() }.should raise_error(Chef::Exceptions::Service)
+      lambda { provider.stop_service() }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
-  describe Chef::Provider::Service::Simple, "restart_service" do
+  describe "#restart_service" do
     it "should call the restart command if one has been specified" do
-      @new_resource.restart_command("/etc/init.d/foo restart")
-      @provider.should_receive(:shell_out!).with("/etc/init.d/foo restart")
-      @provider.restart_service()
+      new_resource.restart_command("/etc/init.d/foo restart")
+      provider.should_receive(:shell_out!).with("/etc/init.d/foo restart")
+      provider.restart_service()
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
-      @provider.should_receive(:stop_service)
-      @provider.should_receive(:sleep).with(1)
-      @provider.should_receive(:start_service)
-      @provider.restart_service()
+      provider.should_receive(:stop_service)
+      provider.should_receive(:sleep).with(1)
+      provider.should_receive(:start_service)
+      provider.restart_service()
     end
   end
 
-  describe Chef::Provider::Service::Simple, "reload_service" do
+  describe "#reload_service" do
     it "should should run the user specified reload command if one is specified" do
-      @new_resource.reload_command("kill -9 1")
-      @provider.should_receive(:shell_out!).with("kill -9 1")
-      @provider.reload_service()
+      new_resource.reload_command("kill -9 1")
+      provider.should_receive(:shell_out!).with("kill -9 1")
+      provider.reload_service()
     end
   end
 end

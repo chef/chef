@@ -20,22 +20,7 @@
 require 'spec_helper'
 
 describe Chef::Provider::Service::Init, "load_current_resource" do
-  include SpecHelpers::Provider
-
-  let(:node) { Chef::Node.new.tap(&with_attributes.call(node_attributes)) }
-  let(:node_attributes) { { :command= => { :ps => ps_command } } }
-  let(:ps_command) { 'ps -ef' }
-
-  let(:new_resource) { current_resource }
-  let(:current_resource) { Chef::Resource::Service.new("chef") }
-  let(:provider) { Chef::Provider::Service::Init.new(new_resource, run_context) }
-
-  let(:stdout) { StringIO.new(<<-PS) }
-aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
-aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
-aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
-PS
-  let(:status) { mock("Status", :exitstatus => 0, :stdout => stdout) }
+  include SpecHelpers::Providers::Service
 
   before(:each) do
     provider.stub!(:shell_out!).and_return(status)
@@ -52,7 +37,7 @@ PS
     current_resource.service_name.should == 'chef'
   end
 
-  describe "when the service supports status" do
+  context "when the service supports status" do
     before do
       new_resource.supports({:status => true})
     end
@@ -83,7 +68,7 @@ PS
     end
   end
 
-  describe "when a status command has been specified" do
+  context "when a status command has been specified" do
     before do
       new_resource.stub!(:status_command).and_return("/etc/init.d/chefhasmonkeypants status")
     end
@@ -95,7 +80,7 @@ PS
 
   end
 
-  describe "when the node has not specified a ps command" do
+  context "when the node has not specified a ps command" do
     let(:ps_command) { nil }
 
     it "should set running to false if the node has a nil ps attribute" do
@@ -115,10 +100,7 @@ PS
     end
 
     context 'with process output with running process' do
-      let(:stdout) { StringIO.new(<<-RUNNING_PS) }
-aj        7842  5057  0 21:26 pts/2    00:00:06 chef
-aj        7842  5057  0 21:26 pts/2    00:00:06 poos
-RUNNING_PS
+      let(:stdout) { ps_with_service_running }
 
       it "should set running to true if the regex matches the output" do
         Chef::Resource::Service.stub!(:new).and_return(current_resource)
@@ -140,7 +122,7 @@ RUNNING_PS
     end
   end
 
-  describe "when starting the service" do
+  describe "#start_service" do
     it "should call the start command if one is specified" do
       new_resource.start_command("/etc/init.d/chef startyousillysally")
       provider.should_receive(:shell_out!).with("/etc/init.d/chef startyousillysally")
@@ -153,7 +135,7 @@ RUNNING_PS
     end
   end
 
-  describe Chef::Provider::Service::Init, "stop_service" do
+  describe "#stop_service" do
     it "should call the stop command if one is specified" do
       new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
       provider.should_receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop")
@@ -166,7 +148,7 @@ RUNNING_PS
     end
   end
 
-  describe "when restarting a service" do
+  describe "#restart_service" do
     it "should call 'restart' on the service_name if the resource supports it" do
       new_resource.supports({:restart => true})
       provider.should_receive(:shell_out!).with("/etc/init.d/#{new_resource.service_name} restart")
@@ -187,7 +169,7 @@ RUNNING_PS
     end
   end
 
-  describe "when reloading a service" do
+  describe "#reload_service" do
     it "should call 'reload' on the service if it supports it" do
       new_resource.supports({:reload => true})
       provider.should_receive(:shell_out!).with("/etc/init.d/chef reload")
