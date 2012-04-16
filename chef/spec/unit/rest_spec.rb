@@ -201,21 +201,24 @@ describe Chef::REST do
         @rest.run_request(:GET, @url, {}).should == "ohai2u_success"
       end
 
-      it "should call run_request again on a Redirect response" do
-        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
-        http_response.add_field("location", @url.path)
-        http_response.stub!(:read_body)
-
+      it "should return false on a Not Modified response" do
+        http_response = Net::HTTPNotModified.new("1.1", "304", "It's old Bob")
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+        http_response.stub!(:read_body)
+        @rest.run_request(:GET, @url).should be_false
       end
 
-      it "should call run_request again on a Permanent Redirect response" do
-        http_response = Net::HTTPMovedPermanently.new("1.1", "301", "That's Bob's job")
-        http_response.add_field("location", @url.path)
-        http_response.stub!(:read_body)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
+        it "should call run_request again on a #{resp_name} response" do
+          resp_cls  = Net.const_get(resp_name)
+          resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
+          http_response = resp_cls.new("1.1", resp_code, "bob somewhere else")
+          http_response.add_field("location", @url.path)
+          http_response.stub!(:read_body)
+
+          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+        end
       end
 
       it "should show the JSON error message on an unsuccessful request" do
@@ -388,24 +391,19 @@ describe Chef::REST do
         @rest.api_request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
       end
 
-      it "should call run_request again on a Redirect response" do
-        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
-        http_response.add_field("location", @url.path)
-        http_response.stub!(:read_body)
+      %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
+        it "should call api_request again on a #{resp_name} response" do
+          resp_cls  = Net.const_get(resp_name)
+          resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
+          http_response = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
+          http_response.add_field("location", @url.path)
+          http_response.stub!(:read_body)
 
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
 
-        lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
-      end
-
-      it "should call run_request again on a Permanent Redirect response" do
-        http_response = Net::HTTPMovedPermanently.new("1.1", "301", "That's Bob's job")
-        http_response.add_field("location", @url.path)
-        http_response.stub!(:read_body)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-
-        lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
-      end
+          lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+        end
+       end
 
       it "should show the JSON error message on an unsuccessful request" do
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")

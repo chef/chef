@@ -199,7 +199,8 @@ class Chef
           end
         end
 
-        if res.kind_of?(Net::HTTPSuccess)
+        case res
+        when Net::HTTPSuccess
           if res['content-type'] =~ /json/
             Chef::JSONCompat.from_json(response_body)
           else
@@ -211,10 +212,10 @@ class Chef
               response_body
             end
           end
-        elsif res.kind_of?(Net::HTTPFound) or res.kind_of?(Net::HTTPMovedPermanently)
-          follow_redirect {run_request(method, create_url(res['location']), headers, false, nil, raw)}
-        elsif res.kind_of?(Net::HTTPNotModified)
+        when Net::HTTPNotModified # Must be tested before Net::HTTPRedirection because it's subclass.
           false
+        when Net::HTTPRedirection
+          follow_redirect {run_request(method, create_url(res['location']), headers, false, nil, raw)}
         else
           if res['content-type'] =~ /json/
             exception = Chef::JSONCompat.from_json(response_body)
