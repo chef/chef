@@ -9,4 +9,4 @@ For more information, see the following pages on the Chef Wiki:
 
 == Copyright
 
-Copyright (c) 2009 Adam Jacob. See LICENSE for details.
+Copyright (c) 2009-2012 Adam Jacob. See LICENSE for details.
