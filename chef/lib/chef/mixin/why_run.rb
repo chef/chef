@@ -261,7 +261,7 @@ class Chef
 
         # Run the assertion and assumption logic.
         def run(action)
-          @assertions[action].each {|a| a.run }
+          @assertions[action.to_sym].each {|a| a.run }
         end
       end
     end
