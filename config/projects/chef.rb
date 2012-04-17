@@ -1,8 +1,8 @@
 name "chef"
 
 install_path    "/opt/chef"
-build_version   "0.10.8"
+build_version   Omnibus::BuildVersion.full
 build_iteration "4"
 
-dependencies ["preparation","chef"]
+dependencies ["preparation","chef","verison-manifest"]
 
