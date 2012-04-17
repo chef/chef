@@ -4,7 +4,7 @@
 #
 
 PROGNAME=$(basename $0)
-INSTALLER_DIR=$(dirname $0)
+INSTALLER_DIR="/opt/chef"
 
 function error_exit
 {
