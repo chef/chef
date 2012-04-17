@@ -25,8 +25,6 @@ class Chef
     class Service
       class Simple < Chef::Provider::Service
 
-        include Chef::Mixin::ShellOut
-
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
@@ -106,7 +104,7 @@ class Chef
             r = Regexp.new(@new_resource.pattern)
             Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
             begin
-              shell_out!(ps_cmd).stdout.each_line do |line|
+              exec_ps_cmd!.stdout.each_line do |line|
                 if r.match(line)
                   @current_resource.running true
                   break
@@ -118,6 +116,10 @@ class Chef
               raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
             end
           end
+        end
+
+        def exec_ps_cmd!
+          shell_out!(ps_cmd)
         end
 
         def ps_cmd
