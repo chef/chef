@@ -303,4 +303,47 @@ describe Chef::Provider::User::Useradd do
       @provider.unlock_user
     end
   end
+
+  describe "when checking if home needs updating" do
+    [
+     {
+       "action" => "should return false if home matches",
+       "current_resource_home" => [ "/home/laurent" ],
+       "new_resource_home" => [ "/home/laurent" ],
+       "expected_result" => false
+     },
+     {
+       "action" => "should return true if home doesn't match",
+       "current_resource_home" => [ "/home/laurent" ],
+       "new_resource_home" => [ "/something/else" ],
+       "expected_result" => true
+     },
+     {
+       "action" => "should return false if home only differs by trailing slash",
+       "current_resource_home" => [ "/home/laurent" ],
+       "new_resource_home" => [ "/home/laurent/", "/home/laurent" ],
+       "expected_result" => false
+     },
+     {
+       "action" => "should return false if home is an equivalent path",
+       "current_resource_home" => [ "/home/laurent" ],
+       "new_resource_home" => [ "/home/./laurent", "/home/laurent" ],
+       "expected_result" => false
+     },
+    ].each do |home_check|
+      it home_check["action"] do
+        @provider.current_resource.home home_check["current_resource_home"].first
+        @current_home_mock = mock("Pathname")
+        @provider.new_resource.home home_check["new_resource_home"].first
+        @new_home_mock = mock("Pathname")
+
+        Pathname.should_receive(:new).with(@current_resource.home).and_return(@current_home_mock)
+        @current_home_mock.should_receive(:cleanpath).and_return(home_check["current_resource_home"].last)
+        Pathname.should_receive(:new).with(@new_resource.home).and_return(@new_home_mock)
+        @new_home_mock.should_receive(:cleanpath).and_return(home_check["new_resource_home"].last)
+
+        @provider.updating_home?.should == home_check["expected_result"]
+      end
+    end
+  end
 end
