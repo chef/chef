@@ -22,7 +22,7 @@ require 'chef/provider'
 require 'ipaddr'
 
 class Chef::Provider::Route < Chef::Provider
-    include Chef::Mixin::Command
+    include Chef::Mixin::ShellOut
 
     attr_accessor :is_running
 
@@ -127,9 +127,7 @@ class Chef::Provider::Route < Chef::Provider
       if is_running
         Chef::Log.debug("#{@new_resource} route already active - nothing to do")
       else
-        command = generate_command(:add)
-
-        run_command( :command => command )
+        shell_out!(generate_command(:add))
         Chef::Log.info("#{@new_resource} added")
         @new_resource.updated_by_last_action(true)
       end
@@ -140,9 +138,7 @@ class Chef::Provider::Route < Chef::Provider
 
     def action_delete
       if is_running
-        command = generate_command(:delete)
-
-        run_command( :command => command )
+        shell_out!(generate_command(:delete) )
         Chef::Log.info("#{@new_resource} removed")
         @new_resource.updated_by_last_action(true)
       else
