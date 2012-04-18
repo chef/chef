@@ -21,7 +21,7 @@ require 'chef/provider/user'
 
 class Chef
   class Provider
-    class User 
+    class User
       class Useradd < Chef::Provider::User
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
 
@@ -30,21 +30,21 @@ class Chef
             useradd << universal_options
             useradd << useradd_options
           end
-          shell_out(command)
+          shell_out!(command)
         end
-        
+
         def manage_user
           command = compile_command("usermod") { |u| u << universal_options }
-          shell_out(command)
+          shell_out!(command)
         end
-        
+
         def remove_user
           command = "userdel"
           command << " -r" if managing_home_dir?
           command << " #{@new_resource.username}"
-          shell_out(command)
+          shell_out!(command)
         end
-        
+
         def check_lock
           status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
             status_line = stdout.gets.split(' ')
@@ -78,13 +78,13 @@ class Chef
 
           @locked
         end
-        
+
         def lock_user
-          shell_out("usermod -L #{@new_resource.username}")
+          shell_out!("usermod -L #{@new_resource.username}")
         end
-        
+
         def unlock_user
-          shell_out("usermod -U #{@new_resource.username}")
+          shell_out!("usermod -U #{@new_resource.username}")
         end
 
         def compile_command(base_command)
@@ -92,10 +92,9 @@ class Chef
           base_command << " #{@new_resource.username}"
           base_command
         end
-        
+
         def universal_options
           opts = ''
-          
           UNIVERSAL_OPTIONS.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
               if @new_resource.send(field)
