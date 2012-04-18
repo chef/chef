@@ -52,6 +52,14 @@ class Chef
         
         @current_resource
       end
+
+      def define_resource_requirements
+        requirements.assert(:modify) do |a| 
+          a.assertion { @group_exists } 
+          a.failure_message(Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!")
+          a.whyrun("Group #{@new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
+        end
+      end
       
       # Check to see if a group needs any changes
       #
@@ -76,43 +84,45 @@ class Chef
       def action_create
         case @group_exists
         when false
-          create_group
-          Chef::Log.info("#{@new_resource} created")
-          @new_resource.updated_by_last_action(true)
+          converge_by("would create #{@new_resource}") do 
+            create_group
+            Chef::Log.info("#{@new_resource} created")
+          end
         else 
           if compare_group
-            manage_group
-            Chef::Log.info("#{@new_resource} altered")
-            @new_resource.updated_by_last_action(true)
+            converge_by("would alter group #{@new_resource}") do 
+              manage_group
+              Chef::Log.info("#{@new_resource} altered")
+            end
           end
         end
       end
       
       def action_remove
         if @group_exists
-          remove_group
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} removed")
+          converge_by("would remove group #{@new_resource}") do
+            remove_group
+            Chef::Log.info("#{@new_resource} removed")
+          end
+
         end
       end
       
       def action_manage
         if @group_exists && compare_group
-          manage_group 
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} managed")
+          converge_by("would manage group #{@new_resource}") do
+            manage_group 
+            Chef::Log.info("#{@new_resource} managed")
+          end
         end
       end
       
       def action_modify
-        if @group_exists 
-          if compare_group
+        if compare_group
+          converge_by("would modify group #{@new_resource}") do
             manage_group
-            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} modified")
           end
-        else
-          raise Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!"
         end
       end
       
