@@ -80,19 +80,17 @@ class Chef
       end
 
       # Creates a new key pair, and signs them with the signing certificate
-      # and key generated from generate_signing_ca above.  
+      # and key generated from generate_signing_ca above.
       #
-      # @param [String] The common name for the key pair.
-      # @param [Optional String] The subject alternative name.
-      # @return [Object, Object] The public and private key objects.
-      def gen_keypair(common_name, subject_alternative_name = nil)
+      # All arguments are unused, though two arguments are accepted for compatibility.
+      #
+      # returns an array of [public_key, private_key]
+      def gen_keypair(common_name=nil, subject_alternative_name = nil)
 
         Chef::Log.info("Creating new key pair for #{common_name}")
 
         # generate client keypair
         client_keypair = OpenSSL::PKey::RSA.generate(2048)
-
-        client_cert = OpenSSL::X509::Certificate.new
 
         return client_keypair.public_key, client_keypair
       end
