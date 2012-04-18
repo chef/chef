@@ -25,6 +25,7 @@ class Chef
       deps do
         require 'chef/cookbook_uploader'
         require 'chef/cookbook_site_streaming_uploader'
+        require 'chef/mixin/shell_out'
       end
 
       banner "knife cookbook site share COOKBOOK CATEGORY (options)"
@@ -55,7 +56,7 @@ class Chef
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
-            Chef::Mixin::Command.run_command(:command => "tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
+            Chef::Mixin::ShellOut.shell_out!("tar -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
             ui.error("Error making tarball #{cookbook_name}.tgz: #{e.message}. Set log level to debug (-l debug) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
