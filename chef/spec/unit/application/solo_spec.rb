@@ -117,7 +117,7 @@ describe Chef::Application::Solo do
         @target_file = StringIO.new
         File.stub!(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
 
-        Chef::Mixin::Command.stub!(:run_command).and_return(true)
+        Chef::Mixin::ShellOut.stub!(:shell_out!).and_return(true)
       end
 
       it "should create the recipes path based on the parent of the cookbook path" do
@@ -136,7 +136,7 @@ describe Chef::Application::Solo do
       end
 
       it "should untar the target file to the parent of the cookbook path" do
-        Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvfC #{Dir.tmpdir}/chef-solo/recipes.tgz #{Dir.tmpdir}/chef-solo"}).and_return(true)
+        Chef::Mixin::ShellOut.should_receive(:shell_out!).with("tar zxvfC #{Dir.tmpdir}/chef-solo/recipes.tgz #{Dir.tmpdir}/chef-solo").and_return(true)
         @app.reconfigure
       end
     end

@@ -179,7 +179,7 @@ class Chef::Application::Solo < Chef::Application
           f.write(r.read)
         end
       end
-      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
+      Chef::Mixin::ShellOut.shell_out! "tar zxvfC #{path} #{recipes_path}"
     end
   end
 
