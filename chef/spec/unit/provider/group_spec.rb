@@ -188,7 +188,7 @@ describe Chef::Provider::User do
       @provider.should_not_receive(:manage_group)
       @provider.run_action(:manage)
     end
-  
+    
     it "should not run manage_group if the group exists but has no differing attributes" do
       @provider.should_receive(:compare_group).and_return(false)
       @provider.should_not_receive(:manage_group)
@@ -226,4 +226,34 @@ describe Chef::Provider::User do
       lambda { @provider.run_action(:modify) }.should raise_error(Chef::Exceptions::Group)
     end
   end
+
+  describe "when determining the reason for a change" do
+    it "should report which group members are missing if members are missing and appending to the group" do
+       @new_resource.members << "user1"
+       @new_resource.members << "user2" 
+       @new_resource.stub!(:append).and_return true
+       @provider.compare_group.should be_true
+       @provider.change_desc.should == "would add missing member(s): user1, user2"
+    end
+
+    it "should report that the group members will be overwritten if not appending" do
+       @new_resource.members << "user1"
+       @new_resource.stub!(:append).and_return false 
+       @provider.compare_group.should be_true
+       @provider.change_desc.should == "would replace group members with new list of members"
+    end
+
+    it "should report the gid will be changed when it does not match" do
+      @current_resource.stub!(:gid).and_return("BADF00D")
+      @provider.compare_group.should be_true
+      @provider.change_desc.should == "would change gid #{@current_resource.gid} to #{@new_resource.gid}"
+
+    end
+
+    it "should report no change reason when no change is required" do
+      @provider.compare_group.should be_false
+      @provider.change_desc.should == nil
+    end
+  end
+
 end
