@@ -94,38 +94,7 @@ class Chef
 
         client_cert = OpenSSL::X509::Certificate.new
 
-        ca_cert = OpenSSL::X509::Certificate.new(File.read(Chef::Config[:signing_ca_cert]))
-
-        info = [
-          ["C", Chef::Config[:signing_ca_country]], 
-          ["ST", Chef::Config[:signing_ca_state]], 
-          ["L", Chef::Config[:signing_ca_location]], 
-          ["O", Chef::Config[:signing_ca_org]],
-          ["OU", "Certificate Service"], 
-          ["CN", common_name ]
-        ]
-
-        client_cert.subject = OpenSSL::X509::Name.new(info)
-        client_cert.issuer = ca_cert.subject
-        client_cert.not_before = Time.now
-        client_cert.not_after = Time.now + 10 * 365 * 24 * 60 * 60 # 10 years
-        client_cert.public_key = client_keypair.public_key
-        client_cert.serial = 1
-        client_cert.version = 3
-
-        ef = OpenSSL::X509::ExtensionFactory.new
-        ef.subject_certificate = client_cert
-        ef.issuer_certificate = ca_cert
-
-        client_cert.extensions = [
-                ef.create_extension("basicConstraints", "CA:FALSE", true),
-                ef.create_extension("subjectKeyIdentifier", "hash")
-        ]
-        client_cert.add_extension ef.create_extension("subjectAltName", subject_alternative_name) if subject_alternative_name
-
-        client_cert.sign(OpenSSL::PKey::RSA.new(File.read(Chef::Config[:signing_ca_key])), OpenSSL::Digest::SHA1.new)
-
-        return client_cert.public_key, client_keypair
+        return client_keypair.public_key, client_keypair
       end
 
       def gen_validation_key(name=Chef::Config[:validation_client_name], key_file=Chef::Config[:validation_key], admin=false)
