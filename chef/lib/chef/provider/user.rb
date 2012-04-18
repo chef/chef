@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,24 +18,24 @@
 
 require 'chef/provider'
 require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/resource/user'
 require 'etc'
 
 class Chef
   class Provider
     class User < Chef::Provider
-      
       include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
-      
+
       attr_accessor :user_exists, :locked
-      
+
       def initialize(new_resource, run_context)
         super
         @user_exists = true
         @locked = nil
       end
-  
+
       def convert_group_name
         if @new_resource.gid.is_a? String
           @new_resource.gid(Etc.getgrnam(@new_resource.gid).gid)
@@ -43,11 +43,11 @@ class Chef
       rescue ArgumentError => e
         raise Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
       end
-      
+
       def load_current_resource
         @current_resource = Chef::Resource::User.new(@new_resource.name)
         @current_resource.username(@new_resource.username)
-      
+
         begin
           user_info = Etc.getpwnam(@new_resource.username)
         rescue ArgumentError => e
@@ -55,7 +55,7 @@ class Chef
           Chef::Log.debug("#{@new_resource} user does not exist")
           user_info = nil
         end
-        
+
         if user_info
           @current_resource.uid(user_info.uid)
           @current_resource.gid(user_info.gid)
@@ -63,7 +63,7 @@ class Chef
           @current_resource.home(user_info.dir)
           @current_resource.shell(user_info.shell)
           @current_resource.password(user_info.passwd)
-        
+
           if @new_resource.password && @current_resource.password == 'x'
             begin
               require 'shadow'
@@ -74,12 +74,12 @@ class Chef
               @current_resource.password(shadow_info.sp_pwdp)
             end
           end
-          
+
           if @new_resource.gid
             convert_group_name
           end
         end
-        
+
         @current_resource
       end
 
@@ -93,7 +93,7 @@ class Chef
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
         end
       end
-      
+
       def action_create
         if !@user_exists
           create_user
@@ -105,7 +105,7 @@ class Chef
           @new_resource.updated_by_last_action(true)
         end
       end
-      
+
       def action_remove
         if @user_exists
           remove_user
@@ -177,7 +177,7 @@ class Chef
           raise Chef::Exceptions::User, "Cannot unlock user - does not exist!"
         end
       end
-      
+
       def unlock_user
         raise NotImplementedError
       end
