@@ -77,7 +77,7 @@ class Chef
 
         @current_resource
       end
-
+      
       def cron_different?
         CRON_ATTRIBUTES.any? do |cron_var|
           !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
@@ -125,20 +125,23 @@ class Chef
             end
             crontab << line
           end
+
           # Handle edge case where the Chef comment is the last line in the current crontab
           crontab << newcron if cron_found
 
-          write_crontab crontab
-          Chef::Log.info("#{@new_resource} updated crontab entry")
-          @new_resource.updated_by_last_action(true)
+          converge_by("would update crontab entry for #{@new_resource}") do
+            write_crontab crontab
+            Chef::Log.info("#{@new_resource} updated crontab entry")
+          end
+
         else
           crontab = read_crontab unless @cron_empty
-
           crontab << newcron
 
-          write_crontab crontab
-          Chef::Log.info("#{@new_resource} added crontab entry")
-          @new_resource.updated_by_last_action(true)
+          converge_by("would add crontab entry for #{@new_resource}") do
+            write_crontab crontab
+            Chef::Log.info("#{@new_resource} added crontab entry")
+          end
         end
       end
 
@@ -164,10 +167,12 @@ class Chef
             end
             crontab << line
           end
-
-          write_crontab crontab
-          Chef::Log.info("#{@new_resource} deleted crontab entry")
-          @new_resource.updated_by_last_action(true)
+          description = cron_found ? "would remove #{@new_resource.name} from crontab" : 
+            "would save unmodified crontab"
+          converge_by(description) do
+            write_crontab crontab
+            Chef::Log.info("#{@new_resource} deleted crontab entry")
+          end
         end
       end
 
