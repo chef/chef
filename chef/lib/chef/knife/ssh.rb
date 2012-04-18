@@ -27,7 +27,7 @@ class Chef
         require 'net/ssh/multi'
         require 'readline'
         require 'chef/search/query'
-        require 'chef/mixin/command'
+        require 'chef/mixin/shell_out'
       end
 
       attr_writer :password
@@ -294,7 +294,7 @@ class Chef
           cmd = ["tmux new-session -d -s #{tmux_name}",
                  "-n '#{server.host}'", ssh_dest.call(server),
                  new_window_cmds.call].join(" ")
-          Chef::Mixin::Command.run_command(:command => cmd)
+          Chef::Mixin::ShellOut.shell_out!(cmd)
           exec("tmux attach-session -t #{tmux_name}")
         rescue Chef::Exceptions::Exec
         end
