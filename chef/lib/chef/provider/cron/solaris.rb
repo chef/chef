@@ -20,11 +20,13 @@
 
 require 'chef/log'
 require 'chef/provider'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Cron
       class Solaris < Chef::Provider::Cron
+        include Chef::Mixin::ShellOut
 
         private
 
@@ -44,7 +46,7 @@ class Chef
           tempcron << crontab
           tempcron.flush
           tempcron.chmod(0644)
-          status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
+          status = shell_out!("/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
           tempcron.close!
           if status.exitstatus > 0
             raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
