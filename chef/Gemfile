@@ -2,6 +2,9 @@ source :rubygems
 
 gemspec
 
+# Temporary until stdin branch has been verified to work
+gem 'mixlib-shellout', :git => 'git://github.com/hosh/mixlib-shellout.git', :branch => 'chef-2994-stdin-support'
+
 gem "dep_selector", :group => :development, :platform => "ruby"
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
