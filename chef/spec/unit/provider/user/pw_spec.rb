@@ -22,7 +22,7 @@ describe Chef::Provider::User::Pw do
   before(:each) do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @new_resource = Chef::Resource::User.new("adam")
     @new_resource.comment   "Adam Jacob"
     @new_resource.uid       1000
@@ -30,7 +30,7 @@ describe Chef::Provider::User::Pw do
     @new_resource.home      "/home/adam"
     @new_resource.shell     "/usr/bin/zsh"
     @new_resource.password  "abracadabra"
-    
+
     @new_resource.supports :manage_home => true
 
     @current_resource = Chef::Resource::User.new("adam")
@@ -85,12 +85,12 @@ describe Chef::Provider::User::Pw do
 
   describe "create_user" do
     before(:each) do
-      @provider.stub!(:shell_out).and_return(true)
+      @provider.stub!(:shell_out!).and_return(true)
       @provider.stub!(:modify_password).and_return(true)
     end
 
     it "should run pw useradd with the return of set_options" do
-      @provider.should_receive(:shell_out).with("pw useradd adam -m").and_return(true)
+      @provider.should_receive(:shell_out!).with("pw useradd adam -m").and_return(true)
       @provider.create_user
     end
 
@@ -102,12 +102,12 @@ describe Chef::Provider::User::Pw do
 
   describe "manage_user" do
     before(:each) do
-      @provider.stub!(:shell_out).and_return(true)
+      @provider.stub!(:shell_out!).and_return(true)
       @provider.stub!(:modify_password).and_return(true)
     end
 
     it "should run pw usermod with the return of set_options" do
-      @provider.should_receive(:shell_out).with("pw usermod adam -m").and_return(true)
+      @provider.should_receive(:shell_out!).with("pw usermod adam -m").and_return(true)
       @provider.manage_user
     end
 
@@ -120,12 +120,12 @@ describe Chef::Provider::User::Pw do
   describe "remove_user" do
     it "should run pw userdel with the new resources user name" do
       @new_resource.supports :manage_home => false
-      @provider.should_receive(:shell_out).with("pw userdel #{@new_resource.username}").and_return(true)
+      @provider.should_receive(:shell_out!).with("pw userdel #{@new_resource.username}").and_return(true)
       @provider.remove_user
     end
 
     it "should run pw userdel with the new resources user name and -r if manage_home is true" do
-      @provider.should_receive(:shell_out).with("pw userdel #{@new_resource.username} -r").and_return(true)
+      @provider.should_receive(:shell_out!).with("pw userdel #{@new_resource.username} -r").and_return(true)
       @provider.remove_user
     end
   end
@@ -144,14 +144,14 @@ describe Chef::Provider::User::Pw do
 
   describe "when locking the user" do
     it "should run pw lock with the new resources username" do
-      @provider.should_receive(:shell_out).with("pw lock #{@new_resource.username}")
+      @provider.should_receive(:shell_out!).with("pw lock #{@new_resource.username}")
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run pw unlock with the new resources username" do
-      @provider.should_receive(:shell_out).with("pw unlock #{@new_resource.username}")
+      @provider.should_receive(:shell_out!).with("pw unlock #{@new_resource.username}")
       @provider.unlock_user
     end
   end
@@ -159,8 +159,7 @@ describe Chef::Provider::User::Pw do
   describe "when modifying the password" do
     before(:each) do
       @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:popen4).and_return(@status)
-      @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
+      @provider.stub!(:shell_out!).and_return(@status)
     end
 
     it "should check for differences in password between the new and current resources" do
@@ -193,15 +192,14 @@ describe Chef::Provider::User::Pw do
       end
 
       it "should run pw usermod with the username and the option -H 0" do
-        @provider.should_receive(:popen4).with("pw usermod adam -H 0", :waitlast => true).and_return(@status)
+        @provider.should_receive(:shell_out!).with("pw usermod adam -H 0", :input => anything).and_return(@status)
         @provider.modify_password
       end
 
       it "should send the new password to the stdin of pw usermod" do
         @stdin = StringIO.new
-        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        @provider.should_receive(:shell_out!).with(anything, :input => "abracadabra")
         @provider.modify_password
-        @stdin.string.should == "abracadabra\n"
       end
 
       it "should raise an exception if pw usermod fails" do
