@@ -36,6 +36,7 @@ require 'erb'
 class Chef
   class Provider
     class Ifconfig < Chef::Provider
+      include Chef::Mixin::ShellOut
       include Chef::Mixin::Command
 
       def load_current_resource
@@ -89,9 +90,8 @@ class Chef
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
 
-          run_command(
-            :command => command
-          )
+          shell_out! command
+
           Chef::Log.info("#{@new_resource} added")
           @new_resource.updated_by_last_action(true)
         end
@@ -111,9 +111,8 @@ class Chef
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
 
-          run_command(
-            :command => command
-          )
+          shell_out! command
+
           Chef::Log.info("#{@new_resource} enabled")
           @new_resource.updated_by_last_action(true)
         end
@@ -122,10 +121,9 @@ class Chef
       def action_delete
         # check to see if load_current_resource found the interface
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
-          run_command(
-            :command => command
-          )
+
+          shell_out! "ifconfig #{@new_resource.device} down"
+
           delete_config
           Chef::Log.info("#{@new_resource} deleted")
           @new_resource.updated_by_last_action(true)
@@ -138,10 +136,9 @@ class Chef
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
-          run_command(
-            :command => command
-          )
+
+          shell_out! "ifconfig #{@new_resource.device} down"
+
           Chef::Log.info("#{@new_resource} disabled")
           @new_resource.updated_by_last_action(true)
         else
