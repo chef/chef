@@ -99,7 +99,7 @@ describe Chef::Provider::User::Useradd do
       provider.universal_options.should eql(match_string)
     end
 
-    describe "when we want to create a system user" do
+    context "when we want to create a system user" do
       before do
         new_resource.manage_home(true)
         new_resource.non_unique(false)
@@ -111,7 +111,7 @@ describe Chef::Provider::User::Useradd do
       end
     end
 
-    describe "when the resource has a different home directory and supports home directory management" do
+    context "when the resource has a different home directory and supports home directory management" do
       before do
         new_resource.stub!(:home).and_return("/wowaweea")
         new_resource.stub!(:supports).and_return({:manage_home => true,
@@ -124,7 +124,7 @@ describe Chef::Provider::User::Useradd do
       end
     end
 
-    describe "when the resource has a different home directory and supports home directory management (using real attributes)" do
+    context "when the resource has a different home directory and supports home directory management (using real attributes)" do
       before do
         new_resource.stub!(:home).and_return("/wowaweea")
         new_resource.stub!(:manage_home).and_return(true)
@@ -137,7 +137,7 @@ describe Chef::Provider::User::Useradd do
       end
     end
 
-    describe "when the resource supports non_unique ids" do
+    context "when the resource supports non_unique ids" do
       before do
         new_resource.stub!(:supports).and_return({:manage_home => false,
                                                   :non_unique => true})
@@ -148,7 +148,7 @@ describe Chef::Provider::User::Useradd do
       end
     end
 
-    describe "when the resource supports non_unique ids (using real attributes)" do
+    context "when the resource supports non_unique ids (using real attributes)" do
       before do
         new_resource.stub!(:manage_home).and_return(false)
         new_resource.stub!(:non_unique).and_return(true)
@@ -160,7 +160,7 @@ describe Chef::Provider::User::Useradd do
     end
   end
 
-  describe "when creating a user" do
+  describe "#create_user" do
     before(:each) do
       provider.new_resource.manage_home true
       provider.new_resource.gid '23'
@@ -187,7 +187,7 @@ describe Chef::Provider::User::Useradd do
 
   end
 
-  describe "when managing a user" do
+  describe "#manage_user" do
     before(:each) do
       provider.new_resource.manage_home true
       provider.new_resource.home "/Users/mud"
@@ -207,8 +207,7 @@ describe Chef::Provider::User::Useradd do
 
   end
 
-  describe "when removing a user" do
-
+  describe "#remove_user" do
     it "should run userdel with the new resources user name" do
       provider.should_receive(:shell_out!).with("userdel #{new_resource.username}").and_return(true)
       provider.remove_user
@@ -229,87 +228,148 @@ describe Chef::Provider::User::Useradd do
     end
   end
 
-  describe "when checking the lock" do
-    before(:each) do
-      provider.stub!(:popen4).and_return(status)
-      stdout.stub!(:gets).and_return("root P 09/02/2008 0 99999 7 -1")
-    end
+  describe "#check_lock" do
+    let(:passwd_status) { mock("passwd -S <username>", :exitstatus => exitstatus, :stdout => stdout) }
+    let(:stdout) { "root P 09/02/2008 0 99999 7 -1" }
+    let(:exitstatus) { 0 }
 
-    let(:status) { mock("Status", :exitstatus => 0) }
-    let(:stdin) { mock("STDIN", :nil_object => true) }
-    let(:stdout) { mock("STDOUT", :nil_object => true) }
-    let(:stderr) { mock("STDERR", :nil_object => true) }
-    let(:pid) { mock("PID", :nil_object => true) }
+    let(:should_shell_out_to_passwd) do
+      provider.
+        should_receive(:shell_out!).
+        with("passwd -S #{new_resource.username}").
+        and_return(passwd_status)
+    end
 
     it "should call passwd -S to check the lock status" do
-      provider.should_receive(:popen4).with("passwd -S #{new_resource.username}").and_return(status)
+      should_shell_out_to_passwd
       provider.check_lock
     end
 
-    it "should get the first line of passwd -S STDOUT" do
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      stdout.should_receive(:gets).and_return("root P 09/02/2008 0 99999 7 -1")
-      provider.check_lock
-    end
+    context 'when checking lock status' do
+      subject { should_shell_out_to_passwd; provider.check_lock }
+      context 'with status that begins with P' do
+        let(:stdout) { "root P 09/02/2008 0 99999 7 -1" }
 
-    it "should return false if status begins with P" do
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.check_lock.should eql(false)
-    end
-
-    it "should return false if status begins with N" do
-      stdout.stub!(:gets).and_return("root N")
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.check_lock.should eql(false)
-    end
-
-    it "should return true if status begins with L" do
-      stdout.stub!(:gets).and_return("root L")
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.check_lock.should eql(true)
-    end
-
-    it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
-      node.automatic_attrs[:platform] = 'ubuntu'
-      status.should_receive(:exitstatus).and_return(1)
-      lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
-    end
-
-    ['redhat', 'centos'].each do |os|
-      it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
-        node.automatic_attrs[:platform] = os
-        stdout.stub!(:gets).and_return("passwd-0.73-1\n")
-        status.should_receive(:exitstatus).twice.and_return(1)
-        provider.should_receive(:popen4).with("passwd -S #{new_resource.username}")
-        provider.should_receive(:popen4).with("rpm -q passwd").and_yield(pid, stdin, stdout, stderr).and_return(status)
-        lambda { provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+        it { should be_false }
       end
 
-      it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do
-        node.automatic_attrs[:platform] = os
-        stdout.stub!(:gets).and_return("passwd-0.73-2\n")
-        status.should_receive(:exitstatus).twice.and_return(1)
-        provider.should_receive(:popen4).with("passwd -S #{new_resource.username}")
-        provider.should_receive(:popen4).with("rpm -q passwd").and_yield(pid, stdin, stdout, stderr).and_return(status)
-        lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
+      context 'with status that begins with N' do
+        let(:stdout) { "root N 09/02/2008 0 99999 7 -1" }
+        it { should be_false }
       end
 
-      it "should raise a Chef::Exceptions::User if passwd -S exits with something other than 0 or 1 on #{os}" do
-        node.automatic_attrs[:platform] = os
-        status.should_receive(:exitstatus).twice.and_return(2)
-        lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
+      context 'with status that begins with L' do
+        let(:stdout) { "root L 09/02/2008 0 99999 7 -1" }
+        it { should be_true }
+      end
+    end
+
+    context "when using a broken passwd" do
+      let(:given) do
+        assume_broken_passwd
+        should_shell_out_to_passwd
+      end
+      let(:assume_broken_passwd) { provider.stub!(:broken_passwd_version?).and_return(true) }
+
+      context "when `passwd -S` exits with a 0" do
+        let(:exitstatus) { 0 }
+
+        it "should not raise a Chef::Exceptions::User" do
+          given
+          lambda { provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+        end
+      end
+
+      context "when `passwd -S` exits with a 1" do
+        let(:exitstatus) { 1 }
+
+        it "should not raise a Chef::Exceptions::User" do
+          given
+          lambda { provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+        end
+      end
+    end
+
+    context "when using a sane passwd" do
+      let(:given) do
+        assume_sane_passwd
+        should_shell_out_to_passwd
+      end
+      let(:assume_sane_passwd) { provider.stub!(:broken_passwd_version?).and_return(false) }
+
+      context 'when `passwd -S` exists with a 0' do
+        let(:exitstatus) { 0 }
+
+        it "should not raise a Chef::Exceptions::User" do
+          given
+          lambda { provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
+        end
+      end
+
+      context 'when `passwd -S` exists with a 1' do
+        let(:exitstatus) { 1 }
+
+        it "should raise a Chef::Exceptions::User" do
+          given
+          lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
+        end
+      end
+
+      context 'when `passwd -S` exits with something other than 0 or 1' do
+        let(:exitstatus) { rand(50) + 2 }
+
+        it "should raise a Chef::Exceptions::User" do
+          given
+          lambda { provider.check_lock }.should raise_error(Chef::Exceptions::User)
+        end
       end
     end
   end
 
-  describe "when locking the user" do
+  describe '#broken_passwd_version?' do
+    subject { given; provider.broken_passwd_version? }
+
+    let(:given) do
+      assume_platform
+      shell_out_to_rpm
+    end
+
+    let(:shell_out_to_rpm) { provider.should_receive(:shell_out!).with('rpm -q passwd').and_return(status) }
+    let(:status) { mock('rpm -q passwd', :exitstatus => exitstatus, :stdout => passwd_version) }
+    let(:exitstatus) { 0 }
+
+    ['redhat', 'centos'].each do |os|
+      context "when running on #{os}" do
+        let(:assume_platform) { node.automatic_attrs[:platform] = os }
+
+        context 'with passwd version 0.73-1' do
+          let(:passwd_version) { 'passwd-0.73-1' }
+          it { should be_true }
+        end
+
+        context 'with passwd version 0.73-2' do
+          let(:passwd_version) { 'passwd-0.73-2' }
+          it { should be_false }
+        end
+      end
+    end
+
+    context 'when not running on RHEL or CentOS' do
+      let(:assume_platform) { node.automatic_attrs[:platform] = "Random Distro #{rand(10000)}" }
+      let(:shell_out_to_rpm) { provider.should_not_receive(:shell_out!).with('rpm -q passwd').and_return(status) }
+      let(:passwd_version) { "passwd-irrelevent-#{rand(100)}" }
+      it { should be_false }
+    end
+  end
+
+  describe "#lock_user" do
     it "should run usermod -L with the new resources username" do
       provider.should_receive(:shell_out!).with("usermod -L #{new_resource.username}")
       provider.lock_user
     end
   end
 
-  describe "when unlocking the user" do
+  describe "#unlock_user" do
     it "should run usermod -L with the new resources username" do
       provider.should_receive(:shell_out!).with("usermod -U #{new_resource.username}")
       provider.unlock_user
