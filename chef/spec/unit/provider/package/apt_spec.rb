@@ -44,7 +44,7 @@ PKG_STATUS
     @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
   end
 
-  describe "when loading current resource" do
+  describe "#load_current_resource" do
 
     it "should create a current resource with the name of the new_resource" do
       @provider.should_receive(:shell_out!).and_return(@shell_out)
@@ -140,7 +140,7 @@ libmysqlclient-dev:
 RPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient-dev").and_return(real_package)
-      @provider.should_not_receive(:run_command_with_systems_locale)
+      @provider.should_not_receive(:shell_out_with_systems_locale!)
       @provider.load_current_resource
     end
 
@@ -192,31 +192,35 @@ SHOWPKG_STDOUT
 
   end
 
-  describe "install_package" do
+  describe "#install_package" do
     it "should run apt-get install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y install irssi=0.8.12-7",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "apt-get -q -y install irssi=0.8.12-7",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
       @provider.install_package("irssi", "0.8.12-7")
     end
 
     it "should run apt-get install with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes install irssi=0.8.12-7",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "apt-get -q -y --force-yes install irssi=0.8.12-7",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
       @new_resource.stub!(:options).and_return("--force-yes")
 
       @provider.install_package("irssi", "0.8.12-7")
     end
+
+    context "when installing a virtual package" do
+      it "should install the package without specifying a version" do
+        @provider.is_virtual_package = true
+        @provider.should_receive(:shell_out_with_systems_locale!).with(
+          "apt-get -q -y install libmysqlclient-dev",
+          :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
+          @provider.install_package("libmysqlclient-dev", "not_a_real_version")
+      end
+    end
   end
 
-  describe Chef::Provider::Package::Apt, "upgrade_package" do
+  describe "#upgrade_package" do
 
     it "should run install_package with the name and version" do
       @provider.should_receive(:install_package).with("irssi", "0.8.12-7")
@@ -224,60 +228,47 @@ SHOWPKG_STDOUT
     end
   end
 
-  describe Chef::Provider::Package::Apt, "remove_package" do
+  describe "#remove_package" do
 
     it "should run apt-get remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y remove irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "apt-get -q -y remove irssi",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
       @provider.remove_package("irssi", "0.8.12-7")
     end
 
     it "should run apt-get remove with the package name and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes remove irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "apt-get -q -y --force-yes remove irssi",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
       @new_resource.stub!(:options).and_return("--force-yes")
 
       @provider.remove_package("irssi", "0.8.12-7")
     end
   end
 
-  describe "when purging a package" do
-
+  describe "#purge_package" do
     it "should run apt-get purge with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y purge irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "apt-get -q -y purge irssi",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
       @provider.purge_package("irssi", "0.8.12-7")
     end
 
     it "should run apt-get purge with the package name and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes purge irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "apt-get -q -y --force-yes purge irssi",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
       @new_resource.stub!(:options).and_return("--force-yes")
 
       @provider.purge_package("irssi", "0.8.12-7")
     end
   end
 
-  describe "when preseeding a package" do
+  describe "#preseed_package" do
     before(:each) do
       @provider.stub!(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
-      @provider.stub!(:run_command_with_systems_locale).and_return(true)
+      @provider.stub!(:shell_out_with_systems_locale!).and_return(true)
     end
 
     it "should get the full path to the preseed response file" do
@@ -286,48 +277,30 @@ SHOWPKG_STDOUT
     end
 
     it "should run debconf-set-selections on the preseed file if it has changed" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      }).and_return(true)
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } ).and_return(true)
       @provider.preseed_package("irssi", "0.8.12-7")
     end
 
     it "should not run debconf-set-selections if the preseed file has not changed" do
       @provider.stub!(:get_preseed_file).and_return(false)
-      @provider.should_not_receive(:run_command_with_systems_locale)
+      @provider.should_not_receive(:shell_out_with_systems_locale!)
       @provider.preseed_package("irssi", "0.8.12-7")
     end
   end
 
-  describe "when reconfiguring a package" do
+  describe "#reconfig_package" do
     before(:each) do
-      @provider.stub!(:run_command_with_systems_locale).and_return(true)
+      @provider.stub!(:shell_out_with_systems_locale!).and_return(true)
     end
 
     it "should run dpkg-reconfigure package" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg-reconfigure irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      }).and_return(true)
+      @provider.should_receive(:shell_out_with_systems_locale!).with(
+        "dpkg-reconfigure irssi",
+        :environment => { "DEBIAN_FRONTEND" => "noninteractive" } ).and_return(true)
       @provider.reconfig_package("irssi", "0.8.12-7")
     end
   end
 
-  describe "when installing a virtual package" do
-    it "should install the package without specifying a version" do
-        @provider.is_virtual_package = true
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "apt-get -q -y install libmysqlclient-dev",
-          :environment => {
-            "DEBIAN_FRONTEND" => "noninteractive"
-          }
-        })
-        @provider.install_package("libmysqlclient-dev", "not_a_real_version")
-    end
-  end
 end

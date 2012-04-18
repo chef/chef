@@ -24,8 +24,7 @@ require 'chef/platform'
 class Chef
   class Provider
     class Package < Chef::Provider
-
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       attr_accessor :candidate_version
 

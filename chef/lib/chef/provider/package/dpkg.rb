@@ -25,6 +25,8 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package::Apt
+        include Chef::Mixin::Command
+
         DPKG_INFO = /([a-z\d\-\+\.]+)\t([\w\d.~-]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
         DPKG_VERSION = /^Version: (.+)$/
@@ -58,7 +60,7 @@ class Chef
               end
             end
           end
-          
+
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
@@ -79,35 +81,26 @@ class Chef
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
           end
-          
+
           @current_resource
         end
-     
+
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          shell_out_with_systems_locale!(
+            "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
+            :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
         end
 
         def remove_package(name, version)
-          run_command_with_systems_locale(
-            :command => "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          shell_out_with_systems_locale!(
+            "dpkg -r#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
+            :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
         end
-      
+
         def purge_package(name, version)
-          run_command_with_systems_locale(
-            :command => "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          shell_out_with_systems_locale!(
+            "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",
+            :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
         end
       end
     end

@@ -35,7 +35,7 @@ describe Chef::Provider::Package::Macports do
     @pid = 2342
   end
 
-  describe "load_current_resource" do
+  describe "#load_current_resource" do
     it "should create a current resource with the name of the new_resource" do
       @provider.should_receive(:current_installed_version).and_return(nil)
       @provider.should_receive(:macports_candidate_version).and_return("4.2.7")
@@ -67,7 +67,7 @@ describe Chef::Provider::Package::Macports do
     end
   end
 
-  describe "current_installed_version" do
+  describe "#current_installed_version" do
     it "should return the current version if the package is installed" do
       @stdout.should_receive(:read).and_return(<<EOF
 The following ports are currently installed:
@@ -86,7 +86,7 @@ EOF
     end
   end
 
-  describe "macports_candidate_version" do
+  describe "#macports_candidate_version" do
     it "should return the latest available version of a given package" do
       @stdout.should_receive(:read).and_return("version: 4.2.7\n")
       @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
@@ -100,11 +100,11 @@ EOF
     end
   end
 
-  describe "install_package" do
+  describe "#install_package" do
     it "should run the port install command with the correct version" do
       @current_resource.should_receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port install zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port install zsh @4.2.7")
 
       @provider.install_package("zsh", "4.2.7")
     end
@@ -112,7 +112,7 @@ EOF
     it "should not do anything if a package already exists with the same version" do
       @current_resource.should_receive(:version).and_return("4.2.7")
       @provider.current_resource = @current_resource
-      @provider.should_not_receive(:run_command_with_systems_locale)
+      @provider.should_not_receive(:shell_out_with_systems_locale!)
 
       @provider.install_package("zsh", "4.2.7")
     end
@@ -121,54 +121,53 @@ EOF
       @current_resource.should_receive(:version).and_return("4.1.6")
       @provider.current_resource = @current_resource
       @new_resource.stub!(:options).and_return("-f")
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f install zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port -f install zsh @4.2.7")
 
       @provider.install_package("zsh", "4.2.7")
     end
   end
 
-  describe "purge_package" do
+  describe "#purge_package" do
     it "should run the port uninstall command with the correct version" do
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port uninstall zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
 
     it "should purge the currently active version if no explicit version is passed in" do
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port uninstall zsh")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port uninstall zsh")
       @provider.purge_package("zsh", nil)
     end
 
     it "should add options to the port command when specified" do
       @new_resource.stub!(:options).and_return("-f")
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f uninstall zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port -f uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
   end
 
-  describe "remove_package" do
+  describe "#remove_package" do
     it "should run the port deactivate command with the correct version" do
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port deactivate zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port deactivate zsh @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
 
     it "should remove the currently active version if no explicit version is passed in" do
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port deactivate zsh")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port deactivate zsh")
       @provider.remove_package("zsh", nil)
     end
 
     it "should add options to the port command when specified" do
       @new_resource.stub!(:options).and_return("-f")
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f deactivate zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with( "port -f deactivate zsh @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
   end
 
-  describe "upgrade_package" do
+  describe "#upgrade_package" do
     it "should run the port upgrade command with the correct version" do
       @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
-
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port upgrade zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port upgrade zsh @4.2.7")
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
@@ -176,7 +175,7 @@ EOF
     it "should not run the port upgrade command if the version is already installed" do
       @current_resource.should_receive(:version).at_least(:once).and_return("4.2.7")
       @provider.current_resource = @current_resource
-      @provider.should_not_receive(:run_command_with_systems_locale)
+      @provider.should_not_receive(:run_command_with_systems_locale!)
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
@@ -194,7 +193,7 @@ EOF
       @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
       @provider.current_resource = @current_resource
 
-      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f upgrade zsh @4.2.7")
+      @provider.should_receive(:shell_out_with_systems_locale!).with("port -f upgrade zsh @4.2.7")
 
       @provider.upgrade_package("zsh", "4.2.7")
     end

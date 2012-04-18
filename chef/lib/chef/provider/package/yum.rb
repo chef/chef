@@ -27,6 +27,7 @@ class Chef
   class Provider
     class Package
       class Yum < Chef::Provider::Package
+        include Chef::Mixin::Command
 
         class RPMUtils
           class << self

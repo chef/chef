@@ -37,7 +37,7 @@ ERR
     @pid = 2342
   end
 
-  describe "when determining the current package state" do
+  context "when determining the current package state" do
     it "should create a current resource with the name of the new_resource" do
       Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
@@ -123,54 +123,45 @@ PACMAN
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "install_package" do
+  describe "#install_package" do
     it "should run pacman install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --sync --noconfirm --noprogressbar nano"
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with("pacman --sync --noconfirm --noprogressbar nano")
       @provider.install_package("nano", "1.0")
     end
 
     it "should run pacman install with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --sync --noconfirm --noprogressbar --debug nano"
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with("pacman --sync --noconfirm --noprogressbar --debug nano")
       @new_resource.stub!(:options).and_return("--debug")
 
       @provider.install_package("nano", "1.0")
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "upgrade_package" do
+  describe "#upgrade_package" do
     it "should run install_package with the name and version" do
       @provider.should_receive(:install_package).with("nano", "1.0")
       @provider.upgrade_package("nano", "1.0")
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "remove_package" do
+  describe "#remove_package" do
     it "should run pacman remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --remove --noconfirm --noprogressbar nano"
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with("pacman --remove --noconfirm --noprogressbar nano")
       @provider.remove_package("nano", "1.0")
     end
 
     it "should run pacman remove with the package name and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pacman --remove --noconfirm --noprogressbar --debug nano"
-      })
+      @provider.should_receive(:shell_out_with_systems_locale!).with("pacman --remove --noconfirm --noprogressbar --debug nano" )
       @new_resource.stub!(:options).and_return("--debug")
 
       @provider.remove_package("nano", "1.0")
     end
   end
 
-  describe Chef::Provider::Package::Pacman, "purge_package" do
+  describe "#purge_package" do
     it "should run remove_package with the name and version" do
       @provider.should_receive(:remove_package).with("nano", "1.0")
       @provider.purge_package("nano", "1.0")
     end
-
   end
 end

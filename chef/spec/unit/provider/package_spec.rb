@@ -30,7 +30,7 @@ describe Chef::Provider::Package do
     @provider.candidate_version = "1.0"
   end
 
-  describe "when installing a package" do
+  context "when installing a package" do
     before(:each) do
       @provider.current_resource = @current_resource
       @provider.stub!(:install_package).and_return(true)
@@ -133,7 +133,7 @@ describe Chef::Provider::Package do
 
   end
 
-  describe "when upgrading the package" do
+  context "when upgrading the package" do
     before(:each) do
       @provider.stub!(:upgrade_package).and_return(true)
     end
@@ -177,7 +177,7 @@ describe Chef::Provider::Package do
     end
   end
 
-  describe "When removing the package" do
+  context "when removing the package" do
     before(:each) do
       @provider.stub!(:remove_package).and_return(true)
       @current_resource.version '1.4.2'
@@ -217,7 +217,7 @@ describe Chef::Provider::Package do
 
   end
 
-  describe "When purging the package" do
+  context "when purging the package" do
     before(:each) do
       @provider.stub!(:purge_package).and_return(true)
       @current_resource.version '1.4.2'
@@ -259,7 +259,7 @@ describe Chef::Provider::Package do
 
   end
 
-  describe "when reconfiguring the package" do
+  context "when reconfiguring the package" do
     before(:each) do
       @provider.stub!(:reconfig_package).and_return(true)
     end
@@ -300,7 +300,7 @@ describe Chef::Provider::Package do
     end
   end
 
-  describe "when running commands to be implemented by subclasses" do
+  context "when running commands to be implemented by subclasses" do
     it "should raises UnsupportedAction for install" do
       lambda { @provider.install_package('emacs', '1.4.2') }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
@@ -327,7 +327,7 @@ describe Chef::Provider::Package do
     end
   end
 
-  describe "when given a response file" do
+  context "when given a response file" do
     before(:each) do
       @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
@@ -343,11 +343,12 @@ describe Chef::Provider::Package do
       @new_resource.cookbook_name = 'java'
     end
 
-    describe "creating the cookbook file resource to fetch the response file" do
+    context "when creating the cookbook file resource to fetch the response file" do
       before do
         Chef::FileCache.should_receive(:create_cache_path).with('preseed/java').and_return("/tmp/preseed/java")
       end
-      it "sets the preseed resource's runcontext to its own run context" do
+
+      it "should set the preseed resource's runcontext to its own run context" do
         Chef::FileCache.rspec_reset
         Chef::FileCache.stub!(:create_cache_path).and_return("/tmp/preseed/java")
         @provider.preseed_resource('java', '6').run_context.should_not be_nil
@@ -366,12 +367,12 @@ describe Chef::Provider::Package do
         @provider.preseed_resource('java', '6').backup.should be_false
       end
 
-      it "sets the install path of the resource to $file_cache/$cookbook/$pkg_name-$pkg_version.seed" do
+      it "should set the install path of the resource to $file_cache/$cookbook/$pkg_name-$pkg_version.seed" do
         @provider.preseed_resource('java', '6').path.should == '/tmp/preseed/java/java-6.seed'
       end
     end
 
-    describe "when installing the preseed file to the cache location" do
+    context "when installing the preseed file to the cache location" do
       before do
         @node[:platform] = :just_testing
         @node[:platform_version] = :just_testing
@@ -391,12 +392,12 @@ describe Chef::Provider::Package do
         FileUtils.rm(@response_file_destination) if ::File.exist?(@response_file_destination)
       end
 
-      it "creates the preseed file in the cache" do
+      it "should create the preseed file in the cache" do
         @response_file_resource.should_receive(:run_action).with('create')
         @provider.get_preseed_file("java", "6")
       end
 
-      it "returns the path to the response file if the response file was updated" do
+      it "should return the path to the response file if the response file was updated" do
         @provider.get_preseed_file("java", "6").should == @response_file_destination
       end
 

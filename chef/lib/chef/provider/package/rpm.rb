@@ -24,19 +24,19 @@ class Chef
   class Provider
     class Package
       class Rpm < Chef::Provider::Package
-
+        include Chef::Mixin::Command
         include Chef::Mixin::GetSourceFromPackage
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           @new_resource.version(nil)
-          
+
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
               raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             end
-            
+
             Chef::Log.debug("#{@new_resource} checking rpm status")
             status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each do |line|
@@ -52,7 +52,7 @@ class Chef
               raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
             end
           end
-          
+
           Chef::Log.debug("#{@new_resource} checking install state")
           status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
@@ -63,37 +63,29 @@ class Chef
               end
             end
           end
-          
+
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "rpm failed - #{status.inspect}!"
           end
-          
+
           @current_resource
         end
-        
+
         def install_package(name, version)
           unless @current_resource.version
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -i #{@new_resource.source}"
-            )
+            shell_out_with_systems_locale! "rpm #{@new_resource.options} -i #{@new_resource.source}"
           else
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -U #{@new_resource.source}"
-            )
+            shell_out_with_systems_locale! "rpm #{@new_resource.options} -U #{@new_resource.source}"
           end
         end
-        
+
         alias_method :upgrade_package, :install_package
-        
+
         def remove_package(name, version)
           if version
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -e #{name}-#{version}"
-            )
+            shell_out_with_systems_locale! "rpm #{@new_resource.options} -e #{name}-#{version}"
           else
-            run_command_with_systems_locale(
-              :command => "rpm #{@new_resource.options} -e #{name}"
-            )
+            shell_out_with_systems_locale! "rpm #{@new_resource.options} -e #{name}"
           end
         end
 

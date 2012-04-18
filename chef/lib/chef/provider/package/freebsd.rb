@@ -26,8 +26,6 @@ class Chef
   class Provider
     class Package
       class Freebsd < Chef::Provider::Package
-        include Chef::Mixin::ShellOut
-
         include Chef::Mixin::GetSourceFromPackage
 
         def initialize(*args)

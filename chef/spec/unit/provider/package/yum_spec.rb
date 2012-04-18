@@ -41,7 +41,7 @@ describe Chef::Provider::Package::Yum do
     @pid = mock("PID")
   end
 
-  describe "when loading the current system state" do
+  describe "#load_current_resource" do
     it "should create a current resource with the name of the new_resource" do
       @provider.load_current_resource
       @provider.current_resource.name.should == "cups"
@@ -72,7 +72,7 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource.should eql(@provider.current_resource)
     end
 
-    describe "when arch in package_name" do
+    context "when arch in package_name" do
       it "should set the arch if no existing package_name is found and new_package_name+new_arch is available" do
         @new_resource = Chef::Resource::YumPackage.new('testing.noarch')
         @yum_cache = mock(
@@ -304,7 +304,7 @@ describe Chef::Provider::Package::Yum do
     end
   end
 
-  describe "when installing a package" do
+  describe "#install_package" do
     it "should run yum install with the package name and version" do
       @provider.load_current_resource
       Chef::Provider::Package::Yum::RPMUtils.stub!(:rpmvercmp).and_return(-1)
@@ -453,7 +453,7 @@ describe Chef::Provider::Package::Yum do
     end
   end
 
-  describe "when upgrading a package" do
+  describe "#upgrade_package" do
     it "should run yum install if the package is installed and a version is given" do
       @provider.load_current_resource
       @provider.candidate_version = '11'
@@ -491,7 +491,9 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
       lambda { @provider.upgrade_package("cups", "1.2.4-11.15.el5") }.should raise_error(Chef::Exceptions::Package, %r{is newer than candidate package})
     end
+  end
 
+  describe '#action_upgrade' do
     # Test our little workaround, some crossover into Chef::Provider::Package territory
     it "should call action_upgrade in the parent if the current resource version is nil" do
       @yum_cache.stub!(:installed_version).and_return(nil)
@@ -508,7 +510,7 @@ describe Chef::Provider::Package::Yum do
     it "should call action_upgrade in the parent if the candidate version is nil" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = nil 
+      @provider.candidate_version = nil
       @provider.should_not_receive(:upgrade_package)
       @provider.action_upgrade
     end
@@ -534,7 +536,7 @@ describe Chef::Provider::Package::Yum do
     end
   end
 
-  describe "when removing a package" do
+  describe "#remove_package" do
     it "should run yum remove with the package name" do
       @provider.should_receive(:yum_command).with(
         "yum -d0 -e0 -y remove emacs-1.0"
@@ -551,7 +553,7 @@ describe Chef::Provider::Package::Yum do
     end
   end
 
-  describe "when purging a package" do
+  describe "#purge_package" do
     it "should run yum remove with the package name" do
       @provider.should_receive(:yum_command).with(
         "yum -d0 -e0 -y remove emacs-1.0"
@@ -560,7 +562,7 @@ describe Chef::Provider::Package::Yum do
     end
   end
 
-  describe "when running yum" do
+  describe "#yum_command" do
     it "should run yum once if it exits with a return code of 0" do
       @status = mock("Status", :exitstatus => 0)
       @provider.stub!(:output_of_command).and_return([@status, "", ""])
@@ -606,7 +608,7 @@ describe Chef::Provider::Package::Yum do
 end
 
 describe Chef::Provider::Package::Yum::RPMUtils do
-  describe "version_parse" do
+  describe "#version_parse" do
     before do
       @rpmutils = Chef::Provider::Package::Yum::RPMUtils
     end
@@ -672,7 +674,7 @@ describe Chef::Provider::Package::Yum::RPMUtils do
     end
   end
 
-  describe "rpmvercmp" do
+  describe "#rpmvercmp" do
     before do
       @rpmutils = Chef::Provider::Package::Yum::RPMUtils
     end
@@ -787,62 +789,64 @@ describe Chef::Provider::Package::Yum::RPMUtils do
 end
 
 describe Chef::Provider::Package::Yum::RPMVersion do
-  describe "new - with parsing" do
-    before do
-      @rpmv = Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5")
+  describe "#new" do
+    context 'with parsing' do
+      before do
+        @rpmv = Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5")
+      end
+
+      it "should expose evr (name-version-release) available" do
+        @rpmv.e.should == 1
+        @rpmv.v.should == "1.6.5"
+        @rpmv.r.should == "9.36.el5"
+
+        @rpmv.evr.should == "1:1.6.5-9.36.el5"
+      end
+
+      it "should output a version-release string" do
+        @rpmv.to_s.should == "1.6.5-9.36.el5"
+      end
     end
 
-    it "should expose evr (name-version-release) available" do
-      @rpmv.e.should == 1
-      @rpmv.v.should == "1.6.5"
-      @rpmv.r.should == "9.36.el5"
+    context "without parsing" do
+      before do
+        @rpmv = Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5")
+      end
 
-      @rpmv.evr.should == "1:1.6.5-9.36.el5"
+      it "should expose evr (name-version-release) available" do
+        @rpmv.e.should == 1
+        @rpmv.v.should == "1.6.5"
+        @rpmv.r.should == "9.36.el5"
+
+        @rpmv.evr.should == "1:1.6.5-9.36.el5"
+      end
+
+      it "should output a version-release string" do
+        @rpmv.to_s.should == "1.6.5-9.36.el5"
+      end
     end
 
-    it "should output a version-release string" do
-      @rpmv.to_s.should == "1.6.5-9.36.el5"
+    it "should raise an error unless passed 1 or 3 args" do
+      lambda {
+        Chef::Provider::Package::Yum::RPMVersion.new()
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5")
+      }.should_not raise_error
+      lambda {
+        Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5", "extra")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5")
+      }.should_not raise_error
+      lambda {
+        Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5", "extra")
+      }.should raise_error(ArgumentError)
     end
-  end
-
-  describe "new - no parsing" do
-    before do
-      @rpmv = Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5")
-    end
-
-    it "should expose evr (name-version-release) available" do
-      @rpmv.e.should == 1
-      @rpmv.v.should == "1.6.5"
-      @rpmv.r.should == "9.36.el5"
-
-      @rpmv.evr.should == "1:1.6.5-9.36.el5"
-    end
-
-    it "should output a version-release string" do
-      @rpmv.to_s.should == "1.6.5-9.36.el5"
-    end
-  end
-
-  it "should raise an error unless passed 1 or 3 args" do
-    lambda {
-      Chef::Provider::Package::Yum::RPMVersion.new()
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5")
-    }.should_not raise_error
-    lambda {
-      Chef::Provider::Package::Yum::RPMVersion.new("1:1.6.5-9.36.el5", "extra")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5")
-    }.should_not raise_error
-    lambda {
-      Chef::Provider::Package::Yum::RPMVersion.new("1", "1.6.5", "9.36.el5", "extra")
-    }.should raise_error(ArgumentError)
   end
 
   # thanks version_class_spec.rb!
-  describe "compare" do
+  describe "#compare" do
     it "should sort based on complete epoch-version-release data" do
       [
         # smaller, larger
@@ -928,7 +932,7 @@ describe Chef::Provider::Package::Yum::RPMVersion do
     end
   end
 
-  describe "partial compare" do
+  describe "#partial_compare" do
     it "should compare based on partial epoch-version-release data" do
       [
         # smaller, larger
@@ -972,82 +976,84 @@ describe Chef::Provider::Package::Yum::RPMVersion do
 end
 
 describe Chef::Provider::Package::Yum::RPMPackage do
-  describe "new - with parsing" do
-    before do
-      @rpm = Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", [])
+  describe '#new' do
+    context "with parsing" do
+      before do
+        @rpm = Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", [])
+      end
+
+      it "should expose nevra (name-epoch-version-release-arch) available" do
+        @rpm.name.should == "testing"
+        @rpm.version.e.should == 1
+        @rpm.version.v.should == "1.6.5"
+        @rpm.version.r.should == "9.36.el5"
+        @rpm.arch.should == "x86_64"
+
+        @rpm.nevra.should == "testing-1:1.6.5-9.36.el5.x86_64"
+        @rpm.to_s.should == @rpm.nevra
+      end
+
+      it "should always have at least one provide, itself" do
+        @rpm.provides.size.should == 1
+        @rpm.provides[0].name == "testing"
+        @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
+        @rpm.provides[0].flag == :==
+      end
     end
 
-    it "should expose nevra (name-epoch-version-release-arch) available" do
-      @rpm.name.should == "testing"
-      @rpm.version.e.should == 1
-      @rpm.version.v.should == "1.6.5"
-      @rpm.version.r.should == "9.36.el5"
-      @rpm.arch.should == "x86_64"
+    describe "without parsing" do
+      before do
+        @rpm = Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [])
+      end
 
-      @rpm.nevra.should == "testing-1:1.6.5-9.36.el5.x86_64"
-      @rpm.to_s.should == @rpm.nevra
+      it "should expose nevra (name-epoch-version-release-arch) available" do
+        @rpm.name.should == "testing"
+        @rpm.version.e.should == 1
+        @rpm.version.v.should == "1.6.5"
+        @rpm.version.r.should == "9.36.el5"
+        @rpm.arch.should == "x86_64"
+
+        @rpm.nevra.should == "testing-1:1.6.5-9.36.el5.x86_64"
+        @rpm.to_s.should == @rpm.nevra
+      end
+
+      it "should always have at least one provide, itself" do
+        @rpm.provides.size.should == 1
+        @rpm.provides[0].name == "testing"
+        @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
+        @rpm.provides[0].flag == :==
+      end
     end
 
-    it "should always have at least one provide, itself" do
-      @rpm.provides.size.should == 1
-      @rpm.provides[0].name == "testing"
-      @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
-      @rpm.provides[0].flag == :==
+    it "should raise an error unless passed 4 or 6 args" do
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new()
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", [])
+      }.should_not raise_error
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [])
+      }.should_not raise_error
+      lambda {
+        Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [], "extra")
+      }.should raise_error(ArgumentError)
     end
   end
 
-  describe "new - no parsing" do
-    before do
-      @rpm = Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [])
-    end
-
-    it "should expose nevra (name-epoch-version-release-arch) available" do
-      @rpm.name.should == "testing"
-      @rpm.version.e.should == 1
-      @rpm.version.v.should == "1.6.5"
-      @rpm.version.r.should == "9.36.el5"
-      @rpm.arch.should == "x86_64"
-
-      @rpm.nevra.should == "testing-1:1.6.5-9.36.el5.x86_64"
-      @rpm.to_s.should == @rpm.nevra
-    end
-
-    it "should always have at least one provide, itself" do
-      @rpm.provides.size.should == 1
-      @rpm.provides[0].name == "testing"
-      @rpm.provides[0].version.evr == "1:1.6.5-9.36.el5"
-      @rpm.provides[0].flag == :==
-    end
-  end
-
-  it "should raise an error unless passed 4 or 6 args" do
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new()
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1:1.6.5-9.36.el5", "x86_64", [])
-    }.should_not raise_error
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [])
-    }.should_not raise_error
-    lambda {
-      Chef::Provider::Package::Yum::RPMPackage.new("testing", "1", "1.6.5", "9.36.el5", "x86_64", [], "extra")
-    }.should raise_error(ArgumentError)
-  end
-
-  describe "<=>" do
+  describe "#<=>" do
     it "should sort alphabetically based on package name" do
       [
         [ "a-test",
@@ -1097,13 +1103,13 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
     @rpm_z = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-b", "0:1.6.5-9.36.el5", "noarch", [], true, false, "other")
   end
 
-  describe "initialize" do
+  describe "#new" do
     it "should return a Chef::Provider::Package::Yum::RPMDbPackage object" do
       @rpm_x.should be_kind_of(Chef::Provider::Package::Yum::RPMDbPackage)
     end
   end
 
-  describe "available" do
+  describe "#available" do
     it "should return true" do
       @rpm_x.available.should be == true
       @rpm_y.available.should be == true
@@ -1111,7 +1117,7 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
     end
   end
 
-  describe "installed" do
+  describe "#installed" do
     it "should return true" do
       @rpm_x.installed.should be == false
       @rpm_y.installed.should be == true
@@ -1119,7 +1125,7 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
     end
   end
 
-  describe "repoid" do
+  describe "#repoid" do
     it "should return the source repository repoid" do
       @rpm_x.repoid.should be == "base" 
       @rpm_y.repoid.should be == "extras"
@@ -1129,59 +1135,62 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
 end
 
 describe Chef::Provider::Package::Yum::RPMDependency do
-  describe "new - with parsing" do
-    before do
-      @rpmdep = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
+
+  describe '#new' do
+    context "with parsing" do
+      before do
+        @rpmdep = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
+      end
+
+      it "should expose name, version, flag available" do
+        @rpmdep.name.should == "testing"
+        @rpmdep.version.e.should == 1
+        @rpmdep.version.v.should == "1.6.5"
+        @rpmdep.version.r.should == "9.36.el5"
+        @rpmdep.flag.should == :==
+      end
     end
 
-    it "should expose name, version, flag available" do
-      @rpmdep.name.should == "testing"
-      @rpmdep.version.e.should == 1
-      @rpmdep.version.v.should == "1.6.5"
-      @rpmdep.version.r.should == "9.36.el5"
-      @rpmdep.flag.should == :==
+    context "without parsing" do
+      before do
+        @rpmdep = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==)
+      end
+
+      it "should expose name, version, flag available" do
+        @rpmdep.name.should == "testing"
+        @rpmdep.version.e.should == 1
+        @rpmdep.version.v.should == "1.6.5"
+        @rpmdep.version.r.should == "9.36.el5"
+        @rpmdep.flag.should == :==
+      end
+    end
+
+    it "should raise an error unless passed 3 or 5 args" do
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new()
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new("testing")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
+      }.should_not raise_error
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==, "extra")
+      }.should raise_error(ArgumentError)
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==)
+      }.should_not raise_error
+      lambda {
+        Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==, "extra")
+      }.should raise_error(ArgumentError)
     end
   end
 
-  describe "new - no parsing" do
-    before do
-      @rpmdep = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==)
-    end
-
-    it "should expose name, version, flag available" do
-      @rpmdep.name.should == "testing"
-      @rpmdep.version.e.should == 1
-      @rpmdep.version.v.should == "1.6.5"
-      @rpmdep.version.r.should == "9.36.el5"
-      @rpmdep.flag.should == :==
-    end
-  end
-
-  it "should raise an error unless passed 3 or 5 args" do
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new()
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new("testing")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
-    }.should_not raise_error
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==, "extra")
-    }.should raise_error(ArgumentError)
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==)
-    }.should_not raise_error
-    lambda {
-      Chef::Provider::Package::Yum::RPMDependency.new("testing", "1", "1.6.5", "9.36.el5", :==, "extra")
-    }.should raise_error(ArgumentError)
-  end
-
-  describe "parse" do
+  describe "#parse" do
     it "should parse a name, flag, version string into a valid RPMDependency object" do
       @rpmdep = Chef::Provider::Package::Yum::RPMDependency.parse("testing >= 1:1.6.5-9.36.el5")
 
@@ -1242,7 +1251,7 @@ describe Chef::Provider::Package::Yum::RPMDependency do
     end
   end
 
-  describe "satisfy?" do
+  describe "#satisfy?" do
     it "should raise an error unless a RPMDependency is passed" do
       @rpmprovide = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
       @rpmrequire = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :>=)
@@ -1323,13 +1332,13 @@ describe Chef::Provider::Package::Yum::RPMDb do
     @rpm_z_mirror = Chef::Provider::Package::Yum::RPMDbPackage.new("test-package-c", "0:1.6.5-9.36.el5", "noarch", deps_z, true, true, "base")
   end
 
-  describe "initialize" do
+  describe "#new" do
     it "should return a Chef::Provider::Package::Yum::RPMDb object" do
       @rpmdb.should be_kind_of(Chef::Provider::Package::Yum::RPMDb)
     end
   end
 
-  describe "push" do
+  describe "#push" do
     it "should accept an RPMDbPackage object through pushing" do
       lambda { @rpmdb.push(@rpm_w) }.should_not raise_error
     end
@@ -1379,20 +1388,20 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "<<" do
+  describe "#<<" do
     it "should accept an RPMPackage object through the << operator" do
       lambda { @rpmdb << @rpm_w }.should_not raise_error
     end
   end
 
-  describe "lookup" do
+  describe "#lookup" do
     it "should return an Array of RPMPackage objects by index" do
       @rpmdb << @rpm_w
       @rpmdb.lookup("test-package-b").should be_kind_of(Array)
     end
   end
 
-  describe "[]" do
+  describe "#[]" do
     it "should return an Array of RPMPackage objects though the [index] operator" do
       @rpmdb << @rpm_w
       @rpmdb["test-package-b"].should be_kind_of(Array)
@@ -1411,7 +1420,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "lookup_provides" do
+  describe "#lookup_provides" do
     it "should return an Array of RPMPackage objects by index" do
       @rpmdb << @rpm_z
       x = @rpmdb.lookup_provides("config(test)")
@@ -1420,7 +1429,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "clear" do
+  describe "#clear" do
     it "should clear the RPMDb" do
       @rpmdb.should_receive(:clear_available).once
       @rpmdb.should_receive(:clear_installed).once
@@ -1433,7 +1442,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "clear_available" do
+  describe "#clear_available" do
     it "should clear the available list" do
       @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
       @rpmdb.available_size.should_not be == 0
@@ -1442,7 +1451,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "available?" do
+  describe "#available?" do
     it "should return true if a package is available" do
       @rpmdb.available?(@rpm_w).should be == false
       @rpmdb.push(@rpm_v, @rpm_w)
@@ -1451,7 +1460,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "clear_installed" do
+  describe "#clear_installed" do
     it "should clear the installed list" do
       @rpmdb.push(@rpm_w, @rpm_x, @rpm_y, @rpm_z)
       @rpmdb.installed_size.should_not be == 0
@@ -1460,7 +1469,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "installed?" do
+  describe "#installed?" do
     it "should return true if a package is installed" do
       @rpmdb.installed?(@rpm_w).should be == false
       @rpmdb.push(@rpm_w, @rpm_x)
@@ -1469,7 +1478,7 @@ describe Chef::Provider::Package::Yum::RPMDb do
     end
   end
 
-  describe "whatprovides" do
+  describe "#whatprovides" do
     it "should raise an error unless a RPMDependency is passed" do
       @rpmprovide = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :==)
       @rpmrequire = Chef::Provider::Package::Yum::RPMDependency.new("testing", "1:1.6.5-9.36.el5", :>=)
@@ -1568,7 +1577,7 @@ EOF
     @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_good, @stderr).and_return(@status)
   end
 
-  describe "initialize" do
+  describe "#new" do
     it "should return a Chef::Provider::Package::Yum::YumCache object" do
       @yc.should be_kind_of(Chef::Provider::Package::Yum::YumCache)
     end
@@ -1582,7 +1591,7 @@ EOF
     end
   end
 
-  describe "refresh" do
+  describe "#refresh" do
     it "should implicitly call yum-dump.py only once by default after being instantiated" do
       @yc.should_receive(:popen4).once
       @yc.installed_version("zlib")
@@ -1651,7 +1660,7 @@ EOF
     end
   end
 
-  describe "installed_version" do
+  describe "#installed_version" do
     it "should take one or two arguments" do
       lambda { @yc.installed_version("zip") }.should_not raise_error(ArgumentError)
       lambda { @yc.installed_version("zip", "i386") }.should_not raise_error(ArgumentError)
@@ -1675,7 +1684,7 @@ EOF
     end
   end
 
-  describe "available_version" do
+  describe "#available_version" do
     it "should take one or two arguments" do
       lambda { @yc.available_version("zisofs-tools") }.should_not raise_error(ArgumentError)
       lambda { @yc.available_version("zisofs-tools", "i386") }.should_not raise_error(ArgumentError)
@@ -1699,7 +1708,7 @@ EOF
     end
   end
 
-  describe "version_available?" do
+  describe "#version_available?" do
     it "should take two or three arguments" do
       lambda { @yc.version_available?("zisofs-tools") }.should raise_error(ArgumentError)
       lambda { @yc.version_available?("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error(ArgumentError)
@@ -1728,7 +1737,7 @@ EOF
     end
   end
 
-  describe "package_repository" do
+  describe "#package_repository" do
     it "should take two or three arguments" do
       lambda { @yc.package_repository("zisofs-tools") }.should raise_error(ArgumentError)
       lambda { @yc.package_repository("zisofs-tools", "1.0.6-3.2.2") }.should_not raise_error(ArgumentError)
@@ -1758,7 +1767,7 @@ EOF
     end
   end
 
-  describe "reset" do
+  describe "#reset" do
     it "should empty the installed and available packages RPMDb" do
       @yc.available_version("zip", "x86_64").should be == "2.31-2.el5"
       @yc.installed_version("zip", "x86_64").should be == "2.31-2.el5"
@@ -1768,7 +1777,7 @@ EOF
     end
   end
 
-  describe "package_available?" do
+  describe "#package_available?" do
     it "should return true a package name is available" do
       @yc.package_available?("zisofs-tools").should be == true
       @yc.package_available?("moo").should be == false
@@ -1786,5 +1795,4 @@ EOF
       @yc.package_available?("znc-test.test").should be == false
     end
   end
-
 end

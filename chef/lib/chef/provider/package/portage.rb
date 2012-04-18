@@ -24,6 +24,8 @@ class Chef
   class Provider
     class Package
       class Portage < Chef::Provider::Package
+        include Chef::Mixin::Command
+
         PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}
 
         def load_current_resource
@@ -107,9 +109,7 @@ class Chef
             pkg = "~#{name}-#{$1}"
           end
 
-          run_command_with_systems_locale(
-            :command => "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
-          )
+          shell_out_with_systems_locale! "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
         end
 
         def upgrade_package(name, version)
@@ -123,9 +123,7 @@ class Chef
             pkg = "#{@new_resource.package_name}"
           end
 
-          run_command_with_systems_locale(
-            :command => "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
-          )
+          shell_out_with_systems_locale! "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
         end
 
         def purge_package(name, version)

@@ -26,9 +26,6 @@ class Chef
   class Provider
     class Package
       class EasyInstall < Chef::Provider::Package
-
-        include Chef::Mixin::ShellOut
-
         def install_check(name)
           check = false
 
@@ -115,7 +112,7 @@ class Chef
         end
 
         def install_package(name, version)
-          run_command(:command => "#{easy_install_binary_path}#{expand_options(@new_resource.options)} \"#{name}==#{version}\"")
+          shell_out!("#{easy_install_binary_path}#{expand_options(@new_resource.options)} \"#{name}==#{version}\"")
         end
 
         def upgrade_package(name, version)
@@ -123,7 +120,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          run_command(:command => "#{easy_install_binary_path }#{expand_options(@new_resource.options)} -m #{name}")
+          shell_out!("#{easy_install_binary_path }#{expand_options(@new_resource.options)} -m #{name}")
         end
 
         def purge_package(name, version)

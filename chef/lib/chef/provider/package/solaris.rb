@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Package
       class Solaris < Chef::Provider::Package
-
+        include Chef::Mixin::Command
         include Chef::Mixin::GetSourceFromPackage
 
         # def initialize(*args)
@@ -98,28 +98,20 @@ class Chef
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
-            run_command_with_systems_locale(
-                    :command => "pkgadd -n -d #{@new_resource.source} all"
-                  )
+            shell_out_with_systems_locale!("pkgadd -n -d #{@new_resource.source} all")
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
-            run_command_with_systems_locale(
-              :command => "pkgadd -n#{expand_options(@new_resource.options)} -d #{@new_resource.source} all"
-            )
+            shell_out_with_systems_locale!("pkgadd -n#{expand_options(@new_resource.options)} -d #{@new_resource.source} all")
             Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
         end
 
         def remove_package(name, version)
           if @new_resource.options.nil?
-            run_command_with_systems_locale(
-                    :command => "pkgrm -n #{name}"
-                  )
+            shell_out_with_systems_locale!("pkgrm -n #{name}")
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
-            run_command_with_systems_locale(
-              :command => "pkgrm -n#{expand_options(@new_resource.options)} #{name}"
-            )
+            shell_out_with_systems_locale!("pkgrm -n#{expand_options(@new_resource.options)} #{name}")
             Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
         end

@@ -24,7 +24,8 @@ class Chef
   class Provider
     class Package
       class Pacman < Chef::Provider::Package
-      
+        include Chef::Mixin::Command
+
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
@@ -75,27 +76,23 @@ class Chef
           @candidate_version
 
         end
-        
+
         def install_package(name, version)
-          run_command_with_systems_locale(
-            :command => "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
-          )
+          shell_out_with_systems_locale! "pacman --sync --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
         end
-      
+
         def upgrade_package(name, version)
           install_package(name, version)
         end
-      
+
         def remove_package(name, version)
-          run_command_with_systems_locale(
-            :command => "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
-          )
+          shell_out_with_systems_locale! "pacman --remove --noconfirm --noprogressbar#{expand_options(@new_resource.options)} #{name}"
         end
-      
+
         def purge_package(name, version)
           remove_package(name, version)
         end
-      
+
       end
     end
   end
