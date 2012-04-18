@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/mixin/command"
+require "chef/mixin/shell_out"
 require "chef/mixin/from_file"
 require "chef/provider/git"
 require "chef/provider/subversion"
@@ -24,7 +24,7 @@ require "chef/provider/subversion"
 class Chef
   class Provider
     class Deploy < Chef::Provider
-
+      include Chef::Mixin::ShellOut
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 
@@ -170,7 +170,7 @@ class Chef
           end.join(" ")
 
           Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-          run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info))
+          shell_out!(@new_resource.migration_command, run_options(:cwd => release_path, :log_level => :info))
         end
       end
 
@@ -188,7 +188,7 @@ class Chef
             recipe_eval(&restart_cmd)
           else
             Chef::Log.info("#{@new_resource} restarting app")
-            run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+            shell_out!(@new_resource.restart_command, run_options(:cwd => @new_resource.current_path))
           end
         end
       end
@@ -224,7 +224,7 @@ class Chef
 
       def copy_cached_repo
         FileUtils.mkdir_p(@new_resource.deploy_to + "/releases")
-        run_command(:command => "cp -RPp #{::File.join(@new_resource.destination, ".")} #{release_path}")
+        shell_out!("cp -RPp #{::File.join(@new_resource.destination, ".")} #{release_path}")
         Chef::Log.info "#{@new_resource} copied the cached checkout to #{release_path}"
         release_created(release_path)
       end
@@ -384,7 +384,7 @@ class Chef
         if @new_resource.rollback_on_error
           Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
           failed_release = release_path
-        
+
           if previous_release_path
             @release_path = previous_release_path
             rollback
@@ -394,7 +394,7 @@ class Chef
           FileUtils.rm_rf failed_release
           release_deleted(failed_release)
         end
-        
+
         raise
       end
 

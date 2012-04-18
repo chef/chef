@@ -127,23 +127,23 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
     @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_not_receive(:rollback)
-    lambda { 
+    lambda {
       @provider.action_deploy
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
-  
+
   it "rollbacks to previous release if error happens on deploy" do
     @resource.rollback_on_error true
     @provider.stub!(:all_releases).and_return(['previous_release'])
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
     @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_receive(:rollback)
-    lambda { 
+    lambda {
       @provider.action_deploy
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
 
-  describe "on systems without broken Dir.glob results" do
+  context "on systems without broken Dir.glob results" do
     it "sets the release path to the penultimate release when one is not specified, symlinks, and rm's the last release on rollback" do
       @provider.stub!(:release_path).and_return("/my/deploy/dir/releases/3")
       all_releases = ["/my/deploy/dir/releases/1", "/my/deploy/dir/releases/2", "/my/deploy/dir/releases/3", "/my/deploy/dir/releases/4", "/my/deploy/dir/releases/5"]
@@ -180,7 +180,7 @@ describe Chef::Provider::Deploy do
     end
   end
 
-  describe "CHEF-628: on systems with broken Dir.glob results" do
+  context "CHEF-628: on systems with broken Dir.glob results" do
     it "sets the release path to the penultimate release, symlinks, and rm's the last release on rollback" do
       @provider.unstub!(:release_path)
       all_releases = [ "/my/deploy/dir/releases/20040500000000",
@@ -250,13 +250,13 @@ describe Chef::Provider::Deploy do
 
   it "makes a copy of the cached repo in releases dir" do
     FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
-    @provider.should_receive(:run_command).with({:command => "cp -RPp /my/deploy/dir/shared/cached-copy/. #{@expected_release_dir}"})
+    @provider.should_receive(:shell_out!).with("cp -RPp /my/deploy/dir/shared/cached-copy/. #{@expected_release_dir}")
     @provider.copy_cached_repo
   end
 
   it "calls the internal callback :release_created when copying the cached repo" do
     FileUtils.stub!(:mkdir_p)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
     @provider.should_receive(:release_created)
     @provider.copy_cached_repo
   end
@@ -270,7 +270,7 @@ describe Chef::Provider::Deploy do
 
   it "skips the migration when resource.migrate => false but runs symlinks before migration" do
     @resource.migrate false
-    @provider.should_not_receive :run_command
+    @provider.should_not_receive :shell_out!
     @provider.should_receive :run_symlinks_before_migrate
     @provider.migrate
   end
@@ -285,11 +285,14 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:enforce_ownership)
 
     STDOUT.stub!(:tty?).and_return(true)
-    @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
-                                                :user => "deployNinja", :group => "deployNinjas",
-																								:log_level => :info, :live_stream => STDOUT,
-																								:log_tag => "deploy[/my/deploy/dir]",
-                                                :environment => {"RAILS_ENV"=>"production"})
+    @provider.should_receive(:shell_out!).with("migration_foo",
+                                               :cwd => @expected_release_dir,
+                                               :user => "deployNinja",
+                                               :group => "deployNinjas",
+                                               :log_level => :info,
+                                               :live_stream => STDOUT,
+                                               :log_tag => "deploy[/my/deploy/dir]",
+                                               :environment => { "RAILS_ENV" => "production" } )
     @provider.migrate
   end
 
@@ -348,17 +351,19 @@ describe Chef::Provider::Deploy do
       @provider.should_receive(:enforce_ownership)
       @provider.link_tempfiles_to_current_release
     end
-    
   end
 
   it "does nothing for restart if restart_command is empty" do
-    @provider.should_not_receive(:run_command)
+    @provider.should_not_receive(:shell_out!)
     @provider.restart
   end
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
-    @provider.should_receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
+    @provider.should_receive(:shell_out!).with("restartcmd",
+                                               :cwd => "/my/deploy/dir/current",
+                                               :log_tag => "deploy[/my/deploy/dir]",
+                                               :log_level => :debug)
     @provider.restart
   end
 
@@ -405,7 +410,7 @@ describe Chef::Provider::Deploy do
   it "shouldn't give a no method error on migrate if the environment is nil" do
     @provider.stub!(:enforce_ownership)
     @provider.stub!(:run_symlinks_before_migrate)
-    @provider.stub!(:run_command)
+    @provider.stub!(:shell_out!)
     @provider.migrate
   end
 

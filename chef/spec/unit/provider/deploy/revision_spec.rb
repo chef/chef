@@ -51,7 +51,7 @@ describe Chef::Provider::Deploy::Revision do
 
   it "stores the release dir in the file cache when copying the cached repo" do
     FileUtils.stub!(:mkdir_p)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
     @provider.copy_cached_repo
     @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
     @provider.load_current_resource
@@ -63,7 +63,7 @@ describe Chef::Provider::Deploy::Revision do
 
   it "removes a release from the file cache when it's used again in another release and append it to the end" do
     FileUtils.stub!(:mkdir_p)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
     @provider.copy_cached_repo
     @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
     @provider.load_current_resource
