@@ -26,16 +26,9 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     @new_resource.members %w{lobster rage fist}
     @new_resource.append false
     @provider = Chef::Provider::Group::Gpasswd.new(@new_resource, @run_context)
-    #@provider.stub!(:run_command).and_return(true)
   end
 
   describe "when determining the current group state" do
-    before do
-      # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
-      # @provider = Chef::Provider::Group::Gpasswd.new(@node, @new_resource)
-      # File.stub!(:exists?).and_return(false)
-    end
 
     it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do
       File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(false)

@@ -78,14 +78,14 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:groupadd_options).and_return("")
     @provider.stub!(:modify_group_members).and_return(true)
   end
 
   it "should run groupadd with the return of set_options" do
-    @provider.should_receive(:run_command).with({ :command => "groupadd monkey" }).and_return(true)
+    @provider.should_receive(:shell_out!).with("groupadd monkey").and_return(true)
     @provider.create_group
   end
 
@@ -101,13 +101,13 @@ describe Chef::Provider::Group::Groupadd, "manage_group" do
     @run_context = Chef::RunContext.new(@node, {})
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:modify_group_members).and_return(true)
   end
 
   it "should run groupmod with the return of set_options" do
-    @provider.should_receive(:run_command).with({ :command => "groupmod monkey" }).and_return(true)
+    @provider.should_receive(:shell_out!).with("groupmod monkey").and_return(true)
     @provider.manage_group
   end
 
@@ -123,11 +123,11 @@ describe Chef::Provider::Group::Groupadd, "remove_group" do
     @run_context = Chef::RunContext.new(@node, {})
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
   end
 
   it "should run groupdel with the new resources group name" do
-    @provider.should_receive(:run_command).with({ :command => "groupdel aj" }).and_return(true)
+    @provider.should_receive(:shell_out!).with("groupdel aj").and_return(true)
     @provider.remove_group
   end
 end
@@ -140,7 +140,7 @@ describe Chef::Provider::Group::Groupadd, "modify_group_members" do
     @new_resource.members(["all", "your", "base"])
     @new_resource.append(false)
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
-    @provider.stub!(:run_command).and_return(true)
+    @provider.stub!(:shell_out!).and_return(true)
   end
 
   it "should raise an error when calling modify_group_members" do

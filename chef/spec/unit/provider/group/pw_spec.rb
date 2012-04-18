@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ describe Chef::Provider::Group::Pw do
   before do
     @node = Chef::Node.new
     @run_context = Chef::RunContext.new(@node, {})
-    
+
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.gid 50
     @new_resource.members [ "root", "aj"]
@@ -33,12 +33,12 @@ describe Chef::Provider::Group::Pw do
     @provider = Chef::Provider::Group::Pw.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
-  
+
   describe "when setting options for the pw command" do
     it "does not set the gid option if gids match or are unmanaged" do
       @provider.set_options.should ==  " wheel"
     end
-    
+
     it "sets the option for gid if it is not nil" do
       @new_resource.gid(42)
       @provider.set_options.should eql(" wheel -g '42'")
@@ -48,16 +48,15 @@ describe Chef::Provider::Group::Pw do
   describe "when creating a group" do
     it "should run pw groupadd with the return of set_options and set_members_option" do
       @new_resource.gid(23)
-      @provider.should_receive(:run_command).with({ :command => "pw groupadd wheel -g '23' -M root,aj" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("pw groupadd wheel -g '23' -M root,aj").and_return(true)
       @provider.create_group
     end
   end
 
   describe "when managing the group" do
-  
     it "should run pw groupmod with the return of set_options" do
       @new_resource.gid(42)
-      @provider.should_receive(:run_command).with({ :command => "pw groupmod wheel -g '42' -M root,aj" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("pw groupmod wheel -g '42' -M root,aj").and_return(true)
       @provider.manage_group
     end
 
@@ -65,7 +64,7 @@ describe Chef::Provider::Group::Pw do
 
   describe "when removing the group" do
     it "should run pw groupdel with the new resources group name" do
-      @provider.should_receive(:run_command).with({ :command => "pw groupdel wheel" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("pw groupdel wheel").and_return(true)
       @provider.remove_group
     end
   end
