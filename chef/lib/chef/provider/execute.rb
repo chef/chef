@@ -54,12 +54,11 @@ class Chef
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
           opts[:live_stream] = STDOUT
         end
-
-        result = shell_out!(@new_resource.command, opts)
-        @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} ran successfully")
+        converge_by("would execute #{@new_resource}") do 
+          result = shell_out!(@new_resource.command, opts)
+          Chef::Log.info("#{@new_resource} ran successfully")
+        end
       end
-
     end
   end
 end
