@@ -76,7 +76,8 @@ describe Chef::Knife::Bootstrap do
   it "should have foo => {bar => baz} in the first_boot" do
     template_string = @knife.load_template(@knife.config[:template_file])
     @knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
-    @knife.render_template(template_string).should == '{"foo":{"bar":"baz"},"run_list":[]}'
+    json = Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+    @knife.render_template(template_string).should == json.to_json.to_s
   end
   
 
