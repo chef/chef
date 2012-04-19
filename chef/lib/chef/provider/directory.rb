@@ -38,15 +38,35 @@ class Chef
         @current_resource
       end
 
+      def define_resource_requirements
+        # 2. make sure that we  have permissions to write to the parent directory if not recursive, 
+        #    and the base directory if recursive
+        requirements.assert(:create) do |a|
+          # Make sure the parent dir exists, or else fail.
+          # for why run, print a message explaining the potential error.
+          parent_directory = ::File.dirname(@new_resource.path)
+          a.assertion do
+            if @new_resource.recursive
+              true
+            else
+              ::File.directory?(parent_directory) 
+            end
+          end
+          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist, cannot create #{@new_resource.path}")
+          a.whyrun("Assuming directory #{parent_directory} would have been created")
+        end
+      end
+
       def action_create
         unless ::File.exists?(@new_resource.path)
-          if @new_resource.recursive == true
-            ::FileUtils.mkdir_p(@new_resource.path)
-          else
-            ::Dir.mkdir(@new_resource.path)
-          end
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} created directory #{@new_resource.path}")
+          converge_by("would create new directory #{@new_resource.path}") do 
+            if @new_resource.recursive == true
+              ::FileUtils.mkdir_p(@new_resource.path)
+            else
+              ::Dir.mkdir(@new_resource.path)
+            end
+            Chef::Log.info("#{@new_resource} created directory #{@new_resource.path}")
+          end 
         end
         enforce_ownership_and_permissions
       end

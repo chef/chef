@@ -52,7 +52,7 @@ describe Chef::Provider::Directory do
     File.should_receive(:exists?).once.and_return(false)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
     @directory.should_receive(:enforce_ownership_and_permissions)
-    @directory.action_create
+    @directory.run_action(:create)
     @directory.new_resource.should be_updated
   end
 
@@ -79,6 +79,18 @@ describe Chef::Provider::Directory do
     lambda { @directory.action_delete }.should raise_error(RuntimeError)
   end
 
+  it "should raise an exception if the parent directory does not exist" do 
+    @new_resource.path "/tmp/some/dir"
+    @new_resource.recursive false
+#    load_mock_provider
+    # File.should_receive(:exists?).once.and_return(false)
+
+    #Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
+    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist) 
+
+
+  end
+
   def load_mock_provider
     File.stub!(:exist?).and_return(true)
     File.stub!(:directory?).and_return(true)
@@ -87,6 +99,6 @@ describe Chef::Provider::Directory do
     cstats.stub!(:gid).and_return(500)
     cstats.stub!(:mode).and_return(0755)
     File.stub!(:stat).once.and_return(cstats)
-    @directory.load_current_resource
+  #  @directory.load_current_resource
   end
 end
