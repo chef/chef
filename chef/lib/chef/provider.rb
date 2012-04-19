@@ -74,6 +74,7 @@ class Chef
     
     # exposed publically for accessibility in testing
     def process_resource_requirements(action)
+      requirements.run(:all_actions) unless action == :nothing
       requirements.run(action)
     end
 
