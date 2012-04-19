@@ -68,13 +68,31 @@ class Chef
           ports_makefile_variable_value("PORTVERSION")
         end
 
+        def file_candidate_version_path
+          Dir["#{@new_resource.source}/#{@current_resource.package_name}*"][-1].to_s
+        end
+
+        def file_candidate_version
+          file_candidate_version_path.split(/-/).last.split(/.tbz/).first
+        end
+
         def load_current_resource
           @current_resource.package_name(@new_resource.package_name)
 
           @current_resource.version(current_installed_version)
           Chef::Log.debug("#{@new_resource} current version is #{@current_resource.version}") if @current_resource.version
 
-          @candidate_version = ports_candidate_version
+          case @new_resource.source
+          when /^ports$/
+            @candidate_version = ports_candidate_version
+          when /^http/, /^ftp/
+            @candidate_version = "0.0.0"
+          when /^\//
+            @candidate_version = file_candidate_version
+          else
+            raise Chef::Exceptions::Package, "Couldn't find a candidate version."
+          end
+
           Chef::Log.debug("#{@new_resource} ports candidate version is #{@candidate_version}") if @candidate_version
 
           @current_resource
@@ -86,10 +104,14 @@ class Chef
 
         # The name of the package (without the version number) as understood by pkg_add and pkg_info
         def package_name
-          if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
-            $1
+          if ::File.exist?("/usr/ports/Makefile")
+            if ports_makefile_variable_value("PKGNAME") =~ /^(.+)-[^-]+$/
+              $1
+            else
+              raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
+            end
           else
-            raise Chef::Exceptions::Package, "Unexpected form for PKGNAME variable in #{port_path}/Makefile"
+            @new_resource.package_name
           end
         end
 
@@ -99,10 +121,14 @@ class Chef
             when /^ports$/
               shell_out!("make -DBATCH install", :timeout => 1200, :env => nil, :cwd => port_path).status
             when /^http/, /^ftp/
-              shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+              if @new_resource.source =~ /\/$/
+                shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGESITE" => @new_resource.source, 'LC_ALL' => nil }).status
+              else
+                shell_out!("pkg_add -r #{package_name}", :env => { "PACKAGEROOT" => @new_resource.source, 'LC_ALL' => nil }).status
+              end
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             when /^\//
-              shell_out!("pkg_add #{@new_resource.name}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
+              shell_out!("pkg_add #{file_candidate_version_path}", :env => { "PKG_PATH" => @new_resource.source , 'LC_ALL'=>nil}).status
               Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
             else
               shell_out!("pkg_add -r #{latest_link_name}", :env => nil).status
