@@ -17,7 +17,6 @@
 #
 
 require 'chef/provider'
-require 'chef/mixin/command'
 require 'chef/mixin/shell_out'
 require 'chef/resource/user'
 require 'etc'
@@ -25,7 +24,6 @@ require 'etc'
 class Chef
   class Provider
     class User < Chef::Provider
-      include Chef::Mixin::Command
       include Chef::Mixin::ShellOut
 
       attr_accessor :user_exists, :locked
