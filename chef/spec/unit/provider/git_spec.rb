@@ -94,18 +94,33 @@ describe Chef::Provider::Git do
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
-    it "raises an invalid remote reference error if you try to deploy from ``origin''" do
+    it "raises an invalid remote reference error if you try to deploy from ``origin'' and assertions are run" do
       @resource.revision "origin/"
       @provider.define_resource_requirements 
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
       lambda {@provider.process_resource_requirements(:checkout)}.should raise_error(Chef::Exceptions::InvalidRemoteGitReference)
     end
 
-    it "raises an unresolvable git reference error if the revision can't be resolved to any revision" do
+    it "raises an unresolvable git reference error if the revision can't be resolved to any revision and assertions are run" do
       @resource.revision "FAIL, that's the revision I want"
       @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
+      @provider.define_resource_requirements 
+      lambda { @provider.process_resource_requirements(:checkout) }.should raise_error(Chef::Exceptions::UnresolvableGitReference)
+    end
+
+    it "does not raise an error if the revision can't be resolved when assertions are not run" do
+      @resource.revision "FAIL, that's the revision I want"
+      @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
+      @provider.target_revision.should == nil
+    end
+
+    it "does not raise an error when the revision is valid and assertions are run." do 
+      @resource.revision "v1.0"
+      @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-      lambda {@provider.target_revision}.should raise_error(Chef::Exceptions::UnresolvableGitReference)
+      @provider.define_resource_requirements 
+      lambda { @provider.process_resource_requirements(:checkout) }.should_not raise_error(RuntimeError)
     end
 
     it "gives the latest HEAD revision SHA if nothing is specified" do

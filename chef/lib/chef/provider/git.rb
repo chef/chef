@@ -30,6 +30,7 @@ class Chef
       include Chef::Mixin::ShellOut
 
       def load_current_resource
+        @resolved_reference = nil
         @current_resource = Chef::Resource::Git.new(@new_resource.name)
         if current_revision = find_current_revision
           @current_resource.revision current_revision
@@ -47,13 +48,24 @@ class Chef
         end
 
 
-        requirements.assert(:checkout, :sync, :export) do |a|
+        requirements.assert(:all_actions) do |a|
           a.assertion { !(@new_resource.revision =~ /^origin\//) }
           a.failure_message Chef::Exceptions::InvalidRemoteGitReference,
              "Deploying remote branches is not supported. " +
              "Specify the remote branch as a local branch for " +
              "the git repository you're deploying from " +
              "(ie: '#{@new_resource.revision.gsub('origin/', '')}' rather than '#{@new_resource.revision}')."
+        end
+
+        requirements.assert(:all_actions) do |a|
+          # this can't be recovered from in why-run mode, because nothing that 
+          # we do in the course of a run is likely to create a valid target_revision 
+          # if we can't resolve it up front.
+          a.assertion { target_revision != nil }
+          a.failure_message Chef::Exceptions::UnresolvableGitReference, 
+            "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. " +
+            "Verify your (case-sensitive) repository URL and revision.\n" + 
+            "`git ls-remote` output: #{@resolved_reference}"
         end
       end 
 
@@ -193,8 +205,7 @@ class Chef
           if sha_hash?(@new_resource.revision)
             @target_revision = @new_resource.revision
           else
-            resolved_reference = remote_resolve_reference
-            @target_revision = extract_revision(resolved_reference)
+            @target_revision = remote_resolve_reference
           end
         end
       end
@@ -204,7 +215,12 @@ class Chef
       def remote_resolve_reference
         Chef::Log.debug("#{@new_resource} resolving remote reference")
         command = git('ls-remote', @new_resource.repository, @new_resource.revision)
-        shell_out!(command, run_options).stdout
+        @resolved_reference = shell_out!(command, run_options).stdout
+        if  @resolved_reference =~ /^([0-9a-f]{40})\s+(\S+)/
+          $1
+        else
+          nil
+        end
       end
 
       private
@@ -233,17 +249,6 @@ class Chef
 
       def sha_hash?(string)
         string =~ /^[0-9a-f]{40}$/
-      end
-
-      def extract_revision(resolved_reference) 
-        #TODO this msut also be resolved up front safely, for assertion validity 
-        unless resolved_reference =~ /^([0-9a-f]{40})\s+(\S+)/
-          msg = "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. "
-          msg << "Verify your (case-sensitive) repository URL and revision.\n"
-          msg << "`git ls-remote` output: #{resolved_reference}"
-          raise Chef::Exceptions::UnresolvableGitReference, msg
-        end
-        $1
       end
 
     end
