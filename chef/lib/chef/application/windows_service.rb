@@ -55,6 +55,17 @@ class Chef
         :description  => "Set the number of seconds to wait between chef-client runs",
         :proc         => lambda { |s| s.to_i }
 
+      option :override_runlist,
+        :short        => "-o RunlistItem,RunlistItem...",
+        :long         => "-override-runlist RunlistItem,RunlistItem...",
+        :description  => "Replace current run list with specified items",
+        :proc         => lambda{|items|
+          items = items.split(',')
+          items.compact.map{|item|
+            Chef::RunList::RunListItem.new(item)
+          }
+        }
+
       def service_init
         reconfigure
         Chef::Log.info("Chef Client Service initialized")
@@ -76,7 +87,10 @@ class Chef
               # If we've stopped, then bail out now, instead of going on to run Chef
               next if state != RUNNING
 
-              @chef_client = Chef::Client.new(@chef_client_json)
+              @chef_client = Chef::Client.new(
+                @chef_client_json, 
+                :override_runlist => config[:override_runlist]
+              )
               @chef_client_json = nil
 
               @chef_client.run
