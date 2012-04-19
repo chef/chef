@@ -22,7 +22,7 @@
 # available under the MIT license from
 # http://trac.misuse.org/science/wiki/DeepMerge
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 
 # Test coverage from the original author converted to rspec
 describe Chef::Mixin::DeepMerge, "deep_merge!" do

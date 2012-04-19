@@ -14,13 +14,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# If you need to add anything in here, don't.
+# Add it to one of the files in spec/support
 
 # Abuse ruby's constant lookup to avoid undefined constant errors
 module Shef
   JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
   IRB = nil unless defined? IRB
 end
+
+# Ruby 1.9 Compat
+$:.unshift File.expand_path("../..", __FILE__)
 
 require 'rubygems'
 require 'rspec/mocks'
@@ -39,59 +44,31 @@ require 'chef/applications'
 require 'chef/shef'
 require 'chef/util/file_edit'
 
-Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
+# If you want to load anything into the testing environment
+# without versioning it, add it to spec/support/local_gems.rb
+require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
 
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/data/")
-CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, 'test-backup-path')
+# Explicitly require spec helpers that need to load first
+require 'spec/support/platform_helpers'
 
-Chef::Config[:log_level] = :fatal
-Chef::Config[:cache_type] = "Memory"
-Chef::Config[:cache_options] = { }
-Chef::Config[:persistent_queue] = false
-Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
+# Autoloads support files
+# Excludes support/platforms by default
+# Do not change the gsub.
+Dir["spec/support/**/*.rb"].
+  reject { |f| f =~ %r{^spec/support/platforms} }.
+  map { |f| f.gsub(%r{.rb$}, '') }.
+  each { |f| require f }
 
-Chef::Log.level(Chef::Config.log_level)
-Chef::Config.solo(false)
-
-Chef::Log.logger = Logger.new(StringIO.new)
-
-def windows?
-  if RUBY_PLATFORM =~ /mswin|mingw|windows/
-    true
-  else
-    false
-  end
-end
-
-DEV_NULL = windows? ? 'NUL' : '/dev/null'
-
-def redefine_argv(value)
-  Object.send(:remove_const, :ARGV)
-  Object.send(:const_set, :ARGV, value)
-end
-
-def with_argv(*argv)
-  original_argv = ARGV
-  redefine_argv(argv.flatten)
-  begin
-    yield
-  ensure
-    redefine_argv(original_argv)
-  end
-end
-
-def sha256_checksum(path)
-  Digest::SHA256.hexdigest(File.read(path))
-end
-
-# load mock helpers
-Dir[File.join(File.dirname(__FILE__), 'support', 'mock','**', '*.rb')].sort.each { |lib| require lib }
-
-# load shared contexts & examples
-Dir[File.join(File.dirname(__FILE__), 'support', 'shared','**', '*.rb')].sort.each { |lib| require lib }
-
-# load custom matchers
-Dir[File.join(File.dirname(__FILE__), 'support', 'matchers', '*.rb')].sort.each { |lib| require lib }
 RSpec.configure do |config|
   config.include(Matchers)
+  config.filter_run :focus => true
+  config.filter_run_excluding :external => true
+
+  # Add jruby filters here
+  config.filter_run_excluding :windows_only => true unless windows?
+  config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
+
+  config.run_all_when_everything_filtered = true
+  config.treat_symbols_as_metadata_keys_with_true_values = true
 end

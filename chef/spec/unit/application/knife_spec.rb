@@ -15,11 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
-
+require 'spec_helper'
 require "#{CHEF_SPEC_DATA}/knife_subcommand/test_yourself"
 
 describe Chef::Application::Knife do
+  include SpecHelpers::Knife
+
   before(:all) do
     class NoopKnifeCommand < Chef::Knife
       def run

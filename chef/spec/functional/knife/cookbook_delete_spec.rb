@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
-
+require 'spec_helper'
 require 'tiny_server'
 
 describe Chef::Knife::CookbookDelete do
@@ -54,6 +53,7 @@ describe Chef::Knife::CookbookDelete do
     end
 
     it "logs an error and exits" do
+      @knife.ui.stub!(:stderr).and_return(@log_output)
       lambda {@knife.run}.should raise_error(SystemExit)
       @log_output.string.should match(/Cannot find a cookbook named no-such-cookbook to delete/)
     end
@@ -63,14 +63,14 @@ describe Chef::Knife::CookbookDelete do
   context "when there is only one version of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      @cookbook_list = {'obsolete-cookbook' => ['1.0.0']}
+      @cookbook_list = {'obsolete-cookbook' => { 'versions' => ['version' => '1.0.0']} }
       @api.get("/cookbooks/obsolete-cookbook", 200, @cookbook_list.to_json)
     end
 
     it "asks for confirmation, then deletes the cookbook" do
       stdin, stdout = StringIO.new("y\n"), StringIO.new
-      @knife.stub!(:stdin).and_return(stdin)
-      @knife.stub!(:stdout).and_return(stdout)
+      @knife.ui.stub!(:stdin).and_return(stdin)
+      @knife.ui.stub!(:stdout).and_return(stdout)
 
       cb100_deleted = false
       @api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
@@ -85,8 +85,8 @@ describe Chef::Knife::CookbookDelete do
       @knife.config[:purge] = true
 
       stdin, stdout = StringIO.new("y\ny\n"), StringIO.new
-      @knife.stub!(:stdin).and_return(stdin)
-      @knife.stub!(:stdout).and_return(stdout)
+      @knife.ui.stub!(:stdin).and_return(stdin)
+      @knife.ui.stub!(:stdout).and_return(stdout)
 
       cb100_deleted = false
       @api.delete("/cookbooks/obsolete-cookbook/1.0.0?purge=true", 200) { cb100_deleted = true; "[\"true\"]" }
@@ -104,7 +104,9 @@ describe Chef::Knife::CookbookDelete do
   context "when there are several versions of a cookbook" do
     before do
       @knife.name_args = %w{obsolete-cookbook}
-      @cookbook_list = {'obsolete-cookbook' => ['1.0.0', '1.1.0', '1.2.0']}
+      versions = ['1.0.0', '1.1.0', '1.2.0']
+      with_version = lambda { |version| { 'version' => version } }
+      @cookbook_list = {'obsolete-cookbook' => { 'versions' => versions.map(&with_version) } }
       @api.get("/cookbooks/obsolete-cookbook", 200, @cookbook_list.to_json)
     end
 
@@ -126,8 +128,8 @@ describe Chef::Knife::CookbookDelete do
       cb100_deleted = cb110_deleted = cb120_deleted = nil
       @api.delete("/cookbooks/obsolete-cookbook/1.0.0", 200) { cb100_deleted = true; "[\"true\"]" }
       stdin, stdout = StringIO.new, StringIO.new
-      @knife.stub!(:stdin).and_return(stdin)
-      @knife.stub!(:stdout).and_return(stdout)
+      @knife.ui.stub!(:stdin).and_return(stdin)
+      @knife.ui.stub!(:stdout).and_return(stdout)
       stdin << "1\n"
       stdin.rewind
       @knife.run
@@ -142,8 +144,8 @@ describe Chef::Knife::CookbookDelete do
       @api.delete("/cookbooks/obsolete-cookbook/1.2.0", 200) { cb120_deleted = true; "[\"true\"]" }
 
       stdin, stdout = StringIO.new("4\n"), StringIO.new
-      @knife.stub!(:stdin).and_return(stdin)
-      @knife.stub!(:stdout).and_return(stdout)
+      @knife.ui.stub!(:stdin).and_return(stdin)
+      @knife.ui.stub!(:stdout).and_return(stdout)
 
       @knife.run
 

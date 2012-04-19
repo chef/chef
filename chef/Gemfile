@@ -5,6 +5,13 @@ gemspec
 gem "dep_selector", :group => :development, :platform => "ruby"
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
+group(:development, :test) do
+  gem 'rack'
+  gem 'thin'
+#  gem 'awesome_print'
+#  gem 'pry'
+end
+
 platforms :mswin, :mingw do
   gem "ffi", "1.0.9"
   gem "rdp-ruby-wmi", "0.3.1"
@@ -21,3 +28,7 @@ end
 platforms :mingw_18 do
   gem "win32-open3", "0.3.2"
 end
+
+# If you want to load debugging tools into the bundle exec sandbox,
+# add these additional dependencies into chef/Gemfile.local
+eval(IO.read(__FILE__ + '.local'), binding) if File.exists?(__FILE__ + '.local')

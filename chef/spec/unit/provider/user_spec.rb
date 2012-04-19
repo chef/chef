@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
+require 'spec_helper'
 
 EtcPwnamIsh = Struct.new(:name, :passwd, :uid, :gid, :gecos, :dir, :shell, :change, :uclass, :expire)
 EtcGrnamIsh = Struct.new(:name, :passwd, :gid, :mem)
