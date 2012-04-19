@@ -45,7 +45,7 @@ describe Chef::Provider::User::Pw do
     @provider.current_resource = @current_resource
   end
 
-  describe "setting options to the pw command" do
+  context "when setting options to the pw command" do
     field_list = {
       'comment' => "-c",
       'home' => "-d",
@@ -83,7 +83,7 @@ describe Chef::Provider::User::Pw do
     end
   end
 
-  describe "create_user" do
+  describe "#create_user" do
     before(:each) do
       @provider.stub!(:shell_out!).and_return(true)
       @provider.stub!(:modify_password).and_return(true)
@@ -117,7 +117,7 @@ describe Chef::Provider::User::Pw do
     end
   end
 
-  describe "remove_user" do
+  describe "#remove_user" do
     it "should run pw userdel with the new resources user name" do
       @new_resource.supports :manage_home => false
       @provider.should_receive(:shell_out!).with("pw userdel #{@new_resource.username}").and_return(true)
@@ -130,33 +130,35 @@ describe Chef::Provider::User::Pw do
     end
   end
 
-  describe "determining if the user is locked" do
+  describe "#check_lock" do
     it "should return true if user is locked" do
       @current_resource.stub!(:password).and_return("*LOCKED*abracadabra")
-      @provider.check_lock.should eql(true)
+      @provider.check_lock.should be_true
+      @provider.should be_locked
     end
 
     it "should return false if user is not locked" do
       @current_resource.stub!(:password).and_return("abracadabra")
-      @provider.check_lock.should eql(false)
+      @provider.check_lock.should be_false
+      @provider.should_not be_locked
     end
   end
 
-  describe "when locking the user" do
+  describe "#lock_user" do
     it "should run pw lock with the new resources username" do
       @provider.should_receive(:shell_out!).with("pw lock #{@new_resource.username}")
       @provider.lock_user
     end
   end
 
-  describe "when unlocking the user" do
+  describe "#unlock_user" do
     it "should run pw unlock with the new resources username" do
       @provider.should_receive(:shell_out!).with("pw unlock #{@new_resource.username}")
       @provider.unlock_user
     end
   end
 
-  describe "when modifying the password" do
+  describe "#modify_password" do
     before(:each) do
       @status = mock("Status", :exitstatus => 0)
       @provider.stub!(:shell_out!).and_return(@status)
@@ -168,7 +170,7 @@ describe Chef::Provider::User::Pw do
       @provider.modify_password
     end
 
-    describe "and the passwords are identical" do
+    describe "with unchanged password" do
       before(:each) do
         @new_resource.stub!(:password).and_return("abracadabra")
         @current_resource.stub!(:password).and_return("abracadabra")
@@ -180,7 +182,7 @@ describe Chef::Provider::User::Pw do
       end
     end
 
-    describe "and the passwords are different" do
+    context "with new password" do
       before(:each) do
         @new_resource.stub!(:password).and_return("abracadabra")
         @current_resource.stub!(:password).and_return("sesame")
@@ -214,10 +216,8 @@ describe Chef::Provider::User::Pw do
     end
   end
 
-  describe "when loading the current state" do
-    before do
-      @provider.new_resource = Chef::Resource::User.new("adam")
-    end
+  describe "#load_current_resource" do
+    before { @provider.new_resource = Chef::Resource::User.new("adam") }
 
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
       File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)

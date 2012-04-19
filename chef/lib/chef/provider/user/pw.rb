@@ -49,13 +49,12 @@ class Chef
         end
 
         def check_lock
-          case @current_resource.password
-          when /^\*LOCKED\*/
-            @locked = true
-          else
-            @locked = false
-          end
-          @locked
+          @locked = case @current_resource.password
+                    when /^\*LOCKED\*/
+                      true
+                    else
+                      false
+                    end
         end
 
         def lock_user

@@ -182,6 +182,7 @@ class Chef
         raise NotImplementedError
       end
 
+      def locked?; !!@locked; end
     end
   end
 end
