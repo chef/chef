@@ -49,7 +49,7 @@ EOP
 
 (
 cat <<'EOP'
-<%= { "run_list" => @run_list }.to_json %>
+<%= first_boot.to_json %>
 EOP
 ) > /etc/chef/first-boot.json
 

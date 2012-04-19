@@ -94,6 +94,10 @@ CONFIG
         def chef_version
           knife_config[:bootstrap_version] || Chef::VERSION
         end
+        
+        def first_boot
+          (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+        end
 
       end
     end
