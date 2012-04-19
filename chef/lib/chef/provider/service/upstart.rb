@@ -18,17 +18,16 @@
 
 require 'chef/provider/service'
 require 'chef/provider/service/simple'
-require 'chef/mixin/command'
 require 'chef/util/file_edit'
 
 class Chef
   class Provider
     class Service
       class Upstart < Chef::Provider::Service::Simple
-        include Chef::Mixin::Command
+        attr_reader :upstart_job_dir, :upstart_conf_suffix
 
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
-       
+
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
         # since we have top down dependencies. Which is to say we may follow witha resource next that requires
@@ -42,17 +41,9 @@ class Chef
           # TODO: re-evaluate if this is needed after integrating cookbook fix
           raise ArgumentError, "run_context cannot be nil" unless run_context
           super
-          
+
           run_context.node
-          
-          @job = @new_resource.service_name
-          
-          if @new_resource.parameters
-            @new_resource.parameters.each do |key, value|
-              @job << " #{key}=#{value}"
-            end
-          end
-          
+
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
           if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
             @upstart_job_dir = "/etc/event.d"
@@ -67,55 +58,8 @@ class Chef
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
 
-          # Get running/stopped state
-          # We do not support searching for a service via ps when using upstart since status is a native
-          # upstart function. We will however support status_command in case someone wants to do something special.
-          if @new_resource.status_command
-            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
-
-            begin
-              if shell_out_with_systems_locale!(@new_resource.status_command) == 0
-                @current_resource.running true
-              end
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              @current_resource.running false
-              nil
-            end
-          else
-            begin
-              if upstart_state == "running"
-                @current_resource.running true
-              else
-                @current_resource.running false
-              end
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              @current_resource.running false
-              nil
-            end
-          end
-
-          # Get enabled/disabled state by reading job configuration file
-          if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
-              while line = file.gets
-                case line
-                when /^start on/
-                  Chef::Log.debug("#{@new_resource} enabled: #{line.chomp}")
-                  @current_resource.enabled true
-                  break
-                when /^#start on/
-                  Chef::Log.debug("#{@new_resource} disabled: #{line.chomp}")
-                  @current_resource.enabled false
-                  break
-                end
-              end
-            end
-          else
-            Chef::Log.debug("#{@new_resource} did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            @current_resource.enabled false
-          end
-
+          @current_resource.running service_running?
+          @current_resource.enabled service_enabled?
           @current_resource
         end
 
@@ -128,7 +72,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              shell_out_with_systems_locale!("/sbin/start #{@job}")
+              shell_out_with_systems_locale!("/sbin/start #{job}")
             end
           end
         end
@@ -142,7 +86,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              shell_out_with_systems_locale!("/sbin/stop #{@job}")
+              shell_out_with_systems_locale!("/sbin/stop #{job}")
             end
           end
         end
@@ -154,7 +98,7 @@ class Chef
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
           else @new_resource.supports[:restart]
             if @current_resource.running
-              shell_out_with_systems_locale!("/sbin/restart #{@job}")
+              shell_out_with_systems_locale!("/sbin/restart #{job}")
             else
               start_service
             end
@@ -166,7 +110,7 @@ class Chef
             super
           else
             # upstart >= 0.6.3-4 supports reload (HUP)
-            shell_out_with_systems_locale!("/sbin/reload #{@job}")
+            shell_out_with_systems_locale!("/sbin/reload #{job}")
           end
         end
 
@@ -187,17 +131,76 @@ class Chef
         end
 
         def upstart_state
-          command = "/sbin/status #{@job}"
-          status = popen4(command) do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              # rsyslog stop/waiting
-              # service goal/state
-              # OR
-              # rsyslog (stop) waiting
-              # service (goal) state
-              line =~ UPSTART_STATE_FORMAT
-              data = Regexp.last_match
-              return data[2]
+          command = "/sbin/status #{job}"
+          status = shell_out!(command)
+
+          # rsyslog stop/waiting
+          # service goal/state
+          # OR
+          # rsyslog (stop) waiting
+          # service (goal) state
+          status.stdout.each_line do |line|
+            line =~ UPSTART_STATE_FORMAT
+            data = Regexp.last_match
+            return data[2]
+          end
+        end
+
+        def service_running?
+          # Get running/stopped state
+          # We do not support searching for a service via ps when using upstart since status is a native
+          # upstart function. We will however support status_command in case someone wants to do something special.
+          if @new_resource.status_command
+            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
+
+            begin
+              if shell_out_with_systems_locale!(@new_resource.status_command) == 0
+                return true
+              end
+            rescue Mixlib::ShellOut::ShellCommandFailed
+              return false
+            end
+          else
+            begin
+              if upstart_state == "running"
+                return true
+              else
+                return false
+              end
+            rescue Mixlib::ShellOut::ShellCommandFailed
+              return false
+              nil
+            end
+          end
+        end
+
+        def job
+          @job ||= "#{@new_resource.service_name} #{job_parameters}".chomp(' ')
+        end
+
+        def job_parameters
+          return '' unless @new_resource.parameters
+          @job_parameters ||= @new_resource.parameters.to_a.map { |(key, value)| "#{key}=#{value}" }.join(' ')
+        end
+
+        def service_enabled?
+          # Get enabled/disabled state by reading job configuration file
+          unless ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            Chef::Log.debug("#{@new_resource} did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+            return false
+          end
+
+          Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+          ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}",'r') do |file|
+            while line = file.gets
+              case line
+              when /^start on/
+                Chef::Log.debug("#{@new_resource} enabled: #{line.chomp}")
+                return true
+              when /^#start on/
+                Chef::Log.debug("#{@new_resource} disabled: #{line.chomp}")
+                return false
+              end
             end
           end
         end
