@@ -67,8 +67,18 @@ class Chef
       # constructor...
       load_current_resource
       define_resource_requirements
-      requirements.run(action)
+      process_resource_requirements(action)
       send("action_#{action}")
+      converge
+    end
+    
+    # exposed publically for accessibility in testing
+    def process_resource_requirements(action)
+      requirements.run(action)
+    end
+
+    # exposed publically for accessibility in testing 
+    def converge
       converge_actions.converge!
       new_resource.updated_by_last_action(true) unless converge_actions.empty?
     end
