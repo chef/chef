@@ -199,27 +199,29 @@ describe Chef::Provider::Subversion do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
-    @provider.action_force_export
+    @provider.run_action(:force_export)
+    @resource.should be_updated
   end
 
   it "runs the checkout command for action_checkout" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
-    @provider.action_checkout
+    @provider.run_action(:checkout)
     @resource.should be_updated
   end
 
   it "raises an error if the svn checkout command would fail because the enclosing directory doesn't exist" do
-    lambda {@provider.action_sync}.should raise_error(Chef::Exceptions::MissingParentDirectory)
+    lambda {@provider.run_action(:sync)}.should raise_error(Chef::Exceptions::MissingParentDirectory)
   end
 
   it "should not checkout if the destination exists or is a non empty directory" do
+    ::File.stub!(:exist?).with("/my/deploy/dir/.svn").and_return(false)
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::Dir.stub!(:entries).with("/my/deploy/dir").and_return(['.','..','foo','bar'])
     @provider.should_not_receive(:checkout_command)
-    @provider.action_checkout
+    @provider.run_action(:checkout)
     @resource.should_not be_updated
   end
 
@@ -229,24 +231,22 @@ describe Chef::Provider::Subversion do
     @resource.group "thisis"
     expected_cmd = "svn checkout -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd, :user => "whois", :group => "thisis")
-    @provider.action_checkout
+    @provider.run_action(:checkout)
     @resource.should be_updated
   end
 
   it "does a checkout for action_sync if there's no deploy dir" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").twice.and_return(false)
     @provider.should_receive(:action_checkout)
-    @provider.action_sync
-    @resource.should be_updated
+    @provider.run_action(:sync)
   end
 
   it "does a checkout for action_sync if the deploy dir exists but is empty" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(false)
+    ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").twice.and_return(false)
     @provider.should_receive(:action_checkout)
-    @provider.action_sync
-    @resource.should be_updated
+    @provider.run_action(:sync) 
   end
 
   it "runs the sync_command on action_sync if the deploy dir exists and isn't empty" do
@@ -256,17 +256,16 @@ describe Chef::Provider::Subversion do
     @provider.stub!(:current_revision_matches_target_revision?).and_return(false)
     expected_cmd = "svn update -q  -r12345 /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
-    @provider.action_sync
+    @provider.run_action(:sync)
     @resource.should be_updated
   end
 
   it "does not fetch any updates if the remote revision matches the current revision" do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
-    #::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.stub!(:find_current_revision).and_return('12345')
     @provider.stub!(:current_revision_matches_target_revision?).and_return(true)
-    @provider.action_sync
+    @provider.run_action(:sync)
     @resource.should_not be_updated
   end
 
@@ -274,7 +273,7 @@ describe Chef::Provider::Subversion do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     expected_cmd = "svn export --force -q  -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
     @provider.should_receive(:run_command).with(:command => expected_cmd)
-    @provider.action_export
+    @provider.run_action(:export)
     @resource.should be_updated
   end
 
