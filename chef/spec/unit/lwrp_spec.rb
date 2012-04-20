@@ -223,6 +223,16 @@ describe "LWRP" do
       provider.enclosed_resource.monkey.should == 'bob, the monkey'
     end
 
+    it "should sublclass from an existing provider" do
+      resource = Chef::Resource::LwrpFoo.new("morpheus")
+      resource.monkey("bob")
+      resource.provider(:lwrp_cheezburger)
+      resource.run_context = @run_context
+
+      provider = Chef::Platform.provider_for_resource(resource)
+      provider.methods.should include :action_twiddle_thumbs
+      provider.methods.should include :action_disable
+    end
   end
 
 end

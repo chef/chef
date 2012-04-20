@@ -91,25 +91,36 @@ class Chef
         overriding = Chef::Provider.const_defined?(class_name)
         Chef::Log.info("#{class_name} light-weight provider already initialized -- overriding!") if overriding
 
-        new_provider_class = Class.new self do |cls|
-
+        this_is_just_wrong = "Class"
+        new_provider_module = Module.new do |mod|
           def load_current_resource
             # silence Chef::Exceptions::Override exception
           end
 
-          class << cls
-            include Chef::Mixin::FromFile
 
+          class << mod
+            include Chef::Mixin::FromFile
             # setup DSL's shortcut methods
             def action(name, &block)
               define_method("action_#{name.to_s}") do
                 instance_eval(&block)
               end
             end
+            def subclass(string)
+              @parent = string
+            end
+            def parent
+              constantize(@parent) if @parent
+            end
           end
 
           # load provider definition from file
-          cls.class_from_file(filename)
+          mod.module_from_file(filename)
+        end
+
+        parent = new_provider_module.parent || self
+        new_provider_class = Class.new parent do |cls|
+           include new_provider_module
         end
 
         # register new class as a Chef::Provider
