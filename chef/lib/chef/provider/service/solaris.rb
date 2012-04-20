@@ -17,13 +17,12 @@
 #
 
 require 'chef/provider/service'
-require 'chef/mixin/command'
 
 class Chef
   class Provider
     class Service
       class Solaris < Chef::Provider::Service
-        include Chef::Mixin::Command
+        attr_reader :init_command, :status_command
 
         def initialize(new_resource, run_context=nil)
           super
@@ -34,21 +33,23 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
-          unless ::File.exists? "/bin/svcs"
-            raise Chef::Exceptions::Service, "/bin/svcs does not exist!"
-          end
-          @status = service_status.enabled
+
+          raise Chef::Exceptions::Service, "/bin/svcs does not exist!" unless svcs_exists?
+
+          @status = service_status?
+          @current_resource.enabled @status
+          @current_resource.running @status
           @current_resource
         end
 
         def enable_service
           shell_out!("#{@init_command} enable #{@new_resource.service_name}")
-          return service_status.enabled
+          return service_status?
         end
 
         def disable_service
           shell_out!("#{@init_command} disable #{@new_resource.service_name}")
-          return service_status.enabled
+          return !service_status?
         end
 
         alias_method :stop_service, :disable_service
@@ -63,21 +64,16 @@ class Chef
           return enable_service
         end
 
-        def service_status
-          status = popen4("#{@status_command} #{@current_resource.service_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /state\s+online/
-                @current_resource.enabled(true)
-                @current_resource.running(true)
-              end
-            end
+        def svcs_exists?
+          ::File.exists? "/bin/svcs"
+        end
+
+        # Looks like on Solaris, running and enabled are in tandem.
+        def service_status?
+          shell_out!("#{@status_command} #{@current_resource.service_name}").stdout.each_line do |line|
+            return true if line =~ /state\sonline/
           end
-          unless @current_resource.enabled
-            @current_resource.enabled(false)
-            @current_resource.running(false)
-          end
-          @current_resource
+          return false
         end
 
       end
