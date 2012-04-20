@@ -20,7 +20,7 @@ version Omnibus::BuildVersion.version_tag
 
 dependencies ["ruby",
               "rubygems",
-              "yajl"
+              "yajl",
               "bundler",
               "gecode",
               "libxml2",
