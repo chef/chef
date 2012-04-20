@@ -27,15 +27,16 @@ class Chef
       end
 
       def action_reload
-        ohai = ::Ohai::System.new
-        if @new_resource.plugin
-          ohai.require_plugin @new_resource.plugin
-        else
-          ohai.all_plugins
+        converge_by("would re-run ohai and merge results into node attributes") do
+          ohai = ::Ohai::System.new
+          if @new_resource.plugin
+            ohai.require_plugin @new_resource.plugin
+          else
+            ohai.all_plugins
+          end
+          node.automatic_attrs.merge! ohai.data
+          Chef::Log.info("#{@new_resource} reloaded")
         end
-        node.automatic_attrs.merge! ohai.data
-        Chef::Log.info("#{@new_resource} reloaded")
-        @new_resource.updated_by_last_action(true)
       end
     end
   end
