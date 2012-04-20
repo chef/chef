@@ -30,81 +30,88 @@ class Chef
 
       # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
       def action_head
-        message = check_message(@new_resource.message)
-        modified = @rest.run_request(
-          :HEAD,
-          @rest.create_url("#{@new_resource.url}?message=#{message}"),
-          @new_resource.headers,
-          false,
-          10,
-          false
-        )
-        @new_resource.updated_by_last_action(modified)
-        Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
-        Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
+        converge_by("would #{@new_resource} HEAD to #{@new_resource.url}") do
+          message = check_message(@new_resource.message)
+          modified = @rest.run_request(
+            :HEAD,
+            @rest.create_url("#{@new_resource.url}?message=#{message}"),
+            @new_resource.headers,
+            false,
+            10,
+            false
+          )
+          Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
+          Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
+        end
       end
 
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
       def action_get  
-        message = check_message(@new_resource.message)
-        body = @rest.run_request(
-          :GET, 
-          @rest.create_url("#{@new_resource.url}?message=#{message}"),
-          @new_resource.headers,
-          false,
-          10,
-          false
-        )
-        @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
-        Chef::Log.debug("#{@new_resource} GET request response: #{body}")
+        converge_by("would #{@new_resource} GET to #{@new_resource.url}") do
+
+          message = check_message(@new_resource.message)
+          body = @rest.run_request(
+            :GET, 
+            @rest.create_url("#{@new_resource.url}?message=#{message}"),
+            @new_resource.headers,
+            false,
+            10,
+            false
+          )
+          Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
+          Chef::Log.debug("#{@new_resource} GET request response: #{body}")
+        end
       end
       
       # Send a PUT request to @new_resource.url, with the message as the payload
       def action_put 
-        message = check_message(@new_resource.message)
-        body = @rest.run_request(
-          :PUT,
-          @rest.create_url("#{@new_resource.url}"),
-          @new_resource.headers,
-          message,
-          10,
-          false
-        )
-        @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
-        Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
+        converge_by("would #{@new_resource} PUT to #{@new_resource.url}") do
+          message = check_message(@new_resource.message)
+          body = @rest.run_request(
+            :PUT,
+            @rest.create_url("#{@new_resource.url}"),
+            @new_resource.headers,
+            message,
+            10,
+            false
+          )
+          Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
+          Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
+        end
       end
       
       # Send a POST request to @new_resource.url, with the message as the payload
       def action_post
-        message = check_message(@new_resource.message)
-        body = @rest.run_request(
-          :POST,
-          @rest.create_url("#{@new_resource.url}"),
-          @new_resource.headers,
-          message,
-          10,
-          false
-        )
-        @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
-        Chef::Log.debug("#{@new_resource} POST request response: #{body}")
+        converge_by("would #{@new_resource} POST to #{@new_resource.url}") do
+          message = check_message(@new_resource.message)
+          body = @rest.run_request(
+            :POST,
+            @rest.create_url("#{@new_resource.url}"),
+            @new_resource.headers,
+            message,
+            10,
+            false
+          )
+          Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
+          Chef::Log.debug("#{@new_resource} POST request response: #{body}")
+        end
       end
       
       # Send a DELETE request to @new_resource.url
       def action_delete
-        body = @rest.run_request(
-          :DELETE,
-          @rest.create_url("#{@new_resource.url}"),
-          @new_resource.headers,
-          false,
-          10,
-          false
-        )
-        @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
-        Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
+        converge_by("would #{@new_resource} DELETE to #{@new_resource.url}") do
+          body = @rest.run_request(
+            :DELETE,
+            @rest.create_url("#{@new_resource.url}"),
+            @new_resource.headers,
+            false,
+            10,
+            false
+          )
+          @new_resource.updated_by_last_action(true)
+          Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
+          Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
+        end
       end
       
       private
