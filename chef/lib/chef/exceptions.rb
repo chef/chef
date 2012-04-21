@@ -92,6 +92,9 @@ class Chef
     # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
 
+    # File operation attempted but no permissions to perform it
+    class InsufficientPermissions < RuntimeError; end
+   
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
     class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end

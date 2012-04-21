@@ -51,9 +51,12 @@ class Chef
         if @new_resource.content && ::File.exist?(@new_resource.path)
           @current_resource.checksum(checksum(@new_resource.path))
         end
+        setup_acl
+      end
+      
+      def setup_acl
         @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         @acl_scanner.set_all!
-
       end
 
       def define_resource_requirements
@@ -76,7 +79,7 @@ class Chef
               true
             end
           end
-          a.failure_message("File #{@new_resource.path} exists but is not writeable so it cannot be deleted")
+          a.failure_message(Chef::Exceptions::InsufficientPermissions,"File #{@new_resource.path} exists but is not writable so it cannot be deleted")
         end
       end
 
@@ -108,11 +111,14 @@ class Chef
           end
         else
           set_content unless @new_resource.content.nil?
+          set_all_access_controls
+        end
+      end
 
-          if access_controls.requires_changes?
-            converge_by(access_controls.describe_changes) do
-              access_controls.set_all
-            end
+      def set_all_access_controls
+        if access_controls.requires_changes?
+          converge_by(access_controls.describe_changes) do 
+            access_controls.set_all
           end
         end
       end

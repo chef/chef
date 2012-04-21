@@ -87,14 +87,6 @@ class Chef
         @current_resource.checksum == @new_resource.checksum
       end
 
-      def set_all_access_controls
-        if access_controls.requires_changes?
-          converge_by(access_controls.describe_change_reasons, access_controls.describe_changes) do 
-            access_controls.set_all
-          end
-        end
-      end
-
       private
 
       def render_with_context(template_location, &block)
