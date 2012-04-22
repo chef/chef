@@ -28,7 +28,8 @@ class Chef
         @service_name = name
         @enabled = nil
         @running = nil
-        @pattern = service_name 
+        @parameters = nil
+        @pattern = service_name
         @start_command = nil
         @stop_command = nil
         @status_command = nil
