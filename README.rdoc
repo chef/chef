@@ -20,7 +20,7 @@ Before working on the code, if you plan to contribute your changes, you need to 
 
 You will also need to set up the repository with the appropriate branches. We document the process on the Chef Wiki.
 
-* http://wiki.opscode.com/display/opscode/Working+with+Git
+* http://wiki.opscode.com/display/chef/Working+with+git
 
 Once your repository is set up, you can start working on the code. We do use BDD/TDD with RSpec and Cucumber, so you'll need to get a development environment running.
 
