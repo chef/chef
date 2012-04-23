@@ -137,6 +137,13 @@ class Chef
                       :kind_of => [ Integer, String, Hash ])
       end
 
+      def parameters(arg=nil)
+        set_or_return(
+          :parameters,
+          arg,
+          :kind_of => [ Hash ] )
+      end
+
       def supports(args={})
         if args.is_a? Array
           args.each { |arg| @supports[arg] = true }
