@@ -36,12 +36,13 @@ class Chef
 
         def load_from(repo_location, *components)
           unless object_file = find_file(repo_location, *components)
-            ui.error "Could not find or open file for #{components.join(' ')}"
+            ui.error "Could not find or open file '#{components.last}' in current directory or in '#{repo_location}/#{components.join('/')}'"
             exit 1
           end
           object_from_file(object_file)
         end
 
+        # When someone makes this awesome, please update the above error message.
         def find_file(repo_location, *components)
           if file_exists_and_is_readable?(File.expand_path( components.last ))
             File.expand_path( components.last )
