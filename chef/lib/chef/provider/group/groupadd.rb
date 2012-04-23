@@ -78,10 +78,7 @@ class Chef
 
         def groupadd_options
           opts = ''
-          case node[:platform]
-          when "centos", "redhat", "scientific", "fedora"
-            opts << " -r" if @new_resource.system
-          end
+          opts << " -r" if @new_resource.system
           opts
         end
 
