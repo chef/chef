@@ -61,23 +61,14 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
   end
 
   describe "when we want to create a system group" do
-    it "should set not groupadd when system is false" do
+    it "should not set groupadd_options '-r' when system is false" do
       @new_resource.system(false)
-      @provider.groupadd_options.should == ""
+      @provider.groupadd_options.should_not =~ /-r/
     end
 
-    ["centos", "redhat", "scientific", "fedora", "debian", "ubuntu", "mint"].each do |os|
-      it "should set groupadd -r for #{os}" do
-        @new_resource.system(true)
-        @node.automatic_attrs[:platform] = os
-        @provider.groupadd_options.should == " -r"
-      end
-    end
-
-    it "should not set groupadd -r for other systems" do
+    it "should set groupadd -r if system is true" do
       @new_resource.system(true)
-      @node.automatic_attrs[:platform] = "fakeos"
-      @provider.groupadd_options.should_not == " -r"
+      @provider.groupadd_options.should == " -r"
     end
   end
 end
