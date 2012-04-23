@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,7 +64,7 @@ describe Chef::Provider::Service::Arch do
       end
 
       it "should set running to true if the the status command returns 0" do
-        provider.stub!(:shell_out!).with("/etc/rc.d/chef status").and_return(status)
+        provider.stub!(:exec_status_cmd!).and_return(0)
         provider.load_current_resource
         provider.current_resource.running.should be_true
       end

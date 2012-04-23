@@ -49,14 +49,13 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
 
     it "should set running to true if the the status command returns 0" do
       Chef::Resource::Service.stub!(:new).and_return(current_resource)
-      provider.stub!(:shell_out!).with("/etc/init.d/#{current_resource.service_name} status").and_return(status)
+      provider.should_receive(:exec_status_cmd!).and_return(0)
       provider.load_current_resource
       current_resource.running.should be_true
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      status.stub!(:exitstatus).and_return(1)
-      provider.stub!(:shell_out!).with("/etc/init.d/#{current_resource.service_name} status").and_return(status)
+      provider.should_receive(:exec_status_cmd!).and_return(1)
       provider.load_current_resource
       current_resource.running.should be_false
     end

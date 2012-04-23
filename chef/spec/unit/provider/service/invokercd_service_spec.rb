@@ -59,16 +59,15 @@ PS
       @provider.should_receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
     end
-  
+
     it "should set running to true if the the status command returns 0" do
-      @provider.stub!(:shell_out!).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
+      @provider.should_receive(:exec_status_cmd!).and_return(0)
       @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
     it "should set running to false if the status command returns anything except 0" do
-      @status.stub!(:exitstatus).and_return(1)
-      @provider.stub!(:shell_out!).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
+      @provider.should_receive(:exec_status_cmd!).and_return(1)
       @provider.load_current_resource
       @current_resource.running.should be_false
     end

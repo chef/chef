@@ -15,7 +15,8 @@ module SpecHelpers
         let(:current_resource) { Chef::Resource::Service.new(service_name) }
         let(:provider) { described_class.new(new_resource, run_context) }
         let(:stdout) { ps_without_service_running }
-        let(:status) { mock("Status", :exitstatus => 0, :stdout => stdout) }
+        let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout) }
+        let(:exitstatus) { 0 }
 
         let(:ps_without_service_running) { StringIO.new(<<-PS) }
 aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb

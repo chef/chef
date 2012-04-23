@@ -70,52 +70,47 @@ class Chef
 
       protected
         def determine_current_status!
-          if @new_resource.status_command
-            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
+          @current_resource.running service_running?
+          Chef::Log.debug "#{@new_resource} running #{@current_resource.running}"
+        end
 
-            begin
-              if shell_out!(@new_resource.status_command).exitstatus == 0
-                @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
-              end
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              @current_resource.running false
-              nil
-            end
+        def service_running?
+          return exec_status_cmd! == 0 if status_cmd
+          return service_running_in_ps?
+        end
 
-          elsif @new_resource.supports[:status]
-            Chef::Log.debug("#{@new_resource} supports status, running")
+        def service_running_in_ps?
+          Chef::Log.debug "#{@new_resource} falling back to process table inspection"
+          raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute" if ps_cmd.nil? or ps_cmd.empty?
 
-            begin
-              if shell_out!("#{@init_command} status").exitstatus == 0
-                @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
-              end
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              @current_resource.running false
-              nil
-            end
-          elsif
-            Chef::Log.debug "#{@new_resource} falling back to process table inspection"
-            if ps_cmd.nil? or ps_cmd.empty?
-              raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
-            end
-
-            r = Regexp.new(@new_resource.pattern)
-            Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
-            begin
-              exec_ps_cmd!.stdout.each_line do |line|
-                if r.match(line)
-                  @current_resource.running true
-                  break
-                end
-              end
-              @current_resource.running false unless @current_resource.running
-              Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
-            end
+          r = Regexp.new(@new_resource.pattern)
+          Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
+          begin
+            exec_ps_cmd!.stdout.each_line { |line| return true if r.match(line) }
+            return false
+          rescue Mixlib::ShellOut::ShellCommandFailed
+            raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
           end
+        end
+
+        def exec_status_cmd!
+          return false unless shell_out!(status_cmd).exitstatus == 0
+          Chef::Log.debug("#{@new_resource} is running")
+          true
+        rescue Mixlib::ShellOut::ShellCommandFailed
+          false
+        end
+
+        def status_cmd
+          @_status_command ||= if @new_resource.status_command
+                                 Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
+                                 @new_resource.status_command
+                               elsif @new_resource.supports[:status]
+                                 Chef::Log.debug("#{@new_resource} supports status, running")
+                                 "#{@init_command} status"
+                               else
+                                 nil
+                               end
         end
 
         def exec_ps_cmd!

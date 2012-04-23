@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,76 +18,28 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Service::Simple, "load_current_resource" do
+describe Chef::Provider::Service::Simple do
   include SpecHelpers::Providers::Service
 
-  before(:each) do
-    provider.stub!(:shell_out!).and_return(status)
-  end
+  let(:current_resource) { Chef::Resource::Service.new(service_name) }
 
-  it "should create a current resource with the name of the new resource" do
-    Chef::Resource::Service.should_receive(:new).and_return(current_resource)
-    provider.load_current_resource
-  end
+  describe '#load_current_resource' do
+    subject { given; provider.load_current_resource }
 
-  it "should set the current resources service name to the new resources service name" do
-    provider.load_current_resource
-    current_resource.service_name.should == 'chef'
-  end
+    let(:given) { assume_service_is_running }
+    let(:assume_service_is_running) {  provider.should_receive(:service_running?).and_return(true) }
 
-  context 'when node has a nil :ps attribute' do
-    let(:ps_command) { nil }
-
-    it "should set running to false" do
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
-    end
-  end
-
-  context 'when node has an empty :ps attribute' do
-    let(:ps_command) { '' }
-
-    it "should set running to false if the node has an empty ps attribute" do
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
-    end
-  end
-
-  context 'when node has a :ps attribute' do
-    it "should shell_out! the node's ps command" do
-      provider.should_receive(:shell_out!).with(ps_command).and_return(status)
-      provider.load_current_resource
+    it "should create a current resource with the name of the new resource" do
+      subject.name.should eql(new_resource.name)
     end
 
-    it "should read stdout of the ps command" do
-      provider.stub!(:shell_out!).and_return(status)
-      stdout.should_receive(:each_line).and_return(true)
-      provider.load_current_resource
+    it "should set the current resources service name to the new resources service name" do
+      subject.service_name.should eql(new_resource.service_name)
     end
 
-    context 'with process output with running process' do
-      let(:stdout) { ps_with_service_running }
-
-      it "should set running to true if the regex matches the output" do
-        Chef::Resource::Service.stub!(:new).and_return(current_resource)
-        provider.load_current_resource
-        current_resource.running.should be_true
-      end
+    it "should return the current resource" do
+      subject.should eql(provider.current_resource)
     end
-
-    it "should set running to false if the regex doesn't match" do
-      Chef::Resource::Service.stub!(:new).and_return(current_resource)
-      provider.load_current_resource
-      current_resource.running.should be_false
-    end
-
-    it "should raise an exception if ps fails" do
-      provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
-    end
-  end
-
-  it "should return the current resource" do
-    Chef::Resource::Service.stub!(:new).and_return(current_resource)
-    provider.load_current_resource.should eql(current_resource)
   end
 
   describe "#start_service" do
@@ -134,6 +86,88 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
       new_resource.reload_command("kill -9 1")
       provider.should_receive(:shell_out!).with("kill -9 1")
       provider.reload_service()
+    end
+  end
+
+  describe '#exec_status_cmd!' do
+    subject { given; provider.send(:exec_status_cmd!) }
+    let(:given) do
+      assume_status_cmd
+      should_shell_out
+    end
+
+    let(:assume_status_cmd) { provider.stub!(:status_cmd).and_return(status_cmd) }
+    let(:should_shell_out) { provider.should_receive(:shell_out!).with(status_cmd).and_return(status) }
+    let(:status_cmd) { 'ps -ef' }
+
+    context 'when exit status is 0' do
+      let(:exitstatus) { 0 }
+      it { should be_true }
+    end
+
+    context 'when exit status is 1' do
+      let(:exitstatus) { 1 }
+      it { should be_false }
+    end
+
+    context 'when shell out fails' do
+      let(:should_shell_out) { provider.should_receive(:shell_out!).with(status_cmd).and_raise(Mixlib::ShellOut::ShellCommandFailed) }
+      it { should be_false }
+    end
+  end
+
+  describe '#service_running_in_ps?' do
+    subject { given; provider.send(:service_running_in_ps?) }
+    let(:given) { provider.new_resource = new_resource }
+
+    context 'when node has a nil :ps attribute' do
+      let(:ps_command) { nil }
+
+      it "should raise Chef::Exceptions::Service" do
+        lambda { subject }.should raise_error(Chef::Exceptions::Service)
+      end
+    end
+
+    context 'when node has an empty :ps attribute' do
+      let(:ps_command) { '' }
+
+      it "should raise Chef::Exceptions::Service" do
+        lambda { subject }.should raise_error(Chef::Exceptions::Service)
+      end
+    end
+
+    context 'when node has a :ps attribute' do
+      let(:given) do
+        should_exec_ps_cmd
+        provider.new_resource = new_resource
+      end
+
+      let(:should_exec_ps_cmd) { provider.should_receive(:shell_out!).with(ps_command).and_return(status) }
+
+      it "should shell_out! the node's ps command" do
+        should_exec_ps_cmd
+        should_not be_nil
+      end
+
+      it "should read stdout of the ps command" do
+        stdout.should_receive(:each_line).and_return(true)
+        should_not be_nil
+      end
+
+      context 'with process output with running process' do
+        let(:stdout) { ps_with_service_running }
+        it { should be_true }
+      end
+
+      context 'with process output without running process' do
+        let(:stdout) { ps_without_service_running }
+        it { should be_false }
+      end
+
+      it "should raise an exception if ps fails" do
+        provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+      end
     end
   end
 end

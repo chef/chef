@@ -111,7 +111,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
       describe "when update-rc.d shows the init script linked to rc*.d/" do
         before do
           provider.stub!(:assert_update_rcd_available)
-          provider.stub!(:shell_out!).and_return(status)
+          provider.stub!(:service_running?).and_return(true)
           provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
         end
 

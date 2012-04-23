@@ -75,7 +75,7 @@ RC_D_APACHE22
       end
 
       it "should set running to true if the the status command returns 0" do
-        provider.should_receive(:shell_out!).with("/usr/local/etc/rc.d/apache22 status").and_return(status)
+        provider.should_receive(:exec_status_cmd!).and_return(0)
         provider.load_current_resource
         provider.current_resource.running.should be_true
       end
