@@ -51,6 +51,10 @@ Edit an item in a data bag.
 ## FROM FILE
 __knife data bag from file__ _bag name_ _file_ _(options)_
 
+__knife data bag from file__ _bag name_ _file1_ _file2_ _file3_ _(options)_
+
+__knife data bag from file__ _bag name_ _folder_ _(options)_
+
   * `-s`, `--secret SECRET`:
    A secret key used to encrypt the data bag item. See __encryption support__ below.
   * `--secret-file SECRET_FILE`:
