@@ -61,21 +61,21 @@ class Chef
         # data_bags)
         #
         # @param [String] path - base look up location
-        # @param [Integer<ObjectType>] type - type of the object FILE or FOLDER
         #
         # @return [Array<String>] basenames of the found objects
         #
         # @api public
-        def find_all_objects(path, type = ObjectType::FILE)
+        def find_all_objects(path)
           path = File.join(path, '*')
-          path << '.{json,rb}' if type == ObjectType::FILE
-
+          path << '.{json,rb}'
           objects = Dir.glob(File.expand_path(path))
+          objects.map { |o| File.basename(o) }
+        end
 
-          if type == ObjectType::FOLDER
-            objects.delete_if { |o| !File.directory?(o) }
-          end
-
+        def find_all_object_dirs(path)
+          path = File.join(path, '*')
+          objects = Dir.glob(File.expand_path(path))
+          objects.delete_if { |o| !File.directory?(o) }
           objects.map { |o| File.basename(o) }
         end
 

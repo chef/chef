@@ -87,7 +87,7 @@ class Chef
       end
 
       def find_all_data_bags
-        loader.find_all_objects("./#{data_bags_path}", loader.class::ObjectType::FOLDER)
+        loader.find_all_object_dirs("./#{data_bags_path}")
       end
 
       def find_all_data_bag_items(data_bag)
