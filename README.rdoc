@@ -52,7 +52,7 @@ Install the Chef Gems from source in this repository.
 Install the following RubyGems:
 
 * rake
-* rspec (2.5.0)
+* rspec (2.8.0)
 * dep_selector (requires Gecode to compile native extensions)
 
 Run rake or rake spec:
@@ -134,7 +134,7 @@ Documentation:
 Chef - A configuration management system
 
 Author:: Adam Jacob (<adam@opscode.com>)
-Copyright:: Copyright (c) 2008-2011 Opscode, Inc.
+Copyright:: Copyright (c) 2008-2012 Opscode, Inc.
 License:: Apache License, Version 2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");
