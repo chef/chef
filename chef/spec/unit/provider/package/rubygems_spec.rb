@@ -483,8 +483,6 @@ describe Chef::Provider::Package::Rubygems do
       end
       describe "at a specific version" do
         before do
-          @current_resource = Chef::Resource::GemPackage.new("rspec-core")
-          @current_resource.version("2.4.0")
           @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
         end
 
