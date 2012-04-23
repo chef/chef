@@ -444,9 +444,7 @@ class Chef
         def target_version_already_installed?
           return false unless @current_resource && @current_resource.version
           return false if @current_resource.version.nil?
-          # in the future we could support squiggly requirements like "~> 1.2.0"
-          # for now, the behavior when using anything other than exact
-          # requirements is undefined.
+
           Gem::Requirement.new(@new_resource.version).satisfied_by?(Gem::Version.new(@current_resource.version))
         end
 

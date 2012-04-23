@@ -36,7 +36,7 @@ class Chef
 
       def action_install
         # If we specified a version, and it's not the current version, move to the specified version
-        if @new_resource.version != nil && @new_resource.version != @current_resource.version
+        if @new_resource.version != nil && !target_version_already_installed?
           install_version = @new_resource.version
         # If it's not installed at all, install it
         elsif @current_resource.version == nil
@@ -197,6 +197,12 @@ class Chef
 
       def expand_options(options)
         options ? " #{options}" : ""
+      end
+
+    private
+
+      def target_version_already_installed?
+        @new_resource.version == @current_resource.version
       end
 
     end

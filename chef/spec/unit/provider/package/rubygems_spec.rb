@@ -483,15 +483,29 @@ describe Chef::Provider::Package::Rubygems do
       end
       describe "at a specific version" do
         before do
-          @current_resource = Chef::Resource::GemPackage.new("rspec-core")
-          @current_resource.version("2.4.0")
-
           @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
         end
 
         it "installs the gem via the gems api" do
           @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
           @provider.action_install.should be_true
+        end
+      end
+      describe "at version specified with comparison operator" do
+        it "skips install if current version satisifies requested version" do
+          @current_resource.stub(:version).and_return("2.3.3")
+          @new_resource.stub(:version).and_return(">=2.3.0")
+
+          @provider.gem_env.should_not_receive(:install)
+          @provider.action_install
+        end
+
+        it "allows user to specify gem version with fuzzy operator" do
+          @current_resource.stub(:version).and_return("2.3.3")
+          @new_resource.stub(:version).and_return("~>2.3.0")
+
+          @provider.gem_env.should_not_receive(:install)
+          @provider.action_install
         end
       end
     end
