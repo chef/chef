@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ class Chef
         require 'chef/encrypted_data_bag_item'
       end
 
-      banner "knife data bag from file BAG FILE (options)"
+      banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
       category "data bag"
 
       option :secret,
@@ -42,6 +42,11 @@ class Chef
       option :secret_file,
       :long => "--secret-file SECRET_FILE",
       :description => "A file containing the secret key to use to encrypt data bag item values"
+
+      option :all,
+      :short => "-a",
+      :long  => "--all",
+      :description => "Upload all data bags"
 
       def read_secret
         if config[:secret]
@@ -64,23 +69,67 @@ class Chef
       end
 
       def run
-        if @name_args.size != 2
-          ui.msg(opt_parser)
-          exit(1)
+        if config[:all] == true
+          load_all_data_bags(@name_args)
+        else
+          if @name_args.size < 2
+            ui.msg(opt_parser)
+            exit(1)
+          end
+          @data_bag = @name_args.shift
+          load_data_bag_items(@data_bag, @name_args)
         end
-        @data_bag, @item_path = @name_args[0], @name_args[1]
-        item = loader.load_from("data_bags", @data_bag, @item_path)
-        item = if use_encryption
-                 secret = read_secret
-                 Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
-               else
-                 item
-               end
-        dbag = Chef::DataBagItem.new
-        dbag.data_bag(@name_args[0])
-        dbag.raw_data = item
-        dbag.save
-        ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
+      end
+
+      private
+      def data_bags_path
+        @data_bag_path ||= "data_bags"
+      end
+
+      def find_all_data_bags
+        loader.find_all_object_dirs("./#{data_bags_path}")
+      end
+
+      def find_all_data_bag_items(data_bag)
+        loader.find_all_objects("./#{data_bags_path}/#{data_bag}")
+      end
+
+      def load_all_data_bags(args)
+        data_bags = args.empty? ? find_all_data_bags : [args.shift]
+        data_bags.each do |data_bag|
+          load_data_bag_items(data_bag)
+        end
+      end
+
+      def load_data_bag_items(data_bag, items = nil)
+        items ||= find_all_data_bag_items(data_bag)
+        item_paths = normalize_item_paths(items)
+        item_paths.each do |item_path|
+          item = loader.load_from("#{data_bags_path}", data_bag, item_path)
+          item = if use_encryption
+                   secret = read_secret
+                   Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, secret)
+                 else
+                   item
+                 end
+          dbag = Chef::DataBagItem.new
+          dbag.data_bag(data_bag)
+          dbag.raw_data = item
+          dbag.save
+          ui.info("Updated data_bag_item[#{dbag.data_bag}::#{dbag.id}]")
+        end
+      end
+
+      def normalize_item_paths(args)
+        paths = Array.new
+        args.each do |path|
+          if File.directory?(path)
+            paths.concat(Dir.glob(File.join(path, "*.json")))
+          else
+            paths << path
+          end
+        end
+        paths
       end
     end
   end
