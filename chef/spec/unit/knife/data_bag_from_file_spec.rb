@@ -26,7 +26,7 @@ require 'json'
 Chef::Knife::DataBagFromFile.load_deps
 
 describe Chef::Knife::DataBagFromFile do
-  before do
+  before :each do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::DataBagFromFile.new
     @rest = mock("Chef::REST")
@@ -50,7 +50,11 @@ describe Chef::Knife::DataBagFromFile do
     @knife.instance_variable_set(:@name_args, ['bag_name', @db_file.path])
   end
 
-  after do
+  # We have to explicitly clean up Tempfile on Windows because it said so.
+  after :each do
+    @db_file.close
+    @db_file2.close
+    @db_file3.close
     FileUtils.rm_rf(@db_folder)
     FileUtils.rm_rf(@db_folder2)
   end
