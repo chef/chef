@@ -77,7 +77,7 @@ class Chef
     # Errors originating from calls to the Win32 API
     class Win32APIError < RuntimeError; end
 
-    class ObsoleteDependencySyntax < RuntimeError; end
+    class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
     # A different version of a cookbook was added to a
@@ -89,8 +89,7 @@ class Chef
 
     # version constraint should be a string or array, or it doesn't
     # match OP VERSION. ArgumentError?
-    # Rspec 2.9+ Handles RuntimeError badly when mocked
-    class InvalidVersionConstraint < RuntimeError; end
+    class InvalidVersionConstraint < ArgumentError; end
 
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
