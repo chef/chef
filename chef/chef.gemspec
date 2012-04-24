@@ -26,7 +26,8 @@ Gem::Specification.new do |s|
   s.add_dependency "treetop", "~> 1.4.9"
   s.add_dependency "net-ssh", "~> 2.2.2"
   s.add_dependency "net-ssh-multi", "~> 1.1.0"
-  %w{erubis moneta highline uuidtools}.each { |gem| s.add_dependency gem }
+  s.add_dependency "highline", ">= 1.6.9"
+  %w{erubis moneta uuidtools}.each { |gem| s.add_dependency gem }
 
   # development_dependency thin: eventmachine 0.12.10 doesn't support Ruby 1.9 on Windows
   %w(rdoc sdoc ronn rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
