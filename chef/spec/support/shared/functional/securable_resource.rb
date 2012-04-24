@@ -20,26 +20,28 @@
 # TODO test that these work when you are logged on as a user joined to a domain (rather than local computer)
 # TODO test that you can set users from other domains
 
+require 'etc'
+
 shared_examples_for "a securable resource" do
   context "on Unix", :unix_only do
-    before(:each) do
-      require 'etc'
-      @expected_user_name = 'nobody'
-      @expected_group_name = 'nobody'
-      @expected_uid = Etc.getpwnam(@expected_user_name).uid
-      @expected_gid = Etc.getgrnam(@expected_group_name).gid
-    end
+    let(:expected_user_name) { 'nobody' }
+    let(:expected_group_name) { 'nobody' }
+    let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
+    let(:expected_gid) { Etc.getgrnam(expected_group_name).gid }
+
+    pending "should set an owner (Rerun specs under root)", :requires_unprivileged_user => true
+    pending "should set a group (Rerun specs under root)",  :requires_unprivileged_user => true
 
     it "should set an owner", :requires_root do
-      resource.owner @expected_user_name
+      resource.owner expected_user_name
       resource.run_action(:create)
-      File.stat(path).uid.should == @expected_uid
+      File.stat(path).uid.should == expected_uid
     end
 
     it "should set a group", :requires_root do
-      resource.group @expected_group_name
+      resource.group expected_group_name
       resource.run_action(:create)
-      File.stat(path).gid.should == @expected_gid
+      File.stat(path).gid.should == expected_gid
     end
 
     it "should set permissions in string form as an octal number" do
