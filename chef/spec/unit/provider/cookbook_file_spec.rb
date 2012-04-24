@@ -71,7 +71,7 @@ EXPECTED
     end
 
     it "raises a specific error alerting the user to the problem" do
-      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      lambda {@provider.run_action(:create)}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
     end
   end
   describe "when the file doesn't yet exist" do
@@ -94,21 +94,12 @@ EXPECTED
       @provider.file_cache_location.should == expected
     end
 
-    it "sets access controls on a file" do
-      @new_resource.owner(0)
-      @new_resource.group(0)
-      @new_resource.mode(0400)
-      Chef::FileAccessControl.any_instance.should_receive(:set_all)
-      @provider.set_all_access_controls('/tmp/foo')
-      @provider.new_resource.should be_updated
-    end
-
     it "stages the cookbook to a temporary file" do
       cache_file_location = CHEF_SPEC_DATA + "/cookbooks/apache2/files/default/apache2_module_conf_generate.pl"
       actual = nil
       Tempfile.open('rspec-staging-test') do |staging|
         staging.close
-        @provider.should_receive(:set_all_access_controls).with(staging.path)
+        @provider.should_receive(:set_file_access_controls).with(staging.path)
         @provider.stage_file_to_tmpdir(staging.path)
         actual = IO.read(staging.path)
       end
@@ -118,26 +109,26 @@ EXPECTED
     it "installs the file from the cookbook cache" do
       @new_resource.path(@install_to)
       @provider.should_receive(:backup_new_resource)
-      @provider.should_receive(:set_all_access_controls)
-      @provider.action_create
+      @provider.should_receive(:set_file_access_controls)
+      @provider.run_action(:create)
       actual = IO.read(@install_to)
       actual.should == @file_content
     end
 
-    it "installs the file for create_if_missing" do
+    it "installs the file for create_if_missing --> from Provider::File" do
       @new_resource.path(@install_to)
-      @provider.should_receive(:set_all_access_controls)
+      @provider.should_receive(:set_file_access_controls)
       @provider.should_receive(:backup_new_resource)
-      @provider.action_create_if_missing
+      @provider.run_action(:create_if_missing)
       actual = IO.read(@install_to)
       actual.should == @file_content
     end
 
-    it "marks the resource as updated by the last action" do
+    it "marks the resource as updated by the last action --> being tested in the converge framework" do
       @new_resource.path(@install_to)
       @provider.stub!(:backup_new_resource)
-      @provider.stub!(:set_all_access_controls)
-      @provider.action_create
+      @provider.stub!(:set_file_access_controls)
+      @provider.run_action(:create)
       @new_resource.should be_updated
       @new_resource.should be_updated_by_last_action
     end
@@ -155,30 +146,30 @@ EXPECTED
     end
 
     it "overwrites it when the create action is called" do
-      @provider.should_receive(:set_all_access_controls)
+      @provider.should_receive(:set_file_access_controls)
       @provider.should_receive(:backup_new_resource)
-      @provider.action_create
+      @provider.run_action(:create)
       actual = IO.read(@target_file)
       actual.should == @file_content
     end
 
     it "marks the resource as updated by the last action" do
-      @provider.should_receive(:set_all_access_controls)
+      @provider.should_receive(:set_file_access_controls)
       @provider.should_receive(:backup_new_resource)
-      @provider.action_create
+      @provider.run_action(:create)
       @new_resource.should be_updated
       @new_resource.should be_updated_by_last_action
     end
 
     it "doesn't overwrite when the create if missing action is called" do
-      @provider.should_not_receive(:set_all_access_controls)
-      @provider.action_create_if_missing
+      @provider.should_not_receive(:set_file_access_controls)
+      @provider.run_action(:create_if_missing)
       actual = IO.read(@target_file)
       actual.should == "the wrong content\n"
     end
 
     it "doesn't mark the resource as updated by the action for create_if_missing" do
-      @provider.action_create_if_missing
+      @provider.run_action(:create_if_missing)
       @new_resource.should_not be_updated
       @new_resource.should_not be_updated_by_last_action
     end
@@ -199,46 +190,22 @@ EXPECTED
 
     after { @tempfile && @tempfile.unlink}
 
-    it "it checks access control but does not alter content when action is create" do
-      @provider.load_current_resource
+    it "checks access control but does not alter content when action is create" do
       @provider.should_receive(:set_all_access_controls)
       @provider.should_not_receive(:stage_file_to_tmpdir)
-      @provider.action_create
+      @provider.run_action(:create)
     end
 
     it "does not mark the resource as updated by the last action" do
-      @provider.load_current_resource
-      @provider.action_create
+      @provider.run_action(:create)
       @new_resource.should_not be_updated
       @new_resource.should_not be_updated_by_last_action
     end
 
     it "does not alter content or access control when action is create if missing" do
-      @provider.load_current_resource
       @provider.should_not_receive(:set_all_access_controls)
       @provider.should_not_receive(:stage_file_to_tmpdir)
-      @provider.action_create_if_missing
-    end
-
-    describe "but the access controls are incorrect" do
-      before do
-        @access_controls = mock("Chef::FileAccessControl", :modified? => true)
-        Chef::FileAccessControl.stub!(:new).and_return(@access_controls)
-      end
-
-      it "updates the access controls" do
-        @access_controls.should_receive(:set_all)
-        @provider.set_all_access_controls("/foo")
-      end
-
-      it "marks the resource as updated by the last action run" do
-        @access_controls.stub!(:set_all)
-
-        @provider.set_all_access_controls("/foo")
-        @new_resource.should be_updated_by_last_action
-        @new_resource.should be_updated
-      end
-
+      @provider.run_action(:create_if_missing)
     end
 
   end
