@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency "treetop", "~> 1.4.9"
   s.add_dependency "net-ssh", "~> 2.2.2"
   s.add_dependency "net-ssh-multi", "~> 1.1.0"
+  # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
   s.add_dependency "highline", ">= 1.6.9"
   %w{erubis moneta uuidtools}.each { |gem| s.add_dependency gem }
 
