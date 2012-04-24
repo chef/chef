@@ -1,5 +1,5 @@
 #
-# Author:: Nicolas Vinot (<aeris@imirhilfr>)
+# Author:: Nicolas Vinot (<aeris@imirhil.fr>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
