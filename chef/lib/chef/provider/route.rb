@@ -61,7 +61,7 @@ class Chef::Provider::Route < Chef::Provider
             '255.255.255.255'  => '32' }
 
     def load_current_resource
-      is_running = nil
+      self.is_running = false
 
       # cidr or quad dot mask
       if @new_resource.netmask
@@ -93,9 +93,9 @@ class Chef::Provider::Route < Chef::Provider
           #
           running_ip = IPAddr.new("#{destination}/#{mask}")
           Chef::Log.debug("#{@new_resource} new ip: #{new_ip.inspect} running ip: #{running_ip.inspect}")
-          is_running = true if running_ip == new_ip
+          self.is_running = true if running_ip == new_ip && gateway == @new_resource.gateway
         end
-      route_file.close
+        route_file.close
       end
     end
 

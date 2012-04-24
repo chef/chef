@@ -33,8 +33,49 @@ describe Chef::Provider::Route do
     @provider.current_resource = @current_resource
   end
 
-  describe Chef::Provider::Route, "action_add" do
+  describe Chef::Provider::Route, "load_current_resource" do
+    context "on linux" do
+      before do
+        @node[:os] = 'linux'
+        routing_table = "Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT\n" +
+                        "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
+        route_file = StringIO.new(routing_table)
+        File.stub!(:open).with("/proc/net/route", "r").and_return(route_file)
+      end
 
+      it "should set is_running to false when a route is not detected" do
+        resource = Chef::Resource::Route.new('10.10.10.0/24')
+        resource.stub!(:gateway).and_return("10.0.0.1")
+        resource.stub!(:device).and_return("eth0")
+        provider = Chef::Provider::Route.new(resource, @run_context)
+
+        provider.load_current_resource
+        provider.is_running.should be_false
+      end
+
+      it "should detect existing routes and set is_running attribute correctly" do
+        resource = Chef::Resource::Route.new('192.168.100.0/24')
+        resource.stub!(:gateway).and_return("192.168.132.9")
+        resource.stub!(:device).and_return("eth0")
+        provider = Chef::Provider::Route.new(resource, @run_context)
+
+        provider.load_current_resource
+        provider.is_running.should be_true
+      end
+
+      it "should use gateway value when matching routes" do
+        resource = Chef::Resource::Route.new('192.168.100.0/24')
+        resource.stub!(:gateway).and_return("10.10.10.10")
+        resource.stub!(:device).and_return("eth0")
+        provider = Chef::Provider::Route.new(resource, @run_context)
+
+        provider.load_current_resource
+        provider.is_running.should be_false
+      end
+    end
+  end
+
+  describe Chef::Provider::Route, "action_add" do
     it "should add the route if it does not exist" do
       @provider.stub!(:run_command).and_return(true)
       @current_resource.stub!(:gateway).and_return(nil)
