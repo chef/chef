@@ -18,14 +18,11 @@
 
 require 'chef/provider/service'
 require 'chef/provider/service/init'
-require 'chef/mixin/command'
 
 class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
-        include Chef::Mixin::Command
-
         UPDATE_RC_D_ENABLED_MATCHES = /\/rc[\dS].d\/S|not installed/i
         UPDATE_RC_D_PRIORITIES = /\/rc([\dS]).d\/([SK])(\d\d)/i
 
@@ -47,26 +44,22 @@ class Chef
           assert_update_rcd_available
           priority = {}
 
-          status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
-
-            [stdout, stderr].each do |iop|
-              iop.each_line do |line|
-                if UPDATE_RC_D_PRIORITIES =~ line
-                  # priority[runlevel] = [ S|K, priority ] 
-                  # S = Start, K = Kill
-                  # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
-                  priority[$1] = [($2 == "S" ? :start : :stop), $3]
-                end
-                if line =~ UPDATE_RC_D_ENABLED_MATCHES
-                  enabled = true
-                end
+          status = shell_out!("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove")
+          raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}" unless status.exitstatus == 0
+          [status.stdout, status.stderr].each do |iop|
+            iop.each_line do |line|
+              if UPDATE_RC_D_PRIORITIES =~ line
+                # priority[runlevel] = [ S|K, priority ]
+                # S = Start, K = Kill
+                # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
+                priority[$1] = [($2 == "S" ? :start : :stop), $3]
+              end
+              if line =~ UPDATE_RC_D_ENABLED_MATCHES
+                enabled = true
               end
             end
           end
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
-          end
           priority
         end
 
@@ -75,7 +68,6 @@ class Chef
 
           priority.each { |runlevel, arguments|
             Chef::Log.debug("#{@new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
-            
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if (2..5).include?(runlevel.to_i) && arguments[0] == :start
               enabled = true
@@ -90,7 +82,7 @@ class Chef
             shell_out!("/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             shell_out!("/usr/sbin/update-rc.d #{@new_resource.service_name} defaults #{@new_resource.priority} #{100 - @new_resource.priority}")
           elsif @new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling  
+            # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own start priorities
             set_priority()
           else # No priority, go with update-rc.d defaults
@@ -106,7 +98,7 @@ class Chef
             shell_out!("/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             shell_out!("/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .")
           elsif @new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling  
+            # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own stop priorities
             set_priority()
           else 

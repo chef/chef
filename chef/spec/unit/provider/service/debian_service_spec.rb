@@ -24,10 +24,9 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
   before(:each) { provider.current_resource = current_resource }
 
   let(:ps_command) { 'fuuuu' }
-  let(:pid) { nil }
-  let(:stdin) { nil }
-  let(:stdout) { nil }
-  let(:stderr) { nil }
+  let(:stderr) { StringIO.new }
+  let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout, :stderr => stderr) }
+  let(:exitstatus) { 0 }
 
   let(:new_resource) { Chef::Resource::Service.new(service_name) }
 
@@ -50,12 +49,11 @@ Removing any system startup links for /etc/init.d/chef ...
 UPDATE_RC_D_SUCCESS
 
     let(:stderr) { StringIO.new }
-    let(:status) { mock("Status", :exitstatus => 0, :stdout => stdout) }
 
     before do
       provider.stub!(:assert_update_rcd_available)
+      provider.stub!(:service_running?).and_return(true)
       provider.stub!(:shell_out!).and_return(status)
-      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
     end
 
     it "should say the service is enabled" do
@@ -106,13 +104,13 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
       }
     }.each do |model, streams|
 
-      let(:status) { mock("Status", :exitstatus => 0, :stdout => stdout) }
+      let(:status) { mock("Status", :exitstatus => 0, :stdout => stdout, :stderr => stderr) }
 
       describe "when update-rc.d shows the init script linked to rc*.d/" do
         before do
           provider.stub!(:assert_update_rcd_available)
           provider.stub!(:service_running?).and_return(true)
-          provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
+          provider.stub!(:shell_out!).and_return(status)
         end
 
         let(:stdout) { StringIO.new(streams["linked"]["stdout"]) }
@@ -144,8 +142,8 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
       describe "when using squeeze/earlier and update-rc.d shows the init script isn't linked to rc*.d" do
         before do
           provider.stub!(:assert_update_rcd_available)
+          provider.stub!(:service_running?).and_return(true)
           provider.stub!(:shell_out!).and_return(status)
-          provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
         end
 
         let(:stdout) { StringIO.new(streams["not linked"]["stdout"]) }
@@ -167,8 +165,8 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
   describe "when update-rc.d shows the init script isn't linked to rc*.d" do
     before do
       provider.stub!(:assert_update_rcd_available)
+      provider.stub!(:service_running?).and_return(true)
       provider.stub!(:shell_out!).and_return(status)
-      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
     end
 
     let(:stdout) { StringIO.new(" Removing any system startup links for /etc/init.d/chef ...") }
@@ -186,7 +184,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
   end
 
   context "when update-rc.d fails" do
-    before(:each) { provider.stub!(:popen4).and_return(status) }
+    before(:each) { provider.stub!(:shell_out!).and_return(status) }
     let(:status) { mock("Status", :exitstatus => -1) }
 
     it "raises an error" do
