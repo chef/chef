@@ -70,7 +70,7 @@ class Chef
             require 'stringio'
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
-            if data.length == 1 and config[:attribute]
+            if config[:attribute] and data.length == 1
               data.values[0]
             else
               out = StringIO.new
