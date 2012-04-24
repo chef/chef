@@ -181,7 +181,10 @@ describe Chef::Knife::Ssh do
       end
 
       it "should override what is set in knife.rb" do
+        # This is the setting imported from knife.rb
         Chef::Config[:knife][:ssh_attribute] = "fqdn"
+        # Then we run knife with the -a flag, which sets the above variable
+        setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
         @knife.run
         @knife.config[:attribute].should == "ec2.public_hostname"
       end
