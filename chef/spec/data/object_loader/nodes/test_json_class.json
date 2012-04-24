@@ -1,0 +1,6 @@
+{
+  "name": "test",
+  "json_class": "Chef::Node",
+  "environment": "prod",
+  "run_list": []
+}
