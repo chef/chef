@@ -83,7 +83,13 @@ class Chef
         def object_from_file(filename)
           case filename
           when /\.(js|json)$/
-            Chef::JSONCompat.from_json(IO.read(filename))
+            r = Chef::JSONCompat.from_json(IO.read(filename))
+            # Chef::DataBagItem doesn't work well with the json_create method
+            if @klass == Chef::DataBagItem
+              r
+            else
+              @klass.json_create(r)
+            end
           when /\.rb$/
             r = klass.new
             r.from_file(filename)
