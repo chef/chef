@@ -32,8 +32,7 @@ class Chef
       end
 
       def action_create
-        assert_enclosing_directory_exists!
-
+       # assert_enclosing_directory_exists!
         Chef::Log.debug("#{@new_resource} checking for changes")
 
         if current_resource_matches_target_checksum?
@@ -43,24 +42,15 @@ class Chef
             if matches_current_checksum?(raw_file)
               Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
             else
-              backup_new_resource
-              FileUtils.cp raw_file.path, @new_resource.path
-              Chef::Log.info "#{@new_resource} updated"
-              @new_resource.updated_by_last_action(true)
+              converge_by("Would copy downloaded #{@new_resource} into #{@new_resource.path}") do
+                backup_new_resource
+                FileUtils.cp raw_file.path, @new_resource.path
+                Chef::Log.info "#{@new_resource} updated"
+              end
             end
           end
         end
-        enforce_ownership_and_permissions
-
-        @new_resource.updated_by_last_action?
-      end
-
-      def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("#{@new_resource} exists, taking no action.")
-        else
-          action_create
-        end
+        set_all_access_controls
       end
 
       def current_resource_matches_target_checksum?
