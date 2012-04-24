@@ -9,7 +9,7 @@ group(:development, :test) do
   gem 'rack'
   # thin requires eventmachine, which won't work under Ruby 1.9 on Windows
   # http://gembundler.com/man/gemfile.5.html
-  gem 'thin', :platforms => ruby
+  gem 'thin', :platforms => :ruby
 #  gem 'awesome_print'
 #  gem 'pry'
 end
