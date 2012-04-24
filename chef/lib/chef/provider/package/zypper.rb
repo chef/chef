@@ -17,7 +17,6 @@
 #
 
 require 'chef/provider/package'
-require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'singleton'
 
@@ -34,24 +33,28 @@ class Chef
           is_out_of_date=false
           version=''
           oud_version=''
+
           Chef::Log.debug("#{@new_resource} checking zypper")
-          status = popen4("zypper info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^Version: (.+)$/
-                version = $1
-                Chef::Log.debug("#{@new_resource} version #{$1}")
-              when /^Installed: Yes$/
-                is_installed=true
-                Chef::Log.debug("#{@new_resource} is installed")
-              when /^Installed: No$/
-                is_installed=false
-                Chef::Log.debug("#{@new_resource} is not installed")
-              when /^Status: out-of-date \(version (.+) installed\)$/
-                is_out_of_date=true
-                oud_version=$1
-                Chef::Log.debug("#{@new_resource} out of date version #{$1}")
-              end
+
+          status = shell_out!("zypper info #{@new_resource.package_name}")
+          raise Chef::Exceptions::Package, "zypper failed - #{status.inspect}!" unless status.exitstatus == 0
+
+          status.stdout.each_line do |line|
+            case line
+            when /^Version: (.+)$/
+              version = $1
+              Chef::Log.debug("#{@new_resource} version #{$1}")
+            when /^Installed: Yes$/
+              is_installed = true
+              Chef::Log.debug("#{@new_resource} is installed")
+            when /^Installed: No$/
+              is_installed = false
+              Chef::Log.debug("#{@new_resource} is not installed")
+            when /^Status: out-of-date \(version (.+) installed\)$/
+              is_installed = true
+              is_out_of_date = true
+              oud_version = $1
+              Chef::Log.debug("#{@new_resource} out of date version #{$1}")
             end
           end
 
@@ -70,16 +73,13 @@ class Chef
             end
           end
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "zypper failed - #{status.inspect}!"
-          end
-
           @current_resource
         end
 
         #Gets the zypper Version from command output (Returns Floating Point number)
         def zypper_version()
-          `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
+          status = shell_out!('zypper -V 2>&1')
+          status.stdout.scan(/\d+/).join(".").to_f
         end
 
         def install_package(name, version)

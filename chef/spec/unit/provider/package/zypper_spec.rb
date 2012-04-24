@@ -19,128 +19,137 @@
 require 'spec_helper'
 
 describe Chef::Provider::Package::Zypper do
-  before(:each) do
-    @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
-    @new_resource = Chef::Resource::Package.new("cups")
+  include SpecHelpers::Providers::Package
 
-    @current_resource = Chef::Resource::Package.new("cups")
-
-    @status = mock("Status", :exitstatus => 0)
-
-    @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider.stub!(:popen4).and_return(@status)
-    @stderr = StringIO.new
-    @stdout = StringIO.new
-    @pid = mock("PID")
-    @provider.stub!(:`).and_return("2.0")
+  let(:given) do
+    assume_zypper_info
+    assume_zypper_version
   end
 
-  context "when loading the current package state" do
+  let(:assume_zypper_info) { provider.stub!(:shell_out!).and_return(status) }
+  let(:assume_zypper_version) { provider.stub!(:zypper_version).and_return(zypper_version) }
+  let(:zypper_version) { 2.0 }
+
+  describe "#load_current_resource" do
+    subject { given; provider.load_current_resource }
+
+    it "should return the current resouce" do
+      subject.should eql(provider.current_resource)
+    end
+
     it "should create a current resource with the name of the new_resource" do
-      Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
-      @provider.load_current_resource
+      subject.name.should eql(new_resource.name)
     end
 
     it "should set the current resources package name to the new resources package name" do
-      @current_resource.should_receive(:package_name).with(@new_resource.package_name)
-      @provider.load_current_resource
+      subject.package_name.should eql(new_resource.package_name)
+    end
+
+    it "should not raise Chef::Exceptions::Package" do
+      lambda { subject }.should_not raise_error(Chef::Exceptions::Package)
     end
 
     it "should run zypper info with the package name" do
-      @provider.should_receive(:popen4).with("zypper info #{@new_resource.package_name}").and_return(@status)
-      @provider.load_current_resource
+      provider.should_receive(:shell_out!).with("zypper info #{new_resource.package_name}").and_return(status)
+      provider.load_current_resource
     end
 
-    it "should set the installed version to nil on the current resource if zypper info installed version is (none)" do
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @current_resource.should_receive(:version).with(nil).and_return(true)
-      @provider.load_current_resource
+    context 'when zypper info installed version is (none)' do
+      let(:stdout) { StringIO.new('(none)') }
+      it "should set the installed version to nil on the current resource if zypper info installed version is (none)" do
+        subject.version.should be_nil
+      end
     end
 
-    it "should set the installed version if zypper info has one" do
-      @stdout = StringIO.new("Version: 1.0\nInstalled: Yes\n")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @current_resource.should_receive(:version).with("1.0").and_return(true)
-      @provider.load_current_resource
+    context 'when zypper info reports an installed version' do
+      let(:stdout) { StringIO.new("Version: 1.0\nInstalled: Yes\n") }
+
+      it "should set the installed version if zypper info has one" do
+        subject.version.should eql('1.0')
+      end
     end
 
-    it "should set the candidate version if zypper info has one" do
-      @stdout = StringIO.new("Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)")
+    context 'when zypper info reports an outdated, available version' do
+      let(:stdout) { StringIO.new("Version: 1.0\nInstalled: No\nStatus: out-of-date (version 0.9 installed)") }
 
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @provider.candidate_version.should eql("1.0")
+      it "should set version to current, outdated version" do
+        subject
+        provider.current_resource.version.should eql('0.9')
+      end
+
+      it "should set the candidate version" do
+        should_not be_nil
+        provider.candidate_version.should eql("1.0")
+      end
     end
 
-    it "should raise an exception if zypper info fails" do
-      @status.should_receive(:exitstatus).and_return(1)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
-    end
-
-    it "should not raise an exception if zypper info succeeds" do
-      @status.should_receive(:exitstatus).and_return(0)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
-    end
-
-    it "should return the current resouce" do
-      @provider.load_current_resource.should eql(@current_resource)
+    context 'when zypper info fails' do
+      let(:exitstatus) { 1 }
+      it "should raise an exception if zypper info fails" do
+        lambda { subject }.should raise_error(Chef::Exceptions::Package)
+      end
     end
   end
 
   describe "#install_package" do
     it "should run zypper install with the package name and version" do
-      @provider.should_receive(:shell_out!).with("zypper -n --no-gpg-checks install -l  emacs=1.0")
-      @provider.install_package("emacs", "1.0")
+      assume_zypper_version
+      provider.should_receive(:shell_out!).with("zypper -n --no-gpg-checks install -l  emacs=1.0")
+      provider.install_package("emacs", "1.0")
     end
   end
 
   describe "#upgrade_package" do
     it "should run zypper update with the package name and version" do
-      @provider.should_receive(:shell_out!).with("zypper -n --no-gpg-checks install -l emacs=1.0")
-      @provider.upgrade_package("emacs", "1.0")
+      assume_zypper_version
+      provider.should_receive(:shell_out!).with("zypper -n --no-gpg-checks install -l emacs=1.0")
+      provider.upgrade_package("emacs", "1.0")
     end
   end
 
   describe "#remove_package" do
     it "should run zypper remove with the package name" do
-      @provider.should_receive(:shell_out!).with("zypper -n --no-gpg-checks remove  emacs=1.0")
-      @provider.remove_package("emacs", "1.0")
+      assume_zypper_version
+      provider.should_receive(:shell_out!).with("zypper -n --no-gpg-checks remove  emacs=1.0")
+      provider.remove_package("emacs", "1.0")
     end
   end
 
   describe "#purge_package" do
     it "should run remove_package with the name and version" do
-      @provider.should_receive(:remove_package).with("emacs", "1.0")
-      @provider.purge_package("emacs", "1.0")
+      assume_zypper_version
+      provider.should_receive(:remove_package).with("emacs", "1.0")
+      provider.purge_package("emacs", "1.0")
     end
   end
 
   context "with an older zypper" do
-    before(:each) do
-      @provider.stub!(:`).and_return("0.11.6")
-    end
+    let(:zypper_version) { '0.11.6'.to_f }
 
     describe "#install_package" do
       it "should run zypper install with the package name and version" do
-        @provider.should_receive(:shell_out!).with("zypper install -y emacs")
-        @provider.install_package("emacs", "1.0")
+        assume_zypper_version
+        provider.should_receive(:shell_out!).with("zypper install -y emacs")
+        provider.install_package("emacs", "1.0")
       end
     end
 
     describe "#upgrade_package" do
       it "should run zypper update with the package name and version" do
-        @provider.should_receive(:shell_out!).with("zypper install -y emacs")
-        @provider.upgrade_package("emacs", "1.0")
+        assume_zypper_version
+        provider.should_receive(:shell_out!).with("zypper install -y emacs")
+        provider.upgrade_package("emacs", "1.0")
       end
     end
 
     describe "#remove_package" do
       it "should run zypper remove with the package name" do
-        @provider.should_receive(:shell_out!).with("zypper remove -y emacs")
-        @provider.remove_package("emacs", "1.0")
+        assume_zypper_version
+        provider.should_receive(:shell_out!).with("zypper remove -y emacs")
+        provider.remove_package("emacs", "1.0")
       end
     end
   end
+
+  describe '#zypper_version'
 end
