@@ -43,6 +43,14 @@ class Chef
           
           run_context.node
           
+          @job = @new_resource.service_name
+          
+          if @new_resource.parameters
+            @new_resource.parameters.each do |key, value|
+              @job << " #{key}=#{value}"
+            end
+          end
+          
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
           if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
             @upstart_job_dir = "/etc/event.d"
@@ -118,7 +126,7 @@ class Chef
             if @new_resource.start_command
               super
             else
-              run_command_with_systems_locale(:command => "/sbin/start #{@new_resource.service_name}")
+              run_command_with_systems_locale(:command => "/sbin/start #{@job}")
             end
           end
         end
@@ -132,7 +140,7 @@ class Chef
             if @new_resource.stop_command
               super
             else
-              run_command_with_systems_locale(:command => "/sbin/stop #{@new_resource.service_name}")
+              run_command_with_systems_locale(:command => "/sbin/stop #{@job}")
             end
           end
         end
@@ -144,7 +152,7 @@ class Chef
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
           else @new_resource.supports[:restart]
             if @current_resource.running
-              run_command_with_systems_locale(:command => "/sbin/restart #{@new_resource.service_name}")
+              run_command_with_systems_locale(:command => "/sbin/restart #{@job}")
             else
               start_service
             end
@@ -156,7 +164,7 @@ class Chef
             super
           else
             # upstart >= 0.6.3-4 supports reload (HUP)
-            run_command_with_systems_locale(:command => "/sbin/reload #{@new_resource.service_name}")
+            run_command_with_systems_locale(:command => "/sbin/reload #{@job}")
           end
         end
 
@@ -177,7 +185,7 @@ class Chef
         end
 
         def upstart_state
-          command = "/sbin/status #{@new_resource.service_name}"
+          command = "/sbin/status #{@job}"
           status = popen4(command) do |pid, stdin, stdout, stderr|
             stdout.each_line do |line|
               # rsyslog stop/waiting

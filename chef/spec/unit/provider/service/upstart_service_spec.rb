@@ -72,7 +72,7 @@ describe Chef::Provider::Service::Upstart do
       @stdout = StringIO.new
       @stderr = StringIO.new
       @pid = mock("PID")
-
+      
       ::File.stub!(:exists?).and_return(true)
       ::File.stub!(:open).and_return(true)
     end
@@ -227,6 +227,15 @@ describe Chef::Provider::Service::Upstart do
     it "should not call '/sbin/start service_name' if it is already running" do
       @current_resource.stub!(:running).and_return(true)
       @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/sbin/start #{@new_resource.service_name}"}).and_return(0)
+      @provider.start_service()
+    end
+
+    it "should pass parameters to the start command if they are provided" do
+      @new_resource = Chef::Resource::Service.new("rsyslog")
+      @new_resource.parameters({ "OSD_ID" => "2" })
+      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+      @provider.current_resource = @current_resource
+      @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start rsyslog OSD_ID=2"}).and_return(0)
       @provider.start_service()
     end
 

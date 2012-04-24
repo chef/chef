@@ -28,7 +28,8 @@ class Chef
         @service_name = name
         @enabled = nil
         @running = nil
-        @pattern = service_name 
+        @parameters = nil
+        @pattern = service_name
         @start_command = nil
         @stop_command = nil
         @status_command = nil
@@ -134,6 +135,13 @@ class Chef
         set_or_return(:priority,
                       arg,
                       :kind_of => [ Integer, String, Hash ])
+      end
+
+      def parameters(arg=nil)
+        set_or_return(
+          :parameters,
+          arg,
+          :kind_of => [ Hash ] )
       end
 
       def supports(args={})
