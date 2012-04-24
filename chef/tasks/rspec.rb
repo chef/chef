@@ -30,7 +30,7 @@ begin
   desc "Run all specs in spec directory"
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.rspec_opts = ['--options', "\"#{CHEF_ROOT}/.rspec\""]
-    t.pattern = FileList['spec/unit/**/*_spec.rb']
+    t.pattern = FileList['spec/**/*_spec.rb']
   end
 
   desc "Run all functional specs (in functional/ directory)"
