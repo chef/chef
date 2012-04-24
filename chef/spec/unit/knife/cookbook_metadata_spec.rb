@@ -22,7 +22,7 @@ describe Chef::Knife::CookbookMetadata do
   before(:each) do
     @knife = Chef::Knife::CookbookMetadata.new
     @knife.name_args = ['foobar']
-    @cookbook_dir = '/var/tmp/chef/cookbooks'
+    @cookbook_dir = Dir.mktmpdir
     @json_data = '{ "version": "1.0.0" }'
     @stdout = StringIO.new
     @stderr = StringIO.new
