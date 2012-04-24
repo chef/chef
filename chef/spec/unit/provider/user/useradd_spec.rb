@@ -26,11 +26,14 @@ describe Chef::Provider::User::Useradd do
   let(:current_resource) { Chef::Resource::User.new('adam', run_context).tap(&with_attributes.call(current_resource_attributes)) }
   let(:provider) { Chef::Provider::User::Useradd.new(new_resource, run_context).tap(&with_attributes.call(provider_attributes)) }
 
+  let(:current_home_path) { new_home_path }
+  let(:new_home_path) { '/home/adam' }
+
   let(:new_resource_attributes) do
     { :comment     => "Adam Jacob",
       :uid         => 1000,
       :gid         => 1000,
-      :home        => home,
+      :home        => new_home_path,
       :shell       => "/usr/bin/zsh",
       :password    => "abracadabra",
       :system      => false,
@@ -42,7 +45,7 @@ describe Chef::Provider::User::Useradd do
     { :comment => "Adam Jacob",
       :uid => 1000,
       :gid => 1000,
-      :home => home,
+      :home => current_home_path,
       :shell => "/usr/bin/zsh",
       :password => "abracadabra",
       :system => false,
@@ -179,7 +182,6 @@ describe Chef::Provider::User::Useradd do
       let(:expected_command) { "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' adam" }
 
       it "should not include -d in the command options" do
-        ap new_resource_attributes
         provider.should_receive(:shell_out).with(expected_command).and_return(true)
         provider.create_user
       end
@@ -376,56 +378,35 @@ describe Chef::Provider::User::Useradd do
     end
   end
 
-  describe "when checking if home needs updating" do
-    [
-     {
-       "action" => "should return false if home matches",
-       "current_resource_home" => [ "/home/laurent" ],
-       "new_resource_home" => [ "/home/laurent" ],
-       "expected_result" => false
-     },
-     {
-       "action" => "should return true if home doesn't match",
-       "current_resource_home" => [ "/home/laurent" ],
-       "new_resource_home" => [ "/something/else" ],
-       "expected_result" => true
-     },
-     {
-       "action" => "should return false if home only differs by trailing slash",
-       "current_resource_home" => [ "/home/laurent" ],
-       "new_resource_home" => [ "/home/laurent/", "/home/laurent" ],
-       "expected_result" => false
-     },
-     {
-       "action" => "should return false if home is an equivalent path",
-       "current_resource_home" => [ "/home/laurent" ],
-       "new_resource_home" => [ "/home/./laurent", "/home/laurent" ],
-       "expected_result" => false
-     },
-    ].each do |home_check|
-      it home_check["action"] do
-        @provider.current_resource.home home_check["current_resource_home"].first
-        @current_home_mock = mock("Pathname")
-        @provider.new_resource.home home_check["new_resource_home"].first
-        @new_home_mock = mock("Pathname")
+  describe "#updating_home?" do
+    subject { provider.updating_home? }
 
-        Pathname.should_receive(:new).with(@current_resource.home).and_return(@current_home_mock)
-        @current_home_mock.should_receive(:cleanpath).and_return(home_check["current_resource_home"].last)
-        Pathname.should_receive(:new).with(@new_resource.home).and_return(@new_home_mock)
-        @new_home_mock.should_receive(:cleanpath).and_return(home_check["new_resource_home"].last)
+    let(:current_home_path) { '/home/laurent' }
 
-        @provider.updating_home?.should == home_check["expected_result"]
-      end
+    context 'when current and new home paths matches' do
+      let(:new_home_path) { current_home_path }
+      it { should be_false }
     end
-    it "should return true if the current home does not exist but a home is specified by the new resource" do
-      @new_resource = Chef::Resource::User.new("adam", @run_context)
-      @current_resource = Chef::Resource::User.new("adam", @run_context)
-      @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
-      @provider.current_resource = @current_resource
-      @current_resource.home nil
-      @new_resource.home "/home/kitten"
 
-      @provider.updating_home?.should == true
+    context 'when current and new home paths do not match' do
+      let(:new_home_path) { "/home/user#{rand(1000)}" }
+      it { should be_true }
+    end
+
+    context 'when new home path differs only by trailing slash' do
+      let(:new_home_path) { "#{current_home_path}/" }
+      it { should be_false }
+    end
+
+    context 'when new home path is equivalent to current home path' do
+      let(:new_home_path) { "/home/./laurent" }
+      it { should be_false }
+    end
+
+    context 'when creating a new home path' do
+      let(:current_home_path) { nil }
+      it { should be_true }
     end
   end
+
 end
