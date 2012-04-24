@@ -54,14 +54,6 @@ class Chef
         end
       end
 
-      def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("#{@new_resource} exists - taking no action")
-        else
-          action_create
-        end
-      end
-
       def template_location
         @template_file_cache_location ||= begin
           if @new_resource.local
