@@ -88,7 +88,7 @@ describe Chef::Provider::RemoteDirectory do
     after {FileUtils.rm_rf(@destination_dir)}
 
     it "transfers the directory with all contents" do
-      @provider.action_create
+      @provider.run_action(:create)
       ::File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
       ::File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
       ::File.exist?(@destination_dir + '/remotesubdir/remote_subdir_file1.txt').should be_true
@@ -100,14 +100,14 @@ describe Chef::Provider::RemoteDirectory do
     describe "only if it is missing" do
       it "should not overwrite existing files" do
         @resource.overwrite(true)
-        @provider.action_create
+        @provider.run_action(:create)
 
         File.open(@destination_dir + '/remote_dir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         file1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))
         subdirfile1md5 = Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
 
-        @provider.action_create_if_missing
+        @provider.run_action(:create_if_missing)
 
         file1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
         subdirfile1md5.eql?(Digest::MD5.hexdigest(File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true
@@ -118,10 +118,10 @@ describe Chef::Provider::RemoteDirectory do
       before {@resource.purge(true)}
 
       it "removes existing files if purge is true" do
-        @provider.action_create
+        @provider.run_action(:create)
         FileUtils.touch(@destination_dir + '/marked_for_death.txt')
         FileUtils.touch(@destination_dir + '/remotesubdir/marked_for_death_again.txt')
-        @provider.action_create
+        @provider.run_action(:create)
 
         ::File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
         ::File.exist?(@destination_dir + '/remote_dir_file2.txt').should be_true
@@ -133,13 +133,13 @@ describe Chef::Provider::RemoteDirectory do
       end
 
       it "removes files in subdirectories before files above" do
-        @provider.action_create
+        @provider.run_action(:create)
         FileUtils.mkdir_p(@destination_dir + '/a/multiply/nested/directory/')
         FileUtils.touch(@destination_dir + '/a/foo.txt')
         FileUtils.touch(@destination_dir + '/a/multiply/bar.txt')
         FileUtils.touch(@destination_dir + '/a/multiply/nested/baz.txt')
         FileUtils.touch(@destination_dir + '/a/multiply/nested/directory/qux.txt')
-        @provider.action_create
+        @provider.run_action(:create)
         ::File.exist?(@destination_dir + '/a/foo.txt').should be_false
         ::File.exist?(@destination_dir + '/a/multiply/bar.txt').should be_false
         ::File.exist?(@destination_dir + '/a/multiply/nested/baz.txt').should be_false
@@ -167,12 +167,12 @@ describe Chef::Provider::RemoteDirectory do
       before {@resource.overwrite(false)}
 
       it "leaves modifications alone" do
-        @provider.action_create
+        @provider.run_action(:create)
         ::File.open(@destination_dir + '/remote_dir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         ::File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))
         subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
-        @provider.action_create
+        @provider.run_action(:create)
         file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
         subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true
       end
