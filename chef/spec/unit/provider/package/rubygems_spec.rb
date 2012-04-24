@@ -344,11 +344,11 @@ describe Chef::Provider::Package::Rubygems do
 
   it "searches for a gem binary when running on Omnibus on Unix" do
     platform_mock :unix do
-      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/opt/opscode/embedded/bin")
-      ENV.stub!(:[]).with('PATH').and_return("/usr/bin:/usr/sbin:/opt/opscode/embedded/bin")
+      RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/opt/chef/embedded/bin")
+      ENV.stub!(:[]).with('PATH').and_return("/usr/bin:/usr/sbin:/opt/chef/embedded/bin")
       File.stub!(:exists?).with('/usr/bin/gem').and_return(false)
       File.stub!(:exists?).with('/usr/sbin/gem').and_return(true)
-      File.stub!(:exists?).with('/opt/opscode/embedded/bin/gem').and_return(true) # should not get here
+      File.stub!(:exists?).with('/opt/chef/embedded/bin/gem').and_return(true) # should not get here
       provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
       provider.gem_env.gem_binary_location.should == '/usr/sbin/gem'
     end
