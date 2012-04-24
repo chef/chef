@@ -1,0 +1,145 @@
+#!/bin/bash
+#
+# Cluster like it's 1999
+#
+
+LOGNAME=/var/log/chef-server/keepalived/cluster.log
+PROGNAME=$(basename $0)
+
+# must be longer than unicorn 60 second timeout
+export SVWAIT=30
+
+# touching the terminate_master_file will abort a stuck master transition
+# (if you know it will never be able to grab the drbd primary cluster 'lock')
+terminate_master_file=/var/opt/chef-server/keepalived/terminate_master
+requested_state_file=/var/opt/chef-server/keepalived/requested_cluster_status
+current_state_file=/var/opt/chef-server/keepalived/current_cluster_status
+lockfile=/var/opt/chef-server/keepalived/cluster-transition.lock
+
+function log_me
+{
+  echo $1
+  echo "$(date -R): ${1}" >> $LOGNAME
+}
+
+function error_exit
+{
+  log_me "$1"
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+function transition
+{
+  log_me "Transitioning to $1"
+  case "$1" in
+    master)
+      # 10 * SVWAIT 
+      try=300
+      rm -f $terminate_master_file
+      while true; do
+        log_me "Attempting DRBD primary takeover - attempts left ${try}"
+        drbdadm primary pc0 && break
+        let "--try" || error_exit "Cannot become drbd primary!" 
+        [ -e $terminate_master_file ] && error_exit "Aborting master state transition due to request"
+        sleep 1
+      done
+
+      log_me "DRBD primary takeover successful"
+
+      log_me "Mounting <%= node['chef_server']['drbd']['device'] %> at <%= node['chef_server']['drbd']['data_dir'] %>"
+      mount <%= node['chef_server']['drbd']['device'] %> <%= node['chef_server']['drbd']['data_dir'] %> || true
+
+<%- node['chef_server']['keepalived']['service_order'].each do |item| -%>
+<%- if node['chef_server'][item['key']]['ha'] -%>
+      log_me "Starting service <%= item['service_name'] %>"
+      /opt/chef-server/bin/chef-server-ctl <%= item['service_name'] %> start || error_exit "Cannot start <%= item['service_name'] %>"
+      <%- if node['chef_server']['keepalived']['service_posthooks'][item['service_name']] -%>
+        log_me "Doing post-start hook for <%= item['service_name'] %>"
+        <%= node['chef_server']['keepalived']['service_posthooks'][item['service_name']] %>
+      <%- end -%>
+<%- end -%>
+<%- end -%>
+
+      ;;
+    backup)
+<%- node['chef_server']['keepalived']['service_order'].reverse.each do |item| -%>
+<%- if node['chef_server'][item['key']]['ha'] -%>
+      log_me "Stopping service <%= item['service_name'] %>"
+      /opt/chef-server/bin/chef-server-ctl <%= item['service_name'] %> graceful-kill || error_exit "Cannot kill <%= item['service_name'] %>"
+<%- end -%>
+<%- end -%>
+      # 10 * SVWAIT 
+      try=300
+      while true; do
+        log_me "Attempting to become DRBD secondary - attempts left ${try}"
+        mountpoint <%= node['chef_server']['drbd']['data_dir'] %> && fuser -km <%= node['chef_server']['drbd']['data_dir'] %>
+        umount -f <%= node['chef_server']['drbd']['data_dir'] %> || true
+        drbdadm secondary pc0 && break
+        let "--try" || error_exit "Cannot become DRBD secondary"
+        sleep 1
+      done
+      ;;
+    fault)
+      # Um... we are on the way elsewhere
+      ;;
+    *)
+  esac
+}
+
+function lock
+{
+  if [ -e $1 ]; then
+    read lockpid < $1
+    if [ ! -z "$lockpid" -a -d /proc/$lockpid ]; then
+      return 1
+    fi
+  fi
+  trap "rm -f $1; exit" INT TERM EXIT
+  echo $$ > $1
+  return 0
+}
+
+function unlock
+{
+  rm $1
+  trap - INT TERM EXIT
+}
+
+function transition_loop
+{
+   transition "$1"
+   log_me "Transitioned to $1"
+   transitioned_to=$1
+   last_requested_state=`echo -n $(cat $requested_state_file)`
+   while [ "$transitioned_to" != "$last_requested_state" ]; do
+     transition $last_requested_state
+     log_me "Transitioned to $1"
+     transitioned_to=$last_requested_state
+     last_requested_state=`echo -n $(cat $requested_state_file)`
+   done
+   unlock $lockfile 
+   echo $1 > $current_state_file
+}
+
+echo $1 > $requested_state_file
+
+try=10
+while true; do
+  if lock $lockfile; then
+     transition_loop "$1"
+     break
+  else
+     let "--try" || error_exit "Cannot become drbd backup!" 
+     log_me "Requested transition to $1"
+     if [ "$1" != "backup" ]; then
+       error_exit "Requested transition to $1, but state transition already running."
+       break
+     fi
+     log_me "Attempting to interrupt previously running state transition."
+     touch $terminate_master_file
+     sleep 1
+  fi
+done
+
+exit 0

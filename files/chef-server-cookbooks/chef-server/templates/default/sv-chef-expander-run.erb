@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd /opt/chef-server/embedded/service/chef-expander
+
+exec 2>&1
+exec /opt/chef-server/embedded/bin/chpst -P -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /opt/chef-server/bin/chef-expander -n <%= node['chef_server']['chef-expander']['nodes'] %> -c <%= File.join(node["chef_server"]['chef-expander']['dir'], "etc", "expander.rb") %>

@@ -1,0 +1,8 @@
+log_location       STDOUT
+
+solr_jetty_path "<%= File.join(@dir, "jetty") %>"
+solr_data_path  "<%= File.join(@dir, "data") %>"
+solr_home_path  "<%= File.join(@dir, "home") %>"
+solr_heap_size  "<%= @heap_size %>"
+solr_java_opts "<%= @java_opts %>"
+solr_url        "<%= @url %>"

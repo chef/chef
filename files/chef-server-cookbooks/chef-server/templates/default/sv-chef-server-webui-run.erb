@@ -1,0 +1,4 @@
+#!/bin/sh
+
+exec 2>&1
+exec chpst -P -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /usr/bin/env HOME="<%= node['chef_server']['chef-server-webui']['dir'] %>" unicorn -E production -c <%= File.join(node['chef_server']['chef-server-webui']['dir'], "etc", "unicorn.rb") %> /opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-server-webui-<%= Chef::VERSION %>/config.ru

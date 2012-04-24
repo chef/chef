@@ -9,7 +9,7 @@ build_iteration "1"
 dependencies %w{
 preparation
 chef-server
-omnibus-ctl
+chef-server-cookbooks
 version-manifest
 }
 

@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -P /opt/chef-server/embedded/sbin/nginx -c <%= File.join(node['chef_server']['nginx']['dir'], "etc", "nginx.conf") %>
+

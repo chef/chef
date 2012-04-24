@@ -1,0 +1,52 @@
+##
+# Unicorn config at <%= @name %>
+# Managed by Chef - Local Changes will be Nuked from Orbit (just to be sure)
+##
+
+# What ports/sockets to listen on, and what options for them.
+<%- @listen.each do |port, options| %>
+listen "<%= port %>", <%= options %>
+<%- end %>
+
+<%- if @working_directory %>
+working_directory '<%= @working_directory %>'
+<%- end %>
+
+# What the timeout for killing busy workers is, in seconds
+timeout <%= @worker_timeout %>
+
+# Whether the app should be pre-loaded
+preload_app <%= @preload_app %>
+
+# How many worker processes
+worker_processes <%= @worker_processes %>
+
+<%- if @before_fork %>
+# What to do before we fork a worker
+before_fork do |server, worker|
+  <%= @before_fork %>
+end
+
+<%- end %>
+<%- if @after_fork %>
+# What to do after we fork a worker
+after_fork do |server, worker|
+  <%= @after_fork %>
+end
+
+<%- end %>
+<%- if @pid %>
+# Where to drop a pidfile
+pid '<%= @pid %>'
+
+<%- end %>
+<%- if @stderr_path %>
+# Where stderr gets logged
+stderr_path '<%= @stderr_path %>'
+
+<%- end %>
+<%- if @stdout_path %>
+# Where stdout gets logged
+stdout_path '<%= @stdout_path %>'
+
+<%- end %>

@@ -1,0 +1,6 @@
+HOME="<%= @dir %>" 
+RABBITMQ_MNESIA_BASE="<%= File.join(@dir, "db") %>" 
+RABBITMQ_LOG_BASE="<%= File.join(@dir, "log") %>" 
+RABBITMQ_NODE_IP_ADDRESS="<%= @node_ip_address %>"
+RABBITMQ_NODE_PORT="<%= @node_port %>"
+NODENAME="<%= node['chef_server']['rabbitmq']['nodename'] %>"

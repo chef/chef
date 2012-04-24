@@ -1,0 +1,7 @@
+start on runlevel [2345]
+stop on shutdown
+respawn
+post-stop script 
+   ps ax | egrep 'runsv .+' | grep -v egrep | awk '{ print $1 }' | xargs kill -TERM
+end script
+exec /opt/chef-server/embedded/bin/runsvdir-start

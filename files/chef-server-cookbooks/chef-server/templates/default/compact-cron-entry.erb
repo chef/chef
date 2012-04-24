@@ -1,0 +1,9 @@
+#
+# cron-jobs for couchdb
+#
+# Chef Name: <%= @cron_name %>
+SHELL=<%= @cron_shell %>
+HOME=<%= @cron_home %>
+<% if @cron_path %>PATH=<%= @cron_path %><% end %>
+<% if @cron_email %>MAILTO=<%= @cron_email %><% end %>
+<%= @cron_schedule %> <%= @cron_user %> <%= @cron_command %>

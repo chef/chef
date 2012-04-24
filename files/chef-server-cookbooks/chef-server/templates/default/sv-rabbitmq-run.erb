@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -P -u <%= node['chef_server']['user']['username'] %> -U <%= node['chef_server']['user']['username'] %> /usr/bin/env HOME=<%= node['chef_server']['rabbitmq']['dir'] %> /opt/chef-server/embedded/bin/rabbitmq-server
+
