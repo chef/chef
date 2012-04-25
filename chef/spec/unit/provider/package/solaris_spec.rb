@@ -18,20 +18,17 @@
 require 'spec_helper'
 
 describe Chef::Provider::Package::Solaris do
-  before(:each) do
-    @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+  include SpecHelpers::Providers::Package
 
-    @new_resource = Chef::Resource::Package.new("SUNWbash")
-    @new_resource.source("/tmp/bash.pkg")
+  let(:new_resource) { Chef::Resource::Package.new(package_name).tap(&with_attributes.call(new_resource_attributes)) }
+  let(:assume_source_package_exists) { ::File.stub!(:exists?).and_return(true) }
 
-    @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-    ::File.stub!(:exists?).and_return(true)
-  end
+  let(:source_file) { '/tmp/bash.pkg' }
+  let(:package_name) { 'SUNWbash' }
 
-  context "when assessing the current package status" do
-    before do
-      @pkginfo =<<-PKGINFO
+  let(:new_resource_attributes) { { :source => source_file } }
+
+  let(:pkginfo) { <<-PKGINFO }
 PKGINST:  SUNWbash
 NAME:  GNU Bourne-Again shell (bash)
 CATEGORY:  system
@@ -45,123 +42,129 @@ INSTDATE:  Nov 04 2009 01:02
 HOTLINE:  Please contact your local service provider
 PKGINFO
 
-      @status = mock("Status", :exitstatus => 0)
-    end
+  let(:pid) { mock('pid') }
+  let(:stdin) { mock('stdin') }
+  let(:stderr) { mock('stderr') }
+  let(:stdout) { mock('stdout') }
+
+  before(:each) { assume_source_package_exists }
+
+  context "when assessing the current package status" do
 
     it "should create a current resource with the name of new_resource" do
-      @provider.stub!(:popen4).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.name.should == "SUNWbash"
+      provider.stub!(:popen4).and_return(status)
+      provider.load_current_resource
+      provider.current_resource.name.should == "SUNWbash"
     end
 
     it "should set the current reource package name to the new resource package name" do
-      @provider.stub!(:popen4).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.package_name.should == "SUNWbash"
+      provider.stub!(:popen4).and_return(status)
+      provider.load_current_resource
+      provider.current_resource.package_name.should == "SUNWbash"
     end
 
     it "should raise an exception if a source is supplied but not found" do
-      @provider.stub!(:popen4).and_return(@status)
+      provider.stub!(:popen4).and_return(status)
       ::File.stub!(:exists?).and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
 
     it "should get the source package version from pkginfo if provided" do
-      @stdout = StringIO.new(@pkginfo)
-      @stdin, @stderr = StringIO.new, StringIO.new
-      @provider.should_receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.should_receive(:popen4).with("pkginfo -l SUNWbash").and_return(@status)
-      @provider.load_current_resource
+      stdout = StringIO.new(pkginfo)
+      stdin, stderr = StringIO.new, StringIO.new
+      provider.should_receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_yield(pid, stdin, stdout, stderr).and_return(status)
+      provider.should_receive(:popen4).with("pkginfo -l SUNWbash").and_return(status)
+      provider.load_current_resource
 
-      @provider.current_resource.package_name.should == "SUNWbash"
-      @new_resource.version.should == "11.10.0,REV=2005.01.08.05.16"
+      provider.current_resource.package_name.should == "SUNWbash"
+      new_resource.version.should == "11.10.0,REV=2005.01.08.05.16"
     end
 
     it "should return the current version installed if found by pkginfo" do
-      @stdout = StringIO.new(@pkginfo)
-      @stdin, @stderr = StringIO.new, StringIO.new
-      @provider.should_receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(@status)
-      @provider.should_receive(:popen4).with("pkginfo -l SUNWbash").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.version.should == "11.10.0,REV=2005.01.08.05.16"
+      stdout = StringIO.new(pkginfo)
+      stdin, stderr = StringIO.new, StringIO.new
+      provider.should_receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(status)
+      provider.should_receive(:popen4).with("pkginfo -l SUNWbash").and_yield(pid, stdin, stdout, stderr).and_return(status)
+      provider.load_current_resource
+      provider.current_resource.version.should == "11.10.0,REV=2005.01.08.05.16"
     end
 
     it "should raise an exception if the source is not set but we are installing" do
-      @provider.stub!(:popen4).and_return(@status)
-      @new_resource = Chef::Resource::Package.new("SUNWbash")
-      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      provider.stub!(:popen4).and_return(status)
+      new_resource = Chef::Resource::Package.new("SUNWbash")
+      provider = Chef::Provider::Package::Solaris.new(new_resource, run_context)
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should raise an exception if rpm fails to run" do
-      @status = mock("Status", :exitstatus => -1)
-      @provider.stub!(:popen4).and_return(@status)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      status = mock("Status", :exitstatus => -1)
+      provider.stub!(:popen4).and_return(status)
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should return a current resource with a nil version if the package is not found" do
-      @stdout = StringIO.new
-      @provider.should_receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(@status)
-      @provider.should_receive(:popen4).with("pkginfo -l SUNWbash").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.version.should be_nil
+      stdout = StringIO.new
+      provider.should_receive(:popen4).with("pkginfo -l -d /tmp/bash.pkg SUNWbash").and_return(status)
+      provider.should_receive(:popen4).with("pkginfo -l SUNWbash").and_yield(pid, stdin, stdout, stderr).and_return(status)
+      provider.load_current_resource
+      provider.current_resource.version.should be_nil
     end
   end
 
   describe "#candidate_version" do
     it "should return the candidate_version variable if already setup" do
-      @provider.candidate_version = "11.10.0,REV=2005.01.08.05.16"
-      @provider.should_not_receive(:popen4)
-      @provider.candidate_version
+      provider.candidate_version = "11.10.0,REV=2005.01.08.05.16"
+      provider.should_not_receive(:popen4)
+      provider.candidate_version
     end
 
     it "should lookup the candidate_version if the variable is not already set" do
-      @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:popen4).and_return(@status)
-      @provider.should_receive(:popen4)
-      @provider.candidate_version
+      status = mock("Status", :exitstatus => 0)
+      provider.stub!(:popen4).and_return(status)
+      provider.should_receive(:popen4)
+      provider.candidate_version
     end
 
     it "should throw and exception if the exitstatus is not 0" do
-      @status = mock("Status", :exitstatus => 1)
-      @provider.stub!(:popen4).and_return(@status)
-      lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
+      status = mock("Status", :exitstatus => 1)
+      provider.stub!(:popen4).and_return(status)
+      lambda { provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
     end
 
   end
 
   describe "#install_package" do
     it "should run pkgadd -n -d with the package source to install" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with("pkgadd -n -d /tmp/bash.pkg all")
-      @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
+      provider.should_receive(:shell_out_with_systems_locale!).with("pkgadd -n -d /tmp/bash.pkg all")
+      provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
     it "should run pkgadd -n -d when the package is a path to install" do
-      @new_resource = Chef::Resource::Package.new("/tmp/bash.pkg")
-      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-      @new_resource.source.should == "/tmp/bash.pkg"
-      @provider.should_receive(:shell_out_with_systems_locale!).with("pkgadd -n -d /tmp/bash.pkg all")
-      @provider.install_package("/tmp/bash.pkg", "11.10.0,REV=2005.01.08.05.16")
+      new_resource = Chef::Resource::Package.new("/tmp/bash.pkg")
+      provider = Chef::Provider::Package::Solaris.new(new_resource, run_context)
+      new_resource.source.should == "/tmp/bash.pkg"
+      provider.should_receive(:shell_out_with_systems_locale!).with("pkgadd -n -d /tmp/bash.pkg all")
+      provider.install_package("/tmp/bash.pkg", "11.10.0,REV=2005.01.08.05.16")
     end
 
     it "should run pkgadd -n -a /tmp/myadmin -d with the package options -a /tmp/myadmin" do
-      @new_resource.stub!(:options).and_return("-a /tmp/myadmin")
-      @provider.should_receive(:shell_out_with_systems_locale!).with("pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all")
-      @provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
+      new_resource.stub!(:options).and_return("-a /tmp/myadmin")
+      provider.should_receive(:shell_out_with_systems_locale!).with("pkgadd -n -a /tmp/myadmin -d /tmp/bash.pkg all")
+      provider.install_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
   end
 
   describe "#remove_package" do
     it "should run pkgrm -n to remove the package" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with("pkgrm -n SUNWbash")
-      @provider.remove_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
+      provider.should_receive(:shell_out_with_systems_locale!).with("pkgrm -n SUNWbash")
+      provider.remove_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
     it "should run pkgrm -n -a /tmp/myadmin with options -a /tmp/myadmin" do
-      @new_resource.stub!(:options).and_return("-a /tmp/myadmin")
-      @provider.should_receive(:shell_out_with_systems_locale!).with("pkgrm -n -a /tmp/myadmin SUNWbash")
-      @provider.remove_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
+      new_resource.stub!(:options).and_return("-a /tmp/myadmin")
+      provider.should_receive(:shell_out_with_systems_locale!).with("pkgrm -n -a /tmp/myadmin SUNWbash")
+      provider.remove_package("SUNWbash", "11.10.0,REV=2005.01.08.05.16")
     end
 
   end
