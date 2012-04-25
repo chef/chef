@@ -231,31 +231,13 @@ class Chef
           def package(package_name, arch=nil, is_available=false, is_installed=false)
             refresh
             packages = @rpmdb[package_name]
-            if packages
-              packages.each do |pkg|
-                if is_available
-                  next unless @rpmdb.available?(pkg)
-                end
-                if is_installed
-                  next unless @rpmdb.installed?(pkg)
-                end
-                if arch
-                  next unless pkg.arch == arch
-                end
+            return (block_given? ? self : nil) unless packages
 
-                if block_given?
-                  yield pkg
-                else
-                  # first match is latest version
-                  return pkg
-                end
-              end
-            end
-
-            if block_given?
-              return self
-            else
-              return nil
+            packages.each do |pkg|
+              next if is_available && !@rpmdb.available?(pkg)
+              next if is_installed && !@rpmdb.installed?(pkg)
+              next if arch && pkg.arch != arch
+              return (block_given? ? (yield pkg) : pkg)
             end
           end
 
