@@ -150,17 +150,15 @@ class Chef
           def package_available?(package_name)
             refresh
 
-            if @rpmdb.lookup(package_name)
-              return true
-            else
-              if package_name =~ %r{^(.*)\.(.*)$}
-                pkg_name = $1
-                pkg_arch = $2
+            return true if @rpmdb.lookup(package_name)
 
-                if matches = @rpmdb.lookup(pkg_name)
-                  matches.each do |m|
-                    return true if m.arch == pkg_arch
-                  end
+            if package_name =~ %r{^(.*)\.(.*)$}
+              pkg_name = $1
+              pkg_arch = $2
+
+              if matches = @rpmdb.lookup(pkg_name)
+                matches.each do |m|
+                  return true if m.arch == pkg_arch
                 end
               end
             end
