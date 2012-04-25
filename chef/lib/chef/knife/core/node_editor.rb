@@ -61,8 +61,11 @@ class Chef
       end
 
       def apply_updates(updated_data)
-        # TODO: should warn/error/ask for confirmation when changing the
-        # name, since this results in a new node, not an edited node.
+        if node.name and node.name != updated_data["name"]
+          ui.warn "Changing the name of a node results in a new node being created, #{node.name} will not be modified or removed."
+          confirm = ui.confirm "Proceed with creation of new node"
+        end
+
         @updated_node = Node.new.tap do |n|
           n.name( updated_data["name"] )
           n.chef_environment( updated_data["chef_environment"] )
