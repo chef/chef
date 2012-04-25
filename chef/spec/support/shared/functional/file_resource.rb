@@ -124,7 +124,7 @@ end
 
 shared_context Chef::Resource::File  do
   let(:path) do
-    File.join(Dir.tmpdir, Dir::Tmpname.make_tmpname(file_base, nil))
+    File.join(Dir.tmpdir, make_tmpname(file_base, nil))
   end
 
   after(:each) do

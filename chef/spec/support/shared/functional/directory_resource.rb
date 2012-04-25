@@ -76,7 +76,7 @@ end
 
 shared_context Chef::Resource::Directory do
   let(:path) do
-    File.join(Dir.tmpdir, Dir::Tmpname.make_tmpname(directory_base, nil))
+    File.join(Dir.tmpdir, make_tmpname(directory_base, nil))
   end
 
   after(:each) do
