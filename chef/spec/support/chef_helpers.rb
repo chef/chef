@@ -30,3 +30,23 @@ Chef::Log.logger = Logger.new(StringIO.new)
 def sha256_checksum(path)
   Digest::SHA256.hexdigest(File.read(path))
 end
+
+# From Ruby 1.9.2+
+# Here for backwards compatibility with Ruby 1.8.7
+# http://rubydoc.info/stdlib/tmpdir/1.9.2/Dir/Tmpname
+def make_tmpname(prefix_suffix, n)
+  case prefix_suffix
+  when String
+    prefix = prefix_suffix
+    suffix = ""
+  when Array
+    prefix = prefix_suffix[0]
+    suffix = prefix_suffix[1]
+  else
+    raise ArgumentError, "unexpected prefix_suffix: #{prefix_suffix.inspect}"
+  end
+  t = Time.now.strftime("%Y%m%d")
+  path = "#{prefix}#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+  path << "-#{n}" if n
+  path << suffix
+end
