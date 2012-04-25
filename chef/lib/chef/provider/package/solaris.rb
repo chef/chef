@@ -70,10 +70,6 @@ class Chef
             raise Chef::Exceptions::Package, "pkginfo failed - #{status.inspect}!"
           end
 
-          unless @current_resource.version.nil?
-            @current_resource.version(nil)
-          end
-
           @current_resource
         end
 
