@@ -213,19 +213,10 @@ class Chef
 
           def version(package_name, arch=nil, is_available=false, is_installed=false)
             package(package_name, arch, is_available, is_installed) do |pkg|
-              if block_given?
-                yield pkg.version.to_s
-              else
-                # first match is latest version
-                return pkg.version.to_s
-              end
+              return ( block_given? ? ( yield pkg.version.to_s ) : pkg.version.to_s )
             end
 
-            if block_given?
-              return self
-            else
-              return nil
-            end
+            return ( block_given? ? self : nil )
           end
 
           def package(package_name, arch=nil, is_available=false, is_installed=false)
