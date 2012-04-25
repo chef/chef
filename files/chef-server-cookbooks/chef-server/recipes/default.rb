@@ -9,11 +9,7 @@ ENV['PATH'] = "/opt/chef-server/bin:/opt/chef-server/embedded/bin:#{ENV['PATH']}
 
 directory "/etc/chef-server" do
   owner "root"
-  if File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem") 
-    group "root"
-  else
-    group node['chef_server']['user']['username'] 
-  end
+  group "root"
   mode "0775"
   action :nothing
 end.run_action(:create)
@@ -43,6 +39,13 @@ directory "/var/opt/chef-server" do
   action :create
 end
 
+ruby_block "allow key creation" do
+  block do
+    system("chgrp #{node['chef_server']['user']['username']} /etc/chef-server")
+  end
+  not_if { File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem") }
+end
+
 # Install our runit instance
 include_recipe "runit"
 
@@ -70,10 +73,21 @@ file "/etc/chef-server/chef-server-running.json" do
   content Chef::JSONCompat.to_json_pretty({ "chef_server" => node['chef_server'].to_hash, "run_list" => node.run_list })
 end
 
+ruby_block "wait for certificate creation" do
+  block do
+    unless File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem")
+      raise "Still waiting on certificates!"
+    end
+  end
+  retry_delay 10
+  retries 20
+end
+
 directory "fix up /etc/chef-server" do
   path "/etc/chef-server"
   group "root"
 end
+
 
 file "/etc/chef-server/validation.pem" do
   owner "root"
