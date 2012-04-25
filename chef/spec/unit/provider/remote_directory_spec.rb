@@ -146,6 +146,20 @@ describe Chef::Provider::RemoteDirectory do
         ::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt').should be_false
       end
 
+      it "removes directory symlinks properly" do
+        symlinked_dir_path = @destination_dir + '/symlinked_dir'
+        @provider.action_create
+
+        Dir.mktmpdir do |tmp_dir|
+          FileUtils.ln_s(tmp_dir, symlinked_dir_path)
+          ::File.exist?(symlinked_dir_path).should be_true
+
+          @provider.action_create
+
+          ::File.exist?(symlinked_dir_path).should be_false
+          ::File.exist?(tmp_dir).should be_true
+        end
+      end
     end
 
     describe "with overwrite disabled" do
