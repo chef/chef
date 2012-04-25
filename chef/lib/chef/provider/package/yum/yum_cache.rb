@@ -1,10 +1,12 @@
+require 'chef/mixin/shell_out'
+
 class Chef
   class Provider
     class Package
       class Yum
         # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
-          include Chef::Mixin::Command
+          include Chef::Mixin::ShellOut
           include Singleton
 
           def initialize
@@ -58,56 +60,55 @@ class Chef
 
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
 
-            status = popen4("/usr/bin/python #{helper}#{opts}", :waitlast => true) do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                one_line = true
+            status = shell_out!("/usr/bin/python #{helper}#{opts}")
+            status.stdout.each_line do |line|
+              one_line = true
 
-                line.chomp!
+              line.chomp!
 
-                if line =~ %r{\[option (.*)\] (.*)}
-                  if $1 == "installonlypkgs"
-                    @allow_multi_install = $2.split
-                  else
-                    raise Chef::Exceptions::Package, "Strange, unknown option line '#{line}' from yum-dump.py"
-                  end
-                  next
-                end
-
-                if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r]) (\S+)$}
-                  name     = $1
-                  epoch    = $2
-                  version  = $3
-                  release  = $4
-                  arch     = $5
-                  provides = parse_provides($6)
-                  type     = $7
-                  repoid   = $8
+              if line =~ %r{\[option (.*)\] (.*)}
+                if $1 == "installonlypkgs"
+                  @allow_multi_install = $2.split
                 else
-                  Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
-                                 "Please check your yum configuration.")
-                  next
+                  raise Chef::Exceptions::Package, "Strange, unknown option line '#{line}' from yum-dump.py"
                 end
-
-                case type
-                when "i"
-                  # if yum-dump was called with --installed this may not be true, but it's okay
-                  # since we don't touch the @available Set in reload_installed
-                  available = false
-                  installed = true
-                when "a"
-                  available = true
-                  installed = false
-                when "r"
-                  available = true
-                  installed = true
-                end
-
-                pkg = RPMDbPackage.new(name, epoch, version, release, arch, provides, installed, available, repoid)
-                @rpmdb << pkg
+                next
               end
 
-              error = stderr.readlines
+              if line =~ %r{^(\S+) ([0-9]+) (\S+) (\S+) (\S+) \[(.*)\] ([i,a,r]) (\S+)$}
+                name     = $1
+                epoch    = $2
+                version  = $3
+                release  = $4
+                arch     = $5
+                provides = parse_provides($6)
+                type     = $7
+                repoid   = $8
+              else
+                Chef::Log.warn("Problem parsing line '#{line}' from yum-dump.py! " +
+                               "Please check your yum configuration.")
+                next
+              end
+
+              case type
+              when "i"
+                # if yum-dump was called with --installed this may not be true, but it's okay
+                # since we don't touch the @available Set in reload_installed
+                available = false
+                installed = true
+              when "a"
+                available = true
+                installed = false
+              when "r"
+                available = true
+                installed = true
+              end
+
+              pkg = RPMDbPackage.new(name, epoch, version, release, arch, provides, installed, available, repoid)
+              @rpmdb << pkg
             end
+
+            error = status.stderr
 
             if status.exitstatus != 0
               raise Chef::Exceptions::Package, "Yum failed - #{status.inspect} - returns: #{error}"

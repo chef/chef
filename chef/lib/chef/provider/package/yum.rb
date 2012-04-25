@@ -145,13 +145,12 @@ class Chef
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                  @current_resource.package_name($1)
-                  @new_resource.version($2)
-                end
+            status = shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}")
+            status.stdout.each do |line|
+              case line
+              when /([\w\d_.-]+)\s([\w\d_.-]+)/
+                @current_resource.package_name($1)
+                @new_resource.version($2)
               end
             end
           end
