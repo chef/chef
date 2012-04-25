@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# see: http://tickets.opscode.com/browse/CHEF-3022
+if [ ! -e /etc/redhat-release -o "x$1" == "x0" ]; then
+  rm -f /usr/bin/chef-server-ctl
+fi
+
