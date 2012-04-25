@@ -54,7 +54,7 @@ describe Chef::Provider::User do
     end
   end
 
-  describe "load_current_resource" do
+  describe "executing load_current_resource" do
     before(:each) do
       @node = Chef::Node.new
       #@new_resource = mock("Chef::Resource::User", 
@@ -115,23 +115,62 @@ describe Chef::Provider::User do
         @provider.load_current_resource
       end
     end
-  
+
     it "should attempt to convert the group gid if one has been supplied" do
       @provider.should_receive(:convert_group_name)
       @provider.load_current_resource
     end
-  
+
     it "shouldn't try and convert the group gid if none has been supplied" do
       @new_resource.stub!(:gid).and_return(nil)
       @provider.should_not_receive(:convert_group_name)
       @provider.load_current_resource
     end
-  
+
     it "should return the current resource" do
       @provider.load_current_resource.should eql(@current_resource)
     end
-  end
 
+    describe "and running assertions" do
+      before do
+        # We can only perform one of these tests if the 
+        # ruby-shadow library is installed. 
+        @shadow_lib_unavail = false
+        begin
+          require 'shadow'
+        rescue LoadError
+          @shadow_lib_unavail = true
+        end
+      end
+
+      before (:each) do
+        # force ruby-shadow library to be required 
+        user = @pw_user.dup
+        user.passwd = "x"
+        @new_resource.password "some new password"
+        Etc.stub!(:getpwnam).and_return(user)
+      end
+
+      it "should pass assertions when ruby-shadow can be loaded" do
+        pending "ruby-shadow gem not installed for dynamic load test" if @shadow_lib_unavail
+        puts "SHADOW LIB UNAVAIL: #{@shadow_lib_unavail}"
+        original_method = @provider.method(:require)
+        @provider.should_receive(:require) { |*args| original_method.call(*args) }
+        @provider.load_current_resource
+        @provider.define_resource_requirements
+        @provider.process_resource_requirements :all_actions
+      end
+
+      it "should fail assertions when ruby-shadow cannot be loaded" do
+        @provider.should_receive(:require).with("shadow") { raise LoadError }
+        @provider.load_current_resource
+        @provider.define_resource_requirements
+        lambda {@provider.process_resource_requirements :all_actions}.should raise_error Chef::Exceptions::MissingLibrary 
+      end
+
+    end
+  end
+ 
   describe "compare_user" do
     before(:each) do
       # @node = Chef::Node.new
@@ -160,7 +199,7 @@ describe Chef::Provider::User do
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
     end
-  
+    
     %w{uid gid comment home shell password}.each do |attribute|
       it "should return true if #{attribute} doesn't match" do
         @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
@@ -391,7 +430,7 @@ describe Chef::Provider::User do
       @provider.convert_group_name.should == 999
     end
   
-    it "should raise an error if we can't translate the group name" do
+    it "should raise an error if we can't translate the group name during resource assertions" do
       Etc.should_receive(:getgrnam).and_raise(ArgumentError)
       @provider.define_resource_requirements
       @provider.convert_group_name
