@@ -31,6 +31,8 @@ dependencies ["ruby",
               "jre",
               "unicorn",
               "rsync",
+              "runit",
+              "nginx",
               "omnibus-ctl"]
 
 build do
@@ -51,7 +53,7 @@ build do
    end
 
    command "mkdir -p #{install_dir}/embedded/cookbooks"
-   command "#{install_dir}/embedded/bin/rsync --delete -a #{File.expand_path("files/private-chef-cookbooks", Omnibus.root)}/ #{install_dir}/embedded/cookbooks/"
+   command "#{install_dir}/embedded/bin/rsync --delete -a #{File.expand_path("files/chef-server-cookbooks", Omnibus.root)}/ #{install_dir}/embedded/cookbooks/"
 
    block do
      open("#{install_dir}/bin/chef-server-ctl", "w") do |file|

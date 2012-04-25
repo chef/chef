@@ -1,9 +1,7 @@
 #!/bin/sh
 
-cd <%= File.join(node['chef_server']['chef-solr']['dir']['jetty'] %>
+cd <%= File.join(node['chef_server']['chef-solr']['dir'], 'jetty') %>
 
 exec 2>&1
-exec chpst -P -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /usr/bin/env PATH=/opt/chef-server/embedded/bin:/opt/chef-server/bin:/opt/chef-server/embedded/jre/bin:$PATH JAVA_HOME=/opt/chef-server/embedded/jre 
-
-/opt/chef-server/bin/chef-solr -c <%= File.join(node['chef_server']['chef-solr']['dir'], "etc", "solr.rb") %>
+exec chpst -P -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /usr/bin/env PATH=/opt/chef-server/embedded/bin:/opt/chef-server/bin:/opt/chef-server/embedded/jre/bin:$PATH JAVA_HOME=/opt/chef-server/embedded/jre /opt/chef-server/bin/chef-solr -c <%= File.join(node['chef_server']['chef-solr']['dir'], "etc", "solr.rb") %>
 

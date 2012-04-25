@@ -4,20 +4,24 @@
 #
 # All Rights Reserved
 #
-
 chef_server_webui_dir = node['chef_server']['chef-server-webui']['dir']
 chef_server_webui_etc_dir = File.join(chef_server_webui_dir, "etc")
+chef_server_webui_cache_dir = File.join(chef_server_webui_dir, "cache")
+chef_server_webui_sandbox_dir = File.join(chef_server_webui_dir, "sandbox")
+chef_server_webui_checksum_dir = File.join(chef_server_webui_dir, "checksum")
+chef_server_webui_cookbook_tarball_dir = File.join(chef_server_webui_dir, "cookbook-tarballs")
 chef_server_webui_working_dir = File.join(chef_server_webui_dir, "working")
-chef_server_webui_tmp_dir = File.join(chef_server_webui_dir, "tmp")
 chef_server_webui_log_dir = node['chef_server']['chef-server-webui']['log_directory']
 
 [ 
   chef_server_webui_dir,
   chef_server_webui_etc_dir,
+  chef_server_webui_cache_dir,
+  chef_server_webui_sandbox_dir,
+  chef_server_webui_checksum_dir,
+  chef_server_webui_cookbook_tarball_dir,
   chef_server_webui_working_dir,
-  chef_server_webui_tmp_dir,
-  chef_server_webui_log_dir,
-
+  chef_server_webui_log_dir
 ].each do |dir_name|
   directory dir_name do
     owner node['chef_server']['user']['username']
@@ -28,12 +32,10 @@ end
 
 should_notify = OmnibusHelper.should_notify?("chef-server-webui")
 
-env_config = File.join(chef_server_webui_etc_dir, "#{node['chef_server']['chef-server-webui']['environment']}.rb")
-session_store_config = File.join(chef_server_webui_etc_dir, "session_store.rb")
-secret_token_config = File.join(chef_server_webui_etc_dir, "secret_token.rb")
+chef_server_webui_config = File.join(chef_server_webui_etc_dir, "server.rb")
 
-template env_config do
-  source "chef-server-webui-config.rb.erb"
+template chef_server_webui_config do
+  source "server-webui.rb.erb"
   owner "root"
   group "root"
   mode "0644"
@@ -41,34 +43,13 @@ template env_config do
   notifies :restart, 'service[chef-server-webui]' if should_notify
 end
 
-link "/opt/chef-server/embedded/service/chef-server-webui/config/environments/#{node['chef_server']['chef-server-webui']['environment']}.rb" do
-  to env_config
-end
-
-template session_store_config do
-  source "session_store.erb"
+template "/opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-server-webui-#{Chef::VERSION}/config.ru" do
+  source "chef-server-webui.ru.erb" 
+  mode "0644"
   owner "root"
   group "root"
-  mode "0644"
   variables(node['chef_server']['chef-server-webui'].to_hash)
   notifies :restart, 'service[chef-server-webui]' if should_notify
-end
-
-link "/opt/chef-server/embedded/service/chef-server-webui/config/initializers/session_store.rb" do
-  to session_store_config
-end
-
-template secret_token_config do
-  source "secret_token.erb"
-  owner "root"
-  group "root"
-  mode "0644"
-  variables(node['chef_server']['chef-server-webui'].to_hash)
-  notifies :restart, 'service[chef-server-webui]' if should_notify
-end
-
-link "/opt/chef-server/embedded/service/chef-server-webui/config/initializers/secret_token.rb" do
-  to secret_token_config
 end
 
 unicorn_config File.join(chef_server_webui_etc_dir, "unicorn.rb") do
@@ -84,12 +65,6 @@ unicorn_config File.join(chef_server_webui_etc_dir, "unicorn.rb") do
   mode "0644"
   notifies :restart, 'service[chef-server-webui]' if should_notify
 end
-
-link "/opt/chef-server/embedded/service/chef-server-webui/tmp" do
-  to chef_server_webui_tmp_dir 
-end
-
-execute "chown -R #{node['chef_server']['user']['username']} /opt/chef-server/embedded/service/chef-server-webui/public" 
 
 runit_service "chef-server-webui" do
   down node['chef_server']['chef-server-webui']['ha']

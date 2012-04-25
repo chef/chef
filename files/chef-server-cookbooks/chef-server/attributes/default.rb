@@ -134,7 +134,7 @@ default['chef_server']['chef-server-api']['listen'] = '127.0.0.1:9460'
 default['chef_server']['chef-server-api']['backlog'] = 1024
 default['chef_server']['chef-server-api']['tcp_nodelay'] = true 
 default['chef_server']['chef-server-api']['worker_timeout'] = 3600
-default['chef_server']['chef-server-api']['validation_client_name'] = "chef"
+default['chef_server']['chef-server-api']['validation_client_name'] = "chef-validator"
 default['chef_server']['chef-server-api']['umask'] = "0022"
 default['chef_server']['chef-server-api']['worker_processes'] = node["cpu"]["total"].to_i
 default['chef_server']['chef-server-api']['web_ui_client_name'] = "chef-webui"
@@ -158,10 +158,13 @@ default['chef_server']['chef-server-webui']['tcp_nodelay'] = true
 default['chef_server']['chef-server-webui']['worker_timeout'] = 3600
 default['chef_server']['chef-server-webui']['validation_client_name'] = "chef"
 default['chef_server']['chef-server-webui']['umask'] = "0022"
-default['chef_server']['chef-server-webui']['worker_processes'] = node["cpu"]["total"].to_i
+default['chef_server']['chef-server-webui']['worker_processes'] = 2 
 default['chef_server']['chef-server-webui']['session_key'] = "_sandbox_session"
 default['chef_server']['chef-server-webui']['cookie_domain'] = "all"
 default['chef_server']['chef-server-webui']['cookie_secret'] = "47b3b8d95dea455baf32155e95d1e64e" 
+default['chef_server']['chef-server-webui']['web_ui_client_name'] = "chef-webui"
+default['chef_server']['chef-server-webui']['web_ui_admin_user_name'] = "admin"
+default['chef_server']['chef-server-webui']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
 ###
 # Load Balancer
@@ -173,16 +176,7 @@ default['chef_server']['lb']['web_ui_fqdn'] = node['fqdn']
 default['chef_server']['lb']['cache_cookbook_files'] = false
 default['chef_server']['lb']['debug'] = false
 default['chef_server']['lb']['upstream']['chef-server-api'] = [ "127.0.0.1" ]
-default['chef_server']['lb']['upstream']['opscode-erchef'] = [ "127.0.0.1" ]
-default['chef_server']['lb']['upstream']['opscode-account'] = [ "127.0.0.1" ]
 default['chef_server']['lb']['upstream']['chef-server-webui'] = [ "127.0.0.1" ]
-default['chef_server']['lb']['upstream']['opscode-authz'] = [ "127.0.0.1" ]
-default['chef_server']['lb']['upstream']['chef-solr'] = [ "127.0.0.1" ]
-default['chef_server']['lb_internal']['enable'] = true
-default['chef_server']['lb_internal']['vip'] = "127.0.0.1"
-default['chef_server']['lb_internal']['chef_port'] = 9680
-default['chef_server']['lb_internal']['account_port'] = 9685
-default['chef_server']['lb_internal']['authz_port'] = 9683
 
 ####
 # Nginx

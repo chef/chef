@@ -20,7 +20,7 @@ web_ui_admin_default_password "<%= @web_ui_admin_default_password %>"
 solr_url        "<%= node['chef_server']['chef-solr']['url'] %>"
 
 amqp_host '<%= node['chef_server']['rabbitmq']['vip'] %>'
-amqp_port '<%= node['chef_server']['rabbitmq']['port'] %>'
+amqp_port '<%= node['chef_server']['rabbitmq']['node_port'] %>'
 amqp_user '<%= node['chef_server']['rabbitmq']['user'] %>'
 amqp_pass '<%= node['chef_server']['rabbitmq']['password'] %>'
 amqp_vhost '<%= node['chef_server']['rabbitmq']['vhost'] %>'

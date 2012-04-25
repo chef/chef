@@ -98,8 +98,8 @@ module ChefServer
         "chef_server_api",
         "chef_server_webui",
         "lb",
-        "nginx"
-        "bootstrap",
+        "nginx",
+        "bootstrap"
       ].each do |key|
         rkey = key.gsub('_', '-')
         results['chef_server'][rkey] = ChefServer[key]

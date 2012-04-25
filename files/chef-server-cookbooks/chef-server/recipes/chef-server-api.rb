@@ -45,7 +45,7 @@ template chef_config do
   notifies :restart, 'service[chef-server-api]' if should_notify
 end
 
-template "/opt/opscode/embedded/lib/ruby/gems/1.9.1/gems/chef-server-api-#{Chef::VERSION}/config.ru" do
+template "/opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-server-api-#{Chef::VERSION}/config.ru" do
   source "chef-server-api.ru.erb" 
   mode "0644"
   owner "root"

@@ -13,7 +13,7 @@ solr_data_dir_symlink = File.join(solr_dir, "data")
 solr_home_dir = File.join(solr_dir, "home")
 solr_log_dir = node['chef_server']['chef-solr']['log_directory']
 
-[ solr_dir, solr_etc_dir, solr_data_dir, solr_home_dir, solr_log_dir ].each do |dir_name|
+[ solr_dir, solr_etc_dir, solr_data_dir, solr_home_dir, solr_jetty_dir, solr_log_dir ].each do |dir_name|
   directory dir_name do
     owner node['chef_server']['user']['username']
     mode '0700'

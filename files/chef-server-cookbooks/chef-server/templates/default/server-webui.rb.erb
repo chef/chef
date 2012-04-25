@@ -11,9 +11,9 @@ sandbox_path       "<%= File.join(@dir, 'sandbox') %>"
 checksum_path      "<%= File.join(@dir, 'checksum') %>"
 cookbook_tarball_path  "<%= File.join(@dir, 'cookbook-tarballs') %>"
 validation_client_name "<%= @validation_client_name %>"
-validation_key "/etc/chef/validation.pem"
+validation_key "/etc/chef-server/validation.pem"
 web_ui_client_name "chef-webui"
-web_ui_key "/etc/chef/webui.pem"
+web_ui_key "/etc/chef-server/webui.pem"
 web_ui_admin_user_name  "<%= @web_ui_admin_user_name %>"
 web_ui_admin_default_password "<%= @web_ui_admin_default_password %>"
 
@@ -24,7 +24,7 @@ amqp_port '<%= node['chef_server']['rabbitmq']['node_port'] %>'
 amqp_user '<%= node['chef_server']['rabbitmq']['user'] %>'
 amqp_pass '<%= node['chef_server']['rabbitmq']['password'] %>'
 amqp_vhost '<%= node['chef_server']['rabbitmq']['vhost'] %>'
-amqp_consumer_id "<%= @consumer_id %>"
+amqp_consumer_id "<%= node['chef_server']['rabbitmq']['consumer_id'] %>"
 
 umask <%= node['chef_server']['umask'] %>
 

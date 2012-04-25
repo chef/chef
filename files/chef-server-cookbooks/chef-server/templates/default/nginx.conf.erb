@@ -41,156 +41,22 @@ http {
   include /opt/chef-server/embedded/conf/mime.types;
 
   <%- node['chef_server']['lb']['upstream'].each do |uname, servers| -%>
-  upstream <%= uname.sub(/-/, '_') %> {
+  upstream <%= uname.gsub(/-/, '_') %> {
     <%- servers.each do |server| -%>
     server <%= server %>:<%= node['chef_server'][uname]['port'] %>;
     <%- end -%>
   }
   <%- end -%>
 
-  <%- if node['chef_server']['lb']['enable'] -%>
   proxy_cache_path  <%= File.join(@dir, "cache") %> levels=1:2 keys_zone=webui-cache:50m max_size=<%= @cache_max_size %> inactive=600m;
   proxy_temp_path <%= File.join(@dir, "cache-tmp") %>;
-  <%-   unless @non_ssl_port.nil? -%>
+
   server {
     listen <%= @non_ssl_port %>;
     server_name <%= @server_name %>;
-    <%- if @enable_non_ssl -%>
-    access_log /var/log/chef-server/nginx/access-port-<%= @non_ssl_port %>.log;
-    root <%= File.join(@dir, "html") %>;
-
-		client_max_body_size <%= @client_max_body_size %>;
-
-    proxy_set_header Host $host; 
-    proxy_set_header X-Real-IP $remote_addr; 
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
-    proxy_set_header X-Forwarded-Proto https; 
-    proxy_pass_request_headers on;
-    proxy_connect_timeout   1;
-    proxy_send_timeout      300;
-    proxy_read_timeout      300;
-
-    error_page 404 =404 /404.html;
-    error_page 503 =503 /503.json;
-
-    #location /nginx_status {
-      #stub_status on;
-      #access_log   off;
-      #allow 127.0.0.1;
-      #deny all;
-      #}
-
-    location /version {
-      types { }
-      default_type text/plain;
-      alias /opt/chef-server/pc-version.txt;
-    }
-
-    location /docs {
-      index index.html ;
-      alias /opt/chef-server/docs;
-    }
-
-    location /checksum/ {
-      internal;
-      root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>; 
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/.*?/_acl.*$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:search)/.+$" {
-<%= select_upstream("opscode_erchef") %>
-    }
-
-    # backwards compatible for Chef 0.9.x and below clients
-    # the nodes/:node_name/cookbooks is still handled by Ruby-Chef
-    location ~ "^/organizations/[a-z0-9\-_]+?/nodes/[^/]+/cookbooks$" {
-<%= select_upstream("chef_server_api") %>
-    }
-
-    # nodes goes to erchef
-    location ~ "^/organizations/[a-z0-9\-_]+?/nodes/{0,1}.*$" {
-<%= select_upstream("opscode_erchef") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/environments/[^/]+/nodes$" {
-<%= select_upstream("opscode_erchef") %>
-    }
-
-<%- if node['chef_server']['lb']['cache_cookbook_files'] -%>    
-    location ~ "^/organizations/[a-z0-9\-_]+?/cookbooks/[\w\.]+/(\d+\.\d+\.\d+|_latest)/files/.+$" {
-<%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
-      proxy_cache webui-cache;
-      proxy_cache_valid 200 300m;
-    }
-
-<%- end -%>
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:cookbooks|sandboxes)/{0,1}.*$" {
-<%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:nodes|status|search|cookbooks|data|roles|sandboxes|environments)/{0,1}.*$" {
-<%= select_upstream("chef_server_api") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:groups|users|clients|containers|association_requests)/{0,1}.*$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/(?:organizations|users)/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/users/[a-z0-9\-_]+/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/users/[a-z0-9\-_]+/{0,1}/association_requests/{0,1}.*$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/users/[a-z0-9\-_]+/organizations/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/verify_password$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/(?:stylesheets|javascripts|images|facebox|css)/{0,1}.*$" {
-      if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
-        error_page 400 =400 /400-chef_client_manage.json;
-        return 400;
-      }
-      proxy_pass http://chef_server_webui;
-      proxy_pass_request_headers off;
-      proxy_cache webui-cache;
-      proxy_cache_valid 200 302 300m;
-      proxy_cache_valid 404 1m;
-    }
-    
-    location / {
-      # any request from a chef client that reaches this point 
-      # is for a resource/route that doesn't exist.
-      if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
-         error_page 404 =404 /404.json;
-         return 404;
-      }
-
-      proxy_pass http://chef_server_webui; 
-    }
-    <%- else -%>
     access_log /var/log/chef-server/nginx/rewrite-port-<%= @non_ssl_port %>.log;
     rewrite ^(.*) https://$server_name$1 permanent;
-    <%- end -%>
   }
-  <%-  end %>
 
   server { 
     listen <%= @ssl_port %>; 
@@ -232,7 +98,7 @@ http {
     location /version {
       types { }
       default_type text/plain;
-      alias /opt/chef-server/pc-version.txt;
+      alias /opt/chef-server/version-manifest.txt;
     }
 
     location /docs {
@@ -245,71 +111,15 @@ http {
       root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>; 
     }
 
-    location ~ "^/organizations/[a-z0-9\-_]+?/.*?/_acl.*$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:search)/.+$" {
-<%= select_upstream("opscode_erchef") %>
-    }
-
-    # backwards compatible for Chef 0.9.x and below clients
-    # the nodes/:node_name/cookbooks is still handled by Ruby-Chef
-    location ~ "^/organizations/[a-z0-9\-_]+?/nodes/[^/]+/cookbooks$" {
-<%= select_upstream("chef_server_api") %>
-    }
-
-    # nodes goes to erchef
-    location ~ "^/organizations/[a-z0-9\-_]+?/nodes/{0,1}.*$" {
-<%= select_upstream("opscode_erchef") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/environments/[^/]+/nodes$" {
-<%= select_upstream("opscode_erchef") %>
-    }
-
 <%- if node['chef_server']['lb']['cache_cookbook_files'] -%>    
-    location ~ "^/organizations/[a-z0-9\-_]+?/cookbooks/[\w\.]+/(\d+\.\d+\.\d+|_latest)/files/.+$" {
+    location ~ "^/cookbooks/[\w\.]+/(\d+\.\d+\.\d+|_latest)/files/.+$" {
 <%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
       proxy_cache webui-cache;
       proxy_cache_valid 200 300m;
     }
-
 <%- end -%>
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:cookbooks|sandboxes)/{0,1}.*$" {
+    location ~ "^/(?:cookbooks|sandboxes)/{0,1}.*$" {
 <%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:nodes|status|search|cookbooks|data|roles|sandboxes|environments)/{0,1}.*$" {
-<%= select_upstream("chef_server_api") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:groups|users|clients|containers|association_requests)/{0,1}.*$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/(?:organizations|users)/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/users/[a-z0-9\-_]+/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/users/[a-z0-9\-_]+/{0,1}/association_requests/{0,1}.*$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/users/[a-z0-9\-_]+/organizations/{0,1}$" {
-<%= select_upstream("opscode_account") %>
-    }
-
-    location ~ "^/verify_password$" {
-<%= select_upstream("opscode_account") %>
     }
 
     location ~ "^/(?:stylesheets|javascripts|images|facebox|css)/{0,1}.*$" {
@@ -325,174 +135,7 @@ http {
     }
     
     location / {
-      # any request from a chef client that reaches this point 
-      # is for a resource/route that doesn't exist.
-      if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
-         error_page 404 =404 /404.json;
-         return 404;
-      }
-
-      proxy_pass http://chef_server_webui; 
+    <%= select_upstream("chef_server_api", "chef_server_webui") %>
     }
   }
-  <%- end -%>
-  <%- if node['chef_server']['lb_internal']['enable'] -%> 
-  server {
-    listen <%= node['chef_server']['lb_internal']['chef_port'] %>;
-    # The name doesn't matter; this is the only listener on this port
-    server_name <%= node['fqdn'] %>;
-
-		client_max_body_size <%= @client_max_body_size %>;
-    proxy_set_header        Host            $host;
-    proxy_set_header        X-Real-IP       $remote_addr;
-    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header        X-Forwarded-Proto http;
-    proxy_set_header        X-Forwarded-Host $http_host;
-    proxy_pass_request_headers on;
-    proxy_connect_timeout   90;
-    proxy_send_timeout      90;
-    proxy_read_timeout      90;
-
-    access_log /var/log/chef-server/nginx/internal-chef.access.log opscode;
-    error_log  /var/log/chef-server/nginx/internal-chef.error.log<%= node['chef_server']['lb']['debug'] ? " debug" : "" %>;
-
-    location /checksum/ {
-      internal;
-      root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>; 
-    }
-
-    # search goes to erchef
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:search)/.+$" {
-        proxy_redirect http://opscode_erchef /;
-        proxy_pass http://opscode_erchef;
-    }
-
-    # backwards compatible for Chef 0.9.x and below clients
-    # the nodes/:node_name/cookbooks is still handled by Ruby-Chef
-    location ~ "^/organizations/[a-z0-9\-_]+?/nodes/[^/]+/cookbooks$" {
-        proxy_redirect http://chef_server_api /;
-        proxy_pass http://chef_server_api;
-    }
-
-    # nodes goes to erchef
-    location ~ "^/organizations/[a-z0-9\-_]+?/nodes/{0,1}.*$" {
-      proxy_redirect http://opscode_erchef /;
-      proxy_pass http://opscode_erchef;
-    }
-
-    location ~ "^/organizations/[a-z0-9\-_]+?/environments/[^/]+/nodes$" {
-      proxy_redirect http://opscode_erchef /;
-      proxy_pass http://opscode_erchef;
-    }
-
-    # cookbooks must go to the vip running chef-server-api directly (webui hits this)
-    location ~ "^/organizations/[a-z0-9\-_]+?/(?:cookbooks|sandboxes)/{0,1}.*$" {
-      set $my_upstream <%= node['chef_server']['chef-server-api']['upload_internal_vip'] %>:<%= node['chef_server']['chef-server-api']['upload_internal_port'] %>;
-			proxy_redirect <%= node['chef_server']['chef-server-api']['upload_internal_proto'] %>://$my_upstream /;
-			proxy_pass <%= node['chef_server']['chef-server-api']['upload_internal_proto'] %>://$my_upstream;
-    }
-
-    location / {
-      proxy_redirect http://chef_server_api /;
-      proxy_pass http://chef_server_api;
-    }
-  }
-
-  server {
-    listen <%= node['chef_server']['lb_internal']['account_port'] %>;
-    # The name doesn't matter; this is the only listener on this port
-    server_name <%= node['fqdn'] %>;
-
-		client_max_body_size <%= @client_max_body_size %>;
-    proxy_set_header        Host            $host;
-    proxy_set_header        X-Real-IP       $remote_addr;
-    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header        X-Forwarded-Proto http;
-    proxy_set_header        X-Forwarded-Host $http_host;
-    proxy_pass_request_headers on;
-    proxy_connect_timeout   90;
-    proxy_send_timeout      90;
-    proxy_read_timeout      90;
-
-    access_log /var/log/chef-server/nginx/internal-account.access.log opscode;
-    error_log  /var/log/chef-server/nginx/internal-account.error.log<%= node['chef_server']['lb']['debug'] ? " debug" : "" %>;
-
-    location / {
-      proxy_pass http://opscode_account;
-    }
-  }
-
-  server {
-    listen <%= node['chef_server']['lb_internal']['authz_port'] %>;
-    server_name <%= node['fqdn'] %>;
-
-		client_max_body_size <%= @client_max_body_size %>;
-    proxy_set_header        Host            $host;
-    proxy_set_header        X-Real-IP       $remote_addr;
-    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header        X-Forwarded-Proto http;
-    proxy_set_header        X-Forwarded-Host $http_host;
-    proxy_pass_request_headers on;
-
-    proxy_connect_timeout   90;
-    proxy_send_timeout      90;
-    proxy_read_timeout      90;
-
-    access_log /var/log/chef-server/nginx/internal-authz.access.log opscode;
-    error_log  /var/log/chef-server/nginx/internal-authz.error.log<%= node['chef_server']['lb']['debug'] ? " debug" : "" %>;
-
-    location / {
-      proxy_pass http://opscode_authz;
-    }
-  }
-  <%- end -%>
-  <%- if node['chef_server']['nagios']['enable'] -%>
-  server {
-    listen   <%= node['chef_server']['nagios']['port'] %>;
-    server_name <%= node['fqdn'] %>;
-
-    access_log /var/log/chef-server/nginx/nagios.access.log;
-    error_log  /var/log/chef-server/nginx/nagios.error.log<%= node['chef_server']['lb']['debug'] ? " debug" : "" %>;
-
-    auth_basic            "Private Chef Nagios";
-    auth_basic_user_file  <%= File.join(node['chef_server']['nagios']['dir'], "etc", "htpasswd") %>;
-
-    location / {
-      root   /opt/chef-server/embedded/nagios/share/;
-      index  index.php;
-    }
-
-    location /nagios {
-      index index.php;
-      alias /opt/chef-server/embedded/nagios/share/;
-    }
-
-    location /cgi-bin {
-      alias /opt/chef-server/embedded/nagios/sbin;
-    }
-
-    location ~ ^/nagios/(.*\.php)$ {
-      alias /opt/chef-server/embedded/nagios/share/$1;
-      include <%= File.join(@dir, "etc", "fastcgi.conf") %>;
-      fastcgi_pass 127.0.0.1:<%= node['chef_server']['nagios']['php_fpm_port'] %>;
-    }
-
-    location ~ \.cgi$ {
-      root /opt/chef-server/embedded/nagios/sbin;
-      rewrite ^/nagios/cgi-bin/(.*)\.cgi /$1.cgi break;
-      include <%= File.join(@dir, "etc", "fastcgi.conf") %>;
-      fastcgi_param AUTH_USER $remote_user;
-      fastcgi_param REMOTE_USER $remote_user;
-      fastcgi_param DOCUMENT_ROOT  /opt/chef-server/embedded/nagios/sbin;
-      fastcgi_param SCRIPT_FILENAME    $fastcgi_script_name;
-      fastcgi_pass 127.0.0.1:<%= node['chef_server']['nagios']['fcgiwrap_port'] %>;
-    }  
-
-    location ~ \.php$ {
-      include <%= File.join(@dir, "etc", "fastcgi.conf") %>;
-      fastcgi_pass 127.0.0.1:<%= node['chef_server']['nagios']['php_fpm_port'] %>;
-    }  
-
-  }
-  <%- end -%>
 }

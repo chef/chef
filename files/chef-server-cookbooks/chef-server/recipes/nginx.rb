@@ -100,15 +100,6 @@ template nginx_config do
   notifies :restart, 'service[nginx]' if OmnibusHelper.should_notify?("nginx")
 end
 
-template File.join(nginx_etc_dir, "fastcgi.conf") do
-  source "fastcgi.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
-  variables(node['chef_server']['nginx'].to_hash)
-  notifies :restart, 'service[nginx]' if OmnibusHelper.should_notify?("nginx")
-end
-
 runit_service "nginx" do
   down node['chef_server']['nginx']['ha']
   options({
