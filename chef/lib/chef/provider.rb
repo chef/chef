@@ -108,13 +108,14 @@ class Chef
       # TODO: timh,cw: 2010-5-14: This means that the resources within
       # this block cannot interact with resources outside, e.g.,
       # manipulating notifies.
-      saved_run_context = @run_context
-      @run_context = @run_context.dup
-      @run_context.resource_collection = Chef::ResourceCollection.new
-      instance_eval(&block)
-      Chef::Runner.new(@run_context).converge
-
-      @run_context = saved_run_context
+      converge_by ("would evaluate block and run any associated actions") do
+        saved_run_context = @run_context
+        @run_context = @run_context.dup
+        @run_context.resource_collection = Chef::ResourceCollection.new
+        instance_eval(&block)
+        Chef::Runner.new(@run_context).converge
+        @run_context = saved_run_context
+      end
     end
 
     public

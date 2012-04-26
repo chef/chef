@@ -51,6 +51,7 @@ describe Chef::Provider::Deploy do
     @provider.stub(:symlink)
     @provider.stub(:migrate)
     @provider.deploy
+    @provider.converge
   end
 
   it "does not create deploy_to dir if it exists" do
@@ -62,6 +63,7 @@ describe Chef::Provider::Deploy do
     @provider.stub(:symlink)
     @provider.stub(:migrate)
     @provider.deploy
+    @provider.converge
   end
 
   it "updates and copies the repo, then does a migrate, symlink, restart, restart, cleanup on deploy" do
@@ -80,13 +82,14 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:callback).with(:after_restart, nil)
     @provider.should_receive(:cleanup!)
     @provider.deploy
+    @provider.converge
   end
 
   it "should not deploy if there is already a deploy at release_path, and it is the current release" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir])
     @provider.stub!(:current_release?).with(@expected_release_dir).and_return(true)
     @provider.should_not_receive(:deploy)
-    @provider.action_deploy
+    @provider.run_action(:deploy)
   end
 
   it "should call action_rollback if there is already a deploy of this revision at release_path, and it is not the current release" do
@@ -94,32 +97,33 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:current_release?).with(@expected_release_dir).and_return(false)
     @provider.should_receive(:rollback_to).with(@expected_release_dir)
     @provider.should_receive(:current_release?)
-    @provider.action_deploy
+    @provider.run_action(:deploy)
   end
 
   it "calls deploy when deploying a new release" do
     @provider.stub!(:all_releases).and_return([])
     @provider.should_receive(:deploy)
-    @provider.action_deploy
+    @provider.run_action(:deploy)
   end
 
   it "runs action svn_force_export when new_resource.svn_force_export is true" do
     @resource.svn_force_export true
-    @provider.scm_provider.should_receive(:action_force_export)
-    @provider.svn_force_export
+    @provider.scm_provider.should_receive(:run_action).with(:force_export)
+    @provider.update_cached_repo
+    @provider.converge
   end
 
   it "Removes the old release before deploying when force deploying over it" do
     @provider.stub!(:all_releases).and_return([@expected_release_dir])
     FileUtils.should_receive(:rm_rf).with(@expected_release_dir)
     @provider.should_receive(:deploy)
-    @provider.action_force_deploy
+    @provider.run_action(:force_deploy)
   end
 
   it "deploys as normal when force deploying and there's no prior release at the same path" do
     @provider.stub!(:all_releases).and_return([])
     @provider.should_receive(:deploy)
-    @provider.action_force_deploy
+    @provider.run_action(:force_deploy)
   end
 
   it "dont care by default if error happens on deploy" do
@@ -128,7 +132,7 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_not_receive(:rollback)
     lambda { 
-      @provider.action_deploy
+      @provider.run_action(:deploy)
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
   
@@ -139,7 +143,7 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_receive(:rollback)
     lambda { 
-      @provider.action_deploy
+      @provider.run_action(:deploy)
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
 
@@ -207,6 +211,7 @@ describe Chef::Provider::Deploy do
     @runner.should_receive(:converge)
     callback_code = Proc.new { :noop }
     @provider.callback(:whatevs, callback_code)
+    @provider.converge
   end
 
   it "loads callback files from the release/ dir if the file exists" do
@@ -215,6 +220,7 @@ describe Chef::Provider::Deploy do
     ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
     @provider.should_receive(:from_file).with(foo_callback)
     @provider.callback(:foo, "deploy/foo.rb")
+    @provider.converge
   end
 
   it "raises a runtime error if a callback file is explicitly specified but does not exist" do
@@ -229,6 +235,7 @@ describe Chef::Provider::Deploy do
     ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
     @provider.should_receive(:from_file).with(bar_callback)
     @provider.callback(:bar, nil)
+    @provider.converge
   end
 
   it "skips an eval callback if the file doesn't exist" do
@@ -236,6 +243,7 @@ describe Chef::Provider::Deploy do
     ::File.should_receive(:exist?).with(barbaz_callback).and_return(false)
     @provider.should_not_receive(:from_file)
     @provider.callback(:barbaz, nil)
+    @provider.converge
   end
 
   it "gets a SCM provider as specified by its resource" do
@@ -244,14 +252,16 @@ describe Chef::Provider::Deploy do
   end
 
   it "syncs the cached copy of the repo" do
-    @provider.scm_provider.should_receive(:action_sync)
+    @provider.scm_provider.should_receive(:run_action).with(:sync)
     @provider.update_cached_repo
+    @provider.converge
   end
 
   it "makes a copy of the cached repo in releases dir" do
     FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
     @provider.should_receive(:run_command).with({:command => "cp -RPp /my/deploy/dir/shared/cached-copy/. #{@expected_release_dir}"})
     @provider.copy_cached_repo
+    @provider.converge
   end
 
   it "calls the internal callback :release_created when copying the cached repo" do
@@ -259,6 +269,7 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:run_command).and_return(true)
     @provider.should_receive(:release_created)
     @provider.copy_cached_repo
+    @provider.converge
   end
 
   it "chowns the whole release dir to user and group specified in the resource" do
@@ -266,6 +277,7 @@ describe Chef::Provider::Deploy do
     @resource.group "bar"
     FileUtils.should_receive(:chown_R).with("foo", "bar", "/my/deploy/dir")
     @provider.enforce_ownership
+    @provider.converge
   end
 
   it "skips the migration when resource.migrate => false but runs symlinks before migration" do
@@ -273,6 +285,7 @@ describe Chef::Provider::Deploy do
     @provider.should_not_receive :run_command
     @provider.should_receive :run_symlinks_before_migrate
     @provider.migrate
+    @provider.converge
   end
 
   it "links the database.yml and runs resource.migration_command when resource.migrate #=> true" do
@@ -291,6 +304,7 @@ describe Chef::Provider::Deploy do
 																								:log_tag => "deploy[/my/deploy/dir]",
                                                 :environment => {"RAILS_ENV"=>"production"})
     @provider.migrate
+    @provider.converge
   end
 
   it "purges the current release's /log /tmp/pids/ and /public/system directories" do
@@ -298,6 +312,7 @@ describe Chef::Provider::Deploy do
     FileUtils.should_receive(:rm_rf).with(@expected_release_dir + "/tmp/pids")
     FileUtils.should_receive(:rm_rf).with(@expected_release_dir + "/public/system")
     @provider.purge_tempfiles_from_current_release
+    @provider.converge
   end
 
   it "symlinks temporary files and logs from the shared dir into the current release" do
@@ -313,6 +328,7 @@ describe Chef::Provider::Deploy do
     FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/config/database.yml", @expected_release_dir + "/config/database.yml")
     @provider.should_receive(:enforce_ownership)
     @provider.link_tempfiles_to_current_release
+    @provider.converge
   end
 
   it "symlinks the current release dir into production" do
@@ -320,6 +336,7 @@ describe Chef::Provider::Deploy do
     FileUtils.should_receive(:ln_sf).with(@expected_release_dir, "/my/deploy/dir/current")
     @provider.should_receive(:enforce_ownership)
     @provider.link_current_release_to_production
+    @provider.converge
   end
 
   context "with a customized app layout" do
@@ -329,12 +346,14 @@ describe Chef::Provider::Deploy do
       @resource.create_dirs_before_symlink(%w{baz qux})
       @resource.symlinks "foo/bar" => "foo/bar", "baz" => "qux/baz"
       @resource.symlink_before_migrate "radiohead/in_rainbows.yml" => "awesome"
+      @provider.converge
     end
 
     it "purges the purge_before_symlink directories" do
       FileUtils.should_receive(:rm_rf).with(@expected_release_dir + "/foo")
       FileUtils.should_receive(:rm_rf).with(@expected_release_dir + "/bar")
       @provider.purge_tempfiles_from_current_release
+      @provider.converge
     end
 
     it "symlinks files from the shared directory to the current release directory" do
@@ -347,6 +366,7 @@ describe Chef::Provider::Deploy do
       FileUtils.should_receive(:ln_sf).with("/my/deploy/dir/shared/radiohead/in_rainbows.yml", @expected_release_dir + "/awesome")
       @provider.should_receive(:enforce_ownership)
       @provider.link_tempfiles_to_current_release
+      @provider.converge
     end
     
   end
@@ -354,12 +374,14 @@ describe Chef::Provider::Deploy do
   it "does nothing for restart if restart_command is empty" do
     @provider.should_not_receive(:run_command)
     @provider.restart
+    @provider.converge
   end
 
   it "runs the restart command in the current application dir when the resource has a restart_command" do
     @resource.restart_command "restartcmd"
     @provider.should_receive(:run_command).with(:command => "restartcmd", :cwd => "/my/deploy/dir/current", :log_tag => "deploy[/my/deploy/dir]", :log_level => :debug)
     @provider.restart
+    @provider.converge
   end
 
   it "lists all available releases" do
@@ -379,6 +401,7 @@ describe Chef::Provider::Deploy do
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040200000000")
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040300000000")
     @provider.cleanup!
+    @provider.converge
   end
 
   it "fires a callback for :release_deleted when deleting an old release" do
@@ -389,6 +412,7 @@ describe Chef::Provider::Deploy do
     FileUtils.stub!(:rm_rf)
     @provider.should_receive(:release_deleted).with("/my/deploy/dir/20040300000000")
     @provider.cleanup!
+    @provider.converge
   end
 
   it "puts resource.to_hash in @configuration for backwards compat with capistano-esque deploy hooks" do
@@ -400,6 +424,7 @@ describe Chef::Provider::Deploy do
     resource.environment "production"
     provider = Chef::Provider::Deploy.new(resource, @run_context)
     provider.instance_variable_get(:@configuration)[:environment].should eql("production")
+    @provider.converge
   end
 
   it "shouldn't give a no method error on migrate if the environment is nil" do
@@ -407,6 +432,7 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:run_symlinks_before_migrate)
     @provider.stub!(:run_command)
     @provider.migrate
+    @provider.converge
   end
 
   context "using inline recipes for callbacks" do
@@ -416,6 +442,7 @@ describe Chef::Provider::Deploy do
       recipe_code = Proc.new {snitch = 42}
       #@provider.should_receive(:instance_eval).with(&recipe_code)
       @provider.callback(:whateverz, recipe_code)
+      @provider.converge
       snitch.should == 42
     end
 
@@ -424,6 +451,7 @@ describe Chef::Provider::Deploy do
       ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
       @provider.should_receive(:from_file).with(@expected_release_dir + "/chefz/foobar_callback.rb")
       @provider.callback(:whateverz, "chefz/foobar_callback.rb")
+      @provider.converge
     end
 
     it "instance_evals a block/proc for restart command" do
@@ -431,6 +459,7 @@ describe Chef::Provider::Deploy do
       restart_cmd = Proc.new {snitch = 42}
       @resource.restart(&restart_cmd)
       @provider.restart
+      @provider.converge
       snitch.should == 42
     end
 
@@ -440,6 +469,7 @@ describe Chef::Provider::Deploy do
     it "defines sudo as a forwarder to execute" do
       @provider.should_receive(:execute).with("the moon, fool")
       @provider.sudo("the moon, fool")
+      @provider.converge
     end
 
     it "defines run as a forwarder to execute, setting the user, group, cwd and environment to new_resource.user" do
@@ -468,6 +498,7 @@ describe Chef::Provider::Deploy do
         end
       }.twice
       @provider.run("iGoToHell4this")
+      @provider.converge
     end
 
     it "defines run as a forwarder to execute, setting cwd and environment but not override" do
@@ -478,7 +509,9 @@ describe Chef::Provider::Deploy do
       mock_execution.should_receive(:cwd).with(no_args()).and_return("/some/value")
       mock_execution.should_receive(:environment).with(no_args()).and_return({})
       @provider.run("iGoToHell4this")
+      @provider.converge
     end
+
 
     it "converts sudo and run to exec resources in hooks" do
       runner = mock("tehRunner")
@@ -490,12 +523,15 @@ describe Chef::Provider::Deploy do
       callback_code = Proc.new do
         snitch = 42
         temp_collection = self.resource_collection
+      # TODO test says "converts sudo to exec" but we don't use sudo. 
         run("tehMice")
         snitch = temp_collection.lookup("execute[tehMice]")
       end
 
       runner.should_receive(:converge)
+      #
       @provider.callback(:phony, callback_code)
+      @provider.converge
       snitch.should be_an_instance_of(Chef::Resource::Execute)
       snitch.user.should == "tehCat"
     end
