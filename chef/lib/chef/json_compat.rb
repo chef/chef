@@ -17,7 +17,7 @@
 
 # Wrapper class for interacting with JSON.
 
-require 'json'
+require 'yajl/json_gem'
 
 class Chef
   class JSONCompat
