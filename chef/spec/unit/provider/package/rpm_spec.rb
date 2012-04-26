@@ -22,13 +22,14 @@ describe Chef::Provider::Package::Rpm do
   include SpecHelpers::Providers::Package
 
   let(:package_name) { 'emacs' }
+  let(:source_package_name) { package_name }
   let(:source_file) { "/tmp/emacs-21.4-20.el5.i386.rpm" }
 
   let(:assume_source) { new_resource.source source_file }
   let(:assume_rpm_exists) { provider.stub!(:assert_rpm_exists!).and_return(true) }
   let(:assume_current_resource) { provider.current_resource = current_resource }
   let(:assume_new_resource) { provider.new_resource = new_resource }
-  let(:assume_package_name_and_version) { provider.stub!(:package_name_and_version).and_return([package_name, new_version]) }
+  let(:assume_package_name_and_version) { provider.stub!(:package_name_and_version).and_return([source_package_name, new_version]) }
   let(:assume_installed_version) { provider.stub!(:installed_version).and_return(installed_version) }
 
   let(:new_version) { '21.4-20.el5' }
@@ -56,11 +57,27 @@ describe Chef::Provider::Package::Rpm do
       subject.package_name.should eql(new_resource.package_name)
     end
 
-    it "should set installed version on current resource"
+    it "should set installed version on current resource" do
+      subject.version.should eql(installed_version)
+    end
 
     context 'when source is specified' do
-      it 'should set package name of current resource'
-      it 'should set version of new resource'
+      context 'with different package name' do
+        let(:source_package_name) { "emacs-#{rand(10000)}" }
+
+        it 'should set package name of current resource' do
+          subject.package_name.should eql(source_package_name)
+        end
+      end
+
+      context 'with different version' do
+        let(:new_version) { rand(10000).to_s }
+
+        it 'should set version of new resource' do
+          subject.should_not be_nil
+          provider.new_resource.version.should eql(new_version)
+        end
+      end
     end
 
     context 'when attempting to install and source is not specified' do
@@ -179,7 +196,11 @@ describe Chef::Provider::Package::Rpm do
     end
 
     context 'when source is not specified' do
-      it 'should return [ nil, nil ]'
+      let(:given) { assume_new_resource }
+
+      it 'should return [ nil, nil ]' do
+        should eql([nil, nil])
+      end
     end
   end
 
