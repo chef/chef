@@ -62,7 +62,7 @@ class Chef
       def purge_unmanaged_files(unmanaged_files)
         if @new_resource.purge
           unmanaged_files.sort.reverse.each do |f|
-            if ::File.directory?(f)
+            if ::File.directory?(f) && !::File.symlink?(f)
               Dir::rmdir(f)
               Chef::Log.debug("#{@new_resource} removed directory #{f}")
             else
