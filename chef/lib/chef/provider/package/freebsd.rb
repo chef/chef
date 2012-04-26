@@ -83,14 +83,12 @@ class Chef
           Chef::Log.debug("#{@new_resource} current version is #{@current_resource.version}") if @current_resource.version
 
           case @new_resource.source
-          when /^ports$/
-            @candidate_version = ports_candidate_version
           when /^http/, /^ftp/
             @candidate_version = "0.0.0"
           when /^\//
             @candidate_version = file_candidate_version
           else
-            raise Chef::Exceptions::Package, "Couldn't find a candidate version."
+            @candidate_version = ports_candidate_version
           end
 
           Chef::Log.debug("#{@new_resource} ports candidate version is #{@candidate_version}") if @candidate_version
