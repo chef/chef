@@ -34,6 +34,7 @@ class Chef
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
           status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
+              line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
               case line
               when /^Version(\s?)*: (.+)$/
                 Chef::Log.debug("#{@new_resource} current version is #{$2}")
