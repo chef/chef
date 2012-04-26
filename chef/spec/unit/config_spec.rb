@@ -19,6 +19,10 @@
 require 'spec_helper'
 
 describe Chef::Config do
+  before do
+    @original_config = Chef::Config.hash_dup
+  end
+
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
@@ -169,5 +173,9 @@ describe Chef::Config do
 
       Chef::Config[:data_bag_path].should == data_bag_path
     end
+  end
+
+  after do
+    Chef::Config.configuration = @original_config
   end
 end
