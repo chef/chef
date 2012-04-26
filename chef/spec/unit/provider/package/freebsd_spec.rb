@@ -29,6 +29,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
     @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
+    ::File.stub!(:exist?).with('/usr/ports/Makefile').and_return(false)
   end
 
   describe "when determining the current package state" do
@@ -104,7 +105,8 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
       @provider.ports_candidate_version.should == "4.3.6"
     end
 
-    it "should figure out the package name" do
+    it "should figure out the package name when we have ports" do
+      ::File.stub!(:exist?).with('/usr/ports/Makefile').and_return(true)
       @provider.stub!(:port_path).and_return("/usr/ports/shells/zsh")
       make_v = OpenStruct.new(:stdout => "zsh-4.3.6_7\n")
       @provider.should_receive(:shell_out!).with("make -V PKGNAME", {:cwd=>"/usr/ports/shells/zsh", :env=>nil, :returns=>[0, 1]}).and_return(make_v)
