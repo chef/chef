@@ -1,14 +1,9 @@
 log_location       STDOUT
 
-solr_url  "http://<%= node['chef_server']['chef-solr']['vip'] %>:<%= node['chef_server']['chef-solr']['port'] %>"
+solr_url  "http://<%= node['chef_server']['chef-solr']['vip'] %>:<%= node['chef_server']['chef-solr']['port'] %>/solr"
 amqp_host '<%= node['chef_server']['rabbitmq']['vip'] %>'
 amqp_port <%= node['chef_server']['rabbitmq']['node_port'] %>
 amqp_user '<%= node['chef_server']['rabbitmq']['user'] %>'
 amqp_pass '<%= node['chef_server']['rabbitmq']['password'] %>'
-<% if @reindexer == true %> 
-amqp_vhost '<%= node['chef_server']['rabbitmq']['reindexer_vhost'] %>'
-ps_tag '-reindexer'
-<% else %>
 amqp_vhost '<%= node['chef_server']['rabbitmq']['vhost'] %>'
 ps_tag ''
-<% end %>

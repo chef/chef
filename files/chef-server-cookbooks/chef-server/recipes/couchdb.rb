@@ -43,7 +43,7 @@ runit_service "couchdb" do
 end
 
 if node['chef_server']['bootstrap']['enable']
-	execute "/opt/chef-server/bin/chef-server-ctl couchdb start" do
+	execute "/opt/chef-server/bin/chef-server-ctl start couchdb" do
 		retries 20 
 	end
 end

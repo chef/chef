@@ -108,7 +108,7 @@ runit_service "nginx" do
 end
 
 if node['chef_server']['nginx']['bootstrap']
-	execute "/opt/chef-server/bin/chef-server-ctl nginx start" do
+	execute "/opt/chef-server/bin/chef-server-ctl start nginx" do
 		retries 20 
 	end
 end

@@ -6,7 +6,7 @@ class OmnibusHelper
   end
 
   def self.check_status(service_name)
-    o = Chef::ShellOut.new("/opt/chef-server/bin/chef-server-ctl #{service_name} status")
+    o = Chef::ShellOut.new("/opt/chef-server/bin/chef-server-ctl status #{service_name}")
     o.run_command
     o.exitstatus == 0 ? true : false
   end

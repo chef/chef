@@ -2,5 +2,5 @@
 # weekly bounce couchdb monday AM at 4:44AM
 #
 MAILTO=<%= node['chef_server']['notification_email'] %>
-44 17 * * 1,4 root if pgrep -f 'beam.*couch'; then /opt/chef-server/bin/chef-server-ctl couchdb restart; fi
+44 17 * * 1,4 root if pgrep -f 'beam.*couch'; then /opt/chef-server/bin/chef-server-ctl restart couchdb; fi
 

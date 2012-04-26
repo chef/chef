@@ -76,7 +76,7 @@ runit_service "chef-server-api" do
 end
 
 if node['chef_server']['bootstrap']['enable']
-	execute "/opt/chef-server/bin/chef-server-ctl chef-server-api start" do
+	execute "/opt/chef-server/bin/chef-server-ctl start chef-server-api" do
 		retries 20 
 	end
 end

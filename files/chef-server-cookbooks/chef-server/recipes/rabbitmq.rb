@@ -74,7 +74,7 @@ runit_service "rabbitmq" do
 end
 
 if node['chef_server']['bootstrap']['enable']
-	execute "/opt/chef-server/bin/chef-server-ctl rabbitmq start" do
+	execute "/opt/chef-server/bin/chef-server-ctl start rabbitmq" do
 		retries 20 
 	end
   
