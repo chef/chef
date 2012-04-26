@@ -35,11 +35,6 @@ describe Chef::Provider::Package::Rpm do
   let(:new_version) { '21.4-20.el5' }
   let(:installed_version) { new_version }
 
-  let(:pid) { mock('pid') }
-  let(:stdout) { mock('stdout') }
-  let(:stderr) { mock('stderr') }
-  let(:stdin) { mock('stdin') }
-
   context "when determining the current state of the package" do
     subject { given; provider.load_current_resource }
 
@@ -182,7 +177,7 @@ describe Chef::Provider::Package::Rpm do
     end
 
     let(:stdout) { StringIO.new("emacs 21.4-20.el5") }
-    let(:should_query_rpm) { provider.should_receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/emacs-21.4-20.el5.i386.rpm").and_yield(pid, stdin, stdout, stderr).and_return(status) }
+    let(:should_query_rpm) { provider.should_receive(:shell_out!).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/emacs-21.4-20.el5.i386.rpm").and_return(status) }
 
     let(:returned_package_name) { subject[0] }
     let(:returned_version) { subject[1] }
@@ -212,9 +207,8 @@ describe Chef::Provider::Package::Rpm do
 
     it "should call `rpm` to determine installed version" do
       provider.
-        should_receive(:popen4).
+        should_receive(:shell_out!).
         with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' emacs").
-        and_yield(pid, stdin, stdout, stderr).
         and_return(status)
 
       should eql("21.4-20.el5")
@@ -224,7 +218,7 @@ describe Chef::Provider::Package::Rpm do
       let(:exitstatus) { -1 }
 
       it "should raise an exception if rpm fails to run" do
-        provider.stub!(:popen4).and_return(status)
+        provider.stub!(:shell_out!).and_return(status)
         lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
       end
     end

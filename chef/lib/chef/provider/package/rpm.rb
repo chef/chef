@@ -75,12 +75,11 @@ class Chef
           assert_rpm_exists!
 
           Chef::Log.debug("#{@new_resource} checking rpm status")
-          status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                return [$1, $2] # package_name, version
-              end
+          status = shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}")
+          status.stdout.each do |line|
+            case line
+            when /([\w\d_.-]+)\s([\w\d_.-]+)/
+              return [$1, $2] # package_name, version
             end
           end
 
@@ -89,19 +88,17 @@ class Chef
 
         def installed_version
           Chef::Log.debug("#{@current_resource} checking install state")
-          status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                Chef::Log.debug("#{@current_resource} current version is #{$2}")
-                return $2 # installed version
-              end
+          status = shell_out!("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}")
+
+          raise Chef::Exceptions::Package, "rpm failed - #{status.inspect}!" unless status.exitstatus == 0 || status.exitstatus == 1
+          status.stdout.each do |line|
+            case line
+            when /([\w\d_.-]+)\s([\w\d_.-]+)/
+              Chef::Log.debug("#{@current_resource} current version is #{$2}")
+              return $2 # installed version
             end
           end
-
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "rpm failed - #{status.inspect}!"
-          end
+          return nil
         end
 
       end
