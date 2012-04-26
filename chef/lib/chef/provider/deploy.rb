@@ -49,7 +49,7 @@ class Chef
       end
 
       def sudo(command,&block)
-          execute(command, &block)
+        execute(command, &block)
       end
 
       def run(command, &block)
@@ -76,7 +76,6 @@ class Chef
 
           with_rollback_on_error do
             deploy
-            @new_resource.updated_by_last_action(true)
           end
         end
       end
@@ -96,7 +95,6 @@ class Chef
         # * Do nothing - because deploy is force, it will be retried in short time
         # Because last is simpliest, keep it
         deploy
-        @new_resource.updated_by_last_action(true)
       end
 
       def action_rollback
@@ -113,11 +111,12 @@ class Chef
         rollback
 
         releases_to_nuke.each do |i|
-          Chef::Log.info "#{@new_resource} removing release: #{i}"
-          FileUtils.rm_rf i
+          converge_by("would roll back by removing release  #{i}") do
+            Chef::Log.info "#{@new_resource} removing release: #{i}"
+            FileUtils.rm_rf i
+          end
           release_deleted(i)
         end
-        @new_resource.updated_by_last_action(true)
       end
 
       def deploy
@@ -198,16 +197,20 @@ class Chef
             Chef::Log.info("#{@new_resource} restarting app with embedded recipe")
             recipe_eval(&restart_cmd)
           else
-            Chef::Log.info("#{@new_resource} restarting app")
-            run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+            converge_by("Would restart app using command #{@new_resource.restart_command}") do
+              Chef::Log.info("#{@new_resource} restarting app")
+              run_command(run_options(:command => @new_resource.restart_command, :cwd => @new_resource.current_path))
+            end
           end
         end
       end
 
       def cleanup!
         all_releases[0..-6].each do |old_release|
-          Chef::Log.info "#{@new_resource} removing old release #{old_release}"
-          FileUtils.rm_rf(old_release)
+          converge_by("Would remove old release #{old_release}") do
+            Chef::Log.info "#{@new_resource} removing old release #{old_release}"
+            FileUtils.rm_rf(old_release)
+          end
           release_deleted(old_release)
         end
       end
@@ -322,11 +325,15 @@ class Chef
 
       # Internal callback, called after copy_cached_repo.
       # Override if you need to keep state externally.
+      # Note that YOU are responsible for implementing whyrun-friendly behavior 
+      # in any actions you take in this callback. 
       def release_created(release_path)
       end
 
-      # Internal callback, called during cleanup! for each old release removed.
+      # Note that YOU are responsible for using appropriate whyrun nomenclature
       # Override if you need to keep state externally.
+      # Note that YOU are responsible for implementing whyrun-friendly behavior 
+      # in any actions you take in this callback. 
       def release_deleted(release_path)
       end
 
@@ -417,9 +424,10 @@ class Chef
             @release_path = previous_release_path
             rollback
           end
-
-          Chef::Log.info "Removing failed deploy #{failed_release}"
-          FileUtils.rm_rf failed_release
+          converge_by("Would remove failed deploy #{failed_release}") do
+            Chef::Log.info "Removing failed deploy #{failed_release}"
+            FileUtils.rm_rf failed_release
+          end
           release_deleted(failed_release)
         end
         
