@@ -24,127 +24,187 @@ describe Chef::Provider::Package::Rpm do
   let(:package_name) { 'emacs' }
   let(:source_file) { "/tmp/emacs-21.4-20.el5.i386.rpm" }
 
-  let(:assume_source_file_exists) { ::File.stub!(:exists?).and_return(true) }
+  let(:assume_source) { new_resource.source source_file }
+  let(:assume_rpm_exists) { provider.stub!(:assert_rpm_exists!).and_return(true) }
+  let(:assume_current_resource) { provider.current_resource = current_resource }
+  let(:assume_new_resource) { provider.new_resource = new_resource }
+  let(:assume_package_name_and_version) { provider.stub!(:package_name_and_version).and_return([package_name, new_version]) }
+  let(:assume_installed_version) { provider.stub!(:installed_version).and_return(installed_version) }
+
+  let(:new_version) { '21.4-20.el5' }
+  let(:installed_version) { new_version }
 
   let(:pid) { mock('pid') }
   let(:stdout) { mock('stdout') }
   let(:stderr) { mock('stderr') }
   let(:stdin) { mock('stdin') }
 
-  before(:each) do
-    assume_source_file_exists
-    new_resource.source source_file
-  end
-
   context "when determining the current state of the package" do
+    subject { given; provider.load_current_resource }
+
+    let(:given) do
+      assume_source
+      assume_package_name_and_version
+      assume_installed_version
+    end
+
     it "should create a current resource with the name of new_resource" do
-      provider.stub!(:popen4).and_return(status)
-      provider.load_current_resource
-      provider.current_resource.name.should eql(package_name)
+      subject.name.should eql(new_resource.name)
     end
 
     it "should set the current reource package name to the new resource package name" do
-      provider.stub!(:popen4).and_return(status)
-      provider.load_current_resource
-      provider.current_resource.package_name.should eql(package_name)
+      subject.package_name.should eql(new_resource.package_name)
     end
 
-    it "should raise an exception if a source is supplied but not found" do
+    it "should set installed version on current resource"
+
+    context 'when source is specified' do
+      it 'should set package name of current resource'
+      it 'should set version of new resource'
+    end
+
+    context 'when attempting to install and source is not specified' do
+      it "should raise Chef::Exceptions::Package" do
+        new_resource = Chef::Resource::Package.new("emacs")
+        provider = Chef::Provider::Package::Rpm.new(new_resource, run_context)
+        lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      end
+    end
+  end
+
+  describe '#install_package' do
+    before(:each) do
+      assume_current_resource
+      assume_new_resource
+      assume_source
+    end
+
+    it "should run rpm -i with the package source to install" do
+      provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -i /tmp/emacs-21.4-20.el5.i386.rpm")
+      provider.install_package("emacs", "21.4-20.el5")
+    end
+
+    it "should install with custom options specified in the resource" do
+      provider.candidate_version = '11'
+      new_resource.options("--dbpath /var/lib/rpm")
+      provider.should_receive(:shell_out_with_systems_locale!).with("rpm --dbpath /var/lib/rpm -i /tmp/emacs-21.4-20.el5.i386.rpm")
+      provider.install_package(new_resource.name, provider.candidate_version)
+    end
+
+    context 'when package is a path' do
+      let(:new_resource) { Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm") }
+
+      it "should install from a path when the package is a path and the source is nil" do
+        assume_current_resource
+        new_resource.source.should eql("/tmp/emacs-21.4-20.el5.i386.rpm")
+
+        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -i /tmp/emacs-21.4-20.el5.i386.rpm")
+        provider.install_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
+      end
+    end
+  end
+
+  describe '#upgrade_package' do
+    before(:each) do
+      assume_current_resource
+      assume_new_resource
+      assume_source
+    end
+
+    it "should run rpm -U with the package source to upgrade" do
+      provider.current_resource.version("21.4-19.el5")
+      provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm")
+      provider.upgrade_package("emacs", "21.4-20.el5")
+    end
+
+    context 'when package is a path' do
+      let(:new_resource) { Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm") }
+
+      it "should uprgrade from a path when the package is a path and the source is nil" do
+        assume_current_resource
+        new_resource.source.should eql("/tmp/emacs-21.4-20.el5.i386.rpm")
+        current_resource.version("21.4-19.el5")
+
+        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm")
+        provider.upgrade_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
+      end
+    end
+  end
+
+  describe "#remove_package" do
+    it "should run rpm -e to remove the package" do
+      provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -e emacs-21.4-20.el5")
+      provider.remove_package("emacs", "21.4-20.el5")
+    end
+  end
+
+  describe '#assert_rpm_exists!' do
+    subject { provider.assert_rpm_exists! }
+
+    it "should not raise an exception if a source is found" do
+      assume_new_resource
+      ::File.stub!(:exists?).and_return(true)
+      lambda { subject }.should_not raise_error(Chef::Exceptions::Package)
+    end
+
+    it "should raise an exception if a source is not found" do
+      assume_new_resource
       ::File.stub!(:exists?).and_return(false)
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      lambda { subject }.should raise_error(Chef::Exceptions::Package)
+    end
+  end
+
+  describe "#package_name_and_version" do
+    subject { given; provider.package_name_and_version }
+
+    let(:given) do
+      assume_new_resource
+      assume_source
+      assume_rpm_exists
+      should_query_rpm
     end
 
-    it "should get the source package version from rpm if provided" do
-      stdout = StringIO.new("emacs 21.4-20.el5")
-      provider.should_receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/emacs-21.4-20.el5.i386.rpm").and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.should_receive(:popen4).with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' emacs").and_return(status)
-      provider.load_current_resource
-      provider.current_resource.package_name.should eql(package_name)
-      provider.new_resource.version.should eql("21.4-20.el5")
+    let(:stdout) { StringIO.new("emacs 21.4-20.el5") }
+    let(:should_query_rpm) { provider.should_receive(:popen4).with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/emacs-21.4-20.el5.i386.rpm").and_yield(pid, stdin, stdout, stderr).and_return(status) }
+
+    let(:returned_package_name) { subject[0] }
+    let(:returned_version) { subject[1] }
+
+    it 'should return package name' do
+      returned_package_name.should eql(package_name)
     end
 
-    it "should return the current version installed if found by rpm" do
-      stdout = StringIO.new("emacs 21.4-20.el5")
+    it "should return source package version" do
+      returned_version.should eql("21.4-20.el5")
+    end
 
-      provider.
-        should_receive(:popen4).
-        with("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' /tmp/emacs-21.4-20.el5.i386.rpm").
-        and_return(status)
+    context 'when source is not specified' do
+      it 'should return [ nil, nil ]'
+    end
+  end
 
+  describe "#installed_verison" do
+    subject { given; provider.installed_version }
+
+    let(:given) { assume_current_resource }
+    let(:stdout) { StringIO.new("emacs 21.4-20.el5") }
+
+    it "should call `rpm` to determine installed version" do
       provider.
         should_receive(:popen4).
         with("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' emacs").
         and_yield(pid, stdin, stdout, stderr).
         and_return(status)
 
-      provider.load_current_resource
-      provider.current_resource.version.should == "21.4-20.el5"
+      should eql("21.4-20.el5")
     end
 
-    it "should raise an exception if the source is not set but we are installing" do
-      new_resource = Chef::Resource::Package.new("emacs")
-      provider = Chef::Provider::Package::Rpm.new(new_resource, run_context)
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
-    end
+    context 'when `rpm` exits with status -1' do
+      let(:exitstatus) { -1 }
 
-    it "should raise an exception if rpm fails to run" do
-      status = mock("Status", :exitstatus => -1)
-      provider.stub!(:popen4).and_return(status)
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
-    end
-  end
-
-  context "after the current resource is loaded" do
-    before do
-      current_resource = Chef::Resource::Package.new("emacs")
-      provider.current_resource = current_resource
-    end
-
-    context "when installing or upgrading" do
-      it "should run rpm -i with the package source to install" do
-        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -i /tmp/emacs-21.4-20.el5.i386.rpm")
-        provider.install_package("emacs", "21.4-20.el5")
-      end
-
-      it "should run rpm -U with the package source to upgrade" do
-        provider.current_resource.version("21.4-19.el5")
-        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm")
-        provider.upgrade_package("emacs", "21.4-20.el5")
-      end
-
-      it "should install from a path when the package is a path and the source is nil" do
-        new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
-        provider = Chef::Provider::Package::Rpm.new(new_resource, run_context)
-        new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
-        current_resource = Chef::Resource::Package.new("emacs")
-        provider.current_resource = current_resource
-        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -i /tmp/emacs-21.4-20.el5.i386.rpm")
-        provider.install_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
-      end
-
-      it "should uprgrade from a path when the package is a path and the source is nil" do
-        new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
-        provider = Chef::Provider::Package::Rpm.new(new_resource, run_context)
-        new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
-        current_resource = Chef::Resource::Package.new("emacs")
-        current_resource.version("21.4-19.el5")
-        provider.current_resource = current_resource
-        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -U /tmp/emacs-21.4-20.el5.i386.rpm")
-        provider.upgrade_package("/tmp/emacs-21.4-20.el5.i386.rpm", "21.4-20.el5")
-      end
-
-      it "installs with custom options specified in the resource" do
-        provider.candidate_version = '11'
-        new_resource.options("--dbpath /var/lib/rpm")
-        provider.should_receive(:shell_out_with_systems_locale!).with("rpm --dbpath /var/lib/rpm -i /tmp/emacs-21.4-20.el5.i386.rpm")
-        provider.install_package(new_resource.name, provider.candidate_version)
-      end
-    end
-
-    context "when removing the package" do
-      it "should run rpm -e to remove the package" do
-        provider.should_receive(:shell_out_with_systems_locale!).with("rpm  -e emacs-21.4-20.el5")
-        provider.remove_package("emacs", "21.4-20.el5")
+      it "should raise an exception if rpm fails to run" do
+        provider.stub!(:popen4).and_return(status)
+        lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
       end
     end
   end

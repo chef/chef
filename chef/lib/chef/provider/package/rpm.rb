@@ -71,9 +71,8 @@ class Chef
         end
 
         def package_name_and_version
-          return unless @new_resource.source
+          return [ nil, nil ] unless @new_resource.source
           assert_rpm_exists!
-
 
           Chef::Log.debug("#{@new_resource} checking rpm status")
           status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
@@ -89,12 +88,12 @@ class Chef
         end
 
         def installed_version
-          Chef::Log.debug("#{@new_resource} checking install state")
+          Chef::Log.debug("#{@current_resource} checking install state")
           status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
+                Chef::Log.debug("#{@current_resource} current version is #{$2}")
                 return $2 # installed version
               end
             end
