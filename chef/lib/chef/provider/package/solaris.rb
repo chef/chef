@@ -35,81 +35,79 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
-          @new_resource.version(nil)
 
-          if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            end
-
-            Chef::Log.debug("#{@new_resource} checking pkg status")
-            status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /VERSION:\s+(.+)/
-                  @new_resource.version($1)
-                end
-              end
-            end
-          elsif Array(@new_resource.action).include?(:install)
-            raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
-          end
-
-          Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("pkginfo -l #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /VERSION:\s+(.+)/
-                Chef::Log.debug("#{@new_resource} version #{$1} is already installed")
-                @current_resource.version($1)
-              end
-            end
-          end
-
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pkginfo failed - #{status.inspect}!"
-          end
-
+          assert_install_action_requires_source!
+          @new_resource.version candidate_version
+          @current_resource.version installed_version
           @current_resource
         end
 
-        def candidate_version
-          return @candidate_version if @candidate_version
-          status = popen4("pkginfo -l -d #{@new_resource.source} #{new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              case line
-              when /VERSION:\s+(.+)/
-                @candidate_version = $1
-                @new_resource.version($1)
-                Chef::Log.debug("#{@new_resource} setting install candidate version to #{@candidate_version}")
-              end
-            end
-          end
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "pkginfo -l -d #{@new_resource.source} - #{status.inspect}!"
-          end
-          @candidate_version
-        end
 
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} package install options: #{@new_resource.options}")
           if @new_resource.options.nil?
             shell_out_with_systems_locale!("pkgadd -n -d #{@new_resource.source} all")
-            Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           else
             shell_out_with_systems_locale!("pkgadd -n#{expand_options(@new_resource.options)} -d #{@new_resource.source} all")
-            Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
           end
+            Chef::Log.debug("#{@new_resource} installed version #{@new_resource.version} from: #{@new_resource.source}")
         end
 
         def remove_package(name, version)
           if @new_resource.options.nil?
             shell_out_with_systems_locale!("pkgrm -n #{name}")
-            Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           else
             shell_out_with_systems_locale!("pkgrm -n#{expand_options(@new_resource.options)} #{name}")
-            Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
           end
+          Chef::Log.debug("#{@new_resource} removed version #{@new_resource.version}")
+        end
+
+        def assert_install_action_requires_source!
+          return if @new_resource.source || !Array(@new_resource.action).include?(:install)
+          raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
+        end
+
+        def assert_source_file_exists!
+          return if ::File.exists?(@new_resource.source)
+          raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+        end
+
+        def candidate_version
+          return @candidate_version if @candidate_version
+          @candidate_version = source_version
+        end
+
+        def source_version
+          return nil unless @new_resource.source
+          assert_source_file_exists!
+
+          Chef::Log.debug("#{@new_resource} checking pkg status")
+
+          source_version_cmd = "pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}"
+          status = shell_out!(source_version_cmd)
+          raise Chef::Exceptions::Package, "#{source_version_cmd} - #{status.inspect}!" unless status.exitstatus == 0
+
+          version_from_pkginfo(status.stdout)
+        end
+
+        def installed_version
+          Chef::Log.debug("#{@new_resource} checking install state")
+          status = shell_out!("pkginfo -l #{@current_resource.package_name}")
+
+          raise Chef::Exceptions::Package, "pkginfo failed - #{status.inspect}!" unless status.exitstatus == 0 || status.exitstatus == 1
+
+          version_from_pkginfo(status.stdout)
+        end
+
+        def version_from_pkginfo(pkginfo)
+          pkginfo.each_line do |line|
+            case line
+            when /VERSION:\s+(.+)/
+              Chef::Log.debug("#{@new_resource} version #{$1} is already installed")
+              return $1
+            end
+          end
+          return nil
         end
 
       end
