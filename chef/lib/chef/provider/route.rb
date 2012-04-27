@@ -60,6 +60,26 @@ class Chef::Provider::Route < Chef::Provider
             '255.255.255.254'  => '31',
             '255.255.255.255'  => '32' }
 
+    def hex2ip(hex_data)
+      # Cleanup hex data
+      hex_ip = hex_data.to_s.downcase.gsub(/[^0-9a-f]/, '')
+
+      # Check hex data format (IP is a 32bit integer, so should be 8 chars long)
+      return nil if hex_ip.length != hex_data.length || hex_ip.length != 8
+
+      # Extract octets from hex data
+      octets = hex_ip.scan(/../).reverse.collect { |octet| [octet].pack('H2').unpack("C").first }
+
+      # Validate IP
+      ip = octets.join('.')
+      begin
+        IPAddr.new(ip, Socket::AF_INET).to_s
+      rescue ArgumentError
+        Chef::Log.debug("Invalid IP address data: hex=#{hex_ip}, ip=#{ip}")
+        return nil
+      end
+    end
+
     def load_current_resource
       self.is_running = false
 
@@ -70,20 +90,22 @@ class Chef::Provider::Route < Chef::Provider
         new_ip = IPAddr.new(@new_resource.target)
       end
 
-      # pull routes from proc
+      # For linux, we use /proc/net/route file to read proc table info
       if node[:os] == "linux"
         route_file = ::File.open("/proc/net/route", "r")
+
+        # Read all routes
         while (line = route_file.gets)
-          # proc layout
+          # Get all the fields for a route
           iface,destination,gateway,flags,refcnt,use,metric,mask,mtu,window,irtt = line.split
 
-          # need to convert packed adresses int quad dot
-          #  the addrs are reversed hex packed decimal addrs. so this unwraps them. tho you could
-          #  do this without ipaddr using unpack. ipaddr has no htoa method.
-          #
-          destination = IPAddr.new(destination.scan(/../).reverse.to_s.hex, Socket::AF_INET).to_s
-          gateway = IPAddr.new(gateway.scan(/../).reverse.to_s.hex, Socket::AF_INET).to_s
-          mask = IPAddr.new(mask.scan(/../).reverse.to_s.hex, Socket::AF_INET).to_s
+          # Convert hex-encoded values to quad-dotted notation (e.g. 0064A8C0 => 192.168.100.0)
+          destination = hex2ip(destination)
+          gateway = hex2ip(gateway)
+          mask = hex2ip(mask)
+
+          # Skip formatting lines (header, etc)
+          next unless destination && gateway && mask
           Chef::Log.debug("#{@new_resource} system has route: dest=#{destination} mask=#{mask} gw=#{gateway}")
 
           # check if what were trying to configure is already there
@@ -95,6 +117,7 @@ class Chef::Provider::Route < Chef::Provider
           Chef::Log.debug("#{@new_resource} new ip: #{new_ip.inspect} running ip: #{running_ip.inspect}")
           self.is_running = true if running_ip == new_ip && gateway == @new_resource.gateway
         end
+
         route_file.close
       end
     end
