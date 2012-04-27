@@ -19,42 +19,39 @@
 require 'spec_helper'
 
 describe Chef::Provider::Package::Dpkg do
+  include SpecHelpers::Providers::Package
+
+  let(:package_name) { 'wget' }
+
+  let(:pid) { mock("PID") }
+  let(:should_shell_out!) { provider.stub!(:popen4).and_return(status) }
+  let(:source_file) { "/tmp/wget_1.11.4-1ubuntu1_amd64.deb" }
+
   before(:each) do
-    @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
-    @new_resource = Chef::Resource::Package.new("wget")
-    @new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
-
-    @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
-
-    @stdin = StringIO.new
-    @stdout = StringIO.new
-    @status = mock("Status", :exitstatus => 0)
-    @stderr = StringIO.new
-    @pid = mock("PID")
-    @provider.stub!(:popen4).and_return(@status)
-
+    new_resource.source source_file
     ::File.stub!(:exists?).and_return(true)
+    should_shell_out!
   end
 
   describe "#load_current_resource" do
     it "should create a current resource with the name of the new_resource" do
-      @provider.load_current_resource
-      @provider.current_resource.package_name.should == "wget"
+      provider.load_current_resource
+      provider.current_resource.package_name.should eql(package_name)
     end
 
     it "should raise an exception if a source is supplied but not found" do
       ::File.stub!(:exists?).and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     context 'when getting the source package version from dpkg-deb' do
+
       def check_version(version)
-        @stdout = StringIO.new("wget\t#{version}")
-        @provider.stub!(:popen4).with("dpkg-deb -W #{@new_resource.source}").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-        @provider.load_current_resource
-        @provider.current_resource.package_name.should == "wget"
-        @new_resource.version.should == version
+        stdout = StringIO.new("wget\t#{version}")
+        provider.stub!(:popen4).with("dpkg-deb -W #{new_resource.source}").and_yield(pid, stdin, stdout, stderr).and_return(status)
+        provider.load_current_resource
+        provider.current_resource.package_name.should eql(package_name)
+        new_resource.version.should == version
       end
 
       it 'if short version provided' do
@@ -71,20 +68,20 @@ describe Chef::Provider::Package::Dpkg do
     end
 
     it "gets the source package name from dpkg-deb correctly when the package name has `-', `+' or `.' characters" do
-      @stdout = StringIO.new("f.o.o-pkg++2\t1.11.4-1ubuntu1")
-      @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @provider.load_current_resource
-      @provider.current_resource.package_name.should == "f.o.o-pkg++2"
+      stdout = StringIO.new("f.o.o-pkg++2\t1.11.4-1ubuntu1")
+      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
+      provider.load_current_resource
+      provider.current_resource.package_name.should == "f.o.o-pkg++2"
     end
 
     it "should raise an exception if the source is not set but we are installing" do
-      @new_resource = Chef::Resource::Package.new("wget")
-      @provider.new_resource = @new_resource
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      new_resource = Chef::Resource::Package.new("wget")
+      provider.new_resource = new_resource
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should return the current version installed if found by dpkg" do
-      @stdout = StringIO.new(<<-DPKG_S)
+      stdout = StringIO.new(<<-DPKG_S)
 Package: wget
 Status: install ok installed
 Priority: important
@@ -97,95 +94,95 @@ Config-Version: 1.11.4-1ubuntu1
 Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
 Conflicts: wget-ssl
 DPKG_S
-      @provider.stub!(:popen4).with("dpkg -s wget").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      provider.stub!(:popen4).with("dpkg -s wget").and_yield(pid, stdin, stdout, stderr).and_return(status)
 
-      @provider.load_current_resource
-      @provider.current_resource.version.should == "1.11.4-1ubuntu1"
+      provider.load_current_resource
+      provider.current_resource.version.should == "1.11.4-1ubuntu1"
     end
 
     it "should raise an exception if dpkg fails to run" do
-      @status = mock("Status", :exitstatus => -1)
-      @provider.stub!(:popen4).and_return(@status)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      status = mock("Status", :exitstatus => -1)
+      provider.stub!(:popen4).and_return(status)
+      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
   end
 
   describe "#install_package" do
     it "should run dpkg -i with the package source" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @provider.install_package("wget", "1.11.4-1ubuntu1")
+      provider.install_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -i if the package is a path and the source is nil" do
-      @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
-      @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
+      provider = Chef::Provider::Package::Dpkg.new(new_resource, run_context)
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @provider.install_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
+      provider.install_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -i with the package source and options if specified" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -i --force-yes /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @new_resource.stub!(:options).and_return("--force-yes")
+      new_resource.stub!(:options).and_return("--force-yes")
 
-      @provider.install_package("wget", "1.11.4-1ubuntu1")
+      provider.install_package("wget", "1.11.4-1ubuntu1")
     end
   end
 
   describe '#upgrade_package' do
     it "should run dpkg -i if the package is a path and the source is nil for an upgrade" do
-      @new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
-      @provider = Chef::Provider::Package::Dpkg.new(@new_resource, @run_context)
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      new_resource = Chef::Resource::Package.new("/tmp/wget_1.11.4-1ubuntu1_amd64.deb")
+      provider = Chef::Provider::Package::Dpkg.new(new_resource, run_context)
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -i /tmp/wget_1.11.4-1ubuntu1_amd64.deb",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @provider.upgrade_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
+      provider.upgrade_package("/tmp/wget_1.11.4-1ubuntu1_amd64.deb", "1.11.4-1ubuntu1")
     end
 
     it "should upgrade by running install_package" do
-      @provider.should_receive(:install_package).with("wget", "1.11.4-1ubuntu1")
-      @provider.upgrade_package("wget", "1.11.4-1ubuntu1")
+      provider.should_receive(:install_package).with("wget", "1.11.4-1ubuntu1")
+      provider.upgrade_package("wget", "1.11.4-1ubuntu1")
     end
   end
 
   describe "#remove_package" do
     it "should run dpkg -r to remove the package" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -r wget",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @provider.remove_package("wget", "1.11.4-1ubuntu1")
+      provider.remove_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -r to remove the package with options if specified" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -r --force-yes wget",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @new_resource.stub!(:options).and_return("--force-yes")
+      new_resource.stub!(:options).and_return("--force-yes")
 
-      @provider.remove_package("wget", "1.11.4-1ubuntu1")
+      provider.remove_package("wget", "1.11.4-1ubuntu1")
     end
   end
 
   describe "#purge_package" do
     it "should run dpkg -P to purge the package" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -P wget",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @provider.purge_package("wget", "1.11.4-1ubuntu1")
+      provider.purge_package("wget", "1.11.4-1ubuntu1")
     end
 
     it "should run dpkg -P to purge the package with options if specified" do
-      @provider.should_receive(:shell_out_with_systems_locale!).with(
+      provider.should_receive(:shell_out_with_systems_locale!).with(
         "dpkg -P --force-yes wget",
         :environment => { "DEBIAN_FRONTEND" => "noninteractive" } )
-      @new_resource.stub!(:options).and_return("--force-yes")
+      new_resource.stub!(:options).and_return("--force-yes")
 
-      @provider.purge_package("wget", "1.11.4-1ubuntu1")
+      provider.purge_package("wget", "1.11.4-1ubuntu1")
     end
   end
 end
