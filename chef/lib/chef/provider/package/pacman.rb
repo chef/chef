@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,14 +17,12 @@
 #
 
 require 'chef/provider/package'
-require 'chef/mixin/command'
 require 'chef/resource/package'
 
 class Chef
   class Provider
     class Package
       class Pacman < Chef::Provider::Package
-        include Chef::Mixin::Command
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -38,24 +36,23 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          status = popen4("pacman -Ss #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-                when /^(extra|core|community)\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
-                  # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
-                  # simply split by space and use first token
-                  @candidate_version = $2.split(" ").first
-              end
+          status = shell_out!("pacman -Ss #{@new_resource.package_name}")
+          raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!" unless status.exitstatus == 0 || status.exitstatus == 1
+
+          status.stdout.each_line do |line|
+            case line
+            when /^(extra|core|community)\/#{Regexp.escape(@new_resource.package_name)} (.+)$/
+              # $2 contains a string like "4.4.0-1 (kde kdenetwork)" or "3.10-4 (base)"
+              # simply split by space and use first token
+              @candidate_version = $2.split(" ").first
             end
           end
 
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
-          end
-
-          unless @candidate_version
-            raise Chef::Exceptions::Package, "pacman does not have a version of package #{@new_resource.package_name}"
-          end
+          # NOTE: Why is this necessary?
+          #  - Not all package providers raise an error
+          #  - Introduces side-effect
+          #  - This really should be handled at the base class, not the sub class.
+          raise Chef::Exceptions::Package, "pacman does not have a version of package #{@new_resource.package_name}" unless @candidate_version
 
           @candidate_version
         end
@@ -78,19 +75,15 @@ class Chef
 
         def installed_version
           Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
-          status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
-              case line
-              when /^Version(\s?)*: (.+)$/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                return $2
-              end
+          status = shell_out!("pacman -Qi #{@new_resource.package_name}")
+          raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!" unless status.exitstatus == 0 || status.exitstatus == 1
+          status.stdout.each_line do |line|
+            line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
+            case line
+            when /^Version(\s?)*: (.+)$/
+              Chef::Log.debug("#{@new_resource} current version is #{$2}")
+              return $2
             end
-          end
-
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
           end
 
           return nil

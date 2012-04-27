@@ -26,7 +26,6 @@ describe Chef::Provider::Package::Pacman do
   let(:stdout) { pacman_output_without_package }
 
   let(:assume_installed_version) { provider.should_receive(:installed_version).and_return(installed_version) }
-  let(:should_shell_out!) { provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status) }
   let(:installed_version) { '2.2.2-1' }
 
   let(:pacman_output_without_package) { StringIO.new(<<-ERR) }
@@ -61,9 +60,6 @@ core/nano 2.2.3-1 (base)
 community/nanoblogger 3.4.1-1
     NanoBlogger is a small weblog engine written in Bash for the command line
 END
-
-  let(:stderr) { StringIO.new }
-  let(:pid) { 2342 }
 
   context "#load_current_resource" do
     subject { given; provider.load_current_resource }
@@ -172,8 +168,8 @@ END
     let(:assume_new_resource) { new_resource }
 
     it "should run pacman query with the package name" do
-      provider.should_receive(:popen4).with("pacman -Qi #{new_resource.package_name}").and_return(status)
-      subject
+      provider.should_receive(:shell_out!).with("pacman -Qi #{new_resource.package_name}").and_return(status)
+      provider.installed_version
     end
 
     context 'without installed package' do
