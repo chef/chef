@@ -33,6 +33,20 @@ describe Chef::Provider::Route do
     @provider.current_resource = @current_resource
   end
 
+  describe Chef::Provider::Route, "hex2ip" do
+    it "should return nil if ip address is invalid" do
+      @provider.hex2ip('foo').should be_nil # does not even look like an ip
+      @provider.hex2ip('ABCDEFGH').should be_nil # 8 chars, but invalid
+    end
+
+    it "should return quad-dotted notation for a valid IP" do
+      @provider.hex2ip('01234567').should == '103.69.35.1'
+      @provider.hex2ip('0064a8c0').should == '192.168.100.0'
+      @provider.hex2ip('00FFFFFF').should == '255.255.255.0'
+    end
+  end
+
+
   describe Chef::Provider::Route, "load_current_resource" do
     context "on linux" do
       before do
