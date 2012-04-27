@@ -57,35 +57,45 @@ describe Chef::Provider::Package::Macports do
   end
 
   describe "#current_installed_version" do
-    it "should return the current version if the package is installed" do
-      stdout.should_receive(:read).and_return(<<EOF
+    context 'with installed package' do
+      let(:stdout) { <<-EOF }
 The following ports are currently installed:
   openssl @0.9.8k_0 (active)
 EOF
-      )
 
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.current_installed_version.should == "0.9.8k_0"
+      it "should return the current version if the package is installed" do
+        should_shell_out!
+        provider.current_installed_version.should == "0.9.8k_0"
+      end
     end
 
-    it "should return nil if a package is not currently installed" do
-      stdout.should_receive(:read).and_return("       \n")
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.current_installed_version.should be_nil
+    context 'without installed package' do
+      let(:stdout) { "       \n" }
+
+      it "should return nil if a package is not currently installed" do
+        should_shell_out!
+        provider.current_installed_version.should be_nil
+      end
     end
   end
 
   describe "#macports_candidate_version" do
-    it "should return the latest available version of a given package" do
-      stdout.should_receive(:read).and_return("version: 4.2.7\n")
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.macports_candidate_version.should == "4.2.7"
+    context 'with candidate version' do
+      let(:stdout) { "version: 4.2.7\n" }
+
+      it "should return the latest available version of a given package" do
+        should_shell_out!
+        provider.macports_candidate_version.should == "4.2.7"
+      end
     end
 
-    it "should return nil if there is no version for a given package" do
-      stdout.should_receive(:read).and_return("Error: port fadsfadsfads not found\n")
-      provider.should_receive(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.macports_candidate_version.should be_nil
+    context 'without candidate version' do
+      let(:stdout) { "Error: port fadsfadsfads not found\n" }
+
+      it "should return nil if there is no version for a given package" do
+        should_shell_out!
+        provider.macports_candidate_version.should be_nil
+      end
     end
   end
 
