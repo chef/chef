@@ -28,25 +28,9 @@ class Chef
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
-          @current_resource.package_name(@new_resource.package_name)
 
-          @current_resource.version(nil)
-
-          Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
-          status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each do |line|
-              line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
-              case line
-              when /^Version(\s?)*: (.+)$/
-                Chef::Log.debug("#{@new_resource} current version is #{$2}")
-                @current_resource.version($2)
-              end
-            end
-          end
-
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
-          end
+          @current_resource.package_name @new_resource.package_name
+          @current_resource.version      installed_version
 
           @current_resource
         end
@@ -74,7 +58,6 @@ class Chef
           end
 
           @candidate_version
-
         end
 
         def install_package(name, version)
@@ -91,6 +74,26 @@ class Chef
 
         def purge_package(name, version)
           remove_package(name, version)
+        end
+
+        def installed_version
+          Chef::Log.debug("#{@new_resource} checking pacman for #{@new_resource.package_name}")
+          status = popen4("pacman -Qi #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+            stdout.each do |line|
+              line.force_encoding(Encoding::UTF_8) if line.respond_to?(:force_encoding)
+              case line
+              when /^Version(\s?)*: (.+)$/
+                Chef::Log.debug("#{@new_resource} current version is #{$2}")
+                return $2
+              end
+            end
+          end
+
+          unless status.exitstatus == 0 || status.exitstatus == 1
+            raise Chef::Exceptions::Package, "pacman failed - #{status.inspect}!"
+          end
+
+          return nil
         end
 
       end
