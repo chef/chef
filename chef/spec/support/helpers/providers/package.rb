@@ -11,9 +11,13 @@ module SpecHelpers
         let(:new_resource) { Chef::Resource::Package.new(package_name) }
         let(:current_resource) { Chef::Resource::Package.new(package_name) }
         let(:provider) { described_class.new(new_resource, run_context) }
-        let(:stdout) { StringIO.new }
+
         let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout) }
         let(:exitstatus) { 0 }
+
+        let(:stdout) { StringIO.new }
+        let(:stderr) { StringIO.new }
+        let(:stdin) { StringIO.new }
 
         let(:should_shell_out!) { provider.should_receive(:shell_out!).and_return(status) }
       end
