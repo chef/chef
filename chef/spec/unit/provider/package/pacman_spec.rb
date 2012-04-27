@@ -23,47 +23,17 @@ describe Chef::Provider::Package::Pacman do
 
   let(:package_name) { 'nano' }
   let(:stdin) { StringIO.new }
-  let(:stdout) { StringIO.new(<<-ERR) }
+  let(:stdout) { pacman_output_without_package }
+
+  let(:assume_installed_version) { provider.should_receive(:installed_version).and_return(installed_version) }
+  let(:should_shell_out!) { provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status) }
+  let(:installed_version) { '2.2.2-1' }
+
+  let(:pacman_output_without_package) { StringIO.new(<<-ERR) }
 error: package "nano" not found
 ERR
 
-  let(:stderr) { StringIO.new }
-  let(:pid) { 2342 }
-
-  before(:each) do
-    provider.stub!(:popen4).and_return(status)
-  end
-
-  context "when determining the current package state" do
-    it "should create a current resource with the name of the new_resource" do
-      provider.load_current_resource
-      provider.current_resource.name.should eql(new_resource.name)
-    end
-
-    it "should set the current resources package name to the new resources package name" do
-      provider.load_current_resource
-      provider.current_resource.package_name.should eql(new_resource.package_name)
-    end
-
-    it "should run pacman query with the package name" do
-      provider.should_receive(:popen4).with("pacman -Qi #{new_resource.package_name}").and_return(status)
-      provider.load_current_resource
-    end
-
-    it "should read stdout on pacman" do
-      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      stdout.should_receive(:each).and_return(true)
-      provider.load_current_resource
-    end
-
-    it "should set the installed version to nil on the current resource if pacman installed version not exists" do
-      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.load_current_resource
-      provider.current_resource.version.should be_nil
-    end
-
-    context 'with installed package' do
-      let(:stdout) { StringIO.new(<<-PACMAN) }
+  let(:pacman_output_with_package) { StringIO.new(<<-PACMAN) }
 Name           : nano
 Version        : 2.2.2-1
 URL            : http://www.nano-editor.org
@@ -85,41 +55,35 @@ Install Script : Yes
 Description    : Pico editor clone with enhancements
 PACMAN
 
-      it "should set the installed version if pacman has one" do
-        provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-        provider.load_current_resource
-        provider.current_resource.version.should == "2.2.2-1"
-      end
+    let(:pacman_query_output) { StringIO.new(<<-END) }
+core/nano 2.2.3-1 (base)
+    Pico editor clone with enhancements
+community/nanoblogger 3.4.1-1
+    NanoBlogger is a small weblog engine written in Bash for the command line
+END
+
+  let(:stderr) { StringIO.new }
+  let(:pid) { 2342 }
+
+  context "#load_current_resource" do
+    subject { given; provider.load_current_resource }
+    let(:given) { assume_installed_version }
+
+    it "should create a current resource with the name of the new_resource" do
+      subject.name.should eql(new_resource.name)
     end
 
-    it "should set the candidate version if pacman has one" do
-      stdout.stub!(:each).and_yield("core/nano 2.2.3-1 (base)").
-                          and_yield("    Pico editor clone with enhancements").
-                          and_yield("community/nanoblogger 3.4.1-1").
-                          and_yield("    NanoBlogger is a small weblog engine written in Bash for the command line")
-      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      provider.load_current_resource
-      provider.candidate_version.should eql("2.2.3-1")
+    it "should set the current resources package name to the new resources package name" do
+      subject.package_name.should eql(new_resource.package_name)
     end
 
-    it "should raise an exception if pacman fails" do
-      status.should_receive(:exitstatus).and_return(2)
-      lambda { provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
-    end
-
-    it "should not raise an exception if pacman succeeds" do
-      status.should_receive(:exitstatus).and_return(0)
-      lambda { provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Package)
-    end
-
-    it "should raise an exception if pacman does not return a candidate version" do
-      stdout.stub!(:each).and_yield("")
-      provider.stub!(:popen4).and_yield(pid, stdin, stdout, stderr).and_return(status)
-      lambda { provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
+    it 'should set current installed version' do
+      subject.version.should eql(installed_version)
     end
 
     it "should return the current resouce" do
-      provider.load_current_resource.should eql(provider.current_resource)
+      subject
+      should eql(provider.current_resource)
     end
   end
 
@@ -162,6 +126,82 @@ PACMAN
     it "should run remove_package with the name and version" do
       provider.should_receive(:remove_package).with("nano", "1.0")
       provider.purge_package("nano", "1.0")
+    end
+  end
+
+  describe '#candidate_version' do
+    subject { given; provider.candidate_version }
+
+    let(:given) do
+      provider.new_resource = new_resource
+      should_shell_out!
+    end
+
+    context 'with available version' do
+      let(:stdout) { pacman_query_output }
+
+      it "should return candidate version" do
+        should eql("2.2.3-1")
+      end
+
+      it 'should memoize candidate version' do
+        provider.instance_variable_get(:@candidate_version).should be_nil
+
+        should_not be_nil
+        provider.instance_variable_get(:@candidate_version).should eql('2.2.3-1')
+      end
+    end
+
+    context 'without available version' do
+      let(:stdout) { StringIO.new }
+
+      it "should raise an exception if pacman does not return a candidate version" do
+        lambda { subject }.should raise_error(Chef::Exceptions::Package)
+      end
+    end
+  end
+
+  describe '#installed_version' do
+    subject { given; provider.installed_version }
+
+    let(:given) do
+      assume_new_resource
+      should_shell_out!
+    end
+
+    let(:assume_new_resource) { new_resource }
+
+    it "should run pacman query with the package name" do
+      provider.should_receive(:popen4).with("pacman -Qi #{new_resource.package_name}").and_return(status)
+      subject
+    end
+
+    context 'without installed package' do
+      it { should be_nil }
+    end
+
+    context 'with installed package' do
+      let(:stdout) { pacman_output_with_package }
+
+      it "should return the version" do
+        should eql("2.2.2-1")
+      end
+    end
+
+    context 'when `pacman` exits with 2' do
+      let(:exitstatus) { 2 }
+
+      it "should raise Chef::Exceptions::Package" do
+        lambda { subject }.should raise_error(Chef::Exceptions::Package)
+      end
+    end
+
+    context 'when `pacman` exits with 0' do
+      let(:exitstatus) { 0 }
+
+      it "should not raise Chef::Exceptions::Package" do
+        lambda { subject .should_not raise_error(Chef::Exceptions::Package) }
+      end
     end
   end
 end
