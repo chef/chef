@@ -50,6 +50,9 @@ describe Chef::Provider::Package::Portage do
   end
 
   describe "#candidate_version" do
+    subject { given; provider.candidate_version }
+    let(:given) { should_shell_out! }
+
     let(:output_from_emerge_without_duplicates) { <<EOF }
 Searching...
 [ Results for search key : git ]
@@ -79,6 +82,7 @@ Searching...
       Description:   gitosis -- software for hosting git repositories
       License:       GPL-2
 EOF
+
       let(:output_from_emerge_with_duplicates) { <<EOF }
 Searching...
 [ Results for search key : git ]
@@ -119,41 +123,39 @@ EOF
 
     it "should return the candidate_version variable if already set" do
       provider.candidate_version = "1.0.0"
-      provider.should_not_receive(:popen4)
+      provider.should_not_receive(:shell_out!)
       provider.candidate_version
     end
 
-    it "should throw an exception if the exitstatus is not 0" do
-      status = mock("Status", :exitstatus => 1)
-      provider.stub!(:popen4).and_return(status)
-      lambda { provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
+    context 'with exitstatus is 1' do
+      let(:exitstatus) { 1 }
+
+      it "should throw an exception if the exitstatus is not 0" do
+        lambda { subject }.should raise_error(Chef::Exceptions::Package)
+      end
     end
 
     context 'without duplicates' do
-      let(:output) { output_from_emerge_without_duplicates }
-    it "should find the candidate_version if a category is specifed and there are no duplicates" do
+      let(:stdout) { output_from_emerge_without_duplicates }
 
-        status = mock("Status", :exitstatus => 0)
-        provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(status)
-        provider.candidate_version.should == "1.6.0.6"
+      it "should find the candidate version " do
+        should eql("1.6.0.6")
       end
 
-      it "should find the candidate_version if a category is not specifed and there are no duplicates" do
-        status = mock("Status", :exitstatus => 0)
-        provider = Chef::Provider::Package::Portage.new(new_resource_without_category, run_context)
-        provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(status)
-        provider.candidate_version.should == "1.6.0.6"
+      context 'without a specified category' do
+        let(:new_resource) { new_resource_without_category }
+
+        it "should find the candidate_version if a category is not specifed and there are no duplicates" do
+          should eql("1.6.0.6")
+        end
       end
     end
 
     context 'with duplicates' do
-      let(:output) { output_from_emerge_with_duplicates }
+      let(:stdout) { output_from_emerge_with_duplicates }
 
       it "should throw an exception if a category is not specified and there are duplicates" do
-        status = mock("Status", :exitstatus => 0)
-        provider = Chef::Provider::Package::Portage.new(new_resource_without_category, run_context)
-        provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(status)
-        lambda { provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
+        lambda { subject }.should raise_error(Chef::Exceptions::Package)
       end
     end
 

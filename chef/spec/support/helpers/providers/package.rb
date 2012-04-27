@@ -14,6 +14,8 @@ module SpecHelpers
         let(:stdout) { StringIO.new }
         let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout) }
         let(:exitstatus) { 0 }
+
+        let(:should_shell_out!) { provider.should_receive(:shell_out!).and_return(status) }
       end
     end
   end

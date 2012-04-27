@@ -67,16 +67,13 @@ class Chef
         def candidate_version
           return @candidate_version if @candidate_version
 
-          status = popen4("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}") do |pid, stdin, stdout, stderr|
-            available, installed = parse_emerge(@new_resource.package_name, stdout.read)
-            @candidate_version = available
-          end
+          status = shell_out!("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}")
+          raise Chef::Exceptions::Package, "emerge --search failed - #{status.inspect}!" unless status.exitstatus == 0
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "emerge --search failed - #{status.inspect}!"
-          end
+          # So why isn't this used to find the installed version?
+          available, installed = parse_emerge(@new_resource.package_name, status.stdout)
 
-          @candidate_version
+          @candidate_version = available
         end
 
 
