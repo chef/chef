@@ -30,29 +30,9 @@ class Chef
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
+
           @current_resource.package_name(@new_resource.package_name)
-
-          @current_resource.version(nil)
-
-          category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
-
-          possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| d.sub(%r{/var/db/pkg/}, "") }
-          versions = possibilities.map do |entry|
-            if(entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)})
-              [$&, $1]
-            end
-          end.compact
-
-          if versions.size > 1
-            atoms = versions.map {|v| v.first }.sort
-            categories = atoms.map {|v| v.split('/')[0] }.uniq
-            if !category && categories.size > 1
-              raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
-            end
-          elsif versions.size == 1
-            @current_resource.version(versions.first.last)
-            Chef::Log.debug("#{@new_resource} current version #{$1}")
-          end
+          @current_resource.version installed_version
 
           @current_resource
         end
@@ -97,17 +77,17 @@ class Chef
           end
 
           @candidate_version
-
         end
 
 
         def install_package(name, version)
-          pkg = "=#{name}-#{version}"
 
-          if(version =~ /^\~(.+)/)
-            # If we start with a tilde
-            pkg = "~#{name}-#{$1}"
-          end
+          pkg = if(version =~ /^\~(.+)/)
+                  # If we start with a tilde
+                  "~#{name}-#{$1}"
+                else
+                  "=#{name}-#{version}"
+                end
 
           shell_out_with_systems_locale! "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
         end
@@ -117,17 +97,39 @@ class Chef
         end
 
         def remove_package(name, version)
-          if(version)
-            pkg = "=#{@new_resource.package_name}-#{version}"
-          else
-            pkg = "#{@new_resource.package_name}"
-          end
+          pkg = if(version)
+                  "=#{@new_resource.package_name}-#{version}"
+                else
+                  "#{@new_resource.package_name}"
+                end
 
           shell_out_with_systems_locale! "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}"
         end
 
         def purge_package(name, version)
           remove_package(name, version)
+        end
+
+        def installed_version
+          category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
+
+          possibilities = Dir["/var/db/pkg/#{category || "*"}/#{pkg}-*"].map {|d| d.sub(%r{/var/db/pkg/}, "") }
+          versions = possibilities.map do |entry|
+            if(entry =~ %r{[^/]+/#{Regexp.escape(pkg)}\-(\d[\.\d]*((_(alpha|beta|pre|rc|p)\d*)*)?(-r\d+)?)})
+              [$&, $1]
+            end
+          end.compact
+
+          if versions.size > 1
+            atoms = versions.map {|v| v.first }.sort
+            categories = atoms.map {|v| v.split('/')[0] }.uniq
+            if !category && categories.size > 1
+              raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+            end
+          elsif versions.size == 1
+            return versions.first.last
+            Chef::Log.debug("#{@new_resource} current version #{$1}")
+          end
         end
 
       end
