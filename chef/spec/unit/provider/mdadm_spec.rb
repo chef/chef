@@ -71,7 +71,7 @@ describe "initialize" do
     describe "when creating the metadevice" do
       it "should create the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --bitmap=none --raid-devices 2 /dev/sdz1 /dev/sdz2"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.action_create
       end

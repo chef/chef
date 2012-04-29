@@ -31,6 +31,7 @@ class Chef
         @exists = false
         @level = 1
         @metadata = "0.90"
+        @bitmap = "none"
         @raid_device = name
 
         @action = :create
@@ -72,6 +73,14 @@ class Chef
       def metadata(arg=nil)
         set_or_return(
           :metadata,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def bitmap(arg=nil)
+        set_or_return(
+          :bitmap,
           arg,
           :kind_of => [ String ]
         )

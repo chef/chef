@@ -63,6 +63,11 @@ describe Chef::Resource::Mdadm do
     @resource.metadata.should eql("1.2")
   end
 
+  it "should allow you to set the bitmap attribute" do
+    @resource.metadata "internal"
+    @resource.metadata.should eql("internal")
+  end
+
   it "should allow you to set the devices attribute" do
     @resource.devices ["/dev/sda", "/dev/sdb"]
     @resource.devices.should eql(["/dev/sda", "/dev/sdb"])
