@@ -172,8 +172,13 @@ class Chef
           end
         end
 
+        def network_device?
+          @new_resource.device =~ /:/ || @new_resource.device =~ /\/\//
+        end
+
         def device_should_exist?
-          @new_resource.device !~ /:/ && @new_resource.device !~ /\/\// && @new_resource.fstype != "tmpfs" && @new_resource.fstype != 'fuse'
+          ( not network_device? ) &&
+            ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
         end
 
         private
@@ -216,7 +221,14 @@ class Chef
         end
 
         def device_mount_regex
-          ::File.symlink?(device_real) ? "(?:#{Regexp.escape(device_real)})|(?:#{Regexp.escape(::File.readlink(device_real))})" : Regexp.escape(device_real)
+          if network_device?
+            # ignore trailing slash
+            Regexp.escape(device_real)+"/?"
+          elsif ::File.symlink?(device_real)
+            "(?:#{Regexp.escape(device_real)})|(?:#{Regexp.escape(::File.readlink(device_real))})"
+          else
+            Regexp.escape(device_real)
+          end
         end
 
         def device_fstab_regex
