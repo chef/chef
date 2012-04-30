@@ -88,10 +88,9 @@ class Chef
         end
 
       end
-      
+
       def action_deploy
         save_release_state
-
         if deployed?(release_path )
           if current_release?(release_path ) 
             Chef::Log.debug("#{@new_resource} is the latest version")
@@ -136,7 +135,7 @@ class Chef
         rollback
 
         releases_to_nuke.each do |i|
-          converge_by("would roll back by removing release  #{i}") do
+          converge_by("would roll back by removing release #{i}") do
             Chef::Log.info "#{@new_resource} removing release: #{i}"
             FileUtils.rm_rf i
           end
