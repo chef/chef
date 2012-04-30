@@ -182,6 +182,30 @@ describe Chef::Provider::Deploy do
       @provider.run_action(:rollback)
       @provider.release_path.should eql("/my/deploy/dir/releases/20040700000000")
     end
+
+    describe "if there are no releases to fallback to" do
+
+      it "an exception is raised when there is only 1 release" do
+        #@provider.unstub!(:release_path) -- unstub the release path on top to feed our own release path
+        all_releases = [ "/my/deploy/dir/releases/20040815162342"]
+        Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+        #@provider.should_receive(:symlink)
+        #FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
+        #@provider.run_action(:rollback)
+        #@provider.release_path.should eql(NIL) -- no check needed since assertions will fail
+        lambda { 
+          @provider.run_action(:rollback)
+        }.should raise_exception(RuntimeError, "There is no release to rollback to!")
+      end
+      
+      it "an exception is raised when there are no releases" do
+        all_releases = []
+        Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
+        lambda { 
+          @provider.run_action(:rollback)
+        }.should raise_exception(RuntimeError, "There is no release to rollback to!")
+      end
+    end
   end
 
   describe "CHEF-628: on systems with broken Dir.glob results" do
@@ -202,7 +226,7 @@ describe Chef::Provider::Deploy do
   it "raises a runtime error when there's no release to rollback to" do
     all_releases = []
     Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-    lambda {@provider.action_rollback}.should raise_error(RuntimeError)
+    lambda {@provider.run_action(:rollback)}.should raise_error(RuntimeError)
   end
 
   it "runs the new resource collection in the runner during a callback" do
@@ -216,7 +240,7 @@ describe Chef::Provider::Deploy do
 
   it "loads callback files from the release/ dir if the file exists" do
     foo_callback = @expected_release_dir + "/deploy/foo.rb"
-    ::File.should_receive(:exist?).with(foo_callback).twice.and_return(true)
+    ::File.should_receive(:exist?).with(foo_callback).once.and_return(true)
     ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
     @provider.should_receive(:from_file).with(foo_callback)
     @provider.callback(:foo, "deploy/foo.rb")
@@ -224,9 +248,11 @@ describe Chef::Provider::Deploy do
   end
 
   it "raises a runtime error if a callback file is explicitly specified but does not exist" do
-    baz_callback = @expected_release_dir + "/deploy/baz.rb"
-    ::File.should_receive(:exist?).with(baz_callback).and_return(false)
-    lambda {@provider.callback(:foo, "deploy/baz.rb")}.should raise_error(RuntimeError)
+    baz_callback =   "/deploy/baz.rb"
+    ::File.should_receive(:exist?).with("#{@expected_release_dir}/#{baz_callback}").and_return(false)
+    @resource.before_migrate  baz_callback
+    @provider.define_resource_requirements
+    lambda {@provider.process_resource_requirements(:deploy)}.should raise_error(RuntimeError)
   end
 
   it "runs a default callback if the callback code is nil" do
@@ -447,7 +473,7 @@ describe Chef::Provider::Deploy do
     end
 
     it "loads a recipe file from the specified path and from_file evals it" do
-      ::File.should_receive(:exist?).with(@expected_release_dir + "/chefz/foobar_callback.rb").twice.and_return(true)
+      ::File.should_receive(:exist?).with(@expected_release_dir + "/chefz/foobar_callback.rb").once.and_return(true)
       ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
       @provider.should_receive(:from_file).with(@expected_release_dir + "/chefz/foobar_callback.rb")
       @provider.callback(:whateverz, "chefz/foobar_callback.rb")
@@ -523,7 +549,6 @@ describe Chef::Provider::Deploy do
       callback_code = Proc.new do
         snitch = 42
         temp_collection = self.resource_collection
-      # TODO test says "converts sudo to exec" but we don't use sudo. 
         run("tehMice")
         snitch = temp_collection.lookup("execute[tehMice]")
       end

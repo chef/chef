@@ -53,21 +53,47 @@ class Chef
       end
 
       def run(command, &block)
-          exec = execute(command, &block)
-          exec.user(@new_resource.user) if @new_resource.user
-          exec.group(@new_resource.group) if @new_resource.group
-          exec.cwd(release_path) unless exec.cwd
-          exec.environment(@new_resource.environment) unless exec.environment
-          converge_by("Would execute #{command}") do
-            exec
-          end
+        exec = execute(command, &block)
+        exec.user(@new_resource.user) if @new_resource.user
+        exec.group(@new_resource.group) if @new_resource.group
+        exec.cwd(release_path) unless exec.cwd
+        exec.environment(@new_resource.environment) unless exec.environment
+        converge_by("Would execute #{command}") do
+          exec 
+        end
       end
+      
+      def define_resource_requirements
+        requirements.assert(:rollback) do |a|
+          a.assertion { all_releases[-2] }
+          a.failure_message(RuntimeError, "There is no release to rollback to!")
+          #There is no reason to assume 2 deployments in a single chef run, hence fails in whyrun.
+        end
 
+        callback_script = [ @new_resource.before_migrate, @new_resource.before_symlink, 
+                           @new_resource.before_restart, @new_resource.after_restart ]
+        callback_script.each do |script|
+          requirements.assert(:deploy, :force_deploy) do |a|
+            callback_file = "#{release_path}/#{script}"
+            a.assertion do 
+              if script && script.class == String
+                ::File.exist?(callback_file)
+              else
+                true
+              end
+            end
+            a.failure_message(RuntimeError, "Can't find your callback file #{callback_file}")
+            a.whyrun("Would assume callback file #{callback_file} included in release")
+          end
+        end
+
+      end
+      
       def action_deploy
         save_release_state
 
-        if deployed?(release_path)
-          if current_release?(release_path) 
+        if deployed?(release_path )
+          if current_release?(release_path ) 
             Chef::Log.debug("#{@new_resource} is the latest version")
           else
             rollback_to release_path
@@ -103,7 +129,6 @@ class Chef
 
       def rollback_to(target_release_path)
         @release_path = target_release_path
-        raise RuntimeError, "There is no release to rollback to!" unless @release_path
 
         rp_index = all_releases.index(release_path)
         releases_to_nuke = all_releases[(rp_index + 1)..-1]
@@ -152,17 +177,9 @@ class Chef
           Chef::Log.info "#{@new_resource} running callback #{what}"
           recipe_eval(&callback_code)
         when String
-          callback_file = "#{release_path}/#{callback_code}"
-          unless ::File.exist?(callback_file)
-            # TODO assertion - file.exist? - recoverable
-            raise RuntimeError, "Can't find your callback file #{callback_file}"
-          end
-          run_callback_from_file(callback_file)
+          run_callback_from_file("#{release_path}/#{callback_code}")
         when nil
           run_callback_from_file("#{release_path}/deploy/#{what}.rb")
-        else
-          # TODO assertion - invalid callback type  - nonrecoverable
-          raise RuntimeError, "You gave me a callback I don't know what to do with: #{callback_code.inspect}"
         end
       end
 
