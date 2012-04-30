@@ -17,5 +17,5 @@
 #
 
 module ChefServer
-  VERSION = '0.10.10.beta.1'
+  VERSION = '0.10.10.rc.1'
 end
