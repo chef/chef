@@ -22,15 +22,6 @@ module SpecHelpers
         let(:assume_package_name_and_version) { provider.stub!(:package_name_and_version).and_return([source_package_name, source_version]) }
         let(:assume_source_version) { provider.should_receive(:source_version).and_return(source_version) }
         let(:assume_installed_version) { provider.stub!(:installed_version).and_return(installed_version) }
-
-        let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout) }
-        let(:exitstatus) { 0 }
-
-        let(:stdout) { StringIO.new }
-        let(:stderr) { StringIO.new }
-        let(:stdin) { StringIO.new }
-
-        let(:should_shell_out!) { provider.should_receive(:shell_out!).and_return(status) }
       end
     end
   end
