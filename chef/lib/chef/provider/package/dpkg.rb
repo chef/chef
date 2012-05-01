@@ -43,7 +43,7 @@ class Chef
 
           @new_resource.version          _version
           @current_resource.package_name _package_name
-          @current_resource.version      package_version
+          @current_resource.version      installed_version
 
           @current_resource
         end
@@ -95,7 +95,7 @@ class Chef
           return [ nil, nil ]
         end
 
-        def package_version
+        def installed_version
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
