@@ -88,12 +88,12 @@ class Chef
             command << " metric #{@new_resource.metric}" if @new_resource.metric
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
-
-          run_command(
-            :command => command
-          )
-          Chef::Log.info("#{@new_resource} added")
-          @new_resource.updated_by_last_action(true)
+          converge_by ("Would run #{command} to add #{@new_resource}") do
+            run_command(
+              :command => command
+            )
+            Chef::Log.info("#{@new_resource} added")
+          end
         end
 
         # Write out the config files
@@ -111,11 +111,12 @@ class Chef
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
 
-          run_command(
-            :command => command
-          )
-          Chef::Log.info("#{@new_resource} enabled")
-          @new_resource.updated_by_last_action(true)
+          converge_by ("Would run #{command} to enable #{@new_resource}") do
+            run_command(
+              :command => command
+            )
+            Chef::Log.info("#{@new_resource} enabled")
+          end
         end
       end
 
@@ -123,12 +124,13 @@ class Chef
         # check to see if load_current_resource found the interface
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-          run_command(
-            :command => command
-          )
-          delete_config
-          Chef::Log.info("#{@new_resource} deleted")
-          @new_resource.updated_by_last_action(true)
+          converge_by ("Would run #{command} to delete #{@new_resource}") do
+            run_command(
+              :command => command
+            )
+            delete_config
+            Chef::Log.info("#{@new_resource} deleted")
+          end
         else
           Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
         end
@@ -139,11 +141,12 @@ class Chef
         # disables, but leaves config files in place.
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-          run_command(
-            :command => command
-          )
-          Chef::Log.info("#{@new_resource} disabled")
-          @new_resource.updated_by_last_action(true)
+          converge_by ("Would run #{command} to delete #{@new_resource}") do
+            run_command(
+              :command => command
+            )
+            Chef::Log.info("#{@new_resource} disabled")
+          end
         else
           Chef::Log.debug("#{@new_resource} does not exist - nothing to do")
         end
@@ -164,9 +167,12 @@ class Chef
 <% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
           }
           template = ::ERB.new(content)
-          network_file = ::File.new("/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}", "w")
-          network_file.puts(template.result(b))
-          network_file.close
+          network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
+          converge_by ("Would generate configuration file : #{network_file_name}") do
+            network_file = ::File.new(network_file_name, "w")
+            network_file.puts(template.result(b))
+            network_file.close
+          end
           Chef::Log.info("#{@new_resource} created configuration file")
         when "debian","ubuntu"
           # template
@@ -181,7 +187,9 @@ class Chef
         when "centos","redhat","fedora"
           ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
           if ::File.exist?(ifcfg_file)
-            FileUtils.rm_f(ifcfg_file, :verbose => false, :force => true)
+            converge_by ("Would delete the #{ifcfg_file}") do
+              FileUtils.rm_f(ifcfg_file, :verbose => false, :force => true)
+            end
           end
         when "debian","ubuntu"
           # delete configs
