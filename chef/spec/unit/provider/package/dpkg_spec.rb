@@ -31,7 +31,6 @@ describe Chef::Provider::Package::Dpkg do
   let(:assume_installed_version) { provider.stub!(:installed_version).and_return(installed_version) }
 
   let(:installed_version) { package_version }
-  let(:should_shell_out!) { provider.stub!(:popen4).and_return(status) }
   let(:should_shell_out_with_systems_locale!) do
     provider.
       should_receive(:shell_out_with_systems_locale!).
@@ -165,9 +164,8 @@ describe Chef::Provider::Package::Dpkg do
 
     let(:should_shell_out!) do
       provider.
-        should_receive(:popen4).
+        should_receive(:shell_out!).
         with("dpkg-deb -W #{new_resource.source}").
-        and_yield(pid, stdin, stdout, stderr).
         and_return(status)
     end
 
@@ -237,16 +235,18 @@ Conflicts: wget-ssl
 DPKG_S
 
     it "should return the current version installed if found by dpkg" do
-      provider.stub!(:popen4).with("dpkg -s wget").and_yield(pid, stdin, stdout, stderr).and_return(status)
+      provider.stub!(:shell_out!).with("dpkg -s wget").and_return(status)
       assume_current_resource
       provider.installed_version.should == "1.11.4-1ubuntu1"
     end
 
-    it "should raise an exception if dpkg fails to run" do
-      assume_current_resource
-      status = mock("Status", :exitstatus => -1)
-      provider.stub!(:popen4).and_return(status)
-      lambda { provider.installed_version }.should raise_error(Chef::Exceptions::Package)
+    context 'when shell out exits with -1' do
+      let(:exitstatus) { -1 }
+      it "should raise an exception if dpkg fails to run" do
+        assume_current_resource
+        should_shell_out!
+        lambda { provider.installed_version }.should raise_error(Chef::Exceptions::Package)
+      end
     end
   end
 end

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 #
 
 require 'chef/provider/package'
-require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'chef/mixin/get_source_from_package'
 
@@ -25,7 +24,6 @@ class Chef
   class Provider
     class Package
       class Dpkg < Chef::Provider::Package::Apt
-        include Chef::Mixin::Command
 
         DPKG_INFO = /([a-z\d\-\+\.]+)\t([\w\d.~-]+)/
         DPKG_INSTALLED = /^Status: install ok installed/
@@ -84,11 +82,10 @@ class Chef
 
           # Get information from the package if supplied
           Chef::Log.debug("#{@new_resource} checking dpkg status")
-          status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              if pkginfo = DPKG_INFO.match(line)
-                return [ pkginfo[1], pkginfo[2] ]
-              end
+          status = shell_out!("dpkg-deb -W #{@new_resource.source}")
+          status.stdout.each_line do |line|
+            if pkginfo = DPKG_INFO.match(line)
+              return [ pkginfo[1], pkginfo[2] ]
             end
           end
 
@@ -99,22 +96,23 @@ class Chef
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("dpkg -s #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
-            stdout.each_line do |line|
-              case line
-              when DPKG_INSTALLED
-                package_installed = true
-              when DPKG_VERSION
-                if package_installed
-                  Chef::Log.debug("#{@new_resource} current version is #{$1}")
-                  return $1
-                end
-              end
-            end
-          end
+
+          status = shell_out!("dpkg -s #{@current_resource.package_name}") 
 
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
+          end
+
+          status.stdout.each_line do |line|
+            case line
+            when DPKG_INSTALLED
+              package_installed = true
+            when DPKG_VERSION
+              if package_installed
+                Chef::Log.debug("#{@new_resource} current version is #{$1}")
+                return $1
+              end
+            end
           end
 
           return nil
