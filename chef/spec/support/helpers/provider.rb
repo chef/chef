@@ -15,6 +15,16 @@ module SpecHelpers
       # Shared setup
       let(:node) { Chef::Node.new }
       let(:run_context) { Chef::RunContext.new(node, {}) }
+
+      # shell_out! helpers
+      let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout, :stderr => stderr) }
+      let(:exitstatus) { 0 }
+
+      let(:stdout) { StringIO.new }
+      let(:stderr) { StringIO.new }
+      let(:stdin) { StringIO.new }
+
+      let(:should_shell_out!) { provider.should_receive(:shell_out!).and_return(status) }
     end
   end
 end
