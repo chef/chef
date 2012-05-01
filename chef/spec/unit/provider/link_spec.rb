@@ -1,7 +1,4 @@
-#
-# Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# # Author:: AJ Christensen (<aj@junglist.gen.nz>) # Copyright:: Copyright (c) 2008 Opscode, Inc.  # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,19 +67,27 @@ describe Chef::Resource::Link do
           @provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           @provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
         end
-
-        it "should update the source of the existing link with the links target" do
-          @provider.load_current_resource
-          @provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
-        end
-        it "should set the owner" do
-          @provider.load_current_resource
-          @provider.current_resource.owner.should == 501
+        
+        describe "when the symlink is correct" do
+          it "" do
+          end
         end
 
-        it "should set the group" do
-          @provider.load_current_resource
-          @provider.current_resource.group.should == 501
+        describe "when the symlink is incorrect" do
+        
+          it "should update the source of the existing link with the links target" do
+            @provider.load_current_resource
+            @provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
+          end
+          it "should set the owner" do
+            @provider.load_current_resource
+            @provider.current_resource.owner.should == 501
+          end
+
+          it "should set the group" do
+            @provider.load_current_resource
+            @provider.current_resource.group.should == 501
+          end
         end
       end
 
@@ -199,8 +204,21 @@ describe Chef::Resource::Link do
         end
 
         it "should expand the path" do
+          @provider.should_receive(:load_current_resource)
           ::File.should_receive(:expand_path).with("../foo", "#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile-link")
-          @provider.action_create
+          @provider.run_action(:create)
+        end
+      end
+
+      describe "when the symbolic link is correct" do
+        before do
+          @current_resource.to "#{CHEF_SPEC_DATA}/fofile"
+          @new_resource.to("#{CHEF_SPEC_DATA}/fofile")
+          @provider.stub!(:enforce_ownership_and_permissions)
+        end
+
+        it "doesn't create the symlink" do
+          @provider.file_class.should_not_receive(:symlink)
         end
       end
 
@@ -208,12 +226,17 @@ describe Chef::Resource::Link do
         before do
           @new_resource.to("#{CHEF_SPEC_DATA}/lolololol")
           @provider.stub!(:enforce_ownership_and_permissions)
-          @provider.file_class.stub!(:symlink)
+        end
+
+        it "creates the correct symlink" do
+          @provider.file_class.should_receive(:symlink).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link")
+          @provider.run_action(:create)
         end
 
         it "should log an appropriate message" do
+          @provider.file_class.stub!(:symlink)
           Chef::Log.should_receive(:info).with("link[#{CHEF_SPEC_DATA}/fofile-link] created")
-          @provider.action_create
+          @provider.run_action(:create)
         end
 
         describe "and we're building a symbolic link" do
@@ -226,13 +249,13 @@ describe Chef::Resource::Link do
 
           it "should call enforce_ownership_and_permissions" do
             @provider.should_receive(:enforce_ownership_and_permissions)
-            @provider.action_create
+            @provider.run_action(:create)
           end
 
           it "should create link using the appropriate link function" do
             @provider.stub!(:enforce_ownership_and_permissions)
             @provider.file_class.should_receive(:symlink).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-            @provider.action_create
+            @provider.run_action(:create)
           end
         end
 
@@ -242,19 +265,21 @@ describe Chef::Resource::Link do
           end
 
           it "should use the appropriate link method to create the link" do
+            @provider.should_receive(:load_current_resource)
             @provider.file_class.should_receive(:link).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-            @provider.action_create
+            @provider.run_action(:create)
           end
 
           it "we should not attempt to set owner or group" do
+            @provider.should_receive(:load_current_resource)
             @provider.file_class.should_receive(:link).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link")
             @provider.should_not_receive(:enforce_ownership_and_permissions)
-            @provider.action_create
+            @provider.run_action(:create)
           end
         end
 
         it "should set updated to true" do
-          @provider.action_create
+          @provider.run_action(:create)
           @new_resource.should be_updated
         end
       end
@@ -274,24 +299,25 @@ describe Chef::Resource::Link do
 
           it "should log an appropriate error message" do
             Chef::Log.should_receive(:info).with("link[#{CHEF_SPEC_DATA}/fofile-link] deleted")
-            @provider.action_delete
+            @provider.run_action(:delete)
           end
 
           it "deletes the link and marks the resource as updated" do
             File.should_receive(:delete).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-            @provider.action_delete
+            @provider.run_action(:delete)
             @new_resource.should be_updated
           end
         end
 
-        describe "and when the file is not a symbolic link but does exist" do
+        describe "and when the existing file is not a symbolic link but does exist" do
           before(:each) do
-            @provider.file_class.should_receive(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
             File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+            File.stub!(:exists?).and_return(false)
+            File.stub!(:symlink?).and_return(false)
           end
 
           it "should raise a Link error" do
-            lambda { @provider.action_delete }.should raise_error(Chef::Exceptions::Link)
+            lambda { @provider.run_action(:delete) }.should raise_error(Chef::Exceptions::Link)
           end
         end
 
@@ -302,7 +328,7 @@ describe Chef::Resource::Link do
           end
 
           it "should not raise a Link error" do
-            lambda { @provider.action_delete }.should_not raise_error(Chef::Exceptions::Link)
+            lambda { @provider.run_action(:delete) }.should_not raise_error(Chef::Exceptions::Link)
           end
         end
       end
@@ -326,6 +352,8 @@ describe Chef::Resource::Link do
             before do
               stat = mock("stats")
               stat.stub!(:ino).and_return(1)
+
+              @provider.should_receive(:load_current_resource)
               @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
               @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
             end
@@ -333,7 +361,7 @@ describe Chef::Resource::Link do
             it "deletes the link and marks the resource updated" do
               Chef::Log.should_receive(:info).with("link[#{CHEF_SPEC_DATA}/fofile-link] deleted")
               File.should_receive(:delete).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
-              @provider.action_delete
+              @provider.run_action(:delete)
               @new_resource.should be_updated
             end
           end
@@ -342,12 +370,13 @@ describe Chef::Resource::Link do
             before do
               stat = mock("stats", :ino => 1)
               stat_two = mock("stats", :ino => 2)
+              @provider.should_receive(:load_current_resource)
               @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
               @file_class.should_receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat_two)
             end
 
             it "should raise a Link error" do
-              lambda { @provider.action_delete }.should raise_error(Chef::Exceptions::Link)
+              lambda { @provider.run_action(:delete) }.should raise_error(Chef::Exceptions::Link)
             end
           end
 
@@ -357,9 +386,8 @@ describe Chef::Resource::Link do
           before do
             File.should_receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
           end
-
           it "should not raise a Link error" do
-            lambda { @provider.action_delete }.should_not raise_error(Chef::Exceptions::Link)
+            lambda { @provider.run_action(:delete) }.should_not raise_error(Chef::Exceptions::Link)
           end
         end
       end

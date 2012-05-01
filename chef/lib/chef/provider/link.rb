@@ -74,51 +74,88 @@ class Chef
         @current_resource
       end
 
+      def define_resource_requirements
+        requirements.assert(:delete) do |a|
+          a.assertion do 
+            puts "Link Type: #{@new_resource.link_type} symlink? #{file_class.symlink?(@new_resource.target_file)}"
+            if @new_resource.link_type == :symbolic && !file_class.symlink?(@new_resource.target_file)
+              ::File.exists?(@new_resource.target_file)
+            else
+              true
+            end
+          end
+          a.failure_message(Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a symbolic link")
+          a.whyrun("Would assume the file #{@new_resource.target_file} was created")
+        end
+        requirements.assert(:delete) do |a|
+          a.assertion do 
+            if @new_resource.link_type == :hard 
+              if ::File.exists?(@new_resource.target_file) 
+                 ::File.exists?(@new_resource.to) && file_class.stat(@current_resource.target_file).ino == file_class.stat(@new_resource.to).ino
+              else
+                 true
+              end
+            else 
+              true
+            end
+          end
+          a.failure_message(Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a hard link")
+          a.whyrun("Would assume the file #{@new_resource.to} was created")
+         end
+      end
+
       def action_create
         if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
           if @new_resource.link_type == :symbolic
             unless (file_class.symlink?(@new_resource.target_file) && file_class.readlink(@new_resource.target_file) == @new_resource.to)
               if file_class.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
-                ::File.unlink(@new_resource.target_file)
+                #TODO convergeby
+                converge_by("Would unlink #{@new_resource.target_file}") do
+                  ::File.unlink(@new_resource.target_file)
+                end
               end
-              file_class.symlink(@new_resource.to,@new_resource.target_file)
+              converge_by("Would create symbolic link from #{@new_resource.to} -> #{@new_resource.target_file} ") do
+                file_class.symlink(@new_resource.to,@new_resource.target_file)
+                Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+                Chef::Log.info("#{@new_resource} created")
+              end
+            end
+          elsif @new_resource.link_type == :hard
+            #TODO convergeby
+            converge_by("Would create #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}") do
+              file_class.link(@new_resource.to, @new_resource.target_file)
               Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
               Chef::Log.info("#{@new_resource} created")
             end
-          elsif @new_resource.link_type == :hard
-            file_class.link(@new_resource.to, @new_resource.target_file)
-            Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
-            Chef::Log.info("#{@new_resource} created")
           end
-          @new_resource.updated_by_last_action(true)
+          #@new_resource.updated_by_last_action(true)
         end
         if @new_resource.link_type == :symbolic
           enforce_ownership_and_permissions
+          #set_all_access_controls
         end
       end
 
       def action_delete
         if @new_resource.link_type == :symbolic
           if file_class.symlink?(@new_resource.target_file)
-            ::File.delete(@new_resource.target_file)
-            Chef::Log.info("#{@new_resource} deleted")
-            @new_resource.updated_by_last_action(true)
-          elsif ::File.exists?(@new_resource.target_file)
-            raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a symbolic link."
+            #TODO convergeby
+            converge_by("Would delete #{@new_resource} for #{@new_resource.link_type}") do
+              ::File.delete(@new_resource.target_file)
+              Chef::Log.info("#{@new_resource} deleted")
+            end
+            #TODO assertion
           end
         elsif @new_resource.link_type == :hard
+          #TODO assertion
           if ::File.exists?(@new_resource.target_file)
-             if ::File.exists?(@new_resource.to) && (file_class.stat(@current_resource.target_file).ino == file_class.stat(@new_resource.to).ino)
+             converge_by("Would delete #{@new_resource} for #{@new_resource.link_type}") do
                ::File.delete(@new_resource.target_file)
                Chef::Log.info("#{@new_resource} deleted")
-               @new_resource.updated_by_last_action(true)
-             else
-               raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a hard link."
              end
           end
         end
       end
-    end
 
     # private
     # def hardlink?(target, to)
@@ -129,5 +166,6 @@ class Chef
     #     ::File.stat(target).ino == ::File.stat(to).ino
     #   end
     # end
+    end
   end
 end
