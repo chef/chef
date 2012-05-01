@@ -129,7 +129,8 @@ class Chef
           # Pathname#cleanpath does a better job than ::File::expand_path (on both unix and windows)
           # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
           # ::File.expand_path("\\tmp") => "C:/tmp"
-          @new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(@new_resource.home).cleanpath
+          @current_resource.home.nil? or
+            (@new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(@new_resource.home).cleanpath)
         end
 
         def managing_home_dir?

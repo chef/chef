@@ -158,13 +158,17 @@ describe Chef::Provider::User::Useradd do
 
   describe "when creating a user" do
     before(:each) do
+      @current_resource = Chef::Resource::User.new(@new_resource.name, @run_context)
+      @current_resource.username(@new_resource.username)
+      @provider.current_resource = @current_resource
       @provider.new_resource.manage_home true
       @provider.new_resource.home "/Users/mud"
       @provider.new_resource.gid '23'
     end
 
     it "runs useradd with the computed command options" do
-      @provider.should_receive(:run_command).with({ :command => "useradd -g '23' -d '/Users/mud' -m adam" }).and_return(true)
+      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -d '/Users/mud' -m adam"
+      @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
       @provider.create_user
     end
 
