@@ -28,7 +28,6 @@ describe Chef::Provider::Package::Portage do
     subject { given; provider.load_current_resource }
 
     let(:given) { assume_installed_version }
-    let(:assume_installed_version) { provider.should_receive(:installed_version).and_return(installed_version) }
     let(:installed_version) { rand(100000).to_s }
 
     it 'should return the current resource' do

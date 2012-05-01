@@ -23,9 +23,6 @@ describe Chef::Provider::Package::Solaris do
   let(:new_resource) { Chef::Resource::Package.new(package_name).tap(&with_attributes.call(new_resource_attributes)) }
 
   let(:assume_source_package_exists) { ::File.stub!(:exists?).and_return(true) }
-  let(:assume_source_version) { provider.should_receive(:source_version).and_return(source_version) }
-  let(:assume_installed_version) { provider.should_receive(:installed_version).and_return(installed_version) }
-  let(:should_shell_out) { provider.should_receive(:shell_out!).and_return(status) }
 
   let(:source_file) { '/tmp/bash.pkg' }
   let(:package_name) { 'SUNWbash' }
@@ -50,12 +47,7 @@ PKGINFO
 
   describe "#load_current_resource" do
     subject { given; provider.load_current_resource }
-
-    let(:given) do
-      new_resource.source source_file
-      assume_source_version
-      assume_installed_version
-    end
+    let(:given) { assume_source and assume_source_version and assume_installed_version }
 
     it "should create a current resource with the name of new_resource" do
       subject.name.should eql(new_resource.name)
@@ -137,15 +129,12 @@ PKGINFO
 
   describe '#source_version' do
     subject { given; provider.source_version }
-    let(:given) do
-      assume_source_package_exists
-      should_shell_out
-    end
+    let(:given) { assume_source_package_exists and should_shell_out! }
 
     let(:stdout) { StringIO.new(pkginfo) }
     let(:assume_source_package_exists) { provider.stub!(:assert_source_file_exists!) }
     let(:assume_source_package_not_found) { ::File.stub!(:exists?).and_return(false) }
-    let(:should_shell_out) {  provider.should_receive(:shell_out!).with("pkginfo -l -d #{source_file} #{package_name}").and_return(status) }
+    let(:should_shell_out!) { provider.should_receive(:shell_out!).with("pkginfo -l -d #{source_file} #{package_name}").and_return(status) }
 
     it "should should shell out to `pkginfo`" do
       should_not be_nil
@@ -182,12 +171,9 @@ PKGINFO
 
   describe '#installed_version' do
     subject { given; provider.installed_version }
-    let(:given) do
-      should_shell_out
-      provider.current_resource = current_resource
-    end
+    let(:given) { should_shell_out! and assume_current_resource }
 
-    let(:should_shell_out) { provider.should_receive(:shell_out!).with("pkginfo -l #{package_name}").and_return(status) }
+    let(:should_shell_out!) { provider.should_receive(:shell_out!).with("pkginfo -l #{package_name}").and_return(status) }
     let(:stdout) { StringIO.new(pkginfo) }
 
     it 'should shell out to `pkginfo`' do

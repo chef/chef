@@ -25,12 +25,8 @@ describe Chef::Provider::Package::Dpkg do
 
   let(:pid) { mock("PID") }
   let(:assume_dpkg_exists) { provider.stub!(:assert_dpkg_exists!).and_return(dpkg_exists?) }
-  let(:assume_source) { new_resource.source source_file }
   let(:assume_options) { new_resource.options '--force-yes' }
-  let(:assume_package_name_and_version) { provider.stub!(:package_name_and_version).and_return([package_name, package_version]) }
-  let(:assume_installed_version) { provider.stub!(:installed_version).and_return(installed_version) }
 
-  let(:installed_version) { package_version }
   let(:should_shell_out_with_systems_locale!) do
     provider.
       should_receive(:shell_out_with_systems_locale!).

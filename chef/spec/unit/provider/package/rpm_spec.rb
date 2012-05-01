@@ -25,24 +25,13 @@ describe Chef::Provider::Package::Rpm do
   let(:source_package_name) { package_name }
   let(:source_file) { "/tmp/emacs-21.4-20.el5.i386.rpm" }
 
-  let(:assume_source) { new_resource.source source_file }
   let(:assume_rpm_exists) { provider.stub!(:assert_rpm_exists!).and_return(true) }
-  let(:assume_current_resource) { provider.current_resource = current_resource }
-  let(:assume_new_resource) { provider.new_resource = new_resource }
-  let(:assume_package_name_and_version) { provider.stub!(:package_name_and_version).and_return([source_package_name, new_version]) }
-  let(:assume_installed_version) { provider.stub!(:installed_version).and_return(installed_version) }
-
-  let(:new_version) { '21.4-20.el5' }
-  let(:installed_version) { new_version }
+  let(:source_version) { '21.4-20.el5' }
+  let(:installed_version) { source_version }
 
   context "when determining the current state of the package" do
     subject { given; provider.load_current_resource }
-
-    let(:given) do
-      assume_source
-      assume_package_name_and_version
-      assume_installed_version
-    end
+    let(:given) { assume_source and assume_package_name_and_version and assume_installed_version }
 
     it "should create a current resource with the name of new_resource" do
       subject.name.should eql(new_resource.name)
@@ -66,11 +55,11 @@ describe Chef::Provider::Package::Rpm do
       end
 
       context 'with different version' do
-        let(:new_version) { rand(10000).to_s }
+        let(:source_version) { rand(10000).to_s }
 
         it 'should set version of new resource' do
           subject.should_not be_nil
-          provider.new_resource.version.should eql(new_version)
+          provider.new_resource.version.should eql(source_version)
         end
       end
     end

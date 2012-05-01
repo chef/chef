@@ -25,7 +25,6 @@ describe Chef::Provider::Package::Pacman do
   let(:stdin) { StringIO.new }
   let(:stdout) { pacman_output_without_package }
 
-  let(:assume_installed_version) { provider.should_receive(:installed_version).and_return(installed_version) }
   let(:installed_version) { '2.2.2-1' }
 
   let(:pacman_output_without_package) { StringIO.new(<<-ERR) }
