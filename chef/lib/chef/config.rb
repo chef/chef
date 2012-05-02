@@ -272,6 +272,7 @@ class Chef
     end
 
     # returns a platform specific path to the user home dir
-    user_home (ENV['HOME'] || ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] || ENV['USERPROFILE'])
+    windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
+    user_home (ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
   end
 end
