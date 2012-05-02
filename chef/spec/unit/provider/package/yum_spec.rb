@@ -535,6 +535,7 @@ describe Chef::Provider::Package::Yum do
       @provider.candidate_version = '11'
       @provider.should_not_receive(:upgrade_package)
       @provider.action_upgrade
+      @provider.converge
     end
   end
 
