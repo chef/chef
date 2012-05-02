@@ -432,6 +432,7 @@ describe Chef::Provider::Package::Rubygems do
       @current_resource = Chef::Resource::GemPackage.new('rspec-core')
       @provider.current_resource = @current_resource
       @gem_dep = Gem::Dependency.new('rspec-core', @spec_version)
+      @provider.stub!(:load_current_resource)
     end
 
     describe "in the current gem environment" do
@@ -594,6 +595,7 @@ describe Chef::Provider::Package::Rubygems do
 
       it "uninstalls a specific version of a gem when a version is provided" do
         @new_resource.version('1.2.3')
+        @provider.should_receive(:load_current_resource)
         @provider.gem_env.should_receive(:uninstall).with('rspec', '1.2.3')
         @provider.action_remove
         @provider.converge
