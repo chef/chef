@@ -414,7 +414,7 @@ describe Chef::Provider::Package do
       end
 
       it "creates the preseed file in the cache" do
-        @response_file_resource.should_receive(:run_action).with('create')
+        @response_file_resource.should_receive(:run_action).with(:create)
         @provider.get_preseed_file("java", "6")
       end
 
@@ -426,7 +426,7 @@ describe Chef::Provider::Package do
         @response_file_resource.updated_by_last_action(false)
         @response_file_resource.should_not be_updated_by_last_action
         # don't let the response_file_resource set updated to true
-        @response_file_resource.should_receive(:run_action).with("create")
+        @response_file_resource.should_receive(:run_action).with(:create)
         @provider.get_preseed_file("java", "6").should be(false)
       end
 

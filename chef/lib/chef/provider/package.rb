@@ -75,7 +75,8 @@ class Chef
             end 
           end
         end
-        converge_by("would install package #{@new_resource.package_name}") do
+        description = install_version ? "version #{install_version} of" : ""
+        converge_by("would install #{description} package #{@new_resource.package_name}") do
           install_package(@new_resource.package_name, install_version)
         end
       end
@@ -86,8 +87,8 @@ class Chef
         elsif @current_resource.version == candidate_version
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         else
-          converge_by("would upgrade package #{@new_resource.package_name}") do
-            orig_version = @current_resource.version || "uninstalled"
+          orig_version = @current_resource.version || "uninstalled"
+          converge_by("would upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
             status = upgrade_package(@new_resource.package_name, candidate_version)
             Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
           end
@@ -96,7 +97,8 @@ class Chef
 
       def action_remove
         if removing_package?
-          converge_by("would remove package #{@current_resource.package_name}") do
+          description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
+          converge_by("would remove #{description} package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} removed")
           end
@@ -119,7 +121,8 @@ class Chef
 
       def action_purge
         if removing_package?
-          converge_by("would purge package #{@current_resource.package_name}") do
+          description = @new_resource.version ? "version #{@new_resource.version} of" : ""
+          converge_by("would purge #{description} package #{@current_resource.package_name}") do
             purge_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} purged")
           end
@@ -174,7 +177,7 @@ class Chef
 
       def get_preseed_file(name, version)
         resource = preseed_resource(name, version)
-        resource.run_action('create')
+        resource.run_action(:create)
         Chef::Log.debug("#{@new_resource} fetched preseed file to #{resource.path}")
 
         if resource.updated_by_last_action?
