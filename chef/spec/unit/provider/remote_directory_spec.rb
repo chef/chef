@@ -183,3 +183,4 @@ describe Chef::Provider::RemoteDirectory do
 
   end
 end
+
