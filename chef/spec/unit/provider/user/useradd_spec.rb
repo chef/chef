@@ -349,5 +349,15 @@ describe Chef::Provider::User::Useradd do
         @provider.updating_home?.should == home_check["expected_result"]
       end
     end
+    it "should return false if the current home is not known" do
+      @new_resource = Chef::Resource::User.new("adam", @run_context)
+      @current_resource = Chef::Resource::User.new("adam", @run_context)
+      @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
+      @provider.current_resource = @current_resource
+      @current_resource.home nil
+      @new_resource.home "/home/kitten"
+
+      @provider.updating_home?.should == true
+    end
   end
 end
