@@ -76,6 +76,8 @@ describe Chef::Provider::Deploy::Revision do
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
     @provider.all_releases.should == [@expected_release_dir,second_release]
     @provider.copy_cached_repo
+    @provider.converge
+
     @provider.stub!(:release_slug).and_return("8a3195bf3efa246f743c5dfa83683201880f935c")
     @provider.load_current_resource
     @provider.copy_cached_repo

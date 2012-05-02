@@ -63,10 +63,10 @@ class Chef
         exec.cwd(release_path) unless exec.cwd
         exec.environment(@new_resource.environment) unless exec.environment
         converge_by("Would execute #{command}") do
-          exec 
+          exec
         end
       end
-      
+
       def define_resource_requirements
         requirements.assert(:rollback) do |a|
           a.assertion { all_releases[-2] }
@@ -74,9 +74,8 @@ class Chef
           #There is no reason to assume 2 deployments in a single chef run, hence fails in whyrun.
         end
 
-        callback_script = [ @new_resource.before_migrate, @new_resource.before_symlink, 
-                           @new_resource.before_restart, @new_resource.after_restart ]
-        callback_script.each do |script|
+        [ @new_resource.before_migrate, @new_resource.before_symlink, 
+          @new_resource.before_restart, @new_resource.after_restart ].each do |script|
           requirements.assert(:deploy, :force_deploy) do |a|
             callback_file = "#{release_path}/#{script}"
             a.assertion do 
@@ -427,7 +426,6 @@ class Chef
               Chef::Log.debug("#{@new_resource} set group to #{@new_resource.group} for #{dir}")
             end
           rescue => e
-            #TODO - assertion - non-recoverable 
             raise Chef::Exceptions::FileNotFound.new("Cannot create directory #{dir}: #{e.message}")
           end
         end
