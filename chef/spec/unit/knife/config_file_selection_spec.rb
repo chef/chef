@@ -19,26 +19,26 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Chef::Knife do
-	before :each do
+  before :each do
     Chef::Config.stub!(:from_file).and_return(true)
   end
 
   it "configure knife from KNIFE_HOME env variable" do
-  	env_config = '/tmp/knife.rb'
+    env_config = '/tmp/knife.rb'
     File.stub!(:exist?).and_return do | arg |
-    	[ env_config ].include? arg
+      [ env_config ].include? arg
     end
 
-  	ENV['KNIFE_HOME'] = '/tmp'
+    ENV['KNIFE_HOME'] = '/tmp'
     @knife = Chef::Knife.new
     @knife.configure_chef
     @knife.config[:config_file].should == env_config
   end
 
- 	it "configure knife from PWD" do
+   it "configure knife from PWD" do
     pwd_config = "#{Dir.pwd}/knife.rb"
     File.stub!(:exist?).and_return do | arg |
-    	[ pwd_config ].include? arg
+      [ pwd_config ].include? arg
     end
 
     @knife = Chef::Knife.new
@@ -47,10 +47,10 @@ describe Chef::Knife do
   end
   
   it "configure knife from UPWARD" do
-  	upward_dir = File.expand_path "#{Dir.pwd}/.chef"
+    upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
     File.stub!(:exist?).and_return do | arg |
-    	[ upward_config ].include? arg
+      [ upward_config ].include? arg
     end
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
     
@@ -62,7 +62,7 @@ describe Chef::Knife do
   it "configure knife from HOME" do
     home_config = File.expand_path "#{ENV['HOME']}/.chef/knife.rb"
     File.stub!(:exist?).and_return do | arg |
-    	[ home_config ].include? arg
+      [ home_config ].include? arg
     end
     
     @knife = Chef::Knife.new
@@ -79,17 +79,17 @@ describe Chef::Knife do
   end
   
   it "configure knife precedence" do
-  	env_config = '/tmp/knife.rb'
-  	pwd_config = "#{Dir.pwd}/knife.rb"
-  	upward_dir = File.expand_path "#{Dir.pwd}/.chef"
+    env_config = '/tmp/knife.rb'
+    pwd_config = "#{Dir.pwd}/knife.rb"
+    upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
     home_config = File.expand_path "#{ENV['HOME']}/.chef/knife.rb"
     configs = [ env_config, pwd_config, upward_config, home_config ]
     File.stub!(:exist?).and_return do | arg |
-    	configs.include? arg
+      configs.include? arg
     end
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
-  	ENV['KNIFE_HOME'] = '/tmp'
+    ENV['KNIFE_HOME'] = '/tmp'
    
     @knife = Chef::Knife.new
     @knife.configure_chef
