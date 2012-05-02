@@ -26,7 +26,8 @@ describe Chef::Provider::Deploy do
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @provider = Chef::Provider::Deploy.new(@resource, @run_context)
     @provider.stub!(:release_slug)
     @provider.stub!(:release_path).and_return(@expected_release_dir)
@@ -252,7 +253,8 @@ describe Chef::Provider::Deploy do
     ::File.should_receive(:exist?).with("#{@expected_release_dir}/#{baz_callback}").and_return(false)
     @resource.before_migrate  baz_callback
     @provider.define_resource_requirements
-    lambda {@provider.process_resource_requirements(:deploy)}.should raise_error(RuntimeError)
+    @provider.action = :deploy
+    lambda {@provider.process_resource_requirements}.should raise_error(RuntimeError)
   end
 
   it "runs a default callback if the callback code is nil" do

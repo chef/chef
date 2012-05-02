@@ -29,7 +29,8 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     @node = Chef::Node.new
     @node[:command] = {:ps => "ps -ef"}
 
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
 
     @new_resource = Chef::Resource::Service.new("chef")
     @new_resource.pattern("chef")

@@ -118,14 +118,16 @@ class Chef
           )
         end
 
-        def preseed_package(preseed_file)
+        def preseed_package(name, version)
           Chef::Log.info("#{@new_resource} pre-seeding package installation instructions")
-          run_command_with_systems_locale(
-            :command => "debconf-set-selections #{preseed_file}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          if preseed_file = get_preseed_file(name, version)
+            run_command_with_systems_locale(
+              :command => "debconf-set-selections #{preseed_file}",
+              :environment => {
+                "DEBIAN_FRONTEND" => "noninteractive"
+              }
+            )
+          end
         end
 
         def reconfig_package(name, version)

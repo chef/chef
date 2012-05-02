@@ -23,7 +23,8 @@ describe Chef::Provider::Log::ChefLog do
   before(:each) do
     @log_str = "this is my test string to log"
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
   end  
 
   it "should be registered with the default platform hash" do

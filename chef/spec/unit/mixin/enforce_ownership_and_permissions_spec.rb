@@ -18,27 +18,33 @@
 
 require 'spec_helper'
 
+class EnforceOwnershipAndPermissionsImplementor < Struct.new(:new_resource, :current_resource)
+  include Chef::Mixin::EnforceOwnershipAndPermissions
+end
+
 describe Chef::Mixin::EnforceOwnershipAndPermissions do
 
   before(:each) do
     @node = Chef::Node.new
     @node.name "make_believe"
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @resource = Chef::Resource::File.new("#{Dir.tmpdir}/madeup.txt")
-    @provider = Chef::Provider::File.new(@resource, @run_context)
+    @provider = EnforceOwnershipAndPermissionsImplementor.new(@resource, @resource)
+    @provider.current_resource = @resource
   end
 
   it "should call set_all on the file access control object" do
     @resource.owner("adam")
     Chef::FileAccessControl.any_instance.should_receive(:set_all)
-    @provider.action_create
+    @provider.enforce_ownership_and_permissions
   end
 
   it "should call updated_by_last_action on the new resource" do
     @resource.owner("adam")
     @provider.new_resource.should_receive(:updated_by_last_action)
-     Chef::FileAccessControl.any_instance.stub(:set_all)
-    @provider.action_create
+    Chef::FileAccessControl.any_instance.stub(:set_all)
+    @provider.enforce_ownership_and_permissions
   end
 
 end

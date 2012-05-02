@@ -59,7 +59,8 @@ describe Chef::Runner do
     @node.name "latte"
     @node.platform "mac_os_x"
     @node.platform_version "10.5.1"
-    @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}))
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @console_ui)
     @first_resource = Chef::Resource::Cat.new("loulou1", @run_context)
     @run_context.resource_collection << @first_resource
     Chef::Platform.set(

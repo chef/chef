@@ -24,7 +24,8 @@ EtcGrnamIsh = Struct.new(:name, :passwd, :gid, :mem)
 describe Chef::Provider::User do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
 
     @new_resource = Chef::Resource::User.new("adam")
     @new_resource.comment "Adam Jacob"
@@ -158,14 +159,14 @@ describe Chef::Provider::User do
         @provider.should_receive(:require) { |*args| original_method.call(*args) }
         @provider.load_current_resource
         @provider.define_resource_requirements
-        @provider.process_resource_requirements :all_actions
+        @provider.process_resource_requirements
       end
 
       it "should fail assertions when ruby-shadow cannot be loaded" do
         @provider.should_receive(:require).with("shadow") { raise LoadError }
         @provider.load_current_resource
         @provider.define_resource_requirements
-        lambda {@provider.process_resource_requirements :all_actions}.should raise_error Chef::Exceptions::MissingLibrary 
+        lambda {@provider.process_resource_requirements}.should raise_error Chef::Exceptions::MissingLibrary 
       end
 
     end
@@ -434,7 +435,7 @@ describe Chef::Provider::User do
       Etc.should_receive(:getgrnam).and_raise(ArgumentError)
       @provider.define_resource_requirements
       @provider.convert_group_name
-      lambda { @provider.process_resource_requirements(:all_actions) }.should raise_error(Chef::Exceptions::User)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::User)
     end
   
     it "should set the new resources gid to the integerized version if available" do

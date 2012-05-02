@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Package::Dpkg do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Package.new("wget")
     @new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
 

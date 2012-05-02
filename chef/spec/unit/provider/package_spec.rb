@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Package do
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Package.new('emacs')
     @current_resource = Chef::Resource::Package.new('emacs')
     @provider = Chef::Provider::Package.new(@new_resource, @run_context)
@@ -355,7 +356,7 @@ describe Chef::Provider::Package do
 
       @node = Chef::Node.new
       @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
-      @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
 
       @node[:platform] = 'PLATFORM: just testing'
       @node[:platform_version] = 'PLATFORM VERSION: just testing'

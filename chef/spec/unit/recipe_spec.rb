@@ -27,7 +27,8 @@ describe Chef::Recipe do
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
     @node = Chef::Node.new
     @node[:tags] = Array.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
     @recipe = Chef::Recipe.new("hjk", "test", @run_context)
 
     # Shef/ext.rb is on the run path, and it defines

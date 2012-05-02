@@ -27,7 +27,8 @@ describe Chef::Provider::Directory do
     @new_resource.group(500)
     @new_resource.mode(0644)
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
 
     @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
   end

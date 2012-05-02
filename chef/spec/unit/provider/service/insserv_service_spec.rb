@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Service::Insserv do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @node[:command] = {:ps => "ps -ax"}
 
     @new_resource = Chef::Resource::Service.new("initgrediant")

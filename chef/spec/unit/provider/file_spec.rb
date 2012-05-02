@@ -23,7 +23,8 @@ describe Chef::Provider::File do
   before(:each) do
     @node = Chef::Node.new
     @node.name "latte"
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
 
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))

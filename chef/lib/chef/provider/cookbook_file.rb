@@ -74,7 +74,8 @@ class Chef
 
       # Set file permissions to match expectation 
       def set_file_access_controls(path)
-        ac = Chef::FileAccessControl.new(@new_resource, path)
+        current_resource_for_tempfile = Chef::Resource::CookbookFile.new(path)
+        ac = Chef::FileAccessControl.new(@new_resource, current_resource_for_tempfile)
         ac.set_all
       end
 

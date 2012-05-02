@@ -22,7 +22,8 @@ describe Chef::Provider::User do
 
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Group.new("wheel", @run_context)
     @new_resource.gid 500
     @new_resource.members "aj"

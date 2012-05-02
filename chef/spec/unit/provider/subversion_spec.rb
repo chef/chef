@@ -29,7 +29,8 @@ describe Chef::Provider::Subversion do
     @resource.svn_arguments(false)
     @resource.svn_info_args(false)
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @provider = Chef::Provider::Subversion.new(@resource, @run_context)
   end
 

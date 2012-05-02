@@ -23,7 +23,8 @@ describe Chef::Provider::Package::Apt do
   before(:each) do
     @node = Chef::Node.new
     @node.cookbook_collection = {}
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Package.new("irssi", @run_context)
     @current_resource = Chef::Resource::Package.new("irssi", @run_context)
 

@@ -23,7 +23,8 @@ require 'spec_helper'
 describe Chef::Provider::Cron::Solaris do
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Cron.new("cronhole some stuff")
     @new_resource.user "root"
     @new_resource.minute "30"

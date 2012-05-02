@@ -52,7 +52,8 @@ describe Chef::Provider::Ohai do
     @node = Chef::Node.new(@hostname)
     @node.name(@fqdn)
     @node.stub!(:save).and_return(@node)
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
     ohai = Ohai::System.new
     ohai.all_plugins

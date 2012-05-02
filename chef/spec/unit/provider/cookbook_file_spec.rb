@@ -27,10 +27,11 @@ describe Chef::Provider::CookbookFile do
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
+    @console_ui = Chef::ConsoleUI.new
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
 
-    @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl')
+    @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl', @run_context)
     @new_resource.cookbook_name = 'apache2'
     @provider = Chef::Provider::CookbookFile.new(@new_resource, @run_context)
 

@@ -22,7 +22,8 @@ describe Chef::Provider::RubyBlock, "initialize" do
   before(:each) do
     $evil_global_evil_laugh = :wahwah
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::RubyBlock.new("bloc party")
     @new_resource.block { $evil_global_evil_laugh = :mwahahaha}
     @provider = Chef::Provider::RubyBlock.new(@new_resource, @run_context)

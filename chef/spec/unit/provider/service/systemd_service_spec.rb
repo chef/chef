@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Service::Systemd do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Service.new('rsyslog.service')
     @provider = Chef::Provider::Service::Systemd.new(@new_resource, @run_context)
   end

@@ -21,14 +21,15 @@ require 'spec_helper'
 describe Chef::Provider::HttpRequest do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
 
     @new_resource = Chef::Resource::HttpRequest.new('adam')
     @new_resource.name "adam"
     @new_resource.url "http://www.opscode.com"
     @new_resource.message "is cool"
 
-    @provider = Chef::Provider::HttpRequest.new(@new_resource, {})
+    @provider = Chef::Provider::HttpRequest.new(@new_resource, @run_context)
   end
 
   describe "load_current_resource" do  

@@ -96,7 +96,7 @@ describe "LWRP" do
     it "should have access to the run context and node during class definition" do
       node = Chef::Node.new(nil)
       node[:penguin_name] = "jackass"
-      run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new)
+      run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @console_ui)
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
         Chef::Resource.build_from_file("lwrp", file, run_context)
@@ -115,7 +115,8 @@ describe "LWRP" do
       @node = Chef::Node.new
       @node.platform(:ubuntu)
       @node.platform_version('8.10')
-      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}))
+      @console_ui = Chef::ConsoleUI.new
+      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @console_ui)
       @runner = Chef::Runner.new(@run_context)
     end
 
@@ -144,7 +145,7 @@ describe "LWRP" do
       resource.provider(:lwrp_monkey_name_printer)
       resource.run_context = @run_context
 
-      provider = Chef::Platform.provider_for_resource(resource)
+      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       provider.action_twiddle_thumbs
     end
 
@@ -179,9 +180,11 @@ describe "LWRP" do
       injector = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
       injector.action(:pass_buck)
       injector.provider(:lwrp_buck_passer)
+
       injector2 = Chef::Resource::LwrpBar.new("tank", @run_context)
       injector2.action(:pass_buck)
       injector2.provider(:lwrp_buck_passer_2)
+
       dummy = Chef::Resource::ZenMaster.new("keanu reeves", @run_context)
       dummy.provider(Chef::Provider::Easy)
 
@@ -205,7 +208,7 @@ describe "LWRP" do
       resource.monkey("bob")
       resource.provider(:lwrp_monkey_name_printer)
 
-      provider = Chef::Platform.provider_for_resource(resource)
+      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       provider.action_twiddle_thumbs
 
       provider.monkey_name.should == "my monkey's name is 'bob'"
@@ -216,7 +219,7 @@ describe "LWRP" do
       resource.monkey("bob")
       resource.provider(:lwrp_embedded_resource_accesses_providers_scope)
 
-      provider = Chef::Platform.provider_for_resource(resource)
+      provider = Chef::Platform.provider_for_resource(resource, :twiddle_thumbs)
       #provider = @runner.build_provider(resource)
       provider.action_twiddle_thumbs
 

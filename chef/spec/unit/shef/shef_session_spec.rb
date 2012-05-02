@@ -51,7 +51,8 @@ describe Shef::StandAloneSession do
   before do
     @session = Shef::StandAloneSession.instance
     @node = @session.node = Chef::Node.new
-    @run_context = @session.run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = @session.run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
     Shef::Extensions.extend_context_recipe(@recipe)
   end
@@ -90,7 +91,8 @@ describe Shef::SoloSession do
     Chef::Config[:shef_solo] = true
     @session = Shef::SoloSession.instance
     @node = Chef::Node.new
-    @run_context = @session.run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = @session.run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @session.node = @node
     @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
     Shef::Extensions.extend_context_recipe(@recipe)

@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.members %w{lobster rage fist}
     @new_resource.append false

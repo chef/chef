@@ -33,7 +33,9 @@ describe Chef::Provider::RemoteDirectory do
 
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
 
     @provider = Chef::Provider::RemoteDirectory.new(@resource, @run_context)
     @provider.current_resource = @resource.clone
@@ -148,13 +150,14 @@ describe Chef::Provider::RemoteDirectory do
 
       it "removes directory symlinks properly" do
         symlinked_dir_path = @destination_dir + '/symlinked_dir'
-        @provider.action_create
+        @provider.action = :create
+        @provider.run_action
 
         Dir.mktmpdir do |tmp_dir|
           FileUtils.ln_s(tmp_dir, symlinked_dir_path)
           ::File.exist?(symlinked_dir_path).should be_true
 
-          @provider.action_create
+          @provider.run_action
 
           ::File.exist?(symlinked_dir_path).should be_false
           ::File.exist?(tmp_dir).should be_true

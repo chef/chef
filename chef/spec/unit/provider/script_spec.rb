@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Script, "action_run" do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::Script.new('run some perl code')
     @new_resource.code "$| = 1; print 'i like beans'"
     @new_resource.interpreter 'perl'

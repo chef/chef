@@ -31,7 +31,8 @@ describe Chef::Provider::Git do
     @resource.destination "/my/deploy/dir"
     @resource.revision "d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @provider = Chef::Provider::Git.new(@resource, @run_context)
     @provider.current_resource = @current_resource
   end
@@ -96,16 +97,18 @@ describe Chef::Provider::Git do
 
     it "raises an invalid remote reference error if you try to deploy from ``origin'' and assertions are run" do
       @resource.revision "origin/"
+      @provider.action = :checkout
       @provider.define_resource_requirements 
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-      lambda {@provider.process_resource_requirements(:checkout)}.should raise_error(Chef::Exceptions::InvalidRemoteGitReference)
+      lambda {@provider.process_resource_requirements}.should raise_error(Chef::Exceptions::InvalidRemoteGitReference)
     end
 
     it "raises an unresolvable git reference error if the revision can't be resolved to any revision and assertions are run" do
       @resource.revision "FAIL, that's the revision I want"
+      @provider.action = :checkout
       @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
       @provider.define_resource_requirements 
-      lambda { @provider.process_resource_requirements(:checkout) }.should raise_error(Chef::Exceptions::UnresolvableGitReference)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::UnresolvableGitReference)
     end
 
     it "does not raise an error if the revision can't be resolved when assertions are not run" do
@@ -118,9 +121,10 @@ describe Chef::Provider::Git do
       @resource.revision "v1.0"
       @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
       @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.action = :checkout
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
       @provider.define_resource_requirements 
-      lambda { @provider.process_resource_requirements(:checkout) }.should_not raise_error(RuntimeError)
+      lambda { @provider.process_resource_requirements }.should_not raise_error(RuntimeError)
     end
 
     it "gives the latest HEAD revision SHA if nothing is specified" do

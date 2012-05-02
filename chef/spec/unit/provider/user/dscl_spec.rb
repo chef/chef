@@ -24,7 +24,8 @@ require 'ostruct'
 describe Chef::Provider::User::Dscl do
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource = Chef::Resource::User.new("toor")
     @provider = Chef::Provider::User::Dscl.new(@new_resource, @run_context)
   end

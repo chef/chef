@@ -36,7 +36,8 @@ describe Chef::Provider do
     @cookbook_collection = Chef::CookbookCollection.new([])
     @node = Chef::Node.new
     @node.name "latte"
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
     @resource = Chef::Resource.new("funk", @run_context)
     @resource.cookbook_name = "a_delicious_pie"
     @provider = Chef::Provider.new(@resource, @run_context)
@@ -63,6 +64,7 @@ describe Chef::Provider do
     temporary_collection = nil
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
+    @provider.converge
     temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
     @provider.run_context.instance_variable_get(:@resource_collection).should == "doesn't matter what this is"
   end

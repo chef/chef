@@ -193,7 +193,7 @@ class Chef
           remote_file.cookbook_name = @new_resource.cookbook_name
           remote_file.source(@new_resource.response_file)
           remote_file.backup(false)
-          provider = Chef::Platform.provider_for_resource(remote_file)
+          provider = Chef::Platform.provider_for_resource(remote_file, :create)
           provider.template_location
         rescue
           Chef::Log.debug("#{@new_resource} fetching preseed file via Template resource failed, fallback to CookbookFile resource")

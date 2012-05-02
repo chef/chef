@@ -25,6 +25,10 @@ describe Chef::Provider::RemoteFile, "action_create" do
     @resource.source("http://foo")
     @node = Chef::Node.new
     @node.name "latte"
+
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+
     @provider = Chef::Provider::RemoteFile.new(@resource, @run_context)
     #To prevent the current_resource.checksum from being overridden.
     @provider.stub!(:load_current_resource)

@@ -23,7 +23,8 @@ require 'ostruct'
 describe Chef::Provider::Package::Freebsd, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @console_ui = Chef::ConsoleUI.new
+    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
     @new_resource     = Chef::Resource::Package.new("zsh")
     @current_resource = Chef::Resource::Package.new("zsh")
 
