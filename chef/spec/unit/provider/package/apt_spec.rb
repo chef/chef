@@ -283,7 +283,8 @@ SHOWPKG_STDOUT
 
     it "should get the full path to the preseed response file" do
       @provider.should_receive(:get_preseed_file).with("irssi", "0.8.12-7").and_return("/tmp/irssi-0.8.12-7.seed")
-      @provider.preseed_package("irssi", "0.8.12-7")
+      file = @provider.get_preseed_file("irssi", "0.8.12-7")
+      @provider.preseed_package(file)
     end
 
     it "should run debconf-set-selections on the preseed file if it has changed" do
@@ -293,13 +294,17 @@ SHOWPKG_STDOUT
           "DEBIAN_FRONTEND" => "noninteractive"
         }
       }).and_return(true)
-      @provider.preseed_package("irssi", "0.8.12-7")
+      file = @provider.get_preseed_file("irssi", "0.8.12-7")
+      @provider.preseed_package(file)
     end
 
     it "should not run debconf-set-selections if the preseed file has not changed" do
+      @provider.stub(:check_package_state)
+      @current_resource.version "0.8.11"
+      @new_resource.response_file "/tmp/file"
       @provider.stub!(:get_preseed_file).and_return(false)
       @provider.should_not_receive(:run_command_with_systems_locale)
-      @provider.preseed_package("irssi", "0.8.12-7")
+      @provider.run_action(:reconfig)
     end
   end
 
