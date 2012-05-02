@@ -273,5 +273,10 @@ class Chef
 
     # returns a platform specific path to the user home dir
     user_home (ENV['HOME'] || ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] || ENV['USERPROFILE'])
+
+    # AWS credentials to access S3
+    aws_key nil
+    aws_secret_key nil
+    s3_host "s3-eu-west-1.amazonaws.com"
   end
 end
