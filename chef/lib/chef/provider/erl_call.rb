@@ -29,6 +29,10 @@ class Chef
         super(node, new_resource)
       end
 
+      def whyrun_supported?
+        true
+      end
+      
       def load_current_resource
         true
       end

@@ -80,6 +80,10 @@ class Chef::Provider::Route < Chef::Provider
       end
     end
 
+    def whyrun_supported?
+      true
+    end
+
     def load_current_resource
       self.is_running = false
 

@@ -27,6 +27,10 @@ class Chef
       include Chef::Mixin::Command
 
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         true
       end

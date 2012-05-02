@@ -38,6 +38,10 @@ class Chef
     class Ifconfig < Chef::Provider
       include Chef::Mixin::Command
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @current_resource = Chef::Resource::Ifconfig.new(@new_resource.name)
 

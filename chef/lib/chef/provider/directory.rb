@@ -26,6 +26,10 @@ require 'fileutils'
 class Chef
   class Provider
     class Directory < Chef::Provider::File
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(@new_resource.name)
         @current_resource.path(@new_resource.path)

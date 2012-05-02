@@ -21,9 +21,13 @@ require 'tempfile'
 class Chef
   class Provider
     class HttpRequest < Chef::Provider
-      
+
       attr_accessor :rest
-      
+
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @rest = Chef::REST.new(@new_resource.url, nil, nil)
       end

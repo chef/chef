@@ -23,6 +23,9 @@ require 'tempfile'
 class Chef
   class Provider
     class CookbookFile < Chef::Provider::File
+      def whyrun_supported?
+        true
+      end
 
       def load_current_resource
         @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)

@@ -28,6 +28,10 @@ class Chef
     class Git < Chef::Provider
 
       include Chef::Mixin::ShellOut
+      
+      def whyrun_supported?
+        true
+      end
 
       def load_current_resource
         @resolved_reference = nil

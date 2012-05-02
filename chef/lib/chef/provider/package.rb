@@ -33,6 +33,10 @@ class Chef
         @candidate_version = nil
       end
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
 
       end

@@ -28,6 +28,10 @@ class Chef
       attr_accessor :group_exists
       attr_accessor :change_desc
 
+      def whyrun_supported?
+        true
+      end
+
       def initialize(new_resource, run_context)
         super
         @group_exists = true

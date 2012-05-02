@@ -39,6 +39,10 @@ class Chef
     # break, e.g., Chef 11.
     attr_accessor :action
 
+    def whyrun_supported?
+      false
+    end
+
     def initialize(new_resource, run_context)
       @new_resource = new_resource
       @action = action
@@ -68,7 +72,9 @@ class Chef
     end
 
     def action_nothing
-      Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
+      converge_by("Would do nothing for #{@new_resource.to_s}") do
+        Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
+      end
       true
     end
 
@@ -88,18 +94,17 @@ class Chef
       events.resource_current_state_loaded(@new_resource, action, @current_resource)
       send("action_#{@action}")
       converge
+        #if whyrun && !whyrun-supported converge_by("bypassing action #{action}, whyrun not supported in resource provider ") do
+        #  true
+        #end
     end
-    
+
     # exposed publically for accessibility in testing
     def process_resource_requirements
       requirements.run(:all_actions) unless @action == :nothing
       requirements.run(@action)
     end
 
-    # exposed publically for accessibility in testing 
-    #--
-    # TODO: action should be set in the constructor so we can access it without
-    # having to pass it around all the time.
     def converge
       converge_actions.converge!
       if converge_actions.empty? && !@new_resource.updated_by_last_action?

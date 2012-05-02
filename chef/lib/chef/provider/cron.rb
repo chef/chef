@@ -37,6 +37,10 @@ class Chef
       end
       attr_accessor :cron_exists, :cron_empty
 
+      def whyrun_supported?
+        true
+      end
+      
       def load_current_resource
         crontab_lines = []
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)

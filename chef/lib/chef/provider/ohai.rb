@@ -22,6 +22,10 @@ class Chef
   class Provider
     class Ohai < Chef::Provider
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         true
       end

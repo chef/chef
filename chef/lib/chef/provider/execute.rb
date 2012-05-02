@@ -29,6 +29,10 @@ class Chef
       def load_current_resource
         true
       end
+      
+      def whyrun_supported?
+        true
+      end
 
       def action_run
         opts = {}

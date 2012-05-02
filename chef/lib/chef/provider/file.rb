@@ -43,6 +43,10 @@ class Chef
       end
 
       private :negative_complement, :octal_mode
+      
+      def whyrun_supported?
+        true
+      end
 
       def load_current_resource
         @current_resource = Chef::Resource::File.new(@new_resource.name)

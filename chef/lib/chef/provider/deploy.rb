@@ -43,6 +43,10 @@ class Chef
         @configuration[:environment] = @configuration[:environment] && @configuration[:environment]["RAILS_ENV"]
       end
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @scm_provider.load_current_resource
         @release_path = @new_resource.deploy_to + "/releases/#{release_slug}"

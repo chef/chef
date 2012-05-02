@@ -45,6 +45,10 @@ class Chef
 
       private :negative_complement
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @current_resource = Chef::Resource::Link.new(@new_resource.name)
         @current_resource.target_file(@new_resource.target_file)
