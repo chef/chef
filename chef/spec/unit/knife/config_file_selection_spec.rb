@@ -24,10 +24,9 @@ describe Chef::Knife do
   end
 
   it "configure knife from KNIFE_HOME env variable" do
-    env_config = '/tmp/knife.rb'
-    File.stub!(:exist?).and_return do | arg |
-      [ env_config ].include? arg
-    end
+    env_config = File.expand_path('/tmp/knife.rb')
+    File.stub!(:exist?).and_return(false)
+    File.stub!(:exist?).with(env_config).and_return(true)
 
     ENV['KNIFE_HOME'] = '/tmp'
     @knife = Chef::Knife.new
