@@ -348,10 +348,12 @@ class Chef
         return platform, version
       end
 
-      def provider_for_resource(resource)
+      def provider_for_resource(resource, action)
         node = resource.run_context && resource.run_context.node
         raise ArgumentError, "Cannot find the provider for a resource with no run context set" unless node
-        find_provider_for_node(node, resource).new(resource, resource.run_context)
+        provider = find_provider_for_node(node, resource).new(resource, resource.run_context)
+        provider.action = action
+        provider
       end
 
       def provider_for_node(node, resource_type)

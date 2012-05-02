@@ -28,10 +28,20 @@ class Chef
     include Chef::Mixin::RecipeDefinitionDSLCore
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
-    attr_accessor :new_resource, :current_resource, :run_context
+    attr_accessor :new_resource
+    attr_accessor :current_resource
+    attr_accessor :run_context
+
+    #--
+    # TODO: this should be a reader, and the action should be passed in the
+    # constructor; however, many/most subclasses override the constructor so
+    # changing the arity would be a breaking change. Change this at the next
+    # break, e.g., Chef 11.
+    attr_accessor :action
 
     def initialize(new_resource, run_context)
       @new_resource = new_resource
+      @action = action
       @current_resource = nil
       @run_context = run_context
       @converge_actions = nil
@@ -62,26 +72,42 @@ class Chef
       true
     end
 
-    def run_action(action)
+    def console_ui
+      run_context.console_ui
+    end
+
+    def run_action(action=nil)
+      @action = action unless action.nil?
+
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
       load_current_resource
       define_resource_requirements
-      process_resource_requirements(action)
-      send("action_#{action}")
+      process_resource_requirements
+
+      console_ui.resource_current_state_loaded(@new_resource, action, @current_resource)
+      send("action_#{@action}")
       converge
     end
     
     # exposed publically for accessibility in testing
-    def process_resource_requirements(action)
-      requirements.run(:all_actions) unless action == :nothing
-      requirements.run(action)
+    def process_resource_requirements
+      requirements.run(:all_actions) unless @action == :nothing
+      requirements.run(@action)
     end
 
     # exposed publically for accessibility in testing 
+    #--
+    # TODO: action should be set in the constructor so we can access it without
+    # having to pass it around all the time.
     def converge
       converge_actions.converge!
-      new_resource.updated_by_last_action(true) unless converge_actions.empty?
+      if converge_actions.empty? && !@new_resource.updated_by_last_action?
+        console_ui.resource_up_to_date(@new_resource, @action)
+      else
+        console_ui.resource_updated(@new_resource, @action)
+        new_resource.updated_by_last_action(true) 
+      end
     end
 
     def requirements
@@ -91,7 +117,7 @@ class Chef
     protected
 
     def converge_actions
-      @converge_actions ||= ConvergeActions.new
+      @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
     end
 
     def converge_by(descriptions, &block)

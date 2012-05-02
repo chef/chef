@@ -430,6 +430,10 @@ F
       end
     end
 
+    def console_ui
+      run_context.console_ui
+    end
+
     def run_action(action)
       if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
         # This can be noisy
@@ -441,16 +445,17 @@ F
       updated_by_last_action(false)
 
       begin
-        return if should_skip?
+        return if should_skip?(action)
         # leverage new platform => short_name => resource
         # which requires explicitly setting provider in
         # resource class
         if self.provider
           provider = self.provider.new(self, self.run_context)
+          provider.action = action
         else # fall back to old provider resolution
-          provider = Chef::Platform.provider_for_resource(self)
+          provider = Chef::Platform.provider_for_resource(self, action)
         end
-        provider.run_action(action)
+        provider.run_action
       rescue => e
         if ignore_failure
           Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
@@ -471,7 +476,7 @@ F
     # "fails" its check. Subsequent conditionals are not evaluated, so in
     # general it's not a good idea to rely on side effects from not_if or
     # only_if commands/blocks being evaluated.
-    def should_skip?
+    def should_skip?(action)
       conditionals = only_if + not_if
       return false if conditionals.empty?
 
@@ -479,6 +484,7 @@ F
         if conditional.continue?
           false
         else
+          console_ui.resource_skipped(self, action, conditional)
           Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
           true
         end

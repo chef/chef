@@ -23,6 +23,8 @@
 # Chef run.
 class Chef::RunStatus
 
+  attr_reader :console_ui
+
   attr_reader :run_context
 
   attr_writer :run_context
@@ -35,8 +37,9 @@ class Chef::RunStatus
 
   attr_writer :exception
 
-  def initialize(node)
+  def initialize(node, console_ui)
     @node = node
+    @console_ui = console_ui
   end
 
   def node

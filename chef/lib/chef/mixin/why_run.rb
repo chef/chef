@@ -34,8 +34,13 @@ class Chef
       class ConvergeActions
         attr_reader :actions
 
-        def initialize
+        def initialize(resource, run_context, action)
+          @resource, @run_context = resource, run_context
           @actions = []
+        end
+
+        def console_ui
+          @run_context.console_ui
         end
 
         # Adds an action to the list. +descriptions+ can either be an Array of
@@ -62,6 +67,7 @@ class Chef
               end
             else
               block.call
+              console_ui.resource_update_applied(@resource, @action, descriptions)
             end
           end
         end
