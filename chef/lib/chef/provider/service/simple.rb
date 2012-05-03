@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Service
       class Simple < Chef::Provider::Service
- 
+
         include Chef::Mixin::ShellOut
 
         def load_current_resource
@@ -44,7 +44,6 @@ class Chef
         end
 
         def define_resource_requirements
-          # includes "reload" assertion
           super
           requirements.assert(:start) do |a|
             a.assertion { @new_resource.start_command }

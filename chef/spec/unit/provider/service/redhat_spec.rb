@@ -37,7 +37,8 @@ describe "load_current_resource" do
 
   it "should raise an error if /sbin/chkconfig does not exist" do
     ::File.should_receive(:exists?).with("/sbin/chkconfig").and_return(false)
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "sets the current enabled status to true if the service is enabled for any run level" do
@@ -45,8 +46,20 @@ describe "load_current_resource" do
     status = mock("Status", :exitstatus => 0, :stdout => chkconfig)
     @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
     @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+
+    @provider.instance_variable_get("@service_missing").should be_false
     @provider.load_current_resource
     @current_resource.enabled.should be_true
+  end
+
+  it "flags the service as not available if chkconfig can't find it" do
+    chkconfig = OpenStruct.new(:stderr => "error reading information on service chef: No such file or directory")
+    status = mock("Status", :exitstatus => 0, :stdout => chkconfig)
+    @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+    @provider.load_current_resource
+    @provider.instance_variable_get("@service_missing").should be_true
+    @current_resource.enabled.should be_false
   end
 
   it "sets the current enabled status to false if the regex does not match" do
