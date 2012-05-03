@@ -175,19 +175,25 @@ class Chef
           #     a.failure_message("File /tmp/foo" doesn't exist")
           #   end
           def failure_message(*args)
-           case args.size
-           when 1
-             @failure_message = args[0]
-           when 2
-             @exception_type, @failure_message = args[0], args[1]
-           else
-             raise ArgumentError, "#{self.class}#failure_message takes 1 or 2 arguments, you gave #{args.inspect}"
-           end
+            case args.size
+            when 1
+              @failure_message = args[0]
+            when 2
+              @exception_type, @failure_message = args[0], args[1]
+            else
+              raise ArgumentError, "#{self.class}#failure_message takes 1 or 2 arguments, you gave #{args.inspect}"
+            end
           end
 
           # Defines a message and optionally provides a code block to execute
           # when the requirement is not met and Chef is executing in why run
-          # mode. With a service resource that requires /etc/init.d/service-name to exist:
+          # mode
+          #
+          # If no failure_message is provided (above), then
+          # resource_modifier will be invoked instead of failing during
+          # an actual Chef run.
+          #
+          # With a service resource that requires /etc/init.d/service-name to exist:
           #   # in a provider
           #   assert(:start, :restart) do |a|
           #     a.assertion { ::File.exist?("/etc/init.d/service-name") }
@@ -208,14 +214,17 @@ class Chef
           # and no why run message or block has been declared.
           def run
             if !@assertion_proc.call
-              # TODO: figure out how we want to turn why run on/off...
               if Chef::Config[:why_run] && @whyrun_message
                 # TODO: real logging
                 puts "WHY RUN: #{@failure_message}"
                 puts "WHY RUN: #{@whyrun_message}"
                 @resource_modifier.call if @resource_modifier
               else
-                raise @exception_type, @failure_message
+                if @failure_message
+                  raise @exception_type, @failure_message
+                else
+                  @resource_modifier.call if @resource_modifier
+                end
               end
             end
           end
@@ -258,7 +267,6 @@ class Chef
         #     a.failure_message(Exceptions::InsufficientPrivileges,
         #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
         #   end
-        #
         def assert(*actions)
           assertion = Assertion.new
           yield assertion
