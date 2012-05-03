@@ -95,15 +95,18 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     
   end
 
-  it "should set running to false if the node has a nil ps attribute" do
+  it "should raise error if the node has a nil ps attribute and no other means to get status" do
     @node[:command] = {:ps => nil}
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
   end
 
-  it "should set running to false if the node has an empty ps attribute" do
+  it "should raise error if the node has an empty ps attribute and no other means to get status" do
     @node[:command] = {:ps => ""}
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
   end
+
 
   it "should fail if file /etc/rc.conf does not exist" do
     ::File.stub!(:exists?).with("/etc/rc.conf").and_return(false)
@@ -146,7 +149,9 @@ RUNNING_PS
 
     it "should raise an exception if ps fails" do
       @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+      @provider.load_current_resource
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
