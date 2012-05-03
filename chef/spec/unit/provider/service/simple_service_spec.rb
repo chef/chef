@@ -152,6 +152,11 @@ NOMOCKINGSTRINGSPLZ
   end
 
   describe Chef::Provider::Service::Simple, "reload_service" do
+    it "should raise an exception if reload is requested but no command is specified" do
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements(:reload) }.should raise_error(Chef::Exceptions::UnsupportedAction)
+    end
+
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
       @provider.should_receive(:shell_out!).with("kill -9 1")

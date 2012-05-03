@@ -44,6 +44,8 @@ class Chef
         end
 
         def define_resource_requirements
+          # includes "reload" assertion
+          super
           requirements.assert(:start) do |a|
             a.assertion { @new_resource.start_command }
             a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
@@ -52,10 +54,7 @@ class Chef
             a.assertion { @new_resource.stop_command }
             a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
           end
-          requirements.assert(:reload) do |a|
-            a.assertion { @new_resource.reload_command}
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that reload_command be set"
-          end
+
           requirements.assert(:restart) do |a|
             a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
             a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires both start_command and stop_command be set in order to perform a restart; or that restart_comand be specified"
