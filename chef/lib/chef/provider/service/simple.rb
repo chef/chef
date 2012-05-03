@@ -24,32 +24,49 @@ class Chef
   class Provider
     class Service
       class Simple < Chef::Provider::Service
-
+ 
         include Chef::Mixin::ShellOut
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
 
+          @status_load_failed = false
           determine_current_status!
 
           @current_resource
         end
 
-        def start_service
-          if @new_resource.start_command
-            shell_out!(@new_resource.start_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that start_command to be set"
+        def whyrun_supported?
+          true
+        end
+
+        def define_resource_requirements
+          requirements.assert(:start) do |a|
+            a.assertion { @new_resource.start_command }
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
           end
+          requirements.assert(:stop) do |a|
+            a.assertion { @new_resource.stop_command }
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
+          end
+          requirements.assert(:reload) do |a|
+            a.assertion { @new_resource.reload_command}
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that reload_command be set"
+          end
+          requirements.assert(:restart) do |a|
+            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires both start_command and stop_command be set in order to perform a restart; or that restart_comand be specified"
+          end
+
+        end
+
+        def start_service
+          shell_out!(@new_resource.start_command)
         end
 
         def stop_service
-          if @new_resource.stop_command
-            shell_out!(@new_resource.stop_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that stop_command to be set"
-          end
+          shell_out!(@new_resource.stop_command)
         end
 
         def restart_service
@@ -63,11 +80,7 @@ class Chef
         end
 
         def reload_service
-          if @new_resource.reload_command
-            shell_out!(@new_resource.reload_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
-          end
+          shell_out!(@new_resource.reload_command)
         end
 
       protected

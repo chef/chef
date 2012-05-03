@@ -109,7 +109,8 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should raise an exception if no start command is specified" do
-      lambda { @provider.start_service() }.should raise_error(Chef::Exceptions::Service)
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements(:start) }.should raise_error(Chef::Exceptions::Service)
     end 
   end
 
@@ -121,7 +122,8 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should raise an exception if no stop command is specified" do
-      lambda { @provider.stop_service() }.should raise_error(Chef::Exceptions::Service)
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements(:stop) }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
@@ -130,6 +132,11 @@ NOMOCKINGSTRINGSPLZ
       @new_resource.restart_command("/etc/init.d/foo restart")
       @provider.should_receive(:shell_out!).with("/etc/init.d/foo restart")
       @provider.restart_service()
+    end
+
+    it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements(:restart) }.should raise_error(Chef::Exceptions::Service) 
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
