@@ -31,7 +31,9 @@ class Chef
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
 
-          @status_load_failed = false
+          @status_load_success = false
+          @ps_command_failed = false
+
           determine_current_status!
 
           @current_resource
@@ -59,6 +61,19 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires both start_command and stop_command be set in order to perform a restart; or that restart_comand be specified"
           end
 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or 
+              (!ps_cmd.nil? and !ps_cmd.empty?) } 
+            a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
+          end
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { !@ps_command_failed } 
+            a.failure_message Chef::Exceptions::Service, "Command #{ps_cmd} failed to execute, cannot determine service current status"
+          end
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @status_load_success } 
+            a.whyrun "Failed to load initial status for service, assuming service would have previously been installed and has a current status of not running" 
+          end
         end
 
         def start_service
@@ -94,6 +109,7 @@ class Chef
                 Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed
+              @status_load_success = false
               @current_resource.running false
               nil
             end
@@ -107,15 +123,12 @@ class Chef
                 Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed
+              @status_load_success = false
               @current_resource.running false
               nil
             end
           elsif
             Chef::Log.debug "#{@new_resource} falling back to process table inspection"
-            if ps_cmd.nil? or ps_cmd.empty?
-              raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
-            end
-
             r = Regexp.new(@new_resource.pattern)
             Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
             begin
@@ -128,7 +141,7 @@ class Chef
               @current_resource.running false unless @current_resource.running
               Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
             rescue Mixlib::ShellOut::ShellCommandFailed
-              raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
+              @ps_command_failed = true
             end
           end
         end
