@@ -29,23 +29,46 @@ class Chef
 
         def load_current_resource
           super
-
+          @priority_success = true
+          @rcd_status = nil
           @current_resource.priority(get_priority)
           @current_resource.enabled(service_currently_enabled?(@current_resource.priority))
           @current_resource
         end
 
-        def assert_update_rcd_available
-          unless ::File.exists? "/usr/sbin/update-rc.d"
-            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d does not exist!"
+        def define_resource_requirements
+          super
+          requirements.assert(:all_actions) do |a|
+            update_rcd = "/usr/sbin/update-rc.d"
+            a.assertion { ::File.exists? update_rcd } 
+            a.failure_message Chef::Exceptions::Service, "#{update_rcd} does not exist!"
+            # no whyrun recovery - this is a base system component of debian
+            # distros and must be present 
+          end 
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @priority_load_success } 
+            a.failure_message  Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{@rcd_status.inspect}"
+            # This can happen if the service is not yet installed,so we'll fake it. 
+            a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.", 
+                      "Assigning temporary priorities to continue.",
+                      "If this service is not properly installed prior to this point, this will fail."] do
+              temp_priorities = {"6"=>[:stop, "20"],
+                "0"=>[:stop, "20"],
+                "1"=>[:stop, "20"],
+                "2"=>[:start, "20"],
+                "3"=>[:start, "20"],
+                "4"=>[:start, "20"],
+                "5"=>[:start, "20"]}
+              @current_resource.priority(temp_priorities)
+            end
           end
         end
 
         def get_priority
-          assert_update_rcd_available
           priority = {}
 
-          status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
+          @rcd_status = popen4("/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} remove") do |pid, stdin, stdout, stderr|
 
             [stdout, stderr].each do |iop|
               iop.each_line do |line|
@@ -62,18 +85,16 @@ class Chef
             end
           end
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{status.inspect}"
+          unless @rcd_status.exitstatus == 0
+            @priority_success = false
           end
           priority
         end
 
         def service_currently_enabled?(priority)
           enabled = false
-
           priority.each { |runlevel, arguments|
             Chef::Log.debug("#{@new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
-            
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
             if (2..5).include?(runlevel.to_i) && arguments[0] == :start
               enabled = true
