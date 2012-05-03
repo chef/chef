@@ -1,0 +1,24 @@
+Operating systems
+
+* Debian Stable 32 
+* Debian Stable 64
+* CentOS 5 32
+* CentOS 5 64
+* CentOS 6 32
+* CentOS 6 64
+* Fedora 16 32
+* Fedora 16 64
+* Ubuntu 10.04 32
+* Ubuntu 10.04 64
+* Ubuntu 11.10 32
+* Ubuntu 11.10 64
+* Ubuntu 12.04 32
+* Ubuntu 12.04 64
+* Solaris 10 Sparc
+* Solaris 10 x86
+* Windows
+* Mac OS X
+* FreeBSD 32
+* FreeBSD 64
+* SLES 32
+* SLES 64
