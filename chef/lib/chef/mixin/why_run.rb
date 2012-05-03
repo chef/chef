@@ -189,9 +189,9 @@ class Chef
           # when the requirement is not met and Chef is executing in why run
           # mode
           #
-          # If no failure_message is provided (above), then
-          # resource_modifier will be invoked instead of failing during
-          # an actual Chef run.
+          # If no failure_message is provided (above), then execution 
+          # will be allowed to continue in both whyrun an dnon-whyrun
+          # mode
           #
           # With a service resource that requires /etc/init.d/service-name to exist:
           #   # in a provider
@@ -222,8 +222,6 @@ class Chef
               else
                 if @failure_message
                   raise @exception_type, @failure_message
-                else
-                  @resource_modifier.call if @resource_modifier
                 end
               end
             end
