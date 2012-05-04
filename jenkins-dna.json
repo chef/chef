@@ -1,7 +1,11 @@
 {
   "omnibus": {
     "build-user": "jenkins",
-    "build-path": "/home/jenkins/omnibus"
+    "build-path": "/home/jenkins/omnibus",
+    "install-dirs": [
+      "/opt/chef",
+      "/opt/chef-server"
+    ]
   },
   "run_list": [
     "recipe[omnibus]"
