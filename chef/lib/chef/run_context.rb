@@ -49,7 +49,7 @@ class Chef
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
       @definitions = Hash.new
-      @console_ui = ConsoleUI.new
+      @console_ui = console_ui
 
       # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
       # cookbook_collection attr_accessor
@@ -80,6 +80,7 @@ class Chef
           raise
         end
       end
+      @console_ui.recipe_load_complete
     end
 
 

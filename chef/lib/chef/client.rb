@@ -176,12 +176,14 @@ class Chef
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
+        @console_ui.run_completed
         true
       rescue Exception => e
         run_status.stop_clock
         run_status.exception = e
         run_failed
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
+        @console_ui.run_completed
         raise
       ensure
         run_status = nil

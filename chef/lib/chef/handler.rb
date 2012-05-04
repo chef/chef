@@ -87,7 +87,7 @@ class Chef
     # from Chef::Client
     def self.run_report_handlers(run_status)
       console_ui = run_status.console_ui
-      console_ui.handler_start(report_handlers.size)
+      console_ui.handlers_start(report_handlers.size)
       Chef::Log.info("Running report handlers")
       report_handlers.each do |handler|
         handler.run_report_safely(run_status)
@@ -112,7 +112,7 @@ class Chef
     # from Chef::Client when the run fails.
     def self.run_exception_handlers(run_status)
       console_ui = run_status.console_ui
-      console_ui.handler_start(exception_handlers.size)
+      console_ui.handlers_start(exception_handlers.size)
       Chef::Log.error("Running exception handlers")
       exception_handlers.each do |handler|
         handler.run_report_safely(run_status)
