@@ -363,8 +363,8 @@ class Chef
         @console_ui.cookbook_resolution_complete(cookbook_hash)
       end
 
-      # TODO: thread console_ui into cookbook sync process.
-      Chef::CookbookVersion.sync_cookbooks(cookbook_hash)
+      synchronizer = Chef::CookbookSynchronizer.new(cookbook_hash, @console_ui)
+      synchronizer.sync_cookbooks
 
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
@@ -438,4 +438,5 @@ end
 # HACK cannot load this first, but it must be loaded.
 require 'chef/cookbook_loader'
 require 'chef/cookbook_version'
+require 'chef/cookbook/synchronizer'
 

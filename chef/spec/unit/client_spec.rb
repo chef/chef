@@ -78,10 +78,7 @@ describe Chef::Client do
       # --Client.setup_run_context
       # ---Client.sync_cookbooks -- downloads the list of cookbooks to sync
       #
-      # FIXME: Ideally, we might prefer to mock at a lower level, but
-      #        this at least avoids the spec test from trying to
-      #        delete files out of Chef::Config[:file_cache_path] (/var/chef/cache)
-      Chef::CookbookVersion.should_receive(:clear_obsoleted_cookbooks).with({}).and_return(true)
+      Chef::CookbookSynchronizer.any_instance.should_receive(:sync_cookbooks)
       mock_chef_rest_for_node.should_receive(:post_rest).with("environments/_default/cookbook_versions", {:run_list => []}).and_return({})
 
       # --Client.converge
