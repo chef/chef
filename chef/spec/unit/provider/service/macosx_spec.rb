@@ -60,6 +60,20 @@ SVC_LIST
           end
         end
 
+        describe "running unsupported actions" do
+          before do
+            Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist"], [])
+          end
+          it "should throw an exception when enable action is attempted" do
+            lambda {provider.run_action(:enable)}.should raise_error(Chef::Exceptions::UnsupportedAction)
+          end
+          it "should throw an exception when reload action is attempted" do
+            lambda {provider.run_action(:reload)}.should raise_error(Chef::Exceptions::UnsupportedAction)
+          end
+          it "should throw an exception when disable action is attempted" do
+            lambda {provider.run_action(:disable)}.should raise_error(Chef::Exceptions::UnsupportedAction)
+          end
+        end
         context "when launchctl returns empty service pid" do
           let(:stdout) { StringIO.new <<-SVC_LIST }
 12761 - 0x100114220.old.machinit.thing
@@ -113,25 +127,20 @@ SVC_LIST
             end
           end
 
-          context "and several plists match service name" do
-            before do
+          describe "and several plists match service name" do
+            it "throws exception" do
               Dir.stub!(:glob).and_return(["/Users/igor/Library/LaunchAgents/io.redis.redis-server.plist",
                                            "/Users/wtf/something.plist"])
-            end
-
-            it "throws exception" do
-              lambda {
-                provider.load_current_resource
-              }.should raise_error(Chef::Exceptions::Service)
+              provider.load_current_resource
+              provider.define_resource_requirements
+              lambda { provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
             end
           end
         end
       end
-
       describe "#start_service" do
         before do
           Chef::Resource::Service.stub!(:new).and_return(current_resource)
-
           provider.load_current_resource
           current_resource.stub!(:running).and_return(false)
         end
