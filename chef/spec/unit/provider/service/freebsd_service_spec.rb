@@ -111,6 +111,43 @@ PS_SAMPLE
       lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
     end
     
+    describe "when executing assertions" do
+      it "should verify that /etc/rc.conf exists" do
+        ::File.should_receive(:exists?).with("/etc/rc.conf")
+        @provider.stub!(:service_enable_variable_name).and_return("apache22_enable")
+        @provider.load_current_resource
+      end
+
+      it "should raise an exception when init script is not found" do
+        ::File.stub!(:exists?).and_return(false)
+        @provider.load_current_resource
+        @provider.define_resource_requirements 
+        @provider.instance_variable_get("@rcd_script_found").should be_false
+        lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      end
+
+      it "update state when current resource enabled state could not be determined" do
+        ::File.should_receive(:exists?).with("/etc/rc.conf").and_return false
+        @provider.load_current_resource
+        @provider.instance_variable_get("@enabled_state_found").should be_false
+      end 
+
+      it "update state when current resource enabled state could be determined" do
+        ::File.should_receive(:exists?).with("/etc/rc.conf").and_return  true
+        @provider.load_current_resource
+        @provider.instance_variable_get("@enabled_state_found").should be_false
+        @provider.instance_variable_get("@rcd_script_found").should be_true
+        @provider.define_resource_requirements 
+        lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service,
+          'Could not find name="service" line in /usr/local/etc/rc.d/apache22')
+      end 
+
+      it "should throw an exception if service line is missing from rc.d script" do
+
+      end
+
+    end
+
     describe "when we have a 'ps' attribute" do
       before do
         @node[:command] = {:ps => "ps -ax"}
