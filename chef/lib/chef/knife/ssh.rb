@@ -182,6 +182,7 @@ class Chef
       end
 
       def ssh_command(command, subsession=nil)
+        exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
         subsession.open_channel do |ch|
@@ -194,9 +195,13 @@ class Chef
                 ichannel.send_data("#{get_password}\n")
               end
             end
+            ch.on_request "exit-status" do |ichannel, data|
+              exit_status = data.read_long
+            end
           end
         end
         session.loop
+        exit_status
       end
 
       def get_password
@@ -378,6 +383,7 @@ class Chef
         configure_identity_file
         configure_session
 
+        exit_status =
         case @name_args[1]
         when "interactive"
           interactive
@@ -398,6 +404,7 @@ class Chef
         end
 
         session.close
+        exit_status
       end
 
     end
