@@ -15,12 +15,24 @@ class Chef
   # implementors can easily do the same thing for all/most file types.
   class ConsoleUI
 
+    attr_reader :updated_resources
+    attr_reader :updates_by_resource
+
+
+    def initialize
+      require 'pp'
+      @updated_resources = []
+      @updates_by_resource = Hash.new {|h, k| h[k] = []}
+    end
+
     # Called at the very start of a Chef Run
     def run_start(version)
+      puts "Starting Chef Client, version #{version}"
     end
 
     # Called at the end of the Chef run.
     def run_completed
+      puts "Chef Client finished, #{@updated_resources.size} resources updated"
     end
 
     # Called right after ohai runs.
@@ -66,6 +78,7 @@ class Chef
 
     # Called before the cookbook collection is fetched from the server.
     def cookbook_resolution_start(expanded_run_list)
+      puts "resolving cookbooks for run list: #{expanded_run_list.inspect}"
     end
 
     # Called when there is an error getting the cookbook collection from the
@@ -99,10 +112,12 @@ class Chef
     #--
     # TODO: Should be called in CookbookVersion.sync_cookbooks
     def cookbook_sync_start(cookbook_count)
+      puts "Synchronizing cookbooks"
     end
 
     # Called when cookbook +cookbook_name+ has been sync'd
     def synchronized_cookbook(cookbook_name)
+      print "."
     end
 
     # Called when an individual file in a cookbook has been updated
@@ -111,16 +126,19 @@ class Chef
 
     # Called after all cookbooks have been sync'd.
     def cookbook_sync_complete
+      puts "done."
     end
 
     ## TODO: add cookbook name to the API for file load callbacks
 
     # Called when library file loading starts
     def library_load_start(file_count)
+      puts "Evaluating cookbooks"
     end
 
     # Called when library file has been loaded
     def library_file_loaded(path)
+      print "."
     end
 
     # Called when a library file has an error on load.
@@ -137,6 +155,7 @@ class Chef
 
     # Called after a LWR or LWP has been loaded
     def lwrp_file_loaded(path)
+      print "."
     end
 
     # Called after a LWR or LWP file errors on load
@@ -153,6 +172,7 @@ class Chef
 
     # Called after the attribute file is loaded
     def attribute_file_loaded(path)
+      print "."
     end
 
     # Called when an attribute file fails to load.
@@ -169,6 +189,7 @@ class Chef
 
     # Called when a resource definition has been loaded
     def definition_file_loaded(path)
+      print "."
     end
 
     # Called when a resource definition file fails to load
@@ -185,6 +206,7 @@ class Chef
 
     # Called after the recipe has been loaded
     def recipe_file_loaded(path)
+      print "."
     end
 
     # Calles after a recipe file fails to load
@@ -193,14 +215,28 @@ class Chef
 
     # Called when recipes have been loaded.
     def recipe_load_complete
+      puts "done."
     end
 
     # Called before convergence starts
     def converge_start(run_context)
+      puts "Converging #{run_context.resource_collection.all_resources.size} resources"
     end
 
     # Called when the converge phase is finished.
     def converge_complete
+      puts "\nsystem converged."
+      if updated_resources.empty?
+        puts "no resources updated"
+      else
+        puts "resources updated this run:"
+        updated_resources.each do |resource|
+          puts "* #{resource.to_s}"
+          updates_by_resource[resource.name].flatten.each do |update|
+            puts "  - #{update}"
+          end
+        end
+      end
     end
 
     # TODO: need events for notification resolve?
@@ -221,6 +257,7 @@ class Chef
 
     # Called when a resource action has been skipped b/c of a conditional
     def resource_skipped(resource, action, conditional)
+      print "S"
     end
 
     # Called after #load_current_resource has run.
@@ -229,6 +266,7 @@ class Chef
 
     # Called when a resource has no converge actions, e.g., it was already correct.
     def resource_up_to_date(resource, action)
+      print "."
     end
 
     ## TODO: callback for assertion failures
@@ -239,10 +277,13 @@ class Chef
     # times per resource, e.g., a file may have its content updated, and then
     # its permissions updated.
     def resource_update_applied(resource, action, update)
+      @updates_by_resource[resource.name] << update
     end
 
     # Called after a resource has been completely converged.
     def resource_updated(resource, action)
+      updated_resources << resource
+      print "U"
     end
 
     # Called before handlers run
