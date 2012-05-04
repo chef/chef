@@ -37,11 +37,24 @@ describe Chef::Provider::Service::Gentoo do
     File.stub!(:exists?).with("/etc/runlevels/default/chef").and_return(false)
     File.stub!(:readable?).with("/etc/runlevels/default/chef").and_return(false)
   end
-  
+ # new test: found_enabled state
+  #
   describe "load_current_resource" do  
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
       File.should_receive(:exists?).with("/sbin/rc-update").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+    end
+
+    it "should track when service file is not found in /etc/runlevels" do
+      @provider.load_current_resource
+      @provider.instance_variable_get("@found_script").should be_false
+    end
+
+    it "should track when service file is found in /etc/runlevels/**/" do
+      Dir.stub!(:glob).with("/etc/runlevels/**/chef").and_return(["/etc/runlevels/default/chef"])
+      @provider.load_current_resource
+      @provider.instance_variable_get("@found_script").should be_true
     end
 
     describe "when detecting the service enable state" do
