@@ -48,13 +48,20 @@ class Chef
         end
 
         def mountable?
-          # only check for existence of non-remote devices
-          if (device_should_exist? && !::File.exists?(device_real) )
-            raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif( !::File.exists?(@new_resource.mount_point) )
-            raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
-          end
+          assert_device_should_exist!
+          assert_mount_point_exist!
           return true
+        end
+
+        def assert_device_should_exist!
+          # only check for existence of non-remote devices
+          raise Chef::Exceptions::Mount,
+            "Device #{@new_resource.device} does not exist" if (device_should_exist? && !::File.exists?(device_real) )
+        end
+
+        def assert_mount_point_exist!
+            raise Chef::Exceptions::Mount,
+              "Mount point #{@new_resource.mount_point} does not exist" if( !::File.exists?(@new_resource.mount_point) )
         end
 
         def fstab_info
@@ -168,26 +175,13 @@ class Chef
         end
 
         def disable_fs
-          if @current_resource.enabled
-            contents = []
+          Chef::Log.debug("#{@new_resource} is not enabled - nothing to do") and return unless @current_resource.enabled
 
-            found = false
-            ::File.readlines("/etc/fstab").reverse_each do |line|
-              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
-                found = true
-                Chef::Log.debug("#{@new_resource} is removed from fstab")
-                next
-              else
-                contents << line
-              end
-            end
-
-            ::File.open("/etc/fstab", "w") do |fstab|
-              contents.reverse_each { |line| fstab.puts line}
-            end
-          else
-            Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
-          end
+          # Look for the last occurance of the filesystem, and remove only that line.
+          fstab_content = ::File.readlines("/etc/fstab")
+          return unless fs_idx = fstab_content.rindex { |i| i =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/ }
+          fstab_content.delete_at(fs_idx)
+          ::File.open("/etc/fstab", "w") { |f| f.puts fstab_content }
         end
 
         def network_device?

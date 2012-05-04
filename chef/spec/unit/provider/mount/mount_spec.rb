@@ -334,9 +334,11 @@ describe Chef::Provider::Mount::Mount do
         provider.current_resource.options(["defaults"])
         provider.current_resource.dump(0)
         provider.current_resource.pass(2)
+
+        provider.should_receive(:disable_fs).and_return(true)
+
         fstab = StringIO.new
         ::File.stub(:readlines).and_return([])
-        ::File.should_receive(:open).once.with("/etc/fstab", "w").and_yield(fstab)
         ::File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(fstab)
 
         provider.enable_fs
