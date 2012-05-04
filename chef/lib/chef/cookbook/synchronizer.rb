@@ -77,6 +77,10 @@ class Chef
       @cookbooks_by_name.values
     end
 
+    def cookbook_count
+      @cookbooks_by_name.size
+    end
+
     def have_cookbook?(cookbook_name)
       @cookbooks_by_name.key?(cookbook_name)
     end
@@ -91,11 +95,15 @@ class Chef
 
       clear_obsoleted_cookbooks
 
+      @console_ui.cookbook_sync_start(cookbook_count)
+
       # Synchronize each of the node's cookbooks, and add to the
       # valid_cache_entries hash.
       cookbooks.each do |cookbook|
         sync_cookbook(cookbook)
       end
+
+      @console_ui.cookbook_sync_complete
 
       true
     end
@@ -103,14 +111,17 @@ class Chef
     # Iterates over cached cookbooks' files, removing files belonging to
     # cookbooks that don't appear in +cookbook_hash+
     def clear_obsoleted_cookbooks
+      @console_ui.cookbook_clean_start
       # Remove all cookbooks no longer relevant to this node
       cache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
         cache_file =~ /^cookbooks\/([^\/]+)\//
         unless have_cookbook?($1)
           Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
           cache.delete(cache_file)
+          @console_ui.removed_cookbook_file(cache_file)
         end
       end
+      @console_ui.cookbook_clean_complete
     end
 
     # Sync the eagerly loaded files contained by +cookbook+
@@ -143,6 +154,7 @@ class Chef
           cookbook.segment_filenames(segment).replace(segment_filenames)
         end
       end
+      @console_ui.synchronized_cookbook(cookbook.name)
     end
 
     # Sync an individual file if needed. If there is an up to date copy
@@ -161,6 +173,7 @@ class Chef
       # is no current checksum.
       if !cached_copy_up_to_date?(cache_filename, file_manifest['checksum'])
         download_file(file_manifest['url'], cache_filename)
+        @console_ui.updated_cookbook_file(cookbook.name, cache_filename)
       else
         Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
       end
