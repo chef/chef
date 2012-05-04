@@ -5,6 +5,8 @@
 
 set -e
 
+mkdir -p chef-solo/cache
+
 if [ $CLEAN = "true" ]; then
   sudo rm -rf /opt/chef || true
   sudo mkdir -p /opt/chef && sudo chown jenkins /opt/chef
