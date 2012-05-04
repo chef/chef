@@ -13,7 +13,6 @@ module SpecHelpers
 
         let(:new_resource) { current_resource }
         let(:current_resource) { Chef::Resource::Service.new(service_name) }
-        let(:provider) { described_class.new(new_resource, run_context) }
         let(:stdout) { ps_without_service_running }
 
         let(:ps_without_service_running) { StringIO.new(<<-PS) }

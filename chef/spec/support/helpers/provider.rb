@@ -15,6 +15,13 @@ module SpecHelpers
       # Shared setup
       let(:node) { Chef::Node.new }
       let(:run_context) { Chef::RunContext.new(node, {}) }
+      let(:provider) { described_class.new(new_resource, run_context) }
+      let(:resource_class) { raise 'Must define resource class' }
+      let(:new_resource) { resource_class.new(resource_name).tap(&with_attributes.call(new_resource_attributes)) }
+      let(:current_resource) { resource_class.new(resource_name).tap(&with_attributes.call(current_resource_attributes)) }
+
+      let(:new_resource_attributes) { { } }
+      let(:current_resource_attributes) { { } }
 
       # shell_out! helpers
       let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout, :stderr => stderr) }

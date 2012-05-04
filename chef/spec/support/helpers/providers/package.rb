@@ -11,7 +11,6 @@ module SpecHelpers
 
         let(:new_resource) { Chef::Resource::Package.new(package_name) }
         let(:current_resource) { Chef::Resource::Package.new(package_name) }
-        let(:provider) { described_class.new(new_resource, run_context) }
         let(:installed_version) { package_version }
         let(:source_package_name) { package_name }
         let(:source_version) { package_version }
