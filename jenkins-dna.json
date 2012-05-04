@@ -1,4 +1,8 @@
 {
+  "omnibus": {
+    "build-user": "jenkins",
+    "build-path": "/home/jenkins/omnibus"
+  },
   "run_list": [
     "recipe[omnibus]"
   ]
