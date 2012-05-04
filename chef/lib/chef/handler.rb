@@ -86,13 +86,14 @@ class Chef
     # Run the report handlers. This will usually be called by a notification
     # from Chef::Client
     def self.run_report_handlers(run_status)
-      @console_ui.handler_start(report_handlers.size)
+      console_ui = run_status.console_ui
+      console_ui.handler_start(report_handlers.size)
       Chef::Log.info("Running report handlers")
       report_handlers.each do |handler|
         handler.run_report_safely(run_status)
-        @console_ui.handler_executed(handler)
+        console_ui.handler_executed(handler)
       end
-      @console_ui.handlers_completed
+      console_ui.handlers_completed
       Chef::Log.info("Report handlers complete")
     end
 
@@ -110,13 +111,14 @@ class Chef
     # Run the exception handlers. Usually will be called by a notification
     # from Chef::Client when the run fails.
     def self.run_exception_handlers(run_status)
-      @console_ui.handler_start(exception_handlers.size)
+      console_ui = run_status.console_ui
+      console_ui.handler_start(exception_handlers.size)
       Chef::Log.error("Running exception handlers")
       exception_handlers.each do |handler|
         handler.run_report_safely(run_status)
-        @console_ui.handler_executed(handler)
+        console_ui.handler_executed(handler)
       end
-      @console_ui.handlers_completed
+      console_ui.handlers_completed
       Chef::Log.error("Exception handlers complete")
     end
 
