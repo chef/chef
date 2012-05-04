@@ -122,6 +122,12 @@ class Chef::Application::Solo < Chef::Application
       }
     }
 
+  option :why_run,
+    :short        => '-W',
+    :long         => '--why-run',
+    :description  => 'Enable whyrun mode',
+    :boolean      => true
+
   attr_reader :chef_solo_json
 
   def initialize

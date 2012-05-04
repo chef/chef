@@ -153,6 +153,12 @@ class Chef::Application::Client < Chef::Application
       }
     }
 
+  option :why_run,
+    :short        => '-W',
+    :long         => '--why-run',
+    :description  => 'Enable whyrun mode',
+    :boolean      => true
+
   attr_reader :chef_client_json
 
   def initialize
