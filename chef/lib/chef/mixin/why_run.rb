@@ -213,7 +213,7 @@ class Chef
           # mode. An exception will also be raised if running in why run mode
           # and no why run message or block has been declared.
           def run
-            if !@assertion_proc.call
+            if !@assertion_proc || !@assertion_proc.call
               if Chef::Config[:why_run] && @whyrun_message
                 # TODO: real logging
                 puts "WHY RUN: #{@failure_message}"
