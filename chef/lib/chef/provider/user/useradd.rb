@@ -28,19 +28,23 @@ class Chef
         def create_user
           command = compile_command("useradd") do |useradd|
             useradd << universal_options
-            useradd << useradd_options
+            useradd << " -m -d '#{@new_resource.home}'" if create_home_dir?
+            useradd << " -r" if @new_resource.system
           end
           run_command(:command => command)
         end
         
         def manage_user
-          command = compile_command("usermod") { |u| u << universal_options }
+          command = compile_command("usermod") do |usermod| 
+            usermod << universal_options 
+            usermod << "-m -d '#{@new_resource.home}'" if modify_home_dir?
+          end
           run_command(:command => command)
         end
         
         def remove_user
           command = "userdel"
-          command << " -r" if managing_home_dir?
+          command << " -r" if remove_home_dir?
           command << " #{@new_resource.username}"
           run_command(:command => command)
         end
@@ -104,39 +108,42 @@ class Chef
               end
             end
           end
-          if updating_home?
-            if managing_home_dir?
-              Chef::Log.debug("#{@new_resource} managing the users home directory")
-              opts << " -d '#{@new_resource.home}'"
-            else
-              Chef::Log.debug("#{@new_resource} setting home to #{@new_resource.home}")
-              opts << " -d '#{@new_resource.home}'"
-            end
-          end
           opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
           opts
         end
 
-        def useradd_options
-          opts = ''
-          opts << " -m" if updating_home? && managing_home_dir?
-          opts << " -r" if @new_resource.system
-          opts
+        def create_home_dir?
+          @new_resource.home && (@new_resource.manage_home || @new_resource.supports[:manage_home] == :create || @new_resource.supports[:manage_home] == :modify || @new_resource.supports[:manage_home] == true)
         end
 
-        def updating_home?
-          # will return false if paths are equivalent
-          # Pathname#cleanpath does a better job than ::File::expand_path (on both unix and windows)
-          # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
-          # ::File.expand_path("\\tmp") => "C:/tmp"
-          @current_resource.home.nil? or
-            (@new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(@new_resource.home).cleanpath)
+        def remove_home_dir?
+          @current_resource.home && (@new_resource.manage_home || @new_resource.supports[:manage_home] == :manage || @new_resource.supports[:manage_home] == true )
         end
 
-        def managing_home_dir?
-          @new_resource.manage_home || @new_resource.supports[:manage_home]
-        end
+        def modify_home_dir?
+          # This might not be pretty but it makes understanding the logic simpler
+          # please consider the next person who needs to debug this 
+          # before attempting to "improve" the code. 
 
+          # first check if we should be managing the home directory
+          unless @new_resource.manage_home || @new_resource.supports[:manage_home] == :create || @new_resource.supports[:manage_home] == :modify || @new_resource.supports[:manage_home] == :manage || @new_resource.supports[:manage_home] == true
+            Chef::Log.debug("#{@new_resource} home directory management is disabled. Add 'supports manage_home: true' to enable.")
+            return false
+          end
+
+          # next check if we are trying to remove a home directory that already exists
+          if @current_resource.home && @new_resource.home.nil?
+            Chef::Log.warn("#{@new_resource} can not remove home directory #{@new_resource.home} from preexisting user #{@new_resource.username}!")
+            return false
+          end
+
+          # we can add a home directory if one does not exist
+          return true if @current_resource.home.nil? && @new_resource.home
+
+          # finally make sure we are not setup to only support creating a home directory
+          # and that the current and new directories are different
+          @new_resource.supports[:manage_home] != :create && Pathname.new(@current_resource.home).cleanpath != Pathname.new(@new_resource.home).cleanpath
+        end
       end
     end
   end
