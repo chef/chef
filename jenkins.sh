@@ -3,6 +3,8 @@
 # Build you some jenkins
 #
 
+set -e
+
 # First, we gotta install our own deps - this is using system ruby
 bundle install
 
