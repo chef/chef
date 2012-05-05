@@ -23,6 +23,10 @@ module SpecHelpers
       let(:new_resource_attributes) { { } }
       let(:current_resource_attributes) { { } }
 
+      # Given
+      let(:assume_new_resource) { provider.new_resource = new_resource }
+      let(:assume_current_resource) { provider.current_resource = current_resource }
+
       # shell_out! helpers
       let(:status) { mock("Status", :exitstatus => exitstatus, :stdout => stdout, :stderr => stderr) }
       let(:exitstatus) { 0 }

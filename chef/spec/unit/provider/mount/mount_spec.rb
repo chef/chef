@@ -25,202 +25,174 @@ describe Chef::Provider::Mount::Mount do
   let(:resource_name) { '/tmp/foo' }
   let(:pid) { mock('pid') }
 
+  let(:assume_fstab_info) { provider.stub!(:fstab_info).and_return(fstab_info) }
+  let(:assume_mounted) { provider.stub!(:mounted?).and_return(true) }
+  let(:assume_symlink) { ::File.stub!(:symlink?).with("#{new_resource.device}").and_return(true) }
+  let(:assume_target) { ::File.stub!(:readlink).with("#{new_resource.device}").and_return(symlink_target) }
+
+  let(:fstab_info) { { } }
   let(:new_resource_attributes) do
-    { :device =>"/dev/sdz1",
-      :device_type => :device,
-      :fstype => "ext3",
+    { :device => device,
+      :device_type => device_type,
+      :fstype => fstype,
       :supports => { :remount => false } }
   end
 
-  before(:each) do
-    ::File.stub!(:exists?).with("/dev/sdz1").and_return true
-    ::File.stub!(:exists?).with("/tmp/foo").and_return true
-  end
+  let(:device) { '/dev/sdz1' }
+  let(:device_type) { :device }
+  let(:fstype) { 'ext3' }
+  let(:symlink_target) { "/dev/mapper/target" }
 
-  describe "when discovering the current fs state" do
-    before do
-      provider.stub!(:shell_out!).and_return(status)
-      ::File.stub!(:foreach).with("/etc/fstab")
-    end
+  describe "#load_current_resource" do
+    subject { given; provider.load_current_resource }
+    let(:given) { assume_mounted and assume_fstab_info }
 
-    it "should create a current resource with the same mount point and device" do
-      provider.load_current_resource
-      provider.current_resource.name.should == '/tmp/foo'
-      provider.current_resource.mount_point.should == '/tmp/foo'
-      provider.current_resource.device.should == '/dev/sdz1'
-    end
-
-    it "should accecpt device_type :uuid" do
-      new_resource.device_type :uuid
-      new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
-      provider.
-        should_receive(:popen4).
-        with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").
-        and_yield(pid, stdin, stdout_findfs, stderr).and_return(status)
-      provider.load_current_resource()
-      provider.mountable?
-    end
-
-    describe "when dealing with network mounts" do
-      { "nfs" => "nfsserver:/vol/path",
-        "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
-        it "should detect network fs_spec (#{type})" do
-          @new_resource.device fs_spec
-          @provider.network_device?.should be_true
-        end
-
-        it "should ignore trailing slash and set mounted to true for network mount (#{type})" do
-          @new_resource.device fs_spec
-          @provider.stub!(:shell_out!).and_return(OpenStruct.new(:stdout => "#{fs_spec}/ on /tmp/foo type #{type} (rw)\n"))
-          @provider.load_current_resource
-          @provider.current_resource.mounted.should be_true
-        end
+    def self.should_load_current_resource_with(attribute)
+      it "should load #{attribute} from new resource" do
+        subject.send(attribute).should eql(new_resource.send(attribute))
       end
     end
 
-    it "should raise an error if the mount device does not exist" do
-      ::File.stub!(:exists?).with("/dev/sdz1").and_return false
-      lambda { provider.load_current_resource(); provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
-    end
+    should_load_current_resource_with :name
+    should_load_current_resource_with :mount_point
+    should_load_current_resource_with :device
+
 
     it "should not call mountable? with load_current_resource - CHEF-1565" do
-      ::File.stub!(:exists?).with("/dev/sdz1").and_return false
-      provider.should_receive(:mounted?).and_return(true)
-      provider.should_receive(:enabled?).and_return(true)
       provider.should_not_receive(:mountable?)
-      provider.load_current_resource
+      should_not be_nil
     end
 
-    it "should raise an error if the mount device (uuid) does not exist" do
-      new_resource.device_type :uuid
-      new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-      status_findfs = mock("Status", :exitstatus => 1)
-      stdout_findfs = mock("STDOUT", :first => nil)
-      provider.
-        should_receive(:popen4).
-        with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").
-        and_yield(pid, stdin, stdout_findfs, stderr).
-        and_return(status_findfs)
-      ::File.should_receive(:exists?).with("").and_return(false)
-      lambda { provider.load_current_resource(); provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
+    it 'should set mounted'
+
+    context 'when filesystem is not mounted' do
+      it 'should set mounted to false'
     end
 
-    it "should raise an error if the mount point does not exist" do
-      ::File.stub!(:exists?).with("/tmp/foo").and_return false
-      lambda { provider.load_current_resource(); provider.mountable? }.should raise_error(Chef::Exceptions::Mount)
+    it 'should set enabled'
+
+    context 'when filesystem is not enabled' do
+      it 'should set enabled to false'
     end
 
-    it "should not expect the device to exist for tmpfs" do
-      new_resource.fstype("tmpfs")
-      new_resource.device("whatever")
-      lambda { provider.load_current_resource() }.should_not raise_error
+    it 'should return the current resource' do
+      subject.should eql(provider.current_resource)
+    end
+  end
+
+  describe '#mountable?' do
+    context 'when device should exist' do
+      it 'should assert device exists'
     end
 
-    it "should not expect the device to exist for Fuse filesystems" do
-      new_resource.fstype("fuse")
-      new_resource.device("nilfs#xxx")
-      lambda { provider.load_current_resource() }.should_not raise_error
+    context 'when device should not exist' do
+      it 'should not assert device exists'
     end
 
-    it "should set mounted true if the mount point is found in the mounts list" do
-      provider.stub!(:shell_out!).and_return(mock('status', :stdout => '/dev/sdz1 on /tmp/foo'))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
+    it 'should assert mount point exists'
+  end
+
+  describe '#assert_device_exists!'
+  describe '#assert_mount_point_exists!'
+
+  describe 'mounted?' do
+    subject { given; provider.mounted? }
+    let(:given) { assume_new_resource and should_shell_out! }
+    let(:stdout) { fstab }
+
+    context 'when mount point is found in mounts list' do
+      let(:fstab) { '/dev/sdz1 on /tmp/foo' }
+      it { should be_true }
     end
 
-    it "should set mounted true if the symlink target of the device is found in the mounts list" do
-      target = "/dev/mapper/target"
+    context 'when symlink target of device is found in the mounts list' do
+      let(:given) { assume_new_resource and assume_symlink and assume_target and should_shell_out! }
+      let(:fstab) { "/dev/mapper/target on /tmp/foo type ext3 (rw)\n" }
 
-      ::File.stub!(:symlink?).with("#{new_resource.device}").and_return(true)
-      ::File.stub!(:readlink).with("#{new_resource.device}").and_return(target)
-
-      provider.stub!(:shell_out!).and_return(OpenStruct.new(:stdout => "/dev/mapper/target on /tmp/foo type ext3 (rw)\n"))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
+      it { should be_true }
     end
 
-    it "should set mounted true if the mount point is found last in the mounts list" do
-      mount = "/dev/sdy1 on #{new_resource.mount_point} type ext3 (rw)\n"
-      mount << "#{new_resource.device} on #{new_resource.mount_point} type ext3 (rw)\n"
-
-      provider.stub!(:shell_out!).and_return(mock('status', :stdout => mount))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_true
+    context 'when mount point is found last in the mounts list' do
+      let(:fstab) { <<-FSTAB }
+/dev/sdy1 on #{new_resource.mount_point} type ext3 (rw)\n
+#{new_resource.device} on #{new_resource.mount_point} type ext3 (rw)\n
+FSTAB
+     it { should be_true }
     end
 
-    it "should set mounted false if the mount point is not last in the mounts list" do
-      mount = "#{new_resource.device} on #{new_resource.mount_point} type ext3 (rw)\n"
-      mount << "/dev/sdy1 on #{new_resource.mount_point} type ext3 (rw)\n"
-
-      provider.stub!(:shell_out!).and_return(mock('status', :stdout => mount))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_false
+    context 'when mount point is not found last in the mounts list' do
+      let(:fstab) { <<-FSTAB }
+#{new_resource.device} on #{new_resource.mount_point} type ext3 (rw)\n
+/dev/sdy1 on #{new_resource.mount_point} type ext3 (rw)\n
+FSTAB
+      it { should be_false }
     end
 
-    it "should return false if the mount point is not found in the mounts list" do
-      provider.stub!(:shell_out!).and_return(mock('status', :stdout => "/dev/sdy1 on /tmp/foo type ext3 (rw)\n"))
-      provider.load_current_resource()
-      provider.current_resource.mounted.should be_false
+    context 'when mount point is not found in the mounts list' do
+      let(:fstab) { "/dev/sdy1 on /tmp/foo type ext3 (rw)\n" }
+      it { should be_false }
     end
 
-    it "should set enabled to true if the mount point is last in fstab" do
-      fstab1 = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
-      fstab2 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
+    context "with network mounts" do
+      let(:fstab) { "#{device}/ on /tmp/foo type #{fstype} (rw)\n" }
 
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
+      def self.should_ignore_trailing_slash(_device, _fstype)
+        context "with #{_fstype} remote mount" do
+          let(:device) { _device }
+          let(:fstype) { _fstype }
+          it("should ignore trailing slash and return true") { should be_true }
+        end
+      end
 
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
+      should_ignore_trailing_slash('//nfs:/share', 'nfs')
+      should_ignore_trailing_slash('//cifsserver/share', 'cifs')
+    end
+  end
+
+  describe 'enabled?' do
+    subject { given; provider.enabled? }
+    let(:given) { assume_new_resource and assume_fstab }
+    let(:assume_fstab) { ::File.stub!(:readlines).and_return(fstab) }
+
+    context 'when mount point is last in fstab' do
+      let(:fstab) { StringIO.new(<<-FSTAB) }
+/dev/sdy1  /tmp/foo  ext3  defaults  1 2
+#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2
+FSTAB
+
+      it { should be_true }
     end
 
-    it "should set enabled to true if the mount point is not last in fstab and mount_point is a substring of another mount" do
-      fstab1 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      fstab2 = "/dev/sdy1  /tmp/foo/bar  ext3  defaults  1 2\n"
-
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield(fstab1).and_yield(fstab2)
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
+    context 'when mount point is not last in fstab and mount_point is a substring of another mount' do
+      let(:fstab) { StringIO.new(<<-FSTAB) }
+#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2
+/dev/sdy1  /tmp/foo/bar  ext3  defaults  1 2
+FSTAB
+      it { should be_true }
     end
 
-    it "should set enabled to true if the symlink target is in fstab" do
-      target = "/dev/mapper/target"
-
-      ::File.stub!(:symlink?).with("#{new_resource.device}").and_return(true)
-      ::File.stub!(:readlink).with("#{new_resource.device}").and_return(target)
-
-      fstab = "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n"
-
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_true
+    context 'when mount point is not last in fstab' do
+      let(:fstab) { StringIO.new(<<-FSTAB) }
+#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2
+/dev/sdy1 #{new_resource.mount_point}  ext3  defaults  1 2
+FSTAB
+      it { should be_false }
     end
 
-    it "should set enabled to false if the mount point is not in fstab" do
-      fstab = "/dev/sdy1  #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_false
+    context 'when symlink target is in fstab' do
+      let(:given) { assume_new_resource and assume_symlink and assume_target and assume_fstab }
+      let(:fstab) { StringIO.new "/dev/sdz1  /tmp/foo ext3  defaults  1 2\n" } # Is this actually testing symlink?
+      it { should be_true }
     end
 
-    it "should ignore commented lines in fstab " do
-       fstab = "\# #{new_resource.device}  #{new_resource.mount_point}  ext3  defaults  1 2\n"
-       ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+    context 'when mount point is not in fstab' do
+      let(:fstab) { StringIO.new "/dev/sdy1  #{new_resource.mount_point}  ext3  defaults  1 2\n" }
+      it { should be_false }
+    end
 
-       provider.load_current_resource
-       provider.current_resource.enabled.should be_false
-     end
-
-    it "should set enabled to false if the mount point is not last in fstab" do
-      line_1 = "#{new_resource.device} #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      line_2 = "/dev/sdy1 #{new_resource.mount_point}  ext3  defaults  1 2\n"
-      ::File.stub!(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
-
-      provider.load_current_resource
-      provider.current_resource.enabled.should be_false
+    context 'when mount point is commented out' do
+      let(:fstab) { StringIO.new "\# #{new_resource.device}  #{new_resource.mount_point}  ext3  defaults  1 2\n" }
+      it { should be_false }
     end
   end
 
@@ -235,13 +207,16 @@ describe Chef::Provider::Mount::Mount do
     end
 
     describe "mount_fs" do
+      let(:assume_mountable_fs) { provider.should_receive(:mountable?).and_return(true) }
+
       it "should mount the filesystem if it is not mounted" do
-        provider.rspec_reset
+        assume_mountable_fs
         provider.should_receive(:shell_out!).with("mount -t ext3 -o defaults /dev/sdz1 /tmp/foo")
         provider.mount_fs()
       end
 
       it "should mount the filesystem with options if options were passed" do
+        assume_mountable_fs
         options = "rw,noexec,noauto"
         new_resource.options(%w{rw noexec noauto})
         provider.should_receive(:shell_out!).with("mount -t ext3 -o rw,noexec,noauto /dev/sdz1 /tmp/foo")
@@ -249,6 +224,7 @@ describe Chef::Provider::Mount::Mount do
       end
 
       it "should mount the filesystem specified by uuid" do
+        assume_mountable_fs
         new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
         new_resource.device_type :uuid
         stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
@@ -401,6 +377,72 @@ describe Chef::Provider::Mount::Mount do
 
         provider.disable_fs
       end
+    end
+  end
+
+  describe '#device_real' do
+    subject { given; provider.send(:device_real) }
+    let(:given) { assume_new_resource and should_shell_out! }
+
+    let(:should_shell_out!) do
+        provider.
+          should_receive(:popen4).
+          with("/sbin/findfs UUID=#{device}").
+          and_yield(pid, stdin, stdout, stderr).and_return(status)
+    end
+
+    context 'with :uuid device type' do
+      let(:device_type) { :uuid }
+      let(:device) { "d21afe51-a0fe-4dc6-9152-ac733763ae0a" }
+      let(:real_device) { '/dev/sdz1' }
+
+      let(:stdout) { StringIO.new(real_device) }
+
+      it "should accept device_type :uuid" do
+        should_not be_nil
+      end
+
+      it 'should find the real device' do
+        should eql(real_device)
+      end
+
+      context 'when `/sbin/findfs` fails to find device and exits with 1' do
+        let(:exitstatus) { 1 }
+        let(:real_device) { '' }
+        it { should eql('') }
+      end
+    end
+
+    context 'with :label device type'
+  end
+
+  describe '#device_should_exist?' do
+    subject { given; provider.device_should_exist? }
+    let(:given) { assume_new_resource }
+    let(:device) { '/dev/sda1' }
+
+    it { should be_true }
+
+    context "with nfs remote mounts" do
+      let(:device) { 'nas.example.com:/home' }
+      it { should be_false }
+    end
+
+    context "with cifs remote mounts" do
+      let(:device) { '//cifsserver/share' }
+      it { should be_false }
+    end
+
+    context 'with tmpfs fstype' do
+      let(:fstype) { 'tmpfs' }
+      let(:device) { rand(100000).to_s }
+      it { should be_false }
+    end
+
+    context 'with fuse fstype' do
+      let(:fstype) { 'fuse' }
+      let(:device) { rand(100000).to_s }
+      it { should be_false }
     end
   end
 end

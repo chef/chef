@@ -45,23 +45,24 @@ class Chef
 
           @current_resource.mounted mounted?
           @current_resource.enabled enabled?
+
+          @current_resource
         end
 
         def mountable?
-          assert_device_should_exist!
-          assert_mount_point_exist!
+          # only check for existence of non-remote devices
+          assert_device_exists! if device_should_exist?
+          assert_mount_point_exists!
           return true
         end
 
-        def assert_device_should_exist!
-          # only check for existence of non-remote devices
-          raise Chef::Exceptions::Mount,
-            "Device #{@new_resource.device} does not exist" if (device_should_exist? && !::File.exists?(device_real) )
+        def assert_device_exists!
+          raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist" unless ::File.exists?(device_real)
         end
 
-        def assert_mount_point_exist!
+        def assert_mount_point_exists!
             raise Chef::Exceptions::Mount,
-              "Mount point #{@new_resource.mount_point} does not exist" if( !::File.exists?(@new_resource.mount_point) )
+              "Mount point #{@new_resource.mount_point} does not exist" unless ::File.exists?(@new_resource.mount_point)
         end
 
         def fstab_info
@@ -70,17 +71,17 @@ class Chef
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           @fstab_info = { :enabled? => false }
 
-          ::File.foreach("/etc/fstab") do |line|
+          ::File.readlines("/etc/fstab").each do |line|
             case line
             when /^[#\s]/
               next
             when /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
 
               @fstab_info[:enabled?] = true
-              @fstab_info[:fstype]  = $1
-              @fstab_info[:options] = $2
-              @fstab_info[:dump]    = $3.to_i
-              @fstab_info[:pass]    = $4.to_i
+              @fstab_info[:fstype]   = $1
+              @fstab_info[:options]  = $2
+              @fstab_info[:dump]     = $3.to_i
+              @fstab_info[:pass]     = $4.to_i
 
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
               next
@@ -189,11 +190,10 @@ class Chef
         end
 
         def device_should_exist?
-          ( not network_device? ) &&
-            ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
+          ( not network_device? ) and ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
         end
 
-        private
+        protected
 
         def device_fstab
           case @new_resource.device_type
