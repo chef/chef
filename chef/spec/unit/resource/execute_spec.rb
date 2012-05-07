@@ -33,9 +33,21 @@ describe Chef::Resource::Execute do
     @resource.command.should eql("some command")
   end
 
+  it "should accept an array on instantiation, too" do
+    resource = Chef::Resource::Execute.new(%w{something else})
+    resource.should be_a_kind_of(Chef::Resource)
+    resource.should be_a_kind_of(Chef::Resource::Execute)
+    resource.command.should eql(%w{something else})
+  end
+
   it "should accept a string for the command to run" do
     @resource.command "something"
     @resource.command.should eql("something")
+  end
+
+  it "should accept an array for the command to run" do
+    @resource.command %w{something else}
+    @resource.command.should eql(%w{something else})
   end
 
   it "should accept a string for the cwd" do
