@@ -612,3 +612,4 @@ describe Chef::Provider::Package::Rubygems do
     end
   end
 end
+
