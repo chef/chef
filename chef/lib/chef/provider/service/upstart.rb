@@ -59,6 +59,30 @@ class Chef
             @upstart_job_dir = "/etc/init"
             @upstart_conf_suffix = ".conf"
           end
+
+          @command_success = true # new_resource.status_command= false, means upstart used 
+          @config_file_found = true 
+          @upstart_command_success = true
+        end
+
+        def define_resource_requirements 
+          super
+
+          requirements.assert(:all_actions) do |a| 
+            if !@command_success
+              whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." : 
+                "Could not determine upstart state for service"
+            end
+            a.assertion { @command_success }
+            # no failure here, just document the assumptions made. 
+            a.whyrun "#{whyrun_msg} Assuming service installed and not running." 
+          end
+
+          requirements.assert(:all_actions) do |a| 
+            a.assertion  { @config_file_found } 
+            # no failure here, just document the assumptions made. 
+            a.whyrun "Could not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}. Assuming service is disabled." 
+          end
         end
 
         def load_current_resource
@@ -76,6 +100,7 @@ class Chef
                 @current_resource.running true
               end
             rescue Chef::Exceptions::Exec
+              @command_success = false
               @current_resource.running false
               nil
             end
@@ -87,11 +112,11 @@ class Chef
                 @current_resource.running false
               end
             rescue Chef::Exceptions::Exec
+              @command_success = false
               @current_resource.running false
               nil
             end
           end
-
           # Get enabled/disabled state by reading job configuration file
           if ::File.exists?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             Chef::Log.debug("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
@@ -110,6 +135,7 @@ class Chef
               end
             end
           else
+            @config_file_found = false
             Chef::Log.debug("#{@new_resource} did not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             @current_resource.enabled false
           end

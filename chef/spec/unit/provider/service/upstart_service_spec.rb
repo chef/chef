@@ -154,6 +154,13 @@ describe Chef::Provider::Service::Upstart do
       @provider.load_current_resource
     end
 
+
+    it "should track state when the upstart configuration file fails to load" do
+      File.should_receive(:exists?).and_return false
+      @provider.load_current_resource
+      @provider.instance_variable_get("@config_file_found").should == false
+    end
+
     describe "when a status command has been specified" do
       before do
         @new_resource.stub!(:status_command).and_return("/bin/chefhasmonkeypants status")
@@ -165,6 +172,12 @@ describe Chef::Provider::Service::Upstart do
         @provider.load_current_resource
       end
 
+      it "should track state when the user-provided status command fails" do 
+        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
+        @provider.load_current_resource
+        @provider.instance_variable_get("@command_success").should == false
+      end
+
       it "should set running to false if it catches a Chef::Exceptions::Exec when using a status command" do
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
         @current_resource.should_receive(:running).with(false)
@@ -172,9 +185,16 @@ describe Chef::Provider::Service::Upstart do
       end
     end
 
+    it "should track state when we fail to obtain service status via upstart_state" do
+      @provider.should_receive(:upstart_state).and_raise Chef::Exceptions::Exec
+      @provider.load_current_resource
+      @provider.instance_variable_get("@command_success").should == false
+    end
+    
     it "should return the current resource" do
       @provider.load_current_resource.should eql(@current_resource)
     end
+
 
   end
 
