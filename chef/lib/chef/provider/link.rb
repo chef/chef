@@ -113,7 +113,6 @@ class Chef
           if @new_resource.link_type == :symbolic
             unless (file_class.symlink?(@new_resource.target_file) && file_class.readlink(@new_resource.target_file) == @new_resource.to)
               if file_class.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
-                #TODO convergeby
                 converge_by("Would unlink #{@new_resource.target_file}") do
                   ::File.unlink(@new_resource.target_file)
                 end
@@ -125,33 +124,29 @@ class Chef
               end
             end
           elsif @new_resource.link_type == :hard
-            #TODO convergeby
             converge_by("Would create #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}") do
               file_class.link(@new_resource.to, @new_resource.target_file)
               Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
               Chef::Log.info("#{@new_resource} created")
             end
           end
-          #@new_resource.updated_by_last_action(true)
         end
         if @new_resource.link_type == :symbolic
-          enforce_ownership_and_permissions
-          #set_all_access_controls
+          converge_by("Would ensure permissions and owner are correct") do 
+            enforce_ownership_and_permissions
+          end
         end
       end
 
       def action_delete
         if @new_resource.link_type == :symbolic
           if file_class.symlink?(@new_resource.target_file)
-            #TODO convergeby
             converge_by("Would delete #{@new_resource} for #{@new_resource.link_type}") do
               ::File.delete(@new_resource.target_file)
               Chef::Log.info("#{@new_resource} deleted")
             end
-            #TODO assertion
           end
         elsif @new_resource.link_type == :hard
-          #TODO assertion
           if ::File.exists?(@new_resource.target_file)
              converge_by("Would delete #{@new_resource} for #{@new_resource.link_type}") do
                ::File.delete(@new_resource.target_file)
@@ -160,16 +155,6 @@ class Chef
           end
         end
       end
-
-    # private
-    # def hardlink?(target, to)
-    #   s = file_class()
-    #   if file_class.respond_to?(:hardlink?)
-    #     file_class.hardlink?(target)
-    #   else
-    #     ::File.stat(target).ino == ::File.stat(to).ino
-    #   end
-    # end
     end
   end
 end
