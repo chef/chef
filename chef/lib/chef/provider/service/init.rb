@@ -33,6 +33,18 @@ class Chef
           @init_command = "/etc/init.d/#{@new_resource.service_name}"
         end
 
+        def define_resource_requirements
+          # do not call super here, inherit only shared_requirements
+          shared_resource_requirements
+          assert(:start, :stop, :restart, :reload) do |a|
+            a.assertion { ::File.exist?(@init_command) }
+            a.why_run("Init script '#{@init_command}' doesn't exist, assuming a prior action would have created it.") do
+              # blindly assume that the service exists but is stopped in why run mode:
+              @new_resource.status(:stopped)
+            end
+          end
+        end
+ 
         def start_service
           if @new_resource.start_command
             super

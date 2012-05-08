@@ -37,7 +37,8 @@ class Chef
         end
 
         def define_resource_requirements
-          super
+          # do not call super here, inherit only shared_requirements
+          shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             update_rcd = "/usr/sbin/update-rc.d"
             a.assertion { ::File.exists? update_rcd } 

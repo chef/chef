@@ -34,6 +34,9 @@ class Chef
         true
       end
 
+      def shared_resource_requirements
+      end
+
       def define_resource_requirements
        requirements.assert(:reload) do |a|
          a.assertion { @new_resource.supports[:reload] || @new_resource.reload_command }
@@ -68,7 +71,7 @@ class Chef
 
       def action_start
         unless @current_resource.running
-          converge_by("Would disable service #{@new_resource}") do
+          converge_by("Would start service #{@new_resource}") do
             start_service
             Chef::Log.info("#{@new_resource} started")
           end

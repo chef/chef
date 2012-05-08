@@ -43,8 +43,13 @@ class Chef
           true
         end
 
-        def define_resource_requirements
+        def shared_resource_requirements
           super
+        end
+
+        def define_resource_requirements
+          # FIXME? need reload from service.rb
+          shared_resource_requirements
           requirements.assert(:start) do |a|
             a.assertion { @new_resource.start_command }
             a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
