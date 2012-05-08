@@ -21,6 +21,7 @@ require 'chef/knife'
 class Chef
   class Knife
     class Ssh < Knife
+      @auth_methods = %w(publickey hostbased password keyboard-interactive)
 
       deps do
         require 'net/ssh'
@@ -28,6 +29,13 @@ class Chef
         require 'readline'
         require 'chef/search/query'
         require 'chef/mixin/command'
+        begin
+          require 'net/ssh/kerberos'
+        rescue LoadError
+          nil
+        else
+          @auth_methods.unshift('gssapi-with-mic')
+        end
       end
 
       attr_writer :password
@@ -143,7 +151,7 @@ class Chef
           Chef::Log.debug("Adding #{item}")
 
           hostspec = config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
-          session_opts = {}
+          session_opts = {:auth_methods => @auth_methods}
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:keys_only] = true if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
