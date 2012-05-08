@@ -29,7 +29,7 @@ class Chef
       end
 
       def action_create
-        converge_by("Would execute the ruby block #{@new_resource}") do 
+        converge_by("Would execute the ruby block #{@new_resource.name}") do 
           @new_resource.block.call
           Chef::Log.info("#{@new_resource} called")
         end
