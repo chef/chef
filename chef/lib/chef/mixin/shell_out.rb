@@ -24,6 +24,15 @@ class Chef
 
       def shell_out(*command_args)
         cmd = Mixlib::ShellOut.new(*command_args)
+        class << cmd
+          def set_environment
+            ENV.clear if Chef::Config[:override_shell_environment]
+            (Chef::Config[:override_shell_environment] || {}).merge(environment).each do |env_var,value|
+              ENV[env_var] = value
+            end
+          end
+        end
+
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?
           cmd.live_stream = STDOUT
         end

@@ -89,7 +89,8 @@ class Chef
                 Process.uid = args[:user]
               end
 
-              args[:environment].each do |key,value|
+              ENV.clear if Chef::Config[:override_shell_environment]
+              (Chef::Config[:override_shell_environment] || {}).merge(args[:environment]).each do |key,value|
                 ENV[key] = value
               end
 
