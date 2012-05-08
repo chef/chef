@@ -49,8 +49,8 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
       @rest = mock(Chef::REST, { })
       Chef::REST.stub!(:new).and_return(@rest)
-      @rest.stub!(:fetch).and_yield(@tempfile)
-
+      @rest.stub!(:streaming_request).and_return(@tempfile)
+      @rest.stub!(:create_url) { |url| url } 
       @resource.cookbook_name = "monkey"
 
       @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
@@ -118,14 +118,14 @@ describe Chef::Provider::RemoteFile, "action_create" do
       describe "and the existing file doesn't match the given checksum" do
         it "downloads the file" do
           @resource.checksum("this hash doesn't match")
-          @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
           @provider.run_action(:create)
         end
 
         it "does not consider the checksum a match if the matching string is offset" do
           # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
           @resource.checksum("fd012fd")
-          @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
           @provider.run_action(:create)
         end
       end
@@ -135,7 +135,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     describe "and the resource doesn't specify a checksum" do
       it "should download the file from the remote URL" do
         @resource.checksum(nil)
-        @rest.should_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+        @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end
@@ -143,14 +143,14 @@ describe Chef::Provider::RemoteFile, "action_create" do
     it "should raise an exception if it's any other kind of retriable response than 304" do
       r = Net::HTTPMovedPermanently.new("one", "two", "three")
       e = Net::HTTPRetriableError.new("301", r)
-      @rest.stub!(:fetch).and_raise(e)
+      @rest.stub!(:streaming_request).and_raise(e)
       lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPRetriableError)
     end
 
     it "should raise an exception if anything else happens" do
       r = Net::HTTPBadRequest.new("one", "two", "three")
       e = Net::HTTPServerException.new("fake exception", r)
-      @rest.stub!(:fetch).and_raise(e)
+      @rest.stub!(:streaming_request).and_raise(e)
       lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPServerException)
     end
 

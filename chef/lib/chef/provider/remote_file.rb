@@ -32,21 +32,26 @@ class Chef
       end
 
       def action_create
-       # assert_enclosing_directory_exists!
         Chef::Log.debug("#{@new_resource} checking for changes")
 
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          Chef::REST.new(@new_resource.source, nil, nil).fetch(@new_resource.source) do |raw_file|
-            if matches_current_checksum?(raw_file)
-              Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
-            else
-              converge_by("Would copy downloaded #{@new_resource} into #{@new_resource.path}") do
-                backup_new_resource
-                FileUtils.cp raw_file.path, @new_resource.path
-                Chef::Log.info "#{@new_resource} updated"
-              end
+          rest = Chef::REST.new(@new_resource.source, nil, nil)
+          raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          if matches_current_checksum?(raw_file)
+            Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
+          else 
+            converge_by("Would copy downloaded #{@new_resource} into #{@new_resource.path}") do
+              backup_new_resource
+              FileUtils.cp raw_file.path, @new_resource.path
+              Chef::Log.info "#{@new_resource} updated"
+              raw_file.close!
+            end
+            # whyrun mode cleanup - the temp file will never be used,
+            # so close/unlink it here. 
+            if Chef::Config[:why_run] 
+              raw_file.close!
             end
           end
         end
