@@ -23,7 +23,7 @@ class Chef
     module ShellOut
 
       def shell_out(*command_args)
-        cmd = Mixlib::ShellOut.new(*command_args)
+        cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?
           cmd.live_stream = STDOUT
         end
@@ -35,6 +35,33 @@ class Chef
         cmd= shell_out(*command_args)
         cmd.error!
         cmd
+      end
+
+      # CHEF-3090: Deprecate command_log_level and command_log_prepend
+      # Patterned after https://github.com/opscode/chef/commit/e1509990b559984b43e428d4d801c394e970f432
+      def run_command_compatible_options(command_args)
+        return command_args unless command_args.last.is_a?(Hash)
+
+        _command_args = command_args.dup
+        _options = _command_args.last
+
+        if _options[:command_log_level] then
+          deprecate_option :command_log_level, :log_level
+          _options[:log_level] = _options.delete(:command_log_level)
+        end
+
+        if _options[:command_log_prepend] then
+          deprecate_option :command_log_tag, :log_tag
+          _options[:log_tag] = _options.delete(:command_log_prepend)
+        end
+
+        return _command_args
+      end
+
+      private
+
+      def deprecate_option(old_option, new_option)
+        Chef::Log.logger.warn "DEPRECATION: Chef::Mixin::ShellOut option :#{old_option} is deprecated. Use :#{new_option}"
       end
     end
   end
