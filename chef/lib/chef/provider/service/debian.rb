@@ -47,7 +47,7 @@ class Chef
           end 
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @priority_load_success } 
+            a.assertion { @priority_success } 
             a.failure_message  Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{@rcd_status.inspect}"
             # This can happen if the service is not yet installed,so we'll fake it. 
             a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.", 
