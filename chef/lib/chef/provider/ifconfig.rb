@@ -84,7 +84,7 @@ class Chef
       end
 
       def action_add
-        # check to see if load_current_resource found ifconfig
+        # check to see if load_current_resource found interface in ifconfig
         unless @current_resource.inet_addr
           unless @new_resource.device == "lo"
             command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
@@ -145,7 +145,7 @@ class Chef
         # disables, but leaves config files in place.
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-          converge_by ("Would run #{command} to delete #{@new_resource}") do
+          converge_by ("Would run #{command} to disable #{@new_resource}") do
             run_command(
               :command => command
             )
