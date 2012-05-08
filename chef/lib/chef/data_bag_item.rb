@@ -224,7 +224,11 @@ class Chef
     def save(item_id=@raw_data['id'])
       r = chef_server_rest
       begin
-        r.put_rest("data/#{data_bag}/#{item_id}", self)
+        if Chef::Config[:why_run]
+          Chef::Log.warn("In whyrun mode, so NOT performing data bag item save.")
+        else
+          r.put_rest("data/#{data_bag}/#{item_id}", self)
+        end
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
         r.post_rest("data/#{data_bag}", self)
