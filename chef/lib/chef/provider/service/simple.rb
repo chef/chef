@@ -107,6 +107,10 @@ class Chef
                 Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+            rescue SystemCallError
               @status_load_success = false
               @current_resource.running false
               nil
@@ -121,6 +125,10 @@ class Chef
                 Chef::Log.debug("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+            rescue SystemCallError
               @status_load_success = false
               @current_resource.running false
               nil
@@ -139,6 +147,10 @@ class Chef
               @current_resource.running false unless @current_resource.running
               Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
             rescue Mixlib::ShellOut::ShellCommandFailed
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+            rescue SystemCallError
               @ps_command_failed = true
             end
           end
