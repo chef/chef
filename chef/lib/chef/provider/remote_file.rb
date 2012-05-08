@@ -41,8 +41,8 @@ class Chef
           raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
-          else 
-            converge_by("Would copy downloaded #{@new_resource} into #{@new_resource.path}") do
+          else
+            converge_by("Would copy file download from #{@new_resource.source} into #{@new_resource.path}") do
               backup_new_resource
               FileUtils.cp raw_file.path, @new_resource.path
               Chef::Log.info "#{@new_resource} updated"
