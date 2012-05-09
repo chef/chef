@@ -479,9 +479,9 @@ FSTAB
 
     let(:should_shell_out!) do
         provider.
-          should_receive(:popen4).
+          should_receive(:shell_out!).
           with("/sbin/findfs UUID=#{device}").
-          and_yield(pid, stdin, stdout, stderr).and_return(status)
+          and_return(status)
     end
 
     context 'with :uuid device type' do
@@ -489,7 +489,8 @@ FSTAB
       let(:device) { "d21afe51-a0fe-4dc6-9152-ac733763ae0a" }
       let(:real_device) { '/dev/sdz1' }
 
-      let(:stdout) { StringIO.new(real_device) }
+      # StringIO works most of the time for mocks, but it is not exactly a string
+      let(:stdout) { real_device }
 
       it "should accept device_type :uuid" do
         should_not be_nil

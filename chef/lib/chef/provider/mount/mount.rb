@@ -198,13 +198,9 @@ class Chef
           return @real_device if @real_device
           return @real_device = @new_resource.device if @new_resource.device_type == :device
 
-          @real_device = ""
-          status = popen4("/sbin/findfs #{device_fstab}") do |pid, stdin, stdout, stderr|
-            device_line = stdout.first # stdout.first consumes
-            @real_device = device_line.chomp unless device_line.nil?
-          end
-
-          return @real_device
+          status = shell_out!("/sbin/findfs #{device_fstab}")
+          device_line = status.stdout.split("\n").first # stdout.first consumes
+          return @real_device = (device_line.nil? ? '' : device_line.chomp)
         end
 
         def device_logstring
