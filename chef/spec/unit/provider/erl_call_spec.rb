@@ -22,7 +22,7 @@ describe Chef::Provider::ErlCall do
   include SpecHelpers::Provider
 
   let(:erl_call_name) { 'test' }
-  let(:new_resource) { Chef::Resource::ErlCall.new(erl_call_name, node) }
+  let(:new_resource) { Chef::Resource::ErlCall.new(erl_call_name, node).tap(&with_attributes.call(new_resource_attributes)) }
 
   let(:new_resource_attributes) do
     { :code => code,
@@ -87,6 +87,84 @@ describe Chef::Provider::ErlCall do
       provider.action_run
 
       stdin.string.should == "#{new_resource.code}\n"
+    end
+  end
+
+  describe '#erl_call_cmd' do
+    subject { given; provider.erl_call_cmd }
+    let(:given) { assume_new_resource }
+
+    let(:new_resource_attributes) do
+      { :code        => code,
+        :node_name   => node_name,
+        :name        => erl_call_name,
+        :name_type   => name_type,
+        :distributed => distributed?,
+        :cookie      => cookie }
+    end
+
+    let(:name_type)    { 'name' }
+    let(:cookie)       { nil }
+    let(:distributed?) { false }
+
+    context 'when name type is name' do
+      let(:name_type) { 'name' }
+
+      it 'should return with the -name flag' do
+        should match /^erl_call -e.*\s+-name\s+/
+      end
+
+      it 'should pass the name' do
+        should match /^erl_call -e.*\s+-name\s+#{Regexp.escape(node_name)}/
+      end
+    end
+
+    context 'when name type is sname' do
+      let(:name_type) { 'sname' }
+
+      it 'should return with the -sname flag' do
+        should match /^erl_call -e.*\s+-sname\s+/
+      end
+
+      it 'should pass the sname' do
+        should match /^erl_call -e.*\s+-sname\s+#{Regexp.escape(node_name)}/
+      end
+    end
+
+    context 'when distributed' do
+      let(:distributed?) { true }
+
+      it 'should return with the -s flag' do
+        should match /^erl_call -e.*\s+-s\s+/
+      end
+    end
+
+    context 'when not distributed' do
+      let(:distributed?) { false }
+
+      it 'should return with the -s flag' do
+        should_not match /^erl_call -e.*\s+-s\s+/
+      end
+    end
+
+    context 'with cookie' do
+      let(:cookie) { rand(100000000).to_s }
+
+      it 'should return with the -c flag' do
+        should match /^erl_call -e.*\s+-c\s+/
+      end
+
+      it 'should pass the cookie' do
+        should match /^erl_call -e.*\s+-c\s+#{Regexp.escape(cookie)}/
+      end
+    end
+
+    context 'without cookie' do
+      let(:cookie) { nil }
+
+      it 'should not return with the -c flag' do
+        should_not match /^erl_call -e.*\s+-c\s+/
+      end
     end
   end
 

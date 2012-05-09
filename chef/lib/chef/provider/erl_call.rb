@@ -34,32 +34,11 @@ class Chef
       end
 
       def action_run
-        case @new_resource.name_type
-        when "sname"
-          node = "-sname #{@new_resource.node_name}"
-        when "name"
-          node = "-name #{@new_resource.node_name}"
-        end
-
-        if @new_resource.cookie
-          cookie = "-c #{@new_resource.cookie}"
-        else
-          cookie = ""
-        end
-
-        if @new_resource.distributed
-          distributed = "-s"
-        else
-          distributed = ""
-        end
-
-        command = "erl_call -e #{distributed} #{node} #{cookie}"
-
         begin
-          pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
+          pid, stdin, stdout, stderr = popen4(erl_call_cmd, :waitlast => true)
 
           Chef::Log.debug("#{@new_resource} running")
-          Chef::Log.debug("#{@new_resource} command: #{command}")
+          Chef::Log.debug("#{@new_resource} command: #{erl_call_cmd}")
           Chef::Log.debug("#{@new_resource} code: #{@new_resource.code}")
 
           @new_resource.code.each_line { |line| stdin.puts(line.chomp) }
@@ -96,6 +75,24 @@ class Chef
 
       end
 
+      def erl_call_cmd
+        @_erl_call_cmd ||= "erl_call -e #{erl_distributed} #{erl_node_name} #{erl_cookie}"
+      end
+
+      def erl_node_name
+        case @new_resource.name_type
+        when "sname" then "-sname #{@new_resource.node_name}"
+        when "name"  then "-name #{@new_resource.node_name}"
+        end
+      end
+
+      def erl_cookie
+        @new_resource.cookie ? "-c #{@new_resource.cookie}" : ""
+      end
+
+      def erl_distributed
+        @new_resource.distributed ? "-s" : ""
+      end
     end
   end
 end
