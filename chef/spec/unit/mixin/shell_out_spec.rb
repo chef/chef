@@ -69,7 +69,27 @@ describe Chef::Mixin::ShellOut do
       it 'should emit a deprecation warning'
     end
 
-    pending "with 'command_log_level' option"
-    pending "with 'command_log_prepend' option"
+    context "with 'command_log_level' option" do
+      let(:options) { { 'command_log_level' => command_log_level } }
+      let(:command_log_level) { :warn }
+
+      it "should convert 'command_log_level' to :log_level" do
+        should eql [ cmd, { :log_level => command_log_level } ]
+      end
+
+      it 'should emit a deprecation warning'
+    end
+
+    context "with 'command_log_prepend' option" do
+      let(:options) { { 'command_log_prepend' => command_log_prepend } }
+      let(:command_log_prepend) { 'PROVIDER:' }
+
+      it "should convert 'command_log_prepend' to :log_tag" do
+        should eql [ cmd, { :log_tag => command_log_prepend } ]
+      end
+
+      it 'should emit a deprecation warning'
+    end
+
   end
 end

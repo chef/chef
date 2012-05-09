@@ -37,6 +37,10 @@ class Chef
         cmd
       end
 
+      DEPRECATED_OPTIONS =
+        [ [:command_log_level,   :log_level],
+          [:command_log_prepend, :log_tag] ]
+
       # CHEF-3090: Deprecate command_log_level and command_log_prepend
       # Patterned after https://github.com/opscode/chef/commit/e1509990b559984b43e428d4d801c394e970f432
       def run_command_compatible_options(command_args)
@@ -45,14 +49,11 @@ class Chef
         _command_args = command_args.dup
         _options = _command_args.last
 
-        if _options[:command_log_level] then
-          deprecate_option :command_log_level, :log_level
-          _options[:log_level] = _options.delete(:command_log_level)
-        end
-
-        if _options[:command_log_prepend] then
-          deprecate_option :command_log_tag, :log_tag
-          _options[:log_tag] = _options.delete(:command_log_prepend)
+        DEPRECATED_OPTIONS.each do |old_option, new_option|
+          # Edge case: someone specifies :command_log_level and 'command_log_level' in the option hash
+          next unless value = _options.delete(old_option) || _options.delete(old_option.to_s)
+          deprecate_option old_option, new_option
+          _options[new_option] = value
         end
 
         return _command_args
