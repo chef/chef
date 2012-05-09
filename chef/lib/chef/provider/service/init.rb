@@ -38,6 +38,7 @@ class Chef
           shared_resource_requirements
           requirements.assert(:start, :stop, :restart, :reload) do |a|
             a.assertion { ::File.exist?(@init_command) }
+            a.failure_message(Chef::Exceptions::Service, "#{@init_command} does not exist!")
             a.whyrun("Init script '#{@init_command}' doesn't exist, assuming a prior action would have created it.") do
               # blindly assume that the service exists but is stopped in why run mode:
               @status_load_success = false
