@@ -26,11 +26,11 @@ describe Chef::Provider::Execute do
     @new_resource = Chef::Resource::Execute.new("foo_resource", @run_context)
     @new_resource.timeout 3600
     @new_resource.returns 0
-    @new_resource.environment :environment => "Foo environment"
-    @new_resource.user "user"
-    @new_resource.group "user"
-    @new_resource.cwd File.expand_path(File.dirname(__FILE__))
-    @new_resource.umask "255.255.255.0"
+    #@new_resource.environment :environment => "Foo environment"
+    #@new_resource.user "user"
+    #@new_resource.group "user"
+    #@new_resource.cwd File.expand_path(File.dirname(__FILE__))
+    #@new_resource.umask "255.255.255.0"
     @new_resource.creates "foo_resource"
     @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("foo_resource", @run_context)
@@ -45,11 +45,11 @@ describe Chef::Provider::Execute do
       opts = {}
       opts[:timeout] = @new_resource.timeout
       opts[:returns] = @new_resource.returns
-      opts[:environment] = @new_resource.environment
-      opts[:user] = @new_resource.user
-      opts[:group] = @new_resource.group
-      opts[:cwd] = @new_resource.cwd
-      opts[:umask] = @new_resource.umask
+      #opts[:environment] = @new_resource.environment
+      #opts[:user] = @new_resource.user
+      #opts[:group] = @new_resource.group
+      #opts[:cwd] = @new_resource.cwd
+      #opts[:umask] = @new_resource.umask
       opts[:log_level] = :info
       opts[:log_tag] = @new_resource.to_s
       opts[:live_stream] = STDOUT
