@@ -49,7 +49,7 @@ class Chef
           @current_resource
         end
 
-        def mountable?
+        def assert_mountable!
           # only check for existence of non-remote devices
           assert_device_exists! if device_should_exist?
           assert_mount_point_exists!
@@ -115,24 +115,11 @@ class Chef
         end
 
         def mount_fs
-          unless @current_resource.mounted
-            mountable?
-            command = "mount -t #{@new_resource.fstype}"
-            command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
-            command << case @new_resource.device_type
-            when :device
-              " #{device_real}"
-            when :label
-              " -L #{@new_resource.device}"
-            when :uuid
-              " -U #{@new_resource.device}"
-            end
-            command << " #{@new_resource.mount_point}"
-            shell_out!(command)
-            Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
-          else
-            Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
-          end
+          Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}") and return if @current_resource.mounted
+
+          assert_mountable!
+          shell_out!(mount_cmd)
+          Chef::Log.debug("#{@new_resource} is mounted at #{@new_resource.mount_point}")
         end
 
         def umount_fs
@@ -145,16 +132,16 @@ class Chef
         end
 
         def remount_fs
-          if @current_resource.mounted and @new_resource.supports[:remount]
+          Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point} - nothing to do") and return unless @current_resource.mounted
+
+          if @new_resource.supports[:remount]
             shell_out!("mount -o remount #{@new_resource.mount_point}")
             @new_resource.updated_by_last_action(true)
             Chef::Log.debug("#{@new_resource} is remounted at #{@new_resource.mount_point}")
-          elsif @current_resource.mounted
+          else
             umount_fs
             sleep 1
             mount_fs
-          else
-            Chef::Log.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point} - nothing to do")
           end
         end
 
@@ -169,6 +156,7 @@ class Chef
             # disable, then enable.
             disable_fs
           end
+
           ::File.open("/etc/fstab", "a") do |fstab|
             fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
@@ -252,6 +240,17 @@ class Chef
           @current_resource.pass == @new_resource.pass
         end
 
+        def mount_cmd
+          ["mount -t #{@new_resource.fstype}"].tap do |cmd|
+            cmd << "-o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            cmd << case @new_resource.device_type
+                   when :device then device_real
+                   when :label  then "-L #{@new_resource.device}"
+                   when :uuid   then "-U #{@new_resource.device}"
+                   end
+            cmd << @new_resource.mount_point
+          end.join(' ')
+        end
       end
     end
   end

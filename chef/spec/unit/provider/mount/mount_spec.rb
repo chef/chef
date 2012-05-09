@@ -38,6 +38,14 @@ describe Chef::Provider::Mount::Mount do
       :supports => { :remount => false } }
   end
 
+  let(:new_resource_attributes_with_options) do
+    { :device => device,
+      :device_type => device_type,
+      :fstype => fstype,
+      :options => mount_options,
+      :supports => { :remount => false } }
+  end
+
   let(:device) { '/dev/sdz1' }
   let(:device_type) { :device }
   let(:fstype) { 'ext3' }
@@ -57,9 +65,8 @@ describe Chef::Provider::Mount::Mount do
     should_load_current_resource_with :mount_point
     should_load_current_resource_with :device
 
-
-    it "should not call mountable? with load_current_resource - CHEF-1565" do
-      provider.should_not_receive(:mountable?)
+    it "should not call assert_mountable!  with load_current_resource - CHEF-1565" do
+      provider.should_not_receive(:assert_mountable!)
       should_not be_nil
     end
 
@@ -80,7 +87,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe '#mountable?' do
+  describe '#assert_mountable!' do
     context 'when device should exist' do
       it 'should assert device exists'
     end
@@ -197,61 +204,48 @@ FSTAB
   end
 
   context "after the mount's state has been discovered" do
-    before do
-      current_resource = Chef::Resource::Mount.new("/tmp/foo")
-      current_resource.device       "/dev/sdz1"
-      current_resource.device_type  :device
-      current_resource.fstype       "ext3"
-
-      provider.current_resource = current_resource
-    end
 
     describe "mount_fs" do
-      let(:assume_mountable_fs) { provider.should_receive(:mountable?).and_return(true) }
+      let(:assume_mountable_fs) { provider.should_receive(:assert_mountable!).and_return(true) }
+      let(:assume_mount_cmd) { provider.should_receive(:mount_cmd).and_return(mount_cmd) }
+      let(:mount_cmd) { mock('mount cmd') }
+      let(:cmd) { mount_cmd }
 
-      it "should mount the filesystem if it is not mounted" do
-        assume_mountable_fs
-        provider.should_receive(:shell_out!).with("mount -t ext3 -o defaults /dev/sdz1 /tmp/foo")
-        provider.mount_fs()
+      context 'when filesystem is not mounted' do
+        it 'should mount the filesystem' do
+          assume_current_resource
+          provider.current_resource.mounted false
+          assume_mountable_fs
+          assume_mount_cmd
+          should_shell_out!
+
+          provider.mount_fs
+        end
       end
 
-      it "should mount the filesystem with options if options were passed" do
-        assume_mountable_fs
-        options = "rw,noexec,noauto"
-        new_resource.options(%w{rw noexec noauto})
-        provider.should_receive(:shell_out!).with("mount -t ext3 -o rw,noexec,noauto /dev/sdz1 /tmp/foo")
-        provider.mount_fs()
+      context 'when filesystem is mounted' do
+        it 'should not mount the filesystem' do
+          assume_current_resource
+          provider.current_resource.mounted true
+          provider.should_not_receive(:shell_out!)
+          provider.mount_fs
+        end
       end
-
-      it "should mount the filesystem specified by uuid" do
-        assume_mountable_fs
-        new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
-        new_resource.device_type :uuid
-        stdout_findfs = mock("STDOUT", :first => "/dev/sdz1")
-        provider.stub!(:popen4).with("/sbin/findfs UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_yield(pid,stdin,stdout_findfs,stderr).and_return(status)
-        stdout_mock = mock('stdout mock')
-        stdout_mock.stub!(:each).and_yield("#{new_resource.device} on #{new_resource.mount_point}")
-        provider.should_receive(:shell_out!).with("mount -t #{new_resource.fstype} -o defaults -U #{new_resource.device} #{new_resource.mount_point}").and_return(stdout_mock)
-        provider.mount_fs()
-      end
-
-      it "should not mount the filesystem if it is mounted" do
-        provider.current_resource.stub!(:mounted).and_return(true)
-        provider.should_not_receive(:shell_out!)
-        provider.mount_fs()
-      end
-
     end
 
     describe "umount_fs" do
       it "should umount the filesystem if it is mounted" do
-        provider.current_resource.mounted(true)
+        assume_current_resource
+        provider.current_resource.mounted true
+
         provider.should_receive(:shell_out!).with("umount /tmp/foo")
         provider.umount_fs()
       end
 
       it "should not umount the filesystem if it is not mounted" do
-        current_resource.mounted(false)
+        assume_current_resource
+        current_resource.mounted false
+
         provider.should_not_receive(:shell_out!)
         provider.umount_fs()
       end
@@ -259,15 +253,23 @@ FSTAB
 
     describe "remount_fs" do
       it "should use mount -o remount if remount is supported" do
+        assume_current_resource
+        assume_new_resource
+
         new_resource.supports({:remount => true})
-        provider.current_resource.mounted(true)
+        provider.current_resource.mounted true
+
         provider.should_receive(:shell_out!).with("mount -o remount #{new_resource.mount_point}")
         provider.remount_fs
       end
 
       it "should umount and mount if remount is not supported" do
+        assume_current_resource
+        assume_new_resource
+
         new_resource.supports({:remount => false})
-        provider.current_resource.mounted(true)
+        provider.current_resource.mounted true
+
         provider.should_receive(:umount_fs)
         provider.should_receive(:sleep).with(1)
         provider.should_receive(:mount_fs)
@@ -275,7 +277,11 @@ FSTAB
       end
 
       it "should not try to remount at all if mounted is false" do
-        current_resource.mounted(false)
+        assume_current_resource
+        assume_new_resource
+
+        current_resource.mounted false
+
         provider.should_not_receive(:shell_out!)
         provider.should_not_receive(:umount_fs)
         provider.should_not_receive(:mount_fs)
@@ -283,100 +289,107 @@ FSTAB
       end
     end
 
-    describe "when enabling the fs" do
-      it "should enable if enabled isn't true" do
-        current_resource.enabled(false)
+    describe "#enable_fs" do
+      let(:fstab) { StringIO.new }
 
-        fstab = StringIO.new
-        ::File.stub!(:open).with("/etc/fstab", "a").and_yield(fstab)
-        provider.enable_fs
-        fstab.string.should match(%r{^/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+0\s+2\s*$})
+      context 'when fs is not enabled' do
+        it "should write fs entry into /etc/fstab" do
+          assume_current_resource
+          current_resource.enabled false
+
+          ::File.stub!(:open).with("/etc/fstab", "a").and_yield(fstab)
+
+          provider.enable_fs
+          fstab.string.should match(%r{^/dev/sdz1\s+/tmp/foo\s+ext3\s+defaults\s+0\s+2\s*$})
+        end
       end
 
-      it "should not enable if enabled is true and resources match" do
-        provider.current_resource.enabled(true)
-        provider.current_resource.fstype("ext3")
-        provider.current_resource.options(["defaults"])
-        provider.current_resource.dump(0)
-        provider.current_resource.pass(2)
-        ::File.should_not_receive(:open).with("/etc/fstab", "a")
+      context 'when fs is enabled' do
+        it "should not enable if enabled is true and resources match" do
+          assume_current_resource
+          provider.current_resource.enabled true
+          provider.stub!(:mount_options_unchanged?).and_return(true)
 
-        provider.enable_fs
-      end
+          ::File.should_not_receive(:open).with("/etc/fstab", "a")
+          provider.enable_fs
+        end
 
-      it "should enable if enabled is true and resources do not match" do
-        provider.current_resource.enabled(true)
-        provider.current_resource.fstype("auto")
-        provider.current_resource.options(["defaults"])
-        provider.current_resource.dump(0)
-        provider.current_resource.pass(2)
+        it "should enable if enabled is true and resources do not match" do
+          assume_current_resource
+          provider.current_resource.enabled true
+          provider.stub!(:mount_options_unchanged?).and_return(false)
 
-        provider.should_receive(:disable_fs).and_return(true)
+          provider.should_receive(:disable_fs).and_return(true)
+          ::File.stub(:readlines).and_return([])
+          ::File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(fstab)
 
-        fstab = StringIO.new
-        ::File.stub(:readlines).and_return([])
-        ::File.should_receive(:open).once.with("/etc/fstab", "a").and_yield(fstab)
-
-        provider.enable_fs
+          provider.enable_fs
+        end
       end
     end
 
-    describe "when disabling the fs" do
+    describe "#disable_fs" do
+      let(:other_mount) { "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n" }
+      let(:target_mount) { "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n" }
+      let(:fstab_from_readlines) { [target_mount, other_mount] }
+
+      let(:output) { StringIO.new }
+      let(:new_fstab) { output.string }
+
       it "should disable if enabled is true" do
-        provider.current_resource.enabled(true)
+        assume_current_resource
+        provider.current_resource.enabled true
 
-        other_mount = "/dev/sdy1  /tmp/foo  ext3  defaults  1 2\n"
-        this_mount = "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n"
-
-        fstab_read = [this_mount, other_mount]
-        ::File.stub!(:readlines).with("/etc/fstab").and_return(fstab_read)
-        fstab_write = StringIO.new
-        ::File.stub!(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        ::File.stub!(:readlines).with("/etc/fstab").and_return(fstab_from_readlines)
+        ::File.stub!(:open).with("/etc/fstab", "w").and_yield(output)
 
         provider.disable_fs
-        fstab_write.string.should match(Regexp.escape(other_mount))
-        fstab_write.string.should_not match(Regexp.escape(this_mount))
+        new_fstab.should match Regexp.escape(other_mount)
+        new_fstab.should_not match Regexp.escape(target_mount)
       end
 
-      it "should disable if enabled is true and ignore commented lines" do
-        provider.current_resource.enabled(true)
 
-        fstab_read = [%q{/dev/sdy1 /tmp/foo  ext3  defaults  1 2},
-                      %q{/dev/sdz1 /tmp/foo  ext3  defaults  1 2},
-                      %q{#/dev/sdz1 /tmp/foo  ext3  defaults  1 2}]
-        fstab_write = StringIO.new
+      context 'with commented lines' do
+        let(:commented_mount) { "#/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n" }
+        let(:fstab_from_readlines) { [target_mount, other_mount, commented_mount] }
 
-        ::File.stub!(:readlines).with("/etc/fstab").and_return(fstab_read)
-        ::File.stub!(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        it "should disable if enabled is true and ignore commented lines" do
+          assume_current_resource
+          provider.current_resource.enabled true
 
-        provider.disable_fs
-        fstab_write.string.should match(%r{^/dev/sdy1 /tmp/foo  ext3  defaults  1 2$})
-        fstab_write.string.should match(%r{^#/dev/sdz1 /tmp/foo  ext3  defaults  1 2$})
-        fstab_write.string.should_not match(%r{^/dev/sdz1 /tmp/foo  ext3  defaults  1 2$})
+          ::File.stub!(:readlines).with("/etc/fstab").and_return(fstab_from_readlines)
+          ::File.stub!(:open).with("/etc/fstab", "w").and_yield(output)
+
+          provider.disable_fs
+          new_fstab.should match Regexp.escape(other_mount)
+          new_fstab.should match Regexp.escape(commented_mount)
+
+          new_fstab.should_not match %r{^#{Regexp.escape(target_mount)}}
+        end
       end
 
-      it "should disable only the last entry if enabled is true" do
-        provider.current_resource.stub!(:enabled).and_return(true)
-        fstab_read = ["/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
-                      "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n",
-                      "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n"]
+      context 'when filesystem appears multiple times in fstab' do
+        let(:fstab_from_readlines) { [target_mount, other_mount, target_mount] }
+        let(:expected_output) { [target_mount, other_mount].join }
 
-        fstab_write = StringIO.new
-        ::File.stub!(:readlines).with("/etc/fstab").and_return(fstab_read)
-        ::File.stub!(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+        it "should disable only the last entry if enabled is true" do
+          assume_current_resource
+          provider.current_resource.enabled true
 
-        provider.disable_fs
-        fstab_write.string.should == "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n"
+          ::File.stub!(:readlines).with("/etc/fstab").and_return(fstab_from_readlines)
+          ::File.stub!(:open).with("/etc/fstab", "w").and_yield(output)
+
+          provider.disable_fs
+          new_fstab.should eql expected_output
+        end
       end
 
       it "should not disable if enabled is false" do
-        provider.current_resource.stub!(:enabled).and_return(false)
-
-        ::File.stub!(:readlines).with("/etc/fstab").and_return([])
-        ::File.should_not_receive(:open)
-
+        assume_current_resource
+        provider.current_resource.enabled false
         provider.disable_fs
       end
+
     end
   end
 
@@ -444,5 +457,99 @@ FSTAB
       let(:device) { rand(100000).to_s }
       it { should be_false }
     end
+  end
+
+  describe '#mount_options_unchanged?' do
+    subject { given; provider.send(:mount_options_unchanged?) }
+    let(:given) { assume_new_resource and assume_current_resource and assume_current_resource_state }
+
+    let(:assume_current_resource_state) { current_resource.tap(&with_attributes.call(current_resource_state)) }
+
+    let(:current_resource_state) do
+      { :fstype  => current_fstype,
+        :options => current_mount_options,
+        :dump    => current_dump,
+        :pass    => current_pass }
+    end
+
+    let(:current_fstype)        { provider.new_resource.fstype }
+    let(:current_mount_options) { provider.new_resource.options }
+    let(:current_dump)          { provider.new_resource.dump }
+    let(:current_pass)          { provider.new_resource.pass }
+    let(:token)                 { rand(1000).to_s }
+
+    context 'when mount options are unchanged' do
+      it { should be_true }
+    end
+
+    context 'when fstype is different' do
+      let(:current_fstype) { "#{provider.new_resource.fstype}_#{token}" }
+      it { should be_false }
+    end
+
+    context 'when mount options are different' do
+      let(:current_mount_options) { provider.new_resource.options.dup << token }
+      it { should be_false }
+    end
+
+    context 'when dump option is different' do
+      let(:current_dump) { 1 }
+      it { should be_false }
+    end
+
+    context 'when pass option is different' do
+      let(:current_pass) { 1 }
+      it { should be_false }
+    end
+  end
+
+  describe '#mount_cmd' do
+    subject { given; provider.send(:mount_cmd) }
+    let(:given) { assume_new_resource }
+
+    let(:mount_point) { '/tmp/foo' }
+    let(:fstype) { 'ext3' }
+    let(:device) { '/dev/sdz1' }
+
+    context 'without options' do
+      it 'should return standard mount command' do
+        should eql "mount -t #{fstype} -o defaults #{device} #{mount_point}"
+      end
+    end
+
+    context 'with empty options' do
+      let(:new_resource_attributes) { new_resource_attributes_with_options }
+      let(:mount_options) { [] }
+      it 'should return standard mount command' do
+        should eql "mount -t #{fstype} #{device} #{mount_point}"
+      end
+    end
+
+    context 'with options' do
+      let(:new_resource_attributes) { new_resource_attributes_with_options }
+      let(:mount_options) { %w(rw noexec noauto) }
+      let(:mount_option_flags) { mount_options.join(',') }
+
+      it "should return mount command with options" do
+        should eql "mount -t #{fstype} -o #{mount_option_flags} #{device} #{mount_point}"
+      end
+    end
+
+    context 'when device is specified by UUID' do
+      let(:device_type) { :uuid }
+      let(:device) { 'd21afe51-a0fe-4dc6-9152-ac733763ae0a' }
+      it "should return mount command with -U flag" do
+        should eql "mount -t #{fstype} -o defaults -U #{device} #{mount_point}"
+      end
+    end
+
+    context 'when device is specified by Label' do
+      let(:device_type) { :label }
+      let(:device) { 'postgresqldb' }
+      it "should return mount command with -L flag" do
+        should eql "mount -t #{fstype} -o defaults -L #{device} #{mount_point}"
+      end
+    end
+
   end
 end
