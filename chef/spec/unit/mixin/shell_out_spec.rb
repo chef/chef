@@ -30,6 +30,10 @@ describe Chef::Mixin::ShellOut do
     let(:command_args) { [ cmd, options ] }
     let(:cmd) { "echo '#{rand(1000)}'" }
 
+    let(:output) { StringIO.new }
+    let(:capture_log_output) { Chef::Log.logger = Logger.new(output)  }
+    let(:assume_deprecation_log_level) { Chef::Log.stub!(:level).and_return(:warn) }
+
     context 'without options' do
       let(:command_args) { [ cmd ] }
 
@@ -47,6 +51,16 @@ describe Chef::Mixin::ShellOut do
       end
     end
 
+    def self.should_emit_deprecation_warning_about(old_option, new_option)
+      it 'should emit a deprecation warning' do
+        assume_deprecation_log_level and capture_log_output
+        subject
+        output.string.should match /DEPRECATION:/
+        output.string.should match Regexp.escape(old_option)
+        output.string.should match Regexp.escape(new_option)
+      end
+    end
+
     context 'with :command_log_level option' do
       let(:options) { { :command_log_level => command_log_level } }
       let(:command_log_level) { :warn }
@@ -55,7 +69,7 @@ describe Chef::Mixin::ShellOut do
         should eql [ cmd, { :log_level => command_log_level } ]
       end
 
-      it 'should emit a deprecation warning'
+      should_emit_deprecation_warning_about :command_log_level, :log_level
     end
 
     context 'with :command_log_prepend option' do
@@ -66,7 +80,7 @@ describe Chef::Mixin::ShellOut do
         should eql [ cmd, { :log_tag => command_log_prepend } ]
       end
 
-      it 'should emit a deprecation warning'
+      should_emit_deprecation_warning_about :command_log_prepend, :log_tag
     end
 
     context "with 'command_log_level' option" do
@@ -77,7 +91,7 @@ describe Chef::Mixin::ShellOut do
         should eql [ cmd, { :log_level => command_log_level } ]
       end
 
-      it 'should emit a deprecation warning'
+      should_emit_deprecation_warning_about :command_log_level, :log_level
     end
 
     context "with 'command_log_prepend' option" do
@@ -88,7 +102,7 @@ describe Chef::Mixin::ShellOut do
         should eql [ cmd, { :log_tag => command_log_prepend } ]
       end
 
-      it 'should emit a deprecation warning'
+      should_emit_deprecation_warning_about :command_log_prepend, :log_tag
     end
 
   end
