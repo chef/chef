@@ -17,100 +17,96 @@
 #
 
 require 'spec_helper'
-require 'ostruct'
 
-describe "initialize" do
+describe Chef::Provider::Mdadm do
+  include SpecHelpers::Provider
 
-  before(:each) do
-    @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+  let(:resource_name) { md_device }
+  let(:resource_class) { Chef::Resource::Mdadm }
 
-    @new_resource = Chef::Resource::Mdadm.new('/dev/md1')
-    @new_resource.devices ["/dev/sdz1","/dev/sdz2"]
-    @new_resource.level   1
-    @new_resource.chunk   256
-
-    @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context)
-    #Chef::Resource::Mdadm.stub!(:new).and_return(@current_resource)
-
-    # @status = mock("Status", :exitstatus => 0)
-    # @provider.stub!(:popen4).and_return(@status)
-    # @stdin = mock("STDIN", :null_object => true)
-    # @stdout = mock("STDOUT", :null_object => true)
-    # @stderr = mock("STDERR", :null_object => true)
-    # @pid = mock("PID", :null_object => true)
+  let(:new_resource_attributes) do
+    { :devices => devices,
+      :level   => level,
+      :chunk   => chunk }
   end
 
-  describe "when determining the current metadevice status" do
+  let(:md_device) { '/dev/md1' }
+  let(:devices) { %w(/dev/sdz1 /dev/sdz2) }
+  let(:level) { 1 }
+  let(:chunk) { 256 }
+  let(:stdout) { md_device }
+
+  describe "#load_current_resource" do
+    subject { provider.load_current_resource }
 
     it "should set the current resources mount point to the new resources mount point" do
-      @provider.stub!(:shell_out!).and_return(OpenStruct.new(:stdout => ''))
-      @provider.load_current_resource()
-      @provider.current_resource.name.should == '/dev/md1'
-      @provider.current_resource.raid_device.should == '/dev/md1'
+      should_shell_out!
+
+      subject.name.should eql md_device
+      subject.raid_device.should eql md_device
     end
 
     it "determines that the metadevice exists when mdadm output shows the metadevice" do
-      @provider.stub!(:shell_out!).with("mdadm --detail --scan").and_return(OpenStruct.new(:stdout => '/dev/md1'))
-      @provider.load_current_resource
-      @provider.current_resource.exists.should be_true
+      provider.stub!(:shell_out!).with("mdadm --detail --scan").and_return(status)
+      provider.load_current_resource
+      provider.current_resource.exists.should be_true
     end
   end
 
   describe "after the metadevice status is known" do
     before(:each) do
-      @current_resource = Chef::Resource::Mdadm.new('/dev/md1')
-      @current_resource.devices ["/dev/sdz1","/dev/sdz2"]
-      @current_resource.level   1
-      @current_resource.chunk   256
-
-
-      @provider.current_resource = @current_resource
+      current_resource.devices devices
+      current_resource.level   level
+      current_resource.chunk   chunk
+      provider.current_resource = current_resource
     end
 
-    describe "when creating the metadevice" do
+    #let(:expected_command) { "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2" }
+    let(:expected_command) { "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --bitmap=none --raid-devices 2 /dev/sdz1 /dev/sdz2" }
+
+    describe "#action_create" do
       it "should create the raid device if it doesnt exist" do
-        @current_resource.exists(false)
-        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --bitmap=none --raid-devices 2 /dev/sdz1 /dev/sdz2"
-        @provider.should_receive(:shell_out!).with(expected_command)
-        @provider.action_create
+        current_resource.exists false
+        provider.should_receive(:shell_out!).with(expected_command)
+        provider.action_create
       end
 
       it "should not create the raid device if it does exist" do
-        @current_resource.exists(true)
-        @provider.should_not_receive(:shell_out!)
-        @provider.action_create
+        current_resource.exists true
+        provider.should_not_receive(:shell_out!)
+        provider.action_create
       end
     end
 
-    describe "when asembling the metadevice" do
+    describe "#action_assemble" do
+      let(:expected_mdadm_cmd) { "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2" }
+
       it "should assemble the raid device if it doesnt exist" do
-        @current_resource.exists(false)
-        expected_mdadm_cmd = "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2"
-        @provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
-        @provider.action_assemble
+        current_resource.exists false
+        provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
+        provider.action_assemble
       end
 
-        it "should not assemble the raid device if it doesnt exist" do
-        @current_resource.exists(true)
-        @provider.should_not_receive(:shell_out!)
-        @provider.action_assemble
+      it "should not assemble the raid device if it doesnt exist" do
+        current_resource.exists true
+        provider.should_not_receive(:shell_out!)
+        provider.action_assemble
       end
     end
 
-    describe "when stopping the metadevice" do
+    describe "#action_stop" do
+      let(:expected_mdadm_cmd) { "yes | mdadm --stop /dev/md1" }
 
       it "should stop the raid device if it exists" do
-        @current_resource.exists(true)
-        expected_mdadm_cmd = "yes | mdadm --stop /dev/md1"
-        @provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
-        @provider.action_stop
+        current_resource.exists true
+        provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
+        provider.action_stop
       end
 
       it "should not attempt to stop the raid device if it does not exist" do
-        @current_resource.exists(false)
-        @provider.should_not_receive(:shell_out!)
-        @provider.action_stop
+        current_resource.exists false
+        provider.should_not_receive(:shell_out!)
+        provider.action_stop
       end
     end
   end

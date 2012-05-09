@@ -46,7 +46,9 @@ class Chef
         #     end
         #   end
         # end
-        @current_resource.exists(exists)
+        @current_resource.exists exists
+
+        @current_resource
       end
 
       def action_create
