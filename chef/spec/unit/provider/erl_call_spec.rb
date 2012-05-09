@@ -33,22 +33,15 @@ describe Chef::Provider::ErlCall do
   let(:code) { "io:format(\"burritos\", [])." }
   let(:node_name) { "chef@localhost" }
 
-  let(:stdout) { StringIO.new('{ok, woohoo}') }
-  let(:pid) { 2342999 }
-
-  let(:should_shell_out!) { provider.stub!(:popen4).and_return(status) }
-
-  before(:each) do
-    should_shell_out!
-  end
+  let(:stdout) { '{ok, woohoo}' }
+  let(:stderr) { '' }
 
   it "should return a Chef::Provider::ErlCall object" do
-    provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
     provider.should be_a_kind_of(Chef::Provider::ErlCall)
   end
 
   it "should return true" do
-   provider.load_current_resource.should eql(true)
+    provider.load_current_resource.should eql(true)
   end
 
   describe "when running a distributed erl call resource" do
@@ -61,12 +54,8 @@ describe Chef::Provider::ErlCall do
     let(:expected_cmd) { "erl_call -e -s -sname chef@localhost -c nomnomnom" }
 
     it "should write to stdin of the erl_call command" do
-      provider.should_receive(:popen4).with(expected_cmd, :waitlast => true).and_return([pid, stdin, stdout, stderr])
-      Process.should_receive(:wait).with(pid)
-
+      provider.should_receive(:shell_out!).with(expected_cmd, :input => code).and_return(status)
       provider.action_run
-
-      stdin.string.should == "#{new_resource.code}\n"
     end
   end
 
@@ -79,14 +68,11 @@ describe Chef::Provider::ErlCall do
 
     it "should write to stdin of the erl_call command" do
       provider.
-        should_receive(:popen4).
-        with("erl_call -e  -name chef@localhost ", :waitlast => true).
-        and_return([pid, stdin, stdout, stderr])
-      Process.should_receive(:wait).with(pid)
+        should_receive(:shell_out!).
+        with("erl_call -e  -name chef@localhost ", :input => code).
+        and_return(status)
 
       provider.action_run
-
-      stdin.string.should == "#{new_resource.code}\n"
     end
   end
 

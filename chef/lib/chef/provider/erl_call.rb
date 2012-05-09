@@ -17,13 +17,13 @@
 #
 
 require 'chef/log'
-require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/provider'
 
 class Chef
   class Provider
     class ErlCall < Chef::Provider
-      include Chef::Mixin::Command
+      include Chef::Mixin::ShellOut
 
       def initialize(node, new_resource)
         super(node, new_resource)
@@ -34,45 +34,24 @@ class Chef
       end
 
       def action_run
-        begin
-          pid, stdin, stdout, stderr = popen4(erl_call_cmd, :waitlast => true)
+        Chef::Log.debug("#{@new_resource} running")
+        Chef::Log.debug("#{@new_resource} command: #{erl_call_cmd}")
+        Chef::Log.debug("#{@new_resource} code: #{@new_resource.code}")
 
-          Chef::Log.debug("#{@new_resource} running")
-          Chef::Log.debug("#{@new_resource} command: #{erl_call_cmd}")
-          Chef::Log.debug("#{@new_resource} code: #{@new_resource.code}")
+        status = shell_out!(erl_call_cmd, :input => @new_resource.code)
 
-          @new_resource.code.each_line { |line| stdin.puts(line.chomp) }
+        Chef::Log.debug("#{@new_resource} output: ")
 
-          stdin.close
+        # fail if stderr contains anything
+        raise Chef::Exceptions::ErlCall, status.stderr unless status.stderr.empty?
 
-          Chef::Log.debug("#{@new_resource} output: ")
+        # fail if the first 4 characters aren't "{ok,"
+        raise Chef::Exceptions::ErlCall, status.stdout unless status.stdout[0..3].include?('{ok,')
 
-          stdout_output = ""
-          stdout.each_line { |line| stdout_output << line }
-          stdout.close
+        @new_resource.updated_by_last_action(true)
 
-          stderr_output = ""
-          stderr.each_line { |line| stderr_output << line }
-          stderr.close
-
-          # fail if stderr contains anything
-          if stderr_output.length > 0
-            raise Chef::Exceptions::ErlCall, stderr_output
-          end
-
-          # fail if the first 4 characters aren't "{ok,"
-          unless stdout_output[0..3].include?('{ok,')
-            raise Chef::Exceptions::ErlCall, stdout_output
-          end
-
-          @new_resource.updated_by_last_action(true)
-
-          Chef::Log.debug("#{@new_resource} #{stdout_output}")
-          Chef::Log.info("#{@new_resouce} ran successfully")
-        ensure
-          Process.wait(pid) if pid
-        end
-
+        Chef::Log.debug("#{@new_resource} #{status.stdout}")
+        Chef::Log.info("#{@new_resouce} ran successfully")
       end
 
       def erl_call_cmd
