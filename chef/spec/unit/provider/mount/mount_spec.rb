@@ -70,16 +70,33 @@ describe Chef::Provider::Mount::Mount do
       should_not be_nil
     end
 
-    it 'should set mounted'
-
-    context 'when filesystem is not mounted' do
-      it 'should set mounted to false'
+    context 'when filesystem is mounted' do
+      it 'should set mounted to true' do
+        subject.mounted.should eql true
+      end
     end
 
-    it 'should set enabled'
+    context 'when filesystem is not mounted' do
+      let(:given) { assume_unmounted and assume_fstab_info }
+      let(:assume_unmounted) { provider.stub!(:mounted?).and_return(false) }
+
+      it 'should set mounted to false' do
+        subject.mounted.should eql false
+      end
+    end
+
+    context 'when filesystem is enabled' do
+      let(:fstab_info) { { :enabled? => true } }
+      it 'should set enabled to true' do
+        subject.enabled.should eql true
+      end
+    end
 
     context 'when filesystem is not enabled' do
-      it 'should set enabled to false'
+      let(:fstab_info) { { :enabled? => false } }
+      it 'should set enabled to false' do
+        subject.enabled.should eql false
+      end
     end
 
     it 'should return the current resource' do
@@ -88,19 +105,82 @@ describe Chef::Provider::Mount::Mount do
   end
 
   describe '#assert_mountable!' do
+    let(:should_assert_mount_point_exists) { provider.should_receive(:assert_mount_point_exists!).and_return(true) }
+
+    let(:assume_device_should_exist) { provider.should_receive(:device_should_exist?).and_return(true) }
+    let(:should_assert_device_exists) { provider.should_receive(:assert_device_exists!).and_return(true) }
+    let(:assume_device_should_not_exist) { provider.should_receive(:device_should_exist?).and_return(false) }
+    let(:should_not_assert_device_exists) { provider.should_not_receive(:assert_device_exists!) }
+
     context 'when device should exist' do
-      it 'should assert device exists'
+
+      it 'should assert device exists' do
+        assume_device_should_exist
+        should_assert_device_exists
+        should_assert_mount_point_exists
+        provider.assert_mountable!
+      end
     end
 
     context 'when device should not exist' do
-      it 'should not assert device exists'
+      it 'should not assert device exists' do
+        assume_device_should_not_exist
+        should_not_assert_device_exists
+        should_assert_mount_point_exists
+        provider.assert_mountable!
+      end
     end
 
-    it 'should assert mount point exists'
+    it 'should assert mount point exists' do
+        assume_device_should_not_exist
+        should_assert_mount_point_exists
+        provider.assert_mountable!
+    end
   end
 
-  describe '#assert_device_exists!'
-  describe '#assert_mount_point_exists!'
+  describe '#assert_device_exists!' do
+    subject { given; provider.assert_device_exists! }
+    let(:given) { assume_new_resource and assume_file_existence }
+    let(:assume_file_existence) { ::File.should_receive(:exists?).and_return(device_exists?) }
+
+    context 'when device exists' do
+      let(:device_exists?) { true }
+
+      it 'should not raise Chef::Exceptions::Mount' do
+        lambda { subject }.should_not raise_error Chef::Exceptions::Mount
+      end
+    end
+
+    context 'when device does not exists' do
+      let(:device_exists?) { false }
+
+      it 'should raise Chef::Exceptions::Mount' do
+        lambda { subject }.should raise_error Chef::Exceptions::Mount
+      end
+    end
+  end
+
+  describe '#assert_mount_point_exists!' do
+    subject { given; provider.assert_mount_point_exists! }
+    let(:given) { assume_new_resource and assume_mount_point_existence }
+    let(:assume_mount_point_existence) { ::File.should_receive(:exists?).and_return(device_exists?) }
+
+    context 'when mount point exists' do
+      let(:device_exists?) { true }
+
+      it 'should not raise Chef::Exceptions::Mount' do
+        lambda { subject }.should_not raise_error Chef::Exceptions::Mount
+      end
+    end
+
+    context 'when mount point does not exists' do
+      let(:device_exists?) { false }
+
+      it 'should raise Chef::Exceptions::Mount' do
+        lambda { subject }.should raise_error Chef::Exceptions::Mount
+      end
+    end
+  end
 
   describe 'mounted?' do
     subject { given; provider.mounted? }
