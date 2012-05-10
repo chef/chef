@@ -56,8 +56,8 @@ describe Chef::Mixin::ShellOut do
         assume_deprecation_log_level and capture_log_output
         subject
         output.string.should match /DEPRECATION:/
-        output.string.should match Regexp.escape(old_option)
-        output.string.should match Regexp.escape(new_option)
+        output.string.should match Regexp.escape(old_option.to_s)
+        output.string.should match Regexp.escape(new_option.to_s)
       end
     end
 
