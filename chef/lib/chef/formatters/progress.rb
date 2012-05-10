@@ -98,7 +98,7 @@ class Chef
 
       # Called before cookbook sync starts
       def cookbook_sync_start(cookbook_count)
-        puts "Synchronizing cookbooks"
+        puts "synchronizing cookbooks"
       end
 
       # Called when cookbook +cookbook_name+ has been sync'd
@@ -117,7 +117,7 @@ class Chef
 
       # Called when cookbook loading starts.
       def library_load_start(file_count)
-        puts "Evaluating cookbooks"
+        puts "evaluating cookbooks"
       end
 
       # Called after a file in a cookbook is loaded.
