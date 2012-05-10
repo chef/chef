@@ -156,7 +156,6 @@ class Chef
 
       # Called after the attribute file is loaded
       def attribute_file_loaded(path)
-        print "."
       end
 
       # Called when an attribute file fails to load.
@@ -225,7 +224,6 @@ class Chef
 
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
-        print "S"
       end
 
       # Called after #load_current_resource has run.
@@ -234,7 +232,6 @@ class Chef
 
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
-        print "."
       end
 
       ## TODO: callback for assertion failures
