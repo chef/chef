@@ -30,8 +30,8 @@ end
 describe Chef::Provider::Group::Windows do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("staff")
     @net_group = mock("Chef::Util::Windows::NetGroup")
     Chef::Util::Windows::NetGroup.stub!(:new).and_return(@net_group)

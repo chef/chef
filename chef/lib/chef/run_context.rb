@@ -37,19 +37,19 @@ class Chef
     # of any cookbooks.
     attr_accessor :resource_collection
 
-    attr_reader :console_ui
+    attr_reader :events
 
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
     # === Returns
     # object<Chef::RunContext>:: Duh. :)
-    def initialize(node, cookbook_collection, console_ui)
+    def initialize(node, cookbook_collection, events)
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
       @definitions = Hash.new
-      @console_ui = console_ui
+      @events = events
 
       # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
       # cookbook_collection attr_accessor
@@ -69,47 +69,47 @@ class Chef
       # roles) to the node.
       @node.apply_expansion_attributes(run_list_expansion)
 
-      @console_ui.recipe_load_start(run_list_expansion.recipes.size)
+      @events.recipe_load_start(run_list_expansion.recipes.size)
       run_list_expansion.recipes.each do |recipe|
         begin
           # TODO: timh/cw, 5-14-2010: It's distasteful to be including
           # the DSL in a class outside the context of the DSL
           include_recipe(recipe)
         rescue Exception => e
-          @console_ui.recipe_file_load_failed(path, e)
+          @events.recipe_file_load_failed(path, e)
           raise
         end
       end
-      @console_ui.recipe_load_complete
+      @events.recipe_load_complete
     end
 
 
     private
 
     def load_libraries
-      @console_ui.library_load_start(count_files_by_segment(:libraries))
+      @events.library_load_start(count_files_by_segment(:libraries))
 
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
         begin
           Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
           Kernel.load(filename)
-          @console_ui.library_file_loaded(filename)
+          @events.library_file_loaded(filename)
         rescue Exception => e
           # TODO wrap/munge exception to highlight syntax/name/no method errors.
-          @console_ui.library_load_failed(filename, e)
+          @events.library_load_failed(filename, e)
           raise
         end
       end
 
-      @console_ui.library_load_complete
+      @events.library_load_complete
     end
 
     def load_lwrps
       lwrp_file_count = count_files_by_segment(:providers) + count_files_by_segment(:resources)
-      @console_ui.lwrp_load_start(lwrp_file_count)
+      @events.lwrp_load_start(lwrp_file_count)
       load_lwrp_providers
       load_lwrp_resources
-      @console_ui.lwrp_load_complete
+      @events.lwrp_load_complete
     end
 
     def load_lwrp_providers
@@ -117,10 +117,10 @@ class Chef
         begin
           Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
           Chef::Provider.build_from_file(cookbook_name, filename, self)
-          @console_ui.lwrp_file_loaded(filename)
+          @events.lwrp_file_loaded(filename)
         rescue Exception => e
           # TODO: wrap exception with helpful info
-          @console_ui.lwrp_file_load_failed(filename, e)
+          @events.lwrp_file_load_failed(filename, e)
           raise
         end
       end
@@ -131,30 +131,30 @@ class Chef
         begin
           Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
           Chef::Resource.build_from_file(cookbook_name, filename, self)
-          @console_ui.lwrp_file_loaded(filename)
+          @events.lwrp_file_loaded(filename)
         rescue Exception => e
-          @console_ui.lwrp_file_load_failed(filename, e)
+          @events.lwrp_file_load_failed(filename, e)
           raise
         end
       end
     end
 
     def load_attributes
-      @console_ui.attribute_load_start(count_files_by_segment(:attributes))
+      @events.attribute_load_start(count_files_by_segment(:attributes))
       foreach_cookbook_load_segment(:attributes) do |cookbook_name, filename|
         begin
           Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
           @node.from_file(filename)
         rescue Exception => e
-          @console_ui.attribute_file_load_failed(filename, e)
+          @events.attribute_file_load_failed(filename, e)
           raise
         end
       end
-      @console_ui.attribute_load_complete
+      @events.attribute_load_complete
     end
 
     def load_resource_definitions
-      @console_ui.definition_load_start(count_files_by_segment(:definitions))
+      @events.definition_load_start(count_files_by_segment(:definitions))
       foreach_cookbook_load_segment(:definitions) do |cookbook_name, filename|
         begin
           Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
@@ -164,12 +164,12 @@ class Chef
             Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
             newval
           end
-          @console_ui.definition_file_loaded(filename)
+          @events.definition_file_loaded(filename)
         rescue Exception => e
-          @console_ui.definition_file_load_failed(filename, e)
+          @events.definition_file_load_failed(filename, e)
         end
       end
-      @console_ui.definition_load_complete
+      @events.definition_load_complete
     end
 
     def count_files_by_segment(segment)

@@ -39,8 +39,8 @@ class Chef
       @delayed_actions  = []
     end
 
-    def console_ui
-      @run_context.console_ui
+    def events
+      @run_context.events
     end
 
     # Determine the appropriate provider for the given resource, then
@@ -51,19 +51,19 @@ class Chef
       resource.resolve_notification_references
 
       begin
-        console_ui.resource_action_start(resource, action, notification_type, notifying_resource)
+        events.resource_action_start(resource, action, notification_type, notifying_resource)
         Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
         resource.run_action(action)
       rescue Exception => e
         Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
         if resource.retries > 0
-          console_ui.resource_failed_retriable(resource, action, resource.retries, e)
+          events.resource_failed_retriable(resource, action, resource.retries, e)
           resource.retries -= 1
           Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
           sleep resource.retry_delay
           retry
         else
-          console_ui.resource_failed(resource, action, e)
+          events.resource_failed(resource, action, e)
         end
         raise e unless resource.ignore_failure
       end

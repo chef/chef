@@ -31,8 +31,8 @@ describe Chef::Provider::Git do
     @resource.destination "/my/deploy/dir"
     @resource.revision "d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @provider = Chef::Provider::Git.new(@resource, @run_context)
     @provider.current_resource = @current_resource
   end

@@ -119,8 +119,8 @@ describe Shef::Extensions do
     it "gives access to the stepable iterator" do
       Shef::StandAloneSession.instance.stub!(:reset!)
       Shef.session.stub!(:rebuild_context)
-      console_ui = Chef::ConsoleUI.new
-      run_context = Chef::RunContext.new(Chef::Node.new, {}, console_ui)
+      events = Chef::EventDispatch::Dispatcher.new
+      run_context = Chef::RunContext.new(Chef::Node.new, {}, events)
       run_context.resource_collection.instance_variable_set(:@iterator, :the_iterator)
       Shef.session.run_context = run_context
       @root_context.chef_run.should == :the_iterator
@@ -137,8 +137,8 @@ describe Shef::Extensions do
   describe "extending the recipe object" do
 
     before do
-      @console_ui = Chef::ConsoleUI.new
-      @run_context = Chef::RunContext.new(Chef::Node.new, {}, @console_ui)
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(Chef::Node.new, {}, @events)
       @recipe_object = Chef::Recipe.new(nil, nil, @run_context)
       Shef::Extensions.extend_context_recipe(@recipe_object)
     end

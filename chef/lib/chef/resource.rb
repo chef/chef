@@ -430,8 +430,8 @@ F
       end
     end
 
-    def console_ui
-      run_context.console_ui
+    def events
+      run_context.events
     end
 
     def run_action(action)
@@ -484,7 +484,7 @@ F
         if conditional.continue?
           false
         else
-          console_ui.resource_skipped(self, action, conditional)
+          events.resource_skipped(self, action, conditional)
           Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
           true
         end

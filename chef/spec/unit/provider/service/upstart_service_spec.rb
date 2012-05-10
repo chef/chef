@@ -25,8 +25,8 @@ describe Chef::Provider::Service::Upstart do
     @node[:platform] = 'ubuntu'
     @node[:platform_version] = '9.10'
 
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("rsyslog")
     @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)

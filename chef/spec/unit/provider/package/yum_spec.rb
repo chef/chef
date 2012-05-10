@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Package::Yum do
   before(:each) do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new('cups')
     @status = mock("Status", :exitstatus => 0)
     @yum_cache = mock(

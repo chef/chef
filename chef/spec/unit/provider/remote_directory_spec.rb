@@ -34,8 +34,8 @@ describe Chef::Provider::RemoteDirectory do
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
 
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @provider = Chef::Provider::RemoteDirectory.new(@resource, @run_context)
     @provider.current_resource = @resource.clone

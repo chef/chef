@@ -66,8 +66,8 @@ describe Chef::CookbookSynchronizer do
     @cookbook_a.manifest = @cookbook_a_manifest
     @cookbook_manifest["cookbook_a"] = @cookbook_a
 
-    @console_ui = Chef::ConsoleUI.new
-    @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_manifest, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_manifest, @events)
   end
 
   it "lists the cookbook names" do
@@ -86,7 +86,7 @@ describe Chef::CookbookSynchronizer do
 
       @cookbook_hash = {"valid1"=> {}, "valid2" => {}}
 
-      @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_hash, @console_ui)
+      @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_hash, @events)
     end
 
     it "removes unneeded cookbooks" do

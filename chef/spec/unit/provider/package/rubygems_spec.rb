@@ -320,8 +320,8 @@ describe Chef::Provider::Package::Rubygems do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::GemPackage.new("rspec-core")
     @spec_version = @new_resource.version RSpec::Core::Version::STRING
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     # We choose detect omnibus via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
     RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/usr/bin/ruby")

@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Package::EasyInstall do
   before(:each) do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::EasyInstallPackage.new('boto')
     @new_resource.version('1.8d')
 

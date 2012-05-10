@@ -27,9 +27,9 @@ describe Chef::Provider::CookbookFile do
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
+    @events = Chef::EventDispatch::Dispatcher.new
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl', @run_context)
     @new_resource.cookbook_name = 'apache2'

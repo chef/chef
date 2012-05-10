@@ -35,7 +35,8 @@ require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
-require 'chef/console_ui'
+require 'chef/event_dispatch/dispatcher'
+require 'chef/formatters/base'
 require 'chef/version'
 require 'ohai'
 require 'rbconfig'
@@ -135,7 +136,7 @@ class Chef
       @ohai = Ohai::System.new
 
       # TODO: Custom formatter support.
-      @console_ui = ConsoleUI.new
+      @events = EventDispatch::Dispatcher.new
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!
     end
@@ -153,11 +154,11 @@ class Chef
     def run
       run_context = nil
 
-      @console_ui.run_start(Chef::VERSION)
+      @events.run_start(Chef::VERSION)
       Chef::Log.info("*** Chef #{Chef::VERSION} ***")
       enforce_path_sanity
       run_ohai
-      @console_ui.ohai_completed(node)
+      @events.ohai_completed(node)
       register unless Chef::Config[:solo]
       build_node
 
@@ -176,14 +177,14 @@ class Chef
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
-        @console_ui.run_completed
+        @events.run_completed
         true
       rescue Exception => e
         run_status.stop_clock
         run_status.exception = e
         run_failed
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
-        @console_ui.run_completed
+        @events.run_completed
         raise
       ensure
         run_status = nil
@@ -201,12 +202,12 @@ class Chef
       if Chef::Config[:solo]
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
         cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path]))
-        run_context = Chef::RunContext.new(node, cookbook_collection, @console_ui)
+        run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       else
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
         cookbook_hash = sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
-        run_context = Chef::RunContext.new(node, cookbook_collection, @console_ui)
+        run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       end
       run_status.run_context = run_context
 
@@ -248,7 +249,7 @@ class Chef
     # === Returns
     # node<Chef::Node>:: Returns the created node object, also stored in @node
     def build_node
-      @console_ui.node_load_start(node_name, Chef::Config)
+      @events.node_load_start(node_name, Chef::Config)
       Chef::Log.debug("Building node object for #{node_name}")
 
       @node = load_node
@@ -289,9 +290,9 @@ class Chef
       Chef::Log.info("Run List is [#{@node.run_list}]")
       Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
 
-      @run_status = Chef::RunStatus.new(@node, @console_ui)
+      @run_status = Chef::RunStatus.new(@node, @events)
 
-      @console_ui.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
+      @events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
 
       @node
     end
@@ -305,7 +306,7 @@ class Chef
     rescue Exception => e
       # TODO: wrap this exception so useful error info can be given to the
       # user.
-      @console_ui.node_load_failed(node_name, e, Chef::Config)
+      @events.node_load_failed(node_name, e, Chef::Config)
       raise
     end
 
@@ -317,7 +318,7 @@ class Chef
       end
     rescue Exception => e
       # TODO: wrap/munge exception with useful error output.
-      @console_ui.node_load_failed(node_name, e, Chef::Config)
+      @events.node_load_failed(node_name, e, Chef::Config)
       raise
     end
 
@@ -326,20 +327,20 @@ class Chef
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
       if File.exists?(config[:client_key])
-        @console_ui.skipping_registration(client_name, config)
+        @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
-        @console_ui.registration_start(node_name, config)
+        @events.registration_start(node_name, config)
         Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
         Chef::REST.new(config[:client_url], config[:validation_client_name], config[:validation_key]).register(client_name, config[:client_key])
-        @console_ui.registration_completed
+        @events.registration_completed
       end
       # We now have the client key, and should use it from now on.
       self.rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
-      @console_ui.registration_failed(node_name, e, config)
+      @events.registration_failed(node_name, e, config)
       raise
     end
 
@@ -354,18 +355,18 @@ class Chef
       Chef::Log.debug("Synchronizing cookbooks")
 
       begin
-        @console_ui.cookbook_resolution_start(@expanded_run_list_with_versions)
+        @events.cookbook_resolution_start(@expanded_run_list_with_versions)
         cookbook_hash = rest.post_rest("environments/#{@node.chef_environment}/cookbook_versions",
                                        {:run_list => @expanded_run_list_with_versions})
       rescue Exception => e
         # TODO: wrap/munge exception to provide helpful error output
-        @console_ui.cookbook_resolution_failed(@expanded_run_list_with_versions, e)
+        @events.cookbook_resolution_failed(@expanded_run_list_with_versions, e)
         raise
       else
-        @console_ui.cookbook_resolution_complete(cookbook_hash)
+        @events.cookbook_resolution_complete(cookbook_hash)
       end
 
-      synchronizer = Chef::CookbookSynchronizer.new(cookbook_hash, @console_ui)
+      synchronizer = Chef::CookbookSynchronizer.new(cookbook_hash, @events)
       synchronizer.sync_cookbooks
 
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
@@ -379,15 +380,15 @@ class Chef
     # === Returns
     # true:: Always returns true
     def converge(run_context)
-      @console_ui.converge_start(run_context)
+      @events.converge_start(run_context)
       Chef::Log.debug("Converging node #{node_name}")
       @runner = Chef::Runner.new(run_context)
       runner.converge
-      @console_ui.converge_complete
+      @events.converge_complete
       true
     rescue Exception => e
       # TODO: should this be a separate #converge_failed(exception) method?
-      @console_ui.converge_complete
+      @events.converge_complete
       raise
     end
 

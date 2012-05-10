@@ -24,8 +24,8 @@ EtcGrnamIsh = Struct.new(:name, :passwd, :gid, :mem)
 describe Chef::Provider::User do
   before(:each) do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::User.new("adam")
     @new_resource.comment "Adam Jacob"

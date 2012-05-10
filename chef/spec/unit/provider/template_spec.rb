@@ -25,8 +25,8 @@ describe Chef::Provider::Template do
 
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @rendered_file_location = Dir.tmpdir + '/openldap_stuff.conf'
 

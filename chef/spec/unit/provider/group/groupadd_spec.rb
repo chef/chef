@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Group::Groupadd, "set_options" do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
     @new_resource.gid(50)
     @new_resource.members(["root", "aj"])
@@ -99,8 +99,8 @@ end
 describe Chef::Provider::Group::Groupadd do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
     @provider.stub!(:run_command).and_return(true)

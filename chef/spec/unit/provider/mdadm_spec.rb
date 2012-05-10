@@ -23,8 +23,8 @@ describe Chef::Provider::Mdadm do
 
   before(:each) do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Mdadm.new('/dev/md1')
     @new_resource.devices ["/dev/sdz1","/dev/sdz2"]

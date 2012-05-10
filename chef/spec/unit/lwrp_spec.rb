@@ -96,7 +96,7 @@ describe "LWRP" do
     it "should have access to the run context and node during class definition" do
       node = Chef::Node.new(nil)
       node[:penguin_name] = "jackass"
-      run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @console_ui)
+      run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @events)
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
         Chef::Resource.build_from_file("lwrp", file, run_context)
@@ -115,8 +115,8 @@ describe "LWRP" do
       @node = Chef::Node.new
       @node.platform(:ubuntu)
       @node.platform_version('8.10')
-      @console_ui = Chef::ConsoleUI.new
-      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @console_ui)
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @events)
       @runner = Chef::Runner.new(@run_context)
     end
 

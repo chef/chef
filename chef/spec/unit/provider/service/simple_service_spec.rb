@@ -22,8 +22,8 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
     @node[:command] = {:ps => "ps -ef"}
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("chef")
     @current_resource = Chef::Resource::Service.new("chef")

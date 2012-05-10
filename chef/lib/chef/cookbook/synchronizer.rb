@@ -61,8 +61,8 @@ class Chef
     EAGER_SEGMENTS.delete(:templates)
     EAGER_SEGMENTS.freeze
 
-    def initialize(cookbooks_by_name, console_ui)
-      @cookbooks_by_name, @console_ui = cookbooks_by_name, console_ui
+    def initialize(cookbooks_by_name, events)
+      @cookbooks_by_name, @events = cookbooks_by_name, events
     end
 
     def cache
@@ -95,7 +95,7 @@ class Chef
 
       clear_obsoleted_cookbooks
 
-      @console_ui.cookbook_sync_start(cookbook_count)
+      @events.cookbook_sync_start(cookbook_count)
 
       # Synchronize each of the node's cookbooks, and add to the
       # valid_cache_entries hash.
@@ -103,7 +103,7 @@ class Chef
         sync_cookbook(cookbook)
       end
 
-      @console_ui.cookbook_sync_complete
+      @events.cookbook_sync_complete
 
       true
     end
@@ -111,17 +111,17 @@ class Chef
     # Iterates over cached cookbooks' files, removing files belonging to
     # cookbooks that don't appear in +cookbook_hash+
     def clear_obsoleted_cookbooks
-      @console_ui.cookbook_clean_start
+      @events.cookbook_clean_start
       # Remove all cookbooks no longer relevant to this node
       cache.find(File.join(%w{cookbooks ** *})).each do |cache_file|
         cache_file =~ /^cookbooks\/([^\/]+)\//
         unless have_cookbook?($1)
           Chef::Log.info("Removing #{cache_file} from the cache; its cookbook is no longer needed on this client.")
           cache.delete(cache_file)
-          @console_ui.removed_cookbook_file(cache_file)
+          @events.removed_cookbook_file(cache_file)
         end
       end
-      @console_ui.cookbook_clean_complete
+      @events.cookbook_clean_complete
     end
 
     # Sync the eagerly loaded files contained by +cookbook+
@@ -154,7 +154,7 @@ class Chef
           cookbook.segment_filenames(segment).replace(segment_filenames)
         end
       end
-      @console_ui.synchronized_cookbook(cookbook.name)
+      @events.synchronized_cookbook(cookbook.name)
     end
 
     # Sync an individual file if needed. If there is an up to date copy
@@ -173,7 +173,7 @@ class Chef
       # is no current checksum.
       if !cached_copy_up_to_date?(cache_filename, file_manifest['checksum'])
         download_file(file_manifest['url'], cache_filename)
-        @console_ui.updated_cookbook_file(cookbook.name, cache_filename)
+        @events.updated_cookbook_file(cookbook.name, cache_filename)
       else
         Chef::Log.debug("Not storing #{cache_filename}, as the cache is up to date.")
       end

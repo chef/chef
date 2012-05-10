@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Group::Usermod do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.members [ "all", "your", "base" ]
     @provider = Chef::Provider::Group::Usermod.new(@new_resource, @run_context)

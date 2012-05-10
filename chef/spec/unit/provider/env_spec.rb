@@ -22,8 +22,8 @@ describe Chef::Provider::Env do
 
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Env.new("FOO")
     @new_resource.value("bar")
     @provider = Chef::Provider::Env.new(@new_resource, @run_context)

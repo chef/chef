@@ -27,8 +27,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
   before(:each) do
     @node = Chef::Node.new
     @node.name "make_believe"
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @resource = Chef::Resource::File.new("#{Dir.tmpdir}/madeup.txt")
     @provider = EnforceOwnershipAndPermissionsImplementor.new(@resource, @resource)
     @provider.current_resource = @resource

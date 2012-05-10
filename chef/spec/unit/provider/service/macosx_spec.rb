@@ -20,8 +20,8 @@ require 'spec_helper'
 
 describe Chef::Provider::Service::Macosx do
   let(:node) { Chef::Node.new }
-  let(:console_ui) {Chef::ConsoleUI.new}
-  let(:run_context) { Chef::RunContext.new(node, {}, console_ui) }
+  let(:events) {Chef::EventDispatch::Dispatcher.new}
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:provider) { described_class.new(new_resource, run_context) }
   let(:stdout) { StringIO.new }
 

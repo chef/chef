@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Package::Rpm do
   before(:each) do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     
     @new_resource = Chef::Resource::Package.new("emacs")
     @new_resource.source "/tmp/emacs-21.4-20.el5.i386.rpm"

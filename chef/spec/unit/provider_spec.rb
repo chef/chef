@@ -36,8 +36,8 @@ describe Chef::Provider do
     @cookbook_collection = Chef::CookbookCollection.new([])
     @node = Chef::Node.new
     @node.name "latte"
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @resource = Chef::Resource.new("funk", @run_context)
     @resource.cookbook_name = "a_delicious_pie"
     @provider = Chef::Provider.new(@resource, @run_context)

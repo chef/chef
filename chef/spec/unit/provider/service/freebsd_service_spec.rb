@@ -22,8 +22,8 @@ describe Chef::Provider::Service::Freebsd do
   before do
     @node = Chef::Node.new
     @node[:command] = {:ps => "ps -ax"}
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("apache22")
     @new_resource.pattern("httpd")

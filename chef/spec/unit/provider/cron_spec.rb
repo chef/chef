@@ -21,8 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Cron do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
     @new_resource.user "root"
     @new_resource.minute "30"

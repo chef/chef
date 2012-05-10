@@ -22,8 +22,8 @@ describe Chef::Provider::Route do
   before do
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new([])
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @new_resource = Chef::Resource::Route.new('10.0.0.10')
     @new_resource.gateway "10.0.0.9"

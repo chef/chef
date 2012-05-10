@@ -35,8 +35,8 @@ REMOTE = "\\\\server-name\\path"
 describe Chef::Provider::Mount::Windows do
   before(:each) do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Mount.new("X:")
     @new_resource.device GUID
     @current_resource = Chef::Resource::Mount.new("X:")

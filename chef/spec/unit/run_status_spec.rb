@@ -22,9 +22,9 @@ require 'spec_helper'
 describe Chef::RunStatus do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
-    @run_status = Chef::RunStatus.new(@node, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @run_status = Chef::RunStatus.new(@node, @events)
   end
 
   describe "before the run context has been set" do

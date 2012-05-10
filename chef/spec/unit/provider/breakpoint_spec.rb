@@ -23,8 +23,8 @@ describe Chef::Provider::Breakpoint do
   before do
     @resource = Chef::Resource::Breakpoint.new
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @collection = mock("resource collection")
     @run_context.stub!(:resource_collection).and_return(@collection)
     @provider = Chef::Provider::Breakpoint.new(@resource, @run_context)

@@ -72,8 +72,8 @@ class Chef
       true
     end
 
-    def console_ui
-      run_context.console_ui
+    def events
+      run_context.events
     end
 
     def run_action(action=nil)
@@ -85,7 +85,7 @@ class Chef
       define_resource_requirements
       process_resource_requirements
 
-      console_ui.resource_current_state_loaded(@new_resource, action, @current_resource)
+      events.resource_current_state_loaded(@new_resource, action, @current_resource)
       send("action_#{@action}")
       converge
     end
@@ -103,9 +103,9 @@ class Chef
     def converge
       converge_actions.converge!
       if converge_actions.empty? && !@new_resource.updated_by_last_action?
-        console_ui.resource_up_to_date(@new_resource, @action)
+        events.resource_up_to_date(@new_resource, @action)
       else
-        console_ui.resource_updated(@new_resource, @action)
+        events.resource_updated(@new_resource, @action)
         new_resource.updated_by_last_action(true) 
       end
     end

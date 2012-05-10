@@ -39,8 +39,8 @@ class Chef
           @actions = []
         end
 
-        def console_ui
-          @run_context.console_ui
+        def events
+          @run_context.events
         end
 
         # Adds an action to the list. +descriptions+ can either be an Array of
@@ -67,7 +67,7 @@ class Chef
               end
             else
               block.call
-              console_ui.resource_update_applied(@resource, @action, descriptions)
+              events.resource_update_applied(@resource, @action, descriptions)
             end
           end
         end

@@ -24,8 +24,8 @@ end
 describe Chef::Resource::Link do
   before do
     @node = Chef::Node.new
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, {}, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
     @new_resource.to "#{CHEF_SPEC_DATA}/fofile"

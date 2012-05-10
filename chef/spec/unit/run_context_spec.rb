@@ -29,8 +29,8 @@ describe Chef::RunContext do
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@chef_repo_path))
     @node = Chef::Node.new
     @node.find_file("run_context")
-    @console_ui = Chef::ConsoleUI.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @console_ui)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
   end
 
   it "has a cookbook collection" do
