@@ -137,7 +137,7 @@ class Chef
       @ohai = Ohai::System.new
 
       # TODO: Custom formatter support.
-      formatter = Chef::Formatter::Progress.new(STDOUT, STDERR)
+      formatter = Chef::Formatters::ProgressFormatter.new(STDOUT, STDERR)
       @events = EventDispatch::Dispatcher.new(formatter)
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!

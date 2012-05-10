@@ -12,7 +12,7 @@ class Chef
     # cookbook) a dot is printed. For resources, a dot, 'S' or 'U' is printed
     # if the resource is up to date, skipped by not_if/only_if, or updated,
     # respectively.
-    class ProgressFormatter
+    class ProgressFormatter < Formatters::Base
 
       cli_name(:progress)
 
@@ -128,8 +128,6 @@ class Chef
       def cookbook_sync_complete
         puts "done."
       end
-
-      ## TODO: add cookbook name to the API for file load callbacks
 
       # Called when library file loading starts
       def library_load_start(file_count)
