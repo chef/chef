@@ -42,10 +42,10 @@ class Chef
       end
 
       def define_resource_requirements
-        requirements.assert(:install) do |a| 
-          a.assertion { !(@current_resource.version.nil? && candidate_version.nil?)  }
+        requirements.assert(:install) do |a|
+          a.assertion { ((@new_resource.version != nil) && !(target_version_already_installed?)) \
+            || !(@current_resource.version.nil? && candidate_version.nil?)  }
           a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
-          a.whyrun("Package #{@new_resource.package_name} does not exist in a currently configured repository. Attempting to install it will fail unless it's provided by a previously configured package repo.")
         end
 
         requirements.assert(:upgrade) do |a|
@@ -57,7 +57,7 @@ class Chef
 
       def action_install
         # If we specified a version, and it's not the current version, move to the specified version
-        if @new_resource.version != nil && !target_version_already_installed?
+        if @new_resource.version != nil && !(target_version_already_installed?)
           install_version = @new_resource.version
         # If it's not installed at all, install it
         elsif @current_resource.version == nil
