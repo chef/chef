@@ -24,12 +24,14 @@ require 'chef/provider'
 require 'etc'
 require 'fileutils'
 require 'chef/scan_access_control'
+require 'chef/mixin/shell_out'
 
 class Chef
 
   class Provider
     class File < Chef::Provider
       include Chef::Mixin::Checksum
+      include Chef::Mixin::ShellOut
 
       def negative_complement(big)
         if big > 1073741823 # Fixnum max
@@ -43,7 +45,39 @@ class Chef
       end
 
       private :negative_complement, :octal_mode
-      
+
+      def diff_current_from_content source_content
+        result = nil
+        Tempfile.open("chef-diff") do |file| 
+          file.write source_content
+          file.close 
+          result = diff_current file.path
+        end
+        result
+      end
+
+      def diff_current source_path
+        begin
+          result = shell_out("diff #{@current_resource.path} #{source_path}" )
+          # diff will set a non-zero return code even when there's 
+          # valid stdout results, if it encounters something unexpected
+          # So as long as we have output, we'll show it.
+          if not result.stdout.empty?
+            val = result.stdout.split("\n")
+            val.delete("\\ No newline at end of file")
+            val
+          elsif not result.stderr.empty?
+            "Could not determine diff"
+          else
+            "(no diff)"
+          end
+        rescue Exception => e
+          # Should *not* receive this, but in some circumstances it seems that 
+          # an exception can be thrown even using shell_out instead of shell_out!
+          "Could not determine diff"
+        end
+      end 
+
       def whyrun_supported?
         true
       end
@@ -95,7 +129,12 @@ class Chef
       # Set the content of the file, assuming it is not set correctly already.
       def set_content
         unless compare_content
-          description = "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
+          description = []
+          if Chef::Config[:why_run]
+            description << "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
+            description << "Content diff follows. No diff listing may indicate whitespace only."
+            description << diff_content_from_source(@new_resource.content) 
+          end
           converge_by(description) do
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }

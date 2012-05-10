@@ -127,8 +127,6 @@ describe Chef::Provider::File do
     @provider.new_resource.content "foobar"
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
-    #File.should_receive(:directory?).with("/tmp").and_return(true)
-    #@provider.should_receive(:enforce_ownership_and_permissions).once
     @provider.access_controls.should_receive(:set_all)
     @provider.run_action(:create)
     io.string.should == "foobar"
@@ -272,5 +270,26 @@ describe Chef::Provider::File do
     end
   end
 
+  describe "when a diff is requested" do
+   
+    it "should return valid diff output when content does not match the string content provided" do
+       Tempfile.open("some-temp") do |file|
+         @resource.path file.path
+         @provider = Chef::Provider::File.new(@resource, @run_context) 
+         @provider.load_current_resource
+         result = @provider.diff_current_from_content "foo baz\n"
+         result.should == ["0a1", "> foo baz"]
+       end
+    end
+    it "should return valid diff output when content does not match the string content provided and the content has new trailing newline" do
+       Tempfile.open("some-temp") do |file|
+         @resource.path file.path
+         @provider = Chef::Provider::File.new(@resource, @run_context) 
+         @provider.load_current_resource
+         result = @provider.diff_current_from_content "foo baz"
+         result.should == ["0a1", "> foo baz"]
+       end
+    end
+  end
 end
 
