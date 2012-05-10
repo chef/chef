@@ -160,7 +160,7 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :purge"
       end
 
-      def preseed_package(name, version)
+      def preseed_package(file)
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support pre-seeding package install/upgrade instructions - don't ask it to!"
       end
 
