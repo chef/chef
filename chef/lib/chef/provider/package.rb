@@ -43,7 +43,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:install) do |a| 
-          a.assertion { !(candidate_version.nil? && @new_resource.version.nil?) }
+          a.assertion { !(@current_resource.version.nil? && candidate_version.nil?)  }
           a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
           a.whyrun("Package #{@new_resource.package_name} does not exist in a currently configured repository. Attempting to install it will fail unless it's provided by a previously configured package repo.")
         end
