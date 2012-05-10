@@ -190,7 +190,7 @@ class Chef
       def recipe_file_loaded(path)
       end
 
-      # Calles after a recipe file fails to load
+      # Called after a recipe file fails to load
       def recipe_file_load_failed(path, exception)
       end
 
