@@ -51,10 +51,6 @@ class Chef
       end
 
       # Failed to register this client with the server.
-      #--
-      # TODO: this will encourage mixing of the meaning of the various failure
-      # scenarios with presentation concerns. Probably should error handling in
-      # Client#register figure out what the various errors are and wrap it up.
       def registration_failed(node_name, exception, config)
       end
 
@@ -62,17 +58,11 @@ class Chef
       end
 
       # Failed to load node data from the server
-      #--
-      # TODO: refactor Chef::Client so that logic to figure out the meaning of
-      # the exception occurs there and not in here. This is the first API request
-      # that is made if the client key already exists.
       def node_load_failed(node_name, exception, config)
       end
 
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
-      #--
-      # TODO: need to handle run list overrides.
       def node_load_completed(node, expanded_run_list, config)
       end
 
@@ -99,8 +89,6 @@ class Chef
       # Called after the file at +path+ is removed. It may be removed if the
       # cookbook containing it was removed from the run list, or if the file was
       # removed from the cookbook.
-      #--
-      # TODO: should be called in CookbookVersion.clear_obsoleted_cookbooks
       def removed_cookbook_file(path)
       end
 
@@ -109,8 +97,6 @@ class Chef
       end
 
       # Called before cookbook sync starts
-      #--
-      # TODO: Should be called in CookbookVersion.sync_cookbooks
       def cookbook_sync_start(cookbook_count)
         puts "Synchronizing cookbooks"
       end
@@ -167,10 +153,6 @@ class Chef
           end
         end
       end
-
-      # TODO: need events for notification resolve?
-      # def notifications_resolved
-      # end
 
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type=nil, notifier=nil)
