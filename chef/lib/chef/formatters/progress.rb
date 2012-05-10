@@ -129,86 +129,17 @@ class Chef
         puts "done."
       end
 
-      # Called when library file loading starts
+      # Called when cookbook loading starts.
       def library_load_start(file_count)
         puts "Evaluating cookbooks"
       end
 
-      # Called when library file has been loaded
-      def library_file_loaded(path)
-        print "."
+      # Called after a file in a cookbook is loaded.
+      def file_loaded(path)
+        print '.'
       end
 
-      # Called when a library file has an error on load.
-      def library_file_load_failed(path, exception)
-      end
-
-      # Called when library file loading has finished
-      def library_load_complete
-      end
-
-      # Called when LWRP loading starts
-      def lwrp_load_start(lwrp_file_count)
-      end
-
-      # Called after a LWR or LWP has been loaded
-      def lwrp_file_loaded(path)
-        print "."
-      end
-
-      # Called after a LWR or LWP file errors on load
-      def lwrp_file_load_failed(path, exception)
-      end
-
-      # Called when LWRPs are finished loading
-      def lwrp_load_complete
-      end
-
-      # Called before attribute files are loaded
-      def attribute_load_start(attribute_file_count)
-      end
-
-      # Called after the attribute file is loaded
-      def attribute_file_loaded(path)
-        print "."
-      end
-
-      # Called when an attribute file fails to load.
-      def attribute_file_load_failed(path, exception)
-      end
-
-      # Called when attribute file loading is finished
-      def attribute_load_complete
-      end
-
-      # Called before resource definitions are loaded
-      def definition_load_start(definition_file_count)
-      end
-
-      # Called when a resource definition has been loaded
-      def definition_file_loaded(path)
-        print "."
-      end
-
-      # Called when a resource definition file fails to load
-      def definition_file_load_failed(path, exception)
-      end
-
-      # Called when resource defintions are done loading
-      def definition_load_complete
-      end
-
-      # Called before recipes are loaded
-      def recipe_load_start(recipe_count)
-      end
-
-      # Called after the recipe has been loaded
-      def recipe_file_loaded(path)
-        print "."
-      end
-
-      # Calles after a recipe file fails to load
-      def recipe_file_load_failed(path, exception)
+      def file_load_failed(path, exception)
       end
 
       # Called when recipes have been loaded.

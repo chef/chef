@@ -36,9 +36,6 @@ class Chef
 
     # == Formatters::Base
     # Base class that all formatters should inherit from.
-    #--
-    # TODO: Provide aggregate methods for file load/fail/complete, so
-    # implementors can easily do the same thing for all/most file types.
     class Base < EventDispatch::Base
 
       def self.cli_name(name)
@@ -50,6 +47,70 @@ class Chef
 
       def initialize(out, err)
         out, err = out, err
+      end
+
+      # Generic callback for any attribute/library/lwrp/recipe file in a
+      # cookbook getting loaded. The per-filetype callbacks for file load are
+      # overriden so that they call this instead. This means that a subclass of
+      # Formatters::Base can implement #file_loaded to do the same thing for
+      # every kind of file that Chef loads from a recipe instead of
+      # implementing all the per-filetype callbacks.
+      def file_loaded(path)
+      end
+
+      # Generic callback for any attribute/library/lwrp/recipe file throwing an
+      # exception when loaded.
+      def file_load_failed(path, exception)
+      end
+
+      # Delegates to #file_loaded
+      def library_file_loaded(path)
+        file_loaded(path)
+      end
+
+      # Delegates to #file_load_failed
+      def library_file_load_failed(path, exception)
+        file_load_failed(path, exception)
+      end
+
+      # Delegates to #file_loaded
+      def lwrp_file_loaded(path)
+        file_loaded(path)
+      end
+
+      # Delegates to #file_load_failed
+      def lwrp_file_load_failed(path, exception)
+        file_load_failed(path, exception)
+      end
+
+      # Delegates to #file_loaded
+      def attribute_file_loaded(path)
+        file_loaded(path)
+      end
+
+      # Delegates to #file_load_failed
+      def attribute_file_load_failed(path, exception)
+        file_load_failed(path, exception)
+      end
+
+      # Delegates to #file_loaded
+      def definition_file_loaded(path)
+        file_loaded(path)
+      end
+
+      # Delegates to #file_load_failed
+      def definition_file_load_failed(path, exception)
+        file_load_failed(path, exception)
+      end
+
+      # Delegates to #file_loaded
+      def recipe_file_loaded(path)
+        file_loaded(path)
+      end
+
+      # Delegates to #file_load_failed
+      def recipe_file_load_failed(path, exception)
+        file_load_failed(path, exception)
       end
 
     end
