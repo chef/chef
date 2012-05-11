@@ -112,6 +112,10 @@ describe Chef::Mixin::Securable do
       end
     end
 
+    after(:all) do
+      load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
+    end
+
     it "should not accept a group name or id for group with spaces and multiple backslashes" do
       lambda { @securable.group 'test\ \group' }.should raise_error(ArgumentError)
     end

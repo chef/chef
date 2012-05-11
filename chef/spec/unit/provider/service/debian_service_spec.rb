@@ -39,7 +39,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
   it "ensures /usr/sbin/update-rc.d is available" do
     File.should_receive(:exists?).with("/usr/sbin/update-rc.d").and_return(false)
     @provider.define_resource_requirements
-    lambda { @provider.process_resource_requirements(:any) } .should raise_error(Chef::Exceptions::Service)
+    lambda { @provider.process_resource_requirements } .should raise_error(Chef::Exceptions::Service)
   end
 
   describe "when update-rc.d shows the init script linked to rc*.d/" do
@@ -195,7 +195,7 @@ insserv: dryrun, not creating .depend.boot, .depend.start, and .depend.stop"
 
     it "raises an error" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 

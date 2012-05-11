@@ -48,6 +48,9 @@ class Chef
     end
 
     def self.platform_specific_path(path)
+      #10.times { puts "* " * 40}
+      #pp caller
+
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
         path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])

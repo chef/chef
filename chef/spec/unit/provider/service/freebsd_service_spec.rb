@@ -82,8 +82,8 @@ PS_SAMPLE
 
       it "should set running to false if the status command returns anything except 0" do
         @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
-        @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
+        @provider.current_resource.running.should be_false
       end
     end
 
@@ -102,13 +102,13 @@ PS_SAMPLE
     it "should raise error if the node has a nil ps attribute and no other means to get status" do
       @node[:command] = {:ps => nil}
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
     it "should raise error if the node has an empty ps attribute and no other means to get status" do
       @node[:command] = {:ps => ""}
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
     
     describe "when executing assertions" do
@@ -123,7 +123,7 @@ PS_SAMPLE
         @provider.load_current_resource
         @provider.define_resource_requirements 
         @provider.instance_variable_get("@rcd_script_found").should be_false
-        lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
       end
 
       it "update state when current resource enabled state could not be determined" do
@@ -138,7 +138,7 @@ PS_SAMPLE
         @provider.instance_variable_get("@enabled_state_found").should be_false
         @provider.instance_variable_get("@rcd_script_found").should be_true
         @provider.define_resource_requirements 
-        lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service,
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service,
           'Could not find name="service" line in /usr/local/etc/rc.d/apache22')
       end 
 
@@ -181,7 +181,7 @@ PS_SAMPLE
         @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
         @provider.load_current_resource
         @provider.define_resource_requirements
-        lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
       end
     end
 

@@ -53,13 +53,13 @@ NOMOCKINGSTRINGSPLZ
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
     @node[:command] = {:ps => nil}
     @provider.define_resource_requirements
-    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps attribute and no other means to get status" do
     @node[:command] = {:ps => ""}
     @provider.define_resource_requirements
-    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
   describe "when we have a 'ps' attribute" do
@@ -93,9 +93,10 @@ NOMOCKINGSTRINGSPLZ
 
     it "should raise an exception if ps fails" do
       @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      @provider.action = :start
       @provider.load_current_resource
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
@@ -114,7 +115,8 @@ NOMOCKINGSTRINGSPLZ
 
     it "should raise an exception if no start command is specified" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:start) }.should raise_error(Chef::Exceptions::Service)
+      @provider.action = :start
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end 
   end
 
@@ -127,7 +129,8 @@ NOMOCKINGSTRINGSPLZ
 
     it "should raise an exception if no stop command is specified" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:stop) }.should raise_error(Chef::Exceptions::Service)
+      @provider.action = :stop
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
@@ -140,7 +143,8 @@ NOMOCKINGSTRINGSPLZ
 
     it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:restart) }.should raise_error(Chef::Exceptions::Service) 
+      @provider.action = :restart
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service) 
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
@@ -154,7 +158,8 @@ NOMOCKINGSTRINGSPLZ
   describe Chef::Provider::Service::Simple, "reload_service" do
     it "should raise an exception if reload is requested but no command is specified" do
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:reload) }.should raise_error(Chef::Exceptions::UnsupportedAction)
+      @provider.action = :reload
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should should run the user specified reload command if one is specified" do

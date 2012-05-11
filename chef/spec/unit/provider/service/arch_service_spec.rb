@@ -98,13 +98,15 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
     @node[:command] = {:ps => nil}
     @provider.define_resource_requirements
-    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+    @provider.action = :start
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps attribute and no other means to get status" do
     @node[:command] = {:ps => ""}
     @provider.define_resource_requirements
-    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+    @provider.action = :start
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
 
@@ -150,8 +152,9 @@ RUNNING_PS
     it "should raise an exception if ps fails" do
       @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       @provider.load_current_resource
+      @provider.action = :start
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 

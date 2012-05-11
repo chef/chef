@@ -25,6 +25,7 @@ class Chef
   class Provider
     class Deploy < Chef::Provider
 
+      include Chef::Mixin::RecipeDefinitionDSLCore
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 

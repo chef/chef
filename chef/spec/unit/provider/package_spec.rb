@@ -70,7 +70,7 @@ describe Chef::Provider::Package do
     end
 
     it "should install the package at the version specified if it is not already installed" do
-      @new_resource.stub!(:version).and_return("1.0")
+      @new_resource.version("1.0")
       @provider.should_receive(:install_package).with(
         @new_resource.name,
         @new_resource.version
@@ -80,7 +80,7 @@ describe Chef::Provider::Package do
     end
 
     it "should install the package at the version specified if a different version is installed" do
-      @new_resource.stub!(:version).and_return("1.0")
+      @new_resource.version("1.0")
       @current_resource.stub!(:version).and_return("0.99")
       @provider.should_receive(:install_package).with(
         @new_resource.name,
@@ -91,42 +91,29 @@ describe Chef::Provider::Package do
     end
 
     it "should not install the package if it is already installed and no version is specified" do
-      @current_resource.stub!(:version).and_return("1.0")
+      @current_resource.version("1.0")
       @provider.should_not_receive(:install_package)
       @provider.run_action(:install)
       @new_resource.should_not be_updated_by_last_action
     end
 
     it "should not install the package if it is already installed at the version specified" do
-      @current_resource.stub!(:version).and_return("1.0")
-      @new_resource.stub!(:version).and_return("1.0")
+      @current_resource.version("1.0")
+      @new_resource.version("1.0")
       @provider.should_not_receive(:install_package)
       @provider.run_action(:install)
       @new_resource.should_not be_updated_by_last_action
     end
 
     it "should call the candidate_version accessor only once if the package is already installed and no version is specified" do
-      @current_resource.stub!(:version).and_return("1.0")
+      @current_resource.version("1.0")
       @provider.stub!(:candidate_version).and_return("1.0")
       @provider.run_action(:install)
     end
 
     it "should call the candidate_version accessor only once if the package is already installed at the version specified" do
-      @current_resource.stub!(:version).and_return("1.0")
-      @new_resource.stub!(:version).and_return("1.0")
-      @provider.run_action(:install)
-    end
-
-    it "should call the candidate_version accessor only once if the package is not installed new package's version is specified" do
-      @new_resource.stub!(:version).and_return("1.0")
-      @provider.should_receive(:candidate_version).once
-      @provider.run_action(:install)
-    end
-
-    it "should call the candidate_version accessor only once if the package at the version specified is a different version than installed" do
-      @new_resource.stub!(:version).and_return("1.0")
-      @current_resource.stub!(:version).and_return("0.99")
-      @provider.should_receive(:candidate_version).once
+      @current_resource.version("1.0")
+      @new_resource.version("1.0")
       @provider.run_action(:install)
     end
 
@@ -340,8 +327,8 @@ describe Chef::Provider::Package do
     end
 
     it "should raise UnsupportedAction for preseed_package" do
-      # 42 is the version of java that will support lambdas
-      lambda { @provider.preseed_package('sun-jdk', '42') }.should raise_error(Chef::Exceptions::UnsupportedAction)
+      preseed_file = "/tmp/sun-jdk-package-preseed-file.seed"
+      lambda { @provider.preseed_package(preseed_file) }.should raise_error(Chef::Exceptions::UnsupportedAction)
     end
 
     it "should raise UnsupportedAction for reconfig" do

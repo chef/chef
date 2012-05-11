@@ -24,7 +24,8 @@ describe Chef::Provider::Ifconfig do
   before do
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new([])
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     #This new_resource can be called anything --> it is not the same as in ifconfig.rb
     @new_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
     @new_resource.mask "255.255.254.0"
@@ -50,7 +51,7 @@ describe Chef::Provider::Ifconfig do
     end
     it "should thrown an exception when ifconfig fails" do 
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error Chef::Exceptions::Ifconfig 
+      lambda { @provider.process_resource_requirements }.should raise_error Chef::Exceptions::Ifconfig 
     end
   end
   describe Chef::Provider::Ifconfig, "action_add" do

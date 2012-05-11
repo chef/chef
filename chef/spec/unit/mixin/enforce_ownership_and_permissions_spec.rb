@@ -35,8 +35,6 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
   end
 
   it "should call set_all on the file access control object" do
-    ::File.should_receive(:exists?).and_return false
-
     Chef::FileAccessControl.any_instance.should_receive(:set_all)
     @provider.enforce_ownership_and_permissions
   end

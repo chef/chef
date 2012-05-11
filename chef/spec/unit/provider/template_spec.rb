@@ -91,10 +91,15 @@ describe Chef::Provider::Template do
     describe "when the target file has the wrong content" do
       before do
         File.open(@rendered_file_location, "w+") { |f| f.print "blargh" }
+
+        @access_controls = mock("access controls")
+        @provider.stub!(:access_controls).and_return(@access_controls)
+
       end
 
       it "overwrites the file with the updated content when the create action is run" do
         @node[:slappiness] = "a warm gun"
+        @access_controls.stub!(:requires_changes?).and_return(false)
         @provider.should_receive(:backup)
         @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
@@ -102,6 +107,7 @@ describe Chef::Provider::Template do
       end
 
       it "should set the file access control as specified in the resource" do
+        @access_controls.stub!(:requires_changes?).and_return(true)
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
@@ -112,6 +118,7 @@ describe Chef::Provider::Template do
       end
 
       it "doesn't overwrite the file when the create if missing action is run" do
+        @access_controls.stub!(:requires_changes?).and_return(false)
         @node[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
         @provider.run_action(:create_if_missing)
@@ -125,10 +132,13 @@ describe Chef::Provider::Template do
         Chef::ChecksumCache.instance.reset!
         File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
+        @access_controls = mock("access controls")
+        @provider.stub!(:access_controls).and_return(@access_controls)
       end
 
       it "does not backup the original or overwrite it" do
         @node[:slappiness] = "a warm gun"
+        @access_controls.stub!(:requires_changes?).and_return(false)
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
         @provider.run_action(:create)
@@ -137,6 +147,7 @@ describe Chef::Provider::Template do
 
       it "does not backup the original or overwrite it on create if missing" do
         @node[:slappiness] = "a warm gun"
+        @access_controls.stub!(:requires_changes?).and_return(false)
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
         @provider.run_action(:create)
@@ -145,6 +156,7 @@ describe Chef::Provider::Template do
 
       it "sets the file access controls if they have diverged" do
         @provider.stub!(:backup).and_return(true)
+        @access_controls.stub!(:requires_changes?).and_return(true)
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)

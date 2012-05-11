@@ -61,7 +61,12 @@ class Chef
 
           requirements.assert(:restart) do |a|
             a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
-            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires both start_command and stop_command be set in order to perform a restart; or that restart_comand be specified"
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
+          end
+
+          requirements.assert(:reload) do |a|
+            a.assertion { @new_resource.reload_command }
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command set in order to perform a reload"
           end
 
           requirements.assert(:all_actions) do |a|

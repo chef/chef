@@ -25,7 +25,6 @@ require 'chef/mixin/why_run'
 class Chef
   class Provider
     include Chef::Mixin::WhyRun
-    include Chef::Mixin::RecipeDefinitionDSLCore
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
     attr_accessor :new_resource
@@ -96,9 +95,8 @@ class Chef
       load_current_resource
       define_resource_requirements
 
-      events.resource_current_state_loaded(@new_resource, action, @current_resource)
-      send("action_#{@action}")
-      process_resource_requirements(action)
+      events.resource_current_state_loaded(@new_resource, @action, @current_resource)
+      process_resource_requirements
 
       # user-defined providers including LWRPs may 
       # not include whyrun support - if they don't support it
@@ -108,13 +106,13 @@ class Chef
       # in non-whyrun mode, this will still cause the action to be
       # executed normally.
       if whyrun_supported?
-        send("action_#{action}")
+        send("action_#{@action}")
       else
         if action == :nothing
           action_nothing
         else
           converge_by("bypassing action #{action}, whyrun not supported in resource provider #{self.class.name} ") do
-            send("action_#{action}")
+            send("action_#{@action}")
           end
         end
       end
@@ -186,6 +184,8 @@ class Chef
         Chef::Log.info("#{class_name} light-weight provider already initialized -- overriding!") if overriding
 
         new_provider_class = Class.new self do |cls|
+
+          include Chef::Mixin::RecipeDefinitionDSLCore
 
           def load_current_resource
             # silence Chef::Exceptions::Override exception

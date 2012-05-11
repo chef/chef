@@ -435,6 +435,8 @@ F
     end
 
     def run_action(action)
+      raise ArgumentError, "nil is not a valid action for resource #{self}" if action.nil?
+
       if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
         # This can be noisy
         Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")

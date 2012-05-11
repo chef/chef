@@ -82,7 +82,7 @@ class Chef
         temp_res.owner(new_resource.owner)
         temp_res.mode(new_resource.mode)
         temp_res.path(path)
-        ac = Chef::FileAccessControl.new(@new_resource, temp_res)
+        ac = Chef::FileAccessControl.new(@new_resource, temp_res, self)
         ac.set_all
       end
 

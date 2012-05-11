@@ -133,7 +133,7 @@ SVC_LIST
                                            "/Users/wtf/something.plist"])
               provider.load_current_resource
               provider.define_resource_requirements
-              lambda { provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+              lambda { provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
             end
           end
         end

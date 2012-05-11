@@ -35,14 +35,16 @@ describe Chef::Provider::Service do
     it "should enable the service if disabled and set the resource as updated" do
       @current_resource.enabled(false)
       @provider.should_receive(:enable_service).and_return(true)
-      @provider.run_action(:enable)
+      @provider.action_enable
+      @provider.converge
       @provider.new_resource.should be_updated
     end
 
     it "should not enable the service if already enabled" do
       @current_resource.enabled(true)
       @provider.should_not_receive(:enable_service)
-      @provider.run_action(:enable)
+      @provider.action_enable
+      @provider.converge
       @provider.new_resource.should_not be_updated
     end
   end

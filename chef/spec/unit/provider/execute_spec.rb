@@ -22,7 +22,8 @@ describe Chef::Provider::Execute do
   before do
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new([])
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @new_resource = Chef::Resource::Execute.new("foo_resource", @run_context)
     @new_resource.timeout 3600
     @new_resource.returns 0
@@ -32,30 +33,28 @@ describe Chef::Provider::Execute do
     @provider.current_resource = @current_resource
   end
 
-  describe Chef::Provider::Ifconfig, "action_run" do
-    
-    it "should execute foo_resource" do
-      @provider.stub!(:load_current_resource)
-      File.should_receive(:exists?).with(@new_resource.creates).and_return(false)
-      opts = {}
-      opts[:timeout] = @new_resource.timeout
-      opts[:returns] = @new_resource.returns
-      opts[:log_level] = :info
-      opts[:log_tag] = @new_resource.to_s
-      opts[:live_stream] = STDOUT
-      @provider.should_receive(:shell_out!).with(@new_resource.command, opts)
 
-      @provider.run_action(:run)
-      @new_resource.should be_updated
-    end
+  it "should execute foo_resource" do
+    @provider.stub!(:load_current_resource)
+    opts = {}
+    opts[:timeout] = @new_resource.timeout
+    opts[:returns] = @new_resource.returns
+    opts[:log_level] = :info
+    opts[:log_tag] = @new_resource.to_s
+    opts[:live_stream] = STDOUT
+    @provider.should_receive(:shell_out!).with(@new_resource.command, opts)
 
-    it "should do nothing if the sentinel file exists" do
-      @provider.stub!(:load_current_resource)
-      File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
-      @provider.should_not_receive(:shell_out!)
+    @provider.run_action(:run)
+    @new_resource.should be_updated
+  end
 
-      @provider.run_action(:run)
-      @new_resource.should_not be_updated
-    end
+  it "should do nothing if the sentinel file exists" do
+    @provider.stub!(:load_current_resource)
+    File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
+    @provider.should_not_receive(:shell_out!)
+
+    @provider.run_action(:run)
+    @new_resource.should_not be_updated
   end
 end
+

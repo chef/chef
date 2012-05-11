@@ -43,7 +43,7 @@ describe Chef::Provider::Service::Gentoo do
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
       File.should_receive(:exists?).with("/sbin/rc-update").and_return(false)
       @provider.define_resource_requirements
-      lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
     it "should track when service file is not found in /etc/runlevels" do

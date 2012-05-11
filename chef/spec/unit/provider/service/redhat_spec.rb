@@ -38,7 +38,7 @@ describe "load_current_resource" do
   it "should raise an error if /sbin/chkconfig does not exist" do
     ::File.should_receive(:exists?).with("/sbin/chkconfig").and_return(false)
     @provider.define_resource_requirements
-    lambda { @provider.process_resource_requirements(:any) }.should raise_error(Chef::Exceptions::Service)
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "sets the current enabled status to true if the service is enabled for any run level" do

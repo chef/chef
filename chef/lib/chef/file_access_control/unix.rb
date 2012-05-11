@@ -44,38 +44,6 @@ class Chef
         changes
       end
 
-      private
-
-      # Workaround the fact that Ruby's Etc module doesn't believe in negative
-      # uids, so negative uids show up as the diminished radix complement of
-      # a uint. For example, a uid of -2 is reported as 4294967294
-      def diminished_radix_complement(int)
-        if int > UID_MAX
-          int - UINT
-        else
-          int
-        end
-      end
-
-      def uid_from_resource(resource) 
-        return nil if resource == nil or resource.owner.nil?
-        if resource.owner.kind_of?(String)
-          diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
-        elsif resource.owner.kind_of?(Integer)
-          resource.owner
-        else
-          Chef::Log.error("The `owner` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
-        end
-      rescue ArgumentError
-        provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
-          a.assertion { false }
-          a.failure_message(Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?")
-          a.whyrun("Assuming user #{resource.owner} would have been created")
-        end
-        return nil
-      end
-
       def target_uid
         uid_from_resource(resource)
       end
@@ -182,6 +150,37 @@ class Chef
           File.chown(uid, gid, file)
         end
       end
+
+      # Workaround the fact that Ruby's Etc module doesn't believe in negative
+      # uids, so negative uids show up as the diminished radix complement of
+      # a uint. For example, a uid of -2 is reported as 4294967294
+      def diminished_radix_complement(int)
+        if int > UID_MAX
+          int - UINT
+        else
+          int
+        end
+      end
+
+      def uid_from_resource(resource) 
+        return nil if resource == nil or resource.owner.nil?
+        if resource.owner.kind_of?(String)
+          diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
+        elsif resource.owner.kind_of?(Integer)
+          resource.owner
+        else
+          Chef::Log.error("The `owner` parameter of the #@resource resource is set to an invalid value (#{resource.owner.inspect})")
+          raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
+        end
+      rescue ArgumentError
+        provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
+          a.assertion { false }
+          a.failure_message(Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?")
+          a.whyrun("Assuming user #{resource.owner} would have been created")
+        end
+        return nil
+      end
+
     end
   end
 end
