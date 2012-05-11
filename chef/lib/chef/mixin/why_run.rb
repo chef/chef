@@ -217,7 +217,12 @@ class Chef
               if Chef::Config[:why_run] && @whyrun_message
                 # TODO: real logging
                 puts "WHY RUN: #{@failure_message}"
-                puts "WHY RUN: #{@whyrun_message}"
+                if @whyrun_message.kind_of?(Array)
+                  puts "WHY RUN:" 
+                  @whyrun_message.each { |m| puts "  #{m}" } 
+                else
+                  puts "WHY RUN: #{@whyrun_message}"
+                end 
                 @resource_modifier.call if @resource_modifier
               else
                 if @failure_message
