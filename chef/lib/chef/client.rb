@@ -37,7 +37,7 @@ require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
 require 'chef/event_dispatch/dispatcher'
 require 'chef/formatters/base'
-require 'chef/formatters/progress'
+require 'chef/formatters/minimal'
 require 'chef/version'
 require 'ohai'
 require 'rbconfig'
@@ -137,7 +137,7 @@ class Chef
       @ohai = Ohai::System.new
 
       # TODO: Custom formatter support.
-      formatter = Chef::Formatters::ProgressFormatter.new(STDOUT, STDERR)
+      formatter = Chef::Formatters::Minimal.new(STDOUT, STDERR)
       @events = EventDispatch::Dispatcher.new(formatter)
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!

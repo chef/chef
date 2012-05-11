@@ -5,22 +5,23 @@ class Chef
   module Formatters
 
 
-    # == Formatters::ProgressFormatter
+    # == Formatters::Minimal
     # Shows the progress of the chef run by printing single characters, and
     # displays a summary of updates at the conclusion of the run. For events
     # that don't have meaningful status information (loading a file, syncing a
     # cookbook) a dot is printed. For resources, a dot, 'S' or 'U' is printed
     # if the resource is up to date, skipped by not_if/only_if, or updated,
     # respectively.
-    class ProgressFormatter < Formatters::Base
+    class Minimal < Formatters::Base
 
-      cli_name(:progress)
+      cli_name(:minimal)
 
       attr_reader :updated_resources
       attr_reader :updates_by_resource
 
 
       def initialize(out, err)
+        super
         @updated_resources = []
         @updates_by_resource = Hash.new {|h, k| h[k] = []}
       end
