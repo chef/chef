@@ -28,6 +28,14 @@ Run a command as the `www` user with no extra ENV settings from `/tmp`
       cmd = Mixlib::ShellOut.new("apachectl", "start", :user => 'www', :env => nil, :cwd => '/tmp')
       cmd.run_command # etc.
 
+## STDIN Example
+Invoke crontab to edit user cron:
+
+      # :input only supports simple strings
+      crontab_lines = [ "* * * * * /bin/true", "* * * * * touch /tmp/here" ]
+      crontab = Mixlib::ShellOut.new("crontab -l -u #{@new_resource.user}", :input => crontab_lines.join("\n"))
+      crontab.run_command
+
 ## Platform Support
 Mixlib::ShellOut does a standard fork/exec on Unix, and uses the Win32
 API on Windows. There is not currently support for JRuby.

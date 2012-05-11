@@ -40,6 +40,8 @@ module Mixlib
         @result = nil
         @execution_time = 0
 
+        write_to_child_stdin
+
         # Ruby 1.8.7 and 1.8.6 from mid 2009 try to allocate objects during GC
         # when calling IO.select and IO#read. Some OS Vendors are not interested
         # in updating their ruby packages (Apple, *cough*) and we *have to*
@@ -114,8 +116,12 @@ module Mixlib
       end
 
       def initialize_ipc
-        @stdout_pipe, @stderr_pipe, @process_status_pipe = IO.pipe, IO.pipe, IO.pipe
+        @stdin_pipe, @stdout_pipe, @stderr_pipe, @process_status_pipe = IO.pipe, IO.pipe, IO.pipe, IO.pipe
         @process_status_pipe.last.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
+      end
+
+      def child_stdin
+        @stdin_pipe[1]
       end
 
       def child_stdout
@@ -131,23 +137,25 @@ module Mixlib
       end
 
       def close_all_pipes
+        child_stdin.close   unless child_stdin.closed?
         child_stdout.close  unless child_stdout.closed?
         child_stderr.close  unless child_stderr.closed?
         child_process_status.close unless child_process_status.closed?
       end
 
-      # replace stdout, and stderr with pipes to the parent, and close the
-      # reader side of the error marshaling side channel. Close STDIN so when we
-      # exec, the new program will know it's never getting input ever.
+      # Replace stdout, and stderr with pipes to the parent, and close the
+      # reader side of the error marshaling side channel.
+      #
+      # If there is no input, close STDIN so when we exec,
+      # the new program will know it's never getting input ever.
       def configure_subprocess_file_descriptors
         process_status_pipe.first.close
 
         # HACK: for some reason, just STDIN.close isn't good enough when running
         # under ruby 1.9.2, so make it good enough:
-        stdin_reader, stdin_writer = IO.pipe
-        stdin_writer.close
-        STDIN.reopen stdin_reader
-        stdin_reader.close
+        stdin_pipe.last.close
+        STDIN.reopen stdin_pipe.first
+        stdin_pipe.first.close unless input
 
         stdout_pipe.first.close
         STDOUT.reopen stdout_pipe.last
@@ -158,14 +166,18 @@ module Mixlib
         stderr_pipe.last.close
 
         STDOUT.sync = STDERR.sync = true
+        STDIN.sync = true if input
       end
 
       def configure_parent_process_file_descriptors
         # Close the sides of the pipes we don't care about
+        stdin_pipe.first.close
+        stdin_pipe.last.close unless input
         stdout_pipe.last.close
         stderr_pipe.last.close
         process_status_pipe.last.close
         # Get output as it happens rather than buffered
+        child_stdin.sync = true if input
         child_stdout.sync = true
         child_stderr.sync = true
 
@@ -176,6 +188,13 @@ module Mixlib
       # segfault when you IO.select a pipe that's reached eof. Weak sauce.
       def open_pipes
         @open_pipes ||= [child_stdout, child_stderr]
+      end
+
+      # Keep this unbuffered for now
+      def write_to_child_stdin
+        return unless input
+        child_stdin << input
+        child_stdin.close # Kick things off
       end
 
       def read_stdout_to_buffer

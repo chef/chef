@@ -5,4 +5,3 @@ module Mixlib
     class InvalidCommandOption < RuntimeError; end
   end
 end
-
