@@ -135,7 +135,7 @@ class Chef
           description = []
           if Chef::Config[:why_run]
             description << "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
-            description << diff_content_from_source(@new_resource.content) 
+            description << diff_current_from_content(@new_resource.content) 
           end
           converge_by(description) do
             backup @new_resource.path if ::File.exists?(@new_resource.path)
