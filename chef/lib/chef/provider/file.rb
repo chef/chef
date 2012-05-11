@@ -58,7 +58,9 @@ class Chef
 
       def diff_current source_path
         begin
-          result = shell_out("diff #{@current_resource.path} #{source_path}" )
+          # -N: Treat missing files as empty
+          # -u: Unified diff format
+          result = shell_out("diff -u -N #{@current_resource.path} #{source_path}" )
           # diff will set a non-zero return code even when there's 
           # valid stdout results, if it encounters something unexpected
           # So as long as we have output, we'll show it.
@@ -67,7 +69,7 @@ class Chef
             val.delete("\\ No newline at end of file")
             val
           elsif not result.stderr.empty?
-            "Could not determine diff"
+            "Could not determine diff. Error: #{result.stderr}"
           else
             "(no diff)"
           end
