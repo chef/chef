@@ -135,7 +135,6 @@ class Chef
           description = []
           if Chef::Config[:why_run]
             description << "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
-            description << "Content diff follows. No diff listing may indicate whitespace only."
             description << diff_content_from_source(@new_resource.content) 
           end
           converge_by(description) do
@@ -148,8 +147,14 @@ class Chef
 
       def action_create
         if !::File.exists?(@new_resource.path)
-          description = "Would create new file #{@new_resource.path}"
-          description << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
+          description = []
+
+          if Chef::Config[:why_run]
+            desc = "Would create new file #{@new_resource.path}"
+            desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
+            description << desc
+            description << diff_content_from_source(@new_resource.content) 
+          end
           converge_by(description) do
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
             access_controls.set_all
