@@ -153,7 +153,7 @@ class Chef
             desc = "Would create new file #{@new_resource.path}"
             desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
             description << desc
-            description << diff_content_from_source(@new_resource.content) 
+            description << diff_current_from_content(@new_resource.content) 
           end
           converge_by(description) do
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
