@@ -95,6 +95,9 @@ class Chef
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
    
+    # Ifconfig failed
+    class Ifconfig < RuntimeError; end
+
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
     class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end

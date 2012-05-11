@@ -19,6 +19,7 @@
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/provider'
+require 'chef/exceptions'
 require 'erb'
 
 #  Recipe example:
@@ -45,9 +46,10 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Ifconfig.new(@new_resource.name)
 
+        @ifconfig_success = true
         @interfaces = {}
 
-        status = popen4("ifconfig") do |pid, stdin, stdout, stderr|
+        @status = popen4("ifconfig") do |pid, stdin, stdout, stderr|
           stdout.each do |line|
 
             if !line[0..9].strip.empty?
@@ -75,12 +77,17 @@ class Chef
             end
           end
         end
-
-        unless status.exitstatus == 0
-          raise Chef::Exception::Ifconfig, "ifconfig failed - #{status.inspect}!"
-        end
-
         @current_resource
+      end
+
+      def define_resource_requirements 
+        requirements.assert(:all_actions) do |a| 
+          a.assertion { @status.exitstatus == 0 }
+          a.failure_message Chef::Exceptions::Ifconfig, "ifconfig failed - #{@status.inspect}!"
+          # no whyrun - if the base ifconfig used in load_current_resource fails
+          # there's no reasonable action that could have been taken in the course of 
+          # a chef run to fix it.
+        end
       end
 
       def action_add
