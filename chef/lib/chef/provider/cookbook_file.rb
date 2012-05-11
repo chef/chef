@@ -37,7 +37,9 @@ class Chef
 
       def action_create
         if file_cache_location && content_stale? 
-          description = "Would create a new cookbook_file #{@new_resource.path}"
+          description = []
+          description << "Would create a new cookbook_file #{@new_resource.path}"
+          description << diff_current(file_cache_location)
           converge_by(description) do
             Chef::Log.debug("#{@new_resource} has new contents")
             backup_new_resource

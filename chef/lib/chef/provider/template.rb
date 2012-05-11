@@ -38,13 +38,17 @@ class Chef
       def action_create
         render_with_context(template_location) do |rendered_template|
           rendered(rendered_template)
-          if ::File.exist?(@new_resource.path) && content_matches?
+          update = ::File.exist?(@new_resource.path)
+          if update && content_matches?
             Chef::Log.debug("#{@new_resource} content has not changed.")
             set_all_access_controls
           else
-            action_message = content_matches? ? "Would create #{@new_resource}" :
-              "Would update #{@current_resource}"
-            converge_by(action_message) do
+            description = [] 
+            action_message = update ? "Would update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
+              "Would create #{@new_resource}"
+            description << action_message
+            description << diff_current(rendered_template.path)
+            converge_by(description) do
               backup
               set_all_access_controls
               FileUtils.mv(rendered_template.path, @new_resource.path)
