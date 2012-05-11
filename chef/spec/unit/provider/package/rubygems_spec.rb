@@ -45,7 +45,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   it "determines the installed versions of gems from Gem.source_index" do
     gems = [gemspec('rspec-core', Gem::Version.new('1.2.9')), gemspec('rspec-core', Gem::Version.new('1.3.0'))]
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
-      Gem::Specification.should_receive(:find_all_by_name).with('rspec-core', Gem::Dependency.new('rspec-core')).and_return(gems)
+      Gem::Specification.should_receive(:find_all_by_name).with('rspec-core', Gem::Dependency.new('rspec-core').requirement).and_return(gems)
     else
       Gem.source_index.should_receive(:search).with(Gem::Dependency.new('rspec-core', nil)).and_return(gems)
     end
@@ -202,7 +202,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     rspec_dep = Gem::Dependency.new('rspec', nil)
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
       @gem_env.stub!(:gem_specification).and_return(Gem::Specification)
-      @gem_env.gem_specification.should_receive(:find_all_by_name).with(rspec_dep.name, rspec_dep).and_return(gems)
+      @gem_env.gem_specification.should_receive(:find_all_by_name).with(rspec_dep.name, rspec_dep.requirement).and_return(gems)
     else
       @gem_env.stub!(:gem_source_index).and_return(Gem.source_index)
       @gem_env.gem_source_index.should_receive(:search).with(rspec_dep).and_return(gems)

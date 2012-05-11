@@ -86,7 +86,7 @@ class Chef
           # [Gem::Specification]  an array of Gem::Specification objects
           def installed_versions(gem_dep)
             if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.8.0')
-              gem_specification.find_all_by_name(gem_dep.name, gem_dep)
+              gem_specification.find_all_by_name(gem_dep.name, gem_dep.requirement)
             else
               gem_source_index.search(gem_dep)
             end
