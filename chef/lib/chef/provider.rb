@@ -92,7 +92,15 @@ class Chef
 
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
-      load_current_resource
+
+      # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
+      if whyrun_supported?
+        load_current_resource
+      else
+        converge_by("bypassing load current resource, why not supported in resource provider #{self.class.name} ") do
+          load_current_resource
+        end
+      end
       define_resource_requirements
 
       events.resource_current_state_loaded(@new_resource, @action, @current_resource)
