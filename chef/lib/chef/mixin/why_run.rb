@@ -62,7 +62,7 @@ class Chef
             # TODO: probably should get this out of the run context instead of making it really global?
             if Chef::Config[:why_run]
               # TODO: legit logging here
-              Array(descriptions).each do |description|
+              Array(descriptions).flatten.each do |description|
                 puts "WHY RUN: #{description}"
               end
             else
@@ -207,6 +207,12 @@ class Chef
             @resource_modifier = resource_modifier
           end
 
+          # Internal method for 
+          def output_whyrun_content(content)
+            Array(content).flatten.each do |description|
+              puts "WHY RUN: #{description}"
+            end
+          end
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
@@ -215,14 +221,8 @@ class Chef
           def run
             if !@assertion_proc || !@assertion_proc.call
               if Chef::Config[:why_run] && @whyrun_message
-                # TODO: real logging
-                puts "WHY RUN: #{@failure_message}"
-                if @whyrun_message.kind_of?(Array)
-                  puts "WHY RUN:" 
-                  @whyrun_message.each { |m| puts "  #{m}" } 
-                else
-                  puts "WHY RUN: #{@whyrun_message}"
-                end 
+                output_whyrun_content(@failure_message)
+                output_whyrun_content(@whyrun_message)
                 @resource_modifier.call if @resource_modifier
               else
                 if @failure_message
