@@ -44,6 +44,8 @@ class Chef
         changes
       end
 
+      private
+
       # Workaround the fact that Ruby's Etc module doesn't believe in negative
       # uids, so negative uids show up as the diminished radix complement of
       # a uint. For example, a uid of -2 is reported as 4294967294
@@ -66,7 +68,12 @@ class Chef
           raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
         end
       rescue ArgumentError
-        raise Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?"
+        provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
+          a.assertion { false }
+          a.failure_message(Chef::Exceptions::UserIDNotFound, "cannot determine user id for '#{resource.owner}', does the user exist on this system?")
+          a.whyrun("Assuming user #{resource.owner} would have been created")
+        end
+        return nil
       end
 
       def target_uid
@@ -108,7 +115,12 @@ class Chef
           raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
         end
       rescue ArgumentError
-        raise Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?"
+        provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
+          a.assertion { false }
+          a.failure_message(Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?")
+          a.whyrun("Assuming user #{resource.owner} would have been created")
+        end
+        return nil
       end
 
       def should_update_group?

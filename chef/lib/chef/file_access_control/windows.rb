@@ -35,6 +35,15 @@ class Chef
         set_dacl
       end
 
+      def require_changes?
+        Chef::Log.info("FIXME: THIS CODE HAS NOT BEEN FIXED FOR WHY-RUN AND I MAY BE LYING THAT THIS RESOURCE WILL CHANGE")
+        true
+      end
+
+      def describe_changes
+        "FIXME: WOULD NEED TO IMPLEMENT WHY-RUN FOR WINDOWS FILE ACCESS CONTROLS"
+      end
+
       private
 
       # Compare the actual ACL on a resource with the ACL we want.  This

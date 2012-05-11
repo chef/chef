@@ -23,7 +23,7 @@ class Chef
     module EnforceOwnershipAndPermissions
 
       def access_controls
-        @access_controls ||= Chef::FileAccessControl.new(current_resource, new_resource)
+        @access_controls ||= Chef::FileAccessControl.new(current_resource, new_resource, self)
       end
 
       # will set the proper user, group and

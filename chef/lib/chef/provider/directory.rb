@@ -37,6 +37,8 @@ class Chef
         @current_resource
       end
       def define_resource_requirements
+        # this must be evaluated before whyrun messages are printed
+        access_controls.requires_changes?
 
         requirements.assert(:create) do |a|
           # Make sure the parent dir exists, or else fail.

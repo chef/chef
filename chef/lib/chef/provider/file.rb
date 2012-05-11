@@ -98,6 +98,9 @@ class Chef
       end
 
       def define_resource_requirements
+        # this must be evaluated before whyrun messages are printed
+        access_controls.requires_changes?
+
         requirements.assert(:create, :create_if_missing, :touch) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
