@@ -16,7 +16,7 @@ class Chef
         context_lines = ""
         Range.new(display_lower_bound, display_upper_bound).each do |i|
           line_nr = (i + 1).to_s.rjust(3)
-          indicator = (i + 1) == culprit_line ? ">>" : ": "
+          indicator = (i + 1) == culprit_line ? ">> " : ":  "
           context_lines << "#{line_nr}#{indicator}#{file_lines[i]}"
         end
         context_lines
@@ -44,6 +44,10 @@ class Chef
 
       def culprit_line
         @culprit_line ||= culprit_backtrace_entry[/^#{@path}:([\d]+)/,1].to_i
+      end
+
+      def filtered_bt
+        exception.backtrace.select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
       end
 
     end
@@ -159,13 +163,19 @@ class Chef
       def file_load_failed(path, exception)
         wrapped_err = CompileErrorInspector.new(path, exception)
         puts "\n"
-        puts "! " * 40
+        puts "-" * 80
         puts "Error compiling #{path}:"
         puts exception.to_s
         puts "\n"
+        puts "Cookbook trace:"
+        wrapped_err.filtered_bt.each do |bt_line|
+          puts "  #{bt_line}"
+        end
+        puts "\n"
+        puts "Most likely caused here:"
         puts wrapped_err.context
         puts "\n"
-        puts "! " * 40
+        puts "-" * 80
       end
 
       # Called when recipes have been loaded.
