@@ -25,7 +25,10 @@ describe Chef::Resource::File do
   let(:expected_content) { "Don't fear the ruby." }
 
   def create_resource
-    resource = Chef::Resource::File.new(path)
+    events = Chef::EventDispatch::Dispatcher.new
+    node = Chef::Node.new
+    run_context = Chef::RunContext.new(node, {}, events)
+    resource = Chef::Resource::File.new(path, run_context)
     resource.content(expected_content)
     resource
   end
