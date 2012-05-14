@@ -37,6 +37,12 @@ class Chef::Application::Client < Chef::Application
     :default => Chef::Config.platform_specific_path("/etc/chef/client.rb"),
     :description => "The configuration file to use"
 
+  option :formatter,
+    :short        => "-F FORMATTER",
+    :long         => "--format FORMATTER",
+    :description  => "output format to use"
+
+
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",

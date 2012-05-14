@@ -38,6 +38,7 @@ require 'chef/cookbook/remote_file_vendor'
 require 'chef/event_dispatch/dispatcher'
 require 'chef/formatters/base'
 require 'chef/formatters/doc'
+require 'chef/formatters/minimal'
 require 'chef/version'
 require 'ohai'
 require 'rbconfig'
@@ -136,8 +137,11 @@ class Chef
       @runner = nil
       @ohai = Ohai::System.new
 
-      # TODO: Custom formatter support.
-      formatter = Chef::Formatters::Doc.new(STDOUT, STDERR)
+      formatter = if formatter_class = Chef::Formatters.by_name(Chef::Config.formatter)
+        formatter_class.new(STDOUT, STDERR)
+      else
+        Chef::Formatters::NullFormatter.new(STDOUT, STDERR)
+      end
       @events = EventDispatch::Dispatcher.new(formatter)
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!

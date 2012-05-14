@@ -189,7 +189,7 @@ class Chef
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
       def resource_update_applied(resource, action, update)
-        @updates_by_resource[resource.name] << update
+        @updates_by_resource[resource.name] << Array(update)[0]
       end
 
       # Called after a resource has been completely converged.

@@ -17,7 +17,7 @@ class Chef
       formatters_by_name[name.to_s] = formatter
     end
 
-    def self.lookup_by_name(name)
+    def self.by_name(name)
       formatters_by_name[name]
     end
 

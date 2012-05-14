@@ -62,8 +62,7 @@ class Chef
       def initialize(out, err)
         super
 
-        @updated_resources = []
-        @updates_by_resource = Hash.new {|h, k| h[k] = []}
+        @updated_resources = 0
       end
 
       def run_start(version)
@@ -71,7 +70,7 @@ class Chef
       end
 
       def run_completed
-        puts "Chef Client finished, #{@updated_resources.size} resources updated"
+        puts "Chef Client finished, #{@updated_resources} resources updated"
       end
 
       # Called right after ohai runs.
@@ -243,11 +242,13 @@ class Chef
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
       def resource_update_applied(resource, action, update)
-        print "\n    - #{update}"
+        line = Array(update)[0]
+        print "\n    - #{line}"
       end
 
       # Called after a resource has been completely converged.
       def resource_updated(resource, action)
+        @updated_resources += 1
         puts "\n"
       end
 
