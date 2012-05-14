@@ -76,6 +76,7 @@ class Chef
           # the DSL in a class outside the context of the DSL
           include_recipe(recipe)
         rescue Exception => e
+          path = resolve_recipe(recipe)
           @events.recipe_file_load_failed(path, e)
           raise
         end
@@ -83,6 +84,11 @@ class Chef
       @events.recipe_load_complete
     end
 
+    def resolve_recipe(recipe_name)
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      cookbook = cookbook_collection[cookbook_name]
+      cookbook.recipe_filenames_by_name[recipe_short_name]
+    end
 
     private
 
