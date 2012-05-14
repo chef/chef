@@ -93,7 +93,7 @@ class Chef
           @new_resource.updated_by_last_action(true)
         end
         if @new_resource.link_type == :symbolic
-          enforce_ownership_and_permissions
+          enforce_ownership_and_permissions @new_resource.target_file
         end
       end
 
