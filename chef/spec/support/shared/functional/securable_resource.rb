@@ -1,6 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
 # Author:: Mark Mzyk (<mmzyk@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
