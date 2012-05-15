@@ -67,7 +67,7 @@ class Chef
             else
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
-              if !Chef::Config[:why_run] || ::File.exist?(parent_directory) 
+              if !whyrun_mode? || ::File.exist?(parent_directory) 
                 ::File.writable?(parent_directory)
               else
                 true

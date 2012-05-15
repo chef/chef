@@ -53,7 +53,7 @@ class Chef
             end
             # whyrun mode cleanup - the temp file will never be used,
             # so close/unlink it here. 
-            if Chef::Config[:why_run] 
+            if whyrun_mode?
               raw_file.close!
             end
           end

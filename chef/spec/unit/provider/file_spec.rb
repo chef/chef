@@ -94,6 +94,7 @@ describe Chef::Provider::File do
     io = StringIO.new
     @provider.load_current_resource
     @provider.new_resource.content "foobar"
+    @provider.should_receive(:diff_current_from_content).and_return("")
     @provider.should_receive(:backup)
     File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
     @provider.set_content
@@ -114,6 +115,7 @@ describe Chef::Provider::File do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     @provider.access_controls.should_receive(:set_all)
+    @provider.should_receive(:diff_current_from_content).and_return("")
     File.stub!(:open).and_return(1)
     #File.should_receive(:directory?).with("/tmp").and_return(true)
     File.should_receive(:open).with(@provider.new_resource.path, "w+")
@@ -126,6 +128,7 @@ describe Chef::Provider::File do
     @provider.load_current_resource
     @provider.new_resource.content "foobar"
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.should_receive(:diff_current_from_content).and_return("")
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
     @provider.access_controls.should_receive(:set_all)
     @provider.run_action(:create)
@@ -154,7 +157,7 @@ describe Chef::Provider::File do
   it "should update the atime/mtime on action_touch" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    #File.should_receive(:directory?).with("/tmp").and_return(true)
+    @provider.should_receive(:diff_current_from_content).and_return("")
     File.should_receive(:utime).once.and_return(1)
     File.stub!(:open).and_return(1)
     @provider.access_controls.should_receive(:set_all).once
@@ -261,6 +264,7 @@ describe Chef::Provider::File do
     it "should call action create if the does not file exist" do
       @resource.path("/tmp/non_existant_file")
       @provider = Chef::Provider::File.new(@resource, @run_context)
+      @provider.should_receive(:diff_current_from_content).and_return("")
       ::File.stub!(:exists?).with(@resource.path).and_return(false)
       io = StringIO.new
       File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
@@ -278,16 +282,9 @@ describe Chef::Provider::File do
          @provider = Chef::Provider::File.new(@resource, @run_context) 
          @provider.load_current_resource
          result = @provider.diff_current_from_content "foo baz\n"
-         result.should == ["0a1", "> foo baz"]
-       end
-    end
-    it "should return valid diff output when content does not match the string content provided and the content has new trailing newline" do
-       Tempfile.open("some-temp") do |file|
-         @resource.path file.path
-         @provider = Chef::Provider::File.new(@resource, @run_context) 
-         @provider.load_current_resource
-         result = @provider.diff_current_from_content "foo baz"
-         result.should == ["0a1", "> foo baz"]
+         # remove the file name info which varies.
+         result.shift(2)
+         result.should == ["@@ -0,0 +1 @@", "+foo baz"] 
        end
     end
   end

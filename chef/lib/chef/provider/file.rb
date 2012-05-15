@@ -109,7 +109,7 @@ class Chef
           parent_directory = ::File.dirname(@new_resource.path)
 
           a.assertion { ::File.directory?(parent_directory) }
-          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist.")
+          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does no exist.")
           a.whyrun("Assuming directory #{parent_directory} would have been created")
         end
 
@@ -135,10 +135,8 @@ class Chef
       def set_content
         unless compare_content
           description = []
-          if Chef::Config[:why_run]
-            description << "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
-            description << diff_current_from_content(@new_resource.content) 
-          end
+          description << "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
+          description << diff_current_from_content(@new_resource.content) 
           converge_by(description) do
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
@@ -150,13 +148,10 @@ class Chef
       def action_create
         if !::File.exists?(@new_resource.path)
           description = []
-
-          if Chef::Config[:why_run]
-            desc = "Would create new file #{@new_resource.path}"
-            desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
-            description << desc
-            description << diff_current_from_content(@new_resource.content) 
-          end
+          desc = "Would create new file #{@new_resource.path}"
+          desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
+          description << desc
+          description << diff_current_from_content(@new_resource.content) 
           converge_by(description) do
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
             access_controls.set_all
@@ -233,14 +228,6 @@ class Chef
       end
 
       private
-
-      def assert_enclosing_directory_exists!
-        enclosing_dir = ::File.dirname(@new_resource.path)
-        unless ::File.directory?(enclosing_dir)
-          msg = "Cannot create a file at #{@new_resource.path} because the enclosing directory (#{enclosing_dir}) does not exist"
-          raise Chef::Exceptions::EnclosingDirectoryDoesNotExist, msg
-        end
-      end
 
       def short_cksum(checksum)
         return "none" if checksum.nil?
