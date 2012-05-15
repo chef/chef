@@ -15,6 +15,7 @@ class Chef
     class Minimal < Formatters::Base
 
       cli_name(:minimal)
+      cli_name(:min)
 
       attr_reader :updated_resources
       attr_reader :updates_by_resource
@@ -99,7 +100,7 @@ class Chef
 
       # Called before cookbook sync starts
       def cookbook_sync_start(cookbook_count)
-        puts "synchronizing cookbooks"
+        puts "Synchronizing cookbooks"
       end
 
       # Called when cookbook +cookbook_name+ has been sync'd
@@ -118,7 +119,7 @@ class Chef
 
       # Called when cookbook loading starts.
       def library_load_start(file_count)
-        puts "evaluating cookbooks"
+        puts "Compiling cookbooks"
       end
 
       # Called after a file in a cookbook is loaded.
@@ -141,16 +142,19 @@ class Chef
 
       # Called when the converge phase is finished.
       def converge_complete
-        puts "\nsystem converged."
+        puts "\n"
+        puts "System converged."
         if updated_resources.empty?
           puts "no resources updated"
         else
+          puts "\n"
           puts "resources updated this run:"
           updated_resources.each do |resource|
             puts "* #{resource.to_s}"
             updates_by_resource[resource.name].flatten.each do |update|
               puts "  - #{update}"
             end
+            puts "\n"
           end
         end
       end
