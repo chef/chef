@@ -97,7 +97,7 @@ class Chef
       if whyrun_supported?
         load_current_resource
       else
-        converge_by("bypassing load current resource, why not supported in resource provider #{self.class.name} ") do
+        converge_by("bypassing load current resource, whyrun not supported in resource provider #{self.class.name} ") do
           load_current_resource
         end
       end
@@ -119,7 +119,7 @@ class Chef
         if action == :nothing
           action_nothing
         else
-          converge_by("bypassing action #{action}, whyrun not supported in resource provider #{self.class.name} ") do
+          converge_by("bypassing action #{@action}, whyrun not supported in resource provider #{self.class.name} ") do
             send("action_#{@action}")
           end
         end
