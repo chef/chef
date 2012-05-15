@@ -109,7 +109,7 @@ class Chef
           parent_directory = ::File.dirname(@new_resource.path)
 
           a.assertion { ::File.directory?(parent_directory) }
-          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist, cannot create #{@new_resource.path}")
+          a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist.")
           a.whyrun("Assuming directory #{parent_directory} would have been created")
         end
 
