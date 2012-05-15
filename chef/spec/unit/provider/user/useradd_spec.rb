@@ -168,21 +168,24 @@ describe Chef::Provider::User::Useradd do
       provider.new_resource.manage_home true
       provider.new_resource.gid '23'
     end
-
     let(:current_resource_attributes) { { } }
-    let(:expected_command) { "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -d '/Users/mud' -m adam" }
 
-    it "runs useradd with the computed command options" do
-      provider.should_receive(:shell_out).with(expected_command ).and_return(true)
-      provider.create_user
+    context 'with home directory specified' do
+      let(:new_home_path) { '/Users/mud' }
+      let(:expected_command) { "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -d '/Users/mud' -m adam" }
+
+      it "runs useradd with the computed command options" do
+        provider.should_receive(:shell_out!).with(expected_command).and_return(status)
+        provider.create_user
+      end
     end
 
     context "and home is not specified for new system user resource" do
-      let(:home) { nil }
+      let(:new_home_path) { nil }
       let(:expected_command) { "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' adam" }
 
       it "should not include -d in the command options" do
-        provider.should_receive(:shell_out).with(expected_command).and_return(true)
+        provider.should_receive(:shell_out!).with(expected_command).and_return(status)
         provider.create_user
       end
     end

@@ -100,7 +100,7 @@ CRONTAB
     end
 
     it "should call crontab with a file containing the crontab" do
-      @provider.should_receive(:shell_out!) do |command|
+      @provider.should_receive(:shell_out!) do |command, options|
         (command =~ %r{\A/usr/bin/crontab (/\S+)\z}).should be_true
         $1.should == "/tmp/foo"
         @status
