@@ -64,6 +64,9 @@ describe Chef::Resource::Link do
         File.exist?(target_file).should be_false
         File.symlink?(target_file).should be_false
       end
+      it 'does not mark the resource updated' do
+        resource.should_not be_updated
+      end
       it 'does not log that it deleted' do
         @info.include?("link[#{target_file}] deleted").should be_false
       end
@@ -82,6 +85,9 @@ describe Chef::Resource::Link do
         File.exist?(target_file).should be_false
         File.symlink?(target_file).should be_false
       end
+      it 'marks the resource updated' do
+        resource.should be_updated
+      end
       it 'logs that it deleted' do
         @info.include?("link[#{target_file}] deleted").should be_true
       end
@@ -99,6 +105,9 @@ describe Chef::Resource::Link do
       it 'leaves the file linked' do
         File.symlink?(target_file).should be_true
         File.readlink(target_file).should == to
+      end
+      it 'does not mark the resource updated' do
+        resource.should_not be_updated
       end
       it 'does not log that it created' do
         @info.include?("link[#{target_file}] created").should be_false
@@ -121,6 +130,9 @@ describe Chef::Resource::Link do
       it 'links to the target file' do
         File.symlink?(target_file).should be_true
         File.readlink(target_file).should == to
+      end
+      it 'marks the resource updated' do
+        resource.should be_updated
       end
       it 'logs that it created' do
         @info.include?("link[#{target_file}] created").should be_true
@@ -148,6 +160,9 @@ describe Chef::Resource::Link do
         File.open(to, "w") { |file| file.write('wowzers') }
         IO.read(target_file).should == 'wowzers'
       end
+      it 'marks the resource updated' do
+        resource.should be_updated
+      end
       it 'logs that it created' do
         @info.include?("link[#{target_file}] created").should be_true
       end
@@ -169,6 +184,9 @@ describe Chef::Resource::Link do
         IO.read(to).should == IO.read(target_file)
         File.open(to, "w") { |file| file.write('wowzers') }
         IO.read(target_file).should == 'wowzers'
+      end
+      it 'does not mark the resource updated' do
+        resource.should_not be_updated
       end
       it 'does not log that it created' do
         @info.include?("link[#{target_file}] created").should be_false
