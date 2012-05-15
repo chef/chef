@@ -34,6 +34,17 @@ class Chef
         super
         @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
+      
+      def define_resource_requirements
+        super
+
+        requirements.assert(:create, :create_if_missing) do |a| 
+          a.assertion { ::File::exist?(@new_resource.source) }
+          a.failure_message TemplateError, "Template source #{@new_resource.source} could not be found."
+          a.whyrun "Template source #{@new_resource.source} does not exist. Assuming it would have been created."
+          a.block_action!
+        end
+      end
 
       def action_create
         render_with_context(template_location) do |rendered_template|
@@ -41,7 +52,6 @@ class Chef
           update = ::File.exist?(@new_resource.path)
           if update && content_matches?
             Chef::Log.debug("#{@new_resource} content has not changed.")
-            set_all_access_controls
           else
             description = [] 
             action_message = update ? "Would update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
@@ -53,10 +63,11 @@ class Chef
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
             end
-            set_all_access_controls
           end
-        end
+          set_all_access_controls
+        end  
       end
+
 
       def template_location
         @template_file_cache_location ||= begin
