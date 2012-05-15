@@ -57,6 +57,11 @@ describe Chef::Provider::Template do
       @provider.template_location.should == '/tmp/its_on_disk.erb'
     end
 
+    it "stops executing when the local template source can't be found" do 
+      @resource.source "invalid.erb" 
+      @resource.local true
+      lambda { @provider.run_action(:create) } .should raise_error Chef::Mixin::WhyRun::ResourceRequirements::Assertion::AssertionFailure
+    end
     it "should use the cookbook name if defined in the template resource" do
       @resource.cookbook_name = 'apache2'
       @resource.cookbook('openldap')
