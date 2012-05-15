@@ -261,6 +261,9 @@ class Chef
       def handlers_completed
       end
 
+      ## TODO: deprecation warning. this way we can queue them up and present
+      #  them all at once.
+
       # An uncategorized message. This supports the case that a user needs to
       # pass output that doesn't fit into one of the callbacks above. Note that
       # there's no semantic information about the content or importance of the
