@@ -114,7 +114,11 @@ class Chef
       # in non-whyrun mode, this will still cause the action to be
       # executed normally.
       if whyrun_supported?
-        send("action_#{@action}")
+        if requirements.action_blocked?(@action) 
+          converge_by("due to failed resource requirement, action #{@action} cannot be processed in whyrun mode. Assuming normal execution.") { }
+        else
+          send("action_#{@action}")
+        end
       else
         if action == :nothing
           action_nothing

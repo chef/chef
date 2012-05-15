@@ -63,7 +63,7 @@ class Chef
             if Chef::Config[:why_run]
               # TODO: legit logging here
               Array(descriptions).flatten.each do |description|
-                puts "WHY RUN: #{description}"
+                puts "WHY RUN: #{description}" if description
               end
             else
               block.call
@@ -102,7 +102,7 @@ class Chef
       #             @current_resource.status(:stopped)
       #           end
       #         else
-      #           if why_run_mode_enabled?
+      #           if whyrun_mode?
       #             # If the init script is not available, and we're in why run mode,
       #             # assume that some previous action would've created it:
       #             log("warning: init script '/etc/init.d/some-service' is not available")
@@ -143,10 +143,12 @@ class Chef
           end
 
           def initialize
+            @block_action = false
             @assertion_proc = nil
             @failure_message = nil
             @whyrun_message = nil
             @resource_modifier = nil
+            @assertion_failed = false
             @exception_type = AssertionFailure
           end
 
@@ -197,7 +199,7 @@ class Chef
           #   # in a provider
           #   assert(:start, :restart) do |a|
           #     a.assertion { ::File.exist?("/etc/init.d/service-name") }
-          #     a.why_run("Init script '/etc/init.d/service-name' doesn't exist, assuming a prior action would have created it.") do
+          #     a.whyrun("Init script '/etc/init.d/service-name' doesn't exist, assuming a prior action would have created it.") do
           #       # blindly assume that the service exists but is stopped in why run mode:
           #       @new_resource.status(:stopped)
           #     end
@@ -207,12 +209,38 @@ class Chef
             @resource_modifier = resource_modifier
           end
 
-          # Internal method for 
+          # Prevents associated actions from being invoked in whyrun mode. 
+          # This will also stop further processing of assertions for a given action. 
+          # 
+          # An example from the template provider: if the source template doesn't exist 
+          # we can't parse it in the action_create block of template - something that we do 
+          # even in whyrun mode.  Because the soruce template may have been created in an earlier 
+          # step, we still want to keep going in whyrun mode.
+          # 
+          # assert(:create, :create_if_missing) do |a|
+          #   a.assertion { File::exists?(@new_resource.source) } 
+          #   a.whyrun "Template source file does not exist, assuming it would have been created."
+          #   a.block_action!
+          # end
+          #
+          def block_action!
+            @block_action = true
+          end
+
+          def block_action? 
+            @block_action
+          end
+
+          def assertion_failed?
+            @assertion_failed
+          end
+
           def output_whyrun_content(content)
             Array(content).flatten.each do |description|
               puts "WHY RUN: #{description}"
             end
           end
+
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
@@ -220,6 +248,7 @@ class Chef
           # and no why run message or block has been declared.
           def run
             if !@assertion_proc || !@assertion_proc.call
+              @assertion_failed = true
               if Chef::Config[:why_run] && @whyrun_message
                 output_whyrun_content(@failure_message)
                 output_whyrun_content(@whyrun_message)
@@ -235,6 +264,14 @@ class Chef
 
         def initialize
           @assertions = Hash.new {|h,k| h[k] = [] }
+          @blocked_actions = []
+        end
+
+        # Check to see if a given action is blocked by a failed assertion
+        #
+        # Takes the action name to be verified.
+        def action_blocked?(action) 
+          @blocked_actions.include?(action)
         end
 
         # Define a new Assertion.
@@ -270,6 +307,21 @@ class Chef
         #     a.failure_message(Exceptions::InsufficientPrivileges,
         #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
         #   end
+        #
+        # A Template provider that will prevent action execution but continue the run in 
+        # whyrun mode if the template source is not available.
+        #   assert(:create, :create_if_missing) do |a| 
+        #     a.assertion { File::exist?(@new_resource.source) }
+        #     a.failure_message Chef::Exceptions::TemplateError, "Template #{@new_resource.source} could not be found exist."
+        #     a.whyrun "Template source #{@new_resource.source} does not exist. Assuming it would have been created."
+        #     a.block_action!
+        #   end
+        #
+        #   assert(:delete) do |a|
+        #     a.assertion { ::File.writable?(@new_resource.path) }
+        #     a.failure_message(Exceptions::InsufficientPrivileges,
+        #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
+        #   end
         def assert(*actions)
           assertion = Assertion.new
           yield assertion
@@ -278,7 +330,13 @@ class Chef
 
         # Run the assertion and assumption logic.
         def run(action)
-          @assertions[action.to_sym].each {|a| a.run }
+          @assertions[action.to_sym].each do |a| 
+            a.run
+            if a.assertion_failed? and a.block_action? 
+              @blocked_actions << action
+              return
+            end
+          end
         end
       end
     end
