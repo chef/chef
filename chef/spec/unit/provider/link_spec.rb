@@ -122,8 +122,8 @@ describe Chef::Resource::Link do
     it "should set the symlink target" do
       provider.current_resource.target_file.should == "#{CHEF_SPEC_DATA}/fofile-link"
     end
-    it "should update the source of the existing link to an empty string" do
-      provider.current_resource.to.should == ''
+    it "should update the source of the existing link to nil" do
+      provider.current_resource.to.should be_nil
     end
     it "should not set the owner" do
       provider.current_resource.owner.should == nil
