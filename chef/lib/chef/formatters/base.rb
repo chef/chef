@@ -28,7 +28,7 @@ class Chef
     #--
     # TODO: is it too clever to be defining new() on a module like this?
     def self.new(name, out, err)
-      formatter_class = lookup_by_name(name) or
+      formatter_class = by_name(name) or
         raise UnknownFormatter, "No output formatter found for #{name} (available: #{available_formatters.join(', ')})"
 
       formatter_class.new(out, err)
