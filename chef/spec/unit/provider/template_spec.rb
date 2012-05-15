@@ -40,6 +40,9 @@ describe Chef::Provider::Template do
 
   describe "when creating the template" do
 
+    before do 
+
+    end
     after do
       FileUtils.rm(@rendered_file_location) if ::File.exist?(@rendered_file_location)
     end
