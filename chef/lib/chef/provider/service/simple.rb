@@ -47,7 +47,7 @@ class Chef
           super
           requirements.assert(:all_actions) do |a| 
             a.assertion { @status_load_success } 
-            a.whyrun "Failed to load initial status for service, assuming service would have previously been installed and has a current status of not running" 
+            a.whyrun ["Service status not available. Assuming a prior action would have installed the service.", "Assuming status of not running."]
           end
         end
 
@@ -70,13 +70,13 @@ class Chef
 
           requirements.assert(:reload) do |a|
             a.assertion { @new_resource.reload_command }
-            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command set in order to perform a reload"
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command be set in order to perform a reload"
           end
 
           requirements.assert(:all_actions) do |a|
             a.assertion { @new_resource.status_command or @new_resource.supports[:status] or 
               (!ps_cmd.nil? and !ps_cmd.empty?) } 
-            a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
+            a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
           requirements.assert(:all_actions) do |a| 
             a.assertion { !@ps_command_failed } 
