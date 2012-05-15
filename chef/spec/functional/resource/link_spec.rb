@@ -100,11 +100,22 @@ describe Chef::Resource::Link do
       end
       context "and the link does not yet exist" do
         it_behaves_like 'a successful symbolic link'
-        context "with a relative link destination", :pending => "understanding this behavior" do
+        context "with a relative link destination" do
           before(:each) do
-            resource.to(File.basename(target_file))
+            resource.to("../#{File.basename(to)}")
           end
-          it_behaves_like 'a successful symbolic link'
+          context 'create succeeds' do
+            before(:each) do
+              resource.run_action(:create)
+            end
+            it "create links to the target file" do
+              File.symlink?(target_file).should be_true
+              File.readlink(target_file).should == "../#{File.basename(to)}"
+            end
+            it_behaves_like 'a securable resource' do
+              let(:path) { target_file }
+            end
+          end
           it_behaves_like 'a successful delete'
         end
       end
@@ -181,7 +192,7 @@ describe Chef::Resource::Link do
         before(:each) do
           Dir.mkdir(target_file)
         end
-        it 'errors out' do
+        it 'create errors out' do
           lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
         end
         it_behaves_like 'delete errors out'
