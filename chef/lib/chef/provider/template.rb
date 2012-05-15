@@ -50,10 +50,10 @@ class Chef
             description << diff_current(rendered_template.path)
             converge_by(description) do
               backup
-              set_all_access_controls
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
             end
+            set_all_access_controls
           end
         end
       end
