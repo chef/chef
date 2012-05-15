@@ -232,6 +232,10 @@ describe Chef::Resource::Link do
           end
           include_context 'create symbolic link is noop'
           include_context 'delete succeeds'
+          it 'the :delete action does not delete the target file' do
+            resource.run_action(:delete)
+            File.exists?(to).should be_true
+          end
           context "and the target's owner is different than desired" do
             before(:each) do
               resource.owner('nobody')
@@ -264,6 +268,10 @@ describe Chef::Resource::Link do
           end
           include_context 'create symbolic link succeeds'
           include_context 'delete succeeds'
+          it 'the :delete action does not delete the target file' do
+            resource.run_action(:delete)
+            File.exists?(to).should be_true
+          end
         end
         context "pointing nowhere" do
           before(:each) do
@@ -383,6 +391,10 @@ describe Chef::Resource::Link do
         end
         include_context 'create hard link is noop'
         include_context 'delete succeeds'
+        it 'the :delete action does not delete the target file' do
+          resource.run_action(:delete)
+          File.exists?(to).should be_true
+        end
       end
       context "and the link already exists and is a file" do
         before(:each) do
