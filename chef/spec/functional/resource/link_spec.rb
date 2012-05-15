@@ -52,41 +52,127 @@ describe Chef::Resource::Link do
     end
   end
 
-  shared_examples_for 'a successful delete' do
-    before(:each) do
-      resource.run_action(:delete)
-    end
-    it 'delete succeeds' do
-      File.exist?(target_file).should be_false
-      File.symlink?(target_file).should be_false
+  shared_context 'delete is noop' do
+    describe 'the :delete action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:delete)
+      end
+
+      it 'leaves the file deleted' do
+        File.exist?(target_file).should be_false
+        File.symlink?(target_file).should be_false
+      end
+      it 'does not log that it deleted' do
+        @info.include?("link[#{target_file}] deleted").should be_false
+      end
     end
   end
 
-  shared_examples_for "a successful symbolic link" do
-    before(:each) do
-      resource.run_action(:create)
-    end
-    it "links to the target file" do
-      File.symlink?(target_file).should be_true
-      File.readlink(target_file).should == to
-    end
-    it_behaves_like 'a securable resource' do
-      let(:path) { target_file }
+  shared_context 'delete succeeds' do
+    describe 'the :delete action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:delete)
+      end
+
+      it 'deletes the file' do
+        File.exist?(target_file).should be_false
+        File.symlink?(target_file).should be_false
+      end
+      it 'logs that it deleted' do
+        @info.include?("link[#{target_file}] deleted").should be_true
+      end
     end
   end
 
-  shared_examples_for 'a successful hard link' do
-    before(:each) do
-      resource.run_action(:create)
+  shared_context 'create symbolic link is noop' do
+    describe 'the :create action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:create)
+      end
+
+      it 'leaves the file linked' do
+        File.symlink?(target_file).should be_true
+        File.readlink(target_file).should == to
+      end
+      it 'does not log that it created' do
+        @info.include?("link[#{target_file}] created").should be_false
+      end
+
+      it_behaves_like 'a securable resource' do
+        let(:path) { target_file }
+      end
     end
-    it 'links to the target file' do
-      File.exists?(target_file).should be_true
-      File.symlink?(target_file).should be_false
-      # Writing to one hardlinked file should cause both
-      # to have the new value.
-      IO.read(to).should == IO.read(target_file)
-      File.open(to, "w") { |file| file.write('wowzers') }
-      IO.read(target_file).should == 'wowzers'
+  end
+
+  shared_context 'create symbolic link succeeds' do
+    describe 'the :create action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:create)
+      end
+
+      it 'links to the target file' do
+        File.symlink?(target_file).should be_true
+        File.readlink(target_file).should == to
+      end
+      it 'logs that it created' do
+        @info.include?("link[#{target_file}] created").should be_true
+      end
+
+      it_behaves_like 'a securable resource' do
+        let(:path) { target_file }
+      end
+    end
+  end
+
+  shared_context 'create hard link succeeds' do
+    describe 'the :create action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:create)
+      end
+      it 'preserves the hard link' do
+        File.exists?(target_file).should be_true
+        File.symlink?(target_file).should be_false
+        # Writing to one hardlinked file should cause both
+        # to have the new value.
+        IO.read(to).should == IO.read(target_file)
+        File.open(to, "w") { |file| file.write('wowzers') }
+        IO.read(target_file).should == 'wowzers'
+      end
+      it 'logs that it created' do
+        @info.include?("link[#{target_file}] created").should be_true
+      end
+    end
+  end
+
+  shared_context 'create hard link is noop' do
+    describe 'the :create action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:create)
+      end
+      it 'links to the target file' do
+        File.exists?(target_file).should be_true
+        File.symlink?(target_file).should be_false
+        # Writing to one hardlinked file should cause both
+        # to have the new value.
+        IO.read(to).should == IO.read(target_file)
+        File.open(to, "w") { |file| file.write('wowzers') }
+        IO.read(target_file).should == 'wowzers'
+      end
+      it 'does not log that it created' do
+        @info.include?("link[#{target_file}] created").should be_false
+      end
     end
   end
 
@@ -99,7 +185,7 @@ describe Chef::Resource::Link do
         end
       end
       context "and the link does not yet exist" do
-        it_behaves_like 'a successful symbolic link'
+        include_context 'create symbolic link succeeds'
         context "with a relative link destination" do
           before(:each) do
             resource.to("../#{File.basename(to)}")
@@ -116,7 +202,7 @@ describe Chef::Resource::Link do
               let(:path) { target_file }
             end
           end
-          it_behaves_like 'a successful delete'
+          include_context 'delete is noop'
         end
       end
       context "and the link already exists and is a symbolic link" do
@@ -126,8 +212,8 @@ describe Chef::Resource::Link do
             File.symlink?(target_file).should be_true
             File.readlink(target_file).should == to
           end
-          it_behaves_like 'a successful symbolic link'
-          it_behaves_like 'a successful delete'
+          include_context 'create symbolic link is noop'
+          include_context 'delete succeeds'
           context "and the target's owner is different than desired" do
             before(:each) do
               resource.owner('nobody')
@@ -158,8 +244,8 @@ describe Chef::Resource::Link do
           after(:each) do
             File.delete(@other_target)
           end
-          it_behaves_like 'a successful symbolic link'
-          it_behaves_like 'a successful delete'
+          include_context 'create symbolic link succeeds'
+          include_context 'delete succeeds'
         end
         context "pointing nowhere" do
           before(:each) do
@@ -168,8 +254,8 @@ describe Chef::Resource::Link do
             File.symlink?(target_file).should be_true
             File.readlink(target_file).should == nonexistent
           end
-          it_behaves_like 'a successful symbolic link'
-          it_behaves_like 'a successful delete'
+          include_context 'create symbolic link succeeds'
+          include_context 'delete succeeds'
         end
       end
       context 'and the link already exists and is a hard link to the file' do
@@ -178,14 +264,14 @@ describe Chef::Resource::Link do
           File.exists?(target_file).should be_true
           File.symlink?(target_file).should be_false
         end
-        it_behaves_like 'a successful symbolic link'
+        include_context 'create symbolic link succeeds'
         it_behaves_like 'delete errors out'
       end
       context 'and the link already exists and is a file' do
         before(:each) do
           File.open(target_file, "w") { |file| file.write("eek") }
         end
-        it_behaves_like 'a successful symbolic link'
+        include_context 'create symbolic link succeeds'
         it_behaves_like 'delete errors out'
       end
       context 'and the link already exists and is a directory' do
@@ -205,8 +291,8 @@ describe Chef::Resource::Link do
         Dir.mkdir(to)
       end
       context 'and the link does not yet exist' do
-        it_behaves_like 'a successful symbolic link'
-        it_behaves_like 'a successful delete'
+        include_context 'create symbolic link succeeds'
+        include_context 'delete is noop'
       end
     end
     context "when the link destination is a symbolic link" do
@@ -222,8 +308,8 @@ describe Chef::Resource::Link do
           File.delete(@other_target)
         end
         context 'and the link does not yet exist' do
-          it_behaves_like 'a successful symbolic link'
-          it_behaves_like 'a successful delete'
+          include_context 'create symbolic link succeeds'
+          include_context 'delete is noop'
         end
       end
       context 'to a file that does not exist' do
@@ -234,16 +320,16 @@ describe Chef::Resource::Link do
           File.readlink(to).should == @other_target
         end
         context 'and the link does not yet exist' do
-          it_behaves_like 'a successful symbolic link'
-          it_behaves_like 'a successful delete'
+          include_context 'create symbolic link succeeds'
+          include_context 'delete is noop'
         end
       end
     end
     context "when the link destination is not readable to this user", :pending do
     end
     context "when the link destination does not exist" do
-      it_behaves_like 'a successful symbolic link'
-      it_behaves_like 'a successful delete'
+      include_context 'create symbolic link succeeds'
+      include_context 'delete is noop'
     end
   end
 
@@ -259,8 +345,8 @@ describe Chef::Resource::Link do
         end
       end
       context "and the link does not yet exist" do
-        it_behaves_like 'a successful hard link'
-        it_behaves_like 'a successful delete'
+        include_context 'create hard link succeeds'
+        include_context 'delete is noop'
       end
       context "and the link already exists and is a symbolic link pointing at the same file" do
         before(:each) do
@@ -268,14 +354,23 @@ describe Chef::Resource::Link do
           File.symlink?(target_file).should be_true
           File.readlink(target_file).should == to
         end
-        it_behaves_like 'a successful hard link'
+        include_context 'create hard link succeeds'
         it_behaves_like 'delete errors out'
+      end
+      context 'and the link already exists and is a hard link to the file' do
+        before(:each) do
+          File.link(to, target_file)
+          File.exists?(target_file).should be_true
+          File.symlink?(target_file).should be_false
+        end
+        include_context 'create hard link is noop'
+        include_context 'delete succeeds'
       end
       context "and the link already exists and is a file" do
         before(:each) do
           File.open(target_file, 'w') { |file| file.write('tomfoolery') }
         end
-        it_behaves_like 'a successful hard link'
+        include_context 'create hard link succeeds'
         it_behaves_like 'delete errors out'
       end
       context "and the link already exists and is a directory" do
@@ -309,7 +404,7 @@ describe Chef::Resource::Link do
         it 'create errors out' do
           lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
         end
-        it_behaves_like 'a successful delete'
+        include_context 'delete is noop'
       end
     end
     context "when the link destination is a symbolic link" do
@@ -331,7 +426,7 @@ describe Chef::Resource::Link do
             File.symlink?(target_file).should be_true
             File.readlink(target_file).should == @other_target
           end
-          it_behaves_like 'a successful delete'
+          include_context 'delete is noop'
         end
       end
       context 'to a nonexistent file' do
@@ -348,7 +443,7 @@ describe Chef::Resource::Link do
             File.symlink?(target_file).should be_true
             File.readlink(target_file).should == @other_target
           end
-          it_behaves_like 'a successful delete'
+          include_context 'delete is noop'
         end
       end
     end
@@ -359,7 +454,7 @@ describe Chef::Resource::Link do
         it 'create errors out' do
           lambda { resource.run_action(:create) }.should raise_error(Errno::ENOENT)
         end
-        it_behaves_like 'a successful delete'
+        include_context 'delete is noop'
       end
     end
   end
