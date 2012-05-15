@@ -45,6 +45,10 @@ class Chef
 
         def shared_resource_requirements
           super
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @status_load_success } 
+            a.whyrun "Failed to load initial status for service, assuming service would have previously been installed and has a current status of not running" 
+          end
         end
 
         def define_resource_requirements
@@ -77,10 +81,6 @@ class Chef
           requirements.assert(:all_actions) do |a| 
             a.assertion { !@ps_command_failed } 
             a.failure_message Chef::Exceptions::Service, "Command #{ps_cmd} failed to execute, cannot determine service current status"
-          end
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { @status_load_success } 
-            a.whyrun "Failed to load initial status for service, assuming service would have previously been installed and has a current status of not running" 
           end
         end
 
