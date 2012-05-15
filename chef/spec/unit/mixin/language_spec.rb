@@ -73,7 +73,11 @@ describe Chef::Mixin::Language do
       let(:platform) { "debian" }
       let(:platform_specific_value) { :platform_specific_value }
       let(:default_value) { :default_value }
-      before(:each) { @node[:platform] = platform }
+      
+      before(:each) do
+        @node[:platform] = platform
+        @platform_hash[platform] = Hash.new
+      end
 
       context "and version constraint is '5.0' where the [OP] is omitted" do
         before(:each) do
@@ -300,12 +304,12 @@ describe Chef::Mixin::Language do
 
     context "when platform versions is an array" do
       before(:each) do
-        @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
+        @platform_hash["debian"] = {["5.0", "6.0"] => "debian-5/6", "default" => "debian"}
       end
 
       it "returns a version-specific value based on the current platform" do
         @node[:platform] = "debian"
-        @node[:platform_version] = "6"
+        @node[:platform_version] = "6.0"
         @language.value_for_platform(@platform_hash).should == "debian-5/6"
       end
 
@@ -406,7 +410,7 @@ describe Chef::Mixin::Language do
 
     it "returns the correct default for a given platform" do
       @node[:platform] = "debian"
-      @node[:platform_version] = '9000'
+      @node[:platform_version] = '9.0'
       @language.value_for_platform(@platform_hash).should == [ :restart, :reload, :status ]
     end
 

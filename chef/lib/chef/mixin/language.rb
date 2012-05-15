@@ -20,13 +20,64 @@ require 'chef/search/query'
 require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'chef/encrypted_data_bag_item'
+require 'chef/version_constraint'
 
 class Chef
   module Mixin
     module Language
 
+      class PlatformConstraintContainer
+        attr_reader :platform_name
+        attr_reader :default_values
+        attr_reader :constraints_map
+
+        def initialize(platform_name, value_hash)
+          value_hash = Mash.from_hash(value_hash)
+          @platform_name = platform_name.to_s
+          @default_values = nil
+
+          if value_hash.has_key?("default")
+            @default_values = value_hash["default"]
+            value_hash.delete("default")
+          end
+
+          self.constraints_map = value_hash
+        end
+
+        private
+
+          def constraints_map=(value_hash)
+             constraints_map = hash_keys_to_version_constraints(value_hash)
+             assert_not_conflicting_constraints(constraints_map)
+
+             @constraints_map = constraints_map
+          end
+
+          def hash_keys_to_version_constraints(hash)
+            hash.inject({}) do |new_hash, key_value|
+              keys, value = *key_value
+              Array(keys).each do |key|
+                new_hash[Chef::VersionConstraint.new(key.to_s)] = value
+              end
+              new_hash
+            end
+          end
+
+          def assert_not_conflicting_constraints(constraints_map)
+            constraints_map.each_key do |key|
+              constraints_map.each_key.each do |ver_constraint|
+                if ver_constraint.include?(key) && ver_constraint != key
+                  raise Chef::Exceptions::VersionConstraintConflict
+                end
+              end
+            end
+          end
+      end
+
       # Implementation class for determining platform dependent values
       class PlatformDependentValue
+        attr_reader :constraint_containers
+        attr_reader :default_values
 
         # Create a platform dependent value object.
         # === Arguments
@@ -44,56 +95,68 @@ class Chef
         #   {platform_version => value_for_that_version}
         # * the exception to the above is the default value, which is given as
         #   :default => default_value
+        # * platform_versions must be in SemVer (x.y.z) format or an abbreviated SemVer format (x.y)
         def initialize(platform_hash)
-          @values = {}
-          platform_hash.each { |platforms, value| set(platforms, value)}
+          @constraint_containers = []
+          @default_values = nil
+          platform_hash = Mash.from_hash(platform_hash)
+
+          if platform_hash.has_key?("default")
+            @default_values = platform_hash["default"]
+            platform_hash.delete("default")
+          end
+
+          platform_hash.each do |platforms, value_hash|
+            assert_valid_platform_values!(platforms, value_hash)
+
+            Array(platforms).each do |platform_name|
+              @constraint_containers << PlatformConstraintContainer.new(platform_name, value_hash)
+            end
+          end
         end
 
         def value_for_node(node)
-          platform, version = node[:platform].to_s, node[:platform_version].to_s
-          if @values.key?(platform) && @values[platform].key?(version)
-            @values[platform][version]
-          elsif @values.key?(platform) && @values[platform].key?("default")
-            @values[platform]["default"]
-          elsif @values.key?("default")
-            @values["default"]
-          else
-            nil
-          end
+          platform_name, platform_version = node[:platform].to_s, node[:platform_version].to_s
+
+          satisfy_version(platform_name, platform_version) || 
+            default_platform_values(platform_name) || 
+            default_values
         end
 
         private
 
-        def set(platforms, value)
-          if platforms.to_s == 'default'
-            @values["default"] = value
-          else
-            assert_valid_platform_values!(platforms, value)
-            Array(platforms).each { |platform| @values[platform.to_s] = normalize_keys(value)}
-            value
-          end
-        end
+          def satisfy_version(platform, version)
+            constraint_container = platform_constraint_container_for(platform)
+            return nil unless constraint_container
 
-        def normalize_keys(hash)
-          hash.inject({}) do |h, key_value|
-            keys, value = *key_value
-            Array(keys).each do |key|
-              h[key.to_s] = value
+            constraint_container.constraints_map.each do |constraint, value|
+              begin
+                return value if constraint.include?(version)
+              rescue Chef::Exceptions::InvalidCookbookVersion; end
             end
-            h
-          end
-        end
 
-        def assert_valid_platform_values!(platforms, value)
-          unless value.kind_of?(Hash)
-            msg = "platform dependent values must be specified in the format :platform => {:version => value} "
-            msg << "you gave a value #{value.inspect} for platform(s) #{platforms}"
-            raise ArgumentError, msg
+            nil
           end
-        end
+
+          def platform_constraint_container_for(platform)
+            @constraint_containers.select { |platform_container| platform_container.platform_name == platform.to_s }.first
+          end
+
+          def default_platform_values(platform)
+            constraint_container = platform_constraint_container_for(platform)
+            return nil unless constraint_container
+
+            constraint_container.default_values
+          end
+
+          def assert_valid_platform_values!(platforms, value)
+            unless value.kind_of?(Hash)
+              msg = "platform dependent values must be specified in the format :platform => {:version => value} "
+              msg << "you gave a value #{value.inspect} for platform(s) #{platforms}"
+              raise ArgumentError, msg
+            end
+          end
       end
-
-
 
       # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
       # per platform defaults, along with a single base default. Arrays may be passed as hash keys and
