@@ -78,12 +78,14 @@ def request_json(method, path, params, env, &block)
   @response_json = Chef::JSONCompat.from_json(@response_raw)
 end
 
-def stub_authentication(controller)
+def stub_authentication(controller,user=nil)
   username = "tester"
 
-  user = Chef::ApiClient.new
-  user.name(username)
-  user.admin(true)
+  unless user
+    user = Chef::ApiClient.new
+    user.name(username)
+    user.admin(true)
+  end
 
   # authenticate_every has a side-effect of setting @auth_user
   controller.stub!(:authenticate_every).and_return(true)
