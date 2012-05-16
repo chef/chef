@@ -51,7 +51,7 @@ class Chef
       # returns nil as per MRI.
       #
       def self.symlink(old_name, new_name)
-        raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
+        # raise Errno::ENOENT, "(#{old_name}, #{new_name})" unless ::File.exist?(old_name)
         # TODO do a check for CreateSymbolicLinkW and
         # raise NotImplemented exception on older Windows
         flags = ::File.directory?(old_name) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0
@@ -99,6 +99,34 @@ class Chef
           end
           buffer.read_wstring(num_chars).sub(path_prepender, "")
         end
+      end
+
+      # Gets the short form of a path (Administrator -> ADMINI~1)
+      def self.get_short_path_name(path)
+        path = path.to_wstring
+        size = GetShortPathNameW(path, nil, 0)
+        if size == 0
+          Chef::Win32::Error.raise!
+        end
+        result = FFI::MemoryPointer.new :char, (size+1)*2
+        if GetShortPathNameW(path, result, size+1) == 0
+          Chef::Win32::Error.raise!
+        end
+        result.read_wstring(size)
+      end
+
+      # Gets the long form of a path (ADMINI~1 -> Administrator)
+      def self.get_long_path_name(path)
+        path = path.to_wstring
+        size = GetLongPathNameW(path, nil, 0)
+        if size == 0
+          Chef::Win32::Error.raise!
+        end
+        result = FFI::MemoryPointer.new :char, (size+1)*2
+        if GetLongPathNameW(path, result, size+1) == 0
+          Chef::Win32::Error.raise!
+        end
+        result.read_wstring(size)
       end
 
       def self.info(file_name)

@@ -218,6 +218,23 @@ BOOLEAN WINAPI CreateSymbolicLink(
 =end
         attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
 
+=begin
+DWORD WINAPI GetLongPathName(
+  __in   LPCTSTR lpszShortPath,
+  __out  LPTSTR lpszLongPath,
+  __in   DWORD cchBuffer
+);
+=end
+        attach_function :GetLongPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+
+=begin
+DWORD WINAPI GetShortPathName(
+  __in   LPCTSTR lpszLongPath,
+  __out  LPTSTR lpszShortPath,
+  __in   DWORD cchBuffer
+);
+=end
+        attach_function :GetShortPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
 
         ###############################################
         # Helpers

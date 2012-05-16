@@ -128,7 +128,7 @@ shared_examples_for "a securable resource" do
     end
 
     def descriptor
-      get_security_descriptor(resource.path)
+      get_security_descriptor(path)
     end
 
     before(:each) do
@@ -136,7 +136,7 @@ shared_examples_for "a securable resource" do
     end
 
     it "sets owner to Administrators on create if owner is not specified" do
-      File.exist?(resource.path).should == false
+      File.exist?(path).should == false
       resource.run_action(:create)
       descriptor.owner.should == SID.Administrators
     end
@@ -171,7 +171,7 @@ shared_examples_for "a securable resource" do
 
     it "sets group to None on create if group is not specified" do
       resource.group.should == nil
-      File.exist?(resource.path).should == false
+      File.exist?(path).should == false
       resource.run_action(:create)
       descriptor.group.should == SID.None
     end

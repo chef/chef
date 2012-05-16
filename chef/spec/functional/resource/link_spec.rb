@@ -18,21 +18,62 @@
 
 require 'spec_helper'
 
+if Chef::Platform.windows?
+  require 'chef/win32/file' #probably need this in spec_helper
+end
+
 describe Chef::Resource::Link do
 
   let(:file_base) { "file_spec" }
 
+  let(:base_dir) do
+    if Chef::Platform.windows?
+      Chef::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))
+    else
+      base_dir
+    end
+  end
+
   let(:to) do
-    File.join(Dir.tmpdir, make_tmpname("to_spec", nil))
+    File.join(base_dir, make_tmpname("to_spec", nil))
   end
   let(:target_file) do
-    File.join(Dir.tmpdir, make_tmpname("from_spec", nil))
+    File.join(base_dir, make_tmpname("from_spec", nil))
   end
 
   after(:each) do
     FileUtils.rm_r(to) if File.exists?(to)
     FileUtils.rm_r(target_file) if File.exists?(target_file)
     FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+  end
+
+  def symlink(a, b)
+    if Chef::Platform.windows?
+      Chef::Win32::File.symlink(a, b)
+    else
+      File.symlink(a, b)
+    end
+  end
+  def symlink?(file)
+    if Chef::Platform.windows?
+      Chef::Win32::File.symlink?(file)
+    else
+      File.symlink?(file)
+    end
+  end
+  def readlink(file)
+    if Chef::Platform.windows?
+      Chef::Win32::File.readlink(file)
+    else
+      File.readlink(file)
+    end
+  end
+  def link(a, b)
+    if Chef::Platform.windows?
+      Chef::Win32::File.link(a, b)
+    else
+      File.link(a, b)
+    end
   end
 
   def create_resource
@@ -48,7 +89,7 @@ describe Chef::Resource::Link do
   shared_examples_for 'delete errors out' do
     it 'delete errors out' do
       lambda { resource.run_action(:delete) }.should raise_error(Chef::Exceptions::Link)
-      (File.exist?(target_file) || File.symlink?(target_file)).should be_true
+      (File.exist?(target_file) || symlink?(target_file)).should be_true
     end
   end
 
@@ -62,7 +103,7 @@ describe Chef::Resource::Link do
 
       it 'leaves the file deleted' do
         File.exist?(target_file).should be_false
-        File.symlink?(target_file).should be_false
+        symlink?(target_file).should be_false
       end
       it 'does not mark the resource updated' do
         resource.should_not be_updated
@@ -83,7 +124,7 @@ describe Chef::Resource::Link do
 
       it 'deletes the file' do
         File.exist?(target_file).should be_false
-        File.symlink?(target_file).should be_false
+        symlink?(target_file).should be_false
       end
       it 'marks the resource updated' do
         resource.should be_updated
@@ -103,18 +144,14 @@ describe Chef::Resource::Link do
       end
 
       it 'leaves the file linked' do
-        File.symlink?(target_file).should be_true
-        File.readlink(target_file).should == to
+        symlink?(target_file).should be_true
+        readlink(target_file).should == to
       end
       it 'does not mark the resource updated' do
         resource.should_not be_updated
       end
       it 'does not log that it created' do
         @info.include?("link[#{target_file}] created").should be_false
-      end
-
-      it_behaves_like 'a securable resource' do
-        let(:path) { target_file }
       end
     end
   end
@@ -128,18 +165,14 @@ describe Chef::Resource::Link do
       end
 
       it 'links to the target file' do
-        File.symlink?(target_file).should be_true
-        File.readlink(target_file).should == to
+        symlink?(target_file).should be_true
+        readlink(target_file).should == to
       end
       it 'marks the resource updated' do
         resource.should be_updated
       end
       it 'logs that it created' do
         @info.include?("link[#{target_file}] created").should be_true
-      end
-
-      it_behaves_like 'a securable resource' do
-        let(:path) { target_file }
       end
     end
   end
@@ -153,7 +186,7 @@ describe Chef::Resource::Link do
       end
       it 'preserves the hard link' do
         File.exists?(target_file).should be_true
-        File.symlink?(target_file).should be_false
+        symlink?(target_file).should be_false
         # Writing to one hardlinked file should cause both
         # to have the new value.
         IO.read(to).should == IO.read(target_file)
@@ -178,7 +211,7 @@ describe Chef::Resource::Link do
       end
       it 'links to the target file' do
         File.exists?(target_file).should be_true
-        File.symlink?(target_file).should be_false
+        symlink?(target_file).should be_false
         # Writing to one hardlinked file should cause both
         # to have the new value.
         IO.read(to).should == IO.read(target_file)
@@ -196,39 +229,32 @@ describe Chef::Resource::Link do
 
   context "is symbolic" do
 
-    context "when the link destination is a file" do
+    context 'when the link destination is a file' do
       before(:each) do
         File.open(to, "w") do |file|
           file.write('woohoo')
         end
       end
-      context "and the link does not yet exist" do
+      context 'and the link does not yet exist' do
         include_context 'create symbolic link succeeds'
-        context "with a relative link destination" do
+        include_context 'delete is noop'
+
+        # TODO figure out what to do with this on Windows
+        context 'with a relative link destination', :unix_only do
           before(:each) do
             resource.to("../#{File.basename(to)}")
           end
-          context 'create succeeds' do
-            before(:each) do
-              resource.run_action(:create)
-            end
-            it "create links to the target file" do
-              File.symlink?(target_file).should be_true
-              File.readlink(target_file).should == "../#{File.basename(to)}"
-            end
-            it_behaves_like 'a securable resource' do
-              let(:path) { target_file }
-            end
-          end
+
+          include_context 'create symbolic link succeeds'
           include_context 'delete is noop'
         end
       end
-      context "and the link already exists and is a symbolic link" do
-        context "pointing at the target" do
+      context 'and the link already exists and is a symbolic link' do
+        context 'pointing at the target' do
           before(:each) do
-            File.symlink(to, target_file)
-            File.symlink?(target_file).should be_true
-            File.readlink(target_file).should == to
+            symlink(to, target_file)
+            symlink?(target_file).should be_true
+            readlink(target_file).should == to
           end
           include_context 'create symbolic link is noop'
           include_context 'delete succeeds'
@@ -236,32 +262,14 @@ describe Chef::Resource::Link do
             resource.run_action(:delete)
             File.exists?(to).should be_true
           end
-          context "and the target's owner is different than desired" do
-            before(:each) do
-              resource.owner('nobody')
-            end
-            it 'sets the owner to the desired state' do
-              resource.run_action(:create)
-              File.lstat(target_file).uid.should == Etc.getpwnam('nobody').uid
-            end
-          end
-          context "and the target's group is different than desired" do
-            before(:each) do
-              resource.group('nogroup')
-            end
-            it 'sets the group to the desired state' do
-              resource.run_action(:create)
-              File.lstat(target_file).gid.should == Etc.getgrnam('nogroup').gid
-            end
-          end
         end
         context 'pointing somewhere else' do
           before(:each) do
-            @other_target = File.join(Dir.tmpdir, make_tmpname("other_spec", nil))
-            File.open(@other_target, "w") { |file| file.write("eek") }
-            File.symlink(@other_target, target_file)
-            File.symlink?(target_file).should be_true
-            File.readlink(target_file).should == @other_target
+            @other_target = File.join(base_dir, make_tmpname('other_spec', nil))
+            File.open(@other_target, 'w') { |file| file.write('eek') }
+            symlink(@other_target, target_file)
+            symlink?(target_file).should be_true
+            readlink(target_file).should == @other_target
           end
           after(:each) do
             File.delete(@other_target)
@@ -273,12 +281,12 @@ describe Chef::Resource::Link do
             File.exists?(to).should be_true
           end
         end
-        context "pointing nowhere" do
+        context 'pointing nowhere', :unix_only do
           before(:each) do
-            nonexistent = File.join(Dir.tmpdir, make_tmpname("nonexistent_spec", nil))
-            File.symlink(nonexistent, target_file)
-            File.symlink?(target_file).should be_true
-            File.readlink(target_file).should == nonexistent
+            nonexistent = File.join(base_dir, make_tmpname('nonexistent_spec', nil))
+            symlink(nonexistent, target_file)
+            symlink?(target_file).should be_true
+            readlink(target_file).should == nonexistent
           end
           include_context 'create symbolic link succeeds'
           include_context 'delete succeeds'
@@ -286,16 +294,16 @@ describe Chef::Resource::Link do
       end
       context 'and the link already exists and is a hard link to the file' do
         before(:each) do
-          File.link(to, target_file)
+          link(to, target_file)
           File.exists?(target_file).should be_true
-          File.symlink?(target_file).should be_false
+          symlink?(target_file).should be_false
         end
         include_context 'create symbolic link succeeds'
         it_behaves_like 'delete errors out'
       end
       context 'and the link already exists and is a file' do
         before(:each) do
-          File.open(target_file, "w") { |file| file.write("eek") }
+          File.open(target_file, 'w') { |file| file.write('eek') }
         end
         include_context 'create symbolic link succeeds'
         it_behaves_like 'delete errors out'
@@ -305,17 +313,28 @@ describe Chef::Resource::Link do
           Dir.mkdir(target_file)
         end
         it 'create errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
+          lambda { resource.run_action(:create) }.should raise_error(Chef::Platform.windows? ? Errno::EACCES : Errno::EISDIR)
         end
         it_behaves_like 'delete errors out'
       end
       context 'and the link already exists and is not writeable to this user', :pending do
+      end
+      it_behaves_like 'a securable resource' do
+        let(:path) { target_file }
+        def allowed_acl(sid, expected_perms)
+          [ ACE.access_allowed(sid, expected_perms[:specific]) ]
+        end
+        def denied_acl(sid, expected_perms)
+          [ ACE.access_denied(sid, expected_perms[:specific]) ]
+        end
       end
     end
     context 'when the link destination is a directory' do
       before(:each) do
         Dir.mkdir(to)
       end
+      # On Windows, readlink fails to open the link.  FILE_FLAG_OPEN_REPARSE_POINT
+      # might help, from http://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx
       context 'and the link does not yet exist' do
         include_context 'create symbolic link succeeds'
         include_context 'delete is noop'
@@ -324,11 +343,11 @@ describe Chef::Resource::Link do
     context "when the link destination is a symbolic link" do
       context 'to a file that exists' do
         before(:each) do
-          @other_target = File.join(Dir.tmpdir, make_tmpname("other_spec", nil))
+          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
           File.open(@other_target, "w") { |file| file.write("eek") }
-          File.symlink(@other_target, to)
-          File.symlink?(to).should be_true
-          File.readlink(to).should == @other_target
+          symlink(@other_target, to)
+          symlink?(to).should be_true
+          readlink(to).should == @other_target
         end
         after(:each) do
           File.delete(@other_target)
@@ -338,12 +357,12 @@ describe Chef::Resource::Link do
           include_context 'delete is noop'
         end
       end
-      context 'to a file that does not exist' do
+      context 'to a file that does not exist', :unix_only do
         before(:each) do
-          @other_target = File.join(Dir.tmpdir, make_tmpname("other_spec", nil))
-          File.symlink(@other_target, to)
-          File.symlink?(to).should be_true
-          File.readlink(to).should == @other_target
+          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
+          symlink(@other_target, to)
+          symlink?(to).should be_true
+          readlink(to).should == @other_target
         end
         context 'and the link does not yet exist' do
           include_context 'create symbolic link succeeds'
@@ -354,8 +373,14 @@ describe Chef::Resource::Link do
     context "when the link destination is not readable to this user", :pending do
     end
     context "when the link destination does not exist" do
-      include_context 'create symbolic link succeeds'
-      include_context 'delete is noop'
+      if Chef::Platform.windows?
+        it 'create errors out' do
+          lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
+        end
+      else
+        include_context 'create symbolic link succeeds'
+        include_context 'delete is noop'
+      end
     end
   end
 
@@ -376,18 +401,18 @@ describe Chef::Resource::Link do
       end
       context "and the link already exists and is a symbolic link pointing at the same file" do
         before(:each) do
-          File.symlink(to, target_file)
-          File.symlink?(target_file).should be_true
-          File.readlink(target_file).should == to
+          symlink(to, target_file)
+          symlink?(target_file).should be_true
+          readlink(target_file).should == to
         end
         include_context 'create hard link succeeds'
         it_behaves_like 'delete errors out'
       end
       context 'and the link already exists and is a hard link to the file' do
         before(:each) do
-          File.link(to, target_file)
+          link(to, target_file)
           File.exists?(target_file).should be_true
-          File.symlink?(target_file).should be_false
+          symlink?(target_file).should be_false
         end
         include_context 'create hard link is noop'
         include_context 'delete succeeds'
@@ -440,11 +465,11 @@ describe Chef::Resource::Link do
     context "when the link destination is a symbolic link" do
       context 'to a real file' do
         before(:each) do
-          @other_target = File.join(Dir.tmpdir, make_tmpname("other_spec", nil))
+          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
           File.open(@other_target, "w") { |file| file.write("eek") }
-          File.symlink(@other_target, to)
-          File.symlink?(to).should be_true
-          File.readlink(to).should == @other_target
+          symlink(@other_target, to)
+          symlink?(to).should be_true
+          readlink(to).should == @other_target
         end
         after(:each) do
           File.delete(@other_target)
@@ -453,25 +478,25 @@ describe Chef::Resource::Link do
           it 'links to the target file' do
             resource.run_action(:create)
             File.exists?(target_file).should be_true
-            File.symlink?(target_file).should be_true
-            File.readlink(target_file).should == @other_target
+            symlink?(target_file).should be_true
+            readlink(target_file).should == @other_target
           end
           include_context 'delete is noop'
         end
       end
       context 'to a nonexistent file' do
         before(:each) do
-          @other_target = File.join(Dir.tmpdir, make_tmpname("other_spec", nil))
-          File.symlink(@other_target, to)
-          File.symlink?(to).should be_true
-          File.readlink(to).should == @other_target
+          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
+          symlink(@other_target, to)
+          symlink?(to).should be_true
+          readlink(to).should == @other_target
         end
         context 'and the link does not yet exist' do
           it 'links to the target file' do
             resource.run_action(:create)
             File.exists?(target_file).should be_false
-            File.symlink?(target_file).should be_true
-            File.readlink(target_file).should == @other_target
+            symlink?(target_file).should be_true
+            readlink(target_file).should == @other_target
           end
           include_context 'delete is noop'
         end

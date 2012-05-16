@@ -50,7 +50,7 @@ describe Chef::Resource::Link do
 
     describe "to a file that exists" do
       before do
-        provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
         provider.load_current_resource
       end
 
@@ -88,7 +88,7 @@ describe Chef::Resource::Link do
 
     describe "to a file that doesn't exist" do
       before do
-        provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
         provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
         provider.load_current_resource
@@ -114,7 +114,7 @@ describe Chef::Resource::Link do
 
   describe "when the target doesn't exist" do
     before do
-      provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+      File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       provider.load_current_resource
     end
@@ -141,13 +141,13 @@ describe Chef::Resource::Link do
 
       File.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
 
-      provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+      File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
       provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
     end
 
     describe "and the source does not exist" do
       before do
-        provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
+        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         provider.load_current_resource
       end
 
@@ -173,7 +173,7 @@ describe Chef::Resource::Link do
 
         File.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 
@@ -199,7 +199,7 @@ describe Chef::Resource::Link do
 
         File.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 
