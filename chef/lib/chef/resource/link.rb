@@ -78,6 +78,11 @@ class Chef
         )
       end
 
+      # make link quack like a file (XXX: not for public consumption)
+      def path
+        @target_file
+      end
+
     end
   end
 end

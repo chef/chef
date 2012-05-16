@@ -21,6 +21,7 @@ require 'chef/log'
 require 'chef/mixin/shell_out'
 require 'chef/resource/link'
 require 'chef/provider'
+require 'chef/scan_access_control'
 
 class Chef
   class Provider
@@ -58,9 +59,6 @@ class Chef
             @current_resource.to(
               ::File.expand_path(file_class.readlink(@current_resource.target_file))
             )
-            cstats = ::File.lstat(@current_resource.target_file)
-            @current_resource.owner(cstats.uid)
-            @current_resource.group(cstats.gid)
           else
             @current_resource.to("")
           end
@@ -75,6 +73,7 @@ class Chef
             @current_resource.to("")
           end
         end
+        ScanAccessControl.new(@new_resource, @current_resource).set_all!
         @current_resource
       end
 
