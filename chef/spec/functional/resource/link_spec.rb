@@ -281,7 +281,7 @@ describe Chef::Resource::Link do
             File.exists?(to).should be_true
           end
         end
-        context 'pointing nowhere', :unix_only do
+        context 'pointing nowhere' do
           before(:each) do
             nonexistent = File.join(base_dir, make_tmpname('nonexistent_spec', nil))
             symlink(nonexistent, target_file)
@@ -357,7 +357,7 @@ describe Chef::Resource::Link do
           include_context 'delete is noop'
         end
       end
-      context 'to a file that does not exist', :unix_only do
+      context 'to a file that does not exist' do
         before(:each) do
           @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
           symlink(@other_target, to)

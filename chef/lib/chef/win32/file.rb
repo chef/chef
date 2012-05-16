@@ -88,16 +88,20 @@ class Chef
       # will raise a NotImplementedError, as per MRI.
       #
       def self.readlink(link_name)
-        raise Errno::ENOENT, link_name unless ::File.exist?(link_name)
-        # TODO do a check for GetFinalPathNameByHandleW and
-        # raise NotImplemented exception on older Windows
-        file_handle(link_name) do |handle|
-          buffer = FFI::MemoryPointer.new(0.chr * MAX_PATH)
-          num_chars = GetFinalPathNameByHandleW(handle, buffer, buffer.size, FILE_NAME_NORMALIZED)
-          if num_chars == 0
-            Chef::Win32::Error.raise! #could be misleading if problem is too small buffer size as GetLastError won't report failure
+        raise Errno::ENOENT, link_name unless ::File.exists?(link_name)
+        symlink_file_handle(link_name) do |handle|
+          # Go to DeviceIoControl to get the symlink information
+          # http://msdn.microsoft.com/en-us/library/windows/desktop/aa364571(v=vs.85).aspx
+          reparse_buffer = FFI::MemoryPointer.new(MAXIMUM_REPARSE_DATA_BUFFER_SIZE)
+          parsed_size = FFI::Buffer.new(:long).write_long(0)
+          if DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, nil, 0, reparse_buffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, parsed_size, nil) == 0
+            Chef::Win32::Error.raise!
           end
-          buffer.read_wstring(num_chars).sub(path_prepender, "")
+          reparse_buffer = REPARSE_DATA_BUFFER.new(reparse_buffer)
+          if reparse_buffer[:ReparseTag] != IO_REPARSE_TAG_SYMLINK
+            raise Errno::EACCES, "#{link_name} is not a symlink"
+          end
+          reparse_buffer[:ReparseBuffer][:SymbolicLinkReparseBuffer].substitute_name
         end
       end
 
