@@ -54,8 +54,8 @@ class Chef
             Chef::Log.debug("#{@new_resource} content has not changed.")
           else
             description = [] 
-            action_message = update ? "Would update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
-              "Would create #{@new_resource}"
+            action_message = update ? "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
+              "create #{@new_resource}"
             description << action_message
             description << diff_current(rendered_template.path)
             converge_by(description) do

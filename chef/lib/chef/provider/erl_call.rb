@@ -59,7 +59,7 @@ class Chef
 
         command = "erl_call -e #{distributed} #{node} #{cookie}"
 
-        converge_by("Would run erlang block") do
+        converge_by("run erlang block") do
           begin
             pid, stdin, stdout, stderr = popen4(command, :waitlast => true)
 
