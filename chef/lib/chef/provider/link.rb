@@ -80,7 +80,6 @@ class Chef
       def define_resource_requirements
         requirements.assert(:delete) do |a|
           a.assertion do 
-            puts "Link Type: #{@new_resource.link_type} symlink? #{file_class.symlink?(@new_resource.target_file)}"
             if @new_resource.link_type == :symbolic && !file_class.symlink?(@new_resource.target_file)
               ::File.exists?(@new_resource.target_file)
             else

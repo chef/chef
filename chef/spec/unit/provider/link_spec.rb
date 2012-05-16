@@ -64,28 +64,24 @@ describe Chef::Resource::Link do
 
       describe "and the target exists and is a symlink" do
         before do
-          @provider.file_class.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+          @provider.file_class.stub!(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           @provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
           @provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
         end
         
-        describe "when the symlink is correct" do
-          it "" do
-          end
-        end
-
         describe "when the symlink is incorrect" do
-        
           it "should update the source of the existing link with the links target" do
             @provider.load_current_resource
             @provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
           end
           it "should set the owner" do
+            @new_resource.owner 500
             @provider.load_current_resource
             @provider.current_resource.owner.should == 501
           end
 
           it "should set the group" do
+            @new_resource.group 500
             @provider.load_current_resource
             @provider.current_resource.group.should == 501
           end
@@ -249,13 +245,14 @@ describe Chef::Resource::Link do
           end
 
           it "should call enforce_ownership_and_permissions" do
-            @provider.should_receive(:enforce_ownership_and_permissions)
+            @provider.access_controls.should_receive(:set_all)
             @provider.run_action(:create)
           end
 
           it "should create link using the appropriate link function" do
             @provider.stub!(:enforce_ownership_and_permissions)
             @provider.file_class.should_receive(:symlink).with("#{CHEF_SPEC_DATA}/lolololol", "#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+            @provider.access_controls.stub!(:set_all)
             @provider.run_action(:create)
           end
         end
