@@ -58,5 +58,17 @@ describe "Clients Controller" do
       end
     end
     
+    describe "from the same client as it is trying to delete" do
+      it "should delete the client" do
+        Chef::ApiClient.stub!(:cdb_load).and_return(@client)
+        @client.should_receive(:cdb_destroy).and_return(true)
+        @controller = mock_request("/clients/deleted_client", {}, {'HTTP_ACCEPT' => "application/json", :request_method => "DELETE"}) do |controller|
+          stub_authentication(controller, @client)
+        end
+        @response_raw = @controller.body
+        @response_json = Chef::JSONCompat.from_json(@response_raw)
+      end
+    end
+
   end
 end
