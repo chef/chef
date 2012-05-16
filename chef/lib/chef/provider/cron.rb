@@ -133,7 +133,7 @@ class Chef
           # Handle edge case where the Chef comment is the last line in the current crontab
           crontab << newcron if cron_found
 
-          converge_by("would update crontab entry for #{@new_resource}") do
+          converge_by("update crontab entry for #{@new_resource}") do
             write_crontab crontab
             Chef::Log.info("#{@new_resource} updated crontab entry")
           end
@@ -142,7 +142,7 @@ class Chef
           crontab = read_crontab unless @cron_empty
           crontab << newcron
 
-          converge_by("would add crontab entry for #{@new_resource}") do
+          converge_by("add crontab entry for #{@new_resource}") do
             write_crontab crontab
             Chef::Log.info("#{@new_resource} added crontab entry")
           end
@@ -171,8 +171,8 @@ class Chef
             end
             crontab << line
           end
-          description = cron_found ? "would remove #{@new_resource.name} from crontab" : 
-            "would save unmodified crontab"
+          description = cron_found ? "remove #{@new_resource.name} from crontab" : 
+            "save unmodified crontab"
           converge_by(description) do
             write_crontab crontab
             Chef::Log.info("#{@new_resource} deleted crontab entry")
