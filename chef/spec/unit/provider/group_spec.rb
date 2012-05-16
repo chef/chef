@@ -234,20 +234,20 @@ describe Chef::Provider::User do
        @new_resource.members << "user2" 
        @new_resource.stub!(:append).and_return true
        @provider.compare_group.should be_true
-       @provider.change_desc.should == "would add missing member(s): user1, user2"
+       @provider.change_desc.should == "add missing member(s): user1, user2"
     end
 
     it "should report that the group members will be overwritten if not appending" do
        @new_resource.members << "user1"
        @new_resource.stub!(:append).and_return false 
        @provider.compare_group.should be_true
-       @provider.change_desc.should == "would replace group members with new list of members"
+       @provider.change_desc.should == "replace group members with new list of members"
     end
 
     it "should report the gid will be changed when it does not match" do
       @current_resource.stub!(:gid).and_return("BADF00D")
       @provider.compare_group.should be_true
-      @provider.change_desc.should == "would change gid #{@current_resource.gid} to #{@new_resource.gid}"
+      @provider.change_desc.should == "change gid #{@current_resource.gid} to #{@new_resource.gid}"
 
     end
 
