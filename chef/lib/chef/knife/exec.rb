@@ -40,6 +40,10 @@ class Chef::Knife::Exec < Chef::Knife
   def run
     config[:script_path] ||= Chef::Config[:script_path]
 
+    # Default script paths are chef-repo/.chef/scripts and ~/.chef/scripts
+    config[:script_path] << File.join(Chef::Knife.chef_config_dir, 'scripts') if Chef::Knife.chef_config_dir
+    config[:script_path] << File.join(ENV['HOME'], '.chef', 'scripts') if ENV['HOME']
+
     scripts = Array(name_args)
     context = Object.new
     Shef::Extensions.extend_context_object(context)
