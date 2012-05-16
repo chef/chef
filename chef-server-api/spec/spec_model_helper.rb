@@ -53,6 +53,13 @@ def make_runlist(*items)
   res
 end
 
+def make_client(name,admin=false)
+  res = Chef::ApiClient.new
+  res.name(name)
+  res.admin(admin)
+  res
+end
+
 def stub_checksum(checksum, present = true)
   Chef::Checksum.should_receive(:new).with(checksum).and_return do
     obj = stub(Chef::Checksum)
