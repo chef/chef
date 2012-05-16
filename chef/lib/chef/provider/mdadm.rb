@@ -47,7 +47,7 @@ class Chef
       def action_create
 
         unless @current_resource.exists
-          converge_by("Would create RAID device #{new_resource.raid_device}") do 
+          converge_by("create RAID device #{new_resource.raid_device}") do 
             command = "yes | mdadm --create #{@new_resource.raid_device} --chunk=#{@new_resource.chunk} --level #{@new_resource.level} --metadata=#{@new_resource.metadata} --bitmap=#{@new_resource.bitmap} --raid-devices #{@new_resource.devices.length} #{@new_resource.devices.join(" ")}"
             Chef::Log.debug("#{@new_resource} mdadm command: #{command}")
             shell_out!(command)
@@ -60,7 +60,7 @@ class Chef
 
       def action_assemble
         unless @current_resource.exists
-          converge_by("Would assemble RAID device #{new_resource.raid_device}") do 
+          converge_by("assemble RAID device #{new_resource.raid_device}") do 
             command = "yes | mdadm --assemble #{@new_resource.raid_device} #{@new_resource.devices.join(" ")}"
             Chef::Log.debug("#{@new_resource} mdadm command: #{command}")
             shell_out!(command)
@@ -73,7 +73,7 @@ class Chef
 
       def action_stop
         if @current_resource.exists
-          converge_by("Would stop RAID device #{new_resource.raid_device}") do 
+          converge_by("stop RAID device #{new_resource.raid_device}") do 
             command = "yes | mdadm --stop #{@new_resource.raid_device}"
             Chef::Log.debug("#{@new_resource} mdadm command: #{command}")
             shell_out!(command)

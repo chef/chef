@@ -51,7 +51,7 @@ class Chef
         if @current_resource.enabled
           Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
         else
-          converge_by("Would enable service #{@new_resource}") do
+          converge_by("enable service #{@new_resource}") do
             enable_service
             Chef::Log.info("#{@new_resource} enabled")
           end
@@ -60,7 +60,7 @@ class Chef
 
       def action_disable
         if @current_resource.enabled
-          converge_by("Would disable service #{@new_resource}") do
+          converge_by("disable service #{@new_resource}") do
             disable_service
             Chef::Log.info("#{@new_resource} disabled")
           end
@@ -71,7 +71,7 @@ class Chef
 
       def action_start
         unless @current_resource.running
-          converge_by("Would start service #{@new_resource}") do
+          converge_by("start service #{@new_resource}") do
             start_service
             Chef::Log.info("#{@new_resource} started")
           end
@@ -82,7 +82,7 @@ class Chef
 
       def action_stop
         if @current_resource.running
-          converge_by("Would stop service #{@new_resource}") do
+          converge_by("stop service #{@new_resource}") do
             stop_service
             Chef::Log.info("#{@new_resource} stopped")
           end
@@ -92,7 +92,7 @@ class Chef
       end
 
       def action_restart
-        converge_by("Would restart service #{@new_resource}") do
+        converge_by("restart service #{@new_resource}") do
           restart_service
           Chef::Log.info("#{@new_resource} restarted")
         end
@@ -100,7 +100,7 @@ class Chef
 
       def action_reload
         if @current_resource.running
-          converge_by("Would disable service #{@new_resource}") do
+          converge_by("disable service #{@new_resource}") do
             reload_service
             Chef::Log.info("#{@new_resource} reloaded")
           end

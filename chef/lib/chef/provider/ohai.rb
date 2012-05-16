@@ -31,7 +31,7 @@ class Chef
       end
 
       def action_reload
-        converge_by("would re-run ohai and merge results into node attributes") do
+        converge_by("re-run ohai and merge results into node attributes") do
           ohai = ::Ohai::System.new
           if @new_resource.plugin
             ohai.require_plugin @new_resource.plugin

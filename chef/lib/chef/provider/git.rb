@@ -86,7 +86,7 @@ class Chef
 
       def action_export
         action_checkout
-        converge_by("Would complete the export by removing #{@new_resource.destination}.git after checkout") do 
+        converge_by("complete the export by removing #{@new_resource.destination}.git after checkout") do 
           FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
         end
       end
@@ -127,7 +127,7 @@ class Chef
       def add_remotes
         if (@new_resource.additional_remotes.length > 0)
           @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
-            converge_by("Would add remote #{remote_name} from #{remote_url}") do
+            converge_by("add remote #{remote_name} from #{remote_url}") do
               Chef::Log.info "#{@new_resource} adding git remote #{remote_name} = #{remote_url}"
               command = "git remote add #{remote_name} #{remote_url}"
               if shell_out(command, run_options(:cwd => @new_resource.destination, :log_level => :info)).exitstatus != 0
@@ -139,7 +139,7 @@ class Chef
       end
 
       def clone 
-        converge_by("Would clone from #{@new_resource.repository} into #{@new_resource.destination}") do
+        converge_by("clone from #{@new_resource.repository} into #{@new_resource.destination}") do
           remote = @new_resource.remote
 
           args = []
@@ -155,7 +155,7 @@ class Chef
 
       def checkout
         sha_ref = target_revision
-        converge_by("Would checkout ref #{sha_ref} branch #{@new_resource.revision}") do
+        converge_by("checkout ref #{sha_ref} branch #{@new_resource.revision}") do
           # checkout into a local branch rather than a detached HEAD
           shell_out!("git checkout -b deploy #{sha_ref}", run_options(:cwd => @new_resource.destination))
           Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} reference: #{sha_ref}"
@@ -164,7 +164,7 @@ class Chef
 
       def enable_submodules
         if @new_resource.enable_submodules
-          converge_by("would enable git submodules for #{@new_resource}") do 
+          converge_by("enable git submodules for #{@new_resource}") do 
             Chef::Log.info "#{@new_resource} enabling git submodules"
             # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
             command = "git submodule update --init --recursive"
@@ -175,7 +175,7 @@ class Chef
 
       def fetch_updates
         setup_remote_tracking_branches if @new_resource.remote != 'origin'
-        converge_by("would fetch updates for #{@new_resource.remote}") do
+        converge_by("fetch updates for #{@new_resource.remote}") do
           # since we're in a local branch already, just reset to specified revision rather than merge
           fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
           Chef::Log.debug "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
@@ -191,7 +191,7 @@ class Chef
       # based from each other it should still work fine.
       def setup_remote_tracking_branches
         command = []
-        converge_by("would set up remote tracking branches for #{@new_resource.repository} at #{@new_resource.remote}") do
+        converge_by("set up remote tracking branches for #{@new_resource.repository} at #{@new_resource.remote}") do
           Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{@new_resource.repository} "+
                           "at remote #{@new_resource.remote}"
           command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"

@@ -121,12 +121,12 @@ class Chef
       def action_create
 
         if !@user_exists
-          converge_by("Would create user #{@new_resource}") do
+          converge_by("create user #{@new_resource}") do
             create_user
             Chef::Log.info("#{@new_resource} created")
           end
         elsif compare_user
-          converge_by("Would alter user #{@new_resource}") do
+          converge_by("alter user #{@new_resource}") do
             manage_user
             Chef::Log.info("#{@new_resource} altered")
           end
@@ -135,7 +135,7 @@ class Chef
 
       def action_remove
         if @user_exists
-          converge_by("Would remove user #{@new_resource}") do
+          converge_by("remove user #{@new_resource}") do
             remove_user
             Chef::Log.info("#{@new_resource} removed")
           end
@@ -148,7 +148,7 @@ class Chef
 
       def action_manage
         if @user_exists && compare_user
-          converge_by("Would manage user #{@new_resource}") do
+          converge_by("manage user #{@new_resource}") do
             manage_user
             Chef::Log.info("#{@new_resource} managed")
           end
@@ -161,7 +161,7 @@ class Chef
 
       def action_modify
         if compare_user
-          converge_by("Would modify user #{@new_resource}") do
+          converge_by("modify user #{@new_resource}") do
             manage_user
             Chef::Log.info("#{@new_resource} modified")
           end
@@ -170,7 +170,7 @@ class Chef
 
       def action_lock
         if check_lock() == false
-          converge_by("Would lock the user #{@new_resource}") do
+          converge_by("lock the user #{@new_resource}") do
             lock_user
             Chef::Log.info("#{@new_resource} locked")
           end
@@ -189,7 +189,7 @@ class Chef
 
       def action_unlock
         if check_lock() == true
-          converge_by("Would unlock user #{@new_resource}") do
+          converge_by("unlock user #{@new_resource}") do
             unlock_user
             Chef::Log.info("#{@new_resource} unlocked")
           end

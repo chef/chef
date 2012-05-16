@@ -34,7 +34,7 @@ class Chef
 
       # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
       def action_head
-        converge_by("would #{@new_resource} HEAD to #{@new_resource.url}") do
+        converge_by("#{@new_resource} HEAD to #{@new_resource.url}") do
           message = check_message(@new_resource.message)
           modified = @rest.run_request(
             :HEAD,
@@ -51,7 +51,7 @@ class Chef
 
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
       def action_get  
-        converge_by("would #{@new_resource} GET to #{@new_resource.url}") do
+        converge_by("#{@new_resource} GET to #{@new_resource.url}") do
 
           message = check_message(@new_resource.message)
           body = @rest.run_request(
@@ -69,7 +69,7 @@ class Chef
       
       # Send a PUT request to @new_resource.url, with the message as the payload
       def action_put 
-        converge_by("would #{@new_resource} PUT to #{@new_resource.url}") do
+        converge_by("#{@new_resource} PUT to #{@new_resource.url}") do
           message = check_message(@new_resource.message)
           body = @rest.run_request(
             :PUT,
@@ -86,7 +86,7 @@ class Chef
       
       # Send a POST request to @new_resource.url, with the message as the payload
       def action_post
-        converge_by("would #{@new_resource} POST to #{@new_resource.url}") do
+        converge_by("#{@new_resource} POST to #{@new_resource.url}") do
           message = check_message(@new_resource.message)
           body = @rest.run_request(
             :POST,
@@ -103,7 +103,7 @@ class Chef
       
       # Send a DELETE request to @new_resource.url
       def action_delete
-        converge_by("would #{@new_resource} DELETE to #{@new_resource.url}") do
+        converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
           body = @rest.run_request(
             :DELETE,
             @rest.create_url("#{@new_resource.url}"),
