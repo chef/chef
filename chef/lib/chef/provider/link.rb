@@ -131,8 +131,10 @@ class Chef
           end
         end
         if @new_resource.link_type == :symbolic
-          converge_by("Would ensure permissions and owner are correct") do 
-            enforce_ownership_and_permissions
+          if access_controls.requires_changes?
+            converge_by(access_controls.describe_changes) do 
+              access_controls.set_all
+            end
           end
         end
       end
