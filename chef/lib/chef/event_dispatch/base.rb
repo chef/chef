@@ -234,10 +234,6 @@ class Chef
       def resource_up_to_date(resource, action)
       end
 
-      ## TODO: callback for assertion failures
-
-      ## TODO: callback for assertion fallback in why run
-
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
@@ -260,6 +256,17 @@ class Chef
       # Called after all handlers have executed
       def handlers_completed
       end
+
+      # Called when an assertion declared by a provider fails
+      def provider_requirement_failed(resource, exception, message)
+      end
+
+      # Called when a provider makes an assumption after a failed assertion
+      # in whyrun mode, in order to allow execution to continue
+      def whyrun_assumption(resource, message) 
+      end
+      
+
 
       ## TODO: deprecation warning. this way we can queue them up and present
       #  them all at once.
