@@ -30,7 +30,7 @@ describe Chef::Resource::Link do
     if Chef::Platform.windows?
       Chef::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))
     else
-      base_dir
+      Dir.tmpdir
     end
   end
 
