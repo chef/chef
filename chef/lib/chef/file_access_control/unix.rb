@@ -38,9 +38,9 @@ class Chef
 
       def describe_changes
         changes = []
-        changes << "would change mode from '#{current_mode_s}' to '#{target_mode_s}'" if should_update_mode?
-        changes << "would change owner from '#{current_resource.owner}' to '#{resource.owner}'" if should_update_owner?
-        changes << "would change group from '#{current_resource.group}' to '#{resource.group}'" if should_update_group?
+        changes << "change mode from '#{current_mode_s}' to '#{target_mode_s}'" if should_update_mode?
+        changes << "change owner from '#{current_resource.owner}' to '#{resource.owner}'" if should_update_owner?
+        changes << "change group from '#{current_resource.group}' to '#{resource.group}'" if should_update_group?
         changes
       end
 

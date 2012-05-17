@@ -25,15 +25,17 @@ describe Chef::FileAccessControl do
       platform_mock :unix do
         # we have to re-load the file so the proper
         # platform specific module is mixed in
+        @node = Chef::Node.new
         load File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "file_access_control.rb")
         @resource = Chef::Resource::File.new('/tmp/a_file.txt')
         @resource.owner('toor')
         @resource.group('wheel')
         @resource.mode('0400')
 
+        @events = Chef::EventDispatch::Dispatcher.new
+        @run_context = Chef::RunContext.new(@node, {}, @events)
         @current_resource = Chef::Resource::File.new('/tmp/different_file.txt')
-
-        @provider_requirements = Chef::Provider::ResourceRequirements.new
+        @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context)
         @provider = mock("File provider", :requirements => @provider_requirements)
 
         @fac = Chef::FileAccessControl.new(@current_resource, @resource, @provider)
@@ -113,7 +115,7 @@ describe Chef::FileAccessControl do
       resource.owner(2342)
       @current_resource.owner(100)
       fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
-      fac.describe_changes.should == ["would change owner from '100' to '2342'"]
+      fac.describe_changes.should == ["change owner from '100' to '2342'"]
     end
 
     it "sets the file's owner as specified in the resource when the current owner is incorrect" do
@@ -180,7 +182,7 @@ describe Chef::FileAccessControl do
       resource.group(2342)
       @current_resource.group(815)
       fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
-      fac.describe_changes.should == ["would change group from '815' to '2342'"]
+      fac.describe_changes.should == ["change group from '815' to '2342'"]
     end
 
     it "sets the file's group as specified in the resource when the group is not correct" do
@@ -240,7 +242,7 @@ describe Chef::FileAccessControl do
       resource.mode("0750")
       @current_resource.mode("0444")
       fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
-      fac.describe_changes.should == ["would change mode from '0444' to '0750'"]
+      fac.describe_changes.should == ["change mode from '0444' to '0750'"]
     end
 
     it "sets the file's mode as specified in the resource when the current modes are incorrect" do
