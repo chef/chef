@@ -29,7 +29,7 @@ class Chef
       def set_all
         set_owner
         set_group
-        set_mode unless resource.instance_of?(Chef::Resource::Link)
+        set_mode
       end
 
       # Workaround the fact that Ruby's Etc module doesn't believe in negative
@@ -87,32 +87,39 @@ class Chef
         end
       end
 
-      # TODO rename this to a more generic target_permissions
       def target_mode
         return nil if resource.mode.nil?
         (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 007777
       end
 
-      # TODO rename this to a more generic set_permissions
       def set_mode
         if (mode = target_mode) && (mode != (stat.mode & 007777))
-          File.chmod(target_mode, file)
+          chmod(target_mode, file)
           Chef::Log.info("#{log_string} mode changed to #{mode.to_s(8)}")
           modified
         end
       end
 
       def stat
-        if resource.instance_of?(Chef::Resource::Link)
-          @stat ||= ::File.lstat(file)
+        if File.symlink?(file)
+          @stat ||= File.lstat(file)
         else
-          @stat ||= ::File.stat(file)
+          @stat ||= File.stat(file)
         end
       end
 
       private
+
+      def chmod(mode, file)
+        if File.symlink?(file)
+          File.lchmod(mode, file)
+        else
+          File.chmod(mode, file)
+        end
+      end
+
       def chown(uid, gid, file)
-        if resource.instance_of?(Chef::Resource::Link)
+        if ::File.symlink?(file)
           File.lchown(uid, gid, file)
         else
           File.chown(uid, gid, file)

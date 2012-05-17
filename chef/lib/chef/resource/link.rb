@@ -62,22 +62,6 @@ class Chef
         )
       end
 
-      def group(arg=nil)
-        set_or_return(
-          :group,
-          arg,
-          :regex => Chef::Config[:group_valid_regex]
-        )
-      end
-
-      def owner(arg=nil)
-        set_or_return(
-          :owner,
-          arg,
-          :regex => Chef::Config[:user_valid_regex]
-        )
-      end
-
     end
   end
 end

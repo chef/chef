@@ -16,4 +16,8 @@ def unix?
   !windows?
 end
 
+def os_x?
+  !!(RUBY_PLATFORM =~ /darwin/)
+end
+
 DEV_NULL = windows? ? 'NUL' : '/dev/null'

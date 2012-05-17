@@ -18,16 +18,15 @@
 
 require 'spec_helper'
 
-if Chef::Platform.windows?
+if windows?
   require 'chef/win32/file' #probably need this in spec_helper
 end
 
 describe Chef::Resource::Link do
-
   let(:file_base) { "file_spec" }
 
   let(:base_dir) do
-    if Chef::Platform.windows?
+    if windows?
       Chef::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))
     else
       Dir.tmpdir
@@ -53,31 +52,31 @@ describe Chef::Resource::Link do
   end
 
   def canonicalize(path)
-    Chef::Platform.windows? ? path.gsub('/', '\\') : path
+    windows? ? path.gsub('/', '\\') : path
   end
   def symlink(a, b)
-    if Chef::Platform.windows?
+    if windows?
       Chef::Win32::File.symlink(a, b)
     else
       File.symlink(a, b)
     end
   end
   def symlink?(file)
-    if Chef::Platform.windows?
+    if windows?
       Chef::Win32::File.symlink?(file)
     else
       File.symlink?(file)
     end
   end
   def readlink(file)
-    if Chef::Platform.windows?
+    if windows?
       Chef::Win32::File.readlink(file)
     else
       File.readlink(file)
     end
   end
   def link(a, b)
-    if Chef::Platform.windows?
+    if windows?
       Chef::Win32::File.link(a, b)
     else
       File.link(a, b)
@@ -311,7 +310,13 @@ describe Chef::Resource::Link do
           Dir.mkdir(target_file)
         end
         it 'create errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Chef::Platform.windows? ? Errno::EACCES : Errno::EISDIR)
+          if windows?
+            lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
+          elsif os_x?
+            lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
+          else
+            lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
+          end
         end
         it_behaves_like 'delete errors out'
       end
@@ -460,7 +465,13 @@ describe Chef::Resource::Link do
           Dir.mkdir(target_file)
         end
         it 'errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Chef::Platform.windows? ? Errno::EACCES : Errno::EISDIR)
+          if windows?
+            lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
+          elsif os_x?
+            lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
+          else
+            lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
+          end
         end
         it_behaves_like 'delete errors out'
       end
@@ -468,11 +479,11 @@ describe Chef::Resource::Link do
       end
       context "and specifies security attributes" do
         before(:each) do
-          resource.owner(Chef::Platform.windows? ? 'Guest' : 'nobody')
+          resource.owner(windows? ? 'Guest' : 'nobody')
         end
         it 'ignores them' do
           resource.run_action(:create)
-          if Chef::Platform.windows?
+          if windows?
             Chef::Win32::Security.get_named_security_info(target_file).owner.should_not == SID.Guest
           else
             File.lstat(target_file).uid.should_not == Etc.getpwnam('nobody').uid
@@ -486,7 +497,7 @@ describe Chef::Resource::Link do
       end
       context 'and the link does not yet exist' do
         it 'create errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Chef::Platform.windows? ? Chef::Exceptions::Win32APIError : Errno::EPERM)
+          lambda { resource.run_action(:create) }.should raise_error(windows? ? Chef::Exceptions::Win32APIError : Errno::EPERM)
         end
         include_context 'delete is noop'
       end
@@ -507,8 +518,11 @@ describe Chef::Resource::Link do
           it 'links to the target file' do
             resource.run_action(:create)
             File.exists?(target_file).should be_true
-            symlink?(target_file).should be_true
-            readlink(target_file).should == @other_target
+            # OS X gets angry about this sort of link.  Bug in OS X, IMO.
+            pending('OS X symlink? and readlink working on hard links to symlinks', :if => os_x?) do
+              symlink?(target_file).should be_true
+              readlink(target_file).should == @other_target
+            end
           end
           include_context 'delete is noop'
         end
@@ -522,15 +536,17 @@ describe Chef::Resource::Link do
         end
         context 'and the link does not yet exist' do
           it 'links to the target file' do
-            resource.run_action(:create)
-            # Windows and Unix have different definitions of exists? here, and that's OK.
-            if Chef::Platform.windows?
-              File.exists?(target_file).should be_true
-            else
-              File.exists?(target_file).should be_false
+            pending('OS X fails to create hardlinks to broken symlinks', :if => os_x?) do
+              resource.run_action(:create)
+              # Windows and Unix have different definitions of exists? here, and that's OK.
+              if windows?
+                File.exists?(target_file).should be_true
+              else
+                File.exists?(target_file).should be_false
+              end
+              symlink?(target_file).should be_true
+              readlink(target_file).should == @other_target
             end
-            symlink?(target_file).should be_true
-            readlink(target_file).should == @other_target
           end
           include_context 'delete is noop'
         end
