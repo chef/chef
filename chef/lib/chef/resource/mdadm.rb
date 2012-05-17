@@ -31,7 +31,7 @@ class Chef
         @exists = false
         @level = 1
         @metadata = "0.90"
-        @bitmap = "none"
+        @bitmap = nil
         @raid_device = name
 
         @action = :create
