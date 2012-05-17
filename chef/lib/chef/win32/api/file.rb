@@ -505,8 +505,8 @@ BOOL WINAPI DeviceIoControl(
         def symlink_file_handle(path, &block)
           begin
             path = encode_path(path)
-            handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT, nil)
+            handle = CreateFileW(path, FILE_READ_EA, FILE_SHARE_READ,
+                                  nil, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
             if handle == INVALID_HANDLE_VALUE
               Chef::Win32::Error.raise!

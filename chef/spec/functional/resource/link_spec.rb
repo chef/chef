@@ -42,9 +42,14 @@ describe Chef::Resource::Link do
   end
 
   after(:each) do
-    FileUtils.rm_r(to) if File.exists?(to)
-    FileUtils.rm_r(target_file) if File.exists?(target_file)
-    FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+    # TODO Windows fails to clean up some symlinks.
+    begin
+      FileUtils.rm_r(to) if File.exists?(to)
+      FileUtils.rm_r(target_file) if File.exists?(target_file)
+      FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+    rescue
+      puts "Could not remove a file: #{$!}"
+    end
   end
 
   def symlink(a, b)
