@@ -30,6 +30,7 @@ class Chef
         require 'highline'
         require 'net/ssh'
         require 'net/ssh/multi'
+        require 'chef/knife/ssh'
         Chef::Knife::Ssh.load_deps
       end
 
@@ -105,7 +106,7 @@ class Chef
         :description => "Comma separated list of roles/recipes to apply",
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
-      
+
       option :first_boot_attributes,
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",
