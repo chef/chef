@@ -160,8 +160,7 @@ describe Chef::Knife::DataBagFromFile do
       secret_file.flush
       @knife.stub!(:config).and_return({:secret_file => secret_file.path})
 
-      @knife.stub!(:load_from_file).with(Chef::DataBagItem, @db_file.path,
-                                         'bag_name').and_return(@plain_data)
+      @knife.loader.stub!(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
       dbag = Chef::DataBagItem.new
       Chef::DataBagItem.stub!(:new).and_return(dbag)
       dbag.should_receive(:save)

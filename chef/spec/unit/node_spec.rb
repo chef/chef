@@ -371,9 +371,9 @@ describe Chef::Node do
     end
 
     it "sets the 'roles' automatic attribute to the expanded role list" do
-      @expansion.instance_variable_set(:@applied_roles, {'lrf' => nil, 'countersnark' => nil})
+      @expansion.instance_variable_set(:@applied_roles, {'arf' => nil, 'countersnark' => nil})
       @node.expand!
-      @node.automatic_attrs[:roles].should == ['lrf', 'countersnark']
+      @node.automatic_attrs[:roles].sort.should == ['arf', 'countersnark']
     end
 
   end

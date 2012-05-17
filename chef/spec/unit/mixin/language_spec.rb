@@ -179,7 +179,7 @@ describe Chef::Mixin::Language do
   describe "when loading data bags and items" do
     it "lists the items in a data bag" do
       Chef::DataBag.should_receive(:load).with("bag_name").and_return("item_1" => "http://url_for/item_1", "item_2" => "http://url_for/item_2")
-      @language.data_bag("bag_name").should == %w[item_1 item_2]
+      @language.data_bag("bag_name").sort.should == %w[item_1 item_2]
     end
 
     it "validates the name of the data bag you're trying to load" do
