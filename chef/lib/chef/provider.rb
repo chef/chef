@@ -95,23 +95,21 @@ class Chef
       # constructor...
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
-      if whyrun_supported?
+      if !whyrun_mode? || whyrun_supported?
         load_current_resource
-      else
-        converge_by("bypassing load current resource, whyrun not supported in resource provider #{self.class.name} ") do
-          load_current_resource
-        end
+        events.resource_current_state_loaded(@new_resource, @action, @current_resource)
+      elsif whyrun_mode? && !whyrun_supported?
+        events.resource_current_state_load_bypassed(@new_resource, @action, @current_resource)
       end
-      define_resource_requirements
 
-      events.resource_current_state_loaded(@new_resource, @action, @current_resource)
+      define_resource_requirements
       process_resource_requirements
 
       # user-defined providers including LWRPs may 
       # not include whyrun support - if they don't support it
       # we can't execute any actions while we're running in
-      # whyrun mode. Instead we 'fake' whyrun by documenting that 
-      # we can't execute the action. 
+      # whyrun mode. Instead we 'fake' whyrun by documenting that
+      # we can't execute the action.
       # in non-whyrun mode, this will still cause the action to be
       # executed normally.
       if whyrun_supported?

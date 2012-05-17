@@ -263,15 +263,13 @@ class Chef
       end
 
       # Called when an assertion declared by a provider fails
-      def provider_requirement_failed(resource, exception, message)
+      def provider_requirement_failed(action, resource, exception, message)
       end
 
       # Called when a provider makes an assumption after a failed assertion
       # in whyrun mode, in order to allow execution to continue
-      def whyrun_assumption(resource, message) 
+      def whyrun_assumption(action, resource, message) 
       end
-      
-
 
       ## TODO: deprecation warning. this way we can queue them up and present
       #  them all at once.

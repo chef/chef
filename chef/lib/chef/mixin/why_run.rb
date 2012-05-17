@@ -240,7 +240,7 @@ class Chef
               @assertion_failed = true
               if Chef::Config[:why_run] && @whyrun_message
                 events.provider_requirement_failed(action, resource, @exception_type, @failure_message)
-                events.whyrun_assumption(action, resource, @whyrun_message)
+                events.whyrun_assumption(action, resource, @whyrun_message) if @whyrun_message
                 @resource_modifier.call if @resource_modifier
               else
                 if @failure_message

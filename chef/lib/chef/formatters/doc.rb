@@ -1,4 +1,5 @@
 require 'chef/formatters/base'
+require 'chef/config'
 
 class Chef
   module Formatters
@@ -155,6 +156,23 @@ E
 
     end
 
+    class Outputter 
+      def highline
+        @highline ||= begin
+          require 'highline'
+          HighLine.new
+        end
+      end
+      def color(string, *colors)
+        if Chef::Config[:color]
+          print highline.color(string, *colors)
+        else
+          print string
+        end
+      end
+    end
+
+
     #--
     # TODO: not sold on the name, but the output is similar to what rspec calls
     # "specdoc"
@@ -165,6 +183,7 @@ E
       def initialize(out, err)
         super
 
+        @output = Outputter.new
         @updated_resources = 0
       end
 
@@ -173,7 +192,11 @@ E
       end
 
       def run_completed
-        puts "Chef Client finished, #{@updated_resources} resources updated"
+        if Chef::Config[:whyrun]
+          puts "Chef Client finished, #{@updated_resources} resources would have been updated"
+        else
+          puts "Chef Client finished, #{@updated_resources} resources updated"
+        end
       end
 
       # Called right after ohai runs.
@@ -345,16 +368,27 @@ E
         puts " (up to date)"
       end
 
-      ## TODO: callback for assertion failures
+      def output_record(line)
 
-      ## TODO: callback for assertion fallback in why run
-
+      end
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.
       def resource_update_applied(resource, action, update)
-        line = Array(update)[0]
-        print "\n    - #{line}"
+        prefix = Chef::Config[:why_run] ? "Would " : ""
+        Array(update).each do |line|
+          next if line.nil? 
+          output_record line
+          if line.kind_of? String
+            @output.color "\n    - #{prefix}#{line}", :green
+          elsif line.kind_of? Array 
+            # Expanded output - delta 
+            # @todo should we have a resource_update_delta callback? 
+            line.each do |detail|
+              @output.color "\n        #{detail}", :white
+            end
+          end
+        end
       end
 
       # Called after a resource has been completely converged.
@@ -363,6 +397,23 @@ E
         puts "\n"
       end
 
+      # Called when resource current state load is skipped due to the provider
+      # not supporting whyrun mode.
+      def resource_current_state_load_bypassed(resource, action, current_resource)
+        @output.color("Whyrun not supported for #{resource}, bypassing load.", :yellow)
+      end
+
+      # Called when a provider makes an assumption after a failed assertion
+      # in whyrun mode, in order to allow execution to continue
+      def whyrun_assumption(action, resource, message) 
+        @output.color("\n    * #{message}", :yellow)
+      end
+
+      # Called when an assertion declared by a provider fails
+      def provider_requirement_failed(action, resource, exception, message)
+        color = Chef::Config[:why_run] ? :yellow : :red
+        @output.color("\n    * #{message}", color)
+      end
     end
   end
 end
