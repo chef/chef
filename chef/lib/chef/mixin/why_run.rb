@@ -63,7 +63,7 @@ class Chef
             if Chef::Config[:why_run]
               # TODO: legit logging here
               Array(descriptions).flatten.each do |description|
-                puts "WHY RUN: #{description}" if description
+                puts "WHY RUN: Would #{description}" if description
               end
             else
               block.call
