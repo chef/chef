@@ -60,7 +60,7 @@ class Chef
 
       def action_checkout
         if target_dir_non_existent_or_empty?
-          converge_by("would perform checkout of #{@new_resource.repository} into #{@new_resource.destination}") do
+          converge_by("perform checkout of #{@new_resource.repository} into #{@new_resource.destination}") do
             run_command(run_options(:command => checkout_command))
           end
         else
@@ -77,7 +77,7 @@ class Chef
       end
 
       def action_force_export
-        converge_by("would export #{@new_resource.repository} into #{@new_resource.destination}") do
+        converge_by("export #{@new_resource.repository} into #{@new_resource.destination}") do
           run_command(run_options(:command => export_command))
         end
       end
@@ -88,7 +88,7 @@ class Chef
           current_rev = find_current_revision
           Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
-            converge_by("would sync #{@new_resource.destination} from #{@new_resource.repository}") do
+            converge_by("sync #{@new_resource.destination} from #{@new_resource.repository}") do
               run_command(run_options(:command => sync_command))
               Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
             end 

@@ -135,7 +135,7 @@ class Chef
       def set_content
         unless compare_content
           description = []
-          description << "Would update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
+          description << "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
           description << diff_current_from_content(@new_resource.content) 
           converge_by(description) do
             backup @new_resource.path if ::File.exists?(@new_resource.path)
@@ -148,7 +148,7 @@ class Chef
       def action_create
         if !::File.exists?(@new_resource.path)
           description = []
-          desc = "Would create new file #{@new_resource.path}"
+          desc = "create new file #{@new_resource.path}"
           desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
           description << desc
           description << diff_current_from_content(@new_resource.content) 
@@ -181,7 +181,7 @@ class Chef
 
       def action_delete
         if ::File.exists?(@new_resource.path)
-          converge_by("would delete file #{@new_resource.path}") do 
+          converge_by("delete file #{@new_resource.path}") do 
             backup unless ::File.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
             Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
@@ -191,7 +191,7 @@ class Chef
 
       def action_touch
         action_create
-        converge_by("would update utime on file #{@new_resource.path}") do
+        converge_by("update utime on file #{@new_resource.path}") do
           time = Time.now
           ::File.utime(time, time, @new_resource.path)
           Chef::Log.info("#{@new_resource} updated atime and mtime to #{time}")

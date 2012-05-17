@@ -43,7 +43,7 @@ class Chef
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
             description = [] 
-            description << "Would copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
+            description << "copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
             converge_by(description) do
               backup_new_resource

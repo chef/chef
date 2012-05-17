@@ -99,7 +99,7 @@ class Chef
             command << " metric #{@new_resource.metric}" if @new_resource.metric
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
-          converge_by ("Would run #{command} to add #{@new_resource}") do
+          converge_by ("run #{command} to add #{@new_resource}") do
             run_command(
               :command => command
             )
@@ -122,7 +122,7 @@ class Chef
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
           end
 
-          converge_by ("Would run #{command} to enable #{@new_resource}") do
+          converge_by ("run #{command} to enable #{@new_resource}") do
             run_command(
               :command => command
             )
@@ -135,7 +135,7 @@ class Chef
         # check to see if load_current_resource found the interface
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-          converge_by ("Would run #{command} to delete #{@new_resource}") do
+          converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
               :command => command
             )
@@ -152,7 +152,7 @@ class Chef
         # disables, but leaves config files in place.
         if @current_resource.device
           command = "ifconfig #{@new_resource.device} down"
-          converge_by ("Would run #{command} to disable #{@new_resource}") do
+          converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
               :command => command
             )
@@ -179,7 +179,7 @@ class Chef
           }
           template = ::ERB.new(content)
           network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          converge_by ("Would generate configuration file : #{network_file_name}") do
+          converge_by ("generate configuration file : #{network_file_name}") do
             network_file = ::File.new(network_file_name, "w")
             network_file.puts(template.result(b))
             network_file.close
@@ -198,7 +198,7 @@ class Chef
         when "centos","redhat","fedora"
           ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
           if ::File.exist?(ifcfg_file)
-            converge_by ("Would delete the #{ifcfg_file}") do
+            converge_by ("delete the #{ifcfg_file}") do
               FileUtils.rm_f(ifcfg_file, :verbose => false, :force => true)
             end
           end

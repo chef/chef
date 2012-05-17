@@ -70,13 +70,13 @@ class Chef
         # We need to make sure we handle the preseed file
         if @new_resource.response_file
           if preseed_file = get_preseed_file(@new_resource.package_name, install_version)
-            converge_by("would preseed package #{@new_resource.package_name}") do  
+            converge_by("preseed package #{@new_resource.package_name}") do  
               preseed_package(preseed_file)
             end 
           end
         end
         description = install_version ? "version #{install_version} of" : ""
-        converge_by("would install #{description} package #{@new_resource.package_name}") do
+        converge_by("install #{description} package #{@new_resource.package_name}") do
           install_package(@new_resource.package_name, install_version)
         end
       end
@@ -88,7 +88,7 @@ class Chef
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         else
           orig_version = @current_resource.version || "uninstalled"
-          converge_by("would upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
+          converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
             status = upgrade_package(@new_resource.package_name, candidate_version)
             Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
           end
@@ -98,7 +98,7 @@ class Chef
       def action_remove
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of " :  ""
-          converge_by("would remove #{description} package #{@current_resource.package_name}") do
+          converge_by("remove #{description} package #{@current_resource.package_name}") do
             remove_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} removed")
           end
@@ -122,7 +122,7 @@ class Chef
       def action_purge
         if removing_package?
           description = @new_resource.version ? "version #{@new_resource.version} of" : ""
-          converge_by("would purge #{description} package #{@current_resource.package_name}") do
+          converge_by("purge #{description} package #{@current_resource.package_name}") do
             purge_package(@current_resource.package_name, @new_resource.version)
             Chef::Log.info("#{@new_resource} purged")
           end
@@ -141,7 +141,7 @@ class Chef
         end
 
         if preseed_file = get_preseed_file(@new_resource.package_name, @current_resource.version)
-          converge_by("would reconfigure package #{@new_resource.package_name}") do
+          converge_by("reconfigure package #{@new_resource.package_name}") do
             preseed_package(preseed_file)
             status = reconfig_package(@new_resource.package_name, @current_resource.version)
             Chef::Log.info("#{@new_resource} reconfigured")

@@ -95,7 +95,7 @@ class Chef
 
       def action_create
         unless ::File.exist?(@new_resource.path)
-          converge_by("would create new directory #{@new_resource.path}") do 
+          converge_by("create new directory #{@new_resource.path}") do 
             if @new_resource.recursive == true
               ::FileUtils.mkdir_p(@new_resource.path)
             else
@@ -109,7 +109,7 @@ class Chef
 
       def action_delete
         if ::File.exist?(@new_resource.path)
-          converge_by("would delete existing directory #{@new_resource.path}") do
+          converge_by("delete existing directory #{@new_resource.path}") do
             if @new_resource.recursive == true
               FileUtils.rm_rf(@new_resource.path)
               Chef::Log.info("#{@new_resource} deleted #{@new_resource.path} recursively")

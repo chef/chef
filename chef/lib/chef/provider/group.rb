@@ -75,7 +75,7 @@ class Chef
       def compare_group
         @change_desc = nil
         if @new_resource.gid != @current_resource.gid
-          @change_desc = "would change gid #{@current_resource.gid} to #{@new_resource.gid}"
+          @change_desc = "change gid #{@current_resource.gid} to #{@new_resource.gid}"
           return true
         end
         
@@ -86,12 +86,12 @@ class Chef
             missing_members << member
           end
           if missing_members.length > 0
-            @change_desc = "would add missing member(s): #{missing_members.join(", ")}"
+            @change_desc = "add missing member(s): #{missing_members.join(", ")}"
             return true
           end
         else
           if @new_resource.members != @current_resource.members
-            @change_desc = "would replace group members with new list of members"
+            @change_desc = "replace group members with new list of members"
             return true
           end
         end
@@ -101,13 +101,13 @@ class Chef
       def action_create
         case @group_exists
         when false
-          converge_by("would create #{@new_resource}") do 
+          converge_by("create #{@new_resource}") do 
             create_group
             Chef::Log.info("#{@new_resource} created")
           end
         else 
           if compare_group
-            converge_by(["would alter group #{@new_resource}", @change_desc ]) do 
+            converge_by(["alter group #{@new_resource}", @change_desc ]) do 
               manage_group
               Chef::Log.info("#{@new_resource} altered")
             end
@@ -117,7 +117,7 @@ class Chef
       
       def action_remove
         if @group_exists
-          converge_by("would remove group #{@new_resource}") do
+          converge_by("remove group #{@new_resource}") do
             remove_group
             Chef::Log.info("#{@new_resource} removed")
           end
@@ -126,7 +126,7 @@ class Chef
       
       def action_manage
         if @group_exists && compare_group
-          converge_by(["would manage group #{@new_resource}", @change_desc]) do
+          converge_by(["manage group #{@new_resource}", @change_desc]) do
             manage_group 
             Chef::Log.info("#{@new_resource} managed")
           end
@@ -135,7 +135,7 @@ class Chef
       
       def action_modify
         if compare_group
-          converge_by(["would modify group #{@new_resource}", @change_desc]) do
+          converge_by(["modify group #{@new_resource}", @change_desc]) do
             manage_group
             Chef::Log.info("#{@new_resource} modified")
           end
