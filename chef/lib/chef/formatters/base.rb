@@ -1,4 +1,5 @@
 require 'chef/event_dispatch/base'
+require 'chef/formatters/error_inspectors'
 
 class Chef
 
