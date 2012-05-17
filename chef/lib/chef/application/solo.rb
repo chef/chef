@@ -34,6 +34,17 @@ class Chef::Application::Solo < Chef::Application
     :default => Chef::Config.platform_specfic_path('/etc/chef/solo.rb'),
     :description => "The configuration file to use"
 
+  option :formatter,
+    :short        => "-F FORMATTER",
+    :long         => "--format FORMATTER",
+    :description  => "output format to use"
+
+  option :color,
+    :long         => '--[no-]color',
+    :boolean      => false,
+    :default      => true,
+    :description  => "Use colored output, defaults to disabled"
+
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
