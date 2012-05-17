@@ -432,7 +432,7 @@ describe Chef::Resource::Link do
           Dir.mkdir(target_file)
         end
         it 'errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
+          lambda { resource.run_action(:create) }.should raise_error(Chef::Platform.windows? ? Errno::EACCES : Errno::EISDIR)
         end
         it_behaves_like 'delete errors out'
       end
@@ -440,13 +440,15 @@ describe Chef::Resource::Link do
       end
       context "and specifies security attributes" do
         before(:each) do
-          resource.owner('nobody')
-          resource.group('nogroup')
+          resource.owner(Chef::Platform.windows? ? 'Guest' : 'nobody')
         end
         it 'ignores them' do
           resource.run_action(:create)
-          File.lstat(target_file).uid.should_not == Etc.getpwnam('nobody').uid
-          File.lstat(target_file).gid.should_not == Etc.getgrnam('nogroup').gid
+          if Chef::Platform.windows?
+            Chef::Win32::Security.get_named_security_info(target_file).owner.should_not == SID.Guest
+          else
+            File.lstat(target_file).uid.should_not == Etc.getpwnam('nobody').uid
+          end
         end
       end
     end
@@ -493,7 +495,12 @@ describe Chef::Resource::Link do
         context 'and the link does not yet exist' do
           it 'links to the target file' do
             resource.run_action(:create)
-            File.exists?(target_file).should be_false
+            # Windows and Unix have different definitions of exists? here, and that's OK.
+            if Chef::Platform.windows?
+              File.exists?(target_file).should be_true
+            else
+              File.exists?(target_file).should be_false
+            end
             symlink?(target_file).should be_true
             readlink(target_file).should == @other_target
           end
