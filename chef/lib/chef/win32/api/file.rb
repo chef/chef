@@ -491,7 +491,7 @@ BOOL WINAPI DeviceIoControl(
           begin
             path = encode_path(path)
             handle = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ,
-                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nil)
+                                  nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, nil)
 
             if handle == INVALID_HANDLE_VALUE
               Chef::Win32::Error.raise!

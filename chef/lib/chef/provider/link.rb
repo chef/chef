@@ -59,8 +59,10 @@ class Chef
         else
           @current_resource.link_type(:hard)
           if ::File.exists?(@current_resource.target_file)
-            if ::File.exists?(@new_resource.to) && ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
-              @current_resource.to(@new_resource.to)
+            if ::File.exists?(@new_resource.to) &&
+               file_class.stat(@current_resource.target_file).ino ==
+               file_class.stat(@new_resource.to).ino
+              @current_resource.to(::File.expand_path(@new_resource.to))
             else
               @current_resource.to("")
             end
@@ -73,14 +75,14 @@ class Chef
         if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file) ||
            @current_resource.link_type != @new_resource.link_type
           if @new_resource.link_type == :symbolic
-            if @current_resource.to # Exists
+            if @current_resource.to # nil if target_file does not exist
               ::File.unlink(@new_resource.target_file)
             end
             file_class.symlink(@new_resource.to,@new_resource.target_file)
             Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
             Chef::Log.info("#{@new_resource} created")
           elsif @new_resource.link_type == :hard
-            if @current_resource.to # Exists
+            if @current_resource.to # nil if target_file does not exist
               ::File.unlink(@new_resource.target_file)
             end
             file_class.link(@new_resource.to, @new_resource.target_file)
