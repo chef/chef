@@ -44,8 +44,8 @@ class Chef::Application::Client < Chef::Application
 
   option :color,
     :long         => '--[no-]color',
-    :boolean      => false,
-    :default      => true,
+    :boolean      => true,
+    :default      => false,
     :description  => "Use colored output, defaults to enabled"
 
   option :log_level,
