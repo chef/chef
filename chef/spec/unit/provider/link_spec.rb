@@ -139,7 +139,7 @@ describe Chef::Resource::Link do
       stat.stub!(:uid).and_return(501)
       stat.stub!(:gid).and_return(501)
 
-      File.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
+      provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
 
       File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
       provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
@@ -171,7 +171,7 @@ describe Chef::Resource::Link do
         stat.stub!(:uid).and_return(502)
         stat.stub!(:gid).and_return(502)
 
-        File.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+        provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
         File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
@@ -197,7 +197,7 @@ describe Chef::Resource::Link do
         stat.stub!(:uid).and_return(502)
         stat.stub!(:gid).and_return(502)
 
-        File.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
+        provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
         File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource

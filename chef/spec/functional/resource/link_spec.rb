@@ -458,7 +458,7 @@ describe Chef::Resource::Link do
       end
       context 'and the link does not yet exist' do
         it 'create errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
+          lambda { resource.run_action(:create) }.should raise_error(Chef::Platform.windows? ? Chef::Exceptions::Win32APIError : Errno::EPERM)
         end
         include_context 'delete is noop'
       end
