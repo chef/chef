@@ -34,6 +34,11 @@ class Chef
         :long => "--run-list",
         :description => "Show the run list"
 
+      option :sort_reverse,
+        :short => "-s",
+        :long => "--sort-reverse",
+        :description => "Sort the status list by last run time descending"
+
       def highline
         @h ||= HighLine.new
       end
@@ -45,7 +50,14 @@ class Chef
         q.search(:node, query) do |node|
           all_nodes << node
         end
-        all_nodes.sort { |n1, n2| (n1["ohai_time"] or 0) <=> (n2["ohai_time"] or 0) }.each do |node|
+
+        all_nodes.sort { |n1, n2|
+          if config[:sort_reverse]
+            (n2["ohai_time"] or 0) <=> (n1["ohai_time"] or 0)
+          else
+            (n1["ohai_time"] or 0) <=> (n2["ohai_time"] or 0)
+          end
+        }.each do |node|
           if node.has_key?("ec2")
             fqdn = node['ec2']['public_hostname']
             ipaddress = node['ec2']['public_ipv4']
