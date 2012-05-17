@@ -330,6 +330,26 @@ shared_examples_for "a securable resource" do
           ACE.access_allowed(SID.Everyone, Security::FILE_GENERIC_EXECUTE)
         ]
       end
+
+      it 'warns when mode tries to set owner bits but owner is not specified' do
+        @warn = []
+        Chef::Log.stub!(:warn) { |msg| @warn << msg }
+
+        resource.mode 0400
+        resource.run_action(:create)
+
+        @warn.include?("Mode 400 includes bits for the owner, but owner is not specified").should be_true
+      end
+
+      it 'warns when mode tries to set group bits but group is not specified' do
+        @warn = []
+        Chef::Log.stub!(:warn) { |msg| @warn << msg }
+
+        resource.mode 0040
+        resource.run_action(:create)
+
+        @warn.include?("Mode 040 includes bits for the group, but group is not specified").should be_true
+      end
     end
 
   end
