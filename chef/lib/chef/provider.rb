@@ -24,6 +24,7 @@ require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 class Chef
   class Provider
+    include Chef::Mixin::RecipeDefinitionDSLCore
     include Chef::Mixin::WhyRun
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
