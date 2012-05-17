@@ -51,7 +51,7 @@ class Chef
         if file_class.symlink?(@current_resource.target_file)
           @current_resource.link_type(:symbolic)
           @current_resource.to(
-            ::File.expand_path(file_class.readlink(@current_resource.target_file))
+            canonicalize(file_class.readlink(@current_resource.target_file))
           )
           cstats = ::File.lstat(@current_resource.target_file)
           @current_resource.owner(cstats.uid)
@@ -62,7 +62,7 @@ class Chef
             if ::File.exists?(@new_resource.to) &&
                file_class.stat(@current_resource.target_file).ino ==
                file_class.stat(@new_resource.to).ino
-              @current_resource.to(::File.expand_path(@new_resource.to))
+              @current_resource.to(canonicalize(@new_resource.to))
             else
               @current_resource.to("")
             end
@@ -71,14 +71,18 @@ class Chef
         @current_resource
       end
 
+      def canonicalize(path)
+        Chef::Platform.windows? ? path.gsub('/', '\\') : path
+      end
+
       def action_create
-        if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file) ||
+        if @current_resource.to != canonicalize(@new_resource.to) ||
            @current_resource.link_type != @new_resource.link_type
           if @new_resource.link_type == :symbolic
             if @current_resource.to # nil if target_file does not exist
               ::File.unlink(@new_resource.target_file)
             end
-            file_class.symlink(@new_resource.to,@new_resource.target_file)
+            file_class.symlink(canonicalize(@new_resource.to),@new_resource.target_file)
             Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
             Chef::Log.info("#{@new_resource} created")
           elsif @new_resource.link_type == :hard

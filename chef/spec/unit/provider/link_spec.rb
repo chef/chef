@@ -37,6 +37,10 @@ describe Chef::Resource::Link do
     result
   end
 
+  def canonicalize(path)
+    Chef::Platform.windows? ? path.gsub('/', '\\') : path
+  end
+
   describe "when the target is a symlink" do
     before(:each) do
       lstat = mock("stats", :ino => 5)
@@ -61,7 +65,7 @@ describe Chef::Resource::Link do
         provider.current_resource.link_type.should == :symbolic
       end
       it "should update the source of the existing link with the links target" do
-        provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
+        provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
       it "should set the owner" do
         provider.current_resource.owner.should == 501
@@ -101,7 +105,7 @@ describe Chef::Resource::Link do
         provider.current_resource.link_type.should == :symbolic
       end
       it "should update the source of the existing link to the link's target" do
-        provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
+        provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
       it "should set the owner" do
         provider.current_resource.owner.should == 501
@@ -210,7 +214,7 @@ describe Chef::Resource::Link do
         provider.current_resource.link_type.should == :hard
       end
       it "should update the source of the existing link to the link's target" do
-        provider.current_resource.to.should == "#{CHEF_SPEC_DATA}/fofile"
+        provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
       it "should not set the owner" do
         provider.current_resource.owner.should == nil

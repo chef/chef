@@ -52,6 +52,9 @@ describe Chef::Resource::Link do
     end
   end
 
+  def canonicalize(path)
+    Chef::Platform.windows? ? path.gsub('/', '\\') : path
+  end
   def symlink(a, b)
     if Chef::Platform.windows?
       Chef::Win32::File.symlink(a, b)
@@ -140,27 +143,6 @@ describe Chef::Resource::Link do
     end
   end
 
-  shared_context 'create symbolic link is noop' do
-    describe 'the :create action' do
-      before(:each) do
-        @info = []
-        Chef::Log.stub!(:info) { |msg| @info << msg }
-        resource.run_action(:create)
-      end
-
-      it 'leaves the file linked' do
-        symlink?(target_file).should be_true
-        readlink(target_file).should == to
-      end
-      it 'does not mark the resource updated' do
-        resource.should_not be_updated
-      end
-      it 'does not log that it created' do
-        @info.include?("link[#{target_file}] created").should be_false
-      end
-    end
-  end
-
   shared_context 'create symbolic link succeeds' do
     describe 'the :create action' do
       before(:each) do
@@ -171,13 +153,34 @@ describe Chef::Resource::Link do
 
       it 'links to the target file' do
         symlink?(target_file).should be_true
-        readlink(target_file).should == to
+        readlink(target_file).should == canonicalize(to)
       end
       it 'marks the resource updated' do
         resource.should be_updated
       end
       it 'logs that it created' do
         @info.include?("link[#{target_file}] created").should be_true
+      end
+    end
+  end
+
+  shared_context 'create symbolic link is noop' do
+    describe 'the :create action' do
+      before(:each) do
+        @info = []
+        Chef::Log.stub!(:info) { |msg| @info << msg }
+        resource.run_action(:create)
+      end
+
+      it 'leaves the file linked' do
+        symlink?(target_file).should be_true
+        readlink(target_file).should == canonicalize(to)
+      end
+      it 'does not mark the resource updated' do
+        resource.should_not be_updated
+      end
+      it 'does not log that it created' do
+        @info.include?("link[#{target_file}] created").should be_false
       end
     end
   end
@@ -243,23 +246,13 @@ describe Chef::Resource::Link do
       context 'and the link does not yet exist' do
         include_context 'create symbolic link succeeds'
         include_context 'delete is noop'
-
-        # TODO figure out what to do with this on Windows
-        context 'with a relative link destination', :unix_only do
-          before(:each) do
-            resource.to("../#{File.basename(to)}")
-          end
-
-          include_context 'create symbolic link succeeds'
-          include_context 'delete is noop'
-        end
       end
       context 'and the link already exists and is a symbolic link' do
         context 'pointing at the target' do
           before(:each) do
             symlink(to, target_file)
             symlink?(target_file).should be_true
-            readlink(target_file).should == to
+            readlink(target_file).should == canonicalize(to)
           end
           include_context 'create symbolic link is noop'
           include_context 'delete succeeds'
@@ -380,6 +373,41 @@ describe Chef::Resource::Link do
     context "when the link destination does not exist" do
       include_context 'create symbolic link succeeds'
       include_context 'delete is noop'
+    end
+
+    {
+      '../' => 'with a relative link destination',
+      '' => 'with a bare filename for the link destination'
+    }.each do |prefix, desc|
+      context desc do
+        let(:to) { "#{prefix}#{File.basename(absolute_to)}" }
+        let(:absolute_to) { File.join(base_dir, make_tmpname("to_spec", nil)) }
+        before(:each) do
+          resource.to(to)
+        end
+        context 'when the link does not yet exist' do
+          include_context 'create symbolic link succeeds'
+          include_context 'delete is noop'
+        end
+        context 'when the link already exists and points at the target' do
+          before(:each) do
+            symlink(to, target_file)
+            symlink?(target_file).should be_true
+            readlink(target_file).should == canonicalize(to)
+          end
+          include_context 'create symbolic link is noop'
+          include_context 'delete succeeds'
+        end
+        context 'when the link already exists and points at the target with an absolute path' do
+          before(:each) do
+            symlink(absolute_to, target_file)
+            symlink?(target_file).should be_true
+            readlink(target_file).should == canonicalize(absolute_to)
+          end
+          include_context 'create symbolic link succeeds'
+          include_context 'delete succeeds'
+        end
+      end
     end
   end
 
