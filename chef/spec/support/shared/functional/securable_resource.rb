@@ -1,6 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
 # Author:: Mark Mzyk (<mmzyk@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -25,7 +26,7 @@ require 'etc'
 shared_examples_for "a securable resource" do
   context "on Unix", :unix_only do
     let(:expected_user_name) { 'nobody' }
-    let(:expected_group_name) { 'nobody' }
+    let(:expected_group_name) { 'nogroup' }
     let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
     let(:expected_gid) { Etc.getgrnam(expected_group_name).gid }
 
@@ -35,27 +36,27 @@ shared_examples_for "a securable resource" do
     it "should set an owner", :requires_root do
       resource.owner expected_user_name
       resource.run_action(:create)
-      File.stat(path).uid.should == expected_uid
+      File.lstat(path).uid.should == expected_uid
     end
 
     it "should set a group", :requires_root do
       resource.group expected_group_name
       resource.run_action(:create)
-      File.stat(path).gid.should == expected_gid
+      File.lstat(path).gid.should == expected_gid
     end
 
     it "should set permissions in string form as an octal number" do
       mode_string = '777'
       resource.mode mode_string
       resource.run_action(:create)
-      (File.stat(path).mode & 007777).should == (mode_string.oct & 007777)
+      (File.lstat(path).mode & 007777).should == (mode_string.oct & 007777)
     end
 
     it "should set permissions in numeric form as a ruby-interpreted octal" do
       mode_integer = 0777
       resource.mode mode_integer
       resource.run_action(:create)
-      (File.stat(path).mode & 007777).should == (mode_integer & 007777)
+      (File.lstat(path).mode & 007777).should == (mode_integer & 007777)
     end
   end
 
@@ -127,7 +128,7 @@ shared_examples_for "a securable resource" do
     end
 
     def descriptor
-      get_security_descriptor(resource.path)
+      get_security_descriptor(path)
     end
 
     before(:each) do
@@ -135,7 +136,7 @@ shared_examples_for "a securable resource" do
     end
 
     it "sets owner to Administrators on create if owner is not specified" do
-      File.exist?(resource.path).should == false
+      File.exist?(path).should == false
       resource.run_action(:create)
       descriptor.owner.should == SID.Administrators
     end
@@ -170,7 +171,7 @@ shared_examples_for "a securable resource" do
 
     it "sets group to None on create if group is not specified" do
       resource.group.should == nil
-      File.exist?(resource.path).should == false
+      File.exist?(path).should == false
       resource.run_action(:create)
       descriptor.group.should == SID.None
     end
@@ -269,7 +270,7 @@ shared_examples_for "a securable resource" do
         resource.rights(:read, 'Everyone')
         resource.run_action(:create)
 
-        explicit_aces.should == 
+        explicit_aces.should ==
           denied_acl(SID.Guest, expected_modify_perms) +
           allowed_acl(SID.Everyone, expected_read_perms)
       end

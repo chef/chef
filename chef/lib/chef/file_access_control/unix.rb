@@ -103,7 +103,11 @@ class Chef
       end
 
       def stat
-        @stat ||= ::File.stat(file)
+        if resource.instance_of?(Chef::Resource::Link)
+          @stat ||= ::File.lstat(file)
+        else
+          @stat ||= ::File.stat(file)
+        end
       end
 
       private

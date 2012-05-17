@@ -139,7 +139,7 @@ int WideCharToMultiByte(
           ustring = (ustring + "").force_encoding('UTF-8') if ustring.respond_to?(:force_encoding) && ustring.encoding.name != "UTF-8"
 
           # ensure we have the double-null termination Windows Wide likes
-          ustring = ustring << "\000\000" if ustring[-1].chr != "\000"
+          ustring = ustring + "\000\000" if ustring[-1].chr != "\000"
 
           # encode it all as UTF-16LE AKA Windows Wide Character AKA Windows Unicode
           ustring = begin
