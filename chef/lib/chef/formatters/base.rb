@@ -50,6 +50,17 @@ class Chef
         out, err = out, err
       end
 
+      # Failed to register this client with the server.
+      def registration_failed(node_name, exception, config)
+        error_inspector = ErrorInspectors::RegistrationErrorInspector.new(node_name, exception, config)
+        puts "\n"
+        puts "-" * 80
+        puts "Chef encountered an error attempting to create the client \"#{node_name}\""
+        puts "\n"
+        puts error_inspector.suspected_cause
+        puts "-" * 80
+      end
+
       # Generic callback for any attribute/library/lwrp/recipe file in a
       # cookbook getting loaded. The per-filetype callbacks for file load are
       # overriden so that they call this instead. This means that a subclass of
@@ -60,8 +71,24 @@ class Chef
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file throwing an
-      # exception when loaded.
+      # exception when loaded. Default behavior is to use CompileErrorInspector
+      # to print contextual info about the failure.
       def file_load_failed(path, exception)
+        wrapped_err = ErrorInspectors::CompileErrorInspector.new(path, exception)
+        puts "\n"
+        puts "-" * 80
+        puts "Error compiling #{path}:"
+        puts exception.to_s
+        puts "\n"
+        puts "Cookbook trace:"
+        wrapped_err.filtered_bt.each do |bt_line|
+          puts "  #{bt_line}"
+        end
+        puts "\n"
+        puts "Most likely caused here:"
+        puts wrapped_err.context
+        puts "\n"
+        puts "-" * 80
       end
 
       # Delegates to #file_loaded

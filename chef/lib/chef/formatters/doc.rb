@@ -63,17 +63,6 @@ class Chef
       def registration_completed
       end
 
-      # Failed to register this client with the server.
-      def registration_failed(node_name, exception, config)
-        error_inspector = RegistrationErrorInspector.new(node_name, exception, config)
-        puts "\n"
-        puts "-" * 80
-        puts "Chef encountered an error attempting to create the client \"#{node_name}\""
-        puts "\n"
-        puts error_inspector.suspected_cause
-        puts "-" * 80
-      end
-
       def node_load_start(node_name, config)
       end
 
@@ -139,24 +128,6 @@ class Chef
 
       # Called after a file in a cookbook is loaded.
       def file_loaded(path)
-      end
-
-      def file_load_failed(path, exception)
-        wrapped_err = CompileErrorInspector.new(path, exception)
-        puts "\n"
-        puts "-" * 80
-        puts "Error compiling #{path}:"
-        puts exception.to_s
-        puts "\n"
-        puts "Cookbook trace:"
-        wrapped_err.filtered_bt.each do |bt_line|
-          puts "  #{bt_line}"
-        end
-        puts "\n"
-        puts "Most likely caused here:"
-        puts wrapped_err.context
-        puts "\n"
-        puts "-" * 80
       end
 
       # Called when recipes have been loaded.
