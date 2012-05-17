@@ -43,7 +43,6 @@ class Chef
 
         if map.has_key?(platform_sym)
           if map[platform_sym].has_key?(version)
-            Chef::Log.debug("Platform #{platform_sym} version #{version} found")
             if map[platform_sym].has_key?(:default)
               resource_map.merge!(map[platform_sym][:default])
             end
@@ -51,8 +50,6 @@ class Chef
           elsif map[platform_sym].has_key?(:default)
             resource_map.merge!(map[platform_sym][:default])
           end
-        else
-          Chef::Log.debug("Platform #{platform} not found, using all defaults. (Unsupported platform?)")
         end
         resource_map
       end
@@ -136,6 +133,7 @@ class Chef
       def platform_resource(short_name, platform, version)
         pmap = filter(platform, version)
         rtkey = short_name.kind_of?(Chef::Resource) ? short_name.resource_name.to_sym : short_name
+
         pmap.has_key?(rtkey) ? pmap[rtkey] : nil
       end
 
