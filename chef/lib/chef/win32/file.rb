@@ -97,11 +97,19 @@ class Chef
           if DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, nil, 0, reparse_buffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, parsed_size, nil) == 0
             Chef::Win32::Error.raise!
           end
+
+          # Ensure it's a symbolic link
           reparse_buffer = REPARSE_DATA_BUFFER.new(reparse_buffer)
           if reparse_buffer[:ReparseTag] != IO_REPARSE_TAG_SYMLINK
             raise Errno::EACCES, "#{link_name} is not a symlink"
           end
-          reparse_buffer[:ReparseBuffer][:SymbolicLinkReparseBuffer].substitute_name
+
+          # Return the link destination (strip off \??\ at the beginning, which is a local filesystem thing)
+          link_dest = reparse_buffer.reparse_buffer.substitute_name
+          if link_dest =~ /^\\\?\?\\/
+            link_dest = link_dest[4..-1]
+          end
+          link_dest
         end
       end
 

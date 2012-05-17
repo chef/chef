@@ -298,11 +298,11 @@ typedef struct _REPARSE_DATA_BUFFER {
             :PathBuffer, :ushort
 
           def substitute_name
-            string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset] + 8
+            string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
             string_pointer.read_wstring(self[:SubstituteNameLength]/2)
           end
           def print_name
-            string_pointer = pointer + offset_of(:PathBuffer) + self[:PrintNameOffset]
+            string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
             string_pointer.read_wstring(self[:PrintNameLength]/2)
           end
         end
@@ -314,11 +314,11 @@ typedef struct _REPARSE_DATA_BUFFER {
             :PathBuffer, :ushort
 
           def substitute_name
-            string_pointer = pointer + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
+            string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:SubstituteNameOffset]
             string_pointer.read_wstring(self[:SubstituteNameLength]/2)
           end
           def print_name
-            string_pointer = pointer + offset_of(:PathBuffer) + self[:PrintNameOffset]
+            string_pointer = FFI::Pointer.new(pointer.address) + offset_of(:PathBuffer) + self[:PrintNameOffset]
             string_pointer.read_wstring(self[:PrintNameLength]/2)
           end
         end
@@ -335,6 +335,16 @@ typedef struct _REPARSE_DATA_BUFFER {
             :ReparseDataLength, :ushort,
             :Reserved, :ushort,
             :ReparseBuffer, REPARSE_DATA_BUFFER_UNION
+
+          def reparse_buffer
+            if self[:ReparseTag] == IO_REPARSE_TAG_SYMLINK
+              self[:ReparseBuffer][:SymbolicLinkReparseBuffer]
+            elsif self[:ReparseTag] == IO_REPARSE_TAG_MOUNT_POINT
+              self[:ReparseBuffer][:MountPointReparseBuffer]
+            else
+              self[:ReparseBuffer][:GenericReparseBuffer]
+            end
+          end
         end
 
 =begin
