@@ -59,16 +59,10 @@ class Chef
         # run its code block, depending on whether why_run mode is active.
         def converge!
           @actions.each do |descriptions, block|
-            # TODO: probably should get this out of the run context instead of making it really global?
-            if Chef::Config[:why_run]
-              # TODO: legit logging here
-              Array(descriptions).flatten.each do |description|
-                puts "WHY RUN: Would #{description}" if description
-              end
-            else
+            if !Chef::Config[:why_run]
               block.call
-              events.resource_update_applied(@resource, @action, descriptions)
             end
+            events.resource_update_applied(@resource, @action, descriptions)
           end
         end
       end
@@ -235,26 +229,22 @@ class Chef
             @assertion_failed
           end
 
-          def output_whyrun_content(content)
-            Array(content).flatten.each do |description|
-              puts "WHY RUN: #{description}"
-            end
-          end
 
           # Runs the assertion/assumption logic. Will raise an Exception of the
           # type specified in #failure_message (or AssertionFailure by default)
           # if the requirement is not met and Chef is not running in why run
           # mode. An exception will also be raised if running in why run mode
           # and no why run message or block has been declared.
-          def run
+          def run(action, events, resource)
             if !@assertion_proc || !@assertion_proc.call
               @assertion_failed = true
               if Chef::Config[:why_run] && @whyrun_message
-                output_whyrun_content(@failure_message)
-                output_whyrun_content(@whyrun_message)
+                events.provider_requirement_failed(action, resource, @exception_type, @failure_message)
+                events.whyrun_assumption(action, resource, @whyrun_message)
                 @resource_modifier.call if @resource_modifier
               else
                 if @failure_message
+                  events.provider_requirement_failed(action, resource, @exception_type, @failure_message)
                   raise @exception_type, @failure_message
                 end
               end
@@ -262,9 +252,14 @@ class Chef
           end
         end
 
-        def initialize
+        def initialize(resource, run_context)
+          @resource, @run_context = resource, run_context
           @assertions = Hash.new {|h,k| h[k] = [] }
           @blocked_actions = []
+        end
+
+        def events
+          @run_context.events
         end
 
         # Check to see if a given action is blocked by a failed assertion
@@ -331,7 +326,7 @@ class Chef
         # Run the assertion and assumption logic.
         def run(action)
           @assertions[action.to_sym].each do |a| 
-            a.run
+            a.run(action, events, @resource)
             if a.assertion_failed? and a.block_action? 
               @blocked_actions << action
               return

@@ -149,7 +149,7 @@ class Chef
     end
 
     def requirements
-      @requirements ||= ResourceRequirements.new
+      @requirements ||= ResourceRequirements.new(@new_resource, run_context)
     end
 
     protected
