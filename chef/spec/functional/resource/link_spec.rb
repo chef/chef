@@ -378,14 +378,8 @@ describe Chef::Resource::Link do
     context "when the link destination is not readable to this user", :pending do
     end
     context "when the link destination does not exist" do
-      if Chef::Platform.windows?
-        it 'create errors out' do
-          lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
-        end
-      else
-        include_context 'create symbolic link succeeds'
-        include_context 'delete is noop'
-      end
+      include_context 'create symbolic link succeeds'
+      include_context 'delete is noop'
     end
   end
 
