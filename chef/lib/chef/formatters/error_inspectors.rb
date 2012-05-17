@@ -1,5 +1,5 @@
-require 'chef/formatters/api_error_inspector'
-require 'chef/formatters/compile_error_inspector'
+require 'chef/formatters/error_inspectors/api_error_inspector'
+require 'chef/formatters/error_inspectors/compile_error_inspector'
 
 class Chef
   module Formatters
