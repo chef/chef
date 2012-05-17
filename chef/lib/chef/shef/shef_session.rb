@@ -25,6 +25,9 @@ require 'chef/client'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook_loader'
 require 'chef/run_list/run_list_expansion'
+require 'chef/formatters/base'
+require 'chef/formatters/doc'
+require 'chef/formatters/minimal'
 
 module Shef
   class ShefSession
@@ -39,6 +42,8 @@ module Shef
     attr_reader :node_attributes, :client
     def initialize
       @node_built = false
+      formatter = Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)
+      @events = Chef::EventDispatch::Dispatcher.new(formatter)
     end
 
     def node_built?
@@ -161,7 +166,7 @@ module Shef
     end
 
     def rebuild_context
-      @run_status = Chef::RunStatus.new(@node)
+      @run_status = Chef::RunStatus.new(@node, @events)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
       @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
