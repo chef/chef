@@ -3,6 +3,23 @@ require 'chef/config'
 
 class Chef
   module Formatters
+    # TODO: this shoudl be standalone, and perhaps shared with knife, etc
+    # as it was modified from code there originally. 
+    class Outputter 
+      def highline
+        @highline ||= begin
+          require 'highline'
+          HighLine.new
+        end
+      end
+      def color(string, *colors)
+        if Chef::Config[:color]
+          print highline.color(string, *colors)
+        else
+          print string
+        end
+      end
+    end
 
     #--
     # TODO: not sold on the name, but the output is similar to what rspec calls
