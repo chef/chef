@@ -133,14 +133,13 @@ documentation using <code>knife help TOPIC</code>.</p>
 <dt><code>-e</code>, <code>--editor</code> EDITOR</dt><dd>Set the editor to use for interactive commands</dd>
 <dt><code>-F</code>, <code>--format</code> FORMAT</dt><dd>Which format to use for output. See FORMATS for details.</dd>
 <dt><code>-V</code>, <code>--verbose</code></dt><dd>More verbose output.  Use twice for max verbosity</dd>
-<dt><code>-n</code>, <code>--no-editor</code></dt><dd>Do not open EDITOR, just accept the data as is</dd>
+<dt><code>-d</code>, <code>--disable-editing</code></dt><dd>Do not open EDITOR, just accept the data as is</dd>
 <dt><code>-u</code>, <code>--user</code> USER</dt><dd>API Client Username, corresponds to <code>Chef::Config</code> <code>node_name</code>.</dd>
 <dt><code>-p</code>, <code>--print-after</code></dt><dd>Show the data after a destructive operation</dd>
 <dt><code>-v</code>, <code>--version</code></dt><dd>Show chef version</dd>
 <dt><code>-y</code>, <code>--yes</code></dt><dd>Say yes to all prompts for confirmation</dd>
 <dt><code>--defaults</code></dt><dd>Accept default values for all questions</dd>
-<dt class="flush"><code>--color</code></dt><dd>Use colored output</dd>
-<dt><code>--no-color</code></dt><dd>Don't use colors in the output</dd>
+<dt><code>--[no-]color</code></dt><dd>Use colored output. Color enabled by default.</dd>
 <dt><code>-h</code>, <code>--help</code></dt><dd>Show the available options for a command.</dd>
 </dl>
 
@@ -265,7 +264,7 @@ recommended though, and git fits with a lot of the workflow paradigms.</p>
 
 <dl>
 <dt class="flush"><code>EDITOR</code></dt><dd>The text editor to use for editing data. The --editor option takes
-precedence over this value, and the --no-editor option supresses
+precedence over this value, and the --disable-editing option supresses
 data editing entirely.</dd>
 </dl>
 
@@ -292,12 +291,12 @@ data editing entirely.</dd>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#58;&#97;&#100;&#x61;&#x6d;&#x40;&#x6f;&#112;&#115;&#99;&#111;&#100;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#97;&#x64;&#x61;&#x6d;&#64;&#x6f;&#112;&#115;&#x63;&#111;&#x64;&#101;&#46;&#99;&#111;&#109;</a> of Opscode
+<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#x61;&#x64;&#97;&#x6d;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#100;&#101;&#46;&#99;&#x6f;&#109;" data-bare-link="true">&#x61;&#100;&#x61;&#x6d;&#x40;&#111;&#x70;&#115;&#99;&#x6f;&#100;&#101;&#x2e;&#99;&#111;&#109;</a> of Opscode
    (<a href="http://www.opscode.com" data-bare-link="true">http://www.opscode.com</a>), with contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#106;&#x6f;&#115;&#104;&#x75;&#97;&#x40;&#x6f;&#112;&#x73;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#x6a;&#x6f;&#115;&#x68;&#x75;&#97;&#64;&#111;&#x70;&#115;&#99;&#111;&#100;&#101;&#46;&#99;&#x6f;&#x6d;</a>.</p>
+<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#106;&#111;&#115;&#104;&#117;&#x61;&#64;&#111;&#112;&#115;&#x63;&#x6f;&#x64;&#x65;&#46;&#x63;&#111;&#x6d;" data-bare-link="true">&#x6a;&#111;&#115;&#104;&#x75;&#97;&#x40;&#x6f;&#112;&#115;&#x63;&#x6f;&#100;&#x65;&#46;&#99;&#111;&#109;</a>.</p>
 
 <h2 id="LICENSE">LICENSE</h2>
 
@@ -311,8 +310,8 @@ data editing entirely.</dd>
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 0.10.6.beta.2</li>
-    <li class='tc'>November 2011</li>
+    <li class='tl'>Chef 0.10.10</li>
+    <li class='tc'>May 2012</li>
     <li class='tr'>knife(1)</li>
   </ol>
 

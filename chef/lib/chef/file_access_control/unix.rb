@@ -29,7 +29,7 @@ class Chef
       def set_all
         set_owner
         set_group
-        set_mode unless resource.instance_of?(Chef::Resource::Link)
+        set_mode
       end
 
       def requires_changes?
@@ -38,7 +38,7 @@ class Chef
 
       def describe_changes
         changes = []
-        changes << "change mode from '#{current_mode_s}' to '#{target_mode_s}'" if should_update_mode?
+        changes << "change mode from '#{mode_to_s(current_mode)}' to '#{mode_to_s(target_mode)}'" if should_update_mode?
         changes << "change owner from '#{current_resource.owner}' to '#{resource.owner}'" if should_update_owner?
         changes << "change group from '#{current_resource.group}' to '#{resource.group}'" if should_update_group?
         changes
@@ -86,7 +86,7 @@ class Chef
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
           a.assertion { false }
           a.failure_message(Chef::Exceptions::GroupIDNotFound, "cannot determine group id for '#{resource.group}', does the group exist on this system?")
-          a.whyrun("Assuming user #{resource.owner} would have been created")
+          a.whyrun("Assuming group #{resource.group} would have been created")
         end
         return nil
       end
@@ -107,44 +107,51 @@ class Chef
         return nil if res == nil or res.mode.nil?
         (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
       end
-      # TODO rename this to a more generic target_permissions
+
       def target_mode
         mode_from_resource(resource)
       end
 
-      def target_mode_s
-        target_mode.nil? ? "n/a" : "0#{target_mode.to_s(8)}"
+      def mode_to_s(mode)
+        mode.nil? ? "" : "0#{mode.to_s(8)}"
       end
 
       def current_mode
         mode_from_resource(current_resource)
       end
 
-      def current_mode_s
-        current_mode.nil? ? "n/a" : "0#{current_mode.to_s(8)}"
-      end
-
       def should_update_mode?
         current_mode != target_mode
       end
 
-      # TODO rename this to a more generic set_permissions
       def set_mode
         if should_update_mode?
-          File.chmod(target_mode, file)
+          chmod(target_mode, file)
           Chef::Log.info("#{log_string} mode changed to #{target_mode.to_s(8)}")
-
           modified
         end
       end
 
       def stat
-        @stat ||= ::File.stat(file)
+        if File.symlink?(file)
+          @stat ||= File.lstat(file)
+        else
+          @stat ||= File.stat(file)
+        end
       end
 
       private
+
+      def chmod(mode, file)
+        if File.symlink?(file)
+          File.lchmod(mode, file)
+        else
+          File.chmod(mode, file)
+        end
+      end
+
       def chown(uid, gid, file)
-        if resource.instance_of?(Chef::Resource::Link)
+        if ::File.symlink?(file)
           File.lchown(uid, gid, file)
         else
           File.chown(uid, gid, file)

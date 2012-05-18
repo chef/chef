@@ -39,7 +39,7 @@ class Chef
 
       def to(arg=nil)
         set_or_return(
-          :source_file,
+          :to,
           arg,
           :kind_of => String
         )
@@ -82,7 +82,6 @@ class Chef
       def path
         @target_file
       end
-
     end
   end
 end

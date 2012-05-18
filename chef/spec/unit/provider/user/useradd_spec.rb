@@ -173,6 +173,22 @@ describe Chef::Provider::User::Useradd do
       @provider.create_user
     end
 
+    describe "and home is not specified for new system user resource" do
+
+      before do
+        @provider.new_resource.system true
+        # there is no public API to set attribute's value to nil 
+        @provider.new_resource.instance_variable_set("@home", nil)
+      end
+
+      it "should not include -d in the command options" do
+        command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -r adam"
+        @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+        @provider.create_user
+      end
+
+    end
+
   end
 
   describe "when managing a user" do
@@ -350,7 +366,7 @@ describe Chef::Provider::User::Useradd do
         @provider.updating_home?.should == home_check["expected_result"]
       end
     end
-    it "should return false if the current home is not known" do
+    it "should return true if the current home does not exist but a home is specified by the new resource" do
       @new_resource = Chef::Resource::User.new("adam", @run_context)
       @current_resource = Chef::Resource::User.new("adam", @run_context)
       @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)

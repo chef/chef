@@ -53,24 +53,21 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Link.new(@new_resource.name)
         @current_resource.target_file(@new_resource.target_file)
-        @current_resource.link_type(@new_resource.link_type)
-        if @new_resource.link_type == :symbolic
-          if ::File.exists?(@current_resource.target_file) && file_class.symlink?(@current_resource.target_file)
-            @current_resource.to(
-              ::File.expand_path(file_class.readlink(@current_resource.target_file))
-            )
-          else
-            @current_resource.to("")
-          end
-        elsif @new_resource.link_type == :hard
-          if ::File.exists?(@current_resource.target_file) && ::File.exists?(@new_resource.to)
-            if ::File.stat(@current_resource.target_file).ino == ::File.stat(@new_resource.to).ino
-              @current_resource.to(@new_resource.to)
+        if file_class.symlink?(@current_resource.target_file)
+          @current_resource.link_type(:symbolic)
+          @current_resource.to(
+            canonicalize(file_class.readlink(@current_resource.target_file))
+          )
+        else
+          @current_resource.link_type(:hard)
+          if ::File.exists?(@current_resource.target_file)
+            if ::File.exists?(@new_resource.to) &&
+               file_class.stat(@current_resource.target_file).ino ==
+               file_class.stat(@new_resource.to).ino
+              @current_resource.to(canonicalize(@new_resource.to))
             else
               @current_resource.to("")
             end
-          else
-            @current_resource.to("")
           end
         end
         ScanAccessControl.new(@new_resource, @current_resource).set_all!
@@ -79,50 +76,39 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:delete) do |a|
-          a.assertion do 
-            if @new_resource.link_type == :symbolic && !file_class.symlink?(@new_resource.target_file)
-              ::File.exists?(@new_resource.target_file)
+          a.assertion do
+            if @current_resource.to
+              @current_resource.link_type == @new_resource.link_type and
+              (@current_resource.link_type == :symbolic  or @current_resource.to != '')
             else
               true
             end
           end
-          a.failure_message(Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a symbolic link")
-          a.whyrun("Would assume the file #{@new_resource.target_file} was created")
+          a.failure_message Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type.to_s} link."
+          a.whyrun("Would assume the link at #{@new_resource.target_file} was previously created")
         end
-        requirements.assert(:delete) do |a|
-          a.assertion do 
-            if @new_resource.link_type == :hard 
-              if ::File.exists?(@new_resource.target_file) 
-                 ::File.exists?(@new_resource.to) && file_class.stat(@current_resource.target_file).ino == file_class.stat(@new_resource.to).ino
-              else
-                 true
-              end
-            else 
-              true
-            end
-          end
-          a.failure_message(Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a hard link")
-          a.whyrun("Would assume the file #{@new_resource.to} was created")
-         end
+      end
+
+      def canonicalize(path)
+        Chef::Platform.windows? ? path.gsub('/', '\\') : path
       end
 
       def action_create
-        if @current_resource.to != ::File.expand_path(@new_resource.to, @new_resource.target_file)
+        if @current_resource.to != canonicalize(@new_resource.to) ||
+           @current_resource.link_type != @new_resource.link_type
+          if @current_resource.to # nil if target_file does not exist
+            converge_by("unlink existing file at #{@new_resource.target_file}") do
+              ::File.unlink(@new_resource.target_file)
+            end
+          end
           if @new_resource.link_type == :symbolic
-            unless (file_class.symlink?(@new_resource.target_file) && file_class.readlink(@new_resource.target_file) == @new_resource.to)
-              if file_class.symlink?(@new_resource.target_file) || ::File.exist?(@new_resource.target_file)
-                converge_by("unlink #{@new_resource.target_file}") do
-                  ::File.unlink(@new_resource.target_file)
-                end
-              end
-              converge_by("create symbolic link from #{@new_resource.to} -> #{@new_resource.target_file} ") do
-                file_class.symlink(@new_resource.to,@new_resource.target_file)
-                Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
-                Chef::Log.info("#{@new_resource} created")
-              end
+            converge_by("create symlink at #{@new_resource.target_file} to #{@new_resource.to}") do
+              file_class.symlink(canonicalize(@new_resource.to),@new_resource.target_file)
+              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+              Chef::Log.info("#{@new_resource} created")
             end
           elsif @new_resource.link_type == :hard
-            converge_by("create #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}") do
+            converge_by("create hard link at #{@new_resource.target_file} to #{@new_resource.to}") do
               file_class.link(@new_resource.to, @new_resource.target_file)
               Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
               Chef::Log.info("#{@new_resource} created")
@@ -135,23 +121,14 @@ class Chef
               access_controls.set_all
             end
           end
-        end
+       end
       end
 
       def action_delete
-        if @new_resource.link_type == :symbolic
-          if file_class.symlink?(@new_resource.target_file)
-            converge_by("delete #{@new_resource} for #{@new_resource.link_type}") do
-              ::File.delete(@new_resource.target_file)
-              Chef::Log.info("#{@new_resource} deleted")
-            end
-          end
-        elsif @new_resource.link_type == :hard
-          if ::File.exists?(@new_resource.target_file)
-             converge_by("delete #{@new_resource} for #{@new_resource.link_type}") do
-               ::File.delete(@new_resource.target_file)
-               Chef::Log.info("#{@new_resource} deleted")
-             end
+        if @current_resource.to # Exists
+          converge_by ("delete link at #{@new_resource.target_file}") do
+            ::File.delete(@new_resource.target_file)
+            Chef::Log.info("#{@new_resource} deleted")
           end
         end
       end

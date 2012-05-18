@@ -232,14 +232,14 @@ class Chef
           if owner
             acls += mode_ace(owner, (mode & 0700) >> 6)
           elsif mode & 0700 != 0
-            raise "Mode #{mode.to_s(8)} includes bits for the owner, but owner is not specified"
+            Chef::Log.warn("Mode #{sprintf("%03o", mode)} includes bits for the owner, but owner is not specified")
           end
 
           group = target_group
           if group
             acls += mode_ace(group, (mode & 070) >> 3)
           elsif mode & 070 != 0
-            raise "Mode #{mode.to_s(8)} includes bits for the group, but group is not specified"
+            Chef::Log.warn("Mode #{sprintf("%03o", mode)} includes bits for the group, but group is not specified")
           end
 
           acls += mode_ace(SID.Everyone, (mode & 07))
