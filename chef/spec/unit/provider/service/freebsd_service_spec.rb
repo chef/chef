@@ -51,6 +51,11 @@ PS_SAMPLE
                           and_yield("#{@new_resource.name}_enable=\"YES\"")
       ::File.stub!(:open).and_return(@lines)
 
+      @rc_with_name = StringIO.new(<<-RC_SAMPLE)
+name="apache22"
+rcvar=`set_rcvar`
+RC_SAMPLE
+      ::File.stub!(:open).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(@rc_with_name)
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -61,6 +66,10 @@ PS_SAMPLE
     it "should set the current resources service name to the new resources service name" do
       @provider.load_current_resource
       @current_resource.service_name.should == @new_resource.service_name
+    end
+
+    it "should not raise an exception if the rcscript have a name variable" do
+      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Service)
     end
 
     describe "when the service supports status" do
@@ -193,6 +202,53 @@ PS_SAMPLE
       end
     end
 
+    describe "when the rcscript does not have a name variable" do
+      before do
+        @rc_without_name = StringIO.new(<<-RC_SAMPLE)
+rcvar=`set_rcvar`
+RC_SAMPLE
+        ::File.stub!(:open).with("/usr/local/etc/rc.d/#{@current_resource.service_name}").and_return(@rc_with_noname)
+        @provider.current_resource = @current_resource
+      end
+
+      describe "when rcvar returns foobar_enable" do
+        before do
+          @rcvar_stdout = <<RCVAR_SAMPLE
+# apache22
+#
+# apache22_enable="YES"
+#   (default: "")
+RCVAR_SAMPLE
+          @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
+          @provider.stub!(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
+        end
+
+        it "should get the service name from rcvar if the rcscript does not have a name variable" do
+          @provider.load_current_resource
+          @provider.service_enable_variable_name.should == "#{@current_resource.service_name}_enable"
+        end
+
+        it "should not raise an exception if the rcscript does not have a name variable" do
+          lambda { @provider.service_enable_variable_name }.should_not raise_error(Chef::Exceptions::Service)
+        end
+      end
+
+      describe "when rcvar does not return foobar_enable" do
+        before do
+          @rcvar_stdout = <<RCVAR_SAMPLE
+# service_with_noname
+#
+RCVAR_SAMPLE
+          @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
+          @provider.stub!(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
+        end
+
+        it "should raise an exception if rcvar does not return foobar_enable" do
+          @provider.load_current_resource
+          lambda { @provider.service_enable_variable_name }.should raise_error(Chef::Exceptions::Service)
+        end
+      end
+    end
   end
 
   describe Chef::Provider::Service::Freebsd, "enable_service" do
