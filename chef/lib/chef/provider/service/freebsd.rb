@@ -100,18 +100,17 @@ class Chef
           end
         end
 
-
         # The variable name used in /etc/rc.conf for enabling this service
         def service_enable_variable_name
           # Look for name="foo" in the shell script @init_command. Use this for determining the variable name in /etc/rc.conf
           # corresponding to this service
           # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
           # to set mysql_enable="YES" in /etc/rc.conf
-          makefile = ::File.open(@init_command)
-          makefile.each do |line|
-            case line
-            when /^name="?(\w+)"?/
-              return $1 + "_enable"
+          ::File.open(@init_command) do |rcscript|
+            rcscript.readlines.each do |line|
+              if line =~ /^name="?(\w+)"?/
+                return $1 + "_enable"
+              end
             end
           end
           raise Chef::Exceptions::Service, "Could not find name=\"service\" line in #{@init_command}"
