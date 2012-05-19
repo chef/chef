@@ -27,14 +27,37 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
+        def define_resource_requirements
+          super
+
+          requirements.assert(:install) do |a|
+            a.assertion { @package_source_exists }
+            a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} must be specified for action install"
+          end
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @package_source_exists }
+            a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+            a.whyrun "Assuming package #{@new_resource.source} would have been made available."
+          end
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @rpm_status.exitstatus == 0 || @rpm_status.exitstatus == 1 } 
+            a.failure_message Chef::Exceptions::Package, "Unable to determine current version due to RPM failure. Detail: #{@rpm_status.inspect}"
+            a.whyrun ["Assuming this would have been previously resolved", "Assuming current version of 0."]
+          end
+        end
+        
         def load_current_resource
+          @package_source_provided = true
+          @package_source_exists = true
+
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           @new_resource.version(nil)
           
           if @new_resource.source
             unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+              @package_source_exists = false
+              return
             end
             
             Chef::Log.debug("#{@new_resource} checking rpm status")
@@ -49,12 +72,13 @@ class Chef
             end
           else
             if Array(@new_resource.action).include?(:install)
-              raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
+              @package_source_exists = false
+              return
             end
           end
           
           Chef::Log.debug("#{@new_resource} checking install state")
-          status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
+          @rpm_status = popen4("rpm -q --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@current_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /([\w\d_.-]+)\s([\w\d_.-]+)/
@@ -64,9 +88,6 @@ class Chef
             end
           end
           
-          unless status.exitstatus == 0 || status.exitstatus == 1
-            raise Chef::Exceptions::Package, "rpm failed - #{status.inspect}!"
-          end
           
           @current_resource
         end
