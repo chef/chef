@@ -113,7 +113,15 @@ class Chef
               end
             end
           end
-          raise Chef::Exceptions::Service, "Could not find name=\"service\" line in #{@init_command}"
+          # some scripts support multiple instances through symlinks such as openvpn.
+          # We should get the service name from rcvar.
+          Chef::Log.debug("name=\"service\" not found at #{@init_command}. falling back to rcvar")
+          sn = shell_out!("#{@init_command} rcvar").stdout[/(\w+_enable)=/, 1]
+          if sn
+            return sn
+          else
+            raise Chef::Exceptions::Service, "Could not find the service name in #{@init_command} and rcvar"
+          end
         end
 
         def set_service_enable(value)
