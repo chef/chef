@@ -33,7 +33,7 @@ describe Chef::Provider::Service::Freebsd do
     @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
-  
+
   describe "load_current_resource" do
     before(:each) do
       @stdout = StringIO.new(<<-PS_SAMPLE)
@@ -52,7 +52,7 @@ PS_SAMPLE
       ::File.stub!(:open).and_return(@lines)
 
     end
-  
+
     it "should create a current resource with the name of the new resource" do
       Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
       @provider.load_current_resource
@@ -72,7 +72,7 @@ PS_SAMPLE
         @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
         @provider.load_current_resource
       end
-  
+
       it "should set running to true if the the status command returns 0" do
         @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
         @current_resource.should_receive(:running).with(true)
@@ -95,7 +95,7 @@ PS_SAMPLE
         @provider.should_receive(:shell_out).with("/bin/chefhasmonkeypants status").and_return(@status)
         @provider.load_current_resource
       end
-    
+
     end
 
     it "should set running to false if the node has a nil ps attribute" do
@@ -201,13 +201,13 @@ PS_SAMPLE
       @provider.stub!(:service_enable_variable_name).and_return("apache22_enable")
     end
 
-    it "should should enable the service if it is not enabled" do
+    it "should enable the service if it is not enabled" do
       @current_resource.stub!(:enabled).and_return(false)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"NO\"", "bar" ])
       @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"YES\""])
       @provider.enable_service()
     end
-  
+
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       @current_resource.stub!(:enabled).and_return(false)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "bar" ])
