@@ -45,10 +45,10 @@ PS_SAMPLE
       @provider.stub!(:shell_out!).with(@node[:command][:ps]).and_return(@status)
 
       ::File.stub!(:exists?).and_return(false)
-      ::File.stub!(:exists?).with("/usr/local/etc/rc.d/apache22").and_return(true)
+      ::File.stub!(:exists?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
       @lines = mock("lines")
       @lines.stub!(:each).and_yield("sshd_enable=\"YES\"").
-                          and_yield("apache22_enable=\"YES\"")
+                          and_yield("#{@new_resource.name}_enable=\"YES\"")
       ::File.stub!(:open).and_return(@lines)
 
     end
@@ -69,18 +69,18 @@ PS_SAMPLE
       end
 
       it "should run '/etc/init.d/service_name status'" do
-        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
+        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/#{@current_resource.service_name} status").and_return(@status)
         @provider.load_current_resource
       end
 
       it "should set running to true if the the status command returns 0" do
-        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_return(@status)
+        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/#{@current_resource.service_name} status").and_return(@status)
         @current_resource.should_receive(:running).with(true)
         @provider.load_current_resource
       end
 
       it "should set running to false if the status command returns anything except 0" do
-        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/apache22 status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/#{@current_resource.service_name} status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
@@ -198,20 +198,20 @@ PS_SAMPLE
   describe Chef::Provider::Service::Freebsd, "enable_service" do
     before do
       @provider.current_resource = @current_resource
-      @provider.stub!(:service_enable_variable_name).and_return("apache22_enable")
+      @provider.stub!(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
     end
 
     it "should enable the service if it is not enabled" do
       @current_resource.stub!(:enabled).and_return(false)
-      @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"NO\"", "bar" ])
-      @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"YES\""])
+      @provider.should_receive(:read_rc_conf).and_return([ "foo", "#{@current_resource.service_name}_enable=\"NO\"", "bar" ])
+      @provider.should_receive(:write_rc_conf).with(["foo", "bar", "#{@current_resource.service_name}_enable=\"YES\""])
       @provider.enable_service()
     end
 
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       @current_resource.stub!(:enabled).and_return(false)
       @provider.should_receive(:read_rc_conf).and_return([ "foo", "bar" ])
-      @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"YES\""])
+      @provider.should_receive(:write_rc_conf).with(["foo", "bar", "#{@current_resource.service_name}_enable=\"YES\""])
       @provider.enable_service()
     end
 
@@ -225,13 +225,13 @@ PS_SAMPLE
   describe Chef::Provider::Service::Freebsd, "disable_service" do
     before do
       @provider.current_resource = @current_resource
-      @provider.stub!(:service_enable_variable_name).and_return("apache22_enable")
+      @provider.stub!(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
     end
 
     it "should should disable the service if it is not disabled" do
       @current_resource.stub!(:enabled).and_return(true)
-      @provider.should_receive(:read_rc_conf).and_return([ "foo", "apache22_enable=\"YES\"", "bar" ])
-      @provider.should_receive(:write_rc_conf).with(["foo", "bar", "apache22_enable=\"NO\""])
+      @provider.should_receive(:read_rc_conf).and_return([ "foo", "#{@current_resource.service_name}_enable=\"YES\"", "bar" ])
+      @provider.should_receive(:write_rc_conf).with(["foo", "bar", "#{@current_resource.service_name}_enable=\"NO\""])
       @provider.disable_service()
     end
 
