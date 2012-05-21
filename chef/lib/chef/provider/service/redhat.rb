@@ -37,7 +37,7 @@ class Chef
         end
 
         def define_resource_requirements
-          super
+          shared_resource_requirements
 
           requirements.assert(:all_actions) do |a|
             chkconfig_file = "/sbin/chkconfig"
