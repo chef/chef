@@ -71,36 +71,20 @@ describe Chef::Provider::Group::Usermod do
   end
 
   describe "when loading the current resource" do
-    before do
+    before (:each) do
       File.stub!(:exists?).and_return(false)
+      @provider.define_resource_requirements
     end
 
-    it "should raise an error if the required binary /usr/sbin/groupadd doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
-    end
-    it "should raise an error if the required binary /usr/sbin/groupmod doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
-    end
-    it "should raise an error if the required binary /usr/sbin/groupdel doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupdel").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
-    end
     it "should raise an error if the required binary /usr/sbin/usermod doesn't exist" do
-      File.should_receive(:exists?).with("/usr/sbin/groupadd").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupmod").and_return(true)
-      File.should_receive(:exists?).with("/usr/sbin/groupdel").and_return(true)
+      File.stub!(:exists?).and_return(true)
       File.should_receive(:exists?).with("/usr/sbin/usermod").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
   
     it "shouldn't raise an error if the required binaries exist" do
       File.stub!(:exists?).and_return(true)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
     end
   end
 end

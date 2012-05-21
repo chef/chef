@@ -123,14 +123,18 @@ describe Chef::Provider::Group::Pw do
   end
 
   describe"load_current_resource" do
+    before (:each) do 
+      @provider.load_current_resource
+      @provider.define_resource_requirements
+    end
     it "should raise an error if the required binary /usr/sbin/pw doesn't exist" do
       File.should_receive(:exists?).with("/usr/sbin/pw").and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Group)
     end
   
     it "shouldn't raise an error if /usr/sbin/pw exists" do
       File.stub!(:exists?).and_return(true)
-      lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Group)
+      lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
     end
   end
 end

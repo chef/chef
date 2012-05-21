@@ -29,8 +29,16 @@ class Chef
 
         def load_current_resource
           super
+        end
+
+        def define_resource_requirements
+          super
           required_binaries.each do |required_binary|
-            raise Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" unless ::File.exists?(required_binary)
+            requirements.assert(:all_actions) do |a| 
+              a.assertion { ::File.exists?(required_binary) } 
+              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" 
+              # No whyrun alternative: this component should be available in the base install of any given system that uses it
+            end
           end
         end
 

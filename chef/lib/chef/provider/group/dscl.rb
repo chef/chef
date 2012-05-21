@@ -84,9 +84,17 @@ class Chef
           end
         end
 
+        def define_resource_requirements
+          super
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { ::File.exists?("/usr/bin/dscl") } 
+            a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/dscl for #{@new_resource.name}"
+            # No whyrun alternative: this component should be available in the base install of any given system that uses it
+          end
+        end
+
         def load_current_resource
           super
-          raise Chef::Exceptions::Group, "Could not find binary /usr/bin/dscl for #{@new_resource}" unless ::File.exists?("/usr/bin/dscl")
         end
         
         def create_group
