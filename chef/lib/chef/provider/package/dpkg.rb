@@ -30,33 +30,46 @@ class Chef
         DPKG_VERSION = /^Version: (.+)$/
 
         include Chef::Mixin::GetSourceFromPackage
+        def define_resource_requirements
+          super
+          requirements.assert(:install) do |a| 
+            a.assertion{ not @new_resource.source.nil? }
+            a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
+          end
+
+          # TODO this was originally written for any action in which .source is provided
+          # but would it make more sense to only look at source if the action is :install?
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @source_exists }
+            a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+            a.whyrun "Assuming it would have been previously downloaded."
+          end
+        end
 
         def load_current_resource
+          @source_exists = true
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.package_name)
           @new_resource.version(nil)
 
-          # if the source was not set, and we're installing, fail
-          if Array(@new_resource.action).include?(:install) && @new_resource.source.nil?
-            raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
-          end
-
-          # We only -need- source for action install
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            end
-
-            # Get information from the package if supplied
-            Chef::Log.debug("#{@new_resource} checking dpkg status")
-            status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-              stdout.each_line do |line|
-                if pkginfo = DPKG_INFO.match(line)
-                  @current_resource.package_name(pkginfo[1])
-                  @new_resource.version(pkginfo[2])
+            @source_exists = ::File.exists?(@new_resource.source) 
+            if @source_exists
+              # Get information from the package if supplied
+              Chef::Log.debug("#{@new_resource} checking dpkg status")
+              status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
+                stdout.each_line do |line|
+                  if pkginfo = DPKG_INFO.match(line)
+                    @current_resource.package_name(pkginfo[1])
+                    @new_resource.version(pkginfo[2])
+                  end
                 end
               end
+            else
+              # Source provided but not valid means we can't safely do further processing
+              return
             end
+
           end
           
           # Check to see if it is installed

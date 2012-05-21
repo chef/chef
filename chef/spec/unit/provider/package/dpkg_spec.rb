@@ -46,8 +46,10 @@ describe Chef::Provider::Package::Dpkg do
     end
 
     it "should raise an exception if a source is supplied but not found" do
+      @provider.load_current_resource
+      @provider.define_resource_requirements
       ::File.stub!(:exists?).and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
 
     describe 'gets the source package version from dpkg-deb' do
@@ -82,7 +84,9 @@ describe Chef::Provider::Package::Dpkg do
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("wget")
       @provider.new_resource = @new_resource
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      @provider.define_resource_requirements
+      @provider.load_current_resource
+      lambda { @provider.run_action(:install)}.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should return the current version installed if found by dpkg" do
