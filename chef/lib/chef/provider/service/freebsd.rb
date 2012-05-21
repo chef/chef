@@ -107,7 +107,7 @@ class Chef
           # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
           # to set mysql_enable="YES" in /etc/rc.conf
           ::File.open(@init_command) do |rcscript|
-            rcscript.readlines.each do |line|
+            rcscript.each_line do |line|
               if line =~ /^name="?(\w+)"?/
                 return $1 + "_enable"
               end
