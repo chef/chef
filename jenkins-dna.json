@@ -1,6 +1,6 @@
 {
   "omnibus": {
-    "build-user": "jenkins",
+    "build-user": "jenkins-node",
     "build-path": "/home/jenkins/omnibus",
     "install-dirs": [
       "/opt/chef",
