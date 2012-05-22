@@ -4,6 +4,7 @@
 #
 
 set -e
+set -x
 
 mkdir -p chef-solo/cache
 
