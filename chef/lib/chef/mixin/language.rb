@@ -47,10 +47,10 @@ class Chef
         private
 
           def constraints_map=(value_hash)
-             constraints_map = hash_keys_to_version_constraints(value_hash)
-             assert_not_conflicting_constraints(constraints_map)
+            constraints_map = hash_keys_to_version_constraints(value_hash)
+            assert_not_conflicting_constraints(constraints_map)
 
-             @constraints_map = constraints_map
+            @constraints_map = constraints_map
           end
 
           def hash_keys_to_version_constraints(hash)
@@ -97,7 +97,7 @@ class Chef
         #   :default => default_value
         # * platform_versions must be in SemVer (x.y.z) format or an abbreviated SemVer format (x.y)
         def initialize(platform_hash)
-          @constraint_containers = []
+          @constraint_containers = Hash.new
           @default_values = nil
           platform_hash = Mash.from_hash(platform_hash)
 
@@ -110,7 +110,7 @@ class Chef
             assert_valid_platform_values!(platforms, value_hash)
 
             Array(platforms).each do |platform_name|
-              @constraint_containers << PlatformConstraintContainer.new(platform_name, value_hash)
+              @constraint_containers[platform_name.to_sym] = PlatformConstraintContainer.new(platform_name, value_hash)
             end
           end
         end
@@ -126,7 +126,7 @@ class Chef
         private
 
           def satisfy_version(platform, version)
-            constraint_container = platform_constraint_container_for(platform)
+            constraint_container = constraint_containers[platform.to_sym]
             return nil unless constraint_container
 
             constraint_container.constraints_map.each do |constraint, value|
@@ -138,12 +138,8 @@ class Chef
             nil
           end
 
-          def platform_constraint_container_for(platform)
-            @constraint_containers.select { |platform_container| platform_container.platform_name == platform.to_s }.first
-          end
-
           def default_platform_values(platform)
-            constraint_container = platform_constraint_container_for(platform)
+            constraint_container = constraint_containers[platform.to_sym]
             return nil unless constraint_container
 
             constraint_container.default_values
