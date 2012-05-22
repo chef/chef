@@ -30,19 +30,15 @@ class Chef
         def define_resource_requirements
           super
 
-          requirements.assert(:install) do |a|
-            a.assertion { @package_source_exists }
-            a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} must be specified for action install"
-          end
           requirements.assert(:all_actions) do |a| 
             a.assertion { @package_source_exists }
             a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            a.whyrun "Assuming package #{@new_resource.source} would have been made available."
+            a.whyrun "Assuming package #{@new_resource.name} would have been made available."
           end
           requirements.assert(:all_actions) do |a| 
-            a.assertion { @rpm_status.exitstatus == 0 || @rpm_status.exitstatus == 1 } 
+            a.assertion { !@rpm_status.nil? && (@rpm_status.exitstatus == 0 || @rpm_status.exitstatus == 1) } 
             a.failure_message Chef::Exceptions::Package, "Unable to determine current version due to RPM failure. Detail: #{@rpm_status.inspect}"
-            a.whyrun ["Assuming this would have been previously resolved", "Assuming current version of 0."]
+            a.whyrun "Assuming current version would have been determined for package#{@new_resource.name}."
           end
         end
         
