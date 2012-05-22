@@ -26,6 +26,8 @@ class Chef
   module Mixin
     module Language
 
+      # Container class for values determined by platform_version constraints of
+      # a specific platform
       class PlatformConstraintContainer
         attr_reader :platform_name
         attr_reader :default_values
