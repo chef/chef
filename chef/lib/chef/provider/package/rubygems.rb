@@ -344,6 +344,7 @@ class Chef
             # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
             # Default to installing somewhere more functional
             gem_location = find_gem_by_path
+            @new_resource.gem_binary gem_location
             @gem_env = AlternateGemEnvironment.new(gem_location)
             Chef::Log.debug("#{@new_resource} using gem '#{gem_location}'")
           else
@@ -353,7 +354,7 @@ class Chef
         end
 
         def is_omnibus?
-          if RbConfig::CONFIG['bindir'] == "/opt/chef/embedded/bin"
+          if RbConfig::CONFIG['bindir'] =~ %r!/opt/(opscode|chef)/embedded/bin!
             Chef::Log.debug("#{@new_resource} detected omnibus installation in #{RbConfig::CONFIG['bindir']}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
