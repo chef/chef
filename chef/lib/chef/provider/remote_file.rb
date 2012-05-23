@@ -101,6 +101,14 @@ class Chef
 
       def http_client_opts
         opts={}
+        # CHEF-3140
+        # 1. If it's already compressed, trying to compress it more will
+        # probably be counter-productive.
+        # 2. Some servers are misconfigured so that you GET $URL/file.tgz but
+        # they respond with content type of tar and content encoding of gzip,
+        # which tricks Chef::REST into decompressing the response body. In this
+        # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
+        # which is not what you wanted.
         if @new_resource.path =~ /gz$/ or @new_resource.source =~ /gz$/
           opts[:disable_gzip] = true
         end
