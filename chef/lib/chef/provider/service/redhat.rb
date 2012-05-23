@@ -47,7 +47,8 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { !@service_missing }
-            a.whyrun "Assuming service would be disabled. It is not presently installed." 
+            a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the init.d script!"
+            a.whyrun "Assuming service would be disabled. The init script is not presently installed." 
           end
         end
 
