@@ -62,6 +62,8 @@ class Chef
       @sign_on_redirect, @sign_request = true, true
       @redirects_followed = 0
       @redirect_limit = 10
+      @disable_gzip = false
+      handle_options(options)
     end
 
     def signing_key_filename
@@ -267,15 +269,19 @@ class Chef
     end
 
     def decompress_body(response)
-      case response[CONTENT_ENCODING]
-      when GZIP
-        Chef::Log.debug "decompressing gzip response"
-        Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
-      when DEFLATE
-        Chef::Log.debug "decompressing deflate response"
-        Zlib::Inflate.inflate(response.body)
-      else
+      if gzip_disabled?
         response.body
+      else
+        case response[CONTENT_ENCODING]
+        when GZIP
+          Chef::Log.debug "decompressing gzip response"
+          Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
+        when DEFLATE
+          Chef::Log.debug "decompressing deflate response"
+          Zlib::Inflate.inflate(response.body)
+        else
+          response.body
+        end
       end
     end
 
@@ -403,7 +409,7 @@ class Chef
       headers['Accept']       = "application/json" unless raw
       headers["Content-Type"] = 'application/json' if json_body
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
-      headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE
+      headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
@@ -419,15 +425,19 @@ class Chef
       # Kudos to _why!
       size, total = 0, response.header['Content-Length'].to_i
 
-      inflater = case response[CONTENT_ENCODING]
-      when GZIP
-        Chef::Log.debug "decompressing gzip stream"
-        Zlib::Inflate.new(Zlib::MAX_WBITS + 16)
-      when DEFLATE
-        Chef::Log.debug "decompressing inflate stream"
-        Zlib::Inflate.new
-      else
+      inflater = if gzip_disabled?
         NoopInflater.new
+      else
+        case response[CONTENT_ENCODING]
+        when GZIP
+          Chef::Log.debug "decompressing gzip stream"
+          Zlib::Inflate.new(Zlib::MAX_WBITS + 16)
+        when DEFLATE
+          Chef::Log.debug "decompressing inflate stream"
+          Zlib::Inflate.new
+        else
+          NoopInflater.new
+        end
       end
 
       response.read_body do |chunk|
@@ -439,6 +449,27 @@ class Chef
     rescue Exception
       tf.close!
       raise
+    end
+
+    # gzip is disabled using the disable_gzip => true option in the
+    # constructor. When gzip is disabled, no 'Accept-Encoding' header will be
+    # set, and the response will not be decompressed, no matter what the
+    # Content-Encoding header of the response is. The intended use case for
+    # this is to work around situations where you request +file.tar.gz+, but
+    # the server responds with a content type of tar and a content encoding of
+    # gzip, tricking the client into decompressing the response so you end up
+    # with a tar archive (no gzip) named file.tar.gz
+    def gzip_disabled?
+      @disable_gzip
+    end
+
+    def handle_options(opts)
+      opts.each do |name, value|
+        case name.to_s
+        when 'disable_gzip'
+          @disable_gzip = value
+        end
+      end
     end
 
   end

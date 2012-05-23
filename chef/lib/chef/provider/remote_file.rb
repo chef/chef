@@ -39,7 +39,7 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          Chef::REST.new(@new_resource.source, nil, nil).fetch(@new_resource.source) do |raw_file|
+          Chef::REST.new(@new_resource.source, nil, nil, http_client_opts).fetch(@new_resource.source) do |raw_file|
             if matches_current_checksum?(raw_file)
               Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
             else
@@ -97,6 +97,14 @@ class Chef
         else
           fetch_from_local_cookbook(source, &block)
         end
+      end
+
+      def http_client_opts
+        opts={}
+        if @new_resource.path =~ /gz$/ or @new_resource.source =~ /gz$/
+          opts[:disable_gzip] = true
+        end
+        opts
       end
 
       private
