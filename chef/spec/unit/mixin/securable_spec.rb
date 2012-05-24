@@ -45,12 +45,17 @@ describe Chef::Mixin::Securable do
   describe "unix-specific behavior" do
     before(:each) do
       platform_mock :unix do
+        @original_config = Chef::Config.hash_dup
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
         @securable = Object.new
         @securable.send(:extend, Chef::Mixin::Securable)
         @securable.send(:extend, Chef::Mixin::ParamsValidate)
       end
+    end
+
+    after(:each) do
+      Chef::Config.configuration = @original_config
     end
 
     it "should accept a group name or id for group with spaces and backslashes" do
@@ -104,12 +109,17 @@ describe Chef::Mixin::Securable do
   describe "windows-specific behavior" do
     before(:each) do
       platform_mock :windows do
+        @original_config = Chef::Config.hash_dup
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
         @securable = Object.new
         @securable.send(:extend, Chef::Mixin::Securable)
         @securable.send(:extend, Chef::Mixin::ParamsValidate)
       end
+    end
+
+    after(:each) do
+      Chef::Config.configuration = @original_config
     end
 
     it "should not accept a group name or id for group with spaces and multiple backslashes" do
