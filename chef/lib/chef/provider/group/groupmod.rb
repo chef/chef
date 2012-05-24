@@ -16,10 +16,14 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
+
 class Chef
   class Provider
     class Group
       class Groupmod < Chef::Provider::Group
+
+        include Chef::Mixin::ShellOut
 
         def load_current_resource
           super
@@ -32,61 +36,66 @@ class Chef
         def create_group
           command = "group add"
           command << set_options
-          run_command(:command => command)
+          shell_out!(command)
 
           add_group_members(@new_resource.members)
         end
 
         # Manage the group when it already exists
         def manage_group
-          current_members = get_group_members
+          if @new_resource.append
+            to_add = @new_resource.members.dup
+            to_add.reject! { |user| @current_resource.members.include?(user) }
 
-          # Create an array of current members who
-          # should be removed from the group, that
-          # is, if they are not in the resource's
-          # members array
-          to_delete = Array.new(current_members)
-          to_delete.reject! { |user| @new_resource.members.include?(user) }
+            to_delete = Array.new
 
-          # Now create an array of members specified
-          # in the resource but not yet present in
-          # the current_members.
-          to_add = Array.new(@new_resource.members)
-          to_add.reject! { |user| current_members.include?(user) }
+            Chef::Log.debug("#{@new_resource} not changing group members, the group has no members to add") if to_add.empty?
+          else
+            to_add = @new_resource.members.dup
+            to_add.reject! { |user| @current_resource.members.include?(user) }
 
-          if !to_delete.empty?
-            # This is tricky, but works: rename the existing
-            # group to "<name>_bak", create a new group with
-            # the same GID and "<name>", then set correct
-            # members on that group
+            to_delete = @current_resource.members.dup
+            to_delete.reject! { |user| @new_resource.members.include?(user) }
+
+            Chef::Log.debug("#{@new_resource} setting group members to: none") if @new_resource.members.empty?
+          end
+
+          if to_delete.empty?
+            # If we are only adding new members to this group, then
+            # call add_group_members with only those users
+            add_group_members(to_add)
+          else
+            Chef::Log.debug("#{@new_resource} removing members #{to_delete.join(', ')}")
+
+            # This is tricky, but works: rename the existing group to
+            # "<name>_bak", create a new group with the same GID and
+            # "<name>", then set correct members on that group
             rename = "group mod -n #{@new_resource.group_name}_bak #{@new_resource.group_name}"
-            run_command(:command => rename)
+            shell_out!(rename)
 
             create = "group add"
             create << set_options(:overwrite_gid => true)
-            run_command(:command => create)
+            shell_out!(create)
 
+            # Ignore to_add here, since we're replacing the group we
+            # have to add all members who should be in the group.
             add_group_members(@new_resource.members)
 
             remove = "group del #{@new_resource.group_name}_bak"
-            run_command(:command => remove)
-          else
-            # If we are only adding new members to this group,
-            # then call add_group_members with only those users
-            add_group_members(to_add)
+            shell_out!(remove)
           end
         end
 
         # Remove the group
         def remove_group
-          run_command(:command => "group del #{@new_resource.group_name}")
+          shell_out!("group del #{@new_resource.group_name}")
         end
 
         # Adds a list of usernames to the group using `user mod`
         def add_group_members(members)
+          Chef::Log.debug("#{@new_resource} adding members #{members.join(', ')}") if !members.empty?
           members.each do |user|
-            command = "user mod -G #{@new_resource.group_name} #{user}"
-            run_command(:command => command)
+            shell_out!("user mod -G #{@new_resource.group_name} #{user}")
           end
         end
 
@@ -97,7 +106,6 @@ class Chef
         def set_options(overwrite_gid=false)
           opts = ""
           if overwrite_gid || @new_resource.gid && (@current_resource.gid != @new_resource.gid)
-            Chef::Log.debug("#{@new_resource}: current gid (#{@current_resource.gid}) doesnt match target gid (#{@new_resource.gid}), changing it")
             opts << " -g '#{@new_resource.gid}'"
           end
           if overwrite_gid
@@ -105,17 +113,6 @@ class Chef
           end
           opts << " #{@new_resource.group_name}"
           opts
-        end
-
-        # Parse the output of "group info <groupanme>" to determine the members
-        def get_group_members
-          command = "group info #{@new_resource.group_name}"
-          status, stdout, stderr = output_of_command(command, {})
-
-          raise Chef::Exceptions::Group, "#{command} returned status #{status}, expected 0" if status != 0
-
-          members = /members\s+([\w, ]+)$/m.match(stdout)[1]
-          members.split(/, +/)
         end
       end
     end
