@@ -11,10 +11,7 @@ function error_exit
 	exit 1
 }
 
-# see: http://tickets.opscode.com/browse/CHEF-3022
-if [ ! -e /etc/redhat-release -o "x$1" == "x1" ]; then
-  ln -sf /opt/chef-server/bin/chef-server-ctl /usr/bin || error_exit "Cannot link chef-server-ctl in /usr/bin"
-fi
+ln -sf /opt/chef-server/bin/chef-server-ctl /usr/bin || error_exit "Cannot link chef-server-ctl in /usr/bin"
   
 if [ -e /etc/opscode/chef-server-running.json ]; then
   echo -e "\033[1mYou have upgraded Chef Server!\033[0m"
