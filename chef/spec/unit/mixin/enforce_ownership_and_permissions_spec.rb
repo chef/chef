@@ -25,20 +25,35 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @node.name "make_believe"
     @run_context = Chef::RunContext.new(@node, {})
     @resource = Chef::Resource::File.new("#{Dir.tmpdir}/madeup.txt")
+    @resource.owner("adam")
     @provider = Chef::Provider::File.new(@resource, @run_context)
   end
 
   it "should call set_all on the file access control object" do
-    @resource.owner("adam")
     Chef::FileAccessControl.any_instance.should_receive(:set_all)
     @provider.action_create
   end
 
-  it "should call updated_by_last_action on the new resource" do
-    @resource.owner("adam")
-    @provider.new_resource.should_receive(:updated_by_last_action)
-     Chef::FileAccessControl.any_instance.stub(:set_all)
-    @provider.action_create
+  context "when nothing was updated" do
+
+    it "does not set updated_by_last_action on the new resource" do
+      @provider.new_resource.should_not_receive(:updated_by_last_action)
+      Chef::FileAccessControl.any_instance.stub(:set_all)
+      @provider.action_create
+    end
+
+  end
+
+  context "when something was modified" do
+    before do
+      Chef::FileAccessControl.any_instance.stub(:modified?).and_return(true)
+    end
+
+    it "sets updated_by_last_action on the new resource" do
+      @provider.new_resource.should_receive(:updated_by_last_action)
+      Chef::FileAccessControl.any_instance.stub(:set_all)
+      @provider.action_create
+    end
   end
 
 end
