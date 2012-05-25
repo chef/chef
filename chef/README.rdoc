@@ -24,6 +24,12 @@ You will also need to set up the repository with the appropriate branches. We do
 
 Once your repository is set up, you can start working on the code. We do use BDD/TDD with RSpec and Cucumber, so you'll need to get a development environment running.
 
+== REQUIREMENTS:
+
+Ruby 1.8.7+ [1]
+
+[1] As of 2012-05-25 Ruby 1.8.6 should still work, except for CHEF-2329.
+
 == ENVIRONMENT:
 
 In order to have a development environment where changes to the Chef code can be tested, we'll need to install a few things after setting up the Git repository.
