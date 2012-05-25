@@ -23,9 +23,9 @@ class Chef
     class User
       class UseraddNetBsd < Chef::Provider::User::Useradd
 
-        def useradd_options
+        def universal_options
           opts = super
-          if !/-g/.match(opts)
+          if !/ -g /.match(opts)
             # If no group id was explicitly specified, then
             # create a group for the user, named after their
             # username, and in such a way that the GID and UID
