@@ -112,7 +112,11 @@ class Chef
 
       def chmod(mode, file)
         if File.symlink?(file)
-          File.lchmod(mode, file)
+          begin
+            File.lchmod(mode, file)
+          rescue NotImplementedError
+            Chef::Log.warn("#{file} mode not changed: File.lchmod is unimplemented on this OS and Ruby version")
+          end
         else
           File.chmod(mode, file)
         end
