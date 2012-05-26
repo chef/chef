@@ -32,6 +32,7 @@ class Chef
         set_mode
       end
 
+      # TODO factor this up
       def requires_changes?
         should_update_mode? || should_update_owner? || should_update_group?
       end
@@ -144,7 +145,11 @@ class Chef
 
       def chmod(mode, file)
         if File.symlink?(file)
-          File.lchmod(mode, file)
+          begin
+            File.lchmod(mode, file)
+          rescue NotImplementedError
+            Chef::Log.warn("#{file} mode not changed: File.lchmod is unimplemented on this OS and Ruby version")
+          end
         else
           File.chmod(mode, file)
         end

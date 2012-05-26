@@ -31,8 +31,7 @@ class Chef
       # version of Chef::FileAccessControl
       def enforce_ownership_and_permissions
         access_controls.set_all
-        # TODO: revisit this after implementing updated/notifies for why-run
-        new_resource.updated_by_last_action(access_controls.modified?)
+        new_resource.updated_by_last_action(true) if access_controls.modified?
       end
 
     end

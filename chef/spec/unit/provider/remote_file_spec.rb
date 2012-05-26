@@ -140,6 +140,38 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
     end
 
+    # CHEF-3140
+    # Some servers return tarballs as content type tar and encoding gzip, which
+    # is totally wrong. When this happens and gzip isn't disabled, Chef::REST
+    # will decompress the file for you, which is not at all what you expected
+    # to happen (you end up with an uncomressed tar archive instead of the
+    # gzipped tar archive you expected). To work around this behavior, we
+    # detect when users are fetching gzipped files and turn off gzip in
+    # Chef::REST.
+
+    context "and the target file is a tarball" do
+      before do
+        @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.tar.gz")))
+        Chef::REST.should_receive(:new).with("http://opscode.com/seattle.txt", nil, nil, :disable_gzip => true).and_return(@rest)
+      end
+
+      it "disables gzip in the http client" do
+        @provider.action_create
+      end
+
+    end
+
+    context "and the source appears to be a tarball" do
+      before do
+        @resource.source("http://example.com/tarball.tgz")
+        Chef::REST.should_receive(:new).with("http://example.com/tarball.tgz", nil, nil, :disable_gzip => true).and_return(@rest)
+      end
+
+      it "disables gzip in the http client" do
+        @provider.action_create
+      end
+    end
+
     it "should raise an exception if it's any other kind of retriable response than 304" do
       r = Net::HTTPMovedPermanently.new("one", "two", "three")
       e = Net::HTTPRetriableError.new("301", r)

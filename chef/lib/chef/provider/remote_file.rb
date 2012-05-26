@@ -37,7 +37,7 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          rest = Chef::REST.new(@new_resource.source, nil, nil)
+          rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
           raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
@@ -95,6 +95,22 @@ class Chef
         else
           fetch_from_local_cookbook(source, &block)
         end
+      end
+
+      def http_client_opts
+        opts={}
+        # CHEF-3140
+        # 1. If it's already compressed, trying to compress it more will
+        # probably be counter-productive.
+        # 2. Some servers are misconfigured so that you GET $URL/file.tgz but
+        # they respond with content type of tar and content encoding of gzip,
+        # which tricks Chef::REST into decompressing the response body. In this
+        # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
+        # which is not what you wanted.
+        if @new_resource.path =~ /gz$/ or @new_resource.source =~ /gz$/
+          opts[:disable_gzip] = true
+        end
+        opts
       end
 
       private

@@ -221,6 +221,25 @@ describe Chef::REST do
         end
       end
 
+      # CHEF-3140
+      context "when configured to disable compression" do
+        before do
+          @rest = Chef::REST.new(@base_url, nil, nil, :disable_gzip => true)
+        end
+
+        it "does not accept encoding gzip" do
+          @rest.send(:build_headers, :GET, @url, {}).should_not have_key("Accept-Encoding")
+        end
+
+        it "does not decompress a response encoded as gzip" do
+          @http_response.add_field("content-encoding", "gzip")
+          request = Net::HTTP::Get.new(@url.path)
+          Net::HTTP::Get.should_receive(:new).and_return(request)
+          # will raise a Zlib error if incorrect
+          @rest.api_request(:GET, @url, {}).should == "ninja"
+        end
+      end
+
       it "should show the JSON error message on an unsuccessful request" do
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
         http_response.add_field("content-type", "application/json")

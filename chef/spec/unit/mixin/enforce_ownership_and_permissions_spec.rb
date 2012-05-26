@@ -18,10 +18,6 @@
 
 require 'spec_helper'
 
-class EnforceOwnershipAndPermissionsImplementor < Struct.new(:new_resource, :current_resource)
-  include Chef::Mixin::EnforceOwnershipAndPermissions
-end
-
 describe Chef::Mixin::EnforceOwnershipAndPermissions do
 
   before(:each) do
@@ -30,7 +26,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @resource = Chef::Resource::File.new("#{Dir.tmpdir}/madeup.txt")
-    @provider = EnforceOwnershipAndPermissionsImplementor.new(@resource, @resource)
+    @resource.owner "adam"
+    @provider = Chef::Provider::File.new(@resource, @run_context)
     @provider.current_resource = @resource
   end
 
@@ -39,11 +36,31 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @provider.enforce_ownership_and_permissions
   end
 
-  it "should call updated_by_last_action on the new resource" do
-    @resource.owner("adam")
-    @provider.new_resource.should_receive(:updated_by_last_action)
-    Chef::FileAccessControl.any_instance.stub(:set_all)
-    @provider.enforce_ownership_and_permissions
+  context "when nothing was updated" do
+    before do
+      Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
+      Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(false)
+    end
+    it "does not set updated_by_last_action on the new resource" do
+      @provider.new_resource.should_not_receive(:updated_by_last_action)
+
+      Chef::FileAccessControl.any_instance.stub(:set_all)
+      @provider.run_action(:create)
+    end
+
+  end
+
+  context "when something was modified" do
+    before do
+      Chef::FileAccessControl.any_instance.stub(:requires_changes?).and_return(true)
+      Chef::FileAccessControl.any_instance.stub(:uid_from_resource).and_return(0)
+    end
+
+    it "sets updated_by_last_action on the new resource" do
+      @provider.new_resource.should_receive(:updated_by_last_action)
+      Chef::FileAccessControl.any_instance.stub(:set_all)
+      @provider.run_action(:create)
+    end
   end
 
 end
