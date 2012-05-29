@@ -22,7 +22,7 @@ else
 fi
 
 # Omnibus build server prep tasks, including build ruby 
-sudo env OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c $WORKSPACE/jenkins/jenkins-solo.rb -j $WORKSPACE/jenkins/jenkins-dna.json -l debug
+sudo env OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c jenkins-solo.rb -j jenkins-dna.json -l debug
 
 # Aaand.. new ruby
 export PATH=/usr/local/bin:$PATH
