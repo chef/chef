@@ -30,7 +30,7 @@ class Chef
       def file_class
         @host_os_file ||= if Chef::Platform.windows?
           require 'chef/win32/file'
-          Chef::Win32::File
+          Chef::ReservedNames::Win32::File
         else
           ::File
         end

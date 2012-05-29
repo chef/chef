@@ -23,12 +23,12 @@ require 'chef/win32/handle'
 require 'ffi'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Process
-      include Chef::Win32::API::Process
-      extend Chef::Win32::API::Process
-      include Chef::Win32::API::PSAPI
-      extend Chef::Win32::API::PSAPI
+      include Chef::ReservedNames::Win32::API::Process
+      extend Chef::ReservedNames::Win32::API::Process
+      include Chef::ReservedNames::Win32::API::PSAPI
+      extend Chef::ReservedNames::Win32::API::PSAPI
 
       def initialize(handle)
         @handle = handle
@@ -55,7 +55,7 @@ class Chef
       def self.get_process_handle_count(handle)
         handle_count = FFI::MemoryPointer.new :uint32
         unless GetProcessHandleCount(handle.handle, handle_count)
-          Chef::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise!
         end
         handle_count.read_uint32
       end
@@ -64,7 +64,7 @@ class Chef
         # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights
         result = GetProcessId(handle.handle)
         if result == 0
-          Chef::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise!
         end
         result
       end
@@ -74,7 +74,7 @@ class Chef
       def self.get_process_memory_info(handle)
         memory_info = PROCESS_MEMORY_COUNTERS.new
         unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)
-          Chef::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise!
         end
         memory_info
       end

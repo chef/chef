@@ -32,11 +32,11 @@ module RSpec
         end
 
         def working_set_size
-          Chef::Win32::Process.get_current_process.memory_info[:WorkingSetSize]
+          Chef::ReservedNames::Win32::Process.get_current_process.memory_info[:WorkingSetSize]
         end
 
         def handle_count
-          Chef::Win32::Process.get_current_process.handle_count
+          Chef::ReservedNames::Win32::Process.get_current_process.handle_count
         end
       end
 

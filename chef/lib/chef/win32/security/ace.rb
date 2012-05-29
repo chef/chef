@@ -23,31 +23,31 @@ require 'chef/win32/memory'
 require 'ffi'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Security
       class ACE
 
         def initialize(pointer, owner = nil)
-          if Chef::Win32::API::Security::ACE_WITH_MASK_AND_SID.supports?(pointer.read_uchar)
-            @struct = Chef::Win32::API::Security::ACE_WITH_MASK_AND_SID.new pointer
+          if Chef::ReservedNames::Win32::API::Security::ACE_WITH_MASK_AND_SID.supports?(pointer.read_uchar)
+            @struct = Chef::ReservedNames::Win32::API::Security::ACE_WITH_MASK_AND_SID.new pointer
           else
             # TODO Support ALL the things
-            @struct = Chef::Win32::API::Security::ACE_HEADER.new pointer
+            @struct = Chef::ReservedNames::Win32::API::Security::ACE_HEADER.new pointer
           end
           # Keep a reference to the actual owner of this memory so we don't get freed
           @owner = owner
         end
 
         def self.size_with_sid(sid)
-          Chef::Win32::API::Security::ACE_WITH_MASK_AND_SID.offset_of(:SidStart) + sid.size
+          Chef::ReservedNames::Win32::API::Security::ACE_WITH_MASK_AND_SID.offset_of(:SidStart) + sid.size
         end
 
         def self.access_allowed(sid, mask, flags = 0)
-          create_ace_with_mask_and_sid(Chef::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE, flags, mask, sid)
+          create_ace_with_mask_and_sid(Chef::ReservedNames::Win32::API::Security::ACCESS_ALLOWED_ACE_TYPE, flags, mask, sid)
         end
 
         def self.access_denied(sid, mask, flags = 0)
-          create_ace_with_mask_and_sid(Chef::Win32::API::Security::ACCESS_DENIED_ACE_TYPE, flags, mask, sid)
+          create_ace_with_mask_and_sid(Chef::ReservedNames::Win32::API::Security::ACCESS_DENIED_ACE_TYPE, flags, mask, sid)
         end
 
         attr_reader :struct
@@ -73,7 +73,7 @@ class Chef
         end
 
         def inherited?
-          (struct[:AceFlags] & Chef::Win32::API::Security::INHERITED_ACE) != 0
+          (struct[:AceFlags] & Chef::ReservedNames::Win32::API::Security::INHERITED_ACE) != 0
         end
 
         def mask
@@ -95,7 +95,7 @@ class Chef
         def sid
           # The SID runs off the end of the structure, starting at :SidStart.
           # Use pointer arithmetic to get a pointer to that location.
-          Chef::Win32::Security::SID.new(struct.pointer + struct.offset_of(:SidStart))
+          Chef::ReservedNames::Win32::Security::SID.new(struct.pointer + struct.offset_of(:SidStart))
         end
 
         def to_s
@@ -111,12 +111,12 @@ class Chef
         def self.create_ace_with_mask_and_sid(type, flags, mask, sid)
           size_needed = size_with_sid(sid)
           pointer = FFI::MemoryPointer.new size_needed
-          struct = Chef::Win32::API::Security::ACE_WITH_MASK_AND_SID.new pointer
+          struct = Chef::ReservedNames::Win32::API::Security::ACE_WITH_MASK_AND_SID.new pointer
           struct[:AceType] = type
           struct[:AceFlags] = flags
           struct[:AceSize] = size_needed
           struct[:Mask] = mask
-          Chef::Win32::Memory.memcpy(struct.pointer + struct.offset_of(:SidStart), sid.pointer, sid.size)
+          Chef::ReservedNames::Win32::Memory.memcpy(struct.pointer + struct.offset_of(:SidStart), sid.pointer, sid.size)
           ACE.new(struct.pointer)
         end
       end

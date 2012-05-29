@@ -24,7 +24,7 @@ if windows?
   require 'fileutils'
 end
 
-describe 'Chef::Win32::Security', :windows_only do
+describe 'Chef::ReservedNames::Win32::Security', :windows_only do
 
   def monkeyfoo
     File.join(CHEF_SPEC_DATA, "monkeyfoo").gsub("/", "\\")
@@ -50,7 +50,7 @@ describe 'Chef::Win32::Security', :windows_only do
 
   it "should not leak when retrieving and reading the ACE from a file" do
     lambda {
-      sids = Chef::Win32::Security::SecurableObject.new(@monkeyfoo).security_descriptor.dacl.select { |ace| ace.sid }
+      sids = Chef::ReservedNames::Win32::Security::SecurableObject.new(@monkeyfoo).security_descriptor.dacl.select { |ace| ace.sid }
       GC.start
     }.should_not leak_memory(:warmup => 50, :iterations => 100)
   end
@@ -59,8 +59,8 @@ describe 'Chef::Win32::Security', :windows_only do
     securable_object = Security::SecurableObject.new(@monkeyfoo)
     lambda {
       securable_object.dacl = Security::ACL.create([
-        Chef::Win32::Security::ACE.access_allowed(Security::SID.Everyone, Chef::Win32::API::Security::GENERIC_READ),
-        Chef::Win32::Security::ACE.access_denied(Security::SID.from_account("Users"), Chef::Win32::API::Security::GENERIC_ALL)
+        Chef::ReservedNames::Win32::Security::ACE.access_allowed(Security::SID.Everyone, Chef::ReservedNames::Win32::API::Security::GENERIC_READ),
+        Chef::ReservedNames::Win32::Security::ACE.access_denied(Security::SID.from_account("Users"), Chef::ReservedNames::Win32::API::Security::GENERIC_ALL)
       ])
       GC.start
     }.should_not leak_memory(:warmup => 50, :iterations => 100)

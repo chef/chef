@@ -20,10 +20,10 @@
 require 'chef/win32/api/unicode'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Unicode
-      include Chef::Win32::API::Unicode
-      extend Chef::Win32::API::Unicode
+      include Chef::ReservedNames::Win32::API::Unicode
+      extend Chef::ReservedNames::Win32::API::Unicode
     end
   end
 end
@@ -31,13 +31,13 @@ end
 module FFI
   class Pointer
     def read_wstring(num_wchars)
-      Chef::Win32::Unicode.wide_to_utf8(self.get_bytes(0, num_wchars*2))
+      Chef::ReservedNames::Win32::Unicode.wide_to_utf8(self.get_bytes(0, num_wchars*2))
     end
   end
 end
 
 class String
   def to_wstring
-    Chef::Win32::Unicode.utf8_to_wide(self)
+    Chef::ReservedNames::Win32::Unicode.utf8_to_wide(self)
   end
 end
