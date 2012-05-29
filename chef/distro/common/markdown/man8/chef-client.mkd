@@ -29,6 +29,8 @@ __chef-client__ _(options)_
     log location(s).
   * `-N`, `--node-name NODE_NAME`:
     The node name for this client
+  * `-o`, `--override-runlist`:
+    Replace current run list with specified items
   * `-K`, `--validation_key KEY_FILE`:
     Set the validation key file location, used for registering new clients
   * `-k`, `--client_key KEY_FILE`:
