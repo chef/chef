@@ -22,9 +22,9 @@ require 'chef/win32/api/system'
 require 'chef/win32/error'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Handle
-      extend Chef::Win32::API::Process
+      extend Chef::ReservedNames::Win32::API::Process
 
       def initialize(handle)
         @handle = handle
@@ -39,7 +39,7 @@ class Chef
 
       def self.close_handle(handle)
         unless CloseHandle(handle)
-          Chef::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise!
         end
       end
 

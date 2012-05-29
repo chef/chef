@@ -21,7 +21,7 @@ require 'chef/win32/security/acl'
 require 'chef/win32/security/sid'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Security
       class SecurityDescriptor
 
@@ -36,56 +36,56 @@ class Chef
         end
 
         def control
-          control, version = Chef::Win32::Security.get_security_descriptor_control(self)
+          control, version = Chef::ReservedNames::Win32::Security.get_security_descriptor_control(self)
           control
         end
 
         def dacl
           raise "DACL not present" if !dacl_present?
-          present, acl, defaulted = Chef::Win32::Security.get_security_descriptor_dacl(self)
+          present, acl, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_dacl(self)
           acl
         end
 
         def dacl_inherits?
-          (control & Chef::Win32::API::Security::SE_DACL_PROTECTED) == 0
+          (control & Chef::ReservedNames::Win32::API::Security::SE_DACL_PROTECTED) == 0
         end
 
         def dacl_present?
-          (control & Chef::Win32::API::Security::SE_DACL_PRESENT) != 0
+          (control & Chef::ReservedNames::Win32::API::Security::SE_DACL_PRESENT) != 0
         end
 
         def group
-          result, defaulted = Chef::Win32::Security.get_security_descriptor_group(self)
+          result, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_group(self)
           result
         end
 
         def owner
-          result, defaulted = Chef::Win32::Security.get_security_descriptor_owner(self)
+          result, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_owner(self)
           result
         end
 
         def sacl
           raise "SACL not present" if !sacl_present?
           Security.with_privileges("SeSecurityPrivilege") do
-            present, acl, defaulted = Chef::Win32::Security.get_security_descriptor_sacl(self)
+            present, acl, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_sacl(self)
             acl
           end
         end
 
         def sacl_inherits?
-          (control & Chef::Win32::API::Security::SE_SACL_PROTECTED) == 0
+          (control & Chef::ReservedNames::Win32::API::Security::SE_SACL_PROTECTED) == 0
         end
 
         def sacl_present?
-          (control & Chef::Win32::API::Security::SE_SACL_PRESENT) != 0
+          (control & Chef::ReservedNames::Win32::API::Security::SE_SACL_PRESENT) != 0
         end
 
         def self_relative?
-          (control & Chef::Win32::API::Security::SE_SELF_RELATIVE) != 0
+          (control & Chef::ReservedNames::Win32::API::Security::SE_SELF_RELATIVE) != 0
         end
 
         def valid?
-          Chef::Win32::Security.is_valid_security_descriptor(self)
+          Chef::ReservedNames::Win32::Security.is_valid_security_descriptor(self)
         end
       end
     end

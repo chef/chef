@@ -18,9 +18,10 @@
 #
 
 require 'ffi'
+require 'chef/reserved_names'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     module API
 
       # put shared stuff (like constants) for all raw Win32 API calls

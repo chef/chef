@@ -22,10 +22,10 @@ require 'chef/win32/unicode'
 require 'chef/exceptions'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Error
-      include Chef::Win32::API::Error
-      extend Chef::Win32::API::Error
+      include Chef::ReservedNames::Win32::API::Error
+      extend Chef::ReservedNames::Win32::API::Error
 
       def self.format_message(message_id = 0, args = {})
         flags = args[:flags] || FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
@@ -42,7 +42,7 @@ class Chef
         begin
           return buffer.read_pointer.read_wstring(num_chars)
         ensure
-          Chef::Win32::Memory.local_free(buffer.read_pointer)
+          Chef::ReservedNames::Win32::Memory.local_free(buffer.read_pointer)
         end
       end
 

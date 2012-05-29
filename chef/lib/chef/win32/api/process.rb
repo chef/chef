@@ -19,10 +19,10 @@
 require 'chef/win32/api'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     module API
       module Process
-        extend Chef::Win32::API
+        extend Chef::ReservedNames::Win32::API
 
         ###############################################
         # Win32 API Bindings
