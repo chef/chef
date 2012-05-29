@@ -27,7 +27,7 @@ describe Chef::Resource::Link do
 
   let(:base_dir) do
     if windows?
-      Chef::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))
+      Chef::ReservedNames::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))
     else
       Dir.tmpdir
     end
@@ -56,28 +56,28 @@ describe Chef::Resource::Link do
   end
   def symlink(a, b)
     if windows?
-      Chef::Win32::File.symlink(a, b)
+      Chef::ReservedNames::Win32::File.symlink(a, b)
     else
       File.symlink(a, b)
     end
   end
   def symlink?(file)
     if windows?
-      Chef::Win32::File.symlink?(file)
+      Chef::ReservedNames::Win32::File.symlink?(file)
     else
       File.symlink?(file)
     end
   end
   def readlink(file)
     if windows?
-      Chef::Win32::File.readlink(file)
+      Chef::ReservedNames::Win32::File.readlink(file)
     else
       File.readlink(file)
     end
   end
   def link(a, b)
     if windows?
-      Chef::Win32::File.link(a, b)
+      Chef::ReservedNames::Win32::File.link(a, b)
     else
       File.link(a, b)
     end
@@ -484,7 +484,7 @@ describe Chef::Resource::Link do
         it 'ignores them' do
           resource.run_action(:create)
           if windows?
-            Chef::Win32::Security.get_named_security_info(target_file).owner.should_not == SID.Guest
+            Chef::ReservedNames::Win32::Security.get_named_security_info(target_file).owner.should_not == SID.Guest
           else
             File.lstat(target_file).uid.should_not == Etc.getpwnam('nobody').uid
           end

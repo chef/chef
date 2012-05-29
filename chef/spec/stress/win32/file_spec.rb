@@ -19,18 +19,18 @@
 require 'spec_helper'
 require 'chef/win32/file' if windows?
 
-describe 'Chef::Win32::File', :windows_only do
+describe 'Chef::ReservedNames::Win32::File', :windows_only do
   before(:each) do
     @path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs"))
   end
 
   it "should not leak memory" do
-    test = lambda { Chef::Win32::File.symlink?(@path) }
+    test = lambda { Chef::ReservedNames::Win32::File.symlink?(@path) }
     test.should_not leak_memory(:warmup => 50, :iterations => 100)
   end
 
   it "should not leak handles" do
-    test = lambda { Chef::Win32::File.symlink?(@path) }
+    test = lambda { Chef::ReservedNames::Win32::File.symlink?(@path) }
     test.should_not leak_handles(:warmup => 50, :iterations => 100)
   end
 

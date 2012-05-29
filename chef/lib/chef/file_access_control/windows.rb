@@ -22,9 +22,9 @@ require 'chef/win32/security'
 class Chef
   class FileAccessControl
     module Windows
-      include Chef::Win32::API::Security
+      include Chef::ReservedNames::Win32::API::Security
 
-      Security = Chef::Win32::Security
+      Security = Chef::ReservedNames::Win32::Security
       ACL = Security::ACL
       ACE = Security::ACE
       SID = Security::SID
@@ -83,9 +83,9 @@ class Chef
       def securable_object
         @securable_object ||= begin
           if file.kind_of?(String)
-            so = Chef::Win32::Security::SecurableObject.new(file.dup)
+            so = Chef::ReservedNames::Win32::Security::SecurableObject.new(file.dup)
           end
-          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::Win32::Security::SecurableObject'" unless so.kind_of? Chef::Win32::Security::SecurableObject
+          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.kind_of? Chef::ReservedNames::Win32::Security::SecurableObject
           so
         end
       end
@@ -236,7 +236,7 @@ class Chef
           acls += mode_ace(SID.Everyone, (mode & 07))
         end
 
-        acls.nil? ? nil : Chef::Win32::Security::ACL.create(acls)
+        acls.nil? ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
       end
 
       def target_group

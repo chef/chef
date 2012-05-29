@@ -20,10 +20,10 @@ require 'chef/win32/api'
 require 'chef/win32/api/system'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Version
-      include Chef::Win32::API::Macros
-      include Chef::Win32::API::System
+      include Chef::ReservedNames::Win32::API::Macros
+      include Chef::ReservedNames::Win32::API::System
 
       # Ruby implementation of
       # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
@@ -99,7 +99,7 @@ class Chef
         lp_version_info = OSVERSIONINFOEX.new
         lp_version_info[:dw_os_version_info_size] = OSVERSIONINFOEX.size
         unless GetVersionExW(lp_version_info)
-          Chef::Win32::Error.raise!
+          Chef::ReservedNames::Win32::Error.raise!
         end
         lp_version_info
       end

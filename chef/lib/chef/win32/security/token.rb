@@ -22,7 +22,7 @@ require 'chef/win32/api/security'
 require 'ffi'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class Security
       class Token
 
@@ -34,28 +34,28 @@ class Chef
 
         def enable_privileges(*privilege_names)
           # Build the list of privileges we want to set
-          new_privileges = Chef::Win32::API::Security::TOKEN_PRIVILEGES.new(
-            FFI::MemoryPointer.new(Chef::Win32::API::Security::TOKEN_PRIVILEGES.size_with_privileges(privilege_names.length)))
+          new_privileges = Chef::ReservedNames::Win32::API::Security::TOKEN_PRIVILEGES.new(
+            FFI::MemoryPointer.new(Chef::ReservedNames::Win32::API::Security::TOKEN_PRIVILEGES.size_with_privileges(privilege_names.length)))
           new_privileges[:PrivilegeCount] = 0
           privilege_names.each do |privilege_name|
-            luid = Chef::Win32::API::Security::LUID.new
+            luid = Chef::ReservedNames::Win32::API::Security::LUID.new
             # Ignore failure (with_privileges TRIES but does not guarantee success--
             # APIs down the line will fail if privilege escalation fails)
-            if Chef::Win32::API::Security.LookupPrivilegeValueW(nil, privilege_name.to_wstring, luid)
+            if Chef::ReservedNames::Win32::API::Security.LookupPrivilegeValueW(nil, privilege_name.to_wstring, luid)
               new_privilege = new_privileges.privilege(new_privileges[:PrivilegeCount])
               new_privilege[:Luid][:LowPart] = luid[:LowPart]
               new_privilege[:Luid][:HighPart] = luid[:HighPart]
-              new_privilege[:Attributes] = Chef::Win32::API::Security::SE_PRIVILEGE_ENABLED
+              new_privilege[:Attributes] = Chef::ReservedNames::Win32::API::Security::SE_PRIVILEGE_ENABLED
               new_privileges[:PrivilegeCount] = new_privileges[:PrivilegeCount] + 1
             end
           end
 
-          old_privileges = Chef::Win32::Security.adjust_token_privileges(self, new_privileges)
+          old_privileges = Chef::ReservedNames::Win32::Security.adjust_token_privileges(self, new_privileges)
         end
 
         def adjust_privileges(privileges_struct)
           if privileges_struct[:PrivilegeCount] > 0
-            Chef::Win32::Security::adjust_token_privileges(self, privileges_struct)
+            Chef::ReservedNames::Win32::Security::adjust_token_privileges(self, privileges_struct)
           end
         end
       end

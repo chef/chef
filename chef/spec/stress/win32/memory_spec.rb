@@ -18,5 +18,5 @@
 
 require 'spec_helper'
 
-describe 'Chef::Win32::Memory', :windows_only do
+describe 'Chef::ReservedNames::Win32::Memory', :windows_only do
 end

@@ -19,17 +19,17 @@
 require 'chef/win32/file'
 
 class Chef
-  module Win32
+  module ReservedNames::Win32
     class File
 
-      # Objects of class Chef::Win32::File::Stat encapsulate common status
-      # information for Chef::Win32::File objects. The information
-      # is recorded at the moment the Chef::Win32::File::Stat object is
+      # Objects of class Chef::ReservedNames::Win32::File::Stat encapsulate common status
+      # information for Chef::ReservedNames::Win32::File objects. The information
+      # is recorded at the moment the Chef::ReservedNames::Win32::File::Stat object is
       # created; changes made to the file after that point will not be reflected.
       class Info
 
-        include Chef::Win32::API::File
-        include Chef::Win32::API
+        include Chef::ReservedNames::Win32::API::File
+        include Chef::ReservedNames::Win32::API
 
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa363788(v=vs.85).aspx
         def initialize(file_name)
@@ -85,7 +85,7 @@ class Chef
         end
         ##############################
 
-        # given a +Chef::Win32::API::File::FILETIME+ structure convert into a
+        # given a +Chef::ReservedNames::Win32::API::File::FILETIME+ structure convert into a
         # Ruby +Time+ object.
         #
         def parse_time(file_time_struct)
