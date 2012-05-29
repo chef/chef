@@ -122,7 +122,7 @@ class Chef
         if @action == :nothing
           action_nothing
         else
-          converge_by("bypassing action #{@action}, whyrun not supported in resource provider #{self.class.name} ") do
+          converge_by("bypass action #{@action}, whyrun not supported in resource provider #{self.class.name} ") do
             send("action_#{@action}")
           end
         end
