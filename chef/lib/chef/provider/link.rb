@@ -33,8 +33,9 @@ class Chef
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!
           rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-            message = "Links are not supported on this version of Windows"
-            message << ": #{node[:platform_version]}" if node
+            message = "Link resource is not supported on this version of Windows"
+            message << ": #{node[:kernel][:name]}" if node
+            message << " (#{node[:platform_version]})" if node
             Chef::Log.fatal(message)
             raise e
           end
