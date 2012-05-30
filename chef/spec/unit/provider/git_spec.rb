@@ -22,6 +22,7 @@ describe Chef::Provider::Git do
 
   before(:each) do
     STDOUT.stub!(:tty?).and_return(true)
+    Chef::Log.level = :info
 
     @current_resource = Chef::Resource::Git.new("web2.0 app")
     @current_resource.revision("d35af14d41ae22b19da05d7d03a0bafc321b244c")
