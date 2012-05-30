@@ -15,6 +15,6 @@ set -x
 cd /var/cache/omnibus/src/chef/chef
 mkdir bundle
 
-export PATH=/opt/chef/bin:/opt/chef/emebedded/bin:$PATH
+export PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 bundle install --without server --path bundle
 bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
