@@ -98,6 +98,10 @@ describe "Chef::Provider::Service::Redhat" do
       Chef::Config[:why_run] = true
     end
 
+    after do
+      Chef::Config[:why_run] = false
+    end
+
     describe "load current resource" do
       it "should raise an error if /sbin/chkconfig does not exist" do
         File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
