@@ -30,9 +30,9 @@ class Chef
 
         ffi_lib 'kernel32'
 
-        attach_function :GetCurrentProcess, [], :HANDLE
-        attach_function :GetProcessHandleCount, [ :HANDLE, :LPDWORD ], :BOOL
-        attach_function :GetProcessId, [ :HANDLE ], :DWORD
+        safe_attach_function :GetCurrentProcess, [], :HANDLE
+        safe_attach_function :GetProcessHandleCount, [ :HANDLE, :LPDWORD ], :BOOL
+        safe_attach_function :GetProcessId, [ :HANDLE ], :DWORD
 
       end
     end
