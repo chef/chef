@@ -18,6 +18,7 @@
 #
 
 require 'chef/resource'
+require 'chef/platform'
 require 'chef/provider/file'
 require 'chef/mixin/securable'
 
@@ -28,8 +29,12 @@ class Chef
 
       identity_attr :path
 
-      # TODO: fix for windows :/
       state_attrs :checksum, :owner, :group, :mode
+
+      # By default, windows gets `state_attrs :rights, :deny_rights`
+      if Platform.windows?
+        state_attrs :rights, :deny_rights
+      end
 
       provides :file, :on_platforms => :all
 
