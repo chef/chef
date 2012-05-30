@@ -8,7 +8,7 @@ set -x
 
 mkdir -p chef-solo/cache
 
-if [ $CLEAN = "true" ]; then
+if [ "$CLEAN" = "true" ]; then
   sudo rm -rf /opt/chef || true
   sudo mkdir -p /opt/chef && sudo chown jenkins-node /opt/chef
   sudo rm -rf /opt/chef-server || true
@@ -26,7 +26,7 @@ sudo env OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c jenkins-solo.rb -j
 
 # Aaand.. new ruby
 export PATH=/usr/local/bin:$PATH
-if [ $CLEAN = "true" ]; then
+if [ "$CLEAN" = "true" ]; then
   bundle update
 else
   bundle install
