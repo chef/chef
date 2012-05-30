@@ -358,21 +358,21 @@ HANDLE WINAPI CreateFile(
   __in_opt  HANDLE hTemplateFile
 );
 =end
-        attach_function :CreateFileW, [:LPCTSTR, :DWORD, :DWORD, :LPSECURITY_ATTRIBUTES, :DWORD, :DWORD, :pointer], :HANDLE
+        safe_attach_function :CreateFileW, [:LPCTSTR, :DWORD, :DWORD, :LPSECURITY_ATTRIBUTES, :DWORD, :DWORD, :pointer], :HANDLE
 
 =begin
 BOOL WINAPI FindClose(
   __inout  HANDLE hFindFile
 );
 =end
-        attach_function :FindClose, [:HANDLE], :BOOL
+        safe_attach_function :FindClose, [:HANDLE], :BOOL
 
 =begin
 DWORD WINAPI GetFileAttributes(
   __in  LPCTSTR lpFileName
 );
 =end
-        attach_function :GetFileAttributesW, [:LPCWSTR], :DWORD
+        safe_attach_function :GetFileAttributesW, [:LPCWSTR], :DWORD
 
 =begin
 DWORD WINAPI GetFinalPathNameByHandle(
@@ -382,7 +382,7 @@ DWORD WINAPI GetFinalPathNameByHandle(
   __in   DWORD dwFlags
 );
 =end
-        attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
+        safe_attach_function :GetFinalPathNameByHandleW, [:HANDLE, :LPTSTR, :DWORD, :DWORD], :DWORD
 
 =begin
 BOOL WINAPI GetFileInformationByHandle(
@@ -390,7 +390,7 @@ BOOL WINAPI GetFileInformationByHandle(
   __out  LPBY_HANDLE_FILE_INFORMATION lpFileInformation
 );
 =end
-        attach_function :GetFileInformationByHandle, [:HANDLE, :LPBY_HANDLE_FILE_INFORMATION], :BOOL
+        safe_attach_function :GetFileInformationByHandle, [:HANDLE, :LPBY_HANDLE_FILE_INFORMATION], :BOOL
 
 =begin
 HANDLE WINAPI FindFirstFile(
@@ -398,7 +398,7 @@ HANDLE WINAPI FindFirstFile(
   __out  LPWIN32_FIND_DATA lpFindFileData
 );
 =end
-        attach_function :FindFirstFileW, [:LPCTSTR, :LPWIN32_FIND_DATA], :HANDLE
+        safe_attach_function :FindFirstFileW, [:LPCTSTR, :LPWIN32_FIND_DATA], :HANDLE
 
 =begin
 BOOL WINAPI CreateHardLink(
@@ -407,7 +407,7 @@ BOOL WINAPI CreateHardLink(
   __reserved  LPSECURITY_ATTRIBUTES lpSecurityAttributes
 );
 =end
-        attach_function :CreateHardLinkW, [:LPCTSTR, :LPCTSTR, :LPSECURITY_ATTRIBUTES], :BOOLEAN
+        safe_attach_function :CreateHardLinkW, [:LPCTSTR, :LPCTSTR, :LPSECURITY_ATTRIBUTES], :BOOLEAN
 
 =begin
 BOOLEAN WINAPI CreateSymbolicLink(
@@ -416,7 +416,7 @@ BOOLEAN WINAPI CreateSymbolicLink(
   __in  DWORD dwFlags
 );
 =end
-        attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
+        safe_attach_function :CreateSymbolicLinkW, [:LPTSTR, :LPTSTR, :DWORD], :BOOLEAN
 
 =begin
 DWORD WINAPI GetLongPathName(
@@ -425,7 +425,7 @@ DWORD WINAPI GetLongPathName(
   __in   DWORD cchBuffer
 );
 =end
-        attach_function :GetLongPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+        safe_attach_function :GetLongPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
 
 =begin
 DWORD WINAPI GetShortPathName(
@@ -434,7 +434,7 @@ DWORD WINAPI GetShortPathName(
   __in   DWORD cchBuffer
 );
 =end
-        attach_function :GetShortPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
+        safe_attach_function :GetShortPathNameW, [:LPCTSTR, :LPTSTR, :DWORD], :DWORD
 
 =begin
 BOOL WINAPI DeviceIoControl(
@@ -448,7 +448,7 @@ BOOL WINAPI DeviceIoControl(
   __inout_opt  LPOVERLAPPED lpOverlapped
 );
 =end
-        attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
+        safe_attach_function :DeviceIoControl, [:HANDLE, :DWORD, :LPVOID, :DWORD, :LPVOID, :DWORD, :LPDWORD, :pointer], :BOOL
 
         ###############################################
         # Helpers

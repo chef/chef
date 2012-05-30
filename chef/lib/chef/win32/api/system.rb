@@ -153,20 +153,20 @@ BOOL WINAPI CloseHandle(
   __in  HANDLE hObject
 );
 =end
-        attach_function :CloseHandle, [ :HANDLE ], :BOOL
+        safe_attach_function :CloseHandle, [ :HANDLE ], :BOOL
 
 =begin
 DWORD WINAPI GetVersion(void);
 =end
-        attach_function :GetVersion, [], :DWORD
+        safe_attach_function :GetVersion, [], :DWORD
 
 =begin
 BOOL WINAPI GetVersionEx(
   __inout  LPOSVERSIONINFO lpVersionInfo
 );
 =end
-        attach_function :GetVersionExW, [:pointer], :BOOL
-        attach_function :GetVersionExA, [:pointer], :BOOL
+        safe_attach_function :GetVersionExW, [:pointer], :BOOL
+        safe_attach_function :GetVersionExA, [:pointer], :BOOL
 
 =begin
 BOOL WINAPI GetProductInfo(
@@ -177,14 +177,14 @@ BOOL WINAPI GetProductInfo(
   __out  PDWORD pdwReturnedProductType
 );
 =end
-        attach_function :GetProductInfo, [:DWORD, :DWORD, :DWORD, :DWORD, :PDWORD], :BOOL
+        safe_attach_function :GetProductInfo, [:DWORD, :DWORD, :DWORD, :DWORD, :PDWORD], :BOOL
 
 =begin
 int WINAPI GetSystemMetrics(
   __in  int nIndex
 );
 =end
-        attach_function :GetSystemMetrics, [:int], :int
+        safe_attach_function :GetSystemMetrics, [:int], :int
 
       end
     end

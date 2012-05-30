@@ -890,30 +890,30 @@ DWORD WINAPI FormatMessage(
   __in_opt  va_list *Arguments
 );
 =end
-        attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
-        attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageA, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPTSTR, :DWORD, :varargs], :DWORD
+        safe_attach_function :FormatMessageW, [:DWORD, :LPCVOID, :DWORD, :DWORD, :LPWSTR, :DWORD, :varargs], :DWORD
 
 =begin
 DWORD WINAPI GetLastError(void);
 =end
-        attach_function :GetLastError, [], :DWORD
+        safe_attach_function :GetLastError, [], :DWORD
 =begin
 void WINAPI SetLastError(
   __in  DWORD dwErrCode
 );
 =end
-        attach_function :SetLastError, [:DWORD], :void
-        attach_function :SetLastErrorEx, [:DWORD, :DWORD], :void
+        safe_attach_function :SetLastError, [:DWORD], :void
+        safe_attach_function :SetLastErrorEx, [:DWORD, :DWORD], :void
 =begin
 UINT WINAPI GetErrorMode(void);s
 =end
-        attach_function :GetErrorMode, [], :uint
+        safe_attach_function :GetErrorMode, [], :uint
 =begin
 UINT WINAPI SetErrorMode(
   __in  UINT uMode
 );
 =end
-        attach_function :SetErrorMode, [:UINT], :UINT
+        safe_attach_function :SetErrorMode, [:UINT], :UINT
 
       end
     end
