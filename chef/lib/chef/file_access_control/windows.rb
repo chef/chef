@@ -35,7 +35,7 @@ class Chef
         set_dacl
       end
 
-      def require_changes?
+      def requires_changes?
         Chef::Log.info("FIXME: THIS CODE HAS NOT BEEN FIXED FOR WHY-RUN AND I MAY BE LYING THAT THIS RESOURCE WILL CHANGE")
         true
       end
