@@ -26,9 +26,9 @@ require 'etc'
 shared_examples_for "a securable resource" do
   context "on Unix", :unix_only do
     let(:expected_user_name) { 'nobody' }
-    let(:expected_group_name) { 'nogroup' }
     let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
-    let(:expected_gid) { Etc.getgrnam(expected_group_name).gid }
+    let(:desired_gid) { 1337 }
+    let(:expected_gid) { 1337 }
 
     pending "should set an owner (Rerun specs under root)", :requires_unprivileged_user => true
     pending "should set a group (Rerun specs under root)",  :requires_unprivileged_user => true
@@ -40,7 +40,7 @@ shared_examples_for "a securable resource" do
     end
 
     it "should set a group", :requires_root do
-      resource.group expected_group_name
+      resource.group desired_gid
       resource.run_action(:create)
       File.lstat(path).gid.should == expected_gid
     end
