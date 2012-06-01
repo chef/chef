@@ -285,10 +285,11 @@ describe Chef::Provider::Deploy do
     @provider.should_receive(:enforce_ownership)
 
     STDOUT.stub!(:tty?).and_return(true)
+    Chef::Log.stub!(:info?).and_return(true)
     @provider.should_receive(:run_command).with(:command => "migration_foo", :cwd => @expected_release_dir,
                                                 :user => "deployNinja", :group => "deployNinjas",
-																								:log_level => :info, :live_stream => STDOUT,
-																								:log_tag => "deploy[/my/deploy/dir]",
+                                                :log_level => :info, :live_stream => STDOUT,
+                                                :log_tag => "deploy[/my/deploy/dir]",
                                                 :environment => {"RAILS_ENV"=>"production"})
     @provider.migrate
   end
