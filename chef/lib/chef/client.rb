@@ -196,7 +196,7 @@ class Chef
         run_status.exception = e
         run_failed
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
-        @events.run_completed
+        @events.run_failed(e)
         raise
       ensure
         run_status = nil
