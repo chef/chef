@@ -22,10 +22,14 @@ class Chef
   class ResourceReporter
 
     attr_reader :updated_resources
+    attr_reader :status
+    attr_reader :exception
 
     def initialize
       @updated_resources = []
       @pending_update  = nil
+      @status = "success"
+      @exception = nil
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
@@ -46,6 +50,14 @@ class Chef
       @pending_update ||= {:new_resource => new_resource}
       @updated_resources << @pending_update
       @pending_update = nil
+    end
+
+    def run_completed
+    end
+
+    def run_failed(exception)
+      @exception = exception
+      @status = "failed"
     end
 
   end

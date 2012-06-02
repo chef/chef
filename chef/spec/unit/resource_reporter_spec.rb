@@ -35,6 +35,63 @@ describe Chef::ResourceReporter do
       @resource_reporter.should have(0).updated_resources
     end
 
+    it "reports a successful run" do
+      @resource_reporter.status.should == "success"
+    end
+
+  end
+
+  context "after the chef run completes" do
+    before do
+      @resource_reporter.run_completed
+    end
+
+    it "reports a successful run" do
+      @resource_reporter.status.should == "success"
+    end
+  end
+
+  context "when chef fails before converging any resources" do
+    before do
+      @exception = Exception.new
+      @resource_reporter.run_failed(@exception)
+    end
+
+    it "sets the run status to 'failed'" do
+      @resource_reporter.status.should == "failed"
+    end
+
+    it "keeps the exception data" do
+      @resource_reporter.exception.should == @exception
+    end
+
+    # TODO: more design
+    # The idea here is to reuse the error inspectors to capture "pretty"
+    # descriptions of errors instead of just the stack. Need to integrate with
+    # UI.
+    # it "has an exception description" do
+    #   error_inspector_output=<<-EOH
+    # Error compiling /var/chef/cache/cookbooks/syntax-err/recipes/default.rb:
+    # undefined method `this_is_not_a_valid_method' for Chef::Resource::File
+    #
+    # Cookbook trace:
+    #   /var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'
+    #   /var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'
+    #
+    # Most likely caused here:
+    #   7:  # All rights reserved - Do Not Redistribute
+    #   8:  #
+    #   9:
+    #  10:
+    #  11:  file "/tmp/explode-me" do
+    #  12:    mode 0655
+    #  13:    owner "root"
+    #  14>>   this_is_not_a_valid_method
+    #  15:  end
+    #  16:
+    # EOH
+    #   @resource_reporter.exception_description.should == error_inspector_output
+    # end
   end
 
   context "when a resource fails before loading current state" do
@@ -134,5 +191,59 @@ describe Chef::ResourceReporter do
 
   end
 
+  describe "when generating a report for the server" do
+    before do
+      # TODO: add inputs to generate expected output.
+
+      # expected_data = {
+      #    "action" : "end",
+      #    "resources" : [
+      #       {
+      #         "type" : "file",
+      #         "id" : "/etc/passwd",
+      #         "name" : "User Defined Resource Block Name",
+      #         "duration" : "1200",
+      #         "result" : "modified",
+      #         "before" : {
+      #              "state" : "exists",
+      #              "group" : "root",
+      #              "owner" : "root",
+      #              "checksum" : "xyz"
+      #         },
+      #         "after" : {
+      #              "state" : "modified",
+      #              "group" : "root",
+      #              "owner" : "root",
+      #              "checksum" : "abc"
+      #         },
+      #         "delta" : ""
+      #      },
+      #      {...}
+      #     ],
+      #    "status" : "success"
+      #    "data" : ""
+      # }
+
+      #@report = @resource_reporter.report
+
+      # TODO: replace demo output with actual.
+      @file_resource_data = {
+        "type" => "template"
+      }
+      @report = {"resources" => [@file_resource_data]}
+    end
+
+    it "includes a list of updated resources" do
+      @report.should have_key("resources")
+    end
+
+    it "includes an updated resource's type" do
+      first_updated_resource = @report["resources"].first
+      first_updated_resource.should have_key("type")
+    end
+
+    #it "includes"
+
+  end
 
 end
