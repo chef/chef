@@ -58,4 +58,20 @@ describe Chef::Resource::Package do
     @resource.options.should eql("something")
   end
 
+ describe "when it has a package_name and version" do
+   before do
+     @resource.package_name("tomcat")
+     @resource.version("10.9.8")
+   end
+
+   it "describes its state" do
+     state = @resource.state
+     state[:version].should == "10.9.8"
+   end
+   
+   it "returns the file path as its identity" do
+     @resource.identity.should == "tomcat"
+   end
+
+ end
 end
