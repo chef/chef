@@ -192,23 +192,31 @@ describe Chef::Client do
       @client.node = @node
     end
 
-    it "should override the run list" do
+    it "should override the run list and save original runlist" do
       @node.run_list << "role[role_containing_cookbook1]"
 
       override_role = Chef::Role.new
       override_role.name 'test_role'
       override_role.run_list << 'cookbook1'
 
+      original_runlist = @node.run_list.dup
+
       Chef::Node.should_receive(:find_or_create).and_return(@node)
       mock_chef_rest = mock("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
+
+      @node.should_receive(:save).and_return(nil)
 
       @client.build_node
       
       @node[:roles].should_not be_nil
       @node[:roles].should eql(['test_role'])
       @node[:recipes].should eql(['cookbook1'])
+
+      @client.save_updated_node
+
+      @node.run_list.should == original_runlist
 
     end
   end
