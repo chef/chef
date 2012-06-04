@@ -36,12 +36,16 @@ class Chef
       end
 
       def requires_changes?
-        Chef::Log.info("FIXME: THIS CODE HAS NOT BEEN FIXED FOR WHY-RUN AND I MAY BE LYING THAT THIS RESOURCE WILL CHANGE")
-        true
+        should_update_dacl? || should_update_owner? || should_update_group?
       end
 
       def describe_changes
-        "FIXME: WOULD NEED TO IMPLEMENT WHY-RUN FOR WINDOWS FILE ACCESS CONTROLS"
+        # FIXME: describe what these are changing from and to
+        changes = []
+        changes << "change dacl" if should_update_dacl?
+        changes << "change owner" if should_update_owner?
+        changes << "change group" if should_update_group?
+        changes
       end
 
       private
@@ -99,6 +103,14 @@ class Chef
         end
       end
 
+      def should_update_dacl?
+        return true unless ::File.exists?(file)
+        dacl = target_dacl
+        existing_dacl = existing_descriptor.dacl
+        inherits = target_inherits
+        ( ! inherits.nil? && inherits != existing_descriptor.dacl_inherits? ) || ( dacl && !acls_equal(dacl, existing_dacl) )
+      end
+
       def set_dacl
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
@@ -120,12 +132,22 @@ class Chef
         end
       end
 
+      def should_update_group?
+        return true unless ::File.exists?(file)
+        (group = target_group) && (group != existing_descriptor.group)
+      end
+
       def set_group
         if (group = target_group) && (group != existing_descriptor.group)
           Chef::Log.info("#{log_string} group changed to #{group}")
           securable_object.group = group
           modified
         end
+      end
+
+      def should_update_owner?
+        return true unless ::File.exists?(file)
+        (owner = target_owner) && (owner != existing_descriptor.owner)
       end
 
       def set_owner
