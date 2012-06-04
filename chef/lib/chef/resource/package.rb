@@ -22,6 +22,10 @@ class Chef
   class Resource
     class Package < Chef::Resource
 
+      identity_attr :package_name
+
+      state_attrs :version
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :package
