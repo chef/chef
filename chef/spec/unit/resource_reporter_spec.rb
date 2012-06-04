@@ -106,7 +106,7 @@ describe Chef::ResourceReporter do
 
     it "collects the desired state of the resource" do
       update_record = @resource_reporter.updated_resources.first
-      update_record[:new_resource].should == @new_resource
+      update_record.new_resource.should == @new_resource
     end
 
   end
@@ -140,13 +140,13 @@ describe Chef::ResourceReporter do
       it "collects the old state of the resource" do
         update_record = @resource_reporter.updated_resources.first
 
-        update_record[:current_resource].should == @current_resource
+        update_record.current_resource.should == @current_resource
       end
 
       it "collects the new state of the resource" do
         update_record = @resource_reporter.updated_resources.first
 
-        update_record[:new_resource].should == @new_resource
+        update_record.new_resource.should == @new_resource
       end
 
       context "and a subsequent resource fails before loading current resource" do
@@ -158,12 +158,12 @@ describe Chef::ResourceReporter do
 
         it "collects the desired state of the failed resource" do
           failed_resource_update = @resource_reporter.updated_resources.last
-          failed_resource_update[:new_resource].should == @next_new_resource
+          failed_resource_update.new_resource.should == @next_new_resource
         end
 
         it "does not have the current state of the failed resource" do
           failed_resource_update = @resource_reporter.updated_resources.last
-          failed_resource_update[:current_resouce].should be_nil
+          failed_resource_update.current_resource.should be_nil
         end
       end
     end
@@ -180,69 +180,80 @@ describe Chef::ResourceReporter do
 
       it "collects the desired state of the resource" do
         update_record = @resource_reporter.updated_resources.first
-        update_record[:new_resource].should == @new_resource
+        update_record.new_resource.should == @new_resource
       end
 
       it "collects the current state of the resource" do
         update_record = @resource_reporter.updated_resources.first
-        update_record[:current_resource].should == @current_resource
+        update_record.current_resource.should == @current_resource
       end
     end
 
   end
 
   describe "when generating a report for the server" do
-    before do
-      # TODO: add inputs to generate expected output.
+    context "for a successful client run" do
+      before do
+        # TODO: add inputs to generate expected output.
 
-      # expected_data = {
-      #    "action" : "end",
-      #    "resources" : [
-      #       {
-      #         "type" : "file",
-      #         "id" : "/etc/passwd",
-      #         "name" : "User Defined Resource Block Name",
-      #         "duration" : "1200",
-      #         "result" : "modified",
-      #         "before" : {
-      #              "state" : "exists",
-      #              "group" : "root",
-      #              "owner" : "root",
-      #              "checksum" : "xyz"
-      #         },
-      #         "after" : {
-      #              "state" : "modified",
-      #              "group" : "root",
-      #              "owner" : "root",
-      #              "checksum" : "abc"
-      #         },
-      #         "delta" : ""
-      #      },
-      #      {...}
-      #     ],
-      #    "status" : "success"
-      #    "data" : ""
-      # }
+        # expected_data = {
+        #    "action" : "end",
+        #    "resources" : [
+        #       {
+        #         "type" : "file",
+        #         "id" : "/etc/passwd",
+        #         "name" : "User Defined Resource Block Name",
+        #         "duration" : "1200",
+        #         "result" : "modified",
+        #         "before" : {
+        #              "state" : "exists",
+        #              "group" : "root",
+        #              "owner" : "root",
+        #              "checksum" : "xyz"
+        #         },
+        #         "after" : {
+        #              "state" : "modified",
+        #              "group" : "root",
+        #              "owner" : "root",
+        #              "checksum" : "abc"
+        #         },
+        #         "delta" : ""
+        #      },
+        #      {...}
+        #     ],
+        #    "status" : "success"
+        #    "data" : ""
+        # }
 
-      #@report = @resource_reporter.report
+        @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
+        @resource_reporter.resource_updated(@new_resource, :create)
+        @resource_reporter.run_completed
+        @report = @resource_reporter.report
+      end
 
-      # TODO: replace demo output with actual.
-      @file_resource_data = {
-        "type" => "template"
-      }
-      @report = {"resources" => [@file_resource_data]}
+      it "includes a list of updated resources" do
+        @report.should have_key("resources")
+      end
+
+      it "includes an updated resource's type" do
+        first_updated_resource = @report["resources"].first
+        first_updated_resource.should have_key("type")
+      end
+
+      it "includes an updated resource's initial state" do
+        first_updated_resource = @report["resources"].first
+        first_updated_resource["before"].should == @current_resource.state
+      end
+
+      it "includes an updated resource's final state" do
+        first_updated_resource = @report["resources"].first
+        first_updated_resource["after"].should == @new_resource.state
+      end
+
     end
 
-    it "includes a list of updated resources" do
-      @report.should have_key("resources")
+    context "for an unsuccessful run" do
     end
-
-    it "includes an updated resource's type" do
-      first_updated_resource = @report["resources"].first
-      first_updated_resource.should have_key("type")
-    end
-
-    #it "includes"
 
   end
 

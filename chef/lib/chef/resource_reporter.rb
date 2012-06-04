@@ -21,6 +21,43 @@
 class Chef
   class ResourceReporter
 
+    class ResourceReport < Struct.new(:new_resource, :current_resource, :action, :exception)
+
+      def self.new_with_current_state(new_resource, action, current_resource)
+        report = new
+        report.new_resource = new_resource
+        report.action = action
+        report.current_resource = current_resource
+        report
+      end
+
+      def self.new_for_exception(new_resource, action)
+        report = new
+        report.new_resource = new_resource
+        report.action = action
+        report
+      end
+
+      def for_json
+        as_hash = {}
+        as_hash["type"]   = new_resource.class.dsl_name
+        # as_hash["name"]   = new_resource.name
+        # as_hash["id"]     = new_resource.identity
+        as_hash["after"]  = new_resource.state
+        as_hash["before"] = current_resource.state if current_resource
+        if success?
+        else
+          #as_hash["result"] = "failed"
+        end
+        as_hash
+
+      end
+
+      def success?
+        !self.exception
+      end
+    end
+
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
@@ -33,8 +70,7 @@ class Chef
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
-      @pending_update = {:current_resource => current_resource,
-                         :new_resource => new_resource}
+      @pending_update = ResourceReport.new_with_current_state(new_resource, action, current_resource)
     end
 
     def resource_up_to_date(new_resource, action)
@@ -47,7 +83,8 @@ class Chef
     end
 
     def resource_failed(new_resource, action, exception)
-      @pending_update ||= {:new_resource => new_resource}
+      @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
+      @pending_update.exception = exception
       @updated_resources << @pending_update
       @pending_update = nil
     end
@@ -58,6 +95,14 @@ class Chef
     def run_failed(exception)
       @exception = exception
       @status = "failed"
+    end
+
+    def report
+      run_data = {}
+      run_data["resources"] = updated_resources.map do |resource_record|
+        resource_record.for_json
+      end
+      run_data
     end
 
   end
