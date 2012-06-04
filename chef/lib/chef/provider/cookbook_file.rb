@@ -43,13 +43,9 @@ class Chef
           converge_by(description) do
             Chef::Log.debug("#{@new_resource} has new contents")
             backup_new_resource
-            Tempfile.open(::File.basename(@new_resource.name)) do |staging_file|
-              Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{staging_file.path}")
-              staging_file.close
-              stage_file_to_tmpdir(staging_file.path)
-              FileUtils.mv(staging_file.path, @new_resource.path)
-            end
+            FileUtils.cp(file_cache_location, @new_resource.path)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+            access_controls.set_all!
           end
         else
           set_all_access_controls
@@ -68,21 +64,6 @@ class Chef
       # i.e., the cookbook the resource was declared in.
       def resource_cookbook
         @new_resource.cookbook || @new_resource.cookbook_name
-      end
-
-      # Copy the file from the cookbook cache to a temporary location and then
-      # set its file access control settings.
-      def stage_file_to_tmpdir(staging_file_location)
-        FileUtils.cp(file_cache_location, staging_file_location)
-        set_file_access_controls(staging_file_location)
-      end
-
-      # Set file permissions to match expectation 
-      def set_file_access_controls(path)
-        temp_res = Chef::Resource::CookbookFile.new(@new_resource.name)
-        temp_res.path(path)
-        ac = Chef::FileAccessControl.new(@new_resource, temp_res, self)
-        ac.set_all
       end
 
       def backup_new_resource
