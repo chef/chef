@@ -65,33 +65,6 @@ describe Chef::ResourceReporter do
       @resource_reporter.exception.should == @exception
     end
 
-    # TODO: more design
-    # The idea here is to reuse the error inspectors to capture "pretty"
-    # descriptions of errors instead of just the stack. Need to integrate with
-    # UI.
-    # it "has an exception description" do
-    #   error_inspector_output=<<-EOH
-    # Error compiling /var/chef/cache/cookbooks/syntax-err/recipes/default.rb:
-    # undefined method `this_is_not_a_valid_method' for Chef::Resource::File
-    #
-    # Cookbook trace:
-    #   /var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'
-    #   /var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'
-    #
-    # Most likely caused here:
-    #   7:  # All rights reserved - Do Not Redistribute
-    #   8:  #
-    #   9:
-    #  10:
-    #  11:  file "/tmp/explode-me" do
-    #  12:    mode 0655
-    #  13:    owner "root"
-    #  14>>   this_is_not_a_valid_method
-    #  15:  end
-    #  16:
-    # EOH
-    #   @resource_reporter.exception_description.should == error_inspector_output
-    # end
   end
 
   context "when a resource fails before loading current state" do
@@ -273,6 +246,23 @@ describe Chef::ResourceReporter do
     end
 
     context "for an unsuccessful run" do
+
+      it "includes the exception type in the event data" do
+        pending "requires API changes"
+      end
+
+      it "includes the exception message in the event data" do
+        pending "requires API changes"
+      end
+
+      it "includes the exception trace in the event data" do
+        pending "requires API changes"
+      end
+
+      it "includes the error inspector output in the event data" do
+        pending "requires API changes"
+      end
+
     end
 
   end
