@@ -31,6 +31,9 @@ __knife__ __bootstrap__ _(options)_
     Bootstrap a distro using a template
   * `--[no-]host-key-verify`:
     Enable host key verification, which is the default behavior.
+  * `--hint HINT_NAME[=HINT_FILE]`:
+    Provide the name of a hint (with option JSON file) to set for use by 
+    Ohai plugins.
 
 ## DESCRIPTION
 

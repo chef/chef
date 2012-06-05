@@ -44,6 +44,19 @@ awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
 rm /tmp/encrypted_data_bag_secret
 <% end -%>
 
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir -p /etc/chef/ohai/hints
+<% end -%>
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+(
+cat <<'EOP'
+<%= hash.to_json %>
+EOP
+) > /etc/chef/ohai/hints/<%= name %>.json
+<% end -%>
+
 (
 cat <<'EOP'
 <%= config_content %>
