@@ -97,6 +97,7 @@ describe Chef::ResourceReporter do
   context "when a resource fails before loading current state" do
     before do
       @exception = Exception.new
+      @resource_reporter.resource_action_start(@new_resource, :create)
       @resource_reporter.resource_failed(@new_resource, :create, @exception)
     end
 
@@ -111,8 +112,12 @@ describe Chef::ResourceReporter do
 
   end
 
+  # TODO: make sure a resource that is skipped because of `not_if` doesn't
+  # leave us in a bad state.
+
   context "once the a resource's current state is loaded" do
     before do
+      @resource_reporter.resource_action_start(@new_resource, :create)
       @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
     end
 
@@ -225,10 +230,12 @@ describe Chef::ResourceReporter do
         #    "data" : ""
         # }
 
+        @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
         @resource_reporter.run_completed
         @report = @resource_reporter.report
+        @first_update_report = @report["resources"].first
       end
 
       it "includes a list of updated resources" do
@@ -236,18 +243,31 @@ describe Chef::ResourceReporter do
       end
 
       it "includes an updated resource's type" do
-        first_updated_resource = @report["resources"].first
-        first_updated_resource.should have_key("type")
+        @first_update_report.should have_key("type")
       end
 
       it "includes an updated resource's initial state" do
-        first_updated_resource = @report["resources"].first
-        first_updated_resource["before"].should == @current_resource.state
+        @first_update_report["before"].should == @current_resource.state
       end
 
       it "includes an updated resource's final state" do
-        first_updated_resource = @report["resources"].first
-        first_updated_resource["after"].should == @new_resource.state
+        @first_update_report["after"].should == @new_resource.state
+      end
+
+      it "includes the resource's name" do
+        @first_update_report["name"].should == @new_resource.name
+      end
+
+      it "includes the resource's id attribute" do
+        @first_update_report["id"].should == @new_resource.identity
+      end
+
+      it "includes the elapsed time for the resource to converge" do
+        @first_update_report["elapsed_time"].should be_within(0.1).of(0)
+      end
+
+      it "includes the action executed by the resource" do
+        @first_update_report["action"].should == "create"
       end
 
     end
