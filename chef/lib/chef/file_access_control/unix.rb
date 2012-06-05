@@ -26,6 +26,12 @@ class Chef
       UINT = (1 << 32)
       UID_MAX = (1 << 32) - 10
 
+      def set_all!
+        set_owner!
+        set_group!
+        set_mode!
+      end
+
       def set_all
         set_owner
         set_group
@@ -57,12 +63,16 @@ class Chef
         target_uid != current_uid
       end
 
-      def set_owner
-        if should_update_owner?
+      def set_owner!
+        unless target_uid.nil?
           chown(target_uid, nil, file)
           Chef::Log.info("#{log_string} owner changed to #{target_uid}")
           modified
         end
+      end
+
+      def set_owner
+        set_owner! if should_update_owner?
       end
 
       def target_gid
@@ -96,12 +106,16 @@ class Chef
         target_gid != current_gid
       end
 
-      def set_group
-        if should_update_group?
+      def set_group!
+        unless target_gid.nil?
           chown(nil, target_gid, file)
           Chef::Log.info("#{log_string} group changed to #{target_gid}")
           modified
         end
+      end
+
+      def set_group
+        set_group! if should_update_group?
       end
 
       def mode_from_resource(res)
@@ -125,12 +139,16 @@ class Chef
         current_mode != target_mode
       end
 
-      def set_mode
-        if should_update_mode?
+      def set_mode!
+        unless target_mode.nil?
           chmod(target_mode, file)
           Chef::Log.info("#{log_string} mode changed to #{target_mode.to_s(8)}")
           modified
         end
+      end
+
+      def set_mode
+        set_mode! if should_update_mode?
       end
 
       def stat

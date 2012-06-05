@@ -52,6 +52,7 @@ class Chef
           update = ::File.exist?(@new_resource.path)
           if update && content_matches?
             Chef::Log.debug("#{@new_resource} content has not changed.")
+            set_all_access_controls
           else
             description = [] 
             action_message = update ? "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
@@ -62,9 +63,9 @@ class Chef
               backup
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
+              access_controls.set_all!
             end
           end
-          set_all_access_controls
         end  
       end
 
