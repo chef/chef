@@ -64,9 +64,11 @@ class Chef
       end
 
       def set_owner!
-        chown(target_uid, nil, file)
-        Chef::Log.info("#{log_string} owner changed to #{target_uid}")
-        modified
+        unless target_uid.nil?
+          chown(target_uid, nil, file)
+          Chef::Log.info("#{log_string} owner changed to #{target_uid}")
+          modified
+        end
       end
 
       def set_owner
@@ -105,9 +107,11 @@ class Chef
       end
 
       def set_group!
-        chown(nil, target_gid, file)
-        Chef::Log.info("#{log_string} group changed to #{target_gid}")
-        modified
+        unless target_gid.nil?
+          chown(nil, target_gid, file)
+          Chef::Log.info("#{log_string} group changed to #{target_gid}")
+          modified
+        end
       end
 
       def set_group
@@ -136,9 +140,11 @@ class Chef
       end
 
       def set_mode!
-        chmod(target_mode, file)
-        Chef::Log.info("#{log_string} mode changed to #{target_mode.to_s(8)}")
-        modified
+        unless target_mode.nil?
+          chmod(target_mode, file)
+          Chef::Log.info("#{log_string} mode changed to #{target_mode.to_s(8)}")
+          modified
+        end
       end
 
       def set_mode
