@@ -77,6 +77,9 @@ class Chef
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
     # Errors originating from calls to the Win32 API
     class Win32APIError < RuntimeError; end
+    # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
+    # when older versions of Windows don't support newer Win32 API functions.
+    class Win32APIFunctionNotImplemented < NotImplementedError; end
 
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end

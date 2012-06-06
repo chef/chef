@@ -145,6 +145,16 @@ class Chef
         Info.new(file_name)
       end
 
+      def self.verify_links_supported!
+        begin
+          CreateSymbolicLinkW(nil)
+        rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
+          raise e
+        rescue Exception
+          # things are ok.
+        end
+      end
+
       # ::File compat
       class << self
         alias :stat :info

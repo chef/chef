@@ -11,7 +11,7 @@ exists() {
 }
 
 install_sh="http://opscode.com/chef/install.sh"
-version_string="<%= "-v #{knife_config[:bootstrap_version]}" if knife_config[:bootstrap_version] %>"
+version_string="-v <%= chef_version %>"
 
 if ! exists /usr/bin/chef-client; then
   if exists wget; then

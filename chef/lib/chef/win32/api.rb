@@ -19,10 +19,24 @@
 
 require 'ffi'
 require 'chef/reserved_names'
+require 'chef/exceptions'
 
 class Chef
   module ReservedNames::Win32
     module API
+
+      # Attempts to use FFI's attach_function method to link a native Win32
+      # function into the calling module.  If this fails a dummy method is
+      # defined which when called, raises a helpful exception to the end-user.
+      def safe_attach_function(win32_func, *args)
+        begin
+          attach_function(win32_func.to_sym, *args)
+        rescue FFI::NotFoundError
+          define_method(win32_func.to_sym) do |*margs|
+            raise Chef::Exceptions::Win32APIFunctionNotImplemented, "This version of Windows does not implement the Win32 function [#{win32_func}]."
+          end
+        end
+      end
 
       # put shared stuff (like constants) for all raw Win32 API calls
       def self.extended(host)
