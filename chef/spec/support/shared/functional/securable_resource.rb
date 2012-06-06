@@ -25,7 +25,7 @@ require 'etc'
 
 shared_context "setup correct permissions" do
   before :each, { :requires_root => true, :unix_only => true } do
-    File.chown(Etc.getpwnam('nobody').uid, Etc.getgrnam('nobody').gid, path)
+    File.chown(Etc.getpwnam('nobody').uid, 1337, path)
     File.chmod(0776, path)
   end
   before :each, { :requires_unprivileged_user => true, :unix_only => true } do
