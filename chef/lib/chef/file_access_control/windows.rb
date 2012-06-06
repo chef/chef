@@ -29,6 +29,12 @@ class Chef
       ACE = Security::ACE
       SID = Security::SID
 
+      def set_all!
+        set_owner!
+        set_group!
+        set_dacl
+      end
+
       def set_all
         set_owner
         set_group
@@ -111,6 +117,10 @@ class Chef
         ( ! inherits.nil? && inherits != existing_descriptor.dacl_inherits? ) || ( dacl && !acls_equal(dacl, existing_dacl) )
       end
 
+      def set_dacl!
+        set_dacl
+      end
+
       def set_dacl
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
@@ -137,11 +147,17 @@ class Chef
         (group = target_group) && (group != existing_descriptor.group)
       end
 
-      def set_group
-        if (group = target_group) && (group != existing_descriptor.group)
+      def set_group!
+        if (group = target_group)
           Chef::Log.info("#{log_string} group changed to #{group}")
           securable_object.group = group
           modified
+        end
+      end
+
+      def set_group
+        if (group = target_group) && (group != existing_descriptor.group)
+          set_group!
         end
       end
 
@@ -150,11 +166,17 @@ class Chef
         (owner = target_owner) && (owner != existing_descriptor.owner)
       end
 
-      def set_owner
-        if (owner = target_owner) && (owner != existing_descriptor.owner)
+      def set_owner!
+        if owner = target_owner
           Chef::Log.info("#{log_string} owner changed to #{owner}")
           securable_object.owner = owner
           modified
+        end
+      end
+
+      def set_owner
+        if (owner = target_owner) && (owner != existing_descriptor.owner)
+          set_owner!
         end
       end
 
