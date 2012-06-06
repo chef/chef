@@ -148,9 +148,9 @@ class Chef
       end
 
       def deploy
-        enforce_ownership
         verify_directories_exist
         update_cached_repo # no converge-by - scm provider will dothis
+        enforce_ownership
         copy_cached_repo
         install_gems
         enforce_ownership
