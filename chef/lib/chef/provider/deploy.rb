@@ -115,8 +115,8 @@ class Chef
       end
 
       def deploy
-        enforce_ownership
         verify_directories_exist
+        enforce_ownership
         update_cached_repo
         copy_cached_repo
         install_gems

@@ -64,6 +64,18 @@ describe Chef::Provider::Deploy do
     @provider.deploy
   end
 
+  it "ensures the deploy_to dir ownership after the verfication that it exists" do
+    @provider.should_receive(:verify_directories_exist).ordered
+    @provider.should_receive(:enforce_ownership).ordered
+    @provider.stub(:copy_cached_repo)
+    @provider.stub(:update_cached_repo)
+    @provider.stub(:install_gems)
+    @provider.stub(:enforce_ownership)
+    @provider.stub(:symlink)
+    @provider.stub(:migrate)
+    @provider.deploy
+  end
+
   it "updates and copies the repo, then does a migrate, symlink, restart, restart, cleanup on deploy" do
     FileUtils.stub(:mkdir_p).with("/my/deploy/dir")
     FileUtils.stub(:mkdir_p).with("/my/deploy/dir/shared")
