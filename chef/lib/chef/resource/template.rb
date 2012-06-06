@@ -70,7 +70,6 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
-
     end
   end
 end

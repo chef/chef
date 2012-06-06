@@ -34,7 +34,12 @@ class Chef
 
       # Called at the end of the Chef run.
       def run_completed
-        puts "Chef Client finished, #{@updated_resources.size} resources updated"
+        puts "chef client finished, #{@updated_resources.size} resources updated"
+      end
+
+      # called at the end of a failed run
+      def run_failed(exception)
+        puts "chef client failed. #{@updated_resources.size} resources updated"
       end
 
       # Called right after ohai runs.

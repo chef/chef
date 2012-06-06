@@ -47,6 +47,14 @@ class Chef
         end
       end
 
+      def run_failed(exception)
+        if Chef::Config[:whyrun]
+          puts "Chef Client failed. #{@updated_resources} resources would have been updated"
+        else
+          puts "Chef Client failed. #{@updated_resources} resources updated"
+        end
+      end
+
       # Called right after ohai runs.
       def ohai_completed(node)
       end
@@ -190,6 +198,7 @@ class Chef
       def output_record(line)
 
       end
+
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
       # its permissions updated.

@@ -170,9 +170,11 @@ class Chef
       run_ohai
       @events.ohai_completed(node)
       register unless Chef::Config[:solo]
-      build_node
+
+      @node = load_node
 
       begin
+        build_node
 
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
@@ -194,7 +196,7 @@ class Chef
         run_status.exception = e
         run_failed
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
-        @events.run_completed
+        @events.run_failed(e)
         raise
       ensure
         run_status = nil
@@ -253,17 +255,12 @@ class Chef
       name
     end
 
-    # Builds a new node object for this client.  Starts with querying for the FQDN of the current
-    # host (unless it is supplied), then merges in the facts from Ohai.
+    # Applies environment, external JSON attributes, and override run list to
+    # the node, Then expands the run_list.
     #
     # === Returns
-    # node<Chef::Node>:: Returns the created node object, also stored in @node
+    # node<Chef::Node>:: The modified @node object. @node is modified in place.
     def build_node
-      @events.node_load_start(node_name, Chef::Config)
-      Chef::Log.debug("Building node object for #{node_name}")
-
-      @node = load_node
-
       # Allow user to override the environment of a node by specifying
       # a config parameter.
       if Chef::Config[:environment] && !Chef::Config[:environment].chop.empty?
@@ -307,7 +304,12 @@ class Chef
       @node
     end
 
+    # In client-server operation, loads the node state from the server. In
+    # chef-solo operation, builds a new node object.
     def load_node
+      @events.node_load_start(node_name, Chef::Config)
+      Chef::Log.debug("Building node object for #{node_name}")
+
       if Chef::Config[:solo]
         Chef::Node.build(node_name)
       else

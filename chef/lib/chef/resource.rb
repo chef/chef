@@ -123,6 +123,10 @@ F
       end
     end
 
+    def self.dsl_name
+      convert_to_snake_case(name, 'Chef::Resource')
+    end
+
     attr_accessor :params
     attr_accessor :provider
     attr_accessor :allowed_actions
@@ -393,7 +397,7 @@ F
     def to_text
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
       text = "# Declared in #{@source_line}\n"
-      text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(\"#{name}\") do\n"
+      text << self.class.dsl_name + "(\"#{name}\") do\n"
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           text << "  #{ivar.to_s.sub(/^@/,'')}(#{value.inspect})\n"
