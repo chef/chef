@@ -56,21 +56,21 @@ HLOCAL WINAPI LocalAlloc(
   __in  SIZE_T uBytes
 );
 =end
-        attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
+        safe_attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
 
 =begin
 UINT WINAPI LocalFlags(
   __in  HLOCAL hMem
 );
 =end
-        attach_function :LocalFlags, [ :pointer ], :UINT
+        safe_attach_function :LocalFlags, [ :pointer ], :UINT
 
 =begin
 HLOCAL WINAPI LocalFree(
   __in  HLOCAL hMem
 );
 =end
-        attach_function :LocalFree, [ :pointer ], :pointer
+        safe_attach_function :LocalFree, [ :pointer ], :pointer
 
 =begin
 HLOCAL WINAPI LocalReAlloc(
@@ -79,25 +79,25 @@ HLOCAL WINAPI LocalReAlloc(
   __in  UINT uFlags
 );
 =end
-        attach_function :LocalReAlloc, [ :pointer, :SIZE_T, :UINT ], :pointer
+        safe_attach_function :LocalReAlloc, [ :pointer, :SIZE_T, :UINT ], :pointer
 
 =begin
 UINT WINAPI LocalSize(
   __in  HLOCAL hMem
 );
 =end
-        attach_function :LocalSize, [ :pointer ], :SIZE_T
+        safe_attach_function :LocalSize, [ :pointer ], :SIZE_T
 
         ###############################################
         # FFI API Bindings
         ###############################################
 
         ffi_lib FFI::Library::LIBC
-        attach_function :malloc, [:size_t], :pointer
-        attach_function :calloc, [:size_t], :pointer
-        attach_function :realloc, [:pointer, :size_t], :pointer
-        attach_function :free, [:pointer], :void
-        attach_function :memcpy, [:pointer, :pointer, :size_t], :pointer
+        safe_attach_function :malloc, [:size_t], :pointer
+        safe_attach_function :calloc, [:size_t], :pointer
+        safe_attach_function :realloc, [:pointer, :size_t], :pointer
+        safe_attach_function :free, [:pointer], :void
+        safe_attach_function :memcpy, [:pointer, :pointer, :size_t], :pointer
 
       end
     end
