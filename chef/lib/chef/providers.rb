@@ -80,6 +80,7 @@ require 'chef/provider/service/macosx'
 require 'chef/provider/user/dscl'
 require 'chef/provider/user/pw'
 require 'chef/provider/user/useradd'
+require 'chef/provider/user/useradd-netbsd'
 require 'chef/provider/user/windows'
 
 require 'chef/provider/group/aix'

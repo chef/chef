@@ -377,3 +377,64 @@ describe Chef::Provider::User::Useradd do
     end
   end
 end
+
+# NetBSD uses a custom sub-class of Useradd, so let's test that here
+describe Chef::Provider::User::UseraddNetBsd do
+  before do
+    @node = Chef::Node.new
+    @run_context = Chef::RunContext.new(@node, {})
+
+    @new_resource = Chef::Resource::User.new("adam", @run_context)
+    @new_resource.comment "Adam Jacob"
+    @new_resource.uid 1000
+    @new_resource.home "/home/adam"
+    @new_resource.shell "/usr/bin/zsh"
+    @new_resource.password "abracadabra"
+    @new_resource.system false
+    @new_resource.manage_home false
+    @new_resource.non_unique false
+    @current_resource = Chef::Resource::User.new("adam", @run_context)
+    @current_resource.comment "Adam Jacob"
+    @current_resource.uid 1000
+    @current_resource.gid 1000
+    @current_resource.home "/home/adam"
+    @current_resource.shell "/usr/bin/zsh"
+    @current_resource.password "abracadabra"
+    @current_resource.system false
+    @current_resource.manage_home false
+    @current_resource.non_unique false
+    @current_resource.supports({:manage_home => false, :non_unique => false})
+    @provider = Chef::Provider::User::UseraddNetBsd.new(@new_resource, @run_context)
+    @provider.current_resource = @current_resource
+  end
+
+  describe "when creating a user with GID set" do
+    before(:each) do
+      @current_resource = Chef::Resource::User.new(@new_resource.name, @run_context)
+      @current_resource.username(@new_resource.username)
+      @provider.current_resource = @current_resource
+      @provider.new_resource.gid '23'
+    end
+
+    it "runs useradd with the -g followed by the GID" do
+      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -d '/home/adam' adam"
+      @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+      @provider.create_user
+    end
+  end
+
+  describe "when creating a user without GID set" do
+    before(:each) do
+      @current_resource = Chef::Resource::User.new(@new_resource.name, @run_context)
+      @current_resource.username(@new_resource.username)
+      @provider.current_resource = @current_resource
+      @provider.new_resource.gid nil
+    end
+
+    it "runs useradd with -g '=uid'" do
+      command = "useradd -c 'Adam Jacob' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -d '/home/adam' -g '=uid' adam"
+      @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+      @provider.create_user
+    end
+  end
+end
