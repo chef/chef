@@ -23,10 +23,32 @@
 
 require 'etc'
 
+shared_context "setup correct permissions" do
+  before :each, { :requires_root => true, :unix_only => true } do
+    File.chown(Etc.getpwnam('nobody').uid, Etc.getgrnam('nobody').gid, path)
+    File.chmod(0776, path)
+  end
+  before :each, { :requires_unprivileged_user => true, :unix_only => true } do
+    File.chmod(0776, path)
+  end
+  # FIXME: windows
+end
+
+shared_context "setup broken permissions" do
+  before :each, { :requires_root => true, :unix_only => true } do
+    File.chown(0, 0, path)
+    File.chmod(0644, path)
+  end
+  before :each, { :requires_unprivileged_user => true, :unix_only => true } do
+    File.chmod(0644, path)
+  end
+  # FIXME: windows
+end
+
 shared_examples_for "a securable resource" do
   context "on Unix", :unix_only do
     let(:expected_user_name) { 'nobody' }
-    let(:expected_group_name) { 'nogroup' }
+    let(:expected_group_name) { 'nobody' }
     let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
     let(:expected_gid) { Etc.getgrnam(expected_group_name).gid }
 
