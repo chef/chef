@@ -152,9 +152,6 @@ describe Chef::Client do
       role_containing_cookbook1.name("role_containing_cookbook1")
       role_containing_cookbook1.run_list << "cookbook1"
 
-      Chef::Node.should_receive(:find_or_create).and_return(@node)
-      #@node.should_receive(:expand!).with('server').and_return(RunListExpansionFromDisk.new(RunListItem.new("cookbook1")))
-
       # build_node will call Node#expand! with server, which will
       # eventually hit the server to expand the included role.
       mock_chef_rest = mock("Chef::REST")
@@ -196,7 +193,6 @@ describe Chef::Client do
       override_role.name 'test_role'
       override_role.run_list << 'cookbook1'
 
-      Chef::Node.should_receive(:find_or_create).and_return(@node)
       mock_chef_rest = mock("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
