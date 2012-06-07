@@ -29,12 +29,19 @@ describe Chef::Provider::User do
     @new_resource.members "aj"
 
     @provider = Chef::Provider::Group.new(@new_resource, @run_context)
-    
+
     @current_resource = Chef::Resource::Group.new("aj", @run_context)
     @current_resource.gid 500
     @current_resource.members "aj"
     
     @provider.current_resource = @current_resource
+
+    @pw_group = mock("Struct::Group",
+      :name => "wheel",
+      :gid => 20,
+      :mem => [ "root", "aj" ]
+      )
+    Etc.stub!(:getgrnam).with('wheel').and_return(@pw_group)
   end
   
   it "assumes the group exists by default" do
@@ -42,14 +49,6 @@ describe Chef::Provider::User do
   end
 
   describe "when establishing the current state of the group" do
-    before do
-      @pw_group = mock("Struct::Group",
-        :name => "wheel",
-        :gid => 20,
-        :mem => [ "root", "aj" ]
-        )
-      Etc.stub!(:getgrnam).and_return(@pw_group)
-    end
   
     it "sets the group name of the current resource to the group name of the new resource" do
       @provider.load_current_resource
