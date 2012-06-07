@@ -100,7 +100,7 @@ EXPECTED
       actual = nil
       Tempfile.open('rspec-staging-test') do |staging|
         staging.close
-        @provider.should_receive(:set_file_access_controls).with(staging.path)
+        #@provider.should_receive(:set_file_access_controls).with(staging.path)
         @provider.stage_file_to_tmpdir(staging.path)
         actual = IO.read(staging.path)
       end
@@ -110,7 +110,6 @@ EXPECTED
     it "installs the file from the cookbook cache" do
       @new_resource.path(@install_to)
       @provider.should_receive(:backup_new_resource)
-      @provider.should_receive(:set_file_access_controls)
       @provider.run_action(:create)
       actual = IO.read(@install_to)
       actual.should == @file_content
@@ -118,7 +117,6 @@ EXPECTED
 
     it "installs the file for create_if_missing --> from Provider::File" do
       @new_resource.path(@install_to)
-      @provider.should_receive(:set_file_access_controls)
       @provider.should_receive(:backup_new_resource)
       @provider.run_action(:create_if_missing)
       actual = IO.read(@install_to)
@@ -147,7 +145,6 @@ EXPECTED
     end
 
     it "overwrites it when the create action is called" do
-      @provider.should_receive(:set_file_access_controls)
       @provider.should_receive(:backup_new_resource)
       @provider.run_action(:create)
       actual = IO.read(@target_file)
@@ -155,7 +152,6 @@ EXPECTED
     end
 
     it "marks the resource as updated by the last action" do
-      @provider.should_receive(:set_file_access_controls)
       @provider.should_receive(:backup_new_resource)
       @provider.run_action(:create)
       @new_resource.should be_updated
