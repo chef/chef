@@ -32,11 +32,13 @@ shared_examples_for "a file with the wrong content" do
   end
 
   it "should backup the existing file" do
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     resource.run_action(:create)
     Dir.glob(backup_glob).size.should equal(1)
   end
 
   it "should not attempt to backup the existing file if :backup == 0" do
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     resource.backup(0)
     resource.run_action(:create)
     Dir.glob(backup_glob).size.should equal(0)
