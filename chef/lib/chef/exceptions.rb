@@ -94,6 +94,10 @@ class Chef
     # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
 
+    # where multiple version constraints can be specified, only one
+    # version constraint should be matched.
+    class VersionConstraintConflict < ArgumentError; end
+
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
     class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
