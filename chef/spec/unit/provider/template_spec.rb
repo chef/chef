@@ -36,6 +36,8 @@ describe Chef::Provider::Template do
     @provider = Chef::Provider::Template.new(@resource, @run_context)
     @current_resource = @resource.dup
     @provider.current_resource = @current_resource
+    @access_controls = mock("access controls")
+    @provider.stub!(:access_controls).and_return(@access_controls)
   end
 
   describe "when creating the template" do
@@ -58,10 +60,12 @@ describe Chef::Provider::Template do
     end
 
     it "stops executing when the local template source can't be found" do 
+      @access_controls.stub!(:requires_changes?).and_return(false)
       @resource.source "invalid.erb" 
       @resource.local true
       lambda { @provider.run_action(:create) } .should raise_error Chef::Mixin::WhyRun::ResourceRequirements::Assertion::AssertionFailure
     end
+
     it "should use the cookbook name if defined in the template resource" do
       @resource.cookbook_name = 'apache2'
       @resource.cookbook('openldap')
@@ -71,6 +75,8 @@ describe Chef::Provider::Template do
 
     describe "when the target file does not exist" do
       it "creates the template with the rendered content" do
+        @access_controls.stub!(:requires_changes?).and_return(true)
+        @access_controls.should_receive(:set_all!)
         @node[:slappiness] = "a warm gun"
         @provider.should_receive(:backup)
         @provider.run_action(:create)
@@ -79,15 +85,18 @@ describe Chef::Provider::Template do
       end
 
       it "should set the file access control as specified in the resource" do
+        @access_controls.stub!(:requires_changes?).and_return(false)
+        @access_controls.should_receive(:set_all!)
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
-        @provider.should_receive(:set_all_access_controls) 
         @provider.run_action(:create)
         @resource.should be_updated_by_last_action
       end
 
       it "creates the template with the rendered content for the create if missing action" do
+        @access_controls.stub!(:requires_changes?).and_return(true)
+        @access_controls.should_receive(:set_all!)
         @node[:slappiness] = "happiness"
         @provider.should_receive(:backup)
         @provider.run_action(:create_if_missing)
@@ -99,15 +108,12 @@ describe Chef::Provider::Template do
     describe "when the target file has the wrong content" do
       before do
         File.open(@rendered_file_location, "w+") { |f| f.print "blargh" }
-
-        @access_controls = mock("access controls")
-        @provider.stub!(:access_controls).and_return(@access_controls)
-
       end
 
       it "overwrites the file with the updated content when the create action is run" do
         @node[:slappiness] = "a warm gun"
         @access_controls.stub!(:requires_changes?).and_return(false)
+        @access_controls.should_receive(:set_all!)
         @provider.should_receive(:backup)
         @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
@@ -116,17 +122,18 @@ describe Chef::Provider::Template do
 
       it "should set the file access control as specified in the resource" do
         @access_controls.stub!(:requires_changes?).and_return(true)
+        @access_controls.should_receive(:set_all!)
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
         @provider.should_receive(:backup)
-        @provider.should_receive(:set_all_access_controls)
         @provider.run_action(:create)
         @resource.should be_updated_by_last_action
       end
 
       it "doesn't overwrite the file when the create if missing action is run" do
         @access_controls.stub!(:requires_changes?).and_return(false)
+        @access_controls.should_not_receive(:set_all!)
         @node[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
         @provider.run_action(:create_if_missing)
@@ -165,10 +172,10 @@ describe Chef::Provider::Template do
       it "sets the file access controls if they have diverged" do
         @provider.stub!(:backup).and_return(true)
         @access_controls.stub!(:requires_changes?).and_return(true)
+        @access_controls.should_receive(:set_all!)
         @resource.owner("adam")
         @resource.group("wheel")
         @resource.mode(00644)
-        @provider.should_receive(:set_all_access_controls)
         @provider.should_receive(:backup)
         @provider.run_action(:create)
         @resource.should be_updated_by_last_action
