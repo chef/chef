@@ -27,6 +27,7 @@ require 'uber-s3'
 # http://opscode-full-stack.s3.amazonaws.com/ubuntu-11.04-i686/chef-full_10.12.0.rc.1-1_i386.deb
 # http://opscode-full-stack.s3.amazonaws.com/ubuntu-11.04-x86_64/chef-full_10.12.0.rc.1-1_amd64.deb
 
+# This will take in data about the OS, chef, and architecture and spit out the proper upload directory
 def package_name(os_platform, os_version, chef_version, architecture, package_iteration = nil)
   arch_dir = if (architecture == 'i386')
                'i686/'
@@ -34,7 +35,7 @@ def package_name(os_platform, os_version, chef_version, architecture, package_it
                'x86_64/'
              end
   arch_file_ext = if (os_platform == 'centos')
-                    arch_dir + '.rpm'
+                    arch_dir.chomp('/') + '.rpm'
                   else
                     if (architecture == 'i386')
                       'i386.deb'
@@ -74,18 +75,17 @@ end
 #   end
 # end
 
-# ARGV = [filename, os_platform, os_version, chef_version, architecture, package_iteration]
+# ARGV = [filename, os_platform, os_version, chef_version, architecture, credentials, package_iteration]
 
-package_iter = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[5])
+package_iter = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[7]) # format upload directory
 package = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4])
 
-puts ARGV[0] + " => " + package_iter
-puts ARGV[0] + " => " + package
+(key, secret, bucket) = IO.read(ARGV[5]).lines.to_a  # Read in s3 credentials
 
 s3 = UberS3.new({
-  :access_key         => 'abc', #PLACEHOLDER
-  :secret_access_key  => 'def', #PLACEHOLDER
-  :bucket             => 'opscode-full-stack',
+  :access_key         => key.chomp,
+  :secret_access_key  => secret.chomp,
+  :bucket             => bucket.chomp,
   :adapter            => :net_http
 })
 
