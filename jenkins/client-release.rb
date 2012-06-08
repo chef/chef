@@ -2,6 +2,7 @@
 
 
 require 'bundler/setup'
+require 'uber-s3'
 
 # Want to upload debian, ubuntu 10, ubuntu 11, centos 5, centos 6
 # Input - filename, S3 credentials, OS platform, OS version, architecture, Chef version, package iteration
@@ -60,15 +61,36 @@ def package_name(os_platform, os_version, chef_version, architecture, package_it
   filename = directorybase + arch_dir + chef_filename + arch_file_ext
 end
 
-os_list = ['debian', 'centos', 'ubuntu']
-arch_list = ['i386', 'x86_64']
-osversion_list = ['10.04', '5'] #made up versions, will differ across operating systems
+# os_list = ['debian', 'centos', 'ubuntu']
+# arch_list = ['i386', 'x86_64']
+# osversion_list = ['10.04', '5'] #made up versions, will differ across operating systems
 
-os_list.each do |os|
-  arch_list.each do |arch|
-    osversion_list.each do |osversion|
-      puts package_name(os, osversion, '10.12.0.rc.1', arch, 1)
-      puts package_name(os, osversion, '10.12.0.rc.1', arch)
-    end
-  end
-end
+# os_list.each do |os|
+#   arch_list.each do |arch|
+#     osversion_list.each do |osversion|
+#       puts package_name(os, osversion, '10.12.0.rc.1', arch, 1)
+#       puts package_name(os, osversion, '10.12.0.rc.1', arch)
+#     end
+#   end
+# end
+
+# ARGV = [filename, os_platform, os_version, chef_version, architecture, package_iteration]
+
+package_iter = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[5])
+package = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4])
+
+puts ARGV[0] + " => " + package_iter
+puts ARGV[0] + " => " + package
+
+s3 = UberS3.new({
+  :access_key         => 'abc', #PLACEHOLDER
+  :secret_access_key  => 'def', #PLACEHOLDER
+  :bucket             => 'opscode-full-stack',
+  :adapter            => :net_http
+})
+
+file = IO.read(ARGV[0])
+
+s3.store(package_iter, file, :access => :public_read)
+s3.store(package, file, :access => :public_read)
+
