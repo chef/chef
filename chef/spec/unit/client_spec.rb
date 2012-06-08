@@ -195,7 +195,6 @@ describe Chef::Client do
 
       original_runlist = @node.run_list.dup
 
-      Chef::Node.should_receive(:find_or_create).and_return(@node)
       mock_chef_rest = mock("Chef::REST")
       mock_chef_rest.should_receive(:get_rest).with("roles/test_role").and_return(override_role)
       Chef::REST.should_receive(:new).and_return(mock_chef_rest)
