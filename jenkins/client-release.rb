@@ -77,7 +77,7 @@ end
 
 # ARGV = [filename, os_platform, os_version, chef_version, architecture, credentials, package_iteration]
 
-package_iter = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[7]) # format upload directory
+package_iter = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[6]) # format upload directory
 package = package_name(ARGV[1], ARGV[2], ARGV[3], ARGV[4])
 
 (key, secret, bucket) = IO.read(ARGV[5]).lines.to_a  # Read in s3 credentials
