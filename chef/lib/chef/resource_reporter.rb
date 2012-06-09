@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require 'uri'
+
 class Chef
   class ResourceReporter
 
@@ -67,12 +69,24 @@ class Chef
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
+    attr_reader :run_id
 
-    def initialize
+    def initialize(rest_client)
       @updated_resources = []
       @pending_update  = nil
       @status = "success"
       @exception = nil
+      @run_id = nil
+      @rest_client = rest_client
+      @node = nil
+    end
+
+    def node_load_completed(node, expanded_run_list_with_versions, config)
+      @node = node
+      resource_history_url = "nodes/#{@node.name}/audit"
+      server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
+      run_uri = URI.parse(server_response["uri"])
+      @run_id = ::File.basename(run_uri.path)
     end
 
     def resource_action_start(resource, action, notification_type=nil, notifier=nil)
@@ -99,6 +113,10 @@ class Chef
     end
 
     def run_completed
+      resource_history_url = "nodes/#{@node.name}/audit/#{run_id}"
+      run_data = report
+      run_data["action"] = "end"
+      @rest_client.post_rest(resource_history_url, run_data)
     end
 
     def run_failed(exception)
@@ -111,6 +129,7 @@ class Chef
       run_data["resources"] = updated_resources.map do |resource_record|
         resource_record.for_json
       end
+      run_data["status"] = status
       run_data
     end
 

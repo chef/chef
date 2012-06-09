@@ -24,7 +24,8 @@ require 'chef/resource_reporter'
 describe Chef::ResourceReporter do
 
   before do
-    @resource_reporter = Chef::ResourceReporter.new
+    @rest_client = mock("Chef::REST (mock)")
+    @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
   end
@@ -43,10 +44,10 @@ describe Chef::ResourceReporter do
 
   context "after the chef run completes" do
     before do
-      @resource_reporter.run_completed
     end
 
     it "reports a successful run" do
+      pending "refactor how node gets set."
       @resource_reporter.status.should == "success"
     end
   end
@@ -206,9 +207,12 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
-        @resource_reporter.run_completed
         @report = @resource_reporter.report
         @first_update_report = @report["resources"].first
+      end
+
+      it "includes the run's status" do
+        @report.should have_key("status")
       end
 
       it "includes a list of updated resources" do
@@ -265,6 +269,44 @@ describe Chef::ResourceReporter do
 
     end
 
+  end
+
+  describe "when updating resource history on the server" do
+    context "after creating the run history document" do
+      before do
+        @node = Chef::Node.new
+        @node.name("spitfire")
+
+        response = {"uri"=>"https://example.com/nodes/spitfire/audit/ABC123"}
+        @rest_client.should_receive(:post_rest).
+          with("nodes/spitfire/audit", {:action => :begin}).
+          and_return(response)
+
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+      end
+
+      it "creates a run document on the server at the start of the run" do
+        @resource_reporter.run_id.should == "ABC123"
+      end
+
+      it "updates the run document with resource updates at the end of the run" do
+        # update some resources...
+        @resource_reporter.resource_action_start(@new_resource, :create)
+        @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
+        @resource_reporter.resource_updated(@new_resource, :create)
+
+        @expected_data = @resource_reporter.report
+        @expected_data["action"] = "end"
+
+        response = {"result"=>"ok"}
+
+        @rest_client.should_receive(:post_rest).
+          with("nodes/spitfire/audit/ABC123", @expected_data).
+          and_return(response)
+
+        @resource_reporter.run_completed
+      end
+    end
   end
 
 end
