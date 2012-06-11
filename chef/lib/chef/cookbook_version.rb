@@ -20,7 +20,6 @@
 # limitations under the License.
 
 require 'chef/log'
-require 'chef/client'
 require 'chef/node'
 require 'chef/resource_definition_list'
 require 'chef/recipe'
