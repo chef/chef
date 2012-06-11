@@ -76,7 +76,7 @@ class Chef
     attr_reader :run_id
 
     def initialize(rest_client)
-      @feature_enabled = true
+      @reporting_enabled = true
       @updated_resources = []
       @pending_update  = nil
       @status = "success"
@@ -95,7 +95,7 @@ class Chef
     rescue Net::HTTPServerException => e
       raise unless e.response.code.to_s == "404"
       Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
-      @feature_enabled = false
+      @reporting_enabled = false
     end
 
     def resource_action_start(resource, action, notification_type=nil, notifier=nil)
@@ -122,7 +122,7 @@ class Chef
     end
 
     def run_completed
-      if @feature_enabled
+      if reporting_enabled?
         resource_history_url = "nodes/#{@node.name}/audit/#{run_id}"
         run_data = report
         run_data["action"] = "end"
@@ -146,6 +146,10 @@ class Chef
       end
       run_data["status"] = status
       run_data
+    end
+
+    def reporting_enabled?
+      @reporting_enabled
     end
 
     private

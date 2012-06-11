@@ -40,6 +40,10 @@ describe Chef::ResourceReporter do
       @resource_reporter.status.should == "success"
     end
 
+    it "assumes the resource history feature is supported" do
+      @resource_reporter.reporting_enabled?.should be_true
+    end
+
   end
 
   context "after the chef run completes" do
@@ -171,6 +175,7 @@ describe Chef::ResourceReporter do
   end
 
   describe "when generating a report for the server" do
+
     context "for a successful client run" do
       before do
         # TODO: add inputs to generate expected output.
@@ -240,11 +245,14 @@ describe Chef::ResourceReporter do
       end
 
       it "includes the elapsed time for the resource to converge" do
-        @first_update_report["elapsed_time"].should be_within(0.1).of(0)
+        # TODO: API takes integer number of milliseconds as a string. This
+        # should be an int.
+        @first_update_report["elapsed_time"].to_i.should be_within(100).of(0)
       end
 
       it "includes the action executed by the resource" do
-        @first_update_report["action"].should == "create"
+        # TODO: rename as "action"
+        @first_update_report["result"].should == "create"
       end
 
     end
@@ -272,11 +280,35 @@ describe Chef::ResourceReporter do
   end
 
   describe "when updating resource history on the server" do
+    before do
+      @node = Chef::Node.new
+      @node.name("spitfire")
+    end
+
+    context "when the server does not support storing resource history" do
+      before do
+        # 404 getting the run_id
+        @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
+        @error = Net::HTTPServerException.new("404 message", @response)
+        @rest_client.should_receive(:post_rest).
+          with("nodes/spitfire/audit", {:action => :begin}).
+          and_raise(@error)
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+      end
+
+      it "assumes the feature is not enabled" do
+        @resource_reporter.reporting_enabled?.should be_false
+      end
+
+      it "does not send a resource report to the server" do
+        @rest_client.should_not_receive(:post_rest)
+        @resource_reporter.run_completed
+      end
+
+    end
+
     context "after creating the run history document" do
       before do
-        @node = Chef::Node.new
-        @node.name("spitfire")
-
         response = {"uri"=>"https://example.com/nodes/spitfire/audit/ABC123"}
         @rest_client.should_receive(:post_rest).
           with("nodes/spitfire/audit", {:action => :begin}).
