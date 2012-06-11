@@ -3,6 +3,7 @@
 
 require 'bundler/setup'
 require 'uber-s3'
+require 'ohai'
 
 # Want to upload debian, ubuntu 10, ubuntu 11, centos 5, centos 6
 # Input - filename, S3 credentials, OS platform, OS version, architecture, Chef version, package iteration
@@ -60,9 +61,14 @@ end
 
 # ARGV = [filepath, os_platform, os_version, architecture, credentials]
 
-package = package_name(ARGV[0], ARGV[1], ARGV[2], ARGV[3]) # format upload directory
+o = Ohai::System.new
+o.require_plugin('os')
+o.require_plugin('platform')
+o.require_plugin('linux/cpu') if o.os == 'linux'
 
-(key, secret, bucket) = IO.read(ARGV[4]).lines.to_a  # Read in s3 credentials
+package = package_name(ARGV[0], o['platform'], o['platform_version'], o['kernel']['machine']) # format upload directory
+
+(key, secret, bucket) = IO.read(ARGV[1]).lines.to_a  # Read in s3 credentials
 
 s3 = UberS3.new({
   :access_key         => key.chomp,
