@@ -96,15 +96,9 @@ EXPECTED
     end
 
     it "stages the cookbook to a temporary file" do
-      cache_file_location = CHEF_SPEC_DATA + "/cookbooks/apache2/files/default/apache2_module_conf_generate.pl"
-      actual = nil
-      Tempfile.open('rspec-staging-test') do |staging|
-        staging.close
-        #@provider.should_receive(:set_file_access_controls).with(staging.path)
-        @provider.stage_file_to_tmpdir(staging.path)
-        actual = IO.read(staging.path)
-      end
-      actual.should == @file_content
+      @new_resource.path(@install_to)
+      @provider.should_receive(:deploy_tempfile)
+      @provider.run_action(:create)
     end
 
     it "installs the file from the cookbook cache" do
@@ -142,6 +136,12 @@ EXPECTED
       @tempfile.close
       @current_resource = @new_resource.dup
       @provider.current_resource = @current_resource
+    end
+
+    it "stages the cookbook to a temporary file" do
+      @new_resource.path(@install_to)
+      @provider.should_receive(:deploy_tempfile)
+      @provider.run_action(:create)
     end
 
     it "overwrites it when the create action is called" do

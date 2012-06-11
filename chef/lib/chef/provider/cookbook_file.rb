@@ -43,9 +43,12 @@ class Chef
           converge_by(description) do
             Chef::Log.debug("#{@new_resource} has new contents")
             backup_new_resource
-            FileUtils.cp(file_cache_location, @new_resource.path)
+            deploy_tempfile do |tempfile|
+              Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
+              tempfile.close
+              FileUtils.cp(file_cache_location, tempfile.path)
+            end
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
-            access_controls.set_all!
           end
         else
           set_all_access_controls

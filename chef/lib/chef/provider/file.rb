@@ -227,6 +227,19 @@ class Chef
         end
       end
 
+      def deploy_tempfile
+        Tempfile.open(::File.basename(@new_resource.name)) do |tempfile|
+          yield tempfile
+
+          temp_res = Chef::Resource::CookbookFile.new(@new_resource.name)
+          temp_res.path(tempfile.path)
+          ac = Chef::FileAccessControl.new(temp_res, @new_resource, self)
+          ac.set_all!
+          puts "BAR: #{@new_resource.path}"
+          FileUtils.mv(tempfile.path, @new_resource.path)
+        end
+      end
+
       private
 
       def short_cksum(checksum)
