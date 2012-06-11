@@ -58,34 +58,43 @@ describe Chef::Client do
       mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
       mock_chef_runner = mock("Chef::Runner")
 
-      # --Client.register
+      # --Client#register
       #   Make sure Client#register thinks the client key doesn't
       #   exist, so it tries to register and create one.
       File.should_receive(:exists?).with(Chef::Config[:client_key]).exactly(1).times.and_return(false)
 
-      #   Client.register will register with the validation client name.
+      #   Client#register will register with the validation client name.
       Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).and_return(mock_chef_rest_for_client)
       mock_chef_rest_for_client.should_receive(:register).with(@fqdn, Chef::Config[:client_key]).and_return(true)
-      #   Client.register will then turn around create another
+      #   Client#register will then turn around create another
       #   Chef::REST object, this time with the client key it got from the
       #   previous step.
       Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], @fqdn, Chef::Config[:client_key]).and_return(mock_chef_rest_for_node)
 
-      # --Client.build_node
+      # --Client#build_node
       #   looks up the node, which we will return, then later saves it.
       Chef::Node.should_receive(:find_or_create).with(@fqdn).and_return(@node)
 
-      # --Client.setup_run_context
-      # ---Client.sync_cookbooks -- downloads the list of cookbooks to sync
+      # --ResourceReporter#node_load_completed
+      #   gets a run id from the server for storing resource history
+      #   (has its own tests, so stubbing it here.)
+      Chef::ResourceReporter.any_instance.should_receive(:node_load_completed)
+
+      # --ResourceReporter#run_completed
+      #   updates the server with the resource history
+      #   (has its own tests, so stubbing it here.)
+      Chef::ResourceReporter.any_instance.should_receive(:run_completed)
+      # --Client#setup_run_context
+      # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
       #
       Chef::CookbookSynchronizer.any_instance.should_receive(:sync_cookbooks)
       mock_chef_rest_for_node.should_receive(:post_rest).with("environments/_default/cookbook_versions", {:run_list => []}).and_return({})
 
-      # --Client.converge
+      # --Client#converge
       Chef::Runner.should_receive(:new).and_return(mock_chef_runner)
       mock_chef_runner.should_receive(:converge).and_return(true)
 
-      # --Client.save_updated_node
+      # --Client#save_updated_node
       Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url]).and_return(mock_chef_rest_for_node_save)
       mock_chef_rest_for_node_save.should_receive(:put_rest).with("nodes/#{@fqdn}", @node).and_return(true)
 
