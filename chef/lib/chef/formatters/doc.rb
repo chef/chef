@@ -228,7 +228,7 @@ class Chef
       # Called when resource current state load is skipped due to the provider
       # not supporting whyrun mode.
       def resource_current_state_load_bypassed(resource, action, current_resource)
-        @output.color("Whyrun not supported for #{resource}, bypassing load.", :yellow)
+        @output.color("\nWhyrun not supported for #{resource}, bypassing load.", :yellow)
       end
 
       # Called when a provider makes an assumption after a failed assertion
