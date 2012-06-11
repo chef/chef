@@ -19,9 +19,10 @@
 #
 
 require 'uri'
+require 'chef/event_dispatch/base'
 
 class Chef
-  class ResourceReporter
+  class ResourceReporter < EventDispatch::Base
 
     class ResourceReport < Struct.new(:new_resource,
                                       :current_resource,
@@ -51,8 +52,11 @@ class Chef
         as_hash["id"]     = new_resource.identity
         as_hash["after"]  = new_resource.state
         as_hash["before"] = current_resource.state if current_resource
-        as_hash["elapsed_time"] = elapsed_time
-        as_hash["action"] = action.to_s
+        as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
+        # TODO: include diffs, etc. here:
+        as_hash["delta"] = ""
+        # TODO: rename as "action"
+        as_hash["result"] = action.to_s
         if success?
         else
           #as_hash["result"] = "failed"
@@ -72,6 +76,7 @@ class Chef
     attr_reader :run_id
 
     def initialize(rest_client)
+      @feature_enabled = true
       @updated_resources = []
       @pending_update  = nil
       @status = "success"
@@ -87,6 +92,10 @@ class Chef
       server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
       run_uri = URI.parse(server_response["uri"])
       @run_id = ::File.basename(run_uri.path)
+    rescue Net::HTTPServerException => e
+      raise unless e.response.code.to_s == "404"
+      Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
+      @feature_enabled = false
     end
 
     def resource_action_start(resource, action, notification_type=nil, notifier=nil)
@@ -113,10 +122,16 @@ class Chef
     end
 
     def run_completed
-      resource_history_url = "nodes/#{@node.name}/audit/#{run_id}"
-      run_data = report
-      run_data["action"] = "end"
-      @rest_client.post_rest(resource_history_url, run_data)
+      if @feature_enabled
+        resource_history_url = "nodes/#{@node.name}/audit/#{run_id}"
+        run_data = report
+        run_data["action"] = "end"
+        Chef::Log.info("Sending resource update report (run-id: #{run_id})")
+        Chef::Log.debug run_data.inspect
+        @rest_client.post_rest(resource_history_url, run_data)
+      else
+        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+      end
     end
 
     def run_failed(exception)

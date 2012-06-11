@@ -40,6 +40,7 @@ require 'chef/formatters/base'
 require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
 require 'chef/version'
+require 'chef/resource_reporter'
 require 'ohai'
 require 'rbconfig'
 
@@ -348,7 +349,9 @@ class Chef
         @events.registration_completed
       end
       # We now have the client key, and should use it from now on.
-      self.rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @resource_reporter = Chef::ResourceReporter.new(@rest)
+      @events.register(@resource_reporter)
     rescue Exception => e
       # TODO: munge exception so a semantic failure message can be given to the
       # user
