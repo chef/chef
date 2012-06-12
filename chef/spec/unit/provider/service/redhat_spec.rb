@@ -43,11 +43,6 @@ describe "Chef::Provider::Service::Redhat" do
     end
 
     describe "load current resource" do
-      it "should raise an error if /sbin/chkconfig does not exist" do
-        File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
-        lambda { @provider.load_current_resource }.should raise_error(Errno::ENOENT)
-      end
-  
       it "sets the current enabled status to true if the service is enabled for any run level" do
         status = mock("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
         @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
@@ -71,6 +66,13 @@ describe "Chef::Provider::Service::Redhat" do
   
     describe "define resource requirements" do
     
+      it "should raise an error if /sbin/chkconfig does not exist" do
+        File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
+        @provider.load_current_resource
+        @provider.define_resource_requirements
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+      end
+  
       it "should raise an error if the service does not exist" do
         status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")
         @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
@@ -102,14 +104,14 @@ describe "Chef::Provider::Service::Redhat" do
       Chef::Config[:why_run] = false
     end
 
-    describe "load current resource" do
+    describe "define resource requirements" do
       it "should raise an error if /sbin/chkconfig does not exist" do
         File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
-        lambda { @provider.load_current_resource }.should raise_error(Errno::ENOENT)
+        @provider.load_current_resource
+        @provider.define_resource_requirements
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
       end
-    end
   
-    describe "define resource requirements" do
       it "should not raise an error if the service does not exist" do
         status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")
         @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
