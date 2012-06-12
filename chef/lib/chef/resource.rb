@@ -501,8 +501,12 @@ F
       run_context.events
     end
 
-    def run_action(action)
-      raise ArgumentError, "nil is not a valid action for resource #{self}" if action.nil?
+    def run_action(action, notification_type=nil, notifying_resource=nil)
+      # Try to resolve lazy/forward references in notifications again to handle
+      # the case where the resource was defined lazily (ie. in a ruby_block)
+      events.resource_action_start(self, action, notification_type, notifying_resource)
+      resolve_notification_references
+      validate_action(action)
 
       if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
         # This can be noisy
@@ -515,28 +519,46 @@ F
 
       begin
         return if should_skip?(action)
-        # leverage new platform => short_name => resource
-        # which requires explicitly setting provider in
-        # resource class
-        if self.provider
-          provider = self.provider.new(self, self.run_context)
-          provider.action = action
-        else # fall back to old provider resolution
-          provider = Chef::Platform.provider_for_resource(self, action)
-        end
-        provider.run_action
-      rescue => e
+        provider_for_action(action).run_action
+      rescue Exception => e
         if ignore_failure
-          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
+          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}; ignore_failure is set, continuing")
+          events.resource_failed(self, action, e)
+        elsif retries > 0
+          events.resource_failed_retriable(self, action, retries, e)
+          @retries -= 1
+          Chef::Log.info("Retrying execution of #{self}, #{retries} attempt(s) left")
+          sleep retry_delay
+          retry
         else
-          Chef::Log.error("#{self} (#{defined_at}) has had an error")
-          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
-          new_exception.set_backtrace(e.backtrace)
-          raise new_exception
+          events.resource_failed(self, action, e)
+          raise customize_exception(e)
         end
       end
     end
 
+    def validate_action(action)
+      raise ArgumentError, "nil is not a valid action for resource #{self}" if action.nil?
+    end
+
+    def provider_for_action(action)
+      # leverage new platform => short_name => resource
+      # which requires explicitly setting provider in
+      # resource class
+      if self.provider
+        provider = self.provider.new(self, self.run_context)
+        provider.action = action
+        provider
+      else # fall back to old provider resolution
+        Chef::Platform.provider_for_resource(self, action)
+      end
+    end
+
+    def customize_exception(e)
+      new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
+      new_exception.set_backtrace(e.backtrace)
+      new_exception
+    end
     # Evaluates not_if and only_if conditionals. Returns a falsey value if any
     # of the conditionals indicate that this resource should be skipped, i.e.,
     # if an only_if evaluates to false or a not_if evaluates to true.

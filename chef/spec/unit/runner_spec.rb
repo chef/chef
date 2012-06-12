@@ -116,7 +116,7 @@ describe Chef::Runner do
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).and_raise(ArgumentError)
-    @runner.should_receive(:sleep).with(2).exactly(3).times
+    @first_resource.should_receive(:sleep).with(2).exactly(3).times
     lambda { @runner.converge }.should raise_error(ArgumentError)
   end
 

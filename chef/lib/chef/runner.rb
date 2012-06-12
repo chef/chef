@@ -46,27 +46,7 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
-      # Try to resolve lazy/forward references in notifications again to handle
-      # the case where the resource was defined lazily (ie. in a ruby_block)
-      resource.resolve_notification_references
-
-      begin
-        events.resource_action_start(resource, action, notification_type, notifying_resource)
-        Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
-        resource.run_action(action)
-      rescue Exception => e
-        Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
-        if resource.retries > 0
-          events.resource_failed_retriable(resource, action, resource.retries, e)
-          resource.retries -= 1
-          Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
-          sleep resource.retry_delay
-          retry
-        else
-          events.resource_failed(resource, action, e)
-        end
-        raise e unless resource.ignore_failure
-      end
+      resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications
       # associated with the resource, but only if it was updated *this time*
