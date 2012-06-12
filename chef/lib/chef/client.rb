@@ -155,7 +155,8 @@ class Chef
     # Do a full run for this Chef::Client.  Calls:
     #
     #  * run_ohai - Collect information about the system
-    #  * build_node - Get the last known state, merge with local changes
+    #  * load_node - Get the last known stage from the server
+    #  * build_node - Merge state with local changes
     #  * register - If not in solo mode, make sure the server knows about this client
     #  * sync_cookbooks - If not in solo mode, populate the local cache with the node's cookbooks
     #  * converge - Bring this system up to date
@@ -172,7 +173,7 @@ class Chef
       @events.ohai_completed(node)
       register unless Chef::Config[:solo]
 
-      @node = load_node
+      load_node
 
       begin
         build_node
@@ -312,9 +313,9 @@ class Chef
       Chef::Log.debug("Building node object for #{node_name}")
 
       if Chef::Config[:solo]
-        Chef::Node.build(node_name)
+        @node = Chef::Node.build(node_name)
       else
-        Chef::Node.find_or_create(node_name)
+        @node = Chef::Node.find_or_create(node_name)
       end
     rescue Exception => e
       # TODO: wrap this exception so useful error info can be given to the
