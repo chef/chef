@@ -502,9 +502,9 @@ F
     end
 
     def run_action(action, notification_type=nil, notifying_resource=nil)
+      events.resource_action_start(self, action, notification_type, notifying_resource)
       # Try to resolve lazy/forward references in notifications again to handle
       # the case where the resource was defined lazily (ie. in a ruby_block)
-      events.resource_action_start(self, action, notification_type, notifying_resource)
       resolve_notification_references
       validate_action(action)
 
