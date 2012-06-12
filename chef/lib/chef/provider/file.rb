@@ -235,7 +235,6 @@ class Chef
           temp_res.path(tempfile.path)
           ac = Chef::FileAccessControl.new(temp_res, @new_resource, self)
           ac.set_all!
-          puts "BAR: #{@new_resource.path}"
           FileUtils.mv(tempfile.path, @new_resource.path)
         end
       end
