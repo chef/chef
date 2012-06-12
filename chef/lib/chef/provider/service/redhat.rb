@@ -55,9 +55,12 @@ class Chef
         def load_current_resource
           super
 
-          chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
-          @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
-          @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
+          if ::File.exists?("/sbin/chkconfig")
+            chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
+            @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
+            @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
+          end 
+
           @current_resource
         end
 

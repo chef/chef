@@ -68,6 +68,8 @@ describe "Chef::Provider::Service::Redhat" do
     
       it "should raise an error if /sbin/chkconfig does not exist" do
         File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
+        @provider.stub!(:shell_out).with("/sbin/service chef status").and_raise(Errno::ENOENT)
+        @provider.stub!(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_raise(Errno::ENOENT)
         @provider.load_current_resource
         @provider.define_resource_requirements
         lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
@@ -107,6 +109,8 @@ describe "Chef::Provider::Service::Redhat" do
     describe "define resource requirements" do
       it "should raise an error if /sbin/chkconfig does not exist" do
         File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
+        @provider.stub!(:shell_out).with("/sbin/service chef status").and_raise(Errno::ENOENT)
+        @provider.stub!(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_raise(Errno::ENOENT)
         @provider.load_current_resource
         @provider.define_resource_requirements
         lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
