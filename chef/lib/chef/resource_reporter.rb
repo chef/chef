@@ -65,6 +65,10 @@ class Chef
 
       end
 
+      def finish
+        self.elapsed_time = new_resource.elapsed_time
+      end
+
       def success?
         !self.exception
       end
@@ -98,17 +102,12 @@ class Chef
       @reporting_enabled = false
     end
 
-    def resource_action_start(resource, action, notification_type=nil, notifier=nil)
-      @start_time = Time.new
-    end
-
     def resource_current_state_loaded(new_resource, action, current_resource)
       @pending_update = ResourceReport.new_with_current_state(new_resource, action, current_resource)
     end
 
     def resource_up_to_date(new_resource, action)
       @pending_update = nil
-      @start_time =nil
     end
 
     def resource_updated(new_resource, action)
@@ -155,7 +154,7 @@ class Chef
     private
 
     def resource_completed
-      @pending_update.elapsed_time = Time.new - @start_time
+      @pending_update.finish
       @updated_resources << @pending_update
       @pending_update = nil
     end

@@ -144,6 +144,8 @@ F
     attr_reader :not_if_args
     attr_reader :only_if_args
 
+    attr_reader :elapsed_time
+
     # Each notify entry is a resource/action pair, modeled as an
     # Struct with a #resource and #action member
     attr_reader :immediate_notifications
@@ -169,6 +171,7 @@ F
       @immediate_notifications = Array.new
       @delayed_notifications = Array.new
       @source_line = nil
+      @elapsed_time = 0
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
@@ -502,6 +505,9 @@ F
     end
 
     def run_action(action, notification_type=nil, notifying_resource=nil)
+      # reset state in case of multiple actions on the same resource.
+      @elapsed_time = 0
+      start_time = Time.now
       events.resource_action_start(self, action, notification_type, notifying_resource)
       # Try to resolve lazy/forward references in notifications again to handle
       # the case where the resource was defined lazily (ie. in a ruby_block)
@@ -534,6 +540,8 @@ F
           events.resource_failed(self, action, e)
           raise customize_exception(e)
         end
+      ensure
+        @elapsed_time = Time.now - start_time
       end
     end
 
