@@ -83,7 +83,6 @@ build do
   rake "gem"
 
   gem ["install chef-server/pkg/chef-server*.gem",
-       "-v #{version}",
        "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" ")
 
