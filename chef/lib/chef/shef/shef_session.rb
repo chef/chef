@@ -142,7 +142,8 @@ module Shef
     session_type :standalone
 
     def rebuild_context
-      @run_context = Chef::RunContext.new(@node, {}) # no recipes
+      cookbook_collection = Chef::CookbookCollection.new({})
+      @run_context = Chef::RunContext.new(@node, cookbook_collection, @events) # no recipes
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", [])) # empty recipe list
     end
 
@@ -169,7 +170,8 @@ module Shef
     def rebuild_context
       @run_status = Chef::RunStatus.new(@node, @events)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
-      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
+      cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path]))
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
       @run_status.run_context = run_context
     end
@@ -199,7 +201,8 @@ module Shef
       @run_status = Chef::RunStatus.new(@node)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, Chef::REST.new(Chef::Config[:server_url])) }
       cookbook_hash = @client.sync_cookbooks
-      @run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
+      cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
       @run_context.load(Chef::RunList::RunListExpansionFromAPI.new("_default", []))
       @run_status.run_context = run_context
     end
