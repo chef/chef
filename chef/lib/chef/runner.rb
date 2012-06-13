@@ -46,7 +46,9 @@ class Chef
       # the case where the resource was defined lazily (ie. in a ruby_block)
       resource.resolve_notification_references
 
-      resource.run_action(action)
+      retry_if_allowed(resource) do
+        resource.run_action(action)
+      end
 
       # Execute any immediate and queue up any delayed notifications
       # associated with the resource, but only if it was updated *this time*
@@ -78,21 +80,9 @@ class Chef
 
       # Execute each resource.
       run_context.resource_collection.execute_each_resource do |resource|
-        begin
-          Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
+        Chef::Log.debug("Processing #{resource} on #{run_context.node.name}")
 
-          # Execute each of this resource's actions.
-          Array(resource.action).each {|action| run_action(resource, action)}
-        rescue => e
-          Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
-          if resource.retries > 0
-            resource.retries -= 1
-            Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
-            sleep resource.retry_delay
-            retry
-          end
-          raise e unless resource.ignore_failure
-        end
+        Array(resource.action).each { |action| run_action(resource, action)}
       end
 
       # Run all our :delayed actions
@@ -104,6 +94,21 @@ class Chef
       end
 
       true
+    end
+
+    def retry_if_allowed(resource)
+      begin
+        yield
+      rescue => e
+        Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
+        if resource.retries > 0
+          resource.retries -= 1
+          Chef::Log.info("Retrying execution of #{resource}, #{resource.retries} attempt(s) left")
+          sleep resource.retry_delay
+          retry
+        end
+        raise e unless resource.ignore_failure
+      end
     end
   end
 end

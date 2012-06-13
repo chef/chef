@@ -119,6 +119,45 @@ describe Chef::Runner do
     lambda { @runner.converge }.should raise_error(ArgumentError)
   end
 
+  it "should execute immediate actions on changed resources and retry if specified" do
+    @first_resource.retries 3
+    notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    notifying_resource.action = :purr
+    @run_context.resource_collection << notifying_resource
+    @first_resource.action = :nothing
+    @runner.should_receive(:sleep).with(2).exactly(3).times
+    notifying_resource.notifies(:sell, @first_resource, :immediately)
+    @first_resource.should_receive(:run_action).with(:nothing).once.and_return(true)
+    @first_resource.should_receive(:run_action).with(:sell).exactly(4).and_raise(ArgumentError)
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+
+  it "should execute delayed actions on changed resources and retry if specified" do
+    @first_resource.retries 3
+    notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    notifying_resource.action = :purr
+    @run_context.resource_collection << notifying_resource
+    @first_resource.action = :nothing
+    @runner.should_receive(:sleep).with(2).exactly(3).times
+    notifying_resource.notifies(:sell, @first_resource, :delayed)
+    @first_resource.should_receive(:run_action).with(:nothing).once.and_return(true)
+    @first_resource.should_receive(:run_action).with(:sell).exactly(4).and_raise(ArgumentError)
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+ 
+  it "should not retry failed resources it notifies" do
+    notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    notifying_resource.action = :purr
+    notifying_resource.retries 3
+    @run_context.resource_collection << notifying_resource
+    @first_resource.action = :nothing
+    @runner.should_not_receive(:sleep)
+    notifying_resource.notifies(:sell, @first_resource, :delayed)
+    @first_resource.should_receive(:run_action).with(:nothing).once.and_return(true)
+    @first_resource.should_receive(:run_action).with(:sell).once.and_raise(ArgumentError)
+    lambda { @runner.converge }.should raise_error(ArgumentError)
+  end
+
   it "should execute immediate actions on changed resources" do
     notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
     notifying_resource.action = :purr # only action that will set updated on the resource
@@ -132,7 +171,7 @@ describe Chef::Runner do
 
     @first_resource.should be_updated
   end
-
+  
   it "should follow a chain of actions" do
     @first_resource.action = :nothing
 
