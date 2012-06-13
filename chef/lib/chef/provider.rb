@@ -112,20 +112,12 @@ class Chef
       # we can't execute the action.
       # in non-whyrun mode, this will still cause the action to be
       # executed normally.
-      if whyrun_supported?
-        if requirements.action_blocked?(@action) 
-          converge_by("due to failed resource requirement, action #{@action} cannot be processed in whyrun mode. Assuming normal execution.") { }
-        else
-          send("action_#{@action}")
-        end
+      if whyrun_supported? && !requirements.action_blocked?(@action)
+        send("action_#{@action}")
+      elsif whyrun_mode?
+        events.resource_bypassed(@new_resource, @action, self)
       else
-        if @action == :nothing
-          action_nothing
-        else
-          converge_by("bypass action #{@action}, whyrun not supported in resource provider #{self.class.name} ") do
-            send("action_#{@action}")
-          end
-        end
+        send("action_#{@action}")
       end
       converge
     end

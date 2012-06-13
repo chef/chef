@@ -239,6 +239,10 @@ class Chef
       def resource_current_state_load_bypassed(resource, action, current_resource)
       end
 
+      # Called when evaluating a resource that does not support whyrun in whyrun mode
+      def resource_bypassed(resource, action)
+      end
+
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
       end

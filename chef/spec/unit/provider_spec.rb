@@ -110,7 +110,7 @@ describe Chef::Provider do
   end
 
   context "when converge actions have been added to the queue" do
-    describe "and provider supports whyrun mode" do 
+    describe "and provider supports whyrun mode" do
       before do
         @provider = ConvergeActionDemonstrator.new(@resource, @run_context)
       end
@@ -136,9 +136,14 @@ describe Chef::Provider do
       end
     end
 
-    describe "and provider does not support whyrun mode" do 
-      before(:each) do 
+    describe "and provider does not support whyrun mode" do
+      before do
+        Chef::Config[:why_run] = true
         @provider = NoWhyrunDemonstrator.new(@resource, @run_context)
+      end
+
+      after do
+        Chef::Config[:why_run] = false
       end
 
       it "should tell us that it doesn't support whyrun" do
@@ -147,14 +152,15 @@ describe Chef::Provider do
 
       it "should automatically generate a converge_by block on the provider's behalf" do
         @provider.run_action(:foo)
-        @provider.send(:converge_actions).should have(1).actions
+        @provider.send(:converge_actions).should have(0).actions
+        @provider.system_state_altered.should be_false
       end
 
       it "should automatically execute the generated converge_by block" do
         @provider.run_action(:foo)
-        @provider.instance_variable_get(:@system_state_altered).should be_true
-        @resource.should be_updated
-        @resource.should be_updated_by_last_action
+        @provider.system_state_altered.should be_false
+        @resource.should_not be_updated
+        @resource.should_not be_updated_by_last_action
       end
     end
   end

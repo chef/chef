@@ -195,6 +195,10 @@ class Chef
         puts " (up to date)"
       end
 
+      def resource_bypassed(resource, action, provider)
+        puts " (Skipped: whyrun not supported by provider #{provider.class.name})"
+      end
+
       def output_record(line)
 
       end
