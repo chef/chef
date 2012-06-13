@@ -151,6 +151,38 @@ describe Chef::ResourceReporter do
       end
     end
 
+    # Some providers, such as RemoteDirectory and some LWRPs use other
+    # resources for their implementation. These should be hidden from reporting
+    # since we only care about the top-level resource and not the sub-resources
+    # used for implementation.
+    context "and a nested resource is updated" do
+      before do
+        @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
+        @resource_reporter.resource_action_start(@implementation_resource , :create)
+        @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
+        @resource_reporter.resource_updated(@implementation_resource, :create)
+        @resource_reporter.resource_updated(@new_resource, :create)
+      end
+
+      it "does not collect data about the nested resource" do
+        @resource_reporter.should have(1).updated_resources
+      end
+    end
+
+    context "and a nested resource runs but is not updated" do
+      before do
+        @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
+        @resource_reporter.resource_action_start(@implementation_resource , :create)
+        @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
+        @resource_reporter.resource_up_to_date(@implementation_resource, :create)
+        @resource_reporter.resource_updated(@new_resource, :create)
+      end
+
+      it "does not collect data about the nested resource" do
+        @resource_reporter.should have(1).updated_resources
+      end
+    end
+
     context "and the resource failed to converge" do
       before do
         @exception = Exception.new

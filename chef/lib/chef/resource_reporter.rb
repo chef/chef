@@ -103,21 +103,25 @@ class Chef
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
-      @pending_update = ResourceReport.new_with_current_state(new_resource, action, current_resource)
+      unless nested_resource?(new_resource)
+        @pending_update = ResourceReport.new_with_current_state(new_resource, action, current_resource)
+      end
     end
 
     def resource_up_to_date(new_resource, action)
-      @pending_update = nil
+      @pending_update = nil unless nested_resource?(new_resource)
     end
 
     def resource_updated(new_resource, action)
-      resource_completed
+      resource_completed unless nested_resource?(new_resource)
     end
 
     def resource_failed(new_resource, action, exception)
-      @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
-      @pending_update.exception = exception
-      resource_completed
+      unless nested_resource?(new_resource)
+        @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
+        @pending_update.exception = exception
+        resource_completed
+      end
     end
 
     def run_completed
@@ -152,6 +156,14 @@ class Chef
     end
 
     private
+
+    # If we are getting messages about a resource while we are in the middle of
+    # another resource's update, we assume that the nested resource is just the
+    # implementation of a provider, and we want to hide it from the reporting
+    # output.
+    def nested_resource?(new_resource)
+      @pending_update && @pending_update.new_resource != new_resource
+    end
 
     def resource_completed
       @pending_update.finish
