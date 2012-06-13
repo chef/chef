@@ -212,6 +212,7 @@ module Shef
       @client = Chef::Client.new
       @client.run_ohai
       @client.register
+      @client.load_node
       @client.build_node
     end
 
@@ -282,6 +283,7 @@ module Shef
       @client = DoppelGangerClient.new(@node_name)
       @client.run_ohai
       @client.register
+      @client.load_node
       @client.build_node
       @client.sync_cookbooks
     end
