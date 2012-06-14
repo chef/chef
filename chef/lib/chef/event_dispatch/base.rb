@@ -240,7 +240,7 @@ class Chef
       end
 
       # Called when evaluating a resource that does not support whyrun in whyrun mode
-      def resource_bypassed(resource, action)
+      def resource_bypassed(resource, action, current_resource)
       end
 
       # Called when a resource has no converge actions, e.g., it was already correct.
