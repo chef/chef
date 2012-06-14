@@ -198,7 +198,7 @@ module Shef
     end
 
     def rebuild_context
-      @run_status = Chef::RunStatus.new(@node)
+      @run_status = Chef::RunStatus.new(@node, @events)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, Chef::REST.new(Chef::Config[:server_url])) }
       cookbook_hash = @client.sync_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
