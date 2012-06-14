@@ -35,8 +35,12 @@ end
 
 require 'chef/version'
 
+require 'timeout'
+
 class Chef
   class REST
+    class RESTTimeout < Timeout::Error
+    end
     class RESTRequest
 
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
@@ -95,12 +99,21 @@ class Chef
       end
 
       def call
-        hide_net_http_bug do
-          http_client.request(http_request) do |response|
-            store_cookie(response)
-            yield response if block_given?
-            response
+        begin
+          Timeout::timeout(config[:rest_timeout], RESTTimeout) do
+            hide_net_http_bug do
+              http_client.request(http_request) do |response|
+                store_cookie(response)
+                yield response if block_given?
+                response
+              end
+            end
           end
+        rescue => e
+          if(e.is_a?(RESTTimeout))
+            Chef::Log.debug "Hard timeout reached for REST request: #{config[:rest_timeout]}"
+          end
+          raise
         end
       end
 
@@ -196,6 +209,7 @@ class Chef
         end
 
         @http_client.read_timeout = config[:rest_timeout]
+
       end
 
 
