@@ -50,15 +50,30 @@ class Chef
         out, err = out, err
       end
 
+      def highlight_error
+        puts "\n"
+        puts "-" * 80
+        yield
+        puts "-" * 80
+      end
+
       # Failed to register this client with the server.
       def registration_failed(node_name, exception, config)
         error_inspector = ErrorInspectors::RegistrationErrorInspector.new(node_name, exception, config)
-        puts "\n"
-        puts "-" * 80
-        puts "Chef encountered an error attempting to create the client \"#{node_name}\""
-        puts "\n"
-        puts error_inspector.suspected_cause
-        puts "-" * 80
+        highlight_error do
+          puts "Chef encountered an error attempting to create the client \"#{node_name}\""
+          puts "\n"
+          puts error_inspector.suspected_cause
+        end
+      end
+
+      def node_load_failed(node_name, exception, config)
+        error_inspector = ErrorInspectors::APIErrorInspector.new(node_name, exception, config)
+        highlight_error do
+          puts "Chef encountered an error attempting to load the node data for \"#{node_name}\""
+          puts "\n"
+          puts error_inspector.suspected_cause
+        end
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file in a
@@ -75,20 +90,19 @@ class Chef
       # to print contextual info about the failure.
       def file_load_failed(path, exception)
         wrapped_err = ErrorInspectors::CompileErrorInspector.new(path, exception)
-        puts "\n"
-        puts "-" * 80
-        puts "Error compiling #{path}:"
-        puts exception.to_s
-        puts "\n"
-        puts "Cookbook trace:"
-        wrapped_err.filtered_bt.each do |bt_line|
-          puts "  #{bt_line}"
+        highlight_error do
+          puts "Error compiling #{path}:"
+          puts exception.to_s
+          puts "\n"
+          puts "Cookbook trace:"
+          wrapped_err.filtered_bt.each do |bt_line|
+            puts "  #{bt_line}"
+          end
+          puts "\n"
+          puts "Most likely caused here:"
+          puts wrapped_err.context
+          puts "\n"
         end
-        puts "\n"
-        puts "Most likely caused here:"
-        puts wrapped_err.context
-        puts "\n"
-        puts "-" * 80
       end
 
       # Delegates to #file_loaded
