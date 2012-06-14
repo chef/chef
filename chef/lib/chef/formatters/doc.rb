@@ -3,24 +3,6 @@ require 'chef/config'
 
 class Chef
   module Formatters
-    # TODO: this shoudl be standalone, and perhaps shared with knife, etc
-    # as it was modified from code there originally. 
-    class Outputter 
-      def highline
-        @highline ||= begin
-          require 'highline'
-          HighLine.new
-        end
-      end
-      def color(string, *colors)
-        if Chef::Config[:color]
-          print highline.color(string, *colors)
-        else
-          print string
-        end
-      end
-    end
-
     #--
     # TODO: not sold on the name, but the output is similar to what rspec calls
     # "specdoc"
@@ -31,7 +13,6 @@ class Chef
       def initialize(out, err)
         super
 
-        @output = Outputter.new
         @updated_resources = 0
       end
 
@@ -76,6 +57,7 @@ class Chef
 
       # Failed to load node data from the server
       def node_load_failed(node_name, exception, config)
+        super
       end
 
       # Default and override attrs from roles have been computed, but not yet applied.

@@ -102,9 +102,13 @@ class Chef::Application
   # logger with output to stdout. This way, we magically do the right thing when
   # the user has configured logging to a file but they're running chef in the
   # shell to debug something.
+  #
+  # If the user has configured a formatter, then we skip the magical logger to
+  # keep the output pretty.
   def configure_logging
+    require 'pp'
     Chef::Log.init(Chef::Config[:log_location])
-    if ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize])
+    if ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config.formatter == "null")
       stdout_logger = Logger.new(STDOUT)
       STDOUT.sync = true
       stdout_logger.formatter = Chef::Log.logger.formatter

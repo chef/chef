@@ -25,6 +25,9 @@ There was a network error connecting to the Chef Server:
 #{exception.message}
 
 Your chef_server_url may be misconfigured, or the network could be down.
+
+Relevant config settings:
+--------------------------------------------------------------------------------
   chef_server_url  "#{server_url}"
 E
           when Chef::Exceptions::PrivateKeyMissing
@@ -33,7 +36,7 @@ Your private key could not be loaded from #{api_key}
 Check your configuration file and ensure that your key is readable
 E
           else
-            "#{e.class.name}: #{e.message}"
+            "#{exception.class.name}: #{exception.message}"
           end
         end
 
@@ -51,9 +54,13 @@ E
             else
               m=<<-E
 Failed to authenticate to the chef server (http 401).
-Server response: '#{format_rest_error}'
 
-One of these configuration options may be incorrect:
+Server response:
+--------------------------------------------------------------------------------
+#{format_rest_error}
+
+Relevant config settings:
+--------------------------------------------------------------------------------
   chef_server_url   "#{server_url}"
   node_name         "#{username}"
   client_key        "#{api_key}"
@@ -81,10 +88,16 @@ E
           when Net::HTTPNotFound
             m=<<-E
 The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
+
+Relevant config settings:
+--------------------------------------------------------------------------------
   chef_server_url "#{server_url}"
 E
           when Net::HTTPInternalServerError
-            "Chef Server had a fatal error attempting to create the client."
+            m=<<-E
+The server had a fatal error attempting to load the node data.
+Server message: #{format_rest_error}
+E
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
             "The Chef Server is temporarily unavailable"
           else
