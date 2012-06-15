@@ -71,6 +71,7 @@ class Chef
           end
         else
           ui.error "Client '#{client['name']}' already exists"
+          exit 1
         end
       end
     end
