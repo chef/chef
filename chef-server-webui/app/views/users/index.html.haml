@@ -11,7 +11,7 @@
             %th &nbsp;
             %th.last &nbsp;
           - even = false
-          - @users.sort.each do |user, user_url|
+          - @users.sort_by {|key,value| key.downcase}.each do |user, user_url|
             %tr{:class => even ? "even": "odd" }
               %td{:colspan => 2}= link_to user, url(:users_show, :user_id => user)
               %td
