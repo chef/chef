@@ -12,7 +12,7 @@
               %th &nbsp;
               %th.last &nbsp;
           %tbody
-            - @databags.sort.each_with_index do |databag, index|
+            - @databags.sort_by {|key, value| value.downcase}.each_with_index do |databag, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
                 %td{:colspan => 2}= link_to databag[0], url(:databag, { :id => databag[0] })
                 %td
