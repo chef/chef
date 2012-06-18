@@ -72,6 +72,39 @@ class Chef
 
     end
 
+    class ErrorDescription
+
+      def initialize(title)
+        @title = title
+        @sections = []
+      end
+
+      def section(heading, text)
+        @sections << [heading, text]
+      end
+
+      def display(out)
+        out.puts "=" * 80
+        out.puts @title, :red
+        out.puts "=" * 80
+        out.puts "\n"
+        sections.each do |section|
+          display_section(section, out)
+        end
+      end
+
+      private
+
+      def display_section(section, out)
+        heading, text = section
+        out.puts heading
+        out.puts "-" * heading.size
+        out.puts text
+        out.puts "\n"
+      end
+
+    end
+
     # == Formatters::Base
     # Base class that all formatters should inherit from.
     class Base < EventDispatch::Base
@@ -96,32 +129,23 @@ class Chef
         @output.print(*args)
       end
 
-      def highlight_error(headline)
-        puts "\n"
-        puts "=" * 80
-        puts headline, :red
-        puts "=" * 80
-        yield
-      end
-
-      def hr
-        puts '-' * 80
+      def describe_error(headline, error_inspector)
+        description = ErrorDescription.new(headline)
+        error_inspector.add_explanation(description)
+        description.display(output)
       end
 
       # Failed to register this client with the server.
       def registration_failed(node_name, exception, config)
         error_inspector = ErrorInspectors::RegistrationErrorInspector.new(node_name, exception, config)
-        highlight_error("Chef encountered an error attempting to create the client \"#{node_name}\"") do
-          puts "\n"
-          puts error_inspector.suspected_cause
-        end
+        headline = "Chef encountered an error attempting to create the client \"#{node_name}\""
+        describe_error(headline, error_inspector)
       end
 
       def node_load_failed(node_name, exception, config)
         error_inspector = ErrorInspectors::APIErrorInspector.new(node_name, exception, config)
-        highlight_error("Chef encountered an error attempting to load the node data for \"#{node_name}\"") do
-          puts error_inspector.suspected_cause
-        end
+        headline = "Chef encountered an error attempting to load the node data for \"#{node_name}\""
+        describe_error(headline, error_inspector)
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file in a
@@ -137,19 +161,19 @@ class Chef
       # exception when loaded. Default behavior is to use CompileErrorInspector
       # to print contextual info about the failure.
       def file_load_failed(path, exception)
-        wrapped_err = ErrorInspectors::CompileErrorInspector.new(path, exception)
-        highlight_error("Error compiling #{path}") do
-          puts exception.to_s
-          puts "\n"
-          puts "Cookbook trace:"
-          wrapped_err.filtered_bt.each do |bt_line|
-            puts "  #{bt_line}"
-          end
-          puts "\n"
-          puts "Most likely caused here:"
-          puts wrapped_err.context
-          puts "\n"
-        end
+        error_inspector = ErrorInspectors::CompileErrorInspector.new(path, exception)
+        headline = "Error compiling #{path}"
+        describe_error(headline, error_inspector)
+        #  puts exception.to_s
+        #  puts "\n"
+        #  puts "Cookbook trace:"
+        #  wrapped_err.filtered_bt.each do |bt_line|
+        #    puts "  #{bt_line}"
+        #  end
+        #  puts "\n"
+        #  puts "Most likely caused here:"
+        #  puts wrapped_err.context
+        #  puts "\n"
       end
 
       # Delegates to #file_loaded
