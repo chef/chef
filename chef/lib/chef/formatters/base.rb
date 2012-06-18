@@ -74,6 +74,8 @@ class Chef
 
     class ErrorDescription
 
+      attr_reader :sections
+
       def initialize(title)
         @title = title
         @sections = []

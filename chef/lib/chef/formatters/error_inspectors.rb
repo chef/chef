@@ -1,4 +1,5 @@
-require 'chef/formatters/error_inspectors/api_error_inspector'
+require 'chef/formatters/error_inspectors/node_load_error_inspector'
+require "chef/formatters/error_inspectors/registration_error_inspector"
 require 'chef/formatters/error_inspectors/compile_error_inspector'
 
 class Chef
