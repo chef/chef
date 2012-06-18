@@ -166,16 +166,6 @@ class Chef
         error_inspector = ErrorInspectors::CompileErrorInspector.new(path, exception)
         headline = "Error compiling #{path}"
         describe_error(headline, error_inspector)
-        #  puts exception.to_s
-        #  puts "\n"
-        #  puts "Cookbook trace:"
-        #  wrapped_err.filtered_bt.each do |bt_line|
-        #    puts "  #{bt_line}"
-        #  end
-        #  puts "\n"
-        #  puts "Most likely caused here:"
-        #  puts wrapped_err.context
-        #  puts "\n"
       end
 
       # Delegates to #file_loaded
