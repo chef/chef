@@ -241,10 +241,12 @@ describe Chef::ResourceReporter do
         #    "data" : ""
         # }
 
+        @node = Chef::Node.new
+        @node.name("spitfire")
         @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
-        @report = @resource_reporter.report
+        @report = @resource_reporter.report(@node)
         @first_update_report = @report["resources"].first
       end
 
@@ -287,6 +289,15 @@ describe Chef::ResourceReporter do
         @first_update_report["result"].should == "create"
       end
 
+      it "includes the total resource count" do
+        @report.should have_key("total_res_count")
+        @report["total_res_count"].should == 1
+      end
+
+      it "includes the run_list" do
+        @report.should have_key("run_list")
+        @report["run_list"].should == "[]"
+      end
     end
 
     context "for an unsuccessful run" do
@@ -334,7 +345,7 @@ describe Chef::ResourceReporter do
 
       it "does not send a resource report to the server" do
         @rest_client.should_not_receive(:post_rest)
-        @resource_reporter.run_completed
+        @resource_reporter.run_completed(@node)
       end
 
     end
@@ -359,7 +370,7 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
 
-        @expected_data = @resource_reporter.report
+        @expected_data = @resource_reporter.report(@node)
         @expected_data["action"] = "end"
 
         response = {"result"=>"ok"}
@@ -368,7 +379,7 @@ describe Chef::ResourceReporter do
           with("nodes/spitfire/audit/ABC123", @expected_data).
           and_return(response)
 
-        @resource_reporter.run_completed
+        @resource_reporter.run_completed(@node)
       end
     end
   end

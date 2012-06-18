@@ -82,6 +82,7 @@ class Chef
     def initialize(rest_client)
       @reporting_enabled = true
       @updated_resources = []
+      @total_res_count = 0
       @pending_update  = nil
       @status = "success"
       @exception = nil
@@ -109,14 +110,21 @@ class Chef
     end
 
     def resource_up_to_date(new_resource, action)
+      @total_res_count += 1
       @pending_update = nil unless nested_resource?(new_resource)
     end
 
+    def resource_skipped(resource, action, conditional)
+      @total_res_count += 1
+    end
+
     def resource_updated(new_resource, action)
+      @total_res_count += 1
       resource_completed unless nested_resource?(new_resource)
     end
 
     def resource_failed(new_resource, action, exception)
+      @total_res_count += 1
       unless nested_resource?(new_resource)
         @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
         @pending_update.exception = exception
@@ -124,10 +132,10 @@ class Chef
       end
     end
 
-    def run_completed
+    def run_completed(node)
       if reporting_enabled?
         resource_history_url = "nodes/#{@node.name}/audit/#{run_id}"
-        run_data = report
+        run_data = report(node)
         run_data["action"] = "end"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
         Chef::Log.debug run_data.inspect
@@ -142,12 +150,14 @@ class Chef
       @status = "failed"
     end
 
-    def report
+    def report(node)
       run_data = {}
       run_data["resources"] = updated_resources.map do |resource_record|
         resource_record.for_json
       end
       run_data["status"] = status
+      run_data["run_list"] = node.run_list.to_json
+      run_data["total_res_count"] = @total_res_count
       run_data
     end
 

@@ -33,7 +33,7 @@ class Chef
       end
 
       # Called at the end of the Chef run.
-      def run_completed
+      def run_completed(node)
         puts "chef client finished, #{@updated_resources.size} resources updated"
       end
 

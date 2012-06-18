@@ -39,7 +39,7 @@ class Chef
         puts "Starting Chef Client, version #{version}"
       end
 
-      def run_completed
+      def run_completed(node)
         if Chef::Config[:whyrun]
           puts "Chef Client finished, #{@updated_resources} resources would have been updated"
         else

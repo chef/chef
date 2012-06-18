@@ -191,7 +191,7 @@ class Chef
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
-        @events.run_completed
+        @events.run_completed(node)
         true
       rescue Exception => e
         run_status.stop_clock
