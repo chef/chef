@@ -500,6 +500,12 @@ F
       end
     end
 
+    def cookbook_version
+      if cookbook_name
+        run_context.cookbook_collection[cookbook_name]
+      end
+    end
+
     def events
       run_context.events
     end

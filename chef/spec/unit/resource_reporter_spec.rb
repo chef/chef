@@ -27,6 +27,9 @@ describe Chef::ResourceReporter do
     @rest_client = mock("Chef::REST (mock)")
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
+    @new_resource.cookbook_name = "monkey"
+    @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
+    @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
     @current_resource  = Chef::Resource::File.new("/tmp/a-file.txt")
   end
 
@@ -289,6 +292,16 @@ describe Chef::ResourceReporter do
         @first_update_report["result"].should == "create"
       end
 
+      it "includes the cookbook name of the resource" do
+        @first_update_report.should have_key("cookbook_name")
+        @first_update_report["cookbook_name"].should == "monkey"
+      end
+
+      it "includes the cookbook version of the resource" do
+        @first_update_report.should have_key("cookbook_version")
+        @first_update_report["cookbook_version"].should == "1.2.3"
+      end
+
       it "includes the total resource count" do
         @report.should have_key("total_res_count")
         @report["total_res_count"].should == 1
@@ -296,7 +309,7 @@ describe Chef::ResourceReporter do
 
       it "includes the run_list" do
         @report.should have_key("run_list")
-        @report["run_list"].should == "[]"
+        @report["run_list"].should == @node.run_list.to_json
       end
     end
 
