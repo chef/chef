@@ -332,7 +332,7 @@ class Chef
       end
     rescue Exception => e
       # TODO: wrap/munge exception with useful error output.
-      @events.node_load_failed(node_name, e, Chef::Config)
+      @events.run_list_expand_failed(node, e)
       raise
     end
 

@@ -34,7 +34,6 @@ class Chef
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
-    class MissingRole < RuntimeError; end
     class CannotDetermineNodeName < RuntimeError; end
     class User < RuntimeError; end
     class Group < RuntimeError; end
@@ -104,6 +103,28 @@ class Chef
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
     class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
+
+    class MissingRole < RuntimeError
+      NULL = Object.new
+
+      attr_reader :expansion
+
+      def initialize(message_or_expansion=NULL)
+        @expansion = nil
+        case message_or_expansion
+        when NULL
+          super()
+        when String
+          super
+        when RunListExpansion
+          @expansion = message_or_expansion
+          missing_roles = @expansion.errors.join(', ')
+          super("The expanded run list includes nonexistent roles: #{missing_roles}")
+        end
+      end
+
+
+    end
 
     class CookbookVersionSelection
 

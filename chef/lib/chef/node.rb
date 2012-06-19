@@ -435,7 +435,7 @@ class Chef
     # invalidated only when run_list is mutated?
     def expand!(data_source = 'server')
       expansion = run_list.expand(chef_environment, data_source)
-      raise Chef::Exceptions::MissingRole if expansion.errors?
+      raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
       self.tags # make sure they're defined
 

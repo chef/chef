@@ -69,6 +69,10 @@ class Chef
       def node_load_failed(node_name, exception, config)
       end
 
+      # Error expanding the run list
+      def run_list_expand_failed(node, exception)
+      end
+
       # Called after Chef client has loaded the node data.
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
