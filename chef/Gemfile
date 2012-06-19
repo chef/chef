@@ -4,6 +4,7 @@ gemspec
 
 gem "dep_selector", :group => :server, :platform => "ruby"
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
+gem "ronn"
 
 group(:development, :test) do
   gem 'rack'

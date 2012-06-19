@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "amqp", "~> 0.6.7"
   s.add_dependency "eventmachine", '~> 0.12.10'
   s.add_dependency "em-http-request", "~> 0.2.11"
-  s.add_dependency 'yajl-ruby', "~> 0.7.7"
+  s.add_dependency 'yajl-ruby', "~> 1.0"
   s.add_dependency 'uuidtools', "~> 2.1.1"
   s.add_dependency 'bunny', '~> 0.6.0'
   s.add_dependency 'fast_xs', "~> 0.7.3"
