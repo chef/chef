@@ -72,7 +72,7 @@ F
     end
 
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time]
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
@@ -399,12 +399,16 @@ F
 
     def to_text
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
-      text = "# Declared in #{@source_line}\n"
+      text = "# Declared in #{@source_line}\n\n"
       text << self.class.dsl_name + "(\"#{name}\") do\n"
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
-          text << "  #{ivar.to_s.sub(/^@/,'')}(#{value.inspect})\n"
+          value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
+          text << "  #{ivar.to_s.sub(/^@/,'')} #{value_string}\n"
         end
+      end
+      [@not_if, @only_if].flatten.each do |conditional|
+        text << "  #{conditional.to_text}\n"
       end
       text << "end\n"
     end
