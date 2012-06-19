@@ -33,10 +33,15 @@ class Chef
 
         def add_explanation(error_description)
           error_description.section(exception.class.name, exception.message)
-          error_description.section("Cookbook Trace:", filtered_bt)
+
+          unless filtered_bt.empty?
+            error_description.section("Cookbook Trace:", filtered_bt.join("\n"))
+          end
+
           unless dynamic_resource?
             error_description.section("Resource Declaration:", recipe_snippet)
           end
+
           error_description.section("Compiled Resource:", "#{resource.to_text}")
         end
 

@@ -155,11 +155,7 @@ class Chef
 
       # Called when a resource fails and will not be retried.
       def resource_failed(resource, action, exception)
-        puts "\n"
-        puts "Error converging #{resource} #{resource.defined_at}"
-        puts "\n"
-        puts resource.to_text
-
+        super
       end
 
       # Called when a resource action has been skipped b/c of a conditional

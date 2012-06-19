@@ -150,6 +150,12 @@ class Chef
         describe_error(headline, error_inspector)
       end
 
+      def resource_failed(resource, action, exception)
+        error_inspector = ErrorInspectors::APIErrorInspector.new(resource, action, exception)
+        headline = "Error executing action `#{action}` on resource '#{resource}'"
+        describe_error(headline, error_inspector)
+      end
+
       # Generic callback for any attribute/library/lwrp/recipe file in a
       # cookbook getting loaded. The per-filetype callbacks for file load are
       # overriden so that they call this instead. This means that a subclass of
