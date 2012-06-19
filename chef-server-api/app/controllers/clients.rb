@@ -23,9 +23,9 @@ class Clients < Application
   provides :json
 
   before :authenticate_every
-  before :is_admin, :only => [ :index, :update, :destroy ]
+  before :is_admin, :only => [ :index, :update ]
   before :is_admin_or_validator, :only => [ :create ]
-  before :admin_or_requesting_node, :only => [ :show ]
+  before :admin_or_requesting_node, :only => [ :show, :destroy ]
   
   # GET /clients
   def index
