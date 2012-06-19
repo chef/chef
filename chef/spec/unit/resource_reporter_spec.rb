@@ -284,7 +284,8 @@ describe Chef::ResourceReporter do
       it "includes the elapsed time for the resource to converge" do
         # TODO: API takes integer number of milliseconds as a string. This
         # should be an int.
-        @first_update_report["elapsed_time"].to_i.should be_within(100).of(0)
+        @first_update_report.should have_key("duration")
+        @first_update_report["duration"].to_i.should be_within(100).of(0)
       end
 
       it "includes the action executed by the resource" do
