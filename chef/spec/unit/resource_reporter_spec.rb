@@ -316,16 +316,31 @@ describe Chef::ResourceReporter do
 
     context "for an unsuccessful run" do
 
+      before do
+        @backtrace = "foo.rb:1 in `foo!'\nbar.rb:2 in `bar!\n'baz.rb:3 in `baz!'"
+        @node = Chef::Node.new
+        @node.name("spitfire")
+        @exception = mock("ArgumentError")
+        @exception.should_receive(:inspect).and_return("Net::HTTPServerException")
+        @exception.should_receive(:message).and_return("Object not found")
+        @exception.should_receive(:backtrace).and_return(@backtrace)
+        @resource_reporter.run_failed(@exception)
+        @report = @resource_reporter.report(@node)
+      end
+
       it "includes the exception type in the event data" do
-        pending "requires API changes"
+        @report.should have_key("exception_class")
+        @report["exception_class"].should == "Net::HTTPServerException"
       end
 
       it "includes the exception message in the event data" do
-        pending "requires API changes"
+        @report.should have_key("exception_message")
+        @report["exception_message"].should == "Object not found"
       end
 
       it "includes the exception trace in the event data" do
-        pending "requires API changes"
+        @report.should have_key("exception_backtrace")
+        @report["exception_backtrace"].should == @backtrace
       end
 
       it "includes the error inspector output in the event data" do

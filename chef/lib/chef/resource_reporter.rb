@@ -160,6 +160,11 @@ class Chef
       run_data["status"] = status
       run_data["run_list"] = node.run_list.to_json
       run_data["total_res_count"] = @total_res_count
+      if exception
+        run_data["exception_class"] = exception.inspect
+        run_data["exception_message"] = exception.message
+        run_data["exception_backtrace"] = exception.backtrace
+      end
       run_data
     end
 
