@@ -50,12 +50,32 @@ class Chef
           @snippet ||= begin
             if file = resource.source_line[/^([^:]+):[\d]+/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
               lines = IO.readlines(file)
+
               relevant_lines = ["# In #{file}\n\n"]
-              i = line - 3
-              while (i += 1 and i <= (line + 50) and !lines[i].nil? and lines[i - 2] !~ /end[\w]*$/)
-                line_nr = (i + 1).to_s.rjust(3) + ": "
-                relevant_lines << line_nr + lines[i]
+
+
+              current_line = line - 2
+              nesting = 0
+
+              relevant_lines << format_line(current_line, lines[current_line])
+
+              loop do
+                current_line += 1
+
+                # low rent parser. try to gracefully handle nested blocks in resources
+                nesting += 1 if lines[current_line] =~ /[\s]+do[\s]*/
+                nesting -= 1 if lines[current_line] =~ /end[\s]*$/
+
+                pp :line => lines[current_line], :nesting => nesting
+
+                relevant_lines << format_line(current_line, lines[current_line])
+
+                break if lines[current_line].nil?
+                break if current_line >= (line + 50)
+                break if nesting == 0
               end
+              relevant_lines << format_line(current_line + 1, lines[current_line + 1])
+
               relevant_lines.join("")
             end
           end
@@ -67,6 +87,14 @@ class Chef
 
         def filtered_bt
           exception.backtrace.select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
+        end
+
+        private
+
+        def format_line(line_nr, line)
+          # Print line number as 1-indexed not zero
+          line_nr_string = (line_nr + 1).to_s.rjust(3) + ": "
+          line_nr_string + line
         end
 
       end
