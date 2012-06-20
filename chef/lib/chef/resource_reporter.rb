@@ -161,9 +161,11 @@ class Chef
       run_data["run_list"] = node.run_list.to_json
       run_data["total_res_count"] = @total_res_count
       if exception
-        run_data["exception_class"] = exception.inspect
-        run_data["exception_message"] = exception.message
-        run_data["exception_backtrace"] = exception.backtrace
+        run_data["exception"] = {}
+        run_data["exception"]["class"] = exception.inspect
+        run_data["exception"]["message"] = exception.message
+        run_data["exception"]["backtrace"] = exception.backtrace
+        run_data["exception"]["description"] = "FIXME: error inspection stuff should go here"
       end
       run_data
     end

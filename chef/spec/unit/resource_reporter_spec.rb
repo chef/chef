@@ -329,22 +329,26 @@ describe Chef::ResourceReporter do
       end
 
       it "includes the exception type in the event data" do
-        @report.should have_key("exception_class")
-        @report["exception_class"].should == "Net::HTTPServerException"
+        @report.should have_key("exception")
+        @report["exception"].should have_key("class")
+        @report["exception"]["class"].should == "Net::HTTPServerException"
       end
 
       it "includes the exception message in the event data" do
-        @report.should have_key("exception_message")
-        @report["exception_message"].should == "Object not found"
+        @report.should have_key("exception")
+        @report["exception"].should have_key("message")
+        @report["exception"]["message"].should == "Object not found"
       end
 
       it "includes the exception trace in the event data" do
-        @report.should have_key("exception_backtrace")
-        @report["exception_backtrace"].should == @backtrace
+        @report.should have_key("exception")
+        @report["exception"].should have_key("backtrace")
+        @report["exception"]["backtrace"].should == @backtrace
       end
 
       it "includes the error inspector output in the event data" do
-        pending "requires API changes"
+        @report.should have_key("exception")
+        @report["exception"].should have_key("description")
       end
 
     end
