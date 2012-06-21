@@ -150,6 +150,12 @@ class Chef
         describe_error(headline, error_inspector)
       end
 
+      def run_list_expand_failed(node, exception)
+        error_inspector = ErrorInspectors::RunListExpansionErrorInspector.new(node, exception)
+        headline = "Error expanding the run_list:"
+        describe_error(headline, error_inspector)
+      end
+
       def resource_failed(resource, action, exception)
         error_inspector = ErrorInspectors::APIErrorInspector.new(resource, action, exception)
         headline = "Error executing action `#{action}` on resource '#{resource}'"
