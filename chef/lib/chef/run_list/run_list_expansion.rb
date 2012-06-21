@@ -40,9 +40,9 @@ class Chef
 
       attr_reader :override_attrs
 
-      attr_reader :errors
-
       attr_reader :environment
+
+      attr_reader :missing_roles_with_including_role
 
       # The data source passed to the constructor. Not used in this class.
       # In subclasses, this is a couchdb or Chef::REST object pre-configured
@@ -51,7 +51,7 @@ class Chef
 
       def initialize(environment, run_list_items, source=nil)
         @environment = environment
-        @errors = Array.new
+        @missing_roles_with_including_role = Array.new
 
         @run_list_items = run_list_items.dup
         @source = source
@@ -66,7 +66,7 @@ class Chef
 
       # Did we find any errors (expanding roles)?
       def errors?
-        @errors.length > 0
+        @missing_roles_with_including_role.length > 0
       end
 
       alias :invalid? :errors?
@@ -83,10 +83,10 @@ class Chef
       # Chef::Role  in most cases
       # false       if the role has already been applied
       # nil         if the role does not exist
-      def inflate_role(role_name)
+      def inflate_role(role_name, included_by)
         return false if applied_role?(role_name) # Prevent infinite loops
         applied_role(role_name)
-        fetch_role(role_name)
+        fetch_role(role_name, included_by)
       end
 
       def apply_role_attributes(role)
@@ -107,7 +107,7 @@ class Chef
       end
 
       # In subclasses, this method will fetch the role from the data source.
-      def fetch_role(name)
+      def fetch_role(name, included_by)
         raise NotImplementedError
       end
 
@@ -115,10 +115,14 @@ class Chef
       # exception is raised.  We do add an entry in the errors collection.
       # === Returns
       # nil
-      def role_not_found(name)
-        Chef::Log.error("Role #{name} is in the runlist but does not exist. Skipping expand.")
-        @errors << name
+      def role_not_found(name, included_by)
+        Chef::Log.error("Role #{name} (included by '#{included_by}') is in the runlist but does not exist. Skipping expand.")
+        @missing_roles_with_including_role << [name, included_by]
         nil
+      end
+
+      def errors
+        @missing_roles_with_including_role.map {|item| item.first }
       end
 
       private
@@ -129,14 +133,14 @@ class Chef
         @applied_roles[role_name] = true
       end
 
-      def expand_run_list_items(items)
+      def expand_run_list_items(items, included_by="top level")
         if entry = items.shift
           case entry.type
           when :recipe
             recipes.add_recipe(entry.name, entry.version)
           when :role
-            if role = inflate_role(entry.name)
-              expand_run_list_items(role.run_list_for(@environment).run_list_items)
+            if role = inflate_role(entry.name, included_by)
+              expand_run_list_items(role.run_list_for(@environment).run_list_items, role)
               apply_role_attributes(role)
             end
           end
@@ -149,10 +153,10 @@ class Chef
     # Expand a run list from disk. Suitable for chef-solo
     class RunListExpansionFromDisk < RunListExpansion
 
-      def fetch_role(name)
+      def fetch_role(name, included_by)
         Chef::Role.from_disk(name)
       rescue Chef::Exceptions::RoleNotFound
-        role_not_found(name)
+        role_not_found(name, included_by)
       end
 
     end
@@ -164,11 +168,11 @@ class Chef
         @rest ||= (source || Chef::REST.new(Chef::Config[:role_url]))
       end
 
-      def fetch_role(name)
+      def fetch_role(name, included_by)
         rest.get_rest("roles/#{name}")
       rescue Net::HTTPServerException => e
         if e.message == '404 "Not Found"'
-          role_not_found(name)
+          role_not_found(name, included_by)
         else
           raise
         end
@@ -182,10 +186,10 @@ class Chef
         source
       end
 
-      def fetch_role(name)
+      def fetch_role(name, included_by)
         Chef::Role.cdb_load(name, couchdb)
       rescue Chef::Exceptions::CouchDBNotFound
-        role_not_found(name)
+        role_not_found(name, included_by)
       end
 
     end

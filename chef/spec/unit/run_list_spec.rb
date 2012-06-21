@@ -182,7 +182,7 @@ describe Chef::RunList do
 
       it "should log a helpful error if the role is not available" do
         Chef::Role.stub!(:from_disk).and_raise(Chef::Exceptions::RoleNotFound)
-        Chef::Log.should_receive(:error).with("Role stubby is in the runlist but does not exist. Skipping expand.")
+        Chef::Log.should_receive(:error).with("Role stubby (included by 'top level') is in the runlist but does not exist. Skipping expand.")
         @run_list.expand("_default", "disk")
       end
     end

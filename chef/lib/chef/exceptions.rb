@@ -116,7 +116,7 @@ class Chef
           super()
         when String
           super
-        when RunListExpansion
+        when RunList::RunListExpansion
           @expansion = message_or_expansion
           missing_roles = @expansion.errors.join(', ')
           super("The expanded run list includes nonexistent roles: #{missing_roles}")
