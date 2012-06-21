@@ -66,8 +66,6 @@ class Chef
                 nesting += 1 if lines[current_line] =~ /[\s]+do[\s]*/
                 nesting -= 1 if lines[current_line] =~ /end[\s]*$/
 
-                pp :line => lines[current_line], :nesting => nesting
-
                 relevant_lines << format_line(current_line, lines[current_line])
 
                 break if lines[current_line].nil?
