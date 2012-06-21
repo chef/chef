@@ -43,15 +43,8 @@ class Chef
           case exception
           when Net::HTTPServerException, Net::HTTPFatalError
             humanize_http_exception(error_description)
-          when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
-            error_description.section("Networking Error:",<<-E)
-#{exception.message}
-
-Your chef_server_url may be misconfigured, or the network could be down.
-E
-            error_description.section("Relevant Config Settings:",<<-E)
-chef_server_url  "#{server_url}"
-E
+          when *NETWORK_ERROR_CLASSES
+            describe_network_errors(error_description)
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:",<<-E)
 Your private key could not be loaded. If the key file exists, ensure that it is
@@ -70,26 +63,7 @@ E
           case response
           when Net::HTTPUnauthorized
             # TODO: this is where you'd see conflicts b/c of username/clientname stuff
-            if clock_skew?
-              error_description.section("Authentication Error:",<<-E)
-Failed to authenticate to the chef server (http 401).
-The request failed because your clock has drifted by more than 15 minutes.
-Syncing your clock to an NTP Time source should resolve the issue.
-E
-            else
-              error_description.section("Authentication Error:",<<-E)
-Failed to authenticate to the chef server (http 401).
-E
-
-              error_description.section("Server Response:", format_rest_error)
-              error_description.section("Relevant Config Settings:",<<-E)
-chef_server_url   "#{server_url}"
-node_name         "#{username}"
-client_key        "#{api_key}"
-
-If these settings are correct, your client_key may be invalid.
-E
-            end
+            describe_401_error(error_description)
           when Net::HTTPForbidden
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
@@ -103,28 +77,28 @@ E
 * Your client (#{username}) may have misconfigured authorization permissions.
 E
           when Net::HTTPBadRequest
-            error_description.section("Invalid Request Data:",<<-E)
-The data in your request was invalid (HTTP 400).
-E
-            error_description.section("Server Response:",format_rest_error)
+            describe_400_error(error_description)
           when Net::HTTPNotFound
-            error_description.section("Resource Not Found:",<<-E)
+          when Net::HTTPInternalServerError
+            describe_500_error(error_description)
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
+            describe_503_error(error_description)
+          else
+            describe_http_error(error_description)
+          end
+        end
+
+        # Custom 404 error messaging. Users sometimes see 404s when they have
+        # misconfigured server URLs, and the wrong one redirects to the new
+        # one, e.g., PUT http://wrong.url/nodes/node-name becomes a GET after a
+        # redirect.
+        def describe_404_error
+          error_description.section("Resource Not Found:",<<-E)
 The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
 E
-            error_description.section("Relevant Config Settings:",<<-E)
+          error_description.section("Relevant Config Settings:",<<-E)
 chef_server_url "#{server_url}"
 E
-          when Net::HTTPInternalServerError
-            error_description.section("Unknown Server Error:",<<-E)
-The server had a fatal error attempting to load the node data.
-E
-            error_description.section("Server Response:", format_rest_error)
-          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
-            error_description.section("Server Unavailable","The Chef Server is temporarily unavailable")
-            error_description.section("Server Response:", format_rest_error)
-          else
-            error_description.section("Unexpected API Request Failure:", format_rest_error)
-          end
         end
 
         def username
