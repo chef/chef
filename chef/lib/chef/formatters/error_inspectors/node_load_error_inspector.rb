@@ -16,13 +16,19 @@
 # limitations under the License.
 #
 
+require 'chef/formatters/error_inspectors/api_error_formatting'
+
 class Chef
   module Formatters
     module ErrorInspectors
 
+
       # == APIErrorInspector
       # Wraps exceptions caused by API calls to the server.
       class NodeLoadErrorInspector
+
+        include APIErrorFormatting
+
         attr_reader :exception
         attr_reader :node_name
         attr_reader :config
@@ -135,16 +141,6 @@ E
 
         def clock_skew?
           exception.response.body =~ /synchronize the clock/i
-        end
-
-        # Parses JSON from the error response sent by Chef Server and returns the
-        # error message
-        #--
-        # TODO: this code belongs in Chef::REST
-        def format_rest_error
-          Array(Chef::JSONCompat.from_json(exception.response.body)["error"]).join('; ')
-        rescue Exception
-          exception.response.body
         end
 
       end
