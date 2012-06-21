@@ -30,6 +30,7 @@ class Chef
         require 'highline'
         require 'net/ssh'
         require 'net/ssh/multi'
+        require 'chef/knife/ssh'
         Chef::Knife::Ssh.load_deps
       end
 
