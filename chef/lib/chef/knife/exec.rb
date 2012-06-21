@@ -38,7 +38,7 @@ class Chef::Knife::Exec < Chef::Knife
   end
 
   def run
-    config[:script_path] ||= Chef::Config[:script_path]
+    config[:script_path] ||= Array(Chef::Config[:script_path])
 
     # Default script paths are chef-repo/.chef/scripts and ~/.chef/scripts
     config[:script_path] << File.join(Chef::Knife.chef_config_dir, 'scripts') if Chef::Knife.chef_config_dir
