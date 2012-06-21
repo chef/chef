@@ -351,8 +351,11 @@ class Chef
 
       # files and templates are lazily loaded, and will be done later.
       eager_segments = COOKBOOK_SEGMENTS.dup
-      eager_segments.delete(:files)
-      eager_segments.delete(:templates)
+
+      unless Chef::Config[:no_lazy_load] then
+        eager_segments.delete(:files)
+        eager_segments.delete(:templates)
+      end
 
       eager_segments.each do |segment|
         segment_filenames = Array.new
