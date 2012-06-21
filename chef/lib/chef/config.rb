@@ -133,6 +133,9 @@ class Chef
     cookbook_path [ platform_specific_path("/var/chef/cookbooks"),
                     platform_specific_path("/var/chef/site-cookbooks") ]
 
+    # An array of paths to search for knife exec scripts if they aren't in the current directory
+    script_path []
+
     # Where files are stored temporarily during uploads
     sandbox_path "/var/chef/sandboxes"
 
