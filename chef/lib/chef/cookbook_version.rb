@@ -288,12 +288,6 @@ class Chef
       Chef::FileCache
     end
 
-    # Setup a notification to clear the valid_cache_entries when a Chef client
-    # run starts
-    Chef::Client.when_run_starts do |run_status|
-      reset_cache_validity
-    end
-
     # Synchronizes all the cookbooks from the chef-server.
     #
     # === Returns
@@ -401,11 +395,6 @@ class Chef
           end
         end
       end
-    end
-
-    # Register a notification to cleanup unused files from cookbooks
-    Chef::Client.when_run_completes_successfully do |run_status|
-      cleanup_file_cache
     end
 
     # Creates a new Chef::CookbookVersion object.
