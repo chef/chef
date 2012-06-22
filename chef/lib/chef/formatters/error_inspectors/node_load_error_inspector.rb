@@ -79,6 +79,7 @@ E
           when Net::HTTPBadRequest
             describe_400_error(error_description)
           when Net::HTTPNotFound
+            describe_404_error(error_description)
           when Net::HTTPInternalServerError
             describe_500_error(error_description)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
@@ -92,7 +93,7 @@ E
         # misconfigured server URLs, and the wrong one redirects to the new
         # one, e.g., PUT http://wrong.url/nodes/node-name becomes a GET after a
         # redirect.
-        def describe_404_error
+        def describe_404_error(error_description)
           error_description.section("Resource Not Found:",<<-E)
 The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
 E
