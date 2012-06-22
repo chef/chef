@@ -442,6 +442,7 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:all_releases).and_return(all_releases)
     FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/20040100000000")
     @provider.cleanup!
+    @provider.converge
   end
 
   it "fires a callback for :release_deleted when deleting an old release" do
