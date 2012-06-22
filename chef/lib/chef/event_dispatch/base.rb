@@ -118,6 +118,10 @@ class Chef
       def updated_cookbook_file(cookbook_name, path)
       end
 
+      # Called when an error occurs during cookbook sync
+      def cookbook_sync_failed(cookbooks, exception)
+      end
+
       # Called after all cookbooks have been sync'd.
       def cookbook_sync_complete
       end

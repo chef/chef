@@ -103,8 +103,11 @@ class Chef
         sync_cookbook(cookbook)
       end
 
+    rescue Exception => e
+      @events.cookbook_sync_failed(cookbooks, e)
+      raise
+    else
       @events.cookbook_sync_complete
-
       true
     end
 
