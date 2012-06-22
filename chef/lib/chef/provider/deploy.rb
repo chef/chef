@@ -226,7 +226,8 @@ class Chef
       end
 
       def cleanup!
-        all_releases[0..-6].each do |old_release|
+        chop = -1 - @new_resource.keep_releases
+        all_releases[0..chop].each do |old_release|
           converge_by("remove old release #{old_release}") do
             Chef::Log.info "#{@new_resource} removing old release #{old_release}"
             FileUtils.rm_rf(old_release)

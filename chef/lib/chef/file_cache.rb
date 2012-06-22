@@ -33,10 +33,12 @@ class Chef
       # path<String>:: The path to the file you want to put in the cache - should
       #   be relative to file_cache_path
       # contents<String>:: A string with the contents you want written to the file
+      # perm<String>:: Sets file permission bits. Permission bits are platform
+      #   dependent; on Unix systems, see open(2) for details.
       #
       # === Returns
       # true
-      def store(path, contents)
+      def store(path, contents, perm=0640)
         validate(
           {
             :path => path,
@@ -51,7 +53,7 @@ class Chef
         file_path_array = File.split(path)
         file_name = file_path_array.pop
         cache_path = create_cache_path(File.join(file_path_array))
-        File.open(File.join(cache_path, file_name), "w") do |io|
+        File.open(File.join(cache_path, file_name), "w", perm) do |io|
           io.print(contents)
         end
         true

@@ -159,7 +159,7 @@ class Chef
           raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
 
-        Dir.glob(File.join(Chef::Config[:data_bag_path], name, "*.json")).inject({}) do |bag, f|
+        Dir.glob(File.join(Chef::Config[:data_bag_path], "#{name}", "*.json")).inject({}) do |bag, f|
           item = JSON.parse(IO.read(f))
           bag[item['id']] = item
           bag

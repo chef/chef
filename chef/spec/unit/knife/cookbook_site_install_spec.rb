@@ -124,5 +124,15 @@ describe Chef::Knife::CookbookSiteInstall do
       @repo.should_receive(:merge_updates_from).with("getting-started", "0.3.0")
       @knife.run
     end
+
+    it "should not create/reset git branches if use_current_branch is set" do
+      @knife.name_args = ["getting-started"]
+      @knife.config[:use_current_branch] = true
+      @knife.config[:no_deps] = true
+      upstream_file = File.join(@install_path, "getting-started.tar.gz")
+      @repo.should_not_receive(:prepare_to_import)
+      @repo.should_not_receive(:reset_to_default_state)
+      @knife.run
+    end
   end
 end

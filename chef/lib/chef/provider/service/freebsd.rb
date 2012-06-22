@@ -86,7 +86,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a| 
             a.assertion { @rcd_script_found && service_enable_variable_name != nil } 
-            a.failure_message Chef::Exceptions::Service, "Could not find name=\"service\" line in #{@init_command}"
+            a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{@init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
         end
@@ -129,30 +129,37 @@ class Chef
           end
         end
 
-
         # The variable name used in /etc/rc.conf for enabling this service
         def service_enable_variable_name
           # Look for name="foo" in the shell script @init_command. Use this for determining the variable name in /etc/rc.conf
           # corresponding to this service
           # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
           # to set mysql_enable="YES" in /etc/rc.conf$
-          # WHYRUN NOTE:
-          # In why-run mode, we are no longer guaranteed that this file exists - 
-          # however, we can't let this block processing. In a normal run
-          # we would be blocked from reaching this point, so it's safe
-          # to work around it for why-run mode. 
           if @rcd_script_found   
-            makefile = ::File.open(@init_command)
-            makefile.each do |line|
-              case line
-              when /^name="?(\w+)"?/
-                return $1 + "_enable"
+            ::File.open(@init_command) do |rcscript|
+              rcscript.each_line do |line|
+                if line =~ /^name="?(\w+)"?/
+                  return $1 + "_enable"
+                end
               end
             end
+            # some scripts support multiple instances through symlinks such as openvpn.
+            # We should get the service name from rcvar.
+            Chef::Log.debug("name=\"service\" not found at #{@init_command}. falling back to rcvar")
+            sn = shell_out!("#{@init_command} rcvar").stdout[/(\w+_enable)=/, 1]
+            if sn
+              return sn
+            else
+              # WHYRUN NOTE:
+              # In why-run mode, we are no longer guaranteed that this file exists - 
+              # however, we can't let this block processing. In a normal run
+              # we would be blocked from reaching this point, so it's safe
+              # to work around it for why-run mode
+              return nil
+            end
           else
-            @new_resource.service_name
+            return @new_resource.service_name
           end
-
         end
 
         def set_service_enable(value)

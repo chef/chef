@@ -30,6 +30,7 @@ class Chef
         require 'highline'
         require 'net/ssh'
         require 'net/ssh/multi'
+        require 'chef/knife/ssh'
         Chef::Knife::Ssh.load_deps
       end
 
@@ -105,7 +106,7 @@ class Chef
         :description => "Comma separated list of roles/recipes to apply",
         :proc => lambda { |o| o.split(/[\s,]+/) },
         :default => []
-      
+
       option :first_boot_attributes,
         :short => "-j JSON_ATTRIBS",
         :long => "--json-attributes",
@@ -118,6 +119,14 @@ class Chef
         :description => "Verify host key, enabled by default.",
         :boolean => true,
         :default => true
+
+      Chef::Config[:knife][:hints] ||= Hash.new
+      option :hint,
+        :long => "--hint HINT_NAME[=HINT_FILE]",
+        :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
+        :proc => Proc.new { |h|
+        name, path = h.split("=")
+           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
 
       def load_template(template=nil)
         # Are we bootstrapping using an already shipped template?

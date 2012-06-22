@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,7 +61,7 @@ describe Chef::DataBag do
 
     %w{
       name
-    }.each do |t| 
+    }.each do |t|
       it "should match '#{t}'" do
         @deserial.send(t.to_sym).should == @data_bag.send(t.to_sym)
       end
@@ -138,6 +138,12 @@ describe Chef::DataBag do
         File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
         Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
         Chef::DataBag.load('foo')
+      end
+
+      it "should get the data bag from the data_bag_path by symbolic name" do
+        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
+        Dir.should_receive(:glob).with('/var/chef/data_bags/foo/*.json').and_return([])
+        Chef::DataBag.load(:foo)
       end
 
       it "should return the data bag" do

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,7 +72,7 @@ describe Chef::Knife::Bootstrap do
     @knife.parse_options(["-r", "role[base],recipe[cupcakes]"])
     @knife.render_template(template_string).should == '{"run_list":["role[base]","recipe[cupcakes]"]}'
   end
-  
+
   it "should have foo => {bar => baz} in the first_boot" do
     template_string = @knife.load_template(@knife.config[:template_file])
     @knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
@@ -80,7 +80,22 @@ describe Chef::Knife::Bootstrap do
     actual_hash = Yajl::Parser.new.parse(@knife.render_template(template_string))
     actual_hash.should == expected_hash
   end
-  
+
+  it "should create a hint file when told to" do
+    @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test-hints.erb"))
+    template_string = @knife.load_template()
+    @knife.parse_options(["--hint", "openstack"])
+    @knife.render_template(template_string).should match /\/etc\/chef\/ohai\/hints\/openstack.json/
+  end
+
+  it "should populate a hint file with JSON when given a file to read" do
+    @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test-hints.erb"))
+    ::File.stub!(:read).and_return('{ "foo" : "bar" }')
+    template_string = @knife.load_template()
+    @knife.parse_options(["--hint", "openstack=hints/openstack.json"])
+    @knife.render_template(template_string).should match /\{\"foo\":\"bar\"\}/
+  end
+
 
   it "should take the node name from ARGV" do
     @knife.name_args = ['barf']

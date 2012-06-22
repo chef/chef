@@ -250,7 +250,8 @@ class Chef
           },
           :netbsd => {
             :default => {
-              :group => Chef::Provider::Group::Usermod
+              :service => Chef::Provider::Service::Freebsd,
+              :group => Chef::Provider::Group::Groupmod
             }
           },
           :openbsd => {

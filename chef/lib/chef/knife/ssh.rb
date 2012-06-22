@@ -26,8 +26,10 @@ class Chef
         require 'net/ssh'
         require 'net/ssh/multi'
         require 'readline'
+        require 'chef/exceptions'
         require 'chef/search/query'
         require 'chef/mixin/shell_out'
+        require 'mixlib/shellout'
       end
 
       include Chef::Mixin::ShellOut
@@ -180,6 +182,7 @@ class Chef
       end
 
       def ssh_command(command, subsession=nil)
+        exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
         subsession.open_channel do |ch|
@@ -192,9 +195,13 @@ class Chef
                 ichannel.send_data("#{get_password}\n")
               end
             end
+            ch.on_request "exit-status" do |ichannel, data|
+              exit_status = data.read_long
+            end
           end
         end
         session.loop
+        exit_status
       end
 
       def get_password
@@ -332,12 +339,23 @@ class Chef
                               "fqdn").strip
       end
 
-      def csshx
-        csshx_cmd = "csshX"
-        session.servers_for.each do |server|
-          csshx_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+      def cssh
+        cssh_cmd = nil
+        %w[csshX cssh].each do |cmd|
+          begin
+            # Unix and Mac only
+            cssh_cmd = shell_out!("which #{cmd}").stdout.strip
+            break
+          rescue Mixlib::ShellOut::ShellCommandFailed
+          end
         end
-        exec(csshx_cmd)
+        raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
+
+        session.servers_for.each do |server|
+          cssh_cmd << " #{server.user ? "#{server.user}@#{server.host}" : server.host}"
+        end
+        Chef::Log.debug("starting cssh session with command: #{cssh_cmd}")
+        exec(cssh_cmd)
       end
 
       def get_stripped_unfrozen_value(value)
@@ -365,6 +383,7 @@ class Chef
         configure_identity_file
         configure_session
 
+        exit_status =
         case @name_args[1]
         when "interactive"
           interactive
@@ -374,13 +393,18 @@ class Chef
           tmux
         when "macterm"
           macterm
+        when "cssh"
+          cssh
         when "csshx"
-          csshx
+          Chef::Log.warn("knife ssh csshx will be deprecated in a future release")
+          Chef::Log.warn("please use knife ssh cssh instead")
+          cssh
         else
           ssh_command(@name_args[1..-1].join(" "))
         end
 
         session.close
+        exit_status
       end
 
     end
