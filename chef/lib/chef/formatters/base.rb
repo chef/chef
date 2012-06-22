@@ -162,6 +162,12 @@ class Chef
         describe_error(headline, error_inspector)
       end
 
+      def cookbook_sync_failed(cookbooks, exception)
+        error_inspector = ErrorInspectors::CookbookSyncErrorInspector.new(cookbooks, exception)
+        headline = "Error Syncing Cookbooks:"
+        describe_error(headline, error_inspector)
+      end
+
       def resource_failed(resource, action, exception)
         error_inspector = ErrorInspectors::APIErrorInspector.new(resource, action, exception)
         headline = "Error executing action `#{action}` on resource '#{resource}'"
