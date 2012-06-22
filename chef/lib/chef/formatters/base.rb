@@ -156,6 +156,12 @@ class Chef
         describe_error(headline, error_inspector)
       end
 
+      def cookbook_resolution_failed(expanded_run_list, exception)
+        error_inspector = ErrorInspectors::CookbookResolveErrorInspector.new(expanded_run_list, exception)
+        headline = "Error Resolving Cookbooks for Run List:"
+        describe_error(headline, error_inspector)
+      end
+
       def resource_failed(resource, action, exception)
         error_inspector = ErrorInspectors::APIErrorInspector.new(resource, action, exception)
         headline = "Error executing action `#{action}` on resource '#{resource}'"
