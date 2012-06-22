@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Group::Groupmod do
     before do
       @node = Chef::Node.new
-      @run_context = Chef::RunContext.new(@node, {})
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(@node, {}, @events)
       @new_resource = Chef::Resource::Group.new("wheel")
       @new_resource.gid 123
       @new_resource.members %w{lobster rage fist}
