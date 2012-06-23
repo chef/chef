@@ -42,13 +42,13 @@ class Chef
 
         def context
           context_lines = []
-          context_lines << "#{path}:"
+          context_lines << "#{culprit_file}:\n\n"
           Range.new(display_lower_bound, display_upper_bound).each do |i|
             line_nr = (i + 1).to_s.rjust(3)
             indicator = (i + 1) == culprit_line ? ">> " : ":  "
             context_lines << "#{line_nr}#{indicator}#{file_lines[i]}"
           end
-          context_lines.join("\n")
+          context_lines.join("")
         end
 
         def display_lower_bound
@@ -64,15 +64,19 @@ class Chef
         end
 
         def file_lines
-          @file_lines ||= IO.readlines(path)
+          @file_lines ||= IO.readlines(culprit_file)
         end
 
         def culprit_backtrace_entry
-          @culprit_backtrace_entry ||= exception.backtrace.find {|line| line =~ /^#{@path}/ }
+          @culprit_backtrace_entry ||= filtered_bt.first
         end
 
         def culprit_line
-          @culprit_line ||= culprit_backtrace_entry[/^#{@path}:([\d]+)/,1].to_i
+          @culprit_line ||= culprit_backtrace_entry[/^[^:]+:([\d]+)/,1].to_i
+        end
+
+        def culprit_file
+          @culprit_file ||= culprit_backtrace_entry[/^([^:]+):([\d]+)/,1]
         end
 
         def filtered_bt
