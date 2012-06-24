@@ -269,6 +269,10 @@ class Chef
         msg opt_parser
         exit 1
       end
+
+      # copy Mixlib::CLI over so that it cab be configured in knife.rb
+      # config file
+      Chef::Config[:verbosity] = config[:verbosity]
     end
 
     def parse_options(args)
@@ -320,7 +324,7 @@ class Chef
 
       Chef::Config[:color] = config[:color]
 
-      case config[:verbosity]
+      case Chef::Config[:verbosity]
       when 0
         Chef::Config[:log_level] = :error
       when 1
@@ -401,7 +405,7 @@ class Chef
       enforce_path_sanity
       run
     rescue Exception => e
-      raise if config[:verbosity] == 2
+      raise if Chef::Config[:verbosity] == 2
       humanize_exception(e)
       exit 100
     end
