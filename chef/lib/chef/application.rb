@@ -82,6 +82,8 @@ class Chef::Application
         ::File::open(config[:config_file]) { |f| apply_config(f.path) }
       end
     rescue Errno::ENOENT => error
+      raise error unless error.message =~ /#{config[:config_file]}$/
+
       Chef::Log.warn("*****************************************")
       Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
       Chef::Log.warn("*****************************************")
