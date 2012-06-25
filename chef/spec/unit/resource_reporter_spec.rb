@@ -305,7 +305,12 @@ describe Chef::ResourceReporter do
 
       it "includes the total resource count" do
         @report.should have_key("total_res_count")
-        @report["total_res_count"].should == 1
+        @report["total_res_count"].should == "1"
+      end
+
+      it "includes the data hash" do
+        @report.should have_key("data")
+        @report["data"].should == {}
       end
 
       it "includes the run_list" do
@@ -367,7 +372,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("nodes/spitfire/audit", {:action => :begin}).
+          with("nodes/spitfire/runs", {:action => :begin}).
           and_raise(@error)
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       end
@@ -385,9 +390,9 @@ describe Chef::ResourceReporter do
 
     context "after creating the run history document" do
       before do
-        response = {"uri"=>"https://example.com/nodes/spitfire/audit/ABC123"}
+        response = {"uri"=>"https://example.com/nodes/spitfire/runs/ABC123"}
         @rest_client.should_receive(:post_rest).
-          with("nodes/spitfire/audit", {:action => :begin}).
+          with("nodes/spitfire/runs", {:action => :begin}).
           and_return(response)
 
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
@@ -409,7 +414,7 @@ describe Chef::ResourceReporter do
         response = {"result"=>"ok"}
 
         @rest_client.should_receive(:post_rest).
-          with("nodes/spitfire/audit/ABC123", @expected_data).
+          with("nodes/spitfire/runs/ABC123", @expected_data).
           and_return(response)
 
         @resource_reporter.run_completed(@node)

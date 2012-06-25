@@ -159,7 +159,7 @@ class Chef
       end
       run_data["status"] = status
       run_data["run_list"] = node.run_list.to_json
-      run_data["total_res_count"] = @total_res_count
+      run_data["total_res_count"] = @total_res_count.to_s
       if exception
         run_data["exception"] = {}
         run_data["exception"]["class"] = exception.inspect
@@ -167,6 +167,7 @@ class Chef
         run_data["exception"]["backtrace"] = exception.backtrace
         run_data["exception"]["description"] = "FIXME: error inspection stuff should go here"
       end
+      run_data["data"] = {}
       run_data
     end
 
