@@ -95,6 +95,8 @@ class Chef
 
               @chef_client.run
               @chef_client = nil
+              GC.start
+              @cleaned = true
 
               Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
               client_sleep Chef::Config[:interval]
@@ -104,13 +106,16 @@ class Chef
             rescue SystemExit => e
               raise
             rescue Exception => e
+              GC.start
+              @cleaned = true
               Chef::Log.error("#{e.class}: #{e}")
               Chef::Application.debug_stacktrace(e)
               Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
               client_sleep Chef::Config[:interval]
               retry
             ensure
-              GC.start
+              GC.start unless @cleaned
+              @cleaned = false
             end
           else # PAUSED or IDLE
             sleep 5
