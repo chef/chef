@@ -49,6 +49,12 @@ class Chef
       # to fetch roles from their correct location.
       attr_reader :source
 
+      # Returns a Hash of the form "including_role" => "included_role_or_recipe".
+      # This can be used to show the expanded run list (ordered) graph.
+      # ==== Caveats
+      # * Duplicate roles are not shown.
+      attr_reader :run_list_trace
+
       def initialize(environment, run_list_items, source=nil)
         @environment = environment
         @missing_roles_with_including_role = Array.new
@@ -62,6 +68,7 @@ class Chef
         @recipes = Chef::RunList::VersionedRecipeList.new
 
         @applied_roles = {}
+        @run_list_trace = Hash.new {|h, key| h[key] = [] }
       end
 
       # Did we find any errors (expanding roles)?
@@ -135,6 +142,8 @@ class Chef
 
       def expand_run_list_items(items, included_by="top level")
         if entry = items.shift
+          @run_list_trace[included_by.to_s] << entry.to_s
+
           case entry.type
           when :recipe
             recipes.add_recipe(entry.name, entry.version)
@@ -144,7 +153,7 @@ class Chef
               apply_role_attributes(role)
             end
           end
-          expand_run_list_items(items)
+          expand_run_list_items(items, included_by)
         end
       end
 
