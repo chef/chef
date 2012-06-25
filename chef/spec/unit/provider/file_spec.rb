@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require 'ostruct'
 
 require 'spec_helper'
 
@@ -24,7 +23,8 @@ describe Chef::Provider::File do
   before(:each) do
     @node = Chef::Node.new
     @node.name "latte"
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
@@ -76,7 +76,8 @@ describe Chef::Provider::File do
 
     ::File.stub!(:symlink?).and_return(true)
     @provider.should_not_receive(:backup)
-    @provider.action_delete
+    @provider.run_action(:delete)
+    @resource.should be_updated_by_last_action
   end
 
   it "should compare the current content with the requested content" do
@@ -93,9 +94,11 @@ describe Chef::Provider::File do
     io = StringIO.new
     @provider.load_current_resource
     @provider.new_resource.content "foobar"
+    @provider.should_receive(:diff_current_from_content).and_return("")
     @provider.should_receive(:backup)
     File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
-    lambda { @provider.set_content }.should_not raise_error
+    @provider.set_content
+    lambda { @provider.send(:converge_actions).converge! }.should_not raise_error
     io.string.should == "foobar"
   end
 
@@ -105,16 +108,19 @@ describe Chef::Provider::File do
     File.stub!(:open).and_return(1)
     File.should_not_receive(:open).with(@provider.new_resource.path, "w")
     lambda { @provider.set_content }.should_not raise_error
+    @resource.should_not be_updated_by_last_action
   end
 
   it "should create the file if it is missing, then set the attributes on action_create" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    @provider.should_receive(:enforce_ownership_and_permissions)
+    @provider.access_controls.should_receive(:set_all)
+    @provider.should_receive(:diff_current_from_content).and_return("")
     File.stub!(:open).and_return(1)
-    File.should_receive(:directory?).with("/tmp").and_return(true)
+    #File.should_receive(:directory?).with("/tmp").and_return(true)
     File.should_receive(:open).with(@provider.new_resource.path, "w+")
-    @provider.action_create
+    @provider.run_action(:create)
+    @resource.should be_updated_by_last_action
   end
 
   it "should create the file with the proper content if it is missing, then set attributes on action_create" do
@@ -122,39 +128,41 @@ describe Chef::Provider::File do
     @provider.load_current_resource
     @provider.new_resource.content "foobar"
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.should_receive(:diff_current_from_content).and_return("")
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
-    File.should_receive(:directory?).with("/tmp").and_return(true)
-    @provider.should_receive(:enforce_ownership_and_permissions).once
-    @provider.action_create
+    @provider.access_controls.should_receive(:set_all)
+    @provider.run_action(:create)
     io.string.should == "foobar"
+    @resource.should be_updated_by_last_action
   end
 
   it "should delete the file if it exists and is writable on action_delete" do
-    @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
     @provider.stub!(:backup).and_return(true)
-    File.should_receive("exists?").with(@provider.new_resource.path).and_return(true)
+    File.should_receive("exists?").exactly(2).times.with(@provider.new_resource.path).and_return(true)
     File.should_receive("writable?").with(@provider.new_resource.path).and_return(true)
     File.should_receive(:delete).with(@provider.new_resource.path).and_return(true)
-    @provider.action_delete
+    @provider.run_action(:delete)
+    @resource.should be_updated_by_last_action
   end
 
   it "should not raise an error if it cannot delete the file because it does not exist" do
-    @provider.load_current_resource
-    @provider.stub!(:backup).and_return(true)
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    File.should_receive("exists?").with(@provider.new_resource.path).and_return(false)
-    lambda { @provider.action_delete }.should_not raise_error()
+    @provider.stub!(:backup).and_return(true)
+    File.should_receive("exists?").exactly(2).times.with(@provider.new_resource.path).and_return(false)
+    lambda { @provider.run_action(:delete) }.should_not raise_error()
+    @resource.should_not be_updated_by_last_action
   end
 
   it "should update the atime/mtime on action_touch" do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
-    File.should_receive(:directory?).with("/tmp").and_return(true)
+    @provider.should_receive(:diff_current_from_content).and_return("")
     File.should_receive(:utime).once.and_return(1)
     File.stub!(:open).and_return(1)
-    @provider.should_receive(:enforce_ownership_and_permissions).once
-    @provider.action_touch
+    @provider.access_controls.should_receive(:set_all).once
+    @provider.run_action(:touch)
+    @resource.should be_updated_by_last_action
   end
 
   it "should keep 1 backup copy if specified" do
@@ -240,7 +248,7 @@ describe Chef::Provider::File do
     end
 
     it "raises a specific error describing the problem" do
-      lambda {@provider.action_create}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+      lambda {@provider.run_action(:create)}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
     end
   end
 
@@ -248,18 +256,37 @@ describe Chef::Provider::File do
     it "should not call action create if the file exists" do
       @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
       @provider = Chef::Provider::File.new(@resource, @run_context)
-      @provider.should_not_receive(:action_create).and_return(true)
-      @provider.action_create_if_missing
+      File.should_not_receive(:open)
+      @provider.run_action(:create_if_missing)
+      @resource.should_not be_updated_by_last_action
     end
 
     it "should call action create if the does not file exist" do
       @resource.path("/tmp/non_existant_file")
       @provider = Chef::Provider::File.new(@resource, @run_context)
+      @provider.should_receive(:diff_current_from_content).and_return("")
       ::File.stub!(:exists?).with(@resource.path).and_return(false)
-      @provider.should_receive(:action_create).and_return(true)
-      @provider.action_create_if_missing
+      io = StringIO.new
+      File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
+      #@provider.should_receive(:action_create).and_return(true)
+      @provider.run_action(:create_if_missing)
+      @resource.should be_updated_by_last_action
     end
   end
 
+  describe "when a diff is requested" do
+   
+    it "should return valid diff output when content does not match the string content provided" do
+       Tempfile.open("some-temp") do |file|
+         @resource.path file.path
+         @provider = Chef::Provider::File.new(@resource, @run_context) 
+         @provider.load_current_resource
+         result = @provider.diff_current_from_content "foo baz\n"
+         # remove the file name info which varies.
+         result.shift(2)
+         result.should == ["@@ -0,0 +1 @@", "+foo baz"] 
+       end
+    end
+  end
 end
 

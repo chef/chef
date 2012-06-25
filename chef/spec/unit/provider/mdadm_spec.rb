@@ -19,11 +19,12 @@
 require 'spec_helper'
 require 'ostruct'
 
-describe "initialize" do
+describe Chef::Provider::Mdadm do
 
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Mdadm.new('/dev/md1')
     @new_resource.devices ["/dev/sdz1","/dev/sdz2"]
@@ -63,8 +64,7 @@ describe "initialize" do
       @current_resource.devices ["/dev/sdz1","/dev/sdz2"]
       @current_resource.level   1
       @current_resource.chunk   256
-
-
+      @provider.stub!(:load_current_resource).and_return(true)
       @provider.current_resource = @current_resource
     end
 
@@ -73,7 +73,7 @@ describe "initialize" do
         @current_resource.exists(false)
         expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2"
         @provider.should_receive(:shell_out!).with(expected_command)
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should specify a bitmap only if set" do
@@ -81,13 +81,15 @@ describe "initialize" do
         @new_resource.bitmap('grow')
         expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --bitmap=grow --raid-devices 2 /dev/sdz1 /dev/sdz2"
         @provider.should_receive(:shell_out!).with(expected_command)
-        @provider.action_create
+        @provider.run_action(:create)
+        @new_resource.should be_updated_by_last_action
       end
 
       it "should not create the raid device if it does exist" do
         @current_resource.exists(true)
         @provider.should_not_receive(:shell_out!)
-        @provider.action_create
+        @provider.run_action(:create)
+        @new_resource.should_not be_updated_by_last_action
       end
     end
 
@@ -96,13 +98,15 @@ describe "initialize" do
         @current_resource.exists(false)
         expected_mdadm_cmd = "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2"
         @provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
-        @provider.action_assemble
+        @provider.run_action(:assemble)
+        @new_resource.should be_updated_by_last_action
       end
 
         it "should not assemble the raid device if it doesnt exist" do
         @current_resource.exists(true)
         @provider.should_not_receive(:shell_out!)
-        @provider.action_assemble
+        @provider.run_action(:assemble)
+        @new_resource.should_not be_updated_by_last_action
       end
     end
 
@@ -112,13 +116,15 @@ describe "initialize" do
         @current_resource.exists(true)
         expected_mdadm_cmd = "yes | mdadm --stop /dev/md1"
         @provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
-        @provider.action_stop
+        @provider.run_action(:stop)
+        @new_resource.should be_updated_by_last_action
       end
 
       it "should not attempt to stop the raid device if it does not exist" do
         @current_resource.exists(false)
         @provider.should_not_receive(:shell_out!)
-        @provider.action_stop
+        @provider.run_action(:stop)
+        @new_resource.should_not be_updated_by_last_action
       end
     end
   end

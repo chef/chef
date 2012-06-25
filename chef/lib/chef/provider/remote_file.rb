@@ -32,35 +32,33 @@ class Chef
       end
 
       def action_create
-        assert_enclosing_directory_exists!
-
         Chef::Log.debug("#{@new_resource} checking for changes")
 
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          Chef::REST.new(@new_resource.source, nil, nil, http_client_opts).fetch(@new_resource.source) do |raw_file|
-            if matches_current_checksum?(raw_file)
-              Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
-            else
+          rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
+          raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          if matches_current_checksum?(raw_file)
+            Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
+          else
+            description = [] 
+            description << "copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
+            description << diff_current(raw_file.path)
+            converge_by(description) do
               backup_new_resource
               FileUtils.cp raw_file.path, @new_resource.path
               Chef::Log.info "#{@new_resource} updated"
-              @new_resource.updated_by_last_action(true)
+              raw_file.close!
+            end
+            # whyrun mode cleanup - the temp file will never be used,
+            # so close/unlink it here. 
+            if whyrun_mode?
+              raw_file.close!
             end
           end
         end
-        enforce_ownership_and_permissions
-
-        @new_resource.updated_by_last_action?
-      end
-
-      def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("#{@new_resource} exists, taking no action.")
-        else
-          action_create
-        end
+        set_all_access_controls
       end
 
       def current_resource_matches_target_checksum?

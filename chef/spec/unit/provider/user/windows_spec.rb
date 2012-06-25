@@ -31,7 +31,8 @@ describe Chef::Provider::User::Windows do
   before(:each) do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::User.new("monkey")
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @current_resource = Chef::Resource::User.new("monkey")
 
     @net_user = mock("Chef::Util::Windows::NetUser")

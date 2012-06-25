@@ -21,6 +21,7 @@ require 'chef/log'
 require 'chef/mixin/shell_out'
 require 'chef/resource/link'
 require 'chef/provider'
+require 'chef/scan_access_control'
 
 class Chef
   class Provider
@@ -54,6 +55,10 @@ class Chef
 
       private :negative_complement
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @current_resource = Chef::Resource::Link.new(@new_resource.name)
         @current_resource.target_file(@new_resource.target_file)
@@ -62,9 +67,6 @@ class Chef
           @current_resource.to(
             canonicalize(file_class.readlink(@current_resource.target_file))
           )
-          cstats = ::File.lstat(@current_resource.target_file)
-          @current_resource.owner(cstats.uid)
-          @current_resource.group(cstats.gid)
         else
           @current_resource.link_type(:hard)
           if ::File.exists?(@current_resource.target_file)
@@ -77,7 +79,23 @@ class Chef
             end
           end
         end
+        ScanAccessControl.new(@new_resource, @current_resource).set_all!
         @current_resource
+      end
+
+      def define_resource_requirements
+        requirements.assert(:delete) do |a|
+          a.assertion do
+            if @current_resource.to
+              @current_resource.link_type == @new_resource.link_type and
+              (@current_resource.link_type == :symbolic  or @current_resource.to != '')
+            else
+              true
+            end
+          end
+          a.failure_message Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type.to_s} link."
+          a.whyrun("Would assume the link at #{@new_resource.target_file} was previously created")
+        end
       end
 
       def canonicalize(path)
@@ -87,51 +105,42 @@ class Chef
       def action_create
         if @current_resource.to != canonicalize(@new_resource.to) ||
            @current_resource.link_type != @new_resource.link_type
-          if @new_resource.link_type == :symbolic
-            if @current_resource.to # nil if target_file does not exist
+          if @current_resource.to # nil if target_file does not exist
+            converge_by("unlink existing file at #{@new_resource.target_file}") do
               ::File.unlink(@new_resource.target_file)
             end
-            file_class.symlink(canonicalize(@new_resource.to),@new_resource.target_file)
-            Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
-            Chef::Log.info("#{@new_resource} created")
-          elsif @new_resource.link_type == :hard
-            if @current_resource.to # nil if target_file does not exist
-              ::File.unlink(@new_resource.target_file)
-            end
-            file_class.link(@new_resource.to, @new_resource.target_file)
-            Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
-            Chef::Log.info("#{@new_resource} created")
           end
-          @new_resource.updated_by_last_action(true)
+          if @new_resource.link_type == :symbolic
+            converge_by("create symlink at #{@new_resource.target_file} to #{@new_resource.to}") do
+              file_class.symlink(canonicalize(@new_resource.to),@new_resource.target_file)
+              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+              Chef::Log.info("#{@new_resource} created")
+            end
+          elsif @new_resource.link_type == :hard
+            converge_by("create hard link at #{@new_resource.target_file} to #{@new_resource.to}") do
+              file_class.link(@new_resource.to, @new_resource.target_file)
+              Chef::Log.debug("#{@new_resource} created #{@new_resource.link_type} link from #{@new_resource.to} -> #{@new_resource.target_file}")
+              Chef::Log.info("#{@new_resource} created")
+            end
+          end
         end
         if @new_resource.link_type == :symbolic
-          enforce_ownership_and_permissions @new_resource.target_file
-        end
+          if access_controls.requires_changes?
+            converge_by(access_controls.describe_changes) do 
+              access_controls.set_all
+            end
+          end
+       end
       end
 
       def action_delete
         if @current_resource.to # Exists
-          if @current_resource.link_type == @new_resource.link_type
-            unless @current_resource.link_type == :hard && @current_resource.to == ''
-              ::File.delete(@new_resource.target_file)
-              Chef::Log.info("#{@new_resource} deleted")
-              @new_resource.updated_by_last_action(true)
-              return
-            end
+          converge_by ("delete link at #{@new_resource.target_file}") do
+            ::File.delete(@new_resource.target_file)
+            Chef::Log.info("#{@new_resource} deleted")
           end
-          raise Chef::Exceptions::Link, "Cannot delete #{@new_resource} at #{@new_resource.target_file}! Not a #{@new_resource.link_type.to_s} link."
         end
       end
     end
-
-    # private
-    # def hardlink?(target, to)
-    #   s = file_class()
-    #   if file_class.respond_to?(:hardlink?)
-    #     file_class.hardlink?(target)
-    #   else
-    #     ::File.stat(target).ino == ::File.stat(to).ino
-    #   end
-    # end
   end
 end

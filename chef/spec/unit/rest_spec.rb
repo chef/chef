@@ -260,6 +260,22 @@ describe Chef::REST do
         lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
       end
 
+      it "adds the rest_request object to any http exception raised" do
+        @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+        http_response.stub!(:read_body)
+        @rest.stub!(:sleep)
+        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        exception = begin
+          @rest.api_request(:GET, @url, {})
+        rescue => e
+          e
+        end
+
+        e.chef_rest_request.url.should == @url
+        e.chef_rest_request.method.should == :GET
+      end
+
       describe "streaming downloads to a tempfile" do
         before do
           @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")

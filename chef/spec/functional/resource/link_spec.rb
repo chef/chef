@@ -54,6 +54,7 @@ describe Chef::Resource::Link do
   def canonicalize(path)
     windows? ? path.gsub('/', '\\') : path
   end
+
   def symlink(a, b)
     if windows?
       Chef::ReservedNames::Win32::File.symlink(a, b)
@@ -84,7 +85,12 @@ describe Chef::Resource::Link do
   end
 
   def create_resource
-    resource = Chef::Resource::Link.new(target_file)
+    node = Chef::Node.new
+    events = Chef::EventDispatch::Dispatcher.new
+    cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo))
+    run_context = Chef::RunContext.new(node, cookbook_collection, events)
+    resource = Chef::Resource::Link.new(target_file, run_context)
     resource.to(to)
     resource
   end

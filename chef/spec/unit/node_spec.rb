@@ -371,9 +371,9 @@ describe Chef::Node do
     end
 
     it "sets the 'roles' automatic attribute to the expanded role list" do
-      @expansion.instance_variable_set(:@applied_roles, {'lrf' => nil, 'countersnark' => nil})
+      @expansion.instance_variable_set(:@applied_roles, {'arf' => nil, 'countersnark' => nil})
       @node.expand!
-      @node.automatic_attrs[:roles].should == ['lrf', 'countersnark']
+      @node.automatic_attrs[:roles].sort.should == ['arf', 'countersnark']
     end
 
   end
@@ -646,6 +646,21 @@ describe Chef::Node do
         @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
         @rest.should_receive(:post_rest).with("nodes", @node)
         @node.save
+      end
+
+      describe "when whyrun mode is enabled" do
+        before do
+          Chef::Config[:why_run] = true
+        end
+        after do
+          Chef::Config[:why_run] = false
+        end
+        it "should not save" do
+          @node.name("monkey")
+          @rest.should_not_receive(:put_rest)
+          @rest.should_not_receive(:post_rest)
+          @node.save
+        end
       end
     end
   end

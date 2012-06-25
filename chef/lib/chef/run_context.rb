@@ -37,16 +37,19 @@ class Chef
     # of any cookbooks.
     attr_accessor :resource_collection
 
+    attr_reader :events
+
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
     # === Returns
     # object<Chef::RunContext>:: Duh. :)
-    def initialize(node, cookbook_collection)
+    def initialize(node, cookbook_collection, events)
       @node = node
       @cookbook_collection = cookbook_collection
       @resource_collection = Chef::ResourceCollection.new
       @definitions = Hash.new
+      @events = events
 
       # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
       # cookbook_collection attr_accessor
@@ -55,8 +58,8 @@ class Chef
 
     def load(run_list_expansion)
       load_libraries
-      load_lwrp_providers
-      load_lwrp_resources
+
+      load_lwrps
       load_attributes
       load_resource_definitions
 
@@ -66,50 +69,118 @@ class Chef
       # roles) to the node.
       @node.apply_expansion_attributes(run_list_expansion)
 
+      @events.recipe_load_start(run_list_expansion.recipes.size)
       run_list_expansion.recipes.each do |recipe|
-        # TODO: timh/cw, 5-14-2010: It's distasteful to be including
-        # the DSL in a class outside the context of the DSL
-        include_recipe(recipe)
+        begin
+          # TODO: timh/cw, 5-14-2010: It's distasteful to be including
+          # the DSL in a class outside the context of the DSL
+          include_recipe(recipe)
+        rescue Exception => e
+          path = resolve_recipe(recipe)
+          @events.recipe_file_load_failed(path, e)
+          raise
+        end
       end
+      @events.recipe_load_complete
     end
 
+    def resolve_recipe(recipe_name)
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      cookbook = cookbook_collection[cookbook_name]
+      cookbook.recipe_filenames_by_name[recipe_short_name]
+    end
 
     private
 
     def load_libraries
+      @events.library_load_start(count_files_by_segment(:libraries))
+
       foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
-        Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
-        Kernel.load(filename)
+        begin
+          Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
+          Kernel.load(filename)
+          @events.library_file_loaded(filename)
+        rescue Exception => e
+          # TODO wrap/munge exception to highlight syntax/name/no method errors.
+          @events.library_load_failed(filename, e)
+          raise
+        end
       end
+
+      @events.library_load_complete
+    end
+
+    def load_lwrps
+      lwrp_file_count = count_files_by_segment(:providers) + count_files_by_segment(:resources)
+      @events.lwrp_load_start(lwrp_file_count)
+      load_lwrp_providers
+      load_lwrp_resources
+      @events.lwrp_load_complete
     end
 
     def load_lwrp_providers
       foreach_cookbook_load_segment(:providers) do |cookbook_name, filename|
-        Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
-        Chef::Provider.build_from_file(cookbook_name, filename, self)
+        begin
+          Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
+          Chef::Provider.build_from_file(cookbook_name, filename, self)
+          @events.lwrp_file_loaded(filename)
+        rescue Exception => e
+          # TODO: wrap exception with helpful info
+          @events.lwrp_file_load_failed(filename, e)
+          raise
+        end
       end
     end
 
     def load_lwrp_resources
       foreach_cookbook_load_segment(:resources) do |cookbook_name, filename|
-        Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
-        Chef::Resource.build_from_file(cookbook_name, filename, self)
+        begin
+          Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
+          Chef::Resource.build_from_file(cookbook_name, filename, self)
+          @events.lwrp_file_loaded(filename)
+        rescue Exception => e
+          @events.lwrp_file_load_failed(filename, e)
+          raise
+        end
       end
     end
 
     def load_attributes
-      node.load_attributes
+      @events.attribute_load_start(count_files_by_segment(:attributes))
+      foreach_cookbook_load_segment(:attributes) do |cookbook_name, filename|
+        begin
+          Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
+          @node.from_file(filename)
+        rescue Exception => e
+          @events.attribute_file_load_failed(filename, e)
+          raise
+        end
+      end
+      @events.attribute_load_complete
     end
 
     def load_resource_definitions
+      @events.definition_load_start(count_files_by_segment(:definitions))
       foreach_cookbook_load_segment(:definitions) do |cookbook_name, filename|
-        Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
-        resourcelist = Chef::ResourceDefinitionList.new
-        resourcelist.from_file(filename)
-        definitions.merge!(resourcelist.defines) do |key, oldval, newval|
-          Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
-          newval
+        begin
+          Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
+          resourcelist = Chef::ResourceDefinitionList.new
+          resourcelist.from_file(filename)
+          definitions.merge!(resourcelist.defines) do |key, oldval, newval|
+            Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
+            newval
+          end
+          @events.definition_file_loaded(filename)
+        rescue Exception => e
+          @events.definition_file_load_failed(filename, e)
         end
+      end
+      @events.definition_load_complete
+    end
+
+    def count_files_by_segment(segment)
+      cookbook_collection.inject(0) do |count, ( cookbook_name, cookbook )|
+        count + cookbook.segment_filenames(segment).size
       end
     end
 

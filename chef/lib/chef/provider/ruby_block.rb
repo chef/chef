@@ -20,14 +20,19 @@
 class Chef
   class Provider
     class RubyBlock < Chef::Provider
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         true
       end
 
       def action_create
-        @new_resource.block.call
-				Chef::Log.info("#{@new_resource} called")
-        @new_resource.updated_by_last_action(true)
+        converge_by("execute the ruby block #{@new_resource.name}") do 
+          @new_resource.block.call
+          Chef::Log.info("#{@new_resource} called")
+        end
       end
     end
   end

@@ -20,7 +20,8 @@ require 'spec_helper'
 describe Chef::Provider::Package::Portage, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new("dev-util/git")
     @new_resource_without_category = Chef::Resource::Package.new("git")
     @current_resource = Chef::Resource::Package.new("dev-util/git")

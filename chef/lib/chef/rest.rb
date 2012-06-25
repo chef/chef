@@ -28,7 +28,10 @@ require 'tempfile'
 require 'chef/rest/auth_credentials'
 require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
+require 'chef/monkey_patches/net_http'
 require 'chef/config'
+
+
 
 class Chef
   # == Chef::REST
@@ -240,30 +243,37 @@ class Chef
       headers = build_headers(method, url, headers, json_body)
 
       retriable_rest_request(method, url, json_body, headers) do |rest_request|
-        response = rest_request.call {|r| r.read_body}
+        begin
+          response = rest_request.call {|r| r.read_body}
 
-        response_body = decompress_body(response)
+          response_body = decompress_body(response)
 
-        if response.kind_of?(Net::HTTPSuccess)
-          if response['content-type'] =~ /json/
-            Chef::JSONCompat.from_json(response_body.chomp)
+          if response.kind_of?(Net::HTTPSuccess)
+            if response['content-type'] =~ /json/
+              Chef::JSONCompat.from_json(response_body.chomp)
+            else
+              Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
+              response_body
+            end
+          elsif redirect_location = redirected_to(response)
+            follow_redirect {api_request(:GET, create_url(redirect_location))}
           else
-            Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
-            response_body
-          end
-        elsif redirect_location = redirected_to(response)
-          follow_redirect {api_request(:GET, create_url(redirect_location))}
-        else
-          # have to decompress the body before making an exception for it. But the body could be nil.
-          response.body.replace(decompress_body(response)) if response.body.respond_to?(:replace)
+            # have to decompress the body before making an exception for it. But the body could be nil.
+            response.body.replace(decompress_body(response)) if response.body.respond_to?(:replace)
 
-          if response['content-type'] =~ /json/
-            exception = Chef::JSONCompat.from_json(response_body)
-            msg = "HTTP Request Returned #{response.code} #{response.message}: "
-            msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-            Chef::Log.info(msg)
+            if response['content-type'] =~ /json/
+              exception = Chef::JSONCompat.from_json(response_body)
+              msg = "HTTP Request Returned #{response.code} #{response.message}: "
+              msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
+              Chef::Log.info(msg)
+            end
+            response.error!
           end
-          response.error!
+        rescue Exception => e
+          if e.respond_to?(:chef_rest_request=)
+            e.chef_rest_request = rest_request
+          end
+          raise
         end
       end
     end
@@ -295,28 +305,35 @@ class Chef
     def streaming_request(url, headers, &block)
       headers = build_headers(:GET, url, headers, nil, true)
       retriable_rest_request(:GET, url, nil, headers) do |rest_request|
-        tempfile = nil
-        response = rest_request.call do |r|
-          if block_given? && r.kind_of?(Net::HTTPSuccess)
-            begin
-              tempfile = stream_to_tempfile(url, r, &block)
-              yield tempfile
-            ensure
-              tempfile.close!
+        begin
+          tempfile = nil
+          response = rest_request.call do |r|
+            if block_given? && r.kind_of?(Net::HTTPSuccess)
+              begin
+                tempfile = stream_to_tempfile(url, r, &block)
+                yield tempfile
+              ensure
+                tempfile.close!
+              end
+            else
+              tempfile = stream_to_tempfile(url, r)
             end
-          else
-            tempfile = stream_to_tempfile(url, r)
           end
-        end
-        if response.kind_of?(Net::HTTPSuccess)
-          tempfile
-        elsif redirect_location = redirected_to(response)
-          # TODO: test tempfile unlinked when following redirects.
-          tempfile && tempfile.close!
-          follow_redirect {streaming_request(create_url(redirect_location), {}, &block)}
-        else
-          tempfile && tempfile.close!
-          response.error!
+          if response.kind_of?(Net::HTTPSuccess)
+            tempfile
+          elsif redirect_location = redirected_to(response)
+            # TODO: test tempfile unlinked when following redirects.
+            tempfile && tempfile.close!
+            follow_redirect {streaming_request(create_url(redirect_location), {}, &block)}
+          else
+            tempfile && tempfile.close!
+            response.error!
+          end
+        rescue Exception => e
+          if e.respond_to?(:chef_rest_request=)
+            e.chef_rest_request = rest_request
+          end
+          raise
         end
       end
     end

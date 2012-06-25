@@ -118,6 +118,10 @@ describe Chef::Mixin::Securable do
       end
     end
 
+    after(:all) do
+      load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
+    end
+
     after(:each) do
       Chef::Config.configuration = @original_config
     end

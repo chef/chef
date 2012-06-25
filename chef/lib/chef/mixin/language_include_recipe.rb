@@ -36,15 +36,16 @@ class Chef
       end
 
       def load_recipe(recipe_name)
-          Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
-          node.run_state[:seen_recipes][recipe_name] = true
+        Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
+        node.run_state[:seen_recipes][recipe_name] = true
 
-          cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+        cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
 
-          run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
-          cookbook = run_context.cookbook_collection[cookbook_name]
-          cookbook.load_recipe(recipe_short_name, run_context)
+        run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
+        cookbook = run_context.cookbook_collection[cookbook_name]
+        cookbook.load_recipe(recipe_short_name, run_context)
       end
+
 
       def require_recipe(*args)
         include_recipe(*args)

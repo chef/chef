@@ -22,7 +22,8 @@ describe Chef::Provider::Route do
   before do
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new([])
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @new_resource = Chef::Resource::Route.new('10.0.0.10')
     @new_resource.gateway "10.0.0.9"
@@ -95,7 +96,7 @@ describe Chef::Provider::Route do
       @current_resource.stub!(:gateway).and_return(nil)
       @provider.should_receive(:generate_command).once.with(:add)
       @provider.should_receive(:generate_config)
-      @provider.action_add
+      @provider.run_action(:add)
       @new_resource.should be_updated
     end
 
@@ -104,7 +105,7 @@ describe Chef::Provider::Route do
       @provider.stub!(:is_running).and_return(true)
       @provider.should_not_receive(:generate_command).with(:add)
       @provider.should_receive(:generate_config)
-      @provider.action_add
+      @provider.run_action(:add)
       @new_resource.should_not be_updated
     end
   end
@@ -114,7 +115,7 @@ describe Chef::Provider::Route do
       @provider.stub!(:run_command).and_return(true)
       @provider.should_receive(:generate_command).once.with(:delete)
       @provider.stub!(:is_running).and_return(true)
-      @provider.action_delete
+      @provider.run_action(:delete)
       @new_resource.should be_updated
     end
 
@@ -122,7 +123,7 @@ describe Chef::Provider::Route do
       @current_resource.stub!(:gateway).and_return(nil)
       @provider.stub!(:run_command).and_return(true)
       @provider.should_not_receive(:generate_command).with(:add)
-      @provider.action_delete
+      @provider.run_action(:delete)
       @new_resource.should_not be_updated
     end
   end
@@ -201,10 +202,11 @@ describe Chef::Provider::Route do
 
         route_file = StringIO.new
         File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
-        Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
+        #Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
 
         @provider.generate_config
+        @provider.converge
       end
     end
 
@@ -218,6 +220,7 @@ describe Chef::Provider::Route do
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
 
       @provider.generate_config
+      @provider.converge
       route_file.string.split("\n").should have(3).items
       route_file.string.should match(/^192.168.1.0\/24 via 192.168.0.1$/)
       route_file.string.should match(/^192.168.2.0\/24 via 192.168.0.1$/)

@@ -76,11 +76,7 @@ class Chef
       end
 
       def validate_cached_copy(cache_filename)
-        valid_cache_entries[cache_filename] = true
-      end
-
-      def valid_cache_entries
-        Chef::CookbookVersion.valid_cache_entries
+        CookbookCacheCleaner.instance.mark_file_as_valid(cache_filename)
       end
 
     end

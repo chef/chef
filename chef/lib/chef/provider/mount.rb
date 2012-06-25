@@ -26,12 +26,22 @@ class Chef
 
       include Chef::Mixin::Command
 
+
+      def whyrun_supported?
+        true
+      end
+
+      def load_current_resource
+        true
+      end
+
       def action_mount
         unless @current_resource.mounted
-          status = mount_fs()
-          if status
-            @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource} mounted")
+          converge_by("mount #{@current_resource.device} to #{@current_resource.mount_point}") do 
+            status = mount_fs()
+            if status
+              Chef::Log.info("#{@new_resource} mounted")
+            end
           end
         else
           Chef::Log.debug("#{@new_resource} is already mounted")
@@ -40,10 +50,11 @@ class Chef
 
       def action_umount
         if @current_resource.mounted
-          status = umount_fs()
-          if status
-            @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource} unmounted")
+          converge_by("unmount #{@current_resource.device}") do 
+            status = umount_fs()
+            if status
+              Chef::Log.info("#{@new_resource} unmounted")
+            end
           end
         else
           Chef::Log.debug("#{@new_resource} is already unmounted")
@@ -55,37 +66,40 @@ class Chef
           raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :remount"
         else
           if @current_resource.mounted
-            status = remount_fs()
-            if status
-              @new_resource.updated_by_last_action(true)
-              Chef::Log.info("#{@new_resource} remounted")
+            converge_by("remount #{@current_resource.device}") do 
+              status = remount_fs()
+              if status
+                Chef::Log.info("#{@new_resource} remounted")
+              end
             end
           else
             Chef::Log.debug("#{@new_resource} not mounted, nothing to remount")
           end
         end
       end
-      
+
       def action_enable
         unless @current_resource.enabled
-          status = enable_fs
-          if status
-            @new_resource.updated_by_last_action(true)
-            Chef::Log.info("#{@new_resource} enabled")
-          else
-            Chef::Log.debug("#{@new_resource} already enabled")
+          converge_by("remount #{@current_resource.device}") do 
+            status = enable_fs
+            if status
+              Chef::Log.info("#{@new_resource} enabled")
+            else
+              Chef::Log.debug("#{@new_resource} already enabled")
+            end
           end
         end
       end
-      
+
       def action_disable
         if @current_resource.enabled
-          status = disable_fs
-          if status
-            @new_resource.updated_by_last_action(true)            
-            Chef::Log.info("#{@new_resource} disabled")
-          else
-            Chef::Log.debug("#{@new_resource} already disabled")
+          converge_by("remount #{@current_resource.device}") do 
+            status = disable_fs
+            if status
+              Chef::Log.info("#{@new_resource} disabled")
+            else
+              Chef::Log.debug("#{@new_resource} already disabled")
+            end
           end
         end
       end

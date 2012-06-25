@@ -59,7 +59,8 @@ describe Chef::Runner do
     @node.name "latte"
     @node.platform "mac_os_x"
     @node.platform_version "10.5.1"
-    @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}))
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @events)
     @first_resource = Chef::Resource::Cat.new("loulou1", @run_context)
     @run_context.resource_collection << @first_resource
     Chef::Platform.set(
@@ -115,7 +116,7 @@ describe Chef::Runner do
     provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).and_raise(ArgumentError)
-    @runner.should_receive(:sleep).with(2).exactly(3).times
+    @first_resource.should_receive(:sleep).with(2).exactly(3).times
     lambda { @runner.converge }.should raise_error(ArgumentError)
   end
 

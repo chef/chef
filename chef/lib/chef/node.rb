@@ -435,7 +435,7 @@ class Chef
     # invalidated only when run_list is mutated?
     def expand!(data_source = 'server')
       expansion = run_list.expand(chef_environment, data_source)
-      raise Chef::Exceptions::MissingRole if expansion.errors?
+      raise Chef::Exceptions::MissingRole, expansion if expansion.errors?
 
       self.tags # make sure they're defined
 
@@ -624,7 +624,11 @@ class Chef
       # Try PUT. If the node doesn't yet exist, PUT will return 404,
       # so then POST to create.
       begin
-        chef_server_rest.put_rest("nodes/#{name}", self)
+        if Chef::Config[:why_run]
+          Chef::Log.warn("In whyrun mode, so NOT performing node save.")
+        else
+          chef_server_rest.put_rest("nodes/#{name}", self)
+        end
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
         chef_server_rest.post_rest("nodes", self)

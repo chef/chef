@@ -18,6 +18,7 @@
 #
 
 require 'chef/resource'
+require 'chef/platform'
 require 'chef/provider/file'
 require 'chef/mixin/securable'
 
@@ -25,6 +26,15 @@ class Chef
   class Resource
     class File < Chef::Resource
       include Chef::Mixin::Securable
+
+      identity_attr :path
+
+      state_attrs :checksum, :owner, :group, :mode
+
+      # By default, windows gets `state_attrs :rights, :deny_rights`
+      if Platform.windows?
+        state_attrs :rights, :deny_rights
+      end
 
       provides :file, :on_platforms => :all
 
@@ -37,6 +47,7 @@ class Chef
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
       end
+
 
       def content(arg=nil)
         set_or_return(

@@ -24,6 +24,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def load_current_resource
     @current_resource = Chef::Resource::Service.new(@new_resource.name)
     @current_resource.service_name(@new_resource.service_name)
+    @status_check_success = true
 
     if @new_resource.status_command
       Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
@@ -33,7 +34,9 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
           @current_resource.running(true)
         end
       rescue Chef::Exceptions::Exec
+        @status_check_success = false
         @current_resource.running(false)
+        @current_resource.enabled(false)
         nil
       end
     else
@@ -42,6 +45,16 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
     @current_resource.enabled(is_enabled?)
     @current_resource
+  end
+
+  def define_resource_requirements
+    super
+    requirements.assert(:all_actions) do |a|
+      a.assertion { @status_check_success } 
+      # We won't stop in any case, but in whyrun warn and tell what we're doing.
+      a.whyrun ["Failed to determine status of #{@new_resource}, using command #{@new_resource.status_command}.",
+        "Assuming service would have been installed and is disabled"]
+    end
   end
 
   def start_service

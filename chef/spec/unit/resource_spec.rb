@@ -30,8 +30,121 @@ describe Chef::Resource do
     @cookbook_repo_path =  File.join(CHEF_SPEC_DATA, 'cookbooks')
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo_path))
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @resource = Chef::Resource.new("funk", @run_context)
+  end
+
+  describe "when declaring the identity attribute" do
+    it "has no identity attribute by default" do
+      Chef::Resource.identity_attr.should be_nil
+    end
+
+    it "sets an identity attribute" do
+      resource_class = Class.new(Chef::Resource)
+      resource_class.identity_attr(:path)
+      resource_class.identity_attr.should == :path
+    end
+
+    it "inherits an identity attribute from a superclass" do
+      resource_class = Class.new(Chef::Resource)
+      resource_subclass = Class.new(resource_class)
+      resource_class.identity_attr(:package_name)
+      resource_subclass.identity_attr.should == :package_name
+    end
+
+    it "overrides the identity attribute from a superclass when the identity attr is set" do
+      resource_class = Class.new(Chef::Resource)
+      resource_subclass = Class.new(resource_class)
+      resource_class.identity_attr(:package_name)
+      resource_subclass.identity_attr(:something_else)
+      resource_subclass.identity_attr.should == :something_else
+    end
+  end
+
+  describe "when no identity attribute has been declared" do
+    before do
+      @resource_sans_id = Chef::Resource.new("my-name")
+    end
+
+    # Would rather force identity attributes to be set for everything,
+    # but that's not plausible for back compat reasons.
+    it "uses the name as the identity" do
+      @resource_sans_id.identity.should == "my-name"
+    end
+  end
+
+  describe "when an identity attribute has been declared" do
+    before do
+      @file_resource_class = Class.new(Chef::Resource) do
+        identity_attr :path
+        attr_accessor :path
+      end
+
+      @file_resource = @file_resource_class.new("identity-attr-test")
+      @file_resource.path = "/tmp/foo.txt"
+    end
+
+    it "gives the value of its identity attribute" do
+      @file_resource.identity.should == "/tmp/foo.txt"
+    end
+  end
+
+  describe "when declaring state attributes" do
+    it "has no state_attrs by default" do
+      Chef::Resource.state_attrs.should be_empty
+    end
+
+    it "sets a list of state attributes" do
+      resource_class = Class.new(Chef::Resource)
+      resource_class.state_attrs(:checksum, :owner, :group, :mode)
+      resource_class.state_attrs.should =~ [:checksum, :owner, :group, :mode]
+    end
+
+    it "inherits state attributes from the superclass" do
+      resource_class = Class.new(Chef::Resource)
+      resource_subclass = Class.new(resource_class)
+      resource_class.state_attrs(:checksum, :owner, :group, :mode)
+      resource_subclass.state_attrs.should =~ [:checksum, :owner, :group, :mode]
+    end
+
+    it "combines inherited state attributes with non-inherited state attributes" do
+      resource_class = Class.new(Chef::Resource)
+      resource_subclass = Class.new(resource_class)
+      resource_class.state_attrs(:checksum, :owner)
+      resource_subclass.state_attrs(:group, :mode)
+      resource_subclass.state_attrs.should =~ [:checksum, :owner, :group, :mode]
+    end
+
+  end
+
+  describe "when a set of state attributes has been declared" do
+    before do
+      @file_resource_class = Class.new(Chef::Resource) do
+
+        state_attrs :checksum, :owner, :group, :mode
+
+        attr_accessor :checksum
+        attr_accessor :owner
+        attr_accessor :group
+        attr_accessor :mode
+      end
+
+      @file_resource = @file_resource_class.new("describe-state-test")
+      @file_resource.checksum = "abc123"
+      @file_resource.owner = "root"
+      @file_resource.group = "wheel"
+      @file_resource.mode = "0644"
+    end
+
+    it "describes its state" do
+      resource_state = @file_resource.state
+      resource_state.keys.should =~ [:checksum, :owner, :group, :mode]
+      resource_state[:checksum].should == "abc123"
+      resource_state[:owner].should == "root"
+      resource_state[:group].should == "wheel"
+      resource_state[:mode].should == "0644"
+    end
   end
 
   describe "load_prior_resource" do
@@ -193,7 +306,7 @@ describe Chef::Resource do
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
         :updated_by_last_action, :before, :supports, :delayed_notifications,
         :immediate_notifications, :noop, :ignore_failure, :name, :source_line,
-        :action, :retries, :retry_delay ]
+        :action, :retries, :retry_delay , :elapsed_time]
       (hash.keys - expected_keys).should == []
       (expected_keys - hash.keys).should == []
       hash[:name].should eql("funk")
@@ -270,7 +383,7 @@ describe Chef::Resource do
   end
 
   it "supports accessing the node via the @node instance variable [DEPRECATED]" do
-    @resource.instance_variable_get(:@node).should == @node
+    @resource.instance_variable_get(:@node).inspect.should == @node.inspect
   end
 
   it "runs an action by finding its provider, loading the current resource and then running the action" do

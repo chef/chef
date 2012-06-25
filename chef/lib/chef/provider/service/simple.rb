@@ -31,25 +31,65 @@ class Chef
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
 
+          @status_load_success = true
+          @ps_command_failed = false
+
           determine_current_status!
 
           @current_resource
         end
 
-        def start_service
-          if @new_resource.start_command
-            shell_out!(@new_resource.start_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that start_command to be set"
+        def whyrun_supported?
+          true
+        end
+
+        def shared_resource_requirements
+          super
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @status_load_success } 
+            a.whyrun ["Service status not available. Assuming a prior action would have installed the service.", "Assuming status of not running."]
           end
         end
 
-        def stop_service
-          if @new_resource.stop_command
-            shell_out!(@new_resource.stop_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that stop_command to be set"
+        def define_resource_requirements
+          # FIXME? need reload from service.rb
+          shared_resource_requirements
+          requirements.assert(:start) do |a|
+            a.assertion { @new_resource.start_command }
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that start_command be set"
           end
+          requirements.assert(:stop) do |a|
+            a.assertion { @new_resource.stop_command }
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires that stop_command be set"
+          end
+
+          requirements.assert(:restart) do |a|
+            a.assertion { @new_resource.restart_command  || ( @new_resource.start_command && @new_resource.stop_command ) }
+            a.failure_message Chef::Exceptions::Service, "#{self.to_s} requires a restart_command or both start_command and stop_command be set in order to perform a restart"
+          end
+
+          requirements.assert(:reload) do |a|
+            a.assertion { @new_resource.reload_command }
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} requires a reload_command be set in order to perform a reload"
+          end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or 
+              (!ps_cmd.nil? and !ps_cmd.empty?) } 
+            a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
+          end
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { !@ps_command_failed } 
+            a.failure_message Chef::Exceptions::Service, "Command #{ps_cmd} failed to execute, cannot determine service current status"
+          end
+        end
+
+        def start_service
+          shell_out!(@new_resource.start_command)
+        end
+
+        def stop_service
+          shell_out!(@new_resource.stop_command)
         end
 
         def restart_service
@@ -63,11 +103,7 @@ class Chef
         end
 
         def reload_service
-          if @new_resource.reload_command
-            shell_out!(@new_resource.reload_command)
-          else
-            raise Chef::Exceptions::Service, "#{self.to_s} requires that reload_command to be set"
-          end
+          shell_out!(@new_resource.reload_command)
         end
 
       protected
@@ -80,29 +116,32 @@ class Chef
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
-            rescue Mixlib::ShellOut::ShellCommandFailed
+            rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+              @status_load_success = false
               @current_resource.running false
               nil
             end
 
           elsif @new_resource.supports[:status]
             Chef::Log.debug("#{@new_resource} supports status, running")
-
             begin
               if shell_out("#{@init_command} status").exitstatus == 0
                 @current_resource.running true
                 Chef::Log.debug("#{@new_resource} is running")
               end
-            rescue Mixlib::ShellOut::ShellCommandFailed
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+            rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
+              @status_load_success = false
               @current_resource.running false
               nil
             end
-          elsif
+          else
             Chef::Log.debug "#{@new_resource} falling back to process table inspection"
-            if ps_cmd.nil? or ps_cmd.empty?
-              raise Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this nodes 'command.ps' attribute"
-            end
-
             r = Regexp.new(@new_resource.pattern)
             Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
             begin
@@ -112,10 +151,14 @@ class Chef
                   break
                 end
               end
+
               @current_resource.running false unless @current_resource.running
               Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              raise Chef::Exceptions::Service, "Command #{ps_cmd} failed"
+            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+            # Temporarily catching different types of exceptions here until we get Shellout fixed.
+            # TODO: Remove the line before one we get the ShellOut fix.
+            rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
+              @ps_command_failed = true
             end
           end
         end

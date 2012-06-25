@@ -23,7 +23,8 @@ describe Chef::Handler do
     @handler = Chef::Handler.new
 
     @node = Chef::Node.new
-    @run_status = Chef::RunStatus.new(@node)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_status = Chef::RunStatus.new(@node, @events)
 
     @handler.instance_variable_set(:@run_status, @run_status)
   end
@@ -34,7 +35,7 @@ describe Chef::Handler do
       @exception = Exception.new("epic_fail")
       @exception.set_backtrace(@backtrace)
       @run_status.exception = @exception
-      @run_context = Chef::RunContext.new(@node, {})
+      @run_context = Chef::RunContext.new(@node, {}, @events)
       @all_resources = [Chef::Resource::Cat.new('lolz'), Chef::Resource::ZenMaster.new('tzu')]
       @all_resources.first.updated = true
       @run_context.resource_collection.all_resources.replace(@all_resources)
@@ -116,7 +117,7 @@ describe Chef::Handler do
   # Hmm, no tests for report handlers, looks like
   describe "when running a report handler" do
     before do
-      @run_context = Chef::RunContext.new(@node, {})
+      @run_context = Chef::RunContext.new(@node, {}, @events)
       @all_resources = [Chef::Resource::Cat.new('foo'), Chef::Resource::ZenMaster.new('moo')]
       @all_resources.first.updated = true
       @run_context.resource_collection.all_resources.replace(@all_resources)

@@ -33,18 +33,42 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
+          @plist_size = 0
           @plist = find_service_plist
           set_service_status
 
           @current_resource
         end
 
-        def enable_service
-          raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
-        end
+        def define_resource_requirements
+          #super
+          requirements.assert(:enable) do |a| 
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
+          end
 
-        def disable_service
-          raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+          requirements.assert(:disable) do |a| 
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
+          end
+
+          requirements.assert(:reload) do |a| 
+            a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+          end
+
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @plist_size < 2 } 
+            a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
+          end
+
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { @plist_size > 0 } 
+            # No failrue here in original code - so we also will not
+            # fail. Instead warn that the service is potentially missing
+            a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do 
+              @current_resource.enabled(false)
+              @current_resource.running(false)
+            end
+          end
+
         end
 
         def start_service
@@ -81,11 +105,10 @@ class Chef
           end
         end
 
-        def reload_service
-          raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
-        end
 
         def set_service_status
+          return if @plist == nil
+
           @current_resource.enabled(!@plist.nil?)
 
           if @current_resource.enabled
@@ -111,12 +134,8 @@ class Chef
             entries = Dir.glob("#{::File.expand_path(dir)}/*#{@current_resource.service_name}*.plist")
             entries.any? ? results << entries : results
           end
-
           plists.flatten!
-          if plists.size > 1
-            raise Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
-          end
-
+          @plist_size = plists.size
           plists.first
         end
       end

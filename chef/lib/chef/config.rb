@@ -48,6 +48,9 @@ class Chef
     end
 
     def self.platform_specific_path(path)
+      #10.times { puts "* " * 40}
+      #pp caller
+
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
         path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])
@@ -119,6 +122,9 @@ class Chef
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     enforce_path_sanity(true)
 
+    # Formatted Chef Client output is a beta feature, disabled by default:
+    formatter "null"
+
     # Used when OpenID authentication is enabled in the Web UI
     authorized_openid_identifiers nil
     authorized_openid_providers nil
@@ -187,6 +193,8 @@ class Chef
     run_command_stdout_timeout 120
     solo  false
     splay nil
+    why_run false
+    color false
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server

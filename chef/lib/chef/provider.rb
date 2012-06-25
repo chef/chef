@@ -21,19 +21,42 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/mixin/enforce_ownership_and_permissions'
-
+require 'chef/mixin/why_run'
 class Chef
   class Provider
-
     include Chef::Mixin::RecipeDefinitionDSLCore
+    include Chef::Mixin::WhyRun
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
-    attr_accessor :new_resource, :current_resource, :run_context
+    attr_accessor :new_resource
+    attr_accessor :current_resource
+    attr_accessor :run_context
+
+    #--
+    # TODO: this should be a reader, and the action should be passed in the
+    # constructor; however, many/most subclasses override the constructor so
+    # changing the arity would be a breaking change. Change this at the next
+    # break, e.g., Chef 11.
+    attr_accessor :action
+
+    def whyrun_supported?
+      false
+    end
 
     def initialize(new_resource, run_context)
       @new_resource = new_resource
+      @action = action
       @current_resource = nil
       @run_context = run_context
+      @converge_actions = nil
+    end
+
+    def whyrun_mode?
+      Chef::Config[:why_run]
+    end
+
+    def whyrun_supported?
+      false
     end
 
     def node
@@ -53,12 +76,81 @@ class Chef
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end
 
+    def define_resource_requirements
+    end
+
     def action_nothing
       Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
       true
     end
 
+    def events
+      run_context.events
+    end
+
+    def run_action(action=nil)
+      @action = action unless action.nil?
+
+      # TODO: it would be preferable to get the action to be executed in the
+      # constructor...
+
+      # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
+      if !whyrun_mode? || whyrun_supported?
+        load_current_resource
+        events.resource_current_state_loaded(@new_resource, @action, @current_resource)
+      elsif whyrun_mode? && !whyrun_supported?
+        events.resource_current_state_load_bypassed(@new_resource, @action, @current_resource)
+      end
+
+      define_resource_requirements
+      process_resource_requirements
+
+      # user-defined providers including LWRPs may 
+      # not include whyrun support - if they don't support it
+      # we can't execute any actions while we're running in
+      # whyrun mode. Instead we 'fake' whyrun by documenting that
+      # we can't execute the action.
+      # in non-whyrun mode, this will still cause the action to be
+      # executed normally.
+      if whyrun_supported? && !requirements.action_blocked?(@action)
+        send("action_#{@action}")
+      elsif whyrun_mode?
+        events.resource_bypassed(@new_resource, @action, self)
+      else
+        send("action_#{@action}")
+      end
+      converge
+    end
+
+    def process_resource_requirements
+      requirements.run(:all_actions) unless @action == :nothing
+      requirements.run(@action)
+    end
+
+    def converge
+      converge_actions.converge!
+      if converge_actions.empty? && !@new_resource.updated_by_last_action?
+        events.resource_up_to_date(@new_resource, @action)
+      else
+        events.resource_updated(@new_resource, @action)
+        new_resource.updated_by_last_action(true) 
+      end
+    end
+
+    def requirements
+      @requirements ||= ResourceRequirements.new(@new_resource, run_context)
+    end
+
     protected
+
+    def converge_actions
+      @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
+    end
+
+    def converge_by(descriptions, &block)
+      converge_actions.add_action(descriptions, &block)
+    end
+
 
     def recipe_eval(&block)
       # This block has new resource definitions within it, which
@@ -69,13 +161,15 @@ class Chef
       # TODO: timh,cw: 2010-5-14: This means that the resources within
       # this block cannot interact with resources outside, e.g.,
       # manipulating notifies.
-      saved_run_context = @run_context
-      @run_context = @run_context.dup
-      @run_context.resource_collection = Chef::ResourceCollection.new
-      instance_eval(&block)
-      Chef::Runner.new(@run_context).converge
 
-      @run_context = saved_run_context
+      converge_by ("would evaluate block and run any associated actions") do
+        saved_run_context = @run_context
+        @run_context = @run_context.dup
+        @run_context.resource_collection = Chef::ResourceCollection.new
+        instance_eval(&block)
+        Chef::Runner.new(@run_context).converge
+        @run_context = saved_run_context
+      end
     end
 
     public
@@ -92,6 +186,8 @@ class Chef
         Chef::Log.info("#{class_name} light-weight provider already initialized -- overriding!") if overriding
 
         new_provider_class = Class.new self do |cls|
+
+          include Chef::Mixin::RecipeDefinitionDSLCore
 
           def load_current_resource
             # silence Chef::Exceptions::Override exception

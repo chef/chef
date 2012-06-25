@@ -30,12 +30,29 @@ class Chef
         @enabled = nil
       end
 
+      def whyrun_supported?
+        true
+      end
+
+      def shared_resource_requirements
+      end
+
+      def define_resource_requirements
+       requirements.assert(:reload) do |a|
+         a.assertion { @new_resource.supports[:reload] || @new_resource.reload_command }
+         a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
+         # if a service is not declared to support reload, that won't
+         # typically change during the course of a run - so no whyrun
+         # alternative here. 
+       end
+      end
+
       def action_enable
         if @current_resource.enabled
           Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
         else
-          if enable_service
-            @new_resource.updated_by_last_action(true)
+          converge_by("enable service #{@new_resource}") do
+            enable_service
             Chef::Log.info("#{@new_resource} enabled")
           end
         end
@@ -43,8 +60,8 @@ class Chef
 
       def action_disable
         if @current_resource.enabled
-          if disable_service
-            @new_resource.updated_by_last_action(true)
+          converge_by("disable service #{@new_resource}") do
+            disable_service
             Chef::Log.info("#{@new_resource} disabled")
           end
         else
@@ -54,40 +71,37 @@ class Chef
 
       def action_start
         unless @current_resource.running
-          if start_service
-            @new_resource.updated_by_last_action(true)
+          converge_by("start service #{@new_resource}") do
+            start_service
             Chef::Log.info("#{@new_resource} started")
           end
         else
           Chef::Log.debug("#{@new_resource} already running - nothing to do")
-        end 
+        end
       end
 
       def action_stop
         if @current_resource.running
-          if stop_service
-            @new_resource.updated_by_last_action(true)
+          converge_by("stop service #{@new_resource}") do
+            stop_service
             Chef::Log.info("#{@new_resource} stopped")
           end
         else
           Chef::Log.debug("#{@new_resource} already stopped - nothing to do")
-        end 
+        end
       end
-      
+
       def action_restart
-        if restart_service
-          @new_resource.updated_by_last_action(true)
+        converge_by("restart service #{@new_resource}") do
+          restart_service
           Chef::Log.info("#{@new_resource} restarted")
         end
       end
 
       def action_reload
-        unless (@new_resource.supports[:reload] || @new_resource.reload_command)
-          raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
-        end
         if @current_resource.running
-          if reload_service
-            @new_resource.updated_by_last_action(true)
+          converge_by("disable service #{@new_resource}") do
+            reload_service
             Chef::Log.info("#{@new_resource} reloaded")
           end
         end
@@ -107,8 +121,8 @@ class Chef
 
       def stop_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :stop"
-      end 
-      
+      end
+
       def restart_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
       end
@@ -116,7 +130,7 @@ class Chef
       def reload_service
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
       end
- 
+
     end
   end
 end

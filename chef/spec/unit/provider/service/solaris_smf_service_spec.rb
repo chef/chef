@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Service::Solaris do
   before(:each) do
     @node =Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new('chef')
 

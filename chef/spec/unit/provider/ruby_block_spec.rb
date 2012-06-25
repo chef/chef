@@ -22,14 +22,15 @@ describe Chef::Provider::RubyBlock, "initialize" do
   before(:each) do
     $evil_global_evil_laugh = :wahwah
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::RubyBlock.new("bloc party")
     @new_resource.block { $evil_global_evil_laugh = :mwahahaha}
     @provider = Chef::Provider::RubyBlock.new(@new_resource, @run_context)
   end
 
   it "should call the block and flag the resource as updated" do
-    @provider.action_create
+    @provider.run_action(:create)
     $evil_global_evil_laugh.should == :mwahahaha
     @new_resource.should be_updated
   end

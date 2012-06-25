@@ -25,13 +25,12 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
     @new_resource.supports[:status] = true
     @new_resource.supports[:restart] = true
-
+    @found_script = false
     super
-    
-    raise Chef::Exceptions::Service unless ::File.exists?("/sbin/rc-update")
-    
+
     @current_resource.enabled(
       Dir.glob("/etc/runlevels/**/#{@current_resource.service_name}").any? do |file|
+        @found_script = true
         exists = ::File.exists? file
         readable = ::File.readable? file
         Chef::Log.debug "#{@new_resource} exists: #{exists}, readable: #{readable}"
@@ -41,6 +40,21 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     Chef::Log.debug "#{@new_resource} enabled: #{@current_resource.enabled}"
 
     @current_resource
+  end
+
+  def define_resource_requirements
+    requirements.assert(:all_actions) do |a|
+      a.assertion { ::File.exists?("/sbin/rc-update") } 
+      a.failure_message Chef::Exceptions::Service, "/sbin/rc-update does not exist"
+      # no whyrun recovery -t his is a core component whose presence is
+      # unlikely to be affected by what we do in the course of a chef run
+    end
+
+    requirements.assert(:all_actions) do |a|
+      a.assertion { @found_script }
+      # No failure, just informational output from whyrun 
+      a.whyrun "Could not find service #{@new_resource.service_name} under any runlevel"
+    end
   end
   
   def enable_service()

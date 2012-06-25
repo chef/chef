@@ -67,7 +67,7 @@ describe Chef::RunList::RunListExpansion do
   describe "after applying a role" do
     before do
       @expansion.stub!(:fetch_role).and_return(Chef::Role.new)
-      @expansion.inflate_role('rage')
+      @expansion.inflate_role('rage', "role[base]")
     end
 
     it "tracks the applied role" do
@@ -75,7 +75,7 @@ describe Chef::RunList::RunListExpansion do
     end
 
     it "does not inflate the role again" do
-      @expansion.inflate_role('rage').should be_false
+      @expansion.inflate_role('rage', "role[base]").should be_false
     end
   end
 
@@ -111,7 +111,7 @@ describe Chef::RunList::RunListExpansion do
 
   describe "after expanding a run list with a non existant role" do
     before do
-      @expansion.stub!(:fetch_role) { @expansion.role_not_found('crabrevenge') }
+      @expansion.stub!(:fetch_role) { @expansion.role_not_found('crabrevenge', "role[base]") }
       @expansion.expand
     end
 

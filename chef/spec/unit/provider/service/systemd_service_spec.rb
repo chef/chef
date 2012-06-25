@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Service::Systemd do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Service.new('rsyslog.service')
     @provider = Chef::Provider::Service::Systemd.new(@new_resource, @run_context)
   end
@@ -73,10 +74,22 @@ describe Chef::Provider::Service::Systemd do
         @provider.load_current_resource
       end
 
+      it "should run the services status command if one has been specified and properly set status check state" do
+        @provider.stub!(:run_command_with_systems_locale).with({:command => "/bin/chefhasmonkeypants status"}).and_return(0)
+        @provider.load_current_resource
+        @provider.instance_variable_get("@status_check_success").should be_true
+      end
+      
       it "should set running to false if it catches a Chef::Exceptions::Exec when using a status command" do
         @provider.stub!(:run_command_with_systems_locale).and_raise(Chef::Exceptions::Exec)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
+      end
+    
+      it "should update state to indicate status check failed when an exception is thrown using a status command" do
+        @provider.stub!(:run_command_with_systems_locale).and_raise(Chef::Exceptions::Exec)
+        @provider.load_current_resource
+        @provider.instance_variable_get("@status_check_success").should be_false
       end
     end 
 

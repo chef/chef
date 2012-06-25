@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Mount do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     
     @new_resource = Chef::Resource::Mount.new('/tmp/foo')
     @new_resource.device      "/dev/sdz1"
@@ -44,13 +45,15 @@ describe Chef::Provider::Mount do
     it "should mount the filesystem if it isn't mounted" do
       @current_resource.stub!(:mounted).and_return(false)
       @provider.should_receive(:mount_fs).with.and_return(true)
-      @provider.action_mount
+      @provider.run_action(:mount)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not mount the filesystem if it is mounted" do
       @current_resource.stub!(:mounted).and_return(true)
-      @provider.should_not_receive(:mount_fs).with.and_return(true)
-      @provider.action_mount
+      @provider.should_not_receive(:mount_fs).and_return(true)
+      @provider.run_action(:mount)
+      @new_resource.should_not be_updated_by_last_action
     end
 
   end
@@ -59,13 +62,15 @@ describe Chef::Provider::Mount do
     it "should umount the filesystem if it is mounted" do
       @current_resource.stub!(:mounted).and_return(true)
       @provider.should_receive(:umount_fs).with.and_return(true)
-      @provider.action_umount
+      @provider.run_action(:umount)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not umount the filesystem if it is not mounted" do
       @current_resource.stub!(:mounted).and_return(false)
-      @provider.should_not_receive(:umount_fs).with.and_return(true)
-      @provider.action_umount
+      @provider.should_not_receive(:umount_fs).and_return(true)
+      @provider.run_action(:umount)
+      @new_resource.should_not be_updated_by_last_action
     end
   end
 
@@ -74,31 +79,45 @@ describe Chef::Provider::Mount do
       @new_resource.supports[:remount] = true
     end
     
-    it "should remount the filesystem if remount is support and it is mounted" do
-      @current_resource.mounted(true)
-      @provider.should_receive(:remount_fs)
-      @provider.action_remount
+    it "should remount the filesystem if it is mounted" do
+      @current_resource.stub!(:mounted).and_return(true)
+      @provider.should_receive(:remount_fs).and_return(true)
+      @provider.run_action(:remount)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not remount the filesystem if it is not mounted" do
-      @current_resource.stub!(:mounted)
-      @new_resource.supports[:remount] = true
+      @current_resource.stub!(:mounted).and_return(false)
       @provider.should_not_receive(:remount_fs)
-      @provider.action_remount
+      @provider.run_action(:remount)
+      @new_resource.should_not be_updated_by_last_action
     end
   end
+  describe "when the filesystem should be remounted and the resource does not support remounting" do 
+    before do 
+      @new_resource.supports[:remount] = false
+    end
 
+    it "should fail to remount the filesystem" do
+      @provider.should_not_receive(:remount_fs)
+      lambda {@provider.run_action(:remount)}.should raise_error(Chef::Exceptions::UnsupportedAction)
+      @new_resource.should_not be_updated_by_last_action
+    end
+
+  end
   describe "when enabling the filesystem to be mounted" do
     it "should enable the mount if it isn't enable" do
       @current_resource.stub!(:enabled).and_return(false)
       @provider.should_receive(:enable_fs).with.and_return(true)
-      @provider.action_enable
+      @provider.run_action(:enable)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not enable the mount if it is enabled" do
       @current_resource.stub!(:enabled).and_return(true)
       @provider.should_not_receive(:enable_fs).with.and_return(true)
-      @provider.action_enable
+      @provider.run_action(:enable)
+      @new_resource.should_not be_updated_by_last_action
     end
   end
 
@@ -106,13 +125,15 @@ describe Chef::Provider::Mount do
     it "should disable the mount if it is enabled" do
       @current_resource.stub!(:enabled).and_return(true)
       @provider.should_receive(:disable_fs).with.and_return(true)
-      @provider.action_disable
+      @provider.run_action(:disable)
+      @new_resource.should be_updated_by_last_action
     end
 
     it "should not disable the mount if it isn't enabled" do
       @current_resource.stub!(:enabled).and_return(false)
       @provider.should_not_receive(:disable_fs).with.and_return(true)
-      @provider.action_disable
+      @provider.run_action(:disable)
+      @new_resource.should_not be_updated_by_last_action
     end
   end
 

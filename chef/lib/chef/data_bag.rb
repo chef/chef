@@ -193,7 +193,11 @@ class Chef
     # Save the Data Bag via RESTful API
     def save
       begin
-        chef_server_rest.put_rest("data/#{@name}", self)
+        if Chef::Config[:why_run]
+          Chef::Log.warn("In whyrun mode, so NOT performing data bag save.")
+        else
+          chef_server_rest.put_rest("data/#{@name}", self)
+        end
       rescue Net::HTTPServerException => e
         raise e unless e.response.code == "404"
         chef_server_rest.post_rest("data", self)

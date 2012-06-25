@@ -34,6 +34,17 @@ class Chef::Application::Solo < Chef::Application
     :default => Chef::Config.platform_specfic_path('/etc/chef/solo.rb'),
     :description => "The configuration file to use"
 
+  option :formatter,
+    :short        => "-F FORMATTER",
+    :long         => "--format FORMATTER",
+    :description  => "output format to use"
+
+  option :color,
+    :long         => '--[no-]color',
+    :boolean      => true,
+    :default      => false,
+    :description  => "Use colored output, defaults to disabled"
+
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
@@ -121,6 +132,12 @@ class Chef::Application::Solo < Chef::Application
         Chef::RunList::RunListItem.new(item)
       }
     }
+
+  option :why_run,
+    :short        => '-W',
+    :long         => '--why-run',
+    :description  => 'Enable whyrun mode',
+    :boolean      => true
 
   attr_reader :chef_solo_json
 

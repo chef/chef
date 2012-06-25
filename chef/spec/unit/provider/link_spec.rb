@@ -28,7 +28,8 @@ end
 describe Chef::Resource::Link do
   let(:provider) do
     node = Chef::Node.new
-    run_context = Chef::RunContext.new(node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    run_context = Chef::RunContext.new(node, {}, @events)
     Chef::Provider::Link.new(new_resource, run_context)
   end
   let(:new_resource) do
@@ -54,7 +55,9 @@ describe Chef::Resource::Link do
 
     describe "to a file that exists" do
       before do
-        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+        File.stub(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+        new_resource.owner 501 # only loaded in current_resource if present in new
+        new_resource.group 501
         provider.load_current_resource
       end
 
@@ -84,17 +87,19 @@ describe Chef::Resource::Link do
           result
         end
         it 'create does no work' do
-          provider.should_receive(:enforce_ownership_and_permissions)
-          provider.action_create
+          provider.access_controls.should_not_receive(:set_all)
+          provider.run_action(:create)
         end
       end
     end
 
     describe "to a file that doesn't exist" do
       before do
-        File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+        File.stub!(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
         provider.file_class.stub!(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
         provider.file_class.stub!(:readlink).with("#{CHEF_SPEC_DATA}/fofile-link").and_return("#{CHEF_SPEC_DATA}/fofile")
+        new_resource.owner "501" # only loaded in current_resource if present in new
+        new_resource.group "501"
         provider.load_current_resource
       end
 
@@ -107,11 +112,11 @@ describe Chef::Resource::Link do
       it "should update the source of the existing link to the link's target" do
         provider.current_resource.to.should == canonicalize("#{CHEF_SPEC_DATA}/fofile")
       end
-      it "should set the owner" do
-        provider.current_resource.owner.should == 501
+      it "should not set the owner" do
+        provider.current_resource.owner.should be_nil
       end
-      it "should set the group" do
-        provider.current_resource.group.should == 501
+      it "should not set the group" do
+        provider.current_resource.group.should be_nil
       end
     end
   end
@@ -142,7 +147,6 @@ describe Chef::Resource::Link do
       stat = mock("stats", :ino => 5)
       stat.stub!(:uid).and_return(501)
       stat.stub!(:gid).and_return(501)
-
       provider.file_class.stub!(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
 
       File.stub!(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
@@ -234,8 +238,10 @@ describe Chef::Resource::Link do
           result
         end
         it 'create does no work' do
-          provider.should_not_receive(:enforce_ownership_and_permissions)
-          provider.action_create
+          provider.file_class.should_not_receive(:symlink) 
+          provider.file_class.should_not_receive(:link) 
+          provider.access_controls.should_not_receive(:set_all)
+          provider.run_action(:create)
         end
       end
     end

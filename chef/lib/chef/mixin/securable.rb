@@ -62,21 +62,47 @@ class Chef
       # TODO should this be separated into different files?
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
-        # supports params like this:
+        # === rights_attribute
+        # "meta-method" for dynamically creating rights attributes on resources.
+        #
+        # Multiple rights attributes can be declared. This enables resources to
+        # have multiple rights attributes with separate runtime states.
+        #
+        # For example, +Chef::Resource::RemoteDirectory+ supports different
+        # rights on the directories and files by declaring separate rights
+        # attributes for each (rights and files_rights).
+        #
+        # ==== User Level API
+        # Given a resource that calls
+        #
+        #   rights_attribute(:rights)
+        #
+        # Then the resource DSL could be used like this:
         #
         #   rights :read, ["Administrators","Everyone"]
         #   rights :deny, "Pinky"
         #   rights :full_control, "Users", :applies_to_children => true
         #   rights :write, "John Keiser", :applies_to_children => :containers_only, :applies_to_self => false, :one_level_deep => true
         #
-        # should also also allow multiple right declarations
-        # in a single resource block as the data will be merged
-        # into a single internal hash
+        # ==== Internal Data Structure
+        # rights attributes support multiple right declarations
+        # in a single resource block--the data will be merged
+        # into a single internal hash.
         #
-        # This method 'creates' rights attributes..this allows us to have
-        # multiple instances of the attribute with separate runtime states.
-        # See +Chef::Resource::RemoteDirectory+ for example usage (rights and files_rights)
+        # The internal representation is a hash with the following keys:
+        #
+        # * `:permissions`: Integer of Windows permissions flags, 1..2^32
+        # or one of `[:full_control, :modify, :read_execute, :read, :write]`
+        # * `:principals`:  String or Array of Strings represnting usernames on
+        # the system.
+        # * `:applies_to_children` (optional): Boolean
+        # * `:applies_to_self` (optional): Boolean
+        # * `:one_level_deep` (optional): Boolean
+        #
         def self.rights_attribute(name)
+
+          # equivalent to something like:
+          # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |*args|
             # Ruby 1.8 compat: default the arguments
             permissions = args.length >= 1 ? args[0] : nil
@@ -85,12 +111,12 @@ class Chef
             raise ArgumentError.new("wrong number of arguments (#{args.length} for 3)") if args.length >= 4
 
             rights = self.instance_variable_get("@#{name.to_s}".to_sym)
-            unless permissions == nil
+            unless permissions.nil?
               input = {
                 :permissions => permissions,
                 :principals => principals
               }
-              input.merge!(args_hash) if args_hash != nil
+              input.merge!(args_hash) unless args_hash.nil?
 
               validations = {:permissions => { :required => true },
                              :principals => { :required => true, :kind_of => [String, Array] },
@@ -146,7 +172,9 @@ class Chef
             :kind_of => [ TrueClass, FalseClass ]
           )
         end
-      end
+
+      end # Windows-specific
+
     end
   end
 end

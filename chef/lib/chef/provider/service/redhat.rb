@@ -25,25 +25,43 @@ class Chef
     class Service
       class Redhat < Chef::Provider::Service::Init
         include Chef::Mixin::ShellOut
-        
+
         CHKCONFIG_ON = /\d:on/
-        
+        CHKCONFIG_MISSING = /No such/
+
         def initialize(new_resource, run_context)
           super
            @init_command = "/sbin/service #{@new_resource.service_name}"
            @new_resource.supports[:status] = true
-         end
-        
-        def load_current_resource
-          unless ::File.exists? "/sbin/chkconfig"
-            raise Chef::Exceptions::Service, "/sbin/chkconfig does not exist!"
+           @service_missing = false
+        end
+
+        def define_resource_requirements
+          shared_resource_requirements
+
+          requirements.assert(:all_actions) do |a|
+            chkconfig_file = "/sbin/chkconfig"
+            a.assertion { ::File.exists? chkconfig_file  }
+            a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
-          
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !@service_missing }
+            a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the init.d script!"
+            a.whyrun "Assuming service would be disabled. The init script is not presently installed." 
+          end
+        end
+
+        def load_current_resource
           super
-          
-          chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
-          @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
-          @current_resource        
+
+          if ::File.exists?("/sbin/chkconfig")
+            chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
+            @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
+            @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
+          end 
+
+          @current_resource
         end
 
         def enable_service()
@@ -53,7 +71,6 @@ class Chef
         def disable_service()
           shell_out! "/sbin/chkconfig #{@new_resource.service_name} off"
         end
-        
       end
     end
   end

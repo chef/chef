@@ -36,12 +36,13 @@ describe Chef::Handler::JsonFile do
   describe "when reporting success" do
     before(:each) do
       @node = Chef::Node.new
-      @run_status = Chef::RunStatus.new(@node)
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_status = Chef::RunStatus.new(@node, @events)
       @expected_time = Time.now
       Time.stub(:now).and_return(@expected_time, @expected_time + 5)
       @run_status.start_clock
       @run_status.stop_clock
-      @run_context = Chef::RunContext.new(@node, {})
+      @run_context = Chef::RunContext.new(@node, {}, @events)
       @run_status.run_context = @run_context
       @run_status.exception = Exception.new("Boy howdy!")
       @file_mock = StringIO.new

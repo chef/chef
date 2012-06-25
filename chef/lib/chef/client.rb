@@ -35,7 +35,12 @@ require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/file_system_file_vendor'
 require 'chef/cookbook/remote_file_vendor'
+require 'chef/event_dispatch/dispatcher'
+require 'chef/formatters/base'
+require 'chef/formatters/doc'
+require 'chef/formatters/minimal'
 require 'chef/version'
+require 'chef/resource_reporter'
 require 'ohai'
 require 'rbconfig'
 
@@ -100,14 +105,16 @@ class Chef
 
     # Callback to fire notifications that the run completed successfully
     def run_completed_successfully
-      self.class.run_completed_successfully_notifications.each do |notification|
+      success_handlers = self.class.run_completed_successfully_notifications
+      success_handlers.each do |notification|
         notification.call(run_status)
       end
     end
 
     # Callback to fire notifications that the Chef run failed
     def run_failed
-      self.class.run_failed_notifications.each do |notification|
+      failure_handlers = self.class.run_failed_notifications
+      failure_handlers.each do |notification|
         notification.call(run_status)
       end
     end
@@ -130,6 +137,17 @@ class Chef
       @run_status = nil
       @runner = nil
       @ohai = Ohai::System.new
+
+      # If we want why-run output and user hasn't explicitly specified a format
+      # we need to use a formatter that will render whyrun output. 
+      if Chef::Config.why_run
+        if Chef::Config.formatter == "null"
+          Chef::Log.warn("Forcing formatter of 'doc' to capture whyrun output.")
+          Chef::Config[:formatter] = 'doc'
+        end
+      end
+      formatter = Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)
+      @events = EventDispatch::Dispatcher.new(formatter)
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!
     end
@@ -137,7 +155,8 @@ class Chef
     # Do a full run for this Chef::Client.  Calls:
     #
     #  * run_ohai - Collect information about the system
-    #  * build_node - Get the last known state, merge with local changes
+    #  * load_node - Get the last known stage from the server
+    #  * build_node - Merge state with local changes
     #  * register - If not in solo mode, make sure the server knows about this client
     #  * sync_cookbooks - If not in solo mode, populate the local cache with the node's cookbooks
     #  * converge - Bring this system up to date
@@ -147,31 +166,39 @@ class Chef
     def run
       run_context = nil
 
+      @events.run_start(Chef::VERSION)
       Chef::Log.info("*** Chef #{Chef::VERSION} ***")
       enforce_path_sanity
       run_ohai
+      @events.ohai_completed(node)
       register unless Chef::Config[:solo]
-      build_node
+
+      load_node
 
       begin
+        build_node
 
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
 
         run_context = setup_run_context
+
         converge(run_context)
+
         save_updated_node
 
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
+        @events.run_completed(node)
         true
       rescue Exception => e
         run_status.stop_clock
         run_status.exception = e
         run_failed
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
+        @events.run_failed(e)
         raise
       ensure
         run_status = nil
@@ -188,11 +215,13 @@ class Chef
     def setup_run_context
       if Chef::Config[:solo]
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
-        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
+        cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path]))
+        run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       else
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
         cookbook_hash = sync_cookbooks
-        run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
+        cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
+        run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       end
       run_status.run_context = run_context
 
@@ -228,20 +257,12 @@ class Chef
       name
     end
 
-    # Builds a new node object for this client.  Starts with querying for the FQDN of the current
-    # host (unless it is supplied), then merges in the facts from Ohai.
+    # Applies environment, external JSON attributes, and override run list to
+    # the node, Then expands the run_list.
     #
     # === Returns
-    # node<Chef::Node>:: Returns the created node object, also stored in @node
+    # node<Chef::Node>:: The modified @node object. @node is modified in place.
     def build_node
-      Chef::Log.debug("Building node object for #{node_name}")
-
-      if Chef::Config[:solo]
-        @node = Chef::Node.build(node_name)
-      else
-        @node = Chef::Node.find_or_create(node_name)
-      end
-
       # Allow user to override the environment of a node by specifying
       # a config parameter.
       if Chef::Config[:environment] && !Chef::Config[:environment].chop.empty?
@@ -263,11 +284,7 @@ class Chef
         Chef::Log.warn "Overridden Run List: [#{@node.run_list}]"
       end
 
-      if Chef::Config[:solo]
-        @run_list_expansion = @node.expand!('disk')
-      else
-        @run_list_expansion = @node.expand!('server')
-      end
+      @run_list_expansion = expand_run_list
 
       # @run_list_expansion is a RunListExpansion.
       #
@@ -282,9 +299,41 @@ class Chef
       Chef::Log.info("Run List is [#{@node.run_list}]")
       Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
 
-      @run_status = Chef::RunStatus.new(@node)
+      @run_status = Chef::RunStatus.new(@node, @events)
+
+      @events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
 
       @node
+    end
+
+    # In client-server operation, loads the node state from the server. In
+    # chef-solo operation, builds a new node object.
+    def load_node
+      @events.node_load_start(node_name, Chef::Config)
+      Chef::Log.debug("Building node object for #{node_name}")
+
+      if Chef::Config[:solo]
+        @node = Chef::Node.build(node_name)
+      else
+        @node = Chef::Node.find_or_create(node_name)
+      end
+    rescue Exception => e
+      # TODO: wrap this exception so useful error info can be given to the
+      # user.
+      @events.node_load_failed(node_name, e, Chef::Config)
+      raise
+    end
+
+    def expand_run_list
+      if Chef::Config[:solo]
+        @node.expand!('disk')
+      else
+        @node.expand!('server')
+      end
+    rescue Exception => e
+      # TODO: wrap/munge exception with useful error output.
+      @events.run_list_expand_failed(node, e)
+      raise
     end
 
     #
@@ -292,13 +341,23 @@ class Chef
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
       if File.exists?(config[:client_key])
+        @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
+        @events.registration_start(node_name, config)
         Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
         Chef::REST.new(config[:client_url], config[:validation_client_name], config[:validation_key]).register(client_name, config[:client_key])
+        @events.registration_completed
       end
       # We now have the client key, and should use it from now on.
-      self.rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @rest = Chef::REST.new(config[:chef_server_url], client_name, config[:client_key])
+      @resource_reporter = Chef::ResourceReporter.new(@rest)
+      @events.register(@resource_reporter)
+    rescue Exception => e
+      # TODO: munge exception so a semantic failure message can be given to the
+      # user
+      @events.registration_failed(node_name, e, config)
+      raise
     end
 
     # Sync_cookbooks eagerly loads all files except files and
@@ -310,9 +369,21 @@ class Chef
     # Hash:: The hash of cookbooks with download URLs as given by the server
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
-      cookbook_hash = rest.post_rest("environments/#{@node.chef_environment}/cookbook_versions",
-                                     {:run_list => @expanded_run_list_with_versions})
-      Chef::CookbookVersion.sync_cookbooks(cookbook_hash)
+
+      begin
+        @events.cookbook_resolution_start(@expanded_run_list_with_versions)
+        cookbook_hash = rest.post_rest("environments/#{@node.chef_environment}/cookbook_versions",
+                                       {:run_list => @expanded_run_list_with_versions})
+      rescue Exception => e
+        # TODO: wrap/munge exception to provide helpful error output
+        @events.cookbook_resolution_failed(@expanded_run_list_with_versions, e)
+        raise
+      else
+        @events.cookbook_resolution_complete(cookbook_hash)
+      end
+
+      synchronizer = Chef::CookbookSynchronizer.new(cookbook_hash, @events)
+      synchronizer.sync_cookbooks
 
       # register the file cache path in the cookbook path so that CookbookLoader actually picks up the synced cookbooks
       Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
@@ -325,10 +396,16 @@ class Chef
     # === Returns
     # true:: Always returns true
     def converge(run_context)
+      @events.converge_start(run_context)
       Chef::Log.debug("Converging node #{node_name}")
       @runner = Chef::Runner.new(run_context)
       runner.converge
+      @events.converge_complete
       true
+    rescue Exception => e
+      # TODO: should this be a separate #converge_failed(exception) method?
+      @events.converge_complete
+      raise
     end
 
     private
@@ -380,4 +457,5 @@ end
 # HACK cannot load this first, but it must be loaded.
 require 'chef/cookbook_loader'
 require 'chef/cookbook_version'
+require 'chef/cookbook/synchronizer'
 

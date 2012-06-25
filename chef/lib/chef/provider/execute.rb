@@ -29,6 +29,10 @@ class Chef
       def load_current_resource
         true
       end
+      
+      def whyrun_supported?
+        true
+      end
 
       def action_run
         opts = {}
@@ -54,12 +58,11 @@ class Chef
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
           opts[:live_stream] = STDOUT
         end
-
-        result = shell_out!(@new_resource.command, opts)
-        @new_resource.updated_by_last_action(true)
-        Chef::Log.info("#{@new_resource} ran successfully")
+        converge_by("execute #{@new_resource.command}") do 
+          result = shell_out!(@new_resource.command, opts)
+          Chef::Log.info("#{@new_resource} ran successfully")
+        end
       end
-
     end
   end
 end

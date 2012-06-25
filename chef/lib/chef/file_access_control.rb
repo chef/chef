@@ -34,7 +34,9 @@ class Chef
       include FileAccessControl::Unix
     end
 
+    attr_reader :current_resource
     attr_reader :resource
+    attr_reader :provider
     attr_reader :file
 
     # FileAccessControl objects set the owner, group and mode of +file+ to
@@ -47,8 +49,11 @@ class Chef
     #             and +mode+
     # file:       The file whose access control settings you wish to modify,
     #             given as a String.
-    def initialize(resource, file)
-      @resource, @file = resource, file
+    #
+    # TODO requiring current_resource will break cookbook_file template_file
+    def initialize(current_resource, new_resource, provider)
+      @current_resource, @resource, @provider = current_resource, new_resource, provider
+      @file = @current_resource.path
       @modified = false
     end
 

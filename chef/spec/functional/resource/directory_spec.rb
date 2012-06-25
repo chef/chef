@@ -24,7 +24,10 @@ describe Chef::Resource::Directory do
   let(:directory_base) { "directory_spec" }
 
   def create_resource
-    Chef::Resource::Directory.new(path)
+    events = Chef::EventDispatch::Dispatcher.new
+    node = Chef::Node.new
+    run_context = Chef::RunContext.new(node, {}, events)
+    Chef::Resource::Directory.new(path, run_context)
   end
 
   let!(:resource) do

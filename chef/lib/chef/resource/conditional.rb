@@ -88,6 +88,14 @@ class Chef
         "#{@positivity} #{cmd_or_block}"
       end
 
+      def to_text
+        if @command
+          "#{positivity} \"#{@command}\""
+        else
+          "#{@positivity} { #code block }"
+        end
+      end
+
     end
   end
 end

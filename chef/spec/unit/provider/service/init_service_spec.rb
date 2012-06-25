@@ -22,7 +22,8 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
     @node[:command] = {:ps => "ps -ef"}
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("chef")
 
@@ -93,16 +94,21 @@ PS
   end
   
   describe "when the node has not specified a ps command" do
-    before do
-      @node[:command] = {:ps => nil}
-    end
     
-    it "should set running to false if the node has a nil ps attribute" do
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    it "should raise an error if the node has a nil ps attribute" do
+      @node[:command] = {:ps => nil}
+      @provider.load_current_resource
+      @provider.action = :start
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
-    it "should set running to false if the node has an empty ps attribute" do
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    it "should raise an error if the node has an empty ps attribute" do
+      @node[:command] = {:ps => ""}
+      @provider.load_current_resource
+      @provider.action = :start
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
     
   end
@@ -132,7 +138,10 @@ RUNNING_PS
 
     it "should raise an exception if ps fails" do
       @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+      @provider.load_current_resource
+      @provider.action = :start
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 

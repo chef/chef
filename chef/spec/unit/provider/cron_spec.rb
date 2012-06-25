@@ -21,8 +21,9 @@ require 'spec_helper'
 describe Chef::Provider::Cron do
   before do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
-    @new_resource = Chef::Resource::Cron.new("cronhole some stuff")
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Cron.new("cronhole some stuff", @run_context)
     @new_resource.user "root"
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
@@ -275,7 +276,7 @@ CRONTAB
 # Chef Name: cronhole some stuff
 30 * * * * /bin/true
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should include env variables that are set" do
@@ -293,17 +294,17 @@ HOME=/home/foo
 TEST=LOL
 30 * * * * /bin/true
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should mark the resource as updated" do
-        @provider.action_create
+        @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
       end
 
       it "should log the action" do
         Chef::Log.should_receive(:info).with("cron[cronhole some stuff] added crontab entry")
-        @provider.action_create
+        @provider.run_action(:create)
       end
     end
 
@@ -331,7 +332,7 @@ TEST=LOL
 # Chef Name: cronhole some stuff
 30 * * * * /bin/true
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should include env variables that are set" do
@@ -355,17 +356,17 @@ HOME=/home/foo
 TEST=LOL
 30 * * * * /bin/true
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should mark the resource as updated" do
-        @provider.action_create
+        @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
       end
 
       it "should log the action" do
         Chef::Log.should_receive(:info).with("cron[cronhole some stuff] added crontab entry")
-        @provider.action_create
+        @provider.run_action(:create)
       end
     end
 
@@ -396,7 +397,7 @@ TEST=LOL
 
 # Another comment
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should include env variables that are set" do
@@ -420,17 +421,17 @@ TEST=LOL
 
 # Another comment
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should mark the resource as updated" do
-        @provider.action_create
+        @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
       end
 
       it "should log the action" do
         Chef::Log.should_receive(:info).with("cron[cronhole some stuff] updated crontab entry")
-        @provider.action_create
+        @provider.run_action(:create)
       end
     end
 
@@ -452,7 +453,7 @@ TEST=LOL
 # Chef Name: cronhole some stuff
 30 * * * * /bin/true
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should not blat any following entries" do
@@ -477,7 +478,7 @@ TEST=LOL
 
 # Another comment
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should handle env vars with no crontab" do
@@ -514,7 +515,7 @@ HOME=/home/foo
 
 # Another comment
         ENDCRON
-        @provider.action_create
+        @provider.run_action(:create)
       end
     end
 
@@ -526,17 +527,17 @@ HOME=/home/foo
 
       it "should not update the crontab" do
         @provider.should_not_receive(:write_crontab)
-        @provider.action_create
+        @provider.run_action(:create)
       end
 
       it "should not mark the resource as updated" do
-        @provider.action_create
+        @provider.run_action(:create)
         @new_resource.should_not be_updated_by_last_action
       end
 
       it "should log nothing changed" do
         Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
-        @provider.action_create
+        @provider.run_action(:create)
       end
     end
   end
@@ -554,11 +555,11 @@ HOME=/home/foo
       it "should do nothing" do
         @provider.should_not_receive(:write_crontab)
         Chef::Log.should_not_receive(:info)
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
 
       it "should not mark the resource as updated" do
-        @provider.action_delete
+        @provider.run_action(:delete)
         @new_resource.should_not be_updated_by_last_action
       end
     end
@@ -587,7 +588,7 @@ HOME=/home/foo
 
 # Another comment
         ENDCRON
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
 
       it "should remove any env vars with the entry" do
@@ -611,17 +612,17 @@ FOO=test
 
 # Another comment
         ENDCRON
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
 
       it "should mark the resource as updated" do
-        @provider.action_delete
+        @provider.run_action(:delete)
         @new_resource.should be_updated_by_last_action
       end
 
       it "should log the action" do
         Chef::Log.should_receive(:info).with("#{@new_resource} deleted crontab entry")
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
     end
 
@@ -640,7 +641,7 @@ FOO=test
 0 2 * * * /some/other/command
 
         ENDCRON
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
 
       it "should not blat following sections" do
@@ -663,7 +664,7 @@ FOO=test
 
 # Another comment
         ENDCRON
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
 
       it "should remove any envvars with the section" do
@@ -687,7 +688,7 @@ MAILTO=foo@example.com
 
 # Another comment
         ENDCRON
-        @provider.action_delete
+        @provider.run_action(:delete)
       end
     end
   end

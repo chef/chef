@@ -80,6 +80,10 @@ class Chef::Provider::Route < Chef::Provider
       end
     end
 
+    def whyrun_supported?
+      true
+    end
+
     def load_current_resource
       self.is_running = false
 
@@ -128,10 +132,10 @@ class Chef::Provider::Route < Chef::Provider
         Chef::Log.debug("#{@new_resource} route already active - nothing to do")
       else
         command = generate_command(:add)
-
-        run_command( :command => command )
-        Chef::Log.info("#{@new_resource} added")
-        @new_resource.updated_by_last_action(true)
+        converge_by ("run #{ command } to add route") do
+          run_command( :command => command )
+          Chef::Log.info("#{@new_resource} added")
+        end
       end
 
       #for now we always write the file (ugly but its what it is)
@@ -141,10 +145,10 @@ class Chef::Provider::Route < Chef::Provider
     def action_delete
       if is_running
         command = generate_command(:delete)
-
-        run_command( :command => command )
-        Chef::Log.info("#{@new_resource} removed")
-        @new_resource.updated_by_last_action(true)
+        converge_by ("run #{ command } to delete route ") do
+          run_command( :command => command )
+          Chef::Log.info("#{@new_resource} removed")
+        end
       else
         Chef::Log.debug("#{@new_resource} route does not exist - nothing to do")
       end
@@ -175,10 +179,13 @@ class Chef::Provider::Route < Chef::Provider
           end
         end
         conf.each do |k, v|
-          network_file = ::File.new("/etc/sysconfig/network-scripts/route-#{k}", "w")
-          network_file.puts(conf[k])
-          Chef::Log.debug("#{@new_resource} writing route.#{k}\n#{conf[k]}")
-          network_file.close
+          network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
+          converge_by ("write route route.#{k}\n#{conf[k]} to #{ network_file_name }") do
+            network_file = ::File.new(network_file_name, "w")
+            network_file.puts(conf[k])
+            Chef::Log.debug("#{@new_resource} writing route.#{k}\n#{conf[k]}")
+            network_file.close
+          end
         end
       end
     end

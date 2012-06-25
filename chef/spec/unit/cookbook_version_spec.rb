@@ -284,55 +284,6 @@ describe Chef::CookbookVersion do
 
   end
 
-  describe "when cleaning up unused cookbook components" do
-    before do
-      Chef::CookbookVersion.reset_cache_validity
-    end
-
-    it "removes all files that belong to unused cookbooks" do
-      file_cache = mock("Chef::FileCache with files from unused cookbooks")
-      valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
-      obsolete_cb_files = %w{cookbooks/old1/recipes/default.rb cookbooks/old2/recipes/default.rb}
-      file_cache.should_receive(:find).with(File.join(%w{cookbooks ** *})).and_return(valid_cached_cb_files + obsolete_cb_files)
-      file_cache.should_receive(:delete).with('cookbooks/old1/recipes/default.rb')
-      file_cache.should_receive(:delete).with('cookbooks/old2/recipes/default.rb')
-      cookbook_hash = {"valid1"=> {}, "valid2" => {}}
-      Chef::CookbookVersion.stub!(:cache).and_return(file_cache)
-      Chef::CookbookVersion.clear_obsoleted_cookbooks(cookbook_hash)
-    end
-
-    it "removes all files not validated during the chef run" do
-      file_cache = mock("Chef::FileCache with files from unused cookbooks")
-      unused_template_files = %w{cookbooks/unused/templates/default/foo.conf.erb cookbooks/unused/tempaltes/default/bar.conf.erb}
-      valid_cached_cb_files = %w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb}
-      Chef::CookbookVersion.valid_cache_entries['cookbooks/valid1/recipes/default.rb'] = true
-      Chef::CookbookVersion.valid_cache_entries['cookbooks/valid2/recipes/default.rb'] = true
-      file_cache.should_receive(:find).with(File.join(%w{cookbooks ** *})).and_return(valid_cached_cb_files + unused_template_files)
-      file_cache.should_receive(:delete).with('cookbooks/unused/templates/default/foo.conf.erb')
-      file_cache.should_receive(:delete).with('cookbooks/unused/tempaltes/default/bar.conf.erb')
-      cookbook_hash = {"valid1"=> {}, "valid2" => {}}
-      Chef::CookbookVersion.stub!(:cache).and_return(file_cache)
-      Chef::CookbookVersion.cleanup_file_cache
-    end
-
-    describe "on chef-solo" do
-      before do
-        Chef::Config[:solo] = true
-      end
-
-      after do
-        Chef::Config[:solo] = false
-      end
-
-      it "does not remove anything" do
-        Chef::CookbookVersion.cache.stub!(:find).and_return(%w{cookbooks/valid1/recipes/default.rb cookbooks/valid2/recipes/default.rb})
-        Chef::CookbookVersion.cache.should_not_receive(:delete)
-        Chef::CookbookVersion.cleanup_file_cache
-      end
-
-    end
-
-  end
 
   describe "<=>" do
 

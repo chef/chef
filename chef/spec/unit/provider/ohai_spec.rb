@@ -52,7 +52,8 @@ describe Chef::Provider::Ohai do
     @node = Chef::Node.new(@hostname)
     @node.name(@fqdn)
     @node.stub!(:save).and_return(@node)
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
     ohai = Ohai::System.new
     ohai.all_plugins
@@ -69,14 +70,14 @@ describe Chef::Provider::Ohai do
     it "applies updated ohai data to the node" do
       @node[:origdata].should == 'somevalue'
       @node[:newdata].should be_nil
-      @provider.action_reload
+      @provider.run_action(:reload)
       @node[:origdata].should == 'somevalue'
       @node[:newdata].should == 'somevalue'
     end
 
     it "should reload a specific plugin and cause node to pick up new values" do
       @new_resource.plugin "someplugin"
-      @provider.action_reload
+      @provider.run_action(:reload)
       @node[:origdata].should == 'somevalue'
       @node[:newdata].should == 'somevalue'
     end

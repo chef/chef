@@ -26,7 +26,12 @@ class Chef
     class Group < Chef::Provider
       include Chef::Mixin::Command
       attr_accessor :group_exists
-      
+      attr_accessor :change_desc
+
+      def whyrun_supported?
+        true
+      end
+
       def initialize(new_resource, run_context)
         super
         @group_exists = true
@@ -52,67 +57,88 @@ class Chef
         
         @current_resource
       end
+
+      def define_resource_requirements
+        requirements.assert(:modify) do |a| 
+          a.assertion { @group_exists } 
+          a.failure_message(Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!")
+          a.whyrun("Group #{@new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
+        end
+      end
       
-      # Check to see if a group needs any changes
+      # Check to see if a group needs any changes. Populate 
+      # @change_desc with a description of why a change must occur 
       #
       # ==== Returns
       # <true>:: If a change is required
       # <false>:: If a change is not required
       def compare_group
-        return true if @new_resource.gid != @current_resource.gid
-
+        @change_desc = nil
+        if @new_resource.gid != @current_resource.gid
+          @change_desc = "change gid #{@current_resource.gid} to #{@new_resource.gid}"
+          return true
+        end
+        
         if(@new_resource.append)
+          missing_members = []
           @new_resource.members.each do |member|
             next if @current_resource.members.include?(member)
+            missing_members << member
+          end
+          if missing_members.length > 0
+            @change_desc = "add missing member(s): #{missing_members.join(", ")}"
             return true
           end
         else
-          return true if @new_resource.members != @current_resource.members
+          if @new_resource.members != @current_resource.members
+            @change_desc = "replace group members with new list of members"
+            return true
+          end
         end
-
         return false
       end
       
       def action_create
         case @group_exists
         when false
-          create_group
-          Chef::Log.info("#{@new_resource} created")
-          @new_resource.updated_by_last_action(true)
+          converge_by("create #{@new_resource}") do 
+            create_group
+            Chef::Log.info("#{@new_resource} created")
+          end
         else 
           if compare_group
-            manage_group
-            Chef::Log.info("#{@new_resource} altered")
-            @new_resource.updated_by_last_action(true)
+            converge_by(["alter group #{@new_resource}", @change_desc ]) do 
+              manage_group
+              Chef::Log.info("#{@new_resource} altered")
+            end
           end
         end
       end
       
       def action_remove
         if @group_exists
-          remove_group
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} removed")
+          converge_by("remove group #{@new_resource}") do
+            remove_group
+            Chef::Log.info("#{@new_resource} removed")
+          end
         end
       end
       
       def action_manage
         if @group_exists && compare_group
-          manage_group 
-          @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} managed")
+          converge_by(["manage group #{@new_resource}", @change_desc]) do
+            manage_group 
+            Chef::Log.info("#{@new_resource} managed")
+          end
         end
       end
       
       def action_modify
-        if @group_exists 
-          if compare_group
+        if compare_group
+          converge_by(["modify group #{@new_resource}", @change_desc]) do
             manage_group
-            @new_resource.updated_by_last_action(true)
             Chef::Log.info("#{@new_resource} modified")
           end
-        else
-          raise Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!"
         end
       end
       

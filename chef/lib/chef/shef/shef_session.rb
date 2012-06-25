@@ -25,6 +25,9 @@ require 'chef/client'
 require 'chef/cookbook/cookbook_collection'
 require 'chef/cookbook_loader'
 require 'chef/run_list/run_list_expansion'
+require 'chef/formatters/base'
+require 'chef/formatters/doc'
+require 'chef/formatters/minimal'
 
 module Shef
   class ShefSession
@@ -39,6 +42,8 @@ module Shef
     attr_reader :node_attributes, :client
     def initialize
       @node_built = false
+      formatter = Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)
+      @events = Chef::EventDispatch::Dispatcher.new(formatter)
     end
 
     def node_built?
@@ -137,7 +142,8 @@ module Shef
     session_type :standalone
 
     def rebuild_context
-      @run_context = Chef::RunContext.new(@node, {}) # no recipes
+      cookbook_collection = Chef::CookbookCollection.new({})
+      @run_context = Chef::RunContext.new(@node, cookbook_collection, @events) # no recipes
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", [])) # empty recipe list
     end
 
@@ -147,6 +153,7 @@ module Shef
       Chef::Config[:solo] = true
       @client = Chef::Client.new
       @client.run_ohai
+      @client.load_node
       @client.build_node
     end
 
@@ -161,9 +168,10 @@ module Shef
     end
 
     def rebuild_context
-      @run_status = Chef::RunStatus.new(@node)
+      @run_status = Chef::RunStatus.new(@node, @events)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
-      @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path])))
+      cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path]))
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
       @run_context.load(Chef::RunList::RunListExpansionFromDisk.new("_default", []))
       @run_status.run_context = run_context
     end
@@ -175,6 +183,7 @@ module Shef
       Chef::Config[:solo] = true
       @client = Chef::Client.new
       @client.run_ohai
+      @client.load_node
       @client.build_node
     end
 
@@ -189,10 +198,11 @@ module Shef
     end
 
     def rebuild_context
-      @run_status = Chef::RunStatus.new(@node)
+      @run_status = Chef::RunStatus.new(@node, @events)
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, Chef::REST.new(Chef::Config[:server_url])) }
       cookbook_hash = @client.sync_cookbooks
-      @run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new(cookbook_hash))
+      cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
       @run_context.load(Chef::RunList::RunListExpansionFromAPI.new("_default", []))
       @run_status.run_context = run_context
     end
@@ -205,6 +215,7 @@ module Shef
       @client = Chef::Client.new
       @client.run_ohai
       @client.register
+      @client.load_node
       @client.build_node
     end
 
@@ -275,6 +286,7 @@ module Shef
       @client = DoppelGangerClient.new(@node_name)
       @client.run_ohai
       @client.register
+      @client.load_node
       @client.build_node
       @client.sync_cookbooks
     end

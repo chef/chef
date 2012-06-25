@@ -22,7 +22,8 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
     @node[:command] = {:ps => "ps -ef"}
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("chef")
     @current_resource = Chef::Resource::Service.new("chef")
@@ -49,14 +50,16 @@ NOMOCKINGSTRINGSPLZ
     @provider.load_current_resource
   end
 
-  it "should set running to false if the node has a nil ps attribute" do
+  it "should raise error if the node has a nil ps attribute and no other means to get status" do
     @node[:command] = {:ps => nil}
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
-  it "should set running to false if the node has an empty ps attribute" do
+  it "should raise error if the node has an empty ps attribute and no other means to get status" do
     @node[:command] = {:ps => ""}
-    lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
   describe "when we have a 'ps' attribute" do
@@ -90,7 +93,10 @@ NOMOCKINGSTRINGSPLZ
 
     it "should raise an exception if ps fails" do
       @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+      @provider.action = :start
+      @provider.load_current_resource
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
@@ -108,7 +114,9 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should raise an exception if no start command is specified" do
-      lambda { @provider.start_service() }.should raise_error(Chef::Exceptions::Service)
+      @provider.define_resource_requirements
+      @provider.action = :start
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end 
   end
 
@@ -120,7 +128,9 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should raise an exception if no stop command is specified" do
-      lambda { @provider.stop_service() }.should raise_error(Chef::Exceptions::Service)
+      @provider.define_resource_requirements
+      @provider.action = :stop
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
   end
 
@@ -129,6 +139,12 @@ NOMOCKINGSTRINGSPLZ
       @new_resource.restart_command("/etc/init.d/foo restart")
       @provider.should_receive(:shell_out!).with("/etc/init.d/foo restart")
       @provider.restart_service()
+    end
+
+    it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
+      @provider.define_resource_requirements
+      @provider.action = :restart
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service) 
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
@@ -140,6 +156,12 @@ NOMOCKINGSTRINGSPLZ
   end
 
   describe Chef::Provider::Service::Simple, "reload_service" do
+    it "should raise an exception if reload is requested but no command is specified" do
+      @provider.define_resource_requirements
+      @provider.action = :reload
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::UnsupportedAction)
+    end
+
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
       @provider.should_receive(:shell_out!).with("kill -9 1")

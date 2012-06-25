@@ -72,13 +72,60 @@ F
     end
 
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time]
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
+
+
+    # Set or return the list of "state attributes" implemented by the Resource
+    # subclass. State attributes are attributes that describe the desired state
+    # of the system, such as file permissions or ownership. In general, state
+    # attributes are attributes that could be populated by examining the state
+    # of the system (e.g., File.stat can tell you the permissions on an
+    # existing file). Contrarily, attributes that are not "state attributes"
+    # usually modify the way Chef itself behaves, for example by providing
+    # additional options for a package manager to use when installing a
+    # package.
+    #
+    # This list is used by the Chef client auditing system to extract
+    # information from resources to describe changes made to the system.
+    def self.state_attrs(*attr_names)
+      @state_attrs ||= []
+      @state_attrs = attr_names unless attr_names.empty?
+
+      # Return *all* state_attrs that this class has, including inherited ones
+      if superclass.respond_to?(:state_attrs)
+        superclass.state_attrs + @state_attrs
+      else
+        @state_attrs
+      end
+    end
+
+    # Set or return the "identity attribute" for this resource class. This is
+    # generally going to be the "name attribute" for this resource. In other
+    # words, the resource type plus this attribute uniquely identify a given
+    # bit of state that chef manages. For a File resource, this would be the
+    # path, for a package resource, it will be the package name. This will show
+    # up in chef-client's audit records as a searchable field.
+    def self.identity_attr(attr_name=nil)
+      @identity_attr ||= nil
+      @identity_attr = attr_name if attr_name
+
+      # If this class doesn't have an identity attr, we'll defer to the superclass:
+      if @identity_attr || !superclass.respond_to?(:identity_attr)
+        @identity_attr
+      else
+        superclass.identity_attr
+      end
+    end
+
+    def self.dsl_name
+      convert_to_snake_case(name, 'Chef::Resource')
+    end
 
     attr_accessor :params
     attr_accessor :provider
@@ -96,6 +143,8 @@ F
     attr_reader :resource_name
     attr_reader :not_if_args
     attr_reader :only_if_args
+
+    attr_reader :elapsed_time
 
     # Each notify entry is a resource/action pair, modeled as an
     # Struct with a #resource and #action member
@@ -122,9 +171,30 @@ F
       @immediate_notifications = Array.new
       @delayed_notifications = Array.new
       @source_line = nil
+      @elapsed_time = 0
 
       @node = run_context ? deprecated_ivar(run_context.node, :node, :warn) : nil
     end
+
+    # Returns a Hash of attribute => value for the state attributes declared in
+    # the resource's class definition.
+    def state
+      self.class.state_attrs.inject({}) do |state_attrs, attr_name|
+        state_attrs[attr_name] = send(attr_name)
+        state_attrs
+      end
+    end
+
+    # Returns the value of the identity attribute, if declared. Falls back to
+    # #name if no identity attribute is declared.
+    def identity
+      if identity_attr = self.class.identity_attr
+        send(identity_attr)
+      else
+        name
+      end
+    end
+
 
     def updated=(true_or_false)
       Chef::Log.warn("Chef::Resource#updated=(true|false) is deprecated. Please call #updated_by_last_action(true|false) instead.")
@@ -329,12 +399,16 @@ F
 
     def to_text
       ivars = instance_variables.map { |ivar| ivar.to_sym } - HIDDEN_IVARS
-      text = "# Declared in #{@source_line}\n"
-      text << convert_to_snake_case(self.class.name, 'Chef::Resource') + "(\"#{name}\") do\n"
+      text = "# Declared in #{@source_line}\n\n"
+      text << self.class.dsl_name + "(\"#{name}\") do\n"
       ivars.each do |ivar|
         if (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
-          text << "  #{ivar.to_s.sub(/^@/,'')}(#{value.inspect})\n"
+          value_string = value.respond_to?(:to_text) ? value.to_text : value.inspect
+          text << "  #{ivar.to_s.sub(/^@/,'')} #{value_string}\n"
         end
+      end
+      [@not_if, @only_if].flatten.each do |conditional|
+        text << "  #{conditional.to_text}\n"
       end
       text << "end\n"
     end
@@ -430,7 +504,26 @@ F
       end
     end
 
-    def run_action(action)
+    def cookbook_version
+      if cookbook_name
+        run_context.cookbook_collection[cookbook_name]
+      end
+    end
+
+    def events
+      run_context.events
+    end
+
+    def run_action(action, notification_type=nil, notifying_resource=nil)
+      # reset state in case of multiple actions on the same resource.
+      @elapsed_time = 0
+      start_time = Time.now
+      events.resource_action_start(self, action, notification_type, notifying_resource)
+      # Try to resolve lazy/forward references in notifications again to handle
+      # the case where the resource was defined lazily (ie. in a ruby_block)
+      resolve_notification_references
+      validate_action(action)
+
       if Chef::Config[:verbose_logging] || Chef::Log.level == :debug
         # This can be noisy
         Chef::Log.info("Processing #{self} action #{action} (#{defined_at})")
@@ -441,29 +534,49 @@ F
       updated_by_last_action(false)
 
       begin
-        return if should_skip?
-        # leverage new platform => short_name => resource
-        # which requires explicitly setting provider in
-        # resource class
-        if self.provider
-          provider = self.provider.new(self, self.run_context)
-        else # fall back to old provider resolution
-          provider = Chef::Platform.provider_for_resource(self)
-        end
-        provider.load_current_resource
-        provider.send("action_#{action}")
-      rescue => e
+        return if should_skip?(action)
+        provider_for_action(action).run_action
+      rescue Exception => e
         if ignore_failure
-          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}")
+          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}; ignore_failure is set, continuing")
+          events.resource_failed(self, action, e)
+        elsif retries > 0
+          events.resource_failed_retriable(self, action, retries, e)
+          @retries -= 1
+          Chef::Log.info("Retrying execution of #{self}, #{retries} attempt(s) left")
+          sleep retry_delay
+          retry
         else
-          Chef::Log.error("#{self} (#{defined_at}) has had an error")
-          new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
-          new_exception.set_backtrace(e.backtrace)
-          raise new_exception
+          events.resource_failed(self, action, e)
+          raise customize_exception(e)
         end
+      ensure
+        @elapsed_time = Time.now - start_time
       end
     end
 
+    def validate_action(action)
+      raise ArgumentError, "nil is not a valid action for resource #{self}" if action.nil?
+    end
+
+    def provider_for_action(action)
+      # leverage new platform => short_name => resource
+      # which requires explicitly setting provider in
+      # resource class
+      if self.provider
+        provider = self.provider.new(self, self.run_context)
+        provider.action = action
+        provider
+      else # fall back to old provider resolution
+        Chef::Platform.provider_for_resource(self, action)
+      end
+    end
+
+    def customize_exception(e)
+      new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
+      new_exception.set_backtrace(e.backtrace)
+      new_exception
+    end
     # Evaluates not_if and only_if conditionals. Returns a falsey value if any
     # of the conditionals indicate that this resource should be skipped, i.e.,
     # if an only_if evaluates to false or a not_if evaluates to true.
@@ -472,7 +585,7 @@ F
     # "fails" its check. Subsequent conditionals are not evaluated, so in
     # general it's not a good idea to rely on side effects from not_if or
     # only_if commands/blocks being evaluated.
-    def should_skip?
+    def should_skip?(action)
       conditionals = only_if + not_if
       return false if conditionals.empty?
 
@@ -480,6 +593,7 @@ F
         if conditional.continue?
           false
         else
+          events.resource_skipped(self, action, conditional)
           Chef::Log.debug("Skipping #{self} due to #{conditional.description}")
           true
         end

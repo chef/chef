@@ -22,7 +22,8 @@ require 'spec_helper'
 describe Chef::Provider::Service::Windows, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Service.new("chef")
     @provider = Chef::Provider::Service::Windows.new(@new_resource, @run_context)
     Object.send(:remove_const, 'Win32') if defined?(Win32)

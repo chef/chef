@@ -26,7 +26,8 @@ describe Chef::CookbookVersion do
     @cookbook = @cookbook_collection[:openldap]
     @node = Chef::Node.new
     @node.name "JuliaChild"
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection)
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
   end
 
   it "should have a name" do

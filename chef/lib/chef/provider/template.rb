@@ -34,30 +34,41 @@ class Chef
         super
         @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
+      
+      def define_resource_requirements
+        super
+
+        requirements.assert(:create, :create_if_missing) do |a| 
+          a.assertion { ::File::exist?(template_location) } 
+          a.failure_message "Template source #{template_location} could not be found."
+          a.whyrun "Template source #{template_location} does not exist. Assuming it would have been created."
+          a.block_action!
+        end
+      end
 
       def action_create
         render_with_context(template_location) do |rendered_template|
           rendered(rendered_template)
-          if ::File.exist?(@new_resource.path) && content_matches?
+          update = ::File.exist?(@new_resource.path)
+          if update && content_matches?
             Chef::Log.debug("#{@new_resource} content has not changed.")
-            set_all_access_controls(@new_resource.path)
+            set_all_access_controls
           else
-            backup
-            set_all_access_controls(rendered_template.path)
-            FileUtils.mv(rendered_template.path, @new_resource.path)
-            Chef::Log.info("#{@new_resource} updated content")
-            @new_resource.updated_by_last_action(true)
+            description = [] 
+            action_message = update ? "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
+              "create #{@new_resource}"
+            description << action_message
+            description << diff_current(rendered_template.path)
+            converge_by(description) do
+              backup
+              FileUtils.mv(rendered_template.path, @new_resource.path)
+              Chef::Log.info("#{@new_resource} updated content")
+              access_controls.set_all!
+            end
           end
-        end
+        end  
       end
 
-      def action_create_if_missing
-        if ::File.exists?(@new_resource.path)
-          Chef::Log.debug("#{@new_resource} exists - taking no action")
-        else
-          action_create
-        end
-      end
 
       def template_location
         @template_file_cache_location ||= begin
@@ -69,7 +80,7 @@ class Chef
           end
         end
       end
-      
+
       def resource_cookbook
         @new_resource.cookbook || @new_resource.cookbook_name
       end
@@ -82,12 +93,6 @@ class Chef
 
       def content_matches?
         @current_resource.checksum == @new_resource.checksum
-      end
-
-      def set_all_access_controls(file)
-        access_controls = Chef::FileAccessControl.new(@new_resource, file)
-        access_controls.set_all
-        @new_resource.updated_by_last_action(access_controls.modified?)
       end
 
       private

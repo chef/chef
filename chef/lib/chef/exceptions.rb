@@ -34,7 +34,6 @@ class Chef
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
-    class MissingRole < RuntimeError; end
     class CannotDetermineNodeName < RuntimeError; end
     class User < RuntimeError; end
     class Group < RuntimeError; end
@@ -70,6 +69,7 @@ class Chef
     class CookbookVersionNameMismatch < ArgumentError; end
     class MissingParentDirectory < RuntimeError; end
     class UnresolvableGitReference < RuntimeError; end
+    class InvalidRemoteGitReference < RuntimeError; end
     class InvalidEnvironmentRunListSpecification < ArgumentError; end
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
@@ -94,9 +94,37 @@ class Chef
     # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
 
+    # File operation attempted but no permissions to perform it
+    class InsufficientPermissions < RuntimeError; end
+   
+    # Ifconfig failed
+    class Ifconfig < RuntimeError; end
+
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'
     class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
+
+    class MissingRole < RuntimeError
+      NULL = Object.new
+
+      attr_reader :expansion
+
+      def initialize(message_or_expansion=NULL)
+        @expansion = nil
+        case message_or_expansion
+        when NULL
+          super()
+        when String
+          super
+        when RunList::RunListExpansion
+          @expansion = message_or_expansion
+          missing_roles = @expansion.errors.join(', ')
+          super("The expanded run list includes nonexistent roles: #{missing_roles}")
+        end
+      end
+
+
+    end
 
     class CookbookVersionSelection
 

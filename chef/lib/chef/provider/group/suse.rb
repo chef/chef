@@ -28,8 +28,15 @@ class Chef
 
         def load_current_resource
           super
+        end
 
-          raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/groupmod for #{@new_resource}" unless ::File.exists?("/usr/sbin/groupmod")
+        def define_resource_requirements
+          super
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { ::File.exists?("/usr/sbin/groupmod") } 
+            a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/groupmod for #{@new_resource.name}"
+            # No whyrun alternative: this component should be available in the base install of any given system that uses it
+          end
         end
 
         def modify_group_members

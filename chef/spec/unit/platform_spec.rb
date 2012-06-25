@@ -73,6 +73,7 @@ describe Chef::Platform do
         :cat => "nice"
       }
     }
+    @events = Chef::EventDispatch::Dispatcher.new
   end
   
   it "should allow you to look up a platform by name and version, returning the provider map for it" do
@@ -158,9 +159,9 @@ describe Chef::Platform do
     node = Chef::Node.new
     node.platform("mac_os_x")
     node.platform_version("9.2.2")
-    run_context = Chef::RunContext.new(node, {})
+    run_context = Chef::RunContext.new(node, {}, @events)
     file = Chef::Resource::File.new("whateva", run_context)
-    provider = Chef::Platform.provider_for_resource(file)
+    provider = Chef::Platform.provider_for_resource(file, :foo)
     provider.should be_an_instance_of(Chef::Provider::File)
     provider.new_resource.should equal(file)
     provider.run_context.should equal(run_context)

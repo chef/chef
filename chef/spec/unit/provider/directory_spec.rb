@@ -27,14 +27,14 @@ describe Chef::Provider::Directory do
     @new_resource.group(500)
     @new_resource.mode(0644)
     @node = Chef::Node.new
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
   end
 
   it "should load the current resource based on the new resource" do
     File.stub!(:exist?).and_return(true)
-    File.should_receive(:directory?).once.and_return(true)
     cstats = mock("stats")
     cstats.stub!(:uid).and_return(500)
     cstats.stub!(:gid).and_return(500)
@@ -44,40 +44,96 @@ describe Chef::Provider::Directory do
     @directory.current_resource.path.should eql(@new_resource.path)
     @directory.current_resource.owner.should eql(500)
     @directory.current_resource.group.should eql(500)
-    @directory.current_resource.mode.should eql("755")
+    @directory.current_resource.mode.should == 00755
   end
 
   it "should create a new directory on create, setting updated to true" do
     load_mock_provider
-    File.should_receive(:exists?).once.and_return(false)
+    @new_resource.path "/tmp/foo"
+    File.should_receive(:exist?).twice.and_return(false)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
-    @directory.should_receive(:enforce_ownership_and_permissions)
-    @directory.action_create
+    @directory.should_receive(:set_all_access_controls)
+    @directory.run_action(:create)
     @directory.new_resource.should be_updated
   end
 
+  it "should raise an exception if the parent directory does not exist and recursive is false" do 
+    @new_resource.path "/tmp/some/dir"
+    @new_resource.recursive false
+    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist) 
+  end
+
+  it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct" do
+    load_mock_provider
+    @new_resource.path "/path/to/dir"
+    @new_resource.recursive true
+    File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
+    File.should_receive(:exist?).with('/path/to').ordered.and_return(false)
+    File.should_receive(:exist?).with('/path').ordered.and_return(true)
+    File.should_receive(:writable?).with('/path').ordered.and_return(true)
+    File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
+ 
+    FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true) 
+    @directory.should_receive(:set_all_access_controls)
+    @directory.run_action(:create)
+    @new_resource.should be_updated
+  end
+ 
+  # it "should raise an error when creating a directory recursively and permissions do not allow creation" do
+    
+  # end
+
+  it "should raise an error when creating a directory when parent directory is a file" do
+    load_mock_provider
+    File.should_receive(:directory?).and_return(false)
+    Dir.should_not_receive(:mkdir).with(@new_resource.path)
+    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    @directory.new_resource.should_not be_updated
+  end
+  
   it "should not create the directory if it already exists" do
     load_mock_provider
-    File.should_receive(:exists?).once.and_return(true)
+    @new_resource.path "/tmp/foo"
+    File.should_receive(:exist?).twice.and_return(true)
     Dir.should_not_receive(:mkdir).with(@new_resource.path)
-    @directory.should_receive(:enforce_ownership_and_permissions)
-    @directory.action_create
+    @directory.should_receive(:set_all_access_controls)
+    @directory.run_action(:create)
   end
 
   it "should delete the directory if it exists, and is writable with action_delete" do
     load_mock_provider
-    File.should_receive(:directory?).once.and_return(true)
+    File.should_receive(:directory?).and_return(true)
     File.should_receive(:writable?).once.and_return(true)
     Dir.should_receive(:delete).with(@new_resource.path).once.and_return(true)
-    @directory.action_delete
+    @directory.run_action(:delete)
   end
 
-  it "should raise an exception if it cannot delete the file due to bad permissions" do
+  it "should raise an exception if it cannot delete the directory due to bad permissions" do
     load_mock_provider
-    File.stub!(:exists?).and_return(true)
+    File.stub!(:exist?).and_return(true)
     File.stub!(:writable?).and_return(false)
-    lambda { @directory.action_delete }.should raise_error(RuntimeError)
+    lambda {  @directory.run_action(:delete) }.should raise_error(RuntimeError)
   end
+
+  it "should take no action when deleting a target directory that does not exist" do
+    @new_resource.path "/an/invalid/path"
+    File.stub!(:exist?).and_return(false)
+    Dir.should_not_receive(:delete).with(@new_resource.path)
+    @directory.run_action(:delete)
+    @directory.new_resource.should_not be_updated
+  end
+
+  it "should raise an exception when deleting a directory when target directory is a file" do
+    load_mock_provider
+    @new_resource.path "/an/invalid/path"
+    File.stub!(:exist?).and_return(true)
+    File.should_receive(:directory?).and_return(false)
+    Dir.should_not_receive(:delete).with(@new_resource.path)
+    lambda { @directory.run_action(:delete) }.should raise_error(RuntimeError)
+    @directory.new_resource.should_not be_updated
+
+  end
+
 
   def load_mock_provider
     File.stub!(:exist?).and_return(true)
@@ -87,6 +143,6 @@ describe Chef::Provider::Directory do
     cstats.stub!(:gid).and_return(500)
     cstats.stub!(:mode).and_return(0755)
     File.stub!(:stat).once.and_return(cstats)
-    @directory.load_current_resource
+  #  @directory.load_current_resource
   end
 end

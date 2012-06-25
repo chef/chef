@@ -22,7 +22,8 @@ describe Chef::Provider::Service::Freebsd do
   before do
     @node = Chef::Node.new
     @node[:command] = {:ps => "ps -ax"}
-    @run_context = Chef::RunContext.new(@node, {})
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("apache22")
     @new_resource.pattern("httpd")
@@ -56,6 +57,8 @@ name="apache22"
 rcvar=`set_rcvar`
 RC_SAMPLE
       ::File.stub!(:open).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(@rc_with_name)
+      @provider.stub(:service_enable_variable_name).and_return nil
+
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -93,6 +96,7 @@ RC_SAMPLE
         @provider.should_receive(:shell_out).with("/usr/local/etc/rc.d/#{@current_resource.service_name} status").and_raise(Mixlib::ShellOut::ShellCommandFailed)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
+       # @provider.current_resource.running.should be_false
       end
     end
 
@@ -108,14 +112,55 @@ RC_SAMPLE
 
     end
 
-    it "should set running to false if the node has a nil ps attribute" do
-      @node.stub!(:[]).with(:command).and_return({:ps => nil})
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    it "should raise error if the node has a nil ps attribute and no other means to get status" do
+      @node[:command] = {:ps => nil}
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
-    it "should set running to false if the node has an empty ps attribute" do
-      @node.stub!(:[]).with(:command).and_return(:ps => "")
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+    it "should raise error if the node has an empty ps attribute and no other means to get status" do
+      @node[:command] = {:ps => ""}
+      @provider.define_resource_requirements
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+    end
+    
+    describe "when executing assertions" do
+      it "should verify that /etc/rc.conf exists" do
+        ::File.should_receive(:exists?).with("/etc/rc.conf")
+        @provider.stub!(:service_enable_variable_name).and_return("#{@current_resource.service_name}_enable")
+        @provider.load_current_resource
+      end
+
+      it "should raise an exception when init script is not found" do
+        ::File.stub!(:exists?).and_return(false)
+        @provider.load_current_resource
+        @provider.define_resource_requirements 
+        @provider.instance_variable_get("@rcd_script_found").should be_false
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+      end
+
+      it "update state when current resource enabled state could not be determined" do
+        ::File.should_receive(:exists?).with("/etc/rc.conf").and_return false
+        @provider.load_current_resource
+        @provider.instance_variable_get("@enabled_state_found").should be_false
+      end 
+
+      it "update state when current resource enabled state could be determined" do
+        ::File.should_receive(:exists?).with("/etc/rc.conf").and_return  true
+        @provider.load_current_resource
+        @provider.instance_variable_get("@enabled_state_found").should be_false
+        @provider.instance_variable_get("@rcd_script_found").should be_true
+        @provider.define_resource_requirements 
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service,
+          "Could not find the service name in /usr/local/etc/rc.d/#{@current_resource.service_name} and rcvar")
+      end 
+
+      it "should throw an exception if service line is missing from rc.d script" do
+          pending "not implemented" do
+            false.should be_true
+          end
+      end
+
     end
 
     describe "when we have a 'ps' attribute" do
@@ -149,7 +194,9 @@ RC_SAMPLE
 
       it "should raise an exception if ps fails" do
         @provider.stub!(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-        lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Service)
+        @provider.load_current_resource
+        @provider.define_resource_requirements
+        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
       end
     end
 
@@ -217,7 +264,7 @@ RC_SAMPLE
           @rcvar_stdout = <<RCVAR_SAMPLE
 # apache22
 #
-# apache22_enable="YES"
+# #{@current_resource.service_name}_enable="YES"
 #   (default: "")
 RCVAR_SAMPLE
           @status = mock(:stdout => @rcvar_stdout, :exitstatus => 0)
@@ -226,6 +273,7 @@ RCVAR_SAMPLE
 
         it "should get the service name from rcvar if the rcscript does not have a name variable" do
           @provider.load_current_resource
+          @provider.unstub!(:service_enable_variable_name)
           @provider.service_enable_variable_name.should == "#{@current_resource.service_name}_enable"
         end
 
@@ -247,7 +295,8 @@ RCVAR_SAMPLE
 
         it "should raise an exception if rcvar does not return foobar_enable" do
           @provider.load_current_resource
-          lambda { @provider.service_enable_variable_name }.should raise_error(Chef::Exceptions::Service)
+          @provider.define_resource_requirements
+          lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
         end
       end
     end
