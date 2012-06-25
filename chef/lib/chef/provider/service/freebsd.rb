@@ -42,9 +42,7 @@ class Chef
             return
           end
           Chef::Log.debug("#{@current_resource} found at #{@init_command}")
-
           determine_current_status!
-
           # Default to disabled if the service doesn't currently exist
           # at all 
           var_name = service_enable_variable_name
@@ -109,6 +107,7 @@ class Chef
 
         def restart_service
           if @new_resource.restart_command
+
             super
           elsif @new_resource.supports[:restart]
             shell_out!("#{@init_command} fastrestart")
@@ -147,19 +146,11 @@ class Chef
             # We should get the service name from rcvar.
             Chef::Log.debug("name=\"service\" not found at #{@init_command}. falling back to rcvar")
             sn = shell_out!("#{@init_command} rcvar").stdout[/(\w+_enable)=/, 1]
-            if sn
-              return sn
-            else
-              # WHYRUN NOTE:
-              # In why-run mode, we are no longer guaranteed that this file exists - 
-              # however, we can't let this block processing. In a normal run
-              # we would be blocked from reaching this point, so it's safe
-              # to work around it for why-run mode
-              return nil
-            end
-          else
-            return @new_resource.service_name
+            return sn
           end
+          # Fallback allows us to keep running in whyrun mode when
+          # the script does not exist.
+          @new_resource.service_name
         end
 
         def set_service_enable(value)
