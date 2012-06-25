@@ -72,7 +72,7 @@ class Chef
                 break if current_line >= (line + 50)
                 break if nesting <= 0
               end
-              relevant_lines << format_line(current_line + 1, lines[current_line + 1])
+              relevant_lines << format_line(current_line + 1, lines[current_line + 1]) if lines[current_line + 1]
 
               relevant_lines.join("")
             end

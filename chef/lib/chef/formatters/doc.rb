@@ -73,6 +73,7 @@ class Chef
       # Called when there is an error getting the cookbook collection from the
       # server.
       def cookbook_resolution_failed(expanded_run_list, exception)
+        super
       end
 
       # Called when the cookbook collection is returned from the server.

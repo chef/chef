@@ -134,6 +134,7 @@ class Chef
       def describe_error(headline, error_inspector)
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
+        puts("")
         description.display(output)
       end
 
@@ -145,7 +146,7 @@ class Chef
       end
 
       def node_load_failed(node_name, exception, config)
-        error_inspector = ErrorInspectors::APIErrorInspector.new(node_name, exception, config)
+        error_inspector = ErrorInspectors::NodeLoadErrorInspector.new(node_name, exception, config)
         headline = "Chef encountered an error attempting to load the node data for \"#{node_name}\""
         describe_error(headline, error_inspector)
       end
@@ -169,7 +170,7 @@ class Chef
       end
 
       def resource_failed(resource, action, exception)
-        error_inspector = ErrorInspectors::APIErrorInspector.new(resource, action, exception)
+        error_inspector = ErrorInspectors::ResourceFailureInspector.new(resource, action, exception)
         headline = "Error executing action `#{action}` on resource '#{resource}'"
         describe_error(headline, error_inspector)
       end
