@@ -38,7 +38,7 @@ class Chef
 
           requirements.assert(:modify, :create) do |a|
             a.assertion { @new_resource.members.empty? || @new_resource.append } 
-            a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self.to_s}"
+            a.failure_message Chef::Exceptions::Group, "setting group members directly is not supported by #{self.to_s}, must set append true in group"
             # No whyrun alternative - this action is simply not supported.
           end
         end
@@ -56,7 +56,6 @@ class Chef
               @new_resource.members.each do |member|
                 Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
                 run_command(:command => "usermod #{append_flags} #{@new_resource.group_name} #{member}" )
-
               end
             end
           else
