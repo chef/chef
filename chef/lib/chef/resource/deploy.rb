@@ -51,7 +51,7 @@ class Chef
     class Deploy < Chef::Resource
 
       provider_base Chef::Provider::Deploy
-      
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :deploy
@@ -71,6 +71,7 @@ class Chef
         @enable_submodules = false
         @shallow_clone = false
         @scm_provider = Chef::Provider::Git
+        @scm_metadata_exclude = nil
         @svn_force_export = false
         @provider = Chef::Provider::Deploy::Timestamped
         @allowed_actions.push(:force_deploy, :deploy, :rollback)
@@ -280,6 +281,14 @@ class Chef
           :svn_force_export,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def scm_metadata_exclude(arg=nil)
+        set_or_return(
+          :scm_metadata_exclude,
+          arg,
+          :kind_of => [ String ]
         )
       end
 
