@@ -5,60 +5,66 @@ class Chef
   class Knife
     class RepoCreate < Knife
 
-      banner "knife repo create REPO"
+      banner "knife repo create REPO (options)"
 
       option :repo_path,
         :short       => "-p PATH",
-        :long        => "--repo-path PATH",
-        :description => "The directory where the repo will be created"
+        :long        => "--repository-path PATH",
+        :description => "The directory where the repository will be created"
 
       def run
         self.config = Chef::Config.merge! config
 
         if @name_args.length < 1
           show_usage
-          ui.fatal "You must specify a repo name"
+          ui.fatal "You must specify a repository name"
           exit 1
         end
 
         repo_name = @name_args.first
-        create_repo repo_name
+
+        path = config[:repo_path] || ''
+        path = File.expand_path(path)
+
+        create_repo repo_name, path
       end
 
-      def create_repo(repo_name)
+      def create_repo(repo_name, path)
         msg "** Creating repo #{repo_name}"
-        FileUtils.mkdir_p "#{repo_name}"
 
-        create_certificates repo_name
-        create_config repo_name
-        create_cookbooks repo_name
-        create_data_bags repo_name
-        create_environments repo_name
-        create_roles repo_name
+        repo_path = File.join path, repo_name
+        FileUtils.mkdir_p repo_path
 
-        create_gitignore repo_name
-        create_root_readme repo_name
-        create_rakefile repo_name
-        create_chefignore repo_name
+        create_certificates repo_path
+        create_config repo_path
+        create_cookbooks repo_path
+        create_data_bags repo_path
+        create_environments repo_path
+        create_roles repo_path
+
+        create_gitignore repo_path
+        create_root_readme repo_path
+        create_rakefile repo_path
+        create_chefignore repo_path
       end
 
       private
 
-      def create_dir(repo_name, dir)
-        FileUtils.mkdir_p "#{File.join repo_name, dir}"
+      def create_dir(repo_path, dir)
+        FileUtils.mkdir_p "#{File.join repo_path, dir}"
       end
 
-      def create_file(repo_name, dir, filename, body)
-        unless File.exists?(File.join repo_name, dir, filename)
-          open(File.join(repo_name, dir, filename), "w") do |file|
+      def create_file(repo_path, dir, filename, body)
+        unless File.exists?(File.join repo_path, dir, filename)
+          open(File.join(repo_path, dir, filename), "w") do |file|
             file.puts body
           end
         end
       end
 
-      def create_certificates(repo_name)
+      def create_certificates(repo_path)
         dir = "certificates"
-        create_dir repo_name, dir
+        create_dir repo_path, dir
 
         readme_body = <<EOH
 Creating SSL certificates is a common task done in web application infrastructures, so a rake task is provided to generate certificates.  These certificates are stored here by the ssl_cert task.  
@@ -82,12 +88,12 @@ In the recipe for that cookbook, create a `cookbook_file` resource to configure 
     end
 EOH
 
-        create_file repo_name, dir, "README.md", readme_body
+        create_file repo_path, dir, "README.md", readme_body
       end
 
-      def create_config(repo_name)
+      def create_config(repo_path)
         dir = "config"
-        create_dir repo_name, dir
+        create_dir repo_path, dir
 
         rake_body = <<EOH
 # Configure the Rakefile's tasks.
@@ -131,12 +137,12 @@ TOPDIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 CADIR = File.expand_path(File.join(TOPDIR, "certificates"))
 EOH
 
-        create_file repo_name, dir, "rake.rb", rake_body 
+        create_file repo_path, dir, "rake.rb", rake_body 
       end
 
-      def create_cookbooks(repo_name)
+      def create_cookbooks(repo_path)
         dir = "cookbooks"
-        create_dir repo_name, dir
+        create_dir repo_path, dir
 
         readme_body = <<EOH
 This directory contains the cookbooks used to configure systems in your infrastructure with Chef.
@@ -195,12 +201,12 @@ If you're not using Git, use the site download subcommand to download the tarbal
 This creates the COOKBOOK.tar.gz from in the current directory (e.g., `~/chef-repo`). We recommend following a workflow similar to the above for your version control tool.
 EOH
 
-        create_file repo_name, dir, "README.md", readme_body
+        create_file repo_path, dir, "README.md", readme_body
       end
 
-      def create_data_bags(repo_name)
+      def create_data_bags(repo_path)
         dir = "data_bags"
-        create_dir repo_name, dir
+        create_dir repo_path, dir
 
         readme_body = <<EOH
 Data Bags
@@ -267,12 +273,12 @@ Use the secret_key to view the contents.
     password:  abc123
 EOH
 
-        create_file repo_name, dir, "README.md", readme_body
+        create_file repo_path, dir, "README.md", readme_body
       end
 
-      def create_environments(repo_name)
+      def create_environments(repo_path)
         dir = "environments"
-        create_dir repo_name, dir
+        create_dir repo_path, dir
 
         readme_body = <<EOH
 Requires Chef 0.10.0+.
@@ -281,12 +287,12 @@ This directory is for Ruby DSL and JSON files for environments. For more informa
 
 http://wiki.opscode.com/display/chef/Environments
 EOH
-        create_file repo_name, dir, "README.md", readme_body
+        create_file repo_path, dir, "README.md", readme_body
       end
 
-      def create_roles(repo_name)
+      def create_roles(repo_path)
         dir = "roles"
-        create_dir repo_name, dir
+        create_dir repo_path, dir
 
         readme_body = <<EOH
 Create roles here, in either the Role Ruby DSL (.rb) or JSON (.json) files. To install roles on the server, use knife.
@@ -308,19 +314,19 @@ Then upload it to the Chef Server:
 
     knife role from file roles/base_example.rb
 EOH
-        create_file repo_name, dir, "README.md", readme_body
+        create_file repo_path, dir, "README.md", readme_body
       end
 
-      def create_gitignore(repo_name)
+      def create_gitignore(repo_path)
         dir = ""
 
         body = <<EOH
 .rake_test_cache
 EOH
-        create_file repo_name, dir, ".gitignore", body
+        create_file repo_path, dir, ".gitignore", body
       end
 
-      def create_root_readme(repo_name)
+      def create_root_readme(repo_path)
         dir = ""
 
         body = <<EOH
@@ -391,10 +397,10 @@ Next Steps
 
 Read the README file in each of the subdirectories for more information about what goes in those directories.
 EOH
-        create_file repo_name, dir, "README.md", body
+        create_file repo_path, dir, "README.md", body
       end
 
-      def create_rakefile(repo_name)
+      def create_rakefile(repo_path)
         dir = ""
 
         body = <<EOH
@@ -467,10 +473,10 @@ task :bundle_cookbook, :cookbook do |t, args|
   FileUtils.rm_rf temp_dir
 end
 EOH
-        create_file repo_name, dir, "Rakefile", body
+        create_file repo_path, dir, "Rakefile", body
       end
 
-      def create_chefignore(repo_name)
+      def create_chefignore(repo_path)
         dir = ""
 
         body = <<EOH
@@ -486,7 +492,7 @@ EOH
 # subversion
 */.svn/*
 EOH
-        create_file repo_name, dir, "chefignore", body
+        create_file repo_path, dir, "chefignore", body
       end
     end
   end
