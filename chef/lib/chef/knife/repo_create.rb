@@ -65,7 +65,12 @@ class Chef
       end
 
       def init_repo(repo_path)
-        exec "git init #{repo_path}"
+        begin
+          exec "git init #{repo_path}"
+        rescue Errno::ENOENT
+          # Skip init if git is not found
+          msg("** git not found: Could not initialize repository")
+        end
       end
 
       def create_certificates(repo_path)
