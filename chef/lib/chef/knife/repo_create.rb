@@ -56,9 +56,9 @@ class Chef
         FileUtils.mkdir_p "#{File.join repo_path, dir}"
       end
 
-      def create_file(repo_path, dir, filename, body)
-        unless File.exists?(File.join repo_path, dir, filename)
-          open(File.join(repo_path, dir, filename), "w") do |file|
+      def create_file(directory, filename, body)
+        unless File.exists?(File.join directory, filename)
+          open(File.join(directory, filename), "w") do |file|
             file.puts body
           end
         end
@@ -74,8 +74,7 @@ class Chef
       end
 
       def create_certificates(repo_path)
-        dir = "certificates"
-        create_dir repo_path, dir
+        create_dir repo_path, "certificates"
 
         readme_body = <<EOH
 Creating SSL certificates is a common task done in web application infrastructures, so a rake task is provided to generate certificates.  These certificates are stored here by the ssl_cert task.  
@@ -99,12 +98,11 @@ In the recipe for that cookbook, create a `cookbook_file` resource to configure 
     end
 EOH
 
-        create_file repo_path, dir, "README.md", readme_body
+        create_file "#{repo_path}/certificates", "README.md", readme_body
       end
 
       def create_config(repo_path)
-        dir = "config"
-        create_dir repo_path, dir
+        create_dir repo_path, "config"
 
         rake_body = <<EOH
 # Configure the Rakefile's tasks.
@@ -148,12 +146,11 @@ TOPDIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 CADIR = File.expand_path(File.join(TOPDIR, "certificates"))
 EOH
 
-        create_file repo_path, dir, "rake.rb", rake_body 
+        create_file "#{repo_path}/config", "rake.rb", rake_body 
       end
 
       def create_cookbooks(repo_path)
-        dir = "cookbooks"
-        create_dir repo_path, dir
+        create_dir repo_path, "cookbooks"
 
         readme_body = <<EOH
 This directory contains the cookbooks used to configure systems in your infrastructure with Chef.
@@ -212,12 +209,11 @@ If you're not using Git, use the site download subcommand to download the tarbal
 This creates the COOKBOOK.tar.gz from in the current directory (e.g., `~/chef-repo`). We recommend following a workflow similar to the above for your version control tool.
 EOH
 
-        create_file repo_path, dir, "README.md", readme_body
+        create_file "#{repo_path}/cookbooks", "README.md", readme_body
       end
 
       def create_data_bags(repo_path)
-        dir = "data_bags"
-        create_dir repo_path, dir
+        create_dir repo_path, "data_bags"
 
         readme_body = <<EOH
 Data Bags
@@ -284,12 +280,11 @@ Use the secret_key to view the contents.
     password:  abc123
 EOH
 
-        create_file repo_path, dir, "README.md", readme_body
+        create_file "#{repo_path}/data_bags", "README.md", readme_body
       end
 
       def create_environments(repo_path)
-        dir = "environments"
-        create_dir repo_path, dir
+        create_dir repo_path, "environments"
 
         readme_body = <<EOH
 Requires Chef 0.10.0+.
@@ -298,12 +293,12 @@ This directory is for Ruby DSL and JSON files for environments. For more informa
 
 http://wiki.opscode.com/display/chef/Environments
 EOH
-        create_file repo_path, dir, "README.md", readme_body
+        create_file "#{repo_path}/environments", "README.md", readme_body
       end
 
       def create_roles(repo_path)
         dir = "roles"
-        create_dir repo_path, dir
+        create_dir repo_path, "roles"
 
         readme_body = <<EOH
 Create roles here, in either the Role Ruby DSL (.rb) or JSON (.json) files. To install roles on the server, use knife.
@@ -325,21 +320,15 @@ Then upload it to the Chef Server:
 
     knife role from file roles/base_example.rb
 EOH
-        create_file repo_path, dir, "README.md", readme_body
+        create_file "#{repo_path}/roles", "README.md", readme_body
       end
 
       def create_gitignore(repo_path)
-        dir = ""
-
-        body = <<EOH
-.rake_test_cache
-EOH
-        create_file repo_path, dir, ".gitignore", body
+        body = ".rake_test_cache"
+        create_file repo_path, ".gitignore", body
       end
 
       def create_root_readme(repo_path)
-        dir = ""
-
         body = <<EOH
 Overview
 ========
@@ -408,12 +397,10 @@ Next Steps
 
 Read the README file in each of the subdirectories for more information about what goes in those directories.
 EOH
-        create_file repo_path, dir, "README.md", body
+        create_file repo_path, "README.md", body
       end
 
       def create_rakefile(repo_path)
-        dir = ""
-
         body = <<EOH
 #
 # Rakefile for Chef Server Repository
@@ -484,12 +471,10 @@ task :bundle_cookbook, :cookbook do |t, args|
   FileUtils.rm_rf temp_dir
 end
 EOH
-        create_file repo_path, dir, "Rakefile", body
+        create_file repo_path, "Rakefile", body
       end
 
       def create_chefignore(repo_path)
-        dir = ""
-
         body = <<EOH
 # Put files/directories that should be ignored in this file.
 # # Lines that start with '# ' are comments.
@@ -503,7 +488,7 @@ EOH
 # subversion
 */.svn/*
 EOH
-        create_file repo_path, dir, "chefignore", body
+        create_file repo_path, "chefignore", body
       end
     end
   end
