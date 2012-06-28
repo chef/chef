@@ -70,7 +70,8 @@ describe Chef::Resource::Deploy do
   resource_has_a_string_attribute(:svn_password)
   resource_has_a_string_attribute(:svn_arguments)
   resource_has_a_string_attribute(:svn_info_args)
-  
+  resource_has_a_string_attribute(:scm_metadata_exclude)
+
   resource_has_a_boolean_attribute(:migrate, :defaults_to=>false)
   resource_has_a_boolean_attribute(:enable_submodules, :defaults_to=>false)
   resource_has_a_boolean_attribute(:shallow_clone, :defaults_to=>false)

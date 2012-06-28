@@ -285,9 +285,49 @@ describe Chef::Provider::Deploy do
     @provider.converge
   end
 
+  it "tests if any binary is in the path" do
+    @provider.binary_in_path?("cp").should_not be_nil
+    @provider.binary_in_path?("notarealbin").should be_nil
+  end
+
+  it "determines git metadata folder exclude path" do
+    @resource.scm_provider(Chef::Provider::Git)
+    @provider.scm_metadata_exclude_path
+    @resource.scm_metadata_exclude.should == "'.git*'"
+  end
+
+  it "determines svn metadata folder exclude path" do
+    @resource.scm_provider(Chef::Provider::Subversion)
+    @provider.scm_metadata_exclude_path
+    @resource.scm_metadata_exclude.should == "'.svn*'"
+  end
+
+  it "uses existing exclude path attribute" do
+    @resource.scm_metadata_exclude("test exclude")
+    @provider.scm_metadata_exclude_path
+    @resource.scm_metadata_exclude.should == "test exclude"
+  end
+
+  it "determines which copy method is available to use" do
+    @provider.stub!(:binary_in_path?).and_return(nil)
+    @provider.copy_command.should == "cp -RPp"
+    @provider.stub!(:binary_in_path?).and_return("rsync")
+    @provider.copy_command.should =~ /^rsync/
+  end
+
   it "makes a copy of the cached repo in releases dir" do
+    @provider.stub!(:binary_in_path?).and_return(nil)
     FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
     @provider.should_receive(:run_command).with({:command => "cp -RPp /my/deploy/dir/shared/cached-copy/. #{@expected_release_dir}"})
+    @provider.copy_cached_repo
+    @provider.converge
+  end
+
+  it "makes a copy of the cached repo in releases dir with rsync" do
+    @provider.stub!(:binary_in_path?).and_return("rsync")
+    @resource.scm_metadata_exclude
+    FileUtils.should_receive(:mkdir_p).with("/my/deploy/dir/releases")
+    @provider.should_receive(:run_command).with({:command => "rsync -a --exclude '.git*' /my/deploy/dir/shared/cached-copy/. #{@expected_release_dir}"})
     @provider.copy_cached_repo
     @provider.converge
   end
