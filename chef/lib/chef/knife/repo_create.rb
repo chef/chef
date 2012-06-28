@@ -46,6 +46,8 @@ class Chef
         create_root_readme repo_path
         create_rakefile repo_path
         create_chefignore repo_path
+
+        init_repo repo_path
       end
 
       private
@@ -60,6 +62,10 @@ class Chef
             file.puts body
           end
         end
+      end
+
+      def init_repo(repo_path)
+        exec "git init #{repo_path}"
       end
 
       def create_certificates(repo_path)
