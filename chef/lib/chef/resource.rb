@@ -71,8 +71,8 @@ F
 
     end
 
-    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if]
-    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time]
+    FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
+    HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
