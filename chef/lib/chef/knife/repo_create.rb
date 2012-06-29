@@ -68,8 +68,8 @@ class Chef
         begin
           exec "git init #{repo_path}"
         rescue Errno::ENOENT
-          # Skip init if git is not found
-          msg("** git not found: Could not initialize repository")
+          # Skip init if there is a problem
+          msg("** Unable to initialize git repository")
         end
       end
 
