@@ -1,6 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Prajakta Purohit (prajakta@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 #
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -45,6 +46,12 @@ describe Chef::ResourceReporter do
 
     it "assumes the resource history feature is supported" do
       @resource_reporter.reporting_enabled?.should be_true
+    end
+
+    it "should have no error_descriptions" do
+      @resource_reporter.error_descriptions.should == [] 
+      @resource_reporter.error_descriptions.should be_empty 
+      @resource_reporter.should have(0).error_descriptions
     end
 
   end
@@ -335,10 +342,11 @@ describe Chef::ResourceReporter do
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = mock("ArgumentError")
-        @exception.should_receive(:inspect).and_return("Net::HTTPServerException")
-        @exception.should_receive(:message).and_return("Object not found")
-        @exception.should_receive(:backtrace).and_return(@backtrace)
+        @exception.stub!(:inspect).and_return("Net::HTTPServerException")
+        @exception.stub!(:message).and_return("Object not found")
+        @exception.stub!(:backtrace).and_return(@backtrace)
         @resource_reporter.run_failed(@exception)
+        @resource_reporter.run_list_expand_failed(@node, @exception)
         @report = @resource_reporter.report(@node)
       end
 
@@ -363,6 +371,7 @@ describe Chef::ResourceReporter do
       it "includes the error inspector output in the event data" do
         @report.should have_key("exception")
         @report["exception"].should have_key("description")
+        @report["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
       end
 
     end

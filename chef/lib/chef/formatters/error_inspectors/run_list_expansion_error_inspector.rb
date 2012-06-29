@@ -1,5 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -108,8 +109,8 @@ E
           else
             error_description.section("Unexpected API Request Failure:", format_rest_error)
           end
-        end
-
+        end          
+             
       end
     end
   end
