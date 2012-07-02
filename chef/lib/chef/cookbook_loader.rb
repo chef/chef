@@ -35,7 +35,7 @@ class Chef
 
     include Enumerable
 
-    def initialize(*repo_paths)
+    def initialize(repo_paths, cookbooks_names=nil)
       @repo_paths = repo_paths.flatten
       raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
       @cookbooks_by_name = Mash.new
@@ -49,7 +49,7 @@ class Chef
       # this variable
       @merged_cookbooks = []
 
-      load_cookbooks
+      load_cookbooks(cookbooks_names)
     end
 
     def merged_cookbook_paths # for deprecation warnings
@@ -58,13 +58,13 @@ class Chef
       merged_cookbook_paths
     end
 
-    def load_cookbooks
-      cookbook_settings = Hash.new
+    def load_cookbooks(cookbooks_names=nil)
       @repo_paths.each do |repo_path|
         repo_path = File.expand_path(repo_path)
         chefignore = Cookbook::Chefignore.new(repo_path)
         Dir[File.join(repo_path, "*")].each do |cookbook_path|
           next unless File.directory?(cookbook_path)
+          next unless cookbooks_names.nil? or cookbooks_names.include? File.basename(cookbook_path)
           loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore)
           loader.load_cookbooks
           next if loader.empty?

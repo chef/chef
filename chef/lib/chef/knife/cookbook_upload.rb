@@ -86,7 +86,11 @@ class Chef
         end
 
         assert_environment_valid!
-        warn_about_cookbook_shadowing
+        if config[:all]
+          warn_about_cookbook_shadowing
+        else
+          warn_about_cookbook_shadowing @name_args
+        end
         version_constraints_to_update = {}
         upload_failures = 0
         upload_ok = 0
@@ -132,12 +136,16 @@ class Chef
             cookbook_repo
           else
             upload_set = {}
+            cookbooks = cookbook_repo(@name_args)
             @name_args.each do |cookbook_name|
             begin
               if ! upload_set.has_key?(cookbook_name)
-                upload_set[cookbook_name] = cookbook_repo[cookbook_name]
+                upload_set[cookbook_name] = cookbooks[cookbook_name]
                 if config[:depends]
-                  upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                  upload_set[cookbook_name].metadata.dependencies.each { |dep, ver|
+                    cookbooks.load_cookbooks(dep)
+                    @name_args << dep
+                  }
                 end
               end
             rescue Exceptions::CookbookNotFoundInRepo => e
@@ -149,10 +157,10 @@ class Chef
           end
       end
 
-      def cookbook_repo
+      def cookbook_repo(cookbooks_names=nil)
         @cookbook_loader ||= begin
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, config[:cookbook_path]) }
-          Chef::CookbookLoader.new(config[:cookbook_path])
+          Chef::CookbookLoader.new(config[:cookbook_path], cookbooks_names)
         end
       end
 
@@ -167,8 +175,8 @@ class Chef
         @environment ||= config[:environment] ? Environment.load(config[:environment]) : nil
       end
 
-      def warn_about_cookbook_shadowing
-        unless cookbook_repo.merged_cookbooks.empty?
+      def warn_about_cookbook_shadowing(cookbooks_names=nil)
+        unless cookbook_repo(cookbooks_names).merged_cookbooks.empty?
           ui.warn "* " * 40
           ui.warn(<<-WARNING)
 The cookbooks: #{cookbook_repo.merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path.
