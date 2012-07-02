@@ -323,6 +323,7 @@ class Chef
         include Chef::Mixin::ShellOut
 
         attr_reader :gem_env
+        attr_reader :cleanup_gem_env
 
         def logger
           Chef::Log.logger
@@ -332,6 +333,7 @@ class Chef
 
         def initialize(new_resource, run_context=nil)
           super
+          @cleanup_gem_env = true
           if new_resource.gem_binary
             if new_resource.options && new_resource.options.kind_of?(Hash)
               msg =  "options cannot be given as a hash when using an explicit gem_binary\n"
@@ -349,6 +351,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} using gem '#{gem_location}'")
           else
             @gem_env = CurrentGemEnvironment.new
+            @cleanup_gem_env = false
             Chef::Log.debug("#{@new_resource} using gem from running ruby environment")
           end
         end
@@ -428,6 +431,13 @@ class Chef
             @current_resource.version(current_spec.version.to_s)
           end
           @current_resource
+        end
+
+        def cleanup_after_converge
+          if @cleanup_gem_env
+            logger.debug { "#{@new_resource} resetting gem environment to default" }
+            Gem.clear_paths
+          end
         end
 
         def candidate_version

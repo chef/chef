@@ -79,6 +79,9 @@ class Chef
     def define_resource_requirements
     end
 
+    def cleanup_after_converge
+    end
+
     def action_nothing
       Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
       true
@@ -120,6 +123,8 @@ class Chef
         send("action_#{@action}")
       end
       converge
+
+      cleanup_after_converge
     end
 
     def process_resource_requirements
