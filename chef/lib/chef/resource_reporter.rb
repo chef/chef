@@ -118,11 +118,11 @@ class Chef
 
     def resource_skipped(resource, action, conditional)
       @total_res_count += 1
+      @pending_update = nil unless nested_resource?(resource)
     end
 
     def resource_updated(new_resource, action)
       @total_res_count += 1
-      resource_completed unless nested_resource?(new_resource)
     end
 
     def resource_failed(new_resource, action, exception)
@@ -130,7 +130,14 @@ class Chef
       unless nested_resource?(new_resource)
         @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
         @pending_update.exception = exception
-        resource_completed
+      end
+    end
+
+    def resource_completed(new_resource)
+      if @pending_update && !nested_resource?(new_resource)
+        @pending_update.finish
+        @updated_resources << @pending_update
+        @pending_update = nil
       end
     end
 
@@ -183,12 +190,6 @@ class Chef
     # output.
     def nested_resource?(new_resource)
       @pending_update && @pending_update.new_resource != new_resource
-    end
-
-    def resource_completed
-      @pending_update.finish
-      @updated_resources << @pending_update
-      @pending_update = nil
     end
 
   end

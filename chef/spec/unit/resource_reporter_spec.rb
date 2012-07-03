@@ -80,6 +80,7 @@ describe Chef::ResourceReporter do
       @exception = Exception.new
       @resource_reporter.resource_action_start(@new_resource, :create)
       @resource_reporter.resource_failed(@new_resource, :create, @exception)
+      @resource_reporter.resource_completed(@new_resource)
     end
 
     it "collects the resource as an updated resource" do
@@ -117,6 +118,7 @@ describe Chef::ResourceReporter do
         @new_resource.content("this is the old content")
         @current_resource.content("this is the new hotness")
         @resource_reporter.resource_updated(@new_resource, :create)
+        @resource_reporter.resource_completed(@new_resource)
       end
 
       it "collects the updated resource" do
@@ -140,6 +142,7 @@ describe Chef::ResourceReporter do
           @next_new_resource = Chef::Resource::Service.new("apache2")
           @exception = Exception.new
           @resource_reporter.resource_failed(@next_new_resource, :create, @exception)
+          @resource_reporter.resource_completed(@next_new_resource)
         end
 
         it "collects the desired state of the failed resource" do
@@ -164,7 +167,9 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_action_start(@implementation_resource , :create)
         @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
         @resource_reporter.resource_updated(@implementation_resource, :create)
+        @resource_reporter.resource_completed(@implementation_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
+        @resource_reporter.resource_completed(@new_resource)
       end
 
       it "does not collect data about the nested resource" do
@@ -178,7 +183,9 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_action_start(@implementation_resource , :create)
         @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
         @resource_reporter.resource_up_to_date(@implementation_resource, :create)
+        @resource_reporter.resource_completed(@implementation_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
+        @resource_reporter.resource_completed(@new_resource)
       end
 
       it "does not collect data about the nested resource" do
@@ -190,6 +197,7 @@ describe Chef::ResourceReporter do
       before do
         @exception = Exception.new
         @resource_reporter.resource_failed(@new_resource, :create, @exception)
+        @resource_reporter.resource_completed(@new_resource)
       end
 
       it "collects the resource as an updated resource" do
@@ -249,6 +257,7 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
+        @resource_reporter.resource_completed(@new_resource)
         @report = @resource_reporter.report(@node)
         @first_update_report = @report["resources"].first
       end
