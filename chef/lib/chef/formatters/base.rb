@@ -120,12 +120,15 @@ class Chef
         @output.print(*args)
       end
 
+      # Input: a Formatters::ErrorDescription object. 
+      # Outputs error to SDOUT.
       def display_error(description)  
         puts("")
         description.display(output)
       end
 
       def registration_failed(node_name, exception, config)
+        #A Formatters::ErrorDescription object
         description = ErrorMapper.registration_failed_helper(node_name, exception, config)
         display_error(description)
       end

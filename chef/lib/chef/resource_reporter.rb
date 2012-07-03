@@ -95,7 +95,7 @@ class Chef
       @run_id = nil
       @rest_client = rest_client
       @node = nil
-      @error_descriptions = [] 
+      @error_descriptions = nil
     end
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
@@ -145,7 +145,7 @@ class Chef
         @pending_update = nil
       end
       description = Formatters::ErrorMapper.resource_failed_helper(new_resource, action, exception)
-      @error_descriptions << description.for_json
+      @error_descriptions = description.for_json
     end
 
     def run_completed(node)
@@ -163,7 +163,7 @@ class Chef
 
     def run_failed(exception)
       @exception = exception
-      @status = "failed"
+      @status = "failure"
     end
 
     def report(node)
@@ -174,30 +174,30 @@ class Chef
       run_data["status"] = status
       run_data["run_list"] = node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
-      if exception
-        run_data["exception"] = {}
-        run_data["exception"]["class"] = exception.inspect
-        run_data["exception"]["message"] = exception.message
-        run_data["exception"]["backtrace"] = exception.backtrace
-        run_data["exception"]["description"] = @error_descriptions
-      end
       run_data["data"] = {}
+      if exception
+        run_data["data"]["exception"] = {}
+        run_data["data"]["exception"]["class"] = exception.inspect
+        run_data["data"]["exception"]["message"] = exception.message
+        run_data["data"]["exception"]["backtrace"] = exception.backtrace
+        run_data["data"]["exception"]["description"] = @error_descriptions
+      end
       run_data
     end
 
     def run_list_expand_failed(node, exception)
       description = Formatters::ErrorMapper.run_list_expand_failed_helper(node, exception)
-      @error_descriptions << description.for_json
+      @error_descriptions = description.for_json    
     end
 
     def cookbook_resolution_failed(expanded_run_list, exception)
       description = Formatters::ErrorMapper.cookbook_resolution_failed_helper(expanded_run_list, exception)
-      @error_descriptions << description.for_json
+      @error_descriptions = description.for_json
     end
     
     def cookbook_sync_failed(cookbooks, exception)
       description = Formatters::ErrorMapper.cookbook_sync_failed_helper(cookbooks, exception)
-      @error_descriptions << description.for_json
+      @error_descriptions = description.for_json
     end
     
     def reporting_enabled?

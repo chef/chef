@@ -18,6 +18,10 @@
 
 class Chef
   module Formatters
+    # == Formatters::ErrorMapper
+    # Collection of methods for creating and returning 
+    # Formatters::ErrorDescription objects based on node,
+    # exception, and configuration information. 
     module ErrorMapper
 
       # Failed to register this client with the server.

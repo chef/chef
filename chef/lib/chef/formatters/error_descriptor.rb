@@ -19,6 +19,8 @@
 
 class Chef
   module Formatters
+    # == Formatters::ErrorDescription
+    # Class for displaying errors on STDOUT.
     class ErrorDescription
 
       attr_reader :sections
