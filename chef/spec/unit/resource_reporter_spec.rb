@@ -50,7 +50,7 @@ describe Chef::ResourceReporter do
 
     it "should have no error_descriptions" do
       @resource_reporter.error_descriptions.should be_nil
-      # @resource_reporter.error_descriptions.should be_empty 
+      # @resource_reporter.error_descriptions.should be_empty
       # @resource_reporter.should have(0).error_descriptions
     end
 
@@ -338,7 +338,7 @@ describe Chef::ResourceReporter do
     context "for an unsuccessful run" do
 
       before do
-        
+
         @backtrace = "foo.rb:1 in `foo!'\nbar.rb:2 in `bar!\n'baz.rb:3 in `baz!'"
         @node = Chef::Node.new
         @node.name("spitfire")
@@ -372,7 +372,7 @@ describe Chef::ResourceReporter do
         @report["data"]["exception"].should have_key("description")
         @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
       end
-      
+
 
     end
 

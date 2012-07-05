@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,9 @@
 class Chef
   module Formatters
     # == Formatters::ErrorMapper
-    # Collection of methods for creating and returning 
+    # Collection of methods for creating and returning
     # Formatters::ErrorDescription objects based on node,
-    # exception, and configuration information. 
+    # exception, and configuration information.
     module ErrorMapper
 
       # Failed to register this client with the server.
@@ -64,7 +64,7 @@ class Chef
         error_inspector.add_explanation(description)
         return description
       end
-      
+
       def self.resource_failed_helper(resource, action, exception)
         error_inspector = ErrorInspectors::ResourceFailureInspector.new(resource, action, exception)
         headline = "Error executing action `#{action}` on resource '#{resource}'"
@@ -74,5 +74,5 @@ class Chef
       end
 
     end
-  end 
+  end
 end

@@ -25,7 +25,7 @@ require 'chef/event_dispatch/base'
 class Chef
   class ResourceReporter < EventDispatch::Base
 
-    
+
 
     class ResourceReport < Struct.new(:new_resource,
                                       :current_resource,
@@ -187,19 +187,19 @@ class Chef
 
     def run_list_expand_failed(node, exception)
       description = Formatters::ErrorMapper.run_list_expand_failed_helper(node, exception)
-      @error_descriptions = description.for_json    
+      @error_descriptions = description.for_json
     end
 
     def cookbook_resolution_failed(expanded_run_list, exception)
       description = Formatters::ErrorMapper.cookbook_resolution_failed_helper(expanded_run_list, exception)
       @error_descriptions = description.for_json
     end
-    
+
     def cookbook_sync_failed(cookbooks, exception)
       description = Formatters::ErrorMapper.cookbook_sync_failed_helper(cookbooks, exception)
       @error_descriptions = description.for_json
     end
-    
+
     def reporting_enabled?
       @reporting_enabled
     end

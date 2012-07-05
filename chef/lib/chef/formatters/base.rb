@@ -92,7 +92,7 @@ class Chef
       end
 
     end
-    
+
 
     # == Formatters::Base
     # Base class that all formatters should inherit from.
@@ -120,9 +120,9 @@ class Chef
         @output.print(*args)
       end
 
-      # Input: a Formatters::ErrorDescription object. 
+      # Input: a Formatters::ErrorDescription object.
       # Outputs error to SDOUT.
-      def display_error(description)  
+      def display_error(description)
         puts("")
         description.display(output)
       end
@@ -152,7 +152,7 @@ class Chef
         description = ErrorMapper.cookbook_sync_failed_helper(cookbooks, exception)
         display_error(description)
       end
-      
+
       def resource_failed(resource, action, exception)
         description = ErrorMapper.resource_failed_helper(resource, action, exception)
         display_error(description)
@@ -210,7 +210,7 @@ class Chef
       def definition_file_loaded(path)
         file_loaded(path)
       end
-      
+
       # Delegates to #file_load_failed
       def definition_file_load_failed(path, exception)
         file_load_failed(path, exception)
