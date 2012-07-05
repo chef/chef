@@ -1,5 +1,26 @@
+#
+# Author:: Tyler Cloke (<tyler@opscode.com>)
+#
+# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require 'chef/event_dispatch/base'
 require 'chef/formatters/error_inspectors'
+require 'chef/formatters/error_descriptor'
+require 'chef/formatters/error_mapper'
 
 class Chef
 
@@ -72,44 +93,12 @@ class Chef
 
     end
 
-    class ErrorDescription
-
-      attr_reader :sections
-
-      def initialize(title)
-        @title = title
-        @sections = []
-      end
-
-      def section(heading, text)
-        @sections << [heading, text]
-      end
-
-      def display(out)
-        out.puts "=" * 80
-        out.puts @title, :red
-        out.puts "=" * 80
-        out.puts "\n"
-        sections.each do |section|
-          display_section(section, out)
-        end
-      end
-
-      private
-
-      def display_section(section, out)
-        heading, text = section
-        out.puts heading
-        out.puts "-" * heading.size
-        out.puts text
-        out.puts "\n"
-      end
-
-    end
 
     # == Formatters::Base
     # Base class that all formatters should inherit from.
     class Base < EventDispatch::Base
+
+      include ErrorMapper
 
       def self.cli_name(name)
         Chef::Formatters.register(name, self)
@@ -131,48 +120,42 @@ class Chef
         @output.print(*args)
       end
 
-      def describe_error(headline, error_inspector)
-        description = ErrorDescription.new(headline)
-        error_inspector.add_explanation(description)
+      # Input: a Formatters::ErrorDescription object.
+      # Outputs error to SDOUT.
+      def display_error(description)
         puts("")
         description.display(output)
       end
 
-      # Failed to register this client with the server.
       def registration_failed(node_name, exception, config)
-        error_inspector = ErrorInspectors::RegistrationErrorInspector.new(node_name, exception, config)
-        headline = "Chef encountered an error attempting to create the client \"#{node_name}\""
-        describe_error(headline, error_inspector)
+        #A Formatters::ErrorDescription object
+        description = ErrorMapper.registration_failed_helper(node_name, exception, config)
+        display_error(description)
       end
 
       def node_load_failed(node_name, exception, config)
-        error_inspector = ErrorInspectors::NodeLoadErrorInspector.new(node_name, exception, config)
-        headline = "Chef encountered an error attempting to load the node data for \"#{node_name}\""
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.node_load_failed_helper(node_name, exception, config)
+        display_error(description)
       end
 
       def run_list_expand_failed(node, exception)
-        error_inspector = ErrorInspectors::RunListExpansionErrorInspector.new(node, exception)
-        headline = "Error expanding the run_list:"
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.run_list_expand_failed_helper(node, exception)
+        display_error(description)
       end
 
       def cookbook_resolution_failed(expanded_run_list, exception)
-        error_inspector = ErrorInspectors::CookbookResolveErrorInspector.new(expanded_run_list, exception)
-        headline = "Error Resolving Cookbooks for Run List:"
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.cookbook_resolution_failed_helper(expanded_run_list, exception)
+        display_error(description)
       end
 
       def cookbook_sync_failed(cookbooks, exception)
-        error_inspector = ErrorInspectors::CookbookSyncErrorInspector.new(cookbooks, exception)
-        headline = "Error Syncing Cookbooks:"
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.cookbook_sync_failed_helper(cookbooks, exception)
+        display_error(description)
       end
 
       def resource_failed(resource, action, exception)
-        error_inspector = ErrorInspectors::ResourceFailureInspector.new(resource, action, exception)
-        headline = "Error executing action `#{action}` on resource '#{resource}'"
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.resource_failed_helper(resource, action, exception)
+        display_error(description)
       end
 
       # Generic callback for any attribute/library/lwrp/recipe file in a

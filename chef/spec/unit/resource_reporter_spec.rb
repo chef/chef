@@ -1,6 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: Prajakta Purohit (prajakta@opscode.com>)
+# Author:: Prajakta Purohit (<prajakta@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 #
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -47,6 +48,12 @@ describe Chef::ResourceReporter do
       @resource_reporter.reporting_enabled?.should be_true
     end
 
+    it "should have no error_descriptions" do
+      @resource_reporter.error_descriptions.should be_nil
+      # @resource_reporter.error_descriptions.should be_empty
+      # @resource_reporter.should have(0).error_descriptions
+    end
+
   end
 
   context "after the chef run completes" do
@@ -65,8 +72,8 @@ describe Chef::ResourceReporter do
       @resource_reporter.run_failed(@exception)
     end
 
-    it "sets the run status to 'failed'" do
-      @resource_reporter.status.should == "failed"
+    it "sets the run status to 'failure'" do
+      @resource_reporter.status.should == "failure"
     end
 
     it "keeps the exception data" do
@@ -90,8 +97,8 @@ describe Chef::ResourceReporter do
     it "collects the desired state of the resource" do
       update_record = @resource_reporter.updated_resources.first
       update_record.new_resource.should == @new_resource
-    end
 
+    end
   end
 
   # TODO: make sure a resource that is skipped because of `not_if` doesn't
@@ -331,39 +338,41 @@ describe Chef::ResourceReporter do
     context "for an unsuccessful run" do
 
       before do
+
         @backtrace = "foo.rb:1 in `foo!'\nbar.rb:2 in `bar!\n'baz.rb:3 in `baz!'"
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = mock("ArgumentError")
-        @exception.should_receive(:inspect).and_return("Net::HTTPServerException")
-        @exception.should_receive(:message).and_return("Object not found")
-        @exception.should_receive(:backtrace).and_return(@backtrace)
+        @exception.stub!(:inspect).and_return("Net::HTTPServerException")
+        @exception.stub!(:message).and_return("Object not found")
+        @exception.stub!(:backtrace).and_return(@backtrace)
         @resource_reporter.run_failed(@exception)
+        @resource_reporter.run_list_expand_failed(@node, @exception)
         @report = @resource_reporter.report(@node)
       end
 
       it "includes the exception type in the event data" do
-        @report.should have_key("exception")
-        @report["exception"].should have_key("class")
-        @report["exception"]["class"].should == "Net::HTTPServerException"
+        @report.should have_key("data")
+        @report["data"].should have_key("exception")
+        @report["data"]["exception"].should have_key("class")
+        @report["data"]["exception"]["class"].should == "Net::HTTPServerException"
       end
 
       it "includes the exception message in the event data" do
-        @report.should have_key("exception")
-        @report["exception"].should have_key("message")
-        @report["exception"]["message"].should == "Object not found"
+        @report["data"]["exception"].should have_key("message")
+        @report["data"]["exception"]["message"].should == "Object not found"
       end
 
       it "includes the exception trace in the event data" do
-        @report.should have_key("exception")
-        @report["exception"].should have_key("backtrace")
-        @report["exception"]["backtrace"].should == @backtrace
+        @report["data"]["exception"].should have_key("backtrace")
+        @report["data"]["exception"]["backtrace"].should == @backtrace
       end
 
       it "includes the error inspector output in the event data" do
-        @report.should have_key("exception")
-        @report["exception"].should have_key("description")
+        @report["data"]["exception"].should have_key("description")
+        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
       end
+
 
     end
 

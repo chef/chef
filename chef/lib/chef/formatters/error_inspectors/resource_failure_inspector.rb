@@ -1,5 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -84,7 +85,7 @@ class Chef
         end
 
         def filtered_bt
-          exception.backtrace.select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
+          Array( exception.backtrace ).select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
         end
 
         private
