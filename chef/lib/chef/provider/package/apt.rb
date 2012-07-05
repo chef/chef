@@ -37,13 +37,16 @@ class Chef
           @current_resource
         end
 
+        def default_release_options
+          # Use apt::Default-Release option only if provider was explicitly defined
+          "-o APT::Default-Release=#{@new_resource.default_release}" if @new_resource.provider && @new_resource.default_release
+        end
+
         def check_package_state(package)
           Chef::Log.debug("#{@new_resource} checking package status for #{package}")
           installed = false
-          # Use apt cache release option only if provider was explicitly defined
-          aptcache_options = "-o APT::Default-Release=#{@new_resource.default_release}" if @new_resource.provider && @new_resource.default_release
 
-          shell_out!("apt-cache#{expand_options(aptcache_options)} policy #{package}").stdout.each_line do |line|
+          shell_out!("apt-cache#{expand_options(default_release_options)} policy #{package}").stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
               installed_version = $1
@@ -88,7 +91,7 @@ class Chef
           package_name = "#{name}=#{version}"
           package_name = name if @is_virtual_package
           run_command_with_systems_locale(
-            :command => "apt-get -q -y#{expand_options(@new_resource.options)} install #{package_name}",
+            :command => "apt-get -q -y#{expand_options(default_release_options)}#{expand_options(@new_resource.options)} install #{package_name}",
             :environment => {
               "DEBIAN_FRONTEND" => "noninteractive"
             }
