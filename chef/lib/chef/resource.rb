@@ -41,19 +41,34 @@ class Chef
         other_notification.resource == resource && other_notification.action == action
       end
 
+      # If resource and/or notifying_resource is not a resource object, this will look them up in the resource collection
+      # and fix the references from strings to actual Resource objects.
       def resolve_resource_reference(resource_collection)
-        return resource if resource.kind_of?(Chef::Resource)
+        return resource if resource.kind_of?(Chef::Resource) && notifying_resource.kind_of?(Chef::Resource)
 
+        if not(resource.kind_of?(Chef::Resource))
+          fix_resource_reference(resource_collection)
+        end
+
+        if not(notifying_resource.kind_of?(Chef::Resource))
+          fix_notifier_reference(resource_collection)
+        end
+      end
+
+      # This will look up the resource if it is not a Resource Object.  It will complain if it finds multiple
+      # resources, can't find a resource, or gets invalid syntax.
+      def fix_resource_reference(resource_collection)
         matching_resource = resource_collection.find(resource)
         if Array(matching_resource).size > 1
           msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, "\
-                "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
+          "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
           raise Chef::Exceptions::InvalidResourceReference, msg
         end
         self.resource = matching_resource
+
       rescue Chef::Exceptions::ResourceNotFound => e
         err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
-Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
+resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
 but #{resource} cannot be found in the resource collection. #{notifying_resource} is defined in \
 #{notifying_resource.source_line}
 FAIL
@@ -64,6 +79,36 @@ FAIL
 Resource #{notifying_resource} is configured to notify resource #{resource} with action #{action}, \
 but #{resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
 is defined near #{notifying_resource.source_line}
+F
+          err.set_backtrace(e.backtrace)
+        raise err
+      end
+
+      # This will look up the notifying_resource if it is not a Resource Object.  It will complain if it finds multiple
+      # resources, can't find a resource, or gets invalid syntax.
+      def fix_notifier_reference(resource_collection)
+        matching_notifier = resource_collection.find(notifying_resource)
+        if Array(matching_notifier).size > 1
+          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple notifying "\
+          "resources, but can only originate from one resource.  Destination resource was defined "\
+          "on #{resource.source_line}"
+          raise Chef::Exceptions::InvalidResourceReference, msg
+        end
+        self.notifying_resource = matching_notifier
+
+      rescue Chef::Exceptions::ResourceNotFound => e
+        err = Chef::Exceptions::ResourceNotFound.new(<<-FAIL)
+Resource #{resource} is configured to receive notifications from #{notifying_resource} with action #{action}, \
+but #{notifying_resource} cannot be found in the resource collection. #{resource} is defined in \
+#{resource.source_line}
+FAIL
+        err.set_backtrace(e.backtrace)
+        raise err
+      rescue Chef::Exceptions::InvalidResourceSpecification => e
+          err = Chef::Exceptions::InvalidResourceSpecification.new(<<-F)
+Resource #{resource} is configured to receive notifications from  #{notifying_resource} with action #{action}, \
+but #{notifying_resource.inspect} is not valid syntax to look up a resource in the resource collection. Notification \
+is defined near #{resource.source_line}
 F
           err.set_backtrace(e.backtrace)
         raise err
@@ -148,8 +193,6 @@ F
 
     # Each notify entry is a resource/action pair, modeled as an
     # Struct with a #resource and #action member
-    attr_reader :immediate_notifications
-    attr_reader :delayed_notifications
 
     def initialize(name, run_context=nil)
       @name = name
@@ -168,8 +211,6 @@ F
       @retry_delay = 2
       @not_if = []
       @only_if = []
-      @immediate_notifications = Array.new
-      @delayed_notifications = Array.new
       @source_line = nil
       @elapsed_time = 0
 
@@ -361,16 +402,24 @@ F
     # resolve_resource_reference on each in turn, causing them to
     # resolve lazy/forward references.
     def resolve_notification_references
-      @immediate_notifications.each { |n| n.resolve_resource_reference(run_context.resource_collection) }
-      @delayed_notifications.each {|n| n.resolve_resource_reference(run_context.resource_collection) }
+      run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
+      run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_collection) }
     end
 
     def notifies_immediately(action, resource_spec)
-      @immediate_notifications << Notification.new(resource_spec, action, self)
+      run_context.notifies_immediately(Notification.new(resource_spec, action, self))
     end
 
     def notifies_delayed(action, resource_spec)
-      @delayed_notifications << Notification.new(resource_spec, action, self)
+      run_context.notifies_delayed(Notification.new(resource_spec, action, self))
+    end
+
+    def immediate_notifications
+      run_context.immediate_notifications(self)
+    end
+
+    def delayed_notifications
+      run_context.delayed_notifications(self)
     end
 
     def resources(*args)
@@ -380,7 +429,13 @@ F
     def subscribes(action, resources, timing=:delayed)
       resources = [resources].flatten
       resources.each do |resource|
-        resource.notifies(action, self, timing)
+        if resource.is_a?(String)
+          resource = Chef::Resource.new(resource, run_context)
+        end
+        if resource.run_context.nil?
+          resource.run_context = run_context
+        end
+        resource.add_notification(action, self, timing)
       end
       true
     end
