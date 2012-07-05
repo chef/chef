@@ -79,7 +79,7 @@ class Chef
         :short => "-G GATEWAY",
         :long => "--ssh-gateway GATEWAY",
         :description => "The ssh gateway",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gatewa] = key }
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
