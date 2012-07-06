@@ -136,6 +136,8 @@ class Chef
         @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
         @pending_update.exception = exception
       end
+      description = Formatters::ErrorMapper.resource_failed_helper(new_resource, action, exception)
+      @error_descriptions = description.for_json
     end
 
     def resource_completed(new_resource)
@@ -144,8 +146,6 @@ class Chef
         @updated_resources << @pending_update
         @pending_update = nil
       end
-      description = Formatters::ErrorMapper.resource_failed_helper(new_resource, action, exception)
-      @error_descriptions = description.for_json
     end
 
     def run_completed(node)
