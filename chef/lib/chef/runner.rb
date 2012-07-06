@@ -52,12 +52,12 @@ class Chef
       # associated with the resource, but only if it was updated *this time*
       # we ran an action on it.
       if resource.updated_by_last_action?
-        resource.immediate_notifications.each do |notification|
+        run_context.immediate_notifications(resource).each do |notification|
           Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
           run_action(notification.resource, notification.action, :immediate, resource)
         end
 
-        resource.delayed_notifications.each do |notification|
+        run_context.delayed_notifications(resource).each do |notification|
           if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
             Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
                             " (delayed), as it's already been queued")
