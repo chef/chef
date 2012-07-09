@@ -270,8 +270,6 @@ class Chef::Application::Client < Chef::Application
 
         @chef_client.run
         @chef_client = nil
-        GC.start
-        @cleaned = true
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           unless SELF_PIPE.empty?
@@ -290,8 +288,6 @@ class Chef::Application::Client < Chef::Application
         raise
       rescue Exception => e
         if Chef::Config[:interval]
-          GC.start
-          @cleaned = true
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Application.debug_stacktrace(e)
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
@@ -306,9 +302,6 @@ class Chef::Application::Client < Chef::Application
           Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
-      ensure
-        GC.start unless @cleaned
-        @cleaned = false
       end
     end
   end
