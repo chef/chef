@@ -223,8 +223,6 @@ class Chef::Application::Solo < Chef::Application
         )
         @chef_solo.run
         @chef_solo = nil
-        GC.start
-        @cleaned = true
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           sleep Chef::Config[:interval]
@@ -235,8 +233,6 @@ class Chef::Application::Solo < Chef::Application
         raise
       rescue Exception => e
         if Chef::Config[:interval]
-          GC.start
-          @cleaned = true
           Chef::Log.error("#{e.class}: #{e}")
           Chef::Log.debug("#{e.class}: #{e}\n#{e.backtrace.join("\n")}")
           Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
@@ -246,9 +242,6 @@ class Chef::Application::Solo < Chef::Application
           Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
-      ensure
-        GC.start unless @cleaned
-        @cleaned = false
       end
     end
   end
