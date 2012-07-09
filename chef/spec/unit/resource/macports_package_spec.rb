@@ -34,4 +34,13 @@ describe Chef::Resource::MacportsPackage, "initialize" do
   it "should set the provider to Chef::Provider::Package::Macports" do
     @resource.provider.should eql(Chef::Provider::Package::Macports)
   end
+
+  it "should default to a nil variants attribute" do
+    @resource.variants.should eql(nil)
+  end
+
+  it "should allow you to set the variants attribute" do
+    @resource.variants "+variant"
+    @resource.variants.should eql("+variant")
+  end
 end

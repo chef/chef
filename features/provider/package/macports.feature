@@ -11,9 +11,13 @@ Feature: Macports integration
     And there <should> be a binary on the path called '<binary>'
 
   Examples:
-    | recipe                                 | binary   | should     | exitcode |
-    | packages::macports_install_yydecode    | yydecode | should     | 0        |
-    | packages::macports_remove_yydecode     | yydecode | should not | 0        |
-    | packages::macports_upgrade_yydecode    | yydecode | should     | 0        |
-    | packages::macports_purge_yydecode      | yydecode | should not | 0        |
-    | packages::macports_install_bad_package | fdsafdsa | should not | 1        |
+    | recipe                                      | binary   | should     | exitcode |
+    | packages::macports_install_yydecode         | yydecode | should     | 0        |
+    | packages::macports_remove_yydecode          | yydecode | should not | 0        |
+    | packages::macports_upgrade_yydecode         | yydecode | should     | 0        |
+    | packages::macports_purge_yydecode           | yydecode | should not | 0        |
+    | packages::macports_install_bad_package      | fdsafdsa | should not | 1        |
+    | packages::macports_install_zsh_mpcompletion | zsh      | should     | 0        |
+    | packages::macports_remove_zsh_mpcompletion  | zsh      | should not | 0        |
+    | packages::macports_upgrade_zsh_mpcompletion | zsh      | should     | 0        |
+    | packages::macports_purge_zsh_mpcompletion   | zsh      | should not | 0        |

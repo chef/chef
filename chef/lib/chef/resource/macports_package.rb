@@ -23,6 +23,15 @@ class Chef
         super
         @resource_name = :macports_package
         @provider = Chef::Provider::Package::Macports
+        @variants = nil
+      end
+
+      def variants(arg=nil)
+        set_or_return(
+          :variants,
+          arg,
+          :kind_of => [ String ]
+        )
       end
     end
   end
