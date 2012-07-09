@@ -73,12 +73,11 @@ class Chef
 
       def options(arg=nil)
         set_or_return(
-	  :options,
-	  arg,
-	  :kind_of => [ String ]
-	)
+          :options,
+	        arg,
+	        :kind_of => [ String ]
+	      )
       end
-
     end
   end
 end
