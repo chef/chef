@@ -21,7 +21,8 @@ require 'spec_helper'
 describe Chef::Provider::Deploy::Revision do
 
   before do
-    Chef::Config[:file_cache_path] = '/tmp/foo'
+    @temp_dir = Dir.mktmpdir
+    Chef::Config[:file_cache_path] = @temp_dir
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @resource.revision("8a3195bf3efa246f743c5dfa83683201880f935c")
     @node = Chef::Node.new
@@ -37,7 +38,7 @@ describe Chef::Provider::Deploy::Revision do
   after do
     # Make sure we don't keep any state in our tests
     FileUtils.rspec_reset
-    FileUtils.rm_rf '/tmp/foo' if File.directory?("/tmp/foo")
+    FileUtils.rm_rf @temp_dir if File.directory?( @temp_dir )
   end
 
 
