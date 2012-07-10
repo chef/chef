@@ -177,6 +177,42 @@ CRONTAB
       end
     end
 
+    context "with a matching entry in the user's crontab using month names and weekday names (#CHEF-3178)" do
+      before :each do
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+0 2 * * * /some/other/command
+      
+# Chef Name: cronhole some stuff
+* 5 * Jan Mon /bin/true param1 param2
+# Chef Name: something else
+2 * 1 * * /bin/false
+
+# Another comment
+CRONTAB
+      end
+
+      it "should set cron_exists" do
+        @provider.load_current_resource
+        @provider.cron_exists.should == true
+        @provider.cron_empty.should == false
+      end
+        
+      it "should pull the details out of the cron line" do
+        cron = @provider.load_current_resource
+        cron.minute.should == '*'
+        cron.hour.should == '5'
+        cron.day.should == '*'
+        cron.month.should == 'Jan'
+        cron.weekday.should == 'Mon'
+        cron.command.should == '/bin/true param1 param2'
+      end
+
+      it "should report the match" do
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
+        @provider.load_current_resource
+      end
+    end
+
     context "with a matching entry without a crontab line" do
       it "should set cron_exists and leave current_resource values at defaults" do
         @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
