@@ -104,7 +104,7 @@ class Chef
       server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
       run_uri = URI.parse(server_response["uri"])
       @run_id = ::File.basename(run_uri.path)
-      Chef::Log.info("Chef server generated run history id: #{@run_id})")
+      Chef::Log.info("Chef server generated run history id: #{@run_id}")
     rescue Net::HTTPServerException => e
       raise unless e.response.code.to_s == "404"
       Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
