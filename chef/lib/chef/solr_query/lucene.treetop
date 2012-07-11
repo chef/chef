@@ -129,11 +129,11 @@ grammar Lucene
   end
 
   rule valid_letter
-    start_letter+ ([a-zA-Z0-9*?_.-] / '\\' special_char)*
+    start_letter+ ([a-zA-Z0-9@*?_.-] / '\\' special_char)*
   end
 
   rule start_letter
-    [a-zA-Z0-9._*] / '\\' special_char
+    [a-zA-Z0-9@._*] / '\\' special_char
   end
 
   rule end_letter

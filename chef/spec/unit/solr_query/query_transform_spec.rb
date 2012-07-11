@@ -296,6 +296,10 @@ describe "Chef::SolrQuery::QueryTransform" do
       @parser.parse('afield:"a b c"').should == '(F:afield STR:"a b c")'
     end
 
+    it "allows @ in a term" do
+      @parser.parse('afield:foo@acme.org').should == '(F:afield T:foo@acme.org)'
+    end
+
     describe "and binary operators" do
       examples = [
                   ['term1 AND afield:term2', "(OP:AND T:term1 (F:afield T:term2))"],
