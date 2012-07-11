@@ -54,7 +54,7 @@ class Chef
         as_hash["name"]   = new_resource.name
         as_hash["id"]     = new_resource.identity
         as_hash["after"]  = new_resource.state
-        as_hash["before"] = curruent_resource ? current_resource.state : {}
+        as_hash["before"] = current_resource ? current_resource.state : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         # TODO: include diffs, etc. here:
         as_hash["delta"] = ""
