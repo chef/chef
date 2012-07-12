@@ -52,9 +52,6 @@ describe Chef::Provider::Execute do
   end
 
   it "should do nothing if the sentinel file exists" do
-    puts "STDOUT: #{STDOUT.tty?}"
-    puts "daemon: #{Chef::Config[:daemon]}"
-    puts "log: #{Chef::Log.info?}"
     @provider.stub!(:load_current_resource)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)
