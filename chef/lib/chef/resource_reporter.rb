@@ -137,7 +137,7 @@ class Chef
         @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
         @pending_update.exception = exception
       end
-      description = Formatters::ErrorMapper.resource_failed_helper(new_resource, action, exception)
+      description = Formatters::ErrorMapper.resource_failed(new_resource, action, exception)
       @error_descriptions = description.for_json
     end
 
@@ -187,17 +187,17 @@ class Chef
     end
 
     def run_list_expand_failed(node, exception)
-      description = Formatters::ErrorMapper.run_list_expand_failed_helper(node, exception)
+      description = Formatters::ErrorMapper.run_list_expand_failed(node, exception)
       @error_descriptions = description.for_json
     end
 
     def cookbook_resolution_failed(expanded_run_list, exception)
-      description = Formatters::ErrorMapper.cookbook_resolution_failed_helper(expanded_run_list, exception)
+      description = Formatters::ErrorMapper.cookbook_resolution_failed(expanded_run_list, exception)
       @error_descriptions = description.for_json
     end
 
     def cookbook_sync_failed(cookbooks, exception)
-      description = Formatters::ErrorMapper.cookbook_sync_failed_helper(cookbooks, exception)
+      description = Formatters::ErrorMapper.cookbook_sync_failed(cookbooks, exception)
       @error_descriptions = description.for_json
     end
 

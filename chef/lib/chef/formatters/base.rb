@@ -129,32 +129,32 @@ class Chef
 
       def registration_failed(node_name, exception, config)
         #A Formatters::ErrorDescription object
-        description = ErrorMapper.registration_failed_helper(node_name, exception, config)
+        description = ErrorMapper.registration_failed(node_name, exception, config)
         display_error(description)
       end
 
       def node_load_failed(node_name, exception, config)
-        description = ErrorMapper.node_load_failed_helper(node_name, exception, config)
+        description = ErrorMapper.node_load_failed(node_name, exception, config)
         display_error(description)
       end
 
       def run_list_expand_failed(node, exception)
-        description = ErrorMapper.run_list_expand_failed_helper(node, exception)
+        description = ErrorMapper.run_list_expand_failed(node, exception)
         display_error(description)
       end
 
       def cookbook_resolution_failed(expanded_run_list, exception)
-        description = ErrorMapper.cookbook_resolution_failed_helper(expanded_run_list, exception)
+        description = ErrorMapper.cookbook_resolution_failed(expanded_run_list, exception)
         display_error(description)
       end
 
       def cookbook_sync_failed(cookbooks, exception)
-        description = ErrorMapper.cookbook_sync_failed_helper(cookbooks, exception)
+        description = ErrorMapper.cookbook_sync_failed(cookbooks, exception)
         display_error(description)
       end
 
       def resource_failed(resource, action, exception)
-        description = ErrorMapper.resource_failed_helper(resource, action, exception)
+        description = ErrorMapper.resource_failed(resource, action, exception)
         display_error(description)
       end
 
@@ -171,9 +171,8 @@ class Chef
       # exception when loaded. Default behavior is to use CompileErrorInspector
       # to print contextual info about the failure.
       def file_load_failed(path, exception)
-        error_inspector = ErrorInspectors::CompileErrorInspector.new(path, exception)
-        headline = "Error compiling #{path}"
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.file_load_failed(path, exception)
+        display_error(description)
       end
 
       # Delegates to #file_loaded
