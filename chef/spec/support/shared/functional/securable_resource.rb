@@ -24,24 +24,40 @@
 require 'etc'
 
 shared_context "setup correct permissions" do
-  before :each, { :requires_root => true, :unix_only => true } do
-    File.chown(Etc.getpwnam('nobody').uid, 1337, path)
-    File.chmod(0776, path)
+  context "on unix", :unix_only do
+    context "with root", :requires_root do
+      before :each do
+        File.chown(Etc.getpwnam('nobody').uid, 1337, path)
+        File.chmod(0776, path)
+      end
+    end
+
+    context "without root", :requires_unprivileged_user do
+      before :each do
+        File.chmod(0776, path)
+      end
+    end
   end
-  before :each, { :requires_unprivileged_user => true, :unix_only => true } do
-    File.chmod(0776, path)
-  end
+
   # FIXME: windows
 end
 
 shared_context "setup broken permissions" do
-  before :each, { :requires_root => true, :unix_only => true } do
-    File.chown(0, 0, path)
-    File.chmod(0644, path)
+  context "on unix", :unix_only do
+    context "with root", :requires_root do
+      before :each do
+        File.chown(0, 0, path)
+        File.chmod(0644, path)
+      end
+    end
+  
+    context "without root", :requires_unprivileged_user do
+      before :each do
+        File.chmod(0644, path)
+      end
+    end
   end
-  before :each, { :requires_unprivileged_user => true, :unix_only => true } do
-    File.chmod(0644, path)
-  end
+
   # FIXME: windows
 end
 
