@@ -139,6 +139,8 @@ EXPECTED
     end
 
     it "stages the cookbook to a temporary file" do
+      # prevents file backups where we might not have write access
+      @provider.should_receive(:backup_new_resource) 
       @new_resource.path(@install_to)
       @provider.should_receive(:deploy_tempfile)
       @provider.run_action(:create)
