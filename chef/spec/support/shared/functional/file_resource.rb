@@ -18,6 +18,7 @@
 
 shared_examples_for "a file with the wrong content" do
   it "overwrites the file with the updated content when the :create action is run" do
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     sleep 1
     resource.run_action(:create)
     File.stat(path).mtime.should > @expected_mtime
