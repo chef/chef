@@ -544,7 +544,7 @@ class Chef
     # called from DSL
     def load_recipe(recipe_name, run_context)
       unless recipe_filenames_by_name.has_key?(recipe_name)
-        raise ArgumentError, "Cannot find a recipe matching #{recipe_name} in cookbook #{name}"
+        raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
@@ -552,7 +552,7 @@ class Chef
       recipe_filename = recipe_filenames_by_name[recipe_name]
 
       unless recipe_filename
-        raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
+        raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
       end
 
       recipe.from_file(recipe_filename)

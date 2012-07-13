@@ -53,6 +53,7 @@ class Chef
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
+    class RecipeNotFound < ArgumentError; end
     class AttributeNotFound < RuntimeError; end
     class InvalidCommandOption < RuntimeError; end
     class CommandTimeout < RuntimeError; end
