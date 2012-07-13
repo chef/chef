@@ -185,6 +185,7 @@ class Chef
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
+        command.force_encoding('binary')
         subsession.open_channel do |ch|
           ch.request_pty
           ch.exec command do |ch, success|
