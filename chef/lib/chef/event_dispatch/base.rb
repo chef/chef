@@ -206,6 +206,10 @@ class Chef
       def recipe_file_load_failed(path, exception)
       end
 
+      # Called when a recipe cannot be resolved
+      def recipe_not_found(exception)
+      end
+
       # Called when recipes have been loaded.
       def recipe_load_complete
       end

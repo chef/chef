@@ -33,11 +33,16 @@ class Chef
         end
 
         def add_explanation(error_description)
-          error_description.section(exception.class.name, exception.message)
+          case exception
+          when Chef::Exceptions::RecipeNotFound
+            error_description.section(exception.class.name, exception.message)
+          else
+            error_description.section(exception.class.name, exception.message)
 
-          traceback = filtered_bt.map {|line| "  #{line}"}.join("\n")
-          error_description.section("Cookbook Trace:", traceback)
-          error_description.section("Relevant File Content:", context)
+            traceback = filtered_bt.map {|line| "  #{line}"}.join("\n")
+            error_description.section("Cookbook Trace:", traceback)
+            error_description.section("Relevant File Content:", context)
+          end
         end
 
         def context
@@ -80,7 +85,8 @@ class Chef
         end
 
         def filtered_bt
-          exception.backtrace.select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
+          r = exception.backtrace.select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
+          return r.count > 0 ? r : exception.backtrace
         end
 
       end

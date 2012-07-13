@@ -175,6 +175,11 @@ class Chef
         display_error(description)
       end
 
+      def recipe_not_found(exception)
+        description = ErrorMapper.file_load_failed(nil, exception)
+        display_error(description)
+      end
+
       # Delegates to #file_loaded
       def library_file_loaded(path)
         file_loaded(path)

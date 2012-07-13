@@ -75,12 +75,11 @@ class Chef
 
       def self.file_load_failed(path, exception)
         error_inspector = ErrorInspectors::CompileErrorInspector.new(path, exception)
-        headline = "Error compiling #{path}"
+        headline = "Recipe Compile Error" + ( path ? " in #{path}" : "" )
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
         description
       end
-
     end
   end
 end

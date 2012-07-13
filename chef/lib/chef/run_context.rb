@@ -77,6 +77,9 @@ class Chef
           # TODO: timh/cw, 5-14-2010: It's distasteful to be including
           # the DSL in a class outside the context of the DSL
           include_recipe(recipe)
+        rescue Chef::Exceptions::RecipeNotFound => e
+          @events.recipe_not_found(e)
+          raise
         rescue Exception => e
           path = resolve_recipe(recipe)
           @events.recipe_file_load_failed(path, e)
