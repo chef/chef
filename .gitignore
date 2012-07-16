@@ -2,3 +2,4 @@
 .bundle
 pkg/*
 .vagrant
+bin/*
