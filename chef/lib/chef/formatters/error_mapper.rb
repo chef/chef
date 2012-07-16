@@ -73,6 +73,13 @@ class Chef
         return description
       end
 
+      def self.file_load_failed_helper(path, exception)
+        error_inspector = ErrorInspectors::CompileErrorInspector.new(path, exception)
+        headline = "Error compiling #{path}"
+        description = ErrorDescription.new(headline)
+        error_inspector.add_explanation(description)
+        return description
+      end
     end
   end
 end

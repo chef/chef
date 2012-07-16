@@ -171,9 +171,8 @@ class Chef
       # exception when loaded. Default behavior is to use CompileErrorInspector
       # to print contextual info about the failure.
       def file_load_failed(path, exception)
-        error_inspector = ErrorInspectors::CompileErrorInspector.new(path, exception)
-        headline = "Error compiling #{path}"
-        describe_error(headline, error_inspector)
+        description = ErrorMapper.file_load_failed_helper(path, exception)
+        display_error(description)
       end
 
       # Delegates to #file_loaded
