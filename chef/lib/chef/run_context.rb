@@ -141,7 +141,7 @@ class Chef
           @events.library_file_loaded(filename)
         rescue Exception => e
           # TODO wrap/munge exception to highlight syntax/name/no method errors.
-          @events.library_load_failed(filename, e)
+          @events.library_file_load_failed(filename, e)
           raise
         end
       end
