@@ -10,6 +10,7 @@ deps = []
 # global
 deps << "chef"
 deps << "preparation"
+deps << "chef-server-cookbooks"
 deps << "chef-server-ctl"
 deps << "nginx"
 deps << "runit"
