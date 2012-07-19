@@ -22,6 +22,8 @@ deps << "chef-expander"
 
 # the front-end services
 deps << "chef-server-api"
+deps << "chef-server-webui"
+
 # version manifest file
 deps << "version-manifest"
 

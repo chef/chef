@@ -33,6 +33,7 @@ end
 should_notify = OmnibusHelper.should_notify?("chef-server-webui")
 
 chef_server_webui_config = File.join(chef_server_webui_etc_dir, "server.rb")
+config_ru = File.join(chef_server_webui_etc_dir, "config.ru")
 
 template chef_server_webui_config do
   source "server-webui.rb.erb"
@@ -43,13 +44,22 @@ template chef_server_webui_config do
   notifies :restart, 'service[chef-server-webui]' if should_notify
 end
 
-template "/opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-server-webui-#{Chef::VERSION}/config.ru" do
-  source "chef-server-webui.ru.erb" 
+template config_ru do
+  source "chef-server-webui.ru.erb"
   mode "0644"
   owner "root"
   group "root"
   variables(node['chef_server']['chef-server-webui'].to_hash)
   notifies :restart, 'service[chef-server-webui]' if should_notify
+end
+
+file "/opt/chef-server/embedded/service/chef-server-webui/config.ru" do
+  action :delete
+  not_if "test -h /opt/chef-server/embedded/service/chef-server-webui/config.ru"
+end
+
+link "/opt/chef-server/embedded/service/chef-server-webui/config.ru" do
+  to config_ru
 end
 
 unicorn_config File.join(chef_server_webui_etc_dir, "unicorn.rb") do
