@@ -40,14 +40,12 @@ should_notify = OmnibusHelper.should_notify?("chef-solr")
 
 solr_installed_file = File.join(solr_dir, "installed")
 
-execute "tar zxvf /opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-solr-0.10.8/solr/solr-home.tar.gz" do
-  cwd solr_home_dir
+execute "cp -R /opt/chef-server/embedded/service/chef-solr/home/conf #{File.join(solr_home_dir, 'conf')}" do
   not_if { File.exists?(solr_installed_file) }
   notifies(:restart, "service[chef-solr]") if should_notify
 end
 
-execute "tar zxvf /opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-solr-0.10.8/solr/solr-jetty.tar.gz" do
-  cwd solr_jetty_dir
+execute "cp -R /opt/chef-server/embedded/service/chef-solr/jetty #{File.dirname(solr_jetty_dir)}" do
   not_if { File.exists?(solr_installed_file) }
   notifies(:restart, "service[chef-solr]") if should_notify
 end
