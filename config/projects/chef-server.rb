@@ -5,12 +5,23 @@ install_path    "/opt/chef-server"
 build_version   Omnibus::BuildVersion.full
 build_iteration "1"
 
-# initialize the dependencies
-dependencies %w{
-preparation
-chef-server
-version-manifest
-}
+deps = []
+
+# global
+deps << "chef"
+deps << "preparation"
+deps << "nginx"
+deps << "runit"
+deps << "unicorn"
+
+# the backend
+deps << "couchdb"
+deps << "rabbitmq"
+
+# version manifest file
+deps << "version-manifest"
+
+dependencies deps
 
 exclude "\.git*"
 exclude "bundler\/git"
