@@ -20,6 +20,8 @@ deps << "rabbitmq"
 deps << "chef-solr"
 deps << "chef-expander"
 
+# the front-end services
+deps << "chef-server-api"
 # version manifest file
 deps << "version-manifest"
 

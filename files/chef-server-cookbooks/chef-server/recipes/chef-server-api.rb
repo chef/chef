@@ -32,7 +32,7 @@ chef_server_api_log_dir = node['chef_server']['chef-server-api']['log_directory'
 end
 
 chef_config = File.join(chef_server_api_etc_dir, "chef-server-api.conf")
-env_config = File.join(chef_server_api_etc_dir, "#{node['chef_server']['chef-server-api']['environment']}.rb")
+config_ru = File.join(chef_server_api_etc_dir, "config.ru")
 
 should_notify = OmnibusHelper.should_notify?("chef-server-api")
 
@@ -45,12 +45,25 @@ template chef_config do
   notifies :restart, 'service[chef-server-api]' if should_notify
 end
 
-template "/opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-server-api-#{Chef::VERSION}/config.ru" do
-  source "chef-server-api.ru.erb" 
+link "/opt/chef-server/embedded/service/chef-server-api/config/chef-server-api.conf" do
+  to chef_config
+end
+
+template config_ru do
+  source "chef-server-api.ru.erb"
   mode "0644"
   owner "root"
   group "root"
   notifies :restart, 'service[chef-server-api]' if should_notify
+end
+
+file "/opt/chef-server/embedded/service/chef-server-api/config.ru" do
+  action :delete
+  not_if "test -h /opt/chef-server/embedded/service/chef-server-api/config.ru"
+end
+
+link "/opt/chef-server/embedded/service/chef-server-api/config.ru" do
+  to config_ru
 end
 
 unicorn_config File.join(chef_server_api_etc_dir, "unicorn.rb") do
