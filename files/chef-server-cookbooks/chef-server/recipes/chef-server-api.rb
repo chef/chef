@@ -14,7 +14,7 @@ chef_server_api_checksum_dir = node['chef_server']['chef-server-api']['checksum_
 chef_server_api_cookbook_cache_dir = File.join(chef_server_api_dir, "cookbooks_cache")
 chef_server_api_log_dir = node['chef_server']['chef-server-api']['log_directory']
 
-[ 
+[
   chef_server_api_dir,
   chef_server_api_etc_dir,
   chef_server_api_working_dir,
@@ -67,13 +67,13 @@ link "/opt/chef-server/embedded/service/chef-server-api/config.ru" do
 end
 
 unicorn_config File.join(chef_server_api_etc_dir, "unicorn.rb") do
-  listen node['chef_server']['chef-server-api']['listen'] => { 
+  listen node['chef_server']['chef-server-api']['listen'] => {
     :backlog => node['chef_server']['chef-server-api']['backlog'],
     :tcp_nodelay => node['chef_server']['chef-server-api']['tcp_nodelay']
   }
   worker_timeout node['chef_server']['chef-server-api']['worker_timeout']
-  working_directory chef_server_api_working_dir 
-  worker_processes node['chef_server']['chef-server-api']['worker_processes']  
+  working_directory chef_server_api_working_dir
+  worker_processes node['chef_server']['chef-server-api']['worker_processes']
   owner "root"
   group "root"
   mode "0644"
@@ -90,7 +90,7 @@ end
 
 if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start chef-server-api" do
-		retries 20 
+		retries 20
 	end
 end
 

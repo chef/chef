@@ -23,7 +23,7 @@ module ChefServer
   lb Mash.new
   bootstrap Mash.new
   nginx Mash.new
-  api_fqdn nil 
+  api_fqdn nil
   node nil
   notification_email nil
 
@@ -75,7 +75,7 @@ module ChefServer
         File.open("/etc/chef-server/chef-server-secrets.json", "w") do |f|
           f.puts(
             Chef::JSONCompat.to_json_pretty({
-              'rabbitmq' => { 
+              'rabbitmq' => {
                 'password' => ChefServer['rabbitmq']['password'],
               },
               'chef_server_webui' => {
@@ -89,7 +89,7 @@ module ChefServer
     end
 
     def generate_hash
-      results = { "chef_server" => {} } 
+      results = { "chef_server" => {} }
       [
         "couchdb",
         "rabbitmq",
@@ -98,6 +98,7 @@ module ChefServer
         "chef_server_api",
         "chef_server_webui",
         "lb",
+        "postgresql",
         "nginx",
         "bootstrap"
       ].each do |key|
@@ -112,14 +113,14 @@ module ChefServer
     def gen_api_fqdn
       ChefServer["lb"]["api_fqdn"] ||= ChefServer['api_fqdn']
       ChefServer["lb"]["web_ui_fqdn"] ||= ChefServer['api_fqdn']
-      ChefServer["nginx"]["server_name"] ||= ChefServer['api_fqdn'] 
+      ChefServer["nginx"]["server_name"] ||= ChefServer['api_fqdn']
       ChefServer["nginx"]["url"] ||= "https://#{ChefServer['api_fqdn']}"
     end
 
     def generate_config(node_name)
       generate_secrets(node_name)
-      ChefServer[:api_fqdn] ||= node_name 
-      gen_api_fqdn 
+      ChefServer[:api_fqdn] ||= node_name
+      gen_api_fqdn
       generate_hash
     end
   end

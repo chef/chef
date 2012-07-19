@@ -19,7 +19,7 @@
 # Create a user for Chef services to run as
 user node['chef_server']['user']['username'] do
   system true
-  shell node['chef_server']['user']['shell'] 
+  shell node['chef_server']['user']['shell']
   home node['chef_server']['user']['home']
 end
 

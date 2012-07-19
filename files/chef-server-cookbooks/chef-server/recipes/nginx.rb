@@ -13,7 +13,7 @@ nginx_html_dir = File.join(nginx_dir, "html")
 nginx_ca_dir = File.join(nginx_dir, "ca")
 nginx_log_dir = node['chef_server']['nginx']['log_directory']
 
-[ 
+[
   nginx_dir,
   nginx_etc_dir,
   nginx_cache_dir,
@@ -109,7 +109,7 @@ end
 
 if node['chef_server']['nginx']['bootstrap']
 	execute "/opt/chef-server/bin/chef-server-ctl start nginx" do
-		retries 20 
+		retries 20
 	end
 end
 

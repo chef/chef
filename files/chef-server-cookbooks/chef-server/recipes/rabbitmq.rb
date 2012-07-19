@@ -48,7 +48,7 @@ rabbitmq_service_dir = "/opt/chef-server/embedded/service/rabbitmq"
   end
 end
 
-config_file = File.join(node['chef_server']['rabbitmq']['dir'], "etc", "rabbitmq.conf") 
+config_file = File.join(node['chef_server']['rabbitmq']['dir'], "etc", "rabbitmq.conf")
 
 template "#{rabbitmq_service_dir}/sbin/rabbitmq-env" do
   owner "root"
@@ -75,11 +75,11 @@ end
 
 if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start rabbitmq" do
-		retries 20 
+		retries 20
 	end
-  
+
   execute "/opt/chef-server/embedded/bin/chpst -u #{node["chef_server"]["user"]["username"]} -U #{node["chef_server"]["user"]["username"]} /opt/chef-server/embedded/bin/rabbitmqctl wait /var/opt/chef-server/rabbitmq/db/rabbit@localhost.pid" do
-    retries 10 
+    retries 10
   end
 
   [ node['chef_server']['rabbitmq']['vhost'] ].each do |vhost|

@@ -13,7 +13,7 @@ chef_server_webui_cookbook_tarball_dir = File.join(chef_server_webui_dir, "cookb
 chef_server_webui_working_dir = File.join(chef_server_webui_dir, "working")
 chef_server_webui_log_dir = node['chef_server']['chef-server-webui']['log_directory']
 
-[ 
+[
   chef_server_webui_dir,
   chef_server_webui_etc_dir,
   chef_server_webui_cache_dir,
@@ -63,13 +63,13 @@ link "/opt/chef-server/embedded/service/chef-server-webui/config.ru" do
 end
 
 unicorn_config File.join(chef_server_webui_etc_dir, "unicorn.rb") do
-  listen node['chef_server']['chef-server-webui']['listen'] => { 
+  listen node['chef_server']['chef-server-webui']['listen'] => {
     :backlog => node['chef_server']['chef-server-webui']['backlog'],
     :tcp_nodelay => node['chef_server']['chef-server-webui']['tcp_nodelay']
   }
   worker_timeout node['chef_server']['chef-server-webui']['worker_timeout']
-  working_directory chef_server_webui_working_dir 
-  worker_processes node['chef_server']['chef-server-webui']['worker_processes']  
+  working_directory chef_server_webui_working_dir
+  worker_processes node['chef_server']['chef-server-webui']['worker_processes']
   owner "root"
   group "root"
   mode "0644"
@@ -85,7 +85,7 @@ end
 
 if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start chef-server-webui" do
-		retries 20 
+		retries 20
 	end
 end
 

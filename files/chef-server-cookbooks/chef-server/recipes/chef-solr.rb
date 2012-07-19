@@ -92,9 +92,9 @@ runit_service "chef-solr" do
   }.merge(params))
 end
 
-if node['chef_server']['bootstrap']['enable'] 
+if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start chef-solr" do
-		retries 20 
+		retries 20
 	end
 end
 

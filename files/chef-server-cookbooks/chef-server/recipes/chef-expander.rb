@@ -31,7 +31,7 @@ template expander_config do
 end
 
 runit_service "chef-expander" do
-  down node['chef_server']['chef-expander']['ha'] 
+  down node['chef_server']['chef-expander']['ha']
   options({
     :log_directory => expander_log_dir
   }.merge(params))
@@ -39,7 +39,7 @@ end
 
 if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start chef-expander" do
-		retries 20 
+		retries 20
 	end
 end
 

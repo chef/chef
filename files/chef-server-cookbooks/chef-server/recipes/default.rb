@@ -91,13 +91,13 @@ end
 
 file "/etc/chef-server/validation.pem" do
   owner "root"
-  group node["chef_server"]['user']['username'] 
+  group node["chef_server"]['user']['username']
   mode "0640"
 end
 
 file "/etc/chef-server/webui.pem" do
   owner "root"
-  group node["chef_server"]['user']['username'] 
+  group node["chef_server"]['user']['username']
   mode "0640"
 end
 
