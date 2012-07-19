@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "received TERM from runit, sending INT instead to force quit connections"
+/opt/chef-server/embedded/bin/sv interrupt postgres

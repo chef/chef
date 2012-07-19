@@ -62,9 +62,10 @@ end
 include_recipe "runit"
 
 # Configure Services
-[ 
-  "couchdb", 
-  "rabbitmq", 
+[
+  "couchdb",
+  "rabbitmq",
+  "postgresql",
   "chef-solr",
   "chef-expander",
   "chef-server-api",

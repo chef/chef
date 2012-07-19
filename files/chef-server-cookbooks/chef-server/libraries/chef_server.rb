@@ -31,6 +31,7 @@ module ChefServer
   chef_server_api Mash.new
   chef_server_webui Mash.new
   lb Mash.new
+  postgresql Mash.new
   bootstrap Mash.new
   nginx Mash.new
   api_fqdn nil

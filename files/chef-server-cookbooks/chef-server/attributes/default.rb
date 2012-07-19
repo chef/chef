@@ -221,3 +221,28 @@ default['chef_server']['nginx']['keepalive_timeout'] = 65
 default['chef_server']['nginx']['client_max_body_size'] = '250m'
 default['chef_server']['nginx']['cache_max_size'] = '5000m'
 
+###
+# PostgreSQL
+###
+default['chef_server']['postgresql']['enable'] = true
+default['chef_server']['postgresql']['ha'] = false
+default['chef_server']['postgresql']['dir'] = "/var/opt/chef-server/postgresql"
+default['chef_server']['postgresql']['data_dir'] = "/var/opt/chef-server/postgresql/data"
+default['chef_server']['postgresql']['log_directory'] = "/var/log/chef-server/postgresql"
+default['chef_server']['postgresql']['svlogd_size'] = 1000000
+default['chef_server']['postgresql']['svlogd_num'] = 10
+default['chef_server']['postgresql']['username'] = "opscode-pgsql"
+default['chef_server']['postgresql']['shell'] = "/bin/sh"
+default['chef_server']['postgresql']['home'] = "/opt/chef-server/embedded"
+default['chef_server']['postgresql']['sql_user'] = "opscode_chef"
+default['chef_server']['postgresql']['sql_password'] = "snakepliskin"
+default['chef_server']['postgresql']['sql_ro_user'] = "opscode_chef_ro"
+default['chef_server']['postgresql']['sql_ro_password'] = "shmunzeltazzen"
+default['chef_server']['postgresql']['vip'] = "127.0.0.1"
+default['chef_server']['postgresql']['port'] = 5432
+default['chef_server']['postgresql']['listen_address'] = 'localhost'
+default['chef_server']['postgresql']['max_connections'] = 200
+default['chef_server']['postgresql']['md5_auth_cidr_addresses'] = [ ]
+default['chef_server']['postgresql']['trust_auth_cidr_addresses'] = [ '127.0.0.1/32', '::1/128' ]
+default['chef_server']['postgresql']['shmmax'] = 17179869184
+default['chef_server']['postgresql']['shmall'] = 4194304

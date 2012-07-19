@@ -15,39 +15,6 @@
 # limitations under the License.
 #
 
-name "chef-server"
-
-replaces        "chef-server"
-install_path    "/opt/chef-server"
-build_version   Omnibus::BuildVersion.full
-build_iteration "1"
-
-deps = []
-
-# global
-deps << "chef"
-deps << "preparation"
-deps << "chef-server-cookbooks"
-deps << "chef-server-scripts"
-deps << "nginx"
-deps << "runit"
-deps << "unicorn"
-
-# the backend
-deps << "couchdb"
-deps << "postgresql"
-deps << "rabbitmq"
-deps << "chef-solr"
-deps << "chef-expander"
-
-# the front-end services
-deps << "chef-server-api"
-deps << "chef-server-webui"
-
-# version manifest file
-deps << "version-manifest"
-
-dependencies deps
-
-exclude "\.git*"
-exclude "bundler\/git"
+runit_service "postgres" do
+  action :disable
+end
