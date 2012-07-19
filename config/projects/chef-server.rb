@@ -17,6 +17,7 @@ deps << "unicorn"
 # the backend
 deps << "couchdb"
 deps << "rabbitmq"
+deps << "chef-expander"
 
 # version manifest file
 deps << "version-manifest"
