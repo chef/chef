@@ -7,6 +7,15 @@ When "I upload the '$cookbook_name' cookbook with knife" do |cookbook_name|
   shell_out!("#{KNIFE_CMD} cookbook upload #{cookbook_name} -o #{cookbook_dir} -c #{KNIFE_CONFIG}")
 end
 
+When "I upload the '$cookbook_name' cookbook with knife from a repository with bad metadata\.rb" do |cookbook_name|
+  cookbook_fixture = File.join(FEATURES_DATA, "cookbooks_repo_with_bad_metadata_rb", cookbook_name)
+  cookbook_dir = ::Tempfile.open("knife-bad-cookbook-dir").path
+  FileUtils.rm(cookbook_dir)
+  FileUtils.mkdir_p(cookbook_dir)
+  FileUtils.cp_r(cookbook_fixture, cookbook_dir)
+  @knife_command_result = shell_out("#{KNIFE_CMD} cookbook upload #{cookbook_name} -o #{cookbook_dir} -c #{KNIFE_CONFIG}")
+end
+
 When "I run knife '$knife_subcommand'" do |knife_subcommand|
   @knife_command_result = shell_out("#{KNIFE_CMD} #{knife_subcommand} -c #{KNIFE_CONFIG}")
 end
@@ -30,4 +39,8 @@ end
 
 Then /^knife should succeed$/ do
   @knife_command_result.should be_successful
+end
+
+Then /^knife should not succeed$/ do
+  @knife_command_result.should_not be_successful
 end

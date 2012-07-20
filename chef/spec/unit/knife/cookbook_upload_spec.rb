@@ -32,6 +32,7 @@ describe Chef::Knife::CookbookUpload do
     @cookbook_loader = {}
     @cookbook_loader.stub!(:[]).and_return(@cookbook)
     @cookbook_loader.stub!(:merged_cookbooks).and_return([])
+    @cookbook_loader.stub!(:load_cookbooks).and_return(@cookbook_loader)
     Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
 
     @output = StringIO.new

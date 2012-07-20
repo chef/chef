@@ -86,7 +86,6 @@ class Chef
         end
 
         assert_environment_valid!
-        warn_about_cookbook_shadowing
         version_constraints_to_update = {}
         upload_failures = 0
         upload_ok = 0
@@ -154,7 +153,7 @@ class Chef
       def cookbooks_to_upload
         @cookbooks_to_upload ||=
           if config[:all]
-            cookbook_repo
+            cookbook_repo.load_cookbooks
           else
             upload_set = {}
             @name_args.each do |cookbook_name|
