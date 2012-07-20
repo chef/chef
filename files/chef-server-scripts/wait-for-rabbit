@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# no rabbit dir probably means frontend server, so no way to wait
+[ -e /var/opt/opscode/rabbitmq ] || exit;
+
+while true; do
+  [ -e /var/opt/opscode/rabbitmq/db/rabbit@localhost.pid ] && break;
+  echo "waiting for rabbitmq pid file to appear..."
+  sleep 1
+done
+
+while true; do
+  pid=`cat /var/opt/opscode/rabbitmq/db/rabbit@localhost.pid`
+  [ -e /proc/$pid/statm ] && break;
+  echo "waiting for rabbitmq process to appear..." 
+  sleep 1
+done
+
+echo "waiting for rabbitmq..."
+HOME=/root PATH=/opt/opscode/embedded/bin:$PATH /opt/opscode/embedded/bin/rabbitmqctl wait /var/opt/opscode/rabbitmq/db/rabbit@localhost.pid 2>/tmp/stderr
+echo "rabbbitmq might be up..."
+
