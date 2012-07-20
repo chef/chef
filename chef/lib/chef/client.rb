@@ -215,7 +215,9 @@ class Chef
     def setup_run_context
       if Chef::Config[:solo]
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, Chef::Config[:cookbook_path]) }
-        cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(Chef::Config[:cookbook_path]))
+        cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
+        cl.load_cookbooks
+        cookbook_collection = Chef::CookbookCollection.new(cl)
         run_context = Chef::RunContext.new(node, cookbook_collection, @events)
       else
         Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, rest) }
