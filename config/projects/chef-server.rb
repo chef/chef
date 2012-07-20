@@ -28,7 +28,7 @@ deps = []
 deps << "chef"
 deps << "preparation"
 deps << "chef-server-cookbooks"
-deps << "chef-server-ctl"
+deps << "chef-server-scripts"
 deps << "nginx"
 deps << "runit"
 deps << "unicorn"
