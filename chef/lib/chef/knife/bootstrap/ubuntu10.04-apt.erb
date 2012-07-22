@@ -31,7 +31,6 @@ rm /tmp/encrypted_data_bag_secret
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
 mkdir -p /etc/chef/ohai/hints
-<% end -%>
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
 (
@@ -39,6 +38,7 @@ cat <<'EOP'
 <%= hash.to_json %>
 EOP
 ) > /etc/chef/ohai/hints/<%= name %>.json
+<% end -%>
 <% end -%>
 
 <% unless @chef_config[:validation_client_name] == "chef-validator" -%>
