@@ -111,6 +111,22 @@ default['chef_server']['chef-expander']['consumer_id'] = "default"
 default['chef_server']['chef-expander']['nodes'] = 2
 
 ####
+# Bookshelf
+####
+default['chef_server']['bookshelf']['enable'] = true
+default['chef_server']['bookshelf']['ha'] = false
+default['chef_server']['bookshelf']['dir'] = "/var/opt/chef-server/bookshelf"
+default['chef_server']['bookshelf']['data_dir'] = "/var/opt/chef-server/bookshelf/data"
+default['chef_server']['bookshelf']['log_directory'] = "/var/log/chef-server/bookshelf"
+default['chef_server']['bookshelf']['svlogd_size'] = 1000000
+default['chef_server']['bookshelf']['svlogd_num'] = 10
+default['chef_server']['bookshelf']['vip'] = '127.0.0.1'
+default['chef_server']['bookshelf']['listen'] = '127.0.0.1'
+default['chef_server']['bookshelf']['port'] = 4321
+default['chef_server']['bookshelf']['access_key_id'] = "generated-by-default"
+default['chef_server']['bookshelf']['secret_access_key'] = "generated-by-default"
+
+####
 # Chef Server API
 ####
 default['chef_server']['chef-server-api']['enable'] = true

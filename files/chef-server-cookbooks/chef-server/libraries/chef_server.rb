@@ -32,6 +32,7 @@ module ChefServer
   chef_server_webui Mash.new
   lb Mash.new
   postgresql Mash.new
+  bookshelf Mash.new
   bootstrap Mash.new
   nginx Mash.new
   api_fqdn nil
@@ -81,6 +82,8 @@ module ChefServer
 
       ChefServer['rabbitmq']['password'] ||= generate_hex(50)
       ChefServer['chef_server_webui']['cookie_secret'] ||= generate_hex(50)
+      ChefServer['bookshelf']['access_key_id'] ||= generate_hex(20)
+      ChefServer['bookshelf']['secret_access_key'] ||= generate_hex(40)
 
       if File.directory?("/etc/chef-server")
         File.open("/etc/chef-server/chef-server-secrets.json", "w") do |f|
@@ -91,6 +94,10 @@ module ChefServer
               },
               'chef_server_webui' => {
                 'cookie_secret' => ChefServer['chef_server_webui']['cookie_secret'],
+              },
+              'bookshelf' => {
+                'access_key_id' => ChefServer['bookshelf']['access_key_id'],
+                'secret_access_key' => ChefServer['bookshelf']['secret_access_key']
               }
             })
           )
@@ -111,6 +118,7 @@ module ChefServer
         "lb",
         "postgresql",
         "nginx",
+        "bookshelf",
         "bootstrap"
       ].each do |key|
         rkey = key.gsub('_', '-')
