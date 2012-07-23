@@ -82,6 +82,8 @@ module ChefServer
 
       ChefServer['rabbitmq']['password'] ||= generate_hex(50)
       ChefServer['chef_server_webui']['cookie_secret'] ||= generate_hex(50)
+      ChefServer['postgresql']['sql_password'] ||= generate_hex(50)
+      ChefServer['postgresql']['sql_ro_password'] ||= generate_hex(50)
       ChefServer['bookshelf']['access_key_id'] ||= generate_hex(20)
       ChefServer['bookshelf']['secret_access_key'] ||= generate_hex(40)
 
@@ -94,6 +96,10 @@ module ChefServer
               },
               'chef_server_webui' => {
                 'cookie_secret' => ChefServer['chef_server_webui']['cookie_secret'],
+              },
+              'postgresql' => {
+                'sql_password' => ChefServer['postgresql']['sql_password'],
+                'sql_ro_password' => ChefServer['postgresql']['sql_ro_password']
               },
               'bookshelf' => {
                 'access_key_id' => ChefServer['bookshelf']['access_key_id'],
