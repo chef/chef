@@ -19,6 +19,7 @@
 require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/file_class'
 require 'chef/resource/link'
 require 'chef/provider'
 require 'chef/scan_access_control'
@@ -27,24 +28,7 @@ class Chef
   class Provider
     class Link < Chef::Provider
       include Chef::Mixin::ShellOut
-
-      def file_class
-        @host_os_file ||= if Chef::Platform.windows?
-          require 'chef/win32/file'
-          begin
-            Chef::ReservedNames::Win32::File.verify_links_supported!
-          rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-            message = "Link resource is not supported on this version of Windows"
-            message << ": #{node[:kernel][:name]}" if node
-            message << " (#{node[:platform_version]})" if node
-            Chef::Log.fatal(message)
-            raise e
-          end
-          Chef::ReservedNames::Win32::File
-        else
-          ::File
-        end
-      end
+      include Chef::Mixin::FileClass
 
       def negative_complement(big)
         if big > 1073741823 # Fixnum max
