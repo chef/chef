@@ -246,6 +246,14 @@ class Chef
         begin
           response = rest_request.call {|r| r.read_body}
 
+          Chef::Log.debug("---- HTTP Status and Header Data: ----")
+          Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
+
+          response.each do |header, value|
+            Chef::Log.debug("#{header}: #{value}")
+          end
+          Chef::Log.debug("---- End HTTP Status/Header Data ----")
+
           response_body = decompress_body(response)
 
           if response.kind_of?(Net::HTTPSuccess)
