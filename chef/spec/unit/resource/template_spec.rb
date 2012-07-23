@@ -86,12 +86,19 @@ describe Chef::Resource::Template do
       @resource.checksum("1" * 64)
     end
 
-    it "describes its state" do
-      state = @resource.state
-      state[:owner].should == "root"
-      state[:group].should == "wheel"
-      state[:mode].should == "0644"
-      state[:checksum].should == "1" * 64
+    context "on unix", :unix_only do
+      it "describes its state" do
+        state = @resource.state
+        state[:owner].should == "root"
+        state[:group].should == "wheel"
+        state[:mode].should == "0644"
+        state[:checksum].should == "1" * 64
+      end
+    end
+
+    context "on windows", :windows_only do
+      # according to Chef::Resource::File, windows state attributes are rights + deny_rights
+      pending "it describes its state"
     end
 
     it "returns the file path as its identity" do
