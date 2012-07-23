@@ -12,7 +12,7 @@ group(:development, :test) do
   # thin requires eventmachine, which won't work under Ruby 1.9 on Windows
   # http://gembundler.com/man/gemfile.5.html
   gem 'thin', :platforms => :ruby
-  gem 'ruby-shadow', :platforms => :ruby
+  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.include?("darwin")
 #  gem 'awesome_print'
 #  gem 'pry'
 end
