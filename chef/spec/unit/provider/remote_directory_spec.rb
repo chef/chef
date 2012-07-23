@@ -19,6 +19,11 @@
 require 'spec_helper'
 require 'digest/md5'
 require 'tmpdir'
+require 'chef/mixin/file_class'
+
+class Chef::CFCCheck
+  include Chef::Mixin::FileClass
+end
 
 describe Chef::Provider::RemoteDirectory do
   before do
@@ -153,8 +158,10 @@ describe Chef::Provider::RemoteDirectory do
         @provider.action = :create
         @provider.run_action
 
+        @fclass = Chef::CFCCheck.new
+
         Dir.mktmpdir do |tmp_dir|
-          FileUtils.ln_s(tmp_dir, symlinked_dir_path)
+          @fclass.file_class.symlink(tmp_dir, symlinked_dir_path)
           ::File.exist?(symlinked_dir_path).should be_true
 
           @provider.run_action

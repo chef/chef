@@ -20,6 +20,7 @@ require 'chef/provider/file'
 require 'chef/provider/directory'
 require 'chef/resource/directory'
 require 'chef/resource/remote_file'
+require 'chef/mixin/file_class'
 require 'chef/platform'
 require 'uri'
 require 'tempfile'
@@ -29,6 +30,7 @@ require 'set'
 class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
+      include Chef::Mixin::FileClass
 
       def action_create
         super
@@ -62,7 +64,8 @@ class Chef
       def purge_unmanaged_files(unmanaged_files)
         if @new_resource.purge
           unmanaged_files.sort.reverse.each do |f|
-            if ::File.directory?(f) && !::File.symlink?(f)
+            # file_class comes from Chef::Mixin::FileClass
+            if ::File.directory?(f) && !file_class.symlink?(f)
               converge_by("delete unmanaged directory #{f}") do
                 Dir::rmdir(f)
                 Chef::Log.debug("#{@new_resource} removed directory #{f}")
