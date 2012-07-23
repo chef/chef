@@ -8,10 +8,11 @@ gem "ronn"
 
 group(:development, :test) do
   gem 'rack'
+  # The 'ruby' platform is surprisingly just unix-y platforms
   # thin requires eventmachine, which won't work under Ruby 1.9 on Windows
   # http://gembundler.com/man/gemfile.5.html
   gem 'thin', :platforms => :ruby
-  gem 'ruby-shadow'
+  gem 'ruby-shadow', :platforms => :ruby
 #  gem 'awesome_print'
 #  gem 'pry'
 end
