@@ -1,8 +1,18 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# License:: Apache License, Version 2.0
 #
-# All Rights Reserved
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 solr_dir = node['chef_server']['chef-solr']['dir']
@@ -40,14 +50,12 @@ should_notify = OmnibusHelper.should_notify?("chef-solr")
 
 solr_installed_file = File.join(solr_dir, "installed")
 
-execute "tar zxvf /opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-solr-0.10.8/solr/solr-home.tar.gz" do
-  cwd solr_home_dir
+execute "cp -R /opt/chef-server/embedded/service/chef-solr/home/conf #{File.join(solr_home_dir, 'conf')}" do
   not_if { File.exists?(solr_installed_file) }
   notifies(:restart, "service[chef-solr]") if should_notify
 end
 
-execute "tar zxvf /opt/chef-server/embedded/lib/ruby/gems/1.9.1/gems/chef-solr-0.10.8/solr/solr-jetty.tar.gz" do
-  cwd solr_jetty_dir
+execute "cp -R /opt/chef-server/embedded/service/chef-solr/jetty #{File.dirname(solr_jetty_dir)}" do
   not_if { File.exists?(solr_installed_file) }
   notifies(:restart, "service[chef-solr]") if should_notify
 end
@@ -94,9 +102,9 @@ runit_service "chef-solr" do
   }.merge(params))
 end
 
-if node['chef_server']['bootstrap']['enable'] 
+if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start chef-solr" do
-		retries 20 
+		retries 20
 	end
 end
 

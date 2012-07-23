@@ -1,14 +1,13 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +47,7 @@ rabbitmq_service_dir = "/opt/chef-server/embedded/service/rabbitmq"
   end
 end
 
-config_file = File.join(node['chef_server']['rabbitmq']['dir'], "etc", "rabbitmq.conf") 
+config_file = File.join(node['chef_server']['rabbitmq']['dir'], "etc", "rabbitmq.conf")
 
 template "#{rabbitmq_service_dir}/sbin/rabbitmq-env" do
   owner "root"
@@ -75,11 +74,11 @@ end
 
 if node['chef_server']['bootstrap']['enable']
 	execute "/opt/chef-server/bin/chef-server-ctl start rabbitmq" do
-		retries 20 
+		retries 20
 	end
-  
+
   execute "/opt/chef-server/embedded/bin/chpst -u #{node["chef_server"]["user"]["username"]} -U #{node["chef_server"]["user"]["username"]} /opt/chef-server/embedded/bin/rabbitmqctl wait /var/opt/chef-server/rabbitmq/db/rabbit@localhost.pid" do
-    retries 10 
+    retries 10
   end
 
   [ node['chef_server']['rabbitmq']['vhost'] ].each do |vhost|

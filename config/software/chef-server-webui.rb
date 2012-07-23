@@ -15,7 +15,17 @@
 # limitations under the License.
 #
 
-runit_service "nginx" do
-  action :disable
-end
+name "chef-server-webui"
+version ENV["CHEF_GIT_REV"] || "bd61f7a80db3f77d2977439271fdf9ddd19ef591"
 
+dependencies ["ruby", "bundler", "libxml2", "libxslt", "curl", "rsync"]
+
+source :git => "git://github.com/opscode/chef"
+
+project_dir = "#{source_dir}/#{name}/#{name}"
+
+build do
+  bundle "install --path=#{install_dir}/embedded/service/gem", :cwd => project_dir
+  command "mkdir -p #{install_dir}/embedded/service/chef-server-webui"
+  command "#{install_dir}/embedded/bin/rsync -a #{project_dir}/ --delete --exclude=.git/*** --exclude=.gitignore #{install_dir}/embedded/service/chef-server-webui/"
+end

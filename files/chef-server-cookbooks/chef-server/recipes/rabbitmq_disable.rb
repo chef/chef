@@ -1,5 +1,6 @@
 #
-# Copyright 2011, Opscode, Inc.
+# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

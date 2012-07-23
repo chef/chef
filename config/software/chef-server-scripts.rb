@@ -1,3 +1,17 @@
+name "chef-server-scripts"
+
+dependencies [ "rsync", "omnibus-ctl" ]
+
+source :path => File.expand_path("files/chef-server-scripts", Omnibus.root)
+
+build do
+  command "mkdir -p #{install_dir}/embedded/bin"
+  command "#{install_dir}/embedded/bin/rsync -a ./ #{install_dir}/bin/"
+
+  block do
+    open("#{install_dir}/bin/chef-server-ctl", "w") do |file|
+      file.print <<-EOH
+#!/bin/bash
 #
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -15,7 +29,10 @@
 # limitations under the License.
 #
 
-runit_service "nginx" do
-  action :disable
-end
+#{install_dir}/embedded/bin/omnibus-ctl chef-server #{install_dir}/embedded/service/omnibus-ctl $1 $2
+       EOH
+    end
+  end
 
+  command "chmod 755 #{install_dir}/bin/chef-server-ctl"
+end

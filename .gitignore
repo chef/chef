@@ -2,3 +2,5 @@
 .bundle
 pkg/*
 .vagrant
+bin/*
+files/chef-server-cookbooks/cache/

@@ -1,8 +1,18 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
+# License:: Apache License, Version 2.0
 #
-# All Rights Reserved
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 require 'mixlib/config'
@@ -23,7 +33,7 @@ module ChefServer
   lb Mash.new
   bootstrap Mash.new
   nginx Mash.new
-  api_fqdn nil 
+  api_fqdn nil
   node nil
   notification_email nil
 
@@ -75,7 +85,7 @@ module ChefServer
         File.open("/etc/chef-server/chef-server-secrets.json", "w") do |f|
           f.puts(
             Chef::JSONCompat.to_json_pretty({
-              'rabbitmq' => { 
+              'rabbitmq' => {
                 'password' => ChefServer['rabbitmq']['password'],
               },
               'chef_server_webui' => {
@@ -89,7 +99,7 @@ module ChefServer
     end
 
     def generate_hash
-      results = { "chef_server" => {} } 
+      results = { "chef_server" => {} }
       [
         "couchdb",
         "rabbitmq",
@@ -98,6 +108,7 @@ module ChefServer
         "chef_server_api",
         "chef_server_webui",
         "lb",
+        "postgresql",
         "nginx",
         "bootstrap"
       ].each do |key|
@@ -112,14 +123,14 @@ module ChefServer
     def gen_api_fqdn
       ChefServer["lb"]["api_fqdn"] ||= ChefServer['api_fqdn']
       ChefServer["lb"]["web_ui_fqdn"] ||= ChefServer['api_fqdn']
-      ChefServer["nginx"]["server_name"] ||= ChefServer['api_fqdn'] 
+      ChefServer["nginx"]["server_name"] ||= ChefServer['api_fqdn']
       ChefServer["nginx"]["url"] ||= "https://#{ChefServer['api_fqdn']}"
     end
 
     def generate_config(node_name)
       generate_secrets(node_name)
-      ChefServer[:api_fqdn] ||= node_name 
-      gen_api_fqdn 
+      ChefServer[:api_fqdn] ||= node_name
+      gen_api_fqdn
       generate_hash
     end
   end
