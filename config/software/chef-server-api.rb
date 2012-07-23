@@ -16,8 +16,7 @@
 #
 
 name "chef-server-api"
-#version ENV["CHEF_GIT_REV"] || "10.12.0"
-version "CHEF-3305"
+version ENV["CHEF_GIT_REV"] || "bd61f7a80db3f77d2977439271fdf9ddd19ef591"
 
 dependencies ["ruby",
               "bundler",
