@@ -71,7 +71,7 @@ describe Chef::Provider::User do
       #)
       Chef::Resource::User.stub!(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
-      @pw_user.uid = "adam"
+      @pw_user.name = "adam"
       @pw_user.gid = 1000
       @pw_user.uid = 1000
       @pw_user.gecos = "Adam Jacob"
@@ -133,33 +133,44 @@ describe Chef::Provider::User do
     end
 
     describe "and running assertions" do
-      before do
-        # We can only perform one of these tests if the 
-        # ruby-shadow library is installed. 
-        @shadow_lib_unavail = false
+      def self.shadow_lib_unavail?
         begin
+          require 'rubygems'
           require 'shadow'
-        rescue LoadError
-          @shadow_lib_unavail = true
+        rescue LoadError => e
+          pending "ruby-shadow gem not installed for dynamic load test"
+          true
+        else
+          false
         end
       end
 
       before (:each) do
-        # force ruby-shadow library to be required 
         user = @pw_user.dup
+        user.name = "root"
         user.passwd = "x"
         @new_resource.password "some new password"
         Etc.stub!(:getpwnam).and_return(user)
       end
-
-      it "should pass assertions when ruby-shadow can be loaded" do
-        pending "ruby-shadow gem not installed for dynamic load test" if @shadow_lib_unavail
-        puts "SHADOW LIB UNAVAIL: #{@shadow_lib_unavail}"
-        original_method = @provider.method(:require)
-        @provider.should_receive(:require) { |*args| original_method.call(*args) }
-        @provider.load_current_resource
-        @provider.define_resource_requirements
-        @provider.process_resource_requirements
+      
+      unless shadow_lib_unavail?
+        context "and we have the ruby-shadow gem" do
+          pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true 
+  
+          context "and we are root", :requires_root => true do
+            it "should pass assertions when ruby-shadow can be loaded" do
+              @provider.action = 'create'
+              original_method = @provider.method(:require)
+              @provider.should_receive(:require) { |*args| original_method.call(*args) }
+              passwd_info = Struct::PasswdEntry.new(:sp_namp => "adm ", :sp_pwdp => "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", :sp_lstchg => 14861, :sp_min => 0, :sp_max => 99999, 
+                                                    :sp_warn => 7, :sp_inact => -1, :sp_expire => -1, :sp_flag => -1)
+              Shadow::Passwd.should_receive(:getspnam).with("adam").and_return(passwd_info)
+              @provider.load_current_resource
+              @provider.define_resource_requirements
+              @provider.process_resource_requirements
+            end
+          end
+        end
       end
 
       it "should fail assertions when ruby-shadow cannot be loaded" do
