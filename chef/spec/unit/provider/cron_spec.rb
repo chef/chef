@@ -263,6 +263,7 @@ CRONTAB
   describe "action_create" do
     before :each do
       @provider.stub!(:write_crontab)
+      @provider.stub!(:read_crontab).and_return(nil)
     end
 
     context "when there is no existing crontab" do
@@ -523,6 +524,14 @@ HOME=/home/foo
       before :each do
         @provider.cron_exists = true
         @provider.stub!(:cron_different?).and_return(false)
+        @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
+0 2 * * * /some/other/command
+
+# Chef Name: something else
+* 5 * * * /bin/true
+
+# Another comment
+CRONTAB
       end
 
       it "should not update the crontab" do
@@ -545,6 +554,7 @@ HOME=/home/foo
   describe "action_delete" do
     before :each do
       @provider.stub!(:write_crontab)
+      @provider.stub!(:read_crontab).and_return(nil)
     end
 
     context "when the user's crontab has no matching section" do
