@@ -70,6 +70,7 @@ include_recipe "runit"
   "chef-expander",
   "bookshelf",
   "chef-server-api",
+  "erchef",
   "chef-server-webui",
   "nginx"
 ].each do |service|

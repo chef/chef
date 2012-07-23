@@ -1,0 +1,6 @@
+#!/bin/sh
+exec 2>&1
+
+/opt/chef-server/bin/wait-for-rabbit
+
+exec chpst -P -u <%= node['chef_server']['user']['username'] %> -U <%= node['chef_server']['user']['username'] %> env HOME=<%= node['chef_server']['erchef']['dir'] %> /opt/chef-server/embedded/service/erchef/bin/erchef runit

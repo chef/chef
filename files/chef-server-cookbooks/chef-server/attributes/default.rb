@@ -159,6 +159,46 @@ default['chef_server']['chef-server-api']['web_ui_admin_user_name'] = "admin"
 default['chef_server']['chef-server-api']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
 ####
+# Erlang Chef Server API
+####
+default['chef_server']['erchef']['enable'] = true
+default['chef_server']['erchef']['enable'] = true
+default['chef_server']['erchef']['ha'] = false
+default['chef_server']['erchef']['dir'] = "/var/opt/chef-server/erchef"
+default['chef_server']['erchef']['log_directory'] = "/var/log/chef-server/erchef"
+default['chef_server']['erchef']['svlogd_size'] = 1000000
+default['chef_server']['erchef']['svlogd_num'] = 10
+default['chef_server']['erchef']['vip'] = '127.0.0.1'
+default['chef_server']['erchef']['listen'] = '127.0.0.1'
+default['chef_server']['erchef']['port'] = 8000
+default['chef_server']['erchef']['auth_skew'] = '900'
+default['chef_server']['erchef']['bulk_fetch_batch_size'] = '5'
+default['chef_server']['erchef']['max_cache_size'] = '10000'
+default['chef_server']['erchef']['cache_ttl'] = '3600'
+default['chef_server']['erchef']['db_pool_size'] = '20'
+default['chef_server']['erchef']['couchdb_max_conn'] = '100'
+default['chef_server']['erchef']['s3_bucket'] = 'bookshelf'
+default['chef_server']['erchef']['proxy_user'] = "pivotal"
+#default['chef_server']['chef-server-api']['environment'] = 'privatechef'
+default['chef_server']['erchef']['url'] = "http://127.0.0.1:8000"
+# default['chef_server']['chef-server-api']['upload_vip'] = "127.0.0.1"
+# default['chef_server']['chef-server-api']['upload_port'] = 9460
+# default['chef_server']['chef-server-api']['upload_proto'] = "http"
+# default['chef_server']['chef-server-api']['upload_internal_vip'] = "127.0.0.1"
+# default['chef_server']['chef-server-api']['upload_internal_port'] = 9460
+# default['chef_server']['chef-server-api']['upload_internal_proto'] = "http"
+# default['chef_server']['chef-server-api']['listen'] = '127.0.0.1:9460'
+# default['chef_server']['chef-server-api']['backlog'] = 1024
+# default['chef_server']['chef-server-api']['tcp_nodelay'] = true
+# default['chef_server']['chef-server-api']['worker_timeout'] = 3600
+default['chef_server']['erchef']['validation_client_name'] = "chef-validator"
+default['chef_server']['erchef']['umask'] = "0022"
+# default['chef_server']['chef-server-api']['worker_processes'] = node["cpu"]["total"].to_i
+default['chef_server']['erchef']['web_ui_client_name'] = "chef-webui"
+default['chef_server']['erchef']['web_ui_admin_user_name'] = "admin"
+default['chef_server']['erchef']['web_ui_admin_default_password'] = "p@ssw0rd1"
+
+####
 # Chef Server WebUI
 ####
 default['chef_server']['chef-server-webui']['enable'] = true
@@ -192,7 +232,7 @@ default['chef_server']['lb']['api_fqdn'] = node['fqdn']
 default['chef_server']['lb']['web_ui_fqdn'] = node['fqdn']
 default['chef_server']['lb']['cache_cookbook_files'] = false
 default['chef_server']['lb']['debug'] = false
-default['chef_server']['lb']['upstream']['chef-server-api'] = [ "127.0.0.1" ]
+default['chef_server']['lb']['upstream']['erchef'] = [ "127.0.0.1" ]
 default['chef_server']['lb']['upstream']['chef-server-webui'] = [ "127.0.0.1" ]
 default['chef_server']['lb']['upstream']['bookshelf'] = [ "127.0.0.1" ]
 

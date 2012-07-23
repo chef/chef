@@ -29,6 +29,7 @@ module ChefServer
   chef_solr Mash.new
   chef_expander Mash.new
   chef_server_api Mash.new
+  erchef Mash.new
   chef_server_webui Mash.new
   lb Mash.new
   postgresql Mash.new
@@ -120,6 +121,7 @@ module ChefServer
         "chef_solr",
         "chef_expander",
         "chef_server_api",
+        "erchef",
         "chef_server_webui",
         "lb",
         "postgresql",

@@ -44,6 +44,7 @@ deps << "bookshelf"
 
 # the front-end services
 deps << "chef-server-api"
+deps << "erchef"
 deps << "chef-server-webui"
 
 # version manifest file
