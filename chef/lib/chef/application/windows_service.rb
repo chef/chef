@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef'
 require 'chef/application'
 require 'chef/client'
 require 'chef/config'
