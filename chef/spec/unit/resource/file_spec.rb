@@ -113,7 +113,7 @@ describe Chef::Resource::File do
     end
     it "describes its state including windows ACL attributes" do
       state = @resource.state
-      state.rights.should == [ {:permissions => :read, :principals => "Everyone"},
+      state[:rights].should == [ {:permissions => :read, :principals => "Everyone"},
                                {:permissions => :full_control, :principals => "DOMAIN\User"} ]
     end
   end
