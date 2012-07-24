@@ -53,7 +53,8 @@ class Chef
 
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
-        path = File.join(ENV['SYSTEMDRIVE'], path.split('/')[2..-1])
+        system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ""
+        path = File.join(system_drive, path.split('/')[2..-1])
         # ensure all forward slashes are backslashes
         path.gsub!(File::SEPARATOR, (File::ALT_SEPARATOR || '\\'))
       end
