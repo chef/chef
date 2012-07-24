@@ -281,8 +281,10 @@ describe Chef::Provider::File do
          @resource.path file.path
          @provider = Chef::Provider::File.new(@resource, @run_context) 
          @provider.load_current_resource
-         result = @provider.diff_current_from_content "foo baz\n"
+         result = @provider.diff_current_from_content "foo baz"
          # remove the file name info which varies.
+         require 'pp'
+         pp result
          result.shift(2)
          result.should == ["@@ -0,0 +1 @@", "+foo baz"] 
        end
