@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'tmpdir'
 
 describe Chef::Knife do
   before :each do
@@ -24,11 +25,11 @@ describe Chef::Knife do
   end
 
   it "configure knife from KNIFE_HOME env variable" do
-    env_config = File.expand_path('/tmp/knife.rb')
+    env_config = File.expand_path(File.join(Dir.tmpdir, 'knife.rb'))
     File.stub!(:exist?).and_return(false)
     File.stub!(:exist?).with(env_config).and_return(true)
 
-    ENV['KNIFE_HOME'] = '/tmp'
+    ENV['KNIFE_HOME'] = Dir.tmpdir
     @knife = Chef::Knife.new
     @knife.configure_chef
     @knife.config[:config_file].should == env_config
@@ -78,7 +79,7 @@ describe Chef::Knife do
   end
   
   it "configure knife precedence" do
-    env_config = '/tmp/knife.rb'
+    env_config = File.join(Dir.tmpdir, 'knife.rb')
     pwd_config = "#{Dir.pwd}/knife.rb"
     upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
@@ -88,7 +89,7 @@ describe Chef::Knife do
       configs.include? arg
     end
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
-    ENV['KNIFE_HOME'] = '/tmp'
+    ENV['KNIFE_HOME'] = Dir.tmpdir
    
     @knife = Chef::Knife.new
     @knife.configure_chef
