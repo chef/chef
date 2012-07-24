@@ -17,6 +17,8 @@
 #
 require 'stringio'
 require 'spec_helper'
+require 'etc'
+require 'ostruct'
 
 describe Chef::Provider::Template do
   before(:each) do
@@ -38,6 +40,14 @@ describe Chef::Provider::Template do
     @provider.current_resource = @current_resource
     @access_controls = mock("access controls")
     @provider.stub!(:access_controls).and_return(@access_controls)
+    passwd_struct = if windows?
+                      Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
+                    else
+                      Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
+                    end
+    group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+    Etc.stub!(:getpwuid).and_return(passwd_struct)
+    Etc.stub!(:getgrgid).and_return(group_struct)
   end
 
   describe "when creating the template" do
