@@ -18,6 +18,7 @@
 
 
 require 'spec_helper'
+require 'tmpdir'
 
 describe Chef::Provider::File do
   before(:each) do
@@ -113,7 +114,7 @@ describe Chef::Provider::File do
 
   it "should create the file if it is missing, then set the attributes on action_create" do
     @provider.load_current_resource
-    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.access_controls.should_receive(:set_all)
     @provider.should_receive(:diff_current_from_content).and_return("")
     File.stub!(:open).and_return(1)
@@ -127,7 +128,7 @@ describe Chef::Provider::File do
     io = StringIO.new
     @provider.load_current_resource
     @provider.new_resource.content "foobar"
-    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.should_receive(:diff_current_from_content).and_return("")
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
     @provider.access_controls.should_receive(:set_all)
@@ -137,7 +138,7 @@ describe Chef::Provider::File do
   end
 
   it "should delete the file if it exists and is writable on action_delete" do
-    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.stub!(:backup).and_return(true)
     File.should_receive("exists?").exactly(2).times.with(@provider.new_resource.path).and_return(true)
     File.should_receive("writable?").with(@provider.new_resource.path).and_return(true)
@@ -147,7 +148,7 @@ describe Chef::Provider::File do
   end
 
   it "should not raise an error if it cannot delete the file because it does not exist" do
-    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.stub!(:backup).and_return(true)
     File.should_receive("exists?").exactly(2).times.with(@provider.new_resource.path).and_return(false)
     lambda { @provider.run_action(:delete) }.should_not raise_error()
@@ -156,7 +157,7 @@ describe Chef::Provider::File do
 
   it "should update the atime/mtime on action_touch" do
     @provider.load_current_resource
-    @provider.new_resource.stub!(:path).and_return("/tmp/monkeyfoo")
+    @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.should_receive(:diff_current_from_content).and_return("")
     File.should_receive(:utime).once.and_return(1)
     File.stub!(:open).and_return(1)
