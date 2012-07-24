@@ -60,7 +60,7 @@ shared_examples_for "a file with the correct content" do
   it "does not update the mtime/atime of the file when the :create action is run" do
     sleep 1
     File.stat(path).mtime.should == @expected_mtime
-    File.stat(path).atime.should be_within(1).of(@expected_atime)
+    File.stat(path).atime.should be_within(2).of(@expected_atime)
   end
 
   it "doesn't overwrite the file when the :create_if_missing action is run" do
