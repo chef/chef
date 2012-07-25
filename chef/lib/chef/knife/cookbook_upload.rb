@@ -86,7 +86,6 @@ class Chef
         end
 
         assert_environment_valid!
-        warn_about_cookbook_shadowing
         version_constraints_to_update = {}
         upload_failures = 0
         upload_ok = 0
@@ -96,6 +95,7 @@ class Chef
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
 
         justify_width = cookbooks_to_upload.map {|name, cookbook| name.size}.max.to_i + 2
+        warn_about_cookbook_shadowing
 
         cookbooks_to_upload.each do |cookbook_name, cookbook|
           cookbook.freeze_version if config[:freeze]
@@ -129,7 +129,7 @@ class Chef
       def cookbooks_to_upload
         @cookbooks_to_upload ||=
           if config[:all]
-            cookbook_repo
+            cookbook_repo.load_cookbooks
           else
             upload_set = {}
             @name_args.each do |cookbook_name|
@@ -144,6 +144,7 @@ class Chef
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
               Log.debug(e)
             end
+            @name_args.uniq!
           end
             upload_set
           end

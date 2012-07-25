@@ -28,8 +28,6 @@ require 'chef/cookbook/metadata'
 class Chef
   class CookbookLoader
 
-    attr_accessor :metadata
-    attr_reader :cookbooks_by_name
     attr_reader :merged_cookbooks
     attr_reader :cookbook_paths
 
@@ -39,7 +37,6 @@ class Chef
       @repo_paths = repo_paths.flatten
       raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
       @cookbooks_by_name = Mash.new
-      @loaded_cookbooks = {}
       @metadata = Mash.new
       @cookbooks_paths = Hash.new {|h,k| h[k] = []} # for deprecation warnings
 
@@ -48,8 +45,6 @@ class Chef
       # deprecated, so users of this class may issue warnings to the user by checking
       # this variable
       @merged_cookbooks = []
-
-      load_cookbooks
     end
 
     def merged_cookbook_paths # for deprecation warnings
@@ -59,7 +54,7 @@ class Chef
     end
 
     def load_cookbooks
-      cookbook_settings = Hash.new
+      @loaded_cookbooks = {}
       @repo_paths.each do |repo_path|
         repo_path = File.expand_path(repo_path)
         chefignore = Cookbook::Chefignore.new(repo_path)
@@ -86,8 +81,36 @@ class Chef
       @cookbooks_by_name
     end
 
+    def load_cookbook(cookbook_name)
+      @loaded_cookbooks ||= {}
+      @repo_paths.each do |repo_path|
+        repo_path = File.expand_path(repo_path)
+        chefignore = Cookbook::Chefignore.new(repo_path)
+        cookbook_path = File.join(repo_path, cookbook_name.to_s)
+        next unless File.directory?(cookbook_path) and Dir[File.join(repo_path, "*")].include?(cookbook_path)
+        loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore)
+        loader.load_cookbooks
+        next if loader.empty?
+        cookbook_name = loader.cookbook_name
+        @cookbooks_paths[cookbook_name] << cookbook_path # for deprecation warnings
+        if @loaded_cookbooks.key?(cookbook_name)
+          @merged_cookbooks << cookbook_name # for deprecation warnings
+          @loaded_cookbooks[cookbook_name].merge!(loader)
+        else
+          @loaded_cookbooks[cookbook_name] = loader
+        end
+      end
+
+      if @loaded_cookbooks.has_key?(cookbook_name)
+        cookbook_version = @loaded_cookbooks[cookbook_name].cookbook_version
+        @cookbooks_by_name[cookbook_name] = cookbook_version
+        @metadata[cookbook_name] = cookbook_version.metadata
+      end
+      @cookbooks_by_name[cookbook_name]
+    end
+
     def [](cookbook)
-      if @cookbooks_by_name.has_key?(cookbook.to_sym)
+      if self.has_key?(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
         raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
@@ -97,25 +120,33 @@ class Chef
     alias :fetch :[]
 
     def has_key?(cookbook_name)
-      @cookbooks_by_name.has_key?(cookbook_name)
+      @cookbooks_by_name.has_key?(cookbook_name) or load_cookbook(cookbook_name) != nil
     end
     alias :cookbook_exists? :has_key?
     alias :key? :has_key?
 
     def each
+      load_cookbooks unless @loaded_cookbooks
       @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
         yield(cname, @cookbooks_by_name[cname])
       end
     end
 
     def cookbook_names
+      load_cookbooks unless @loaded_cookbooks
       @cookbooks_by_name.keys.sort
     end
 
     def values
+      load_cookbooks unless @loaded_cookbooks
       @cookbooks_by_name.values
     end
     alias :cookbooks :values
+
+    def metadata
+      load_cookbooks unless @loaded_cookbooks
+      @metadata
+    end
 
   end
 end

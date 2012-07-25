@@ -68,6 +68,7 @@ describe Chef::Knife::CookbookTest do
         @knife.stub!(:test_cookbook).and_return(true)
         @knife.config[:all] = true
         @loader = {}
+        @loader.stub!(:load_cookbooks).and_return(@loader)
         @cookbooks.each do |cookbook|
           @loader[cookbook.name] = cookbook
         end
