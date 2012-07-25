@@ -49,7 +49,7 @@ class Chef
         def recipe_snippet
           return nil if dynamic_resource?
           @snippet ||= begin
-            if file = resource.source_line[/^([^:]+):[\d]+/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
+            if file = resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]
@@ -74,7 +74,6 @@ class Chef
                 break if nesting <= 0
               end
               relevant_lines << format_line(current_line + 1, lines[current_line + 1]) if lines[current_line + 1]
-
               relevant_lines.join("")
             end
           end
