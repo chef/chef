@@ -67,6 +67,10 @@ class Chef
         :long => "--include-dependencies",
         :description => "Also upload cookbook dependencies"
 
+      option :skip_dependency_check,
+        :long => "--skip-dependency-check",
+        :description => "Skips checking if the dependencies are on the server or being uploaded."
+
       def run
         # Sanity check before we load anything from the server
         unless config[:all]
@@ -200,7 +204,7 @@ WARNING
       def upload(cookbook, justify_width)
         ui.info("Uploading #{cookbook.name.to_s.ljust(justify_width + 10)} [#{cookbook.version}]")
         check_for_broken_links!(cookbook)
-        check_for_dependencies!(cookbook)
+        check_for_dependencies!(cookbook) unless config[:skip_dependency_check]
         Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
       rescue Net::HTTPServerException => e
         case e.response.code

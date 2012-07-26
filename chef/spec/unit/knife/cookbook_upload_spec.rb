@@ -122,6 +122,25 @@ describe Chef::Knife::CookbookUpload do
       end
     end
 
+    describe "check for dependencies" do
+      before (:each) do
+        @knife.unstub!(:upload)
+        Chef::CookbookUploader.stub_chain(:new, :upload_cookbook)
+        @knife.stub!(:check_for_broken_dependencies!)
+      end
+
+      it "should not run when --skip-dependency-check" do
+        @knife.config[:skip_dependency_check] = true
+        @knife.should_not_receive(:check_for_dependencies!)
+        @knife.run
+      end
+
+      it "should run when --skip-dependency-check is not used" do
+        @knife.should_receive(:check_for_dependencies!).once
+        @knife.run
+      end
+    end
+
     describe 'when a frozen cookbook exists on the server' do
       it 'should fail to replace it' do
         @knife.stub!(:upload).and_raise(Chef::Exceptions::CookbookFrozen)
