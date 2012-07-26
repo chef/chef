@@ -215,6 +215,19 @@ SHOWPKG_STDOUT
 
       @provider.install_package("irssi", "0.8.12-7")
     end
+
+    it "should run apt-get install with the package name and version and default_release if there is one and provider is explicitly defined" do
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "apt-get -q -y -o APT::Default-Release=lenny-backports install irssi=0.8.12-7",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+      @new_resource.stub!(:default_release).and_return("lenny-backports")
+      @new_resource.stub!(:provider).and_return("Chef::Provider::Package::Apt")
+
+      @provider.install_package("irssi", "0.8.12-7")
+    end
   end
 
   describe Chef::Provider::Package::Apt, "upgrade_package" do
