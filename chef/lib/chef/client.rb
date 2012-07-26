@@ -202,6 +202,7 @@ class Chef
         raise
       ensure
         run_status = nil
+        run_context = nil
         GC.start
       end
       true
