@@ -94,31 +94,56 @@ class Chef
         # Get a list of cookbooks and their versions from the server
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
+        justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
+        if config[:all]
 
-        justify_width = cookbooks_to_upload.map {|name, cookbook| name.size}.max.to_i + 2
-
-        cookbooks_to_upload.each do |cookbook_name, cookbook|
-          cookbook.freeze_version if config[:freeze]
-          begin
-            upload(cookbook, justify_width)
-            upload_ok += 1
+          cbs = []
+          cookbook_repo.each do |cookbook_name, cookbook|
+            cbs << cookbook
+            cookbook.freeze_version if config[:freeze]
             version_constraints_to_update[cookbook_name] = cookbook.version
-          rescue Exceptions::CookbookFrozen
-            upload_failures += 1
-            ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.") if config[:environment]
           end
-        end
+          begin
+            upload(cbs, justify_width)
+          rescue Exceptions::CookbookFrozen
+            ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
+          end
+          ui.info("Uploaded all cookbooks.")
+        else
+          if @name_args.empty?
+            show_usage
+            ui.error("You must specify the --all flag or at least one cookbook name")
+            exit 1
+          end
 
-        upload_failures += config[:all] ? 0 : @name_args.length - @cookbooks_to_upload.length
+          cookbooks_to_upload.each do |cookbook_name, cookbook|
+            cookbook.freeze_version if config[:freeze]
+            begin
+              upload([cookbook], justify_width)
+              upload_ok += 1
+              version_constraints_to_update[cookbook_name] = cookbook.version
+            rescue Exceptions::CookbookNotFoundInRepo => e
+              upload_failures += 1
+              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+              Log.debug(e)
+              upload_failures += 1
+            rescue Exceptions::CookbookFrozen
+              ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.")
+              upload_failures += 1
+            end
+          end
 
-        if upload_failures == 0
-          ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
-        elsif upload_failures > 0 && upload_ok > 0
-          ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""} ok but #{upload_failures} " +
-            "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
-        elsif upload_failures > 0 && upload_ok == 0
-          ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? "s" : ""}."
-          exit 1
+          upload_failures += @name_args.length - @cookbooks_to_upload.length
+
+          if upload_failures == 0
+            ui.info "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""}."
+          elsif upload_failures > 0 && upload_ok > 0
+            ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok > 1 ? "s" : ""} ok but #{upload_failures} " +
+              "cookbook#{upload_failures > 1 ? "s" : ""} upload failed."
+          elsif upload_failures > 0 && upload_ok == 0
+            ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures > 1 ? "s" : ""}."
+            exit 1
+          end
         end
 
         unless version_constraints_to_update.empty?
@@ -133,18 +158,18 @@ class Chef
           else
             upload_set = {}
             @name_args.each do |cookbook_name|
-            begin
-              if ! upload_set.has_key?(cookbook_name)
-                upload_set[cookbook_name] = cookbook_repo[cookbook_name]
-                if config[:depends]
-                  upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+              begin
+                if ! upload_set.has_key?(cookbook_name)
+                  upload_set[cookbook_name] = cookbook_repo[cookbook_name]
+                  if config[:depends]
+                    upload_set[cookbook_name].metadata.dependencies.each { |dep, ver| @name_args << dep }
+                  end
                 end
+              rescue Exceptions::CookbookNotFoundInRepo => e
+                ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+                Log.debug(e)
               end
-            rescue Exceptions::CookbookNotFoundInRepo => e
-              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
-              Log.debug(e)
             end
-          end
             upload_set
           end
       end
@@ -197,11 +222,13 @@ WARNING
         end
       end
 
-      def upload(cookbook, justify_width)
-        ui.info("Uploading #{cookbook.name.to_s.ljust(justify_width + 10)} [#{cookbook.version}]")
-        check_for_broken_links!(cookbook)
-        check_for_dependencies!(cookbook)
-        Chef::CookbookUploader.new(cookbook, config[:cookbook_path], :force => config[:force]).upload_cookbook
+      def upload(cookbooks, justify_width)
+        cookbooks.each do |cb|
+          ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
+          check_for_broken_links!(cb)
+          check_for_dependencies!(cb)
+        end
+        Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force]).upload_cookbooks
       rescue Net::HTTPServerException => e
         case e.response.code
         when "409"

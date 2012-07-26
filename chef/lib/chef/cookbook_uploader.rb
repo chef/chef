@@ -29,14 +29,15 @@ class Chef
       end
     end
 
-    attr_reader :cookbook
+    attr_reader :cookbooks
     attr_reader :path
     attr_reader :opts
     attr_reader :rest
 
     # Creates a new CookbookUploader.
     # ===Arguments:
-    # * cookbook::: A Chef::CookbookVersion describing the cookbook to be uploaded
+    # * cookbooks::: A Chef::CookbookVersion or array of them describing the
+    #                cookbook(s) to be uploaded
     # * path::: A String or Array of Strings representing the base paths to the
     #           cookbook repositories.
     # * opts::: (optional) An options Hash
@@ -48,19 +49,24 @@ class Chef
     # * :rest   A Chef::REST object that you have configured the way you like it.
     #           If you don't provide this, one will be created using the values
     #           in Chef::Config.
-    def initialize(cookbook, path, opts={})
-      @cookbook, @path, @opts = cookbook, path, opts
+    def initialize(cookbooks, path, opts={})
+      @path, @opts = path, opts
+      @cookbooks = Array(cookbooks)
       @rest = opts[:rest] || Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
-    def upload_cookbook
+    def upload_cookbooks
       Thread.abort_on_exception = true
-      Chef::Log.info("Saving #{cookbook.name}")
 
       # Syntax Check
-      validate_cookbook
+      validate_cookbooks
       # generate checksums of cookbook files and create a sandbox
-      checksum_files = cookbook.checksums
+      checksum_files = {}
+      cookbooks.each do |cb|
+        Chef::Log.info("Saving #{cb.name}")
+        checksum_files.merge!(cb.checksums)
+      end
+
       checksums = checksum_files.inject({}){|memo,elt| memo[elt.first]=nil ; memo}
       new_sandbox = rest.post_rest("sandboxes", { :checksums => checksums })
 
@@ -102,8 +108,10 @@ class Chef
       end
 
       # files are uploaded, so save the manifest
-      save_url = opts[:force] ? cookbook.force_save_url : cookbook.save_url
-      rest.put_rest(save_url, cookbook)
+      cookbooks.each do |cb|
+        save_url = opts[:force] ? cb.force_save_url : cb.save_url
+        rest.put_rest(save_url, cb)
+      end
 
       Chef::Log.info("Upload complete!")
     end
@@ -140,14 +148,16 @@ class Chef
       end
     end
 
-    def validate_cookbook
-      syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cookbook.name, @user_cookbook_path)
-      Chef::Log.info("Validating ruby files")
-      exit(1) unless syntax_checker.validate_ruby_files
-      Chef::Log.info("Validating templates")
-      exit(1) unless syntax_checker.validate_templates
-      Chef::Log.info("Syntax OK")
-      true
+    def validate_cookbooks
+      cookbooks.each do |cb|
+        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name, @user_cookbook_path)
+        Chef::Log.info("Validating ruby files")
+        exit(1) unless syntax_checker.validate_ruby_files
+        Chef::Log.info("Validating templates")
+        exit(1) unless syntax_checker.validate_templates
+        Chef::Log.info("Syntax OK")
+        true
+      end
     end
 
   end

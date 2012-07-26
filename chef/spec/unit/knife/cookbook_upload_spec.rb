@@ -81,6 +81,7 @@ describe Chef::Knife::CookbookUpload do
             "test_cookbook2" =>  @test_cookbook2,
             "test_cookbook3" => @test_cookbook3 }[ckbk]
         end
+        @knife.stub!(:cookbook_names).and_return(["test_cookbook1", "test_cookbook2", "test_cookbook3"])
         @knife.should_receive(:upload).exactly(3).times
         Timeout::timeout(5) do
           @knife.run
@@ -104,13 +105,13 @@ describe Chef::Knife::CookbookUpload do
       end
 
       it 'should upload all cookbooks' do
-        @knife.should_receive(:upload).twice
+        @knife.should_receive(:upload).once
         @knife.run
       end
 
       it 'should report on success' do
-        @knife.should_receive(:upload).twice
-        @knife.ui.should_receive(:info).with(/Uploaded 2 cookbooks/)
+        @knife.should_receive(:upload).once
+        @knife.ui.should_receive(:info).with(/Uploaded all cookbooks/)
         @knife.run
       end
 
