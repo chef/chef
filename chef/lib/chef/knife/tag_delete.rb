@@ -51,7 +51,7 @@ class Chef
         message = if deleted_tags.empty?
                     "Nothing has changed. The tags requested to be deleted do not exist."
                   else
-                    "Deleted the following tags: #{deleted_tags.join(", ")}."
+                    "Deleted tags #{deleted_tags.join(", ")} for node #{name}."
                   end
         ui.info(message)
       end
