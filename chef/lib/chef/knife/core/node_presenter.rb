@@ -102,6 +102,7 @@ class Chef
 #{key('Roles:')}       #{Array(node[:roles]).join(', ')}
 #{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
 #{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
+#{key('Tags:')}        #{Array(node[:tags]).join(', ')}
 SUMMARY
             if config[:medium_output] || config[:long_output]
               summarized +=<<-MORE
