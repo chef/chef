@@ -199,13 +199,13 @@ describe Chef::Provider::User::Useradd do
     end
 
     it "runs usermod with the computed command options" do
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam -m" }).and_return(true)
       @provider.manage_user
     end
 
     it "does not set the -r option to usermod" do
       @new_resource.system(true)
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam -m" }).and_return(true)
       @provider.manage_user
     end
 
