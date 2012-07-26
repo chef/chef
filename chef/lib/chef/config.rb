@@ -196,6 +196,7 @@ class Chef
     splay nil
     why_run false
     color false
+    client_fork false
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server

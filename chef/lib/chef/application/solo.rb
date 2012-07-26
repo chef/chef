@@ -132,7 +132,13 @@ class Chef::Application::Solo < Chef::Application
         Chef::RunList::RunListItem.new(item)
       }
     }
-
+  
+  option :client_fork,
+    :short        => "-f",
+    :long         => "--fork",
+    :description  => "Fork client",
+    :boolean      => true
+  
   option :why_run,
     :short        => '-W',
     :long         => '--why-run',
