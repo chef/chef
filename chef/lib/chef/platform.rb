@@ -211,7 +211,7 @@ class Chef
           :openindiana => {
             :default => {
               :service => Chef::Provider::Service::Solaris,
-              :package => Chef::Provider::Package::Solaris,
+              :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
               :group => Chef::Provider::Group::Usermod
             }
@@ -219,7 +219,7 @@ class Chef
           :opensolaris => {
             :default => {
               :service => Chef::Provider::Service::Solaris,
-              :package => Chef::Provider::Package::Solaris,
+              :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
               :group => Chef::Provider::Group::Usermod
             }
@@ -234,6 +234,18 @@ class Chef
           },
           :solaris2 => {
             :default => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Ips,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            },
+            "5.9" => {
+              :service => Chef::Provider::Service::Solaris,
+              :package => Chef::Provider::Package::Solaris,
+              :cron => Chef::Provider::Cron::Solaris,
+              :group => Chef::Provider::Group::Usermod
+            },
+            "5.10" => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
