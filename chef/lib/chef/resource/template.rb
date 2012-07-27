@@ -37,6 +37,7 @@ class Chef
         @local = false
         @variables = Hash.new
         @provider = Chef::Provider::Template
+	@backup_disabled = false
       end
 
       def source(file=nil)
@@ -70,6 +71,15 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
+
+      def backup_disabled(args=nil)
+        set_or_return(
+          :backup_disabled,
+          args,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
     end
   end
 end

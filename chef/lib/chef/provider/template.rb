@@ -60,7 +60,9 @@ class Chef
             description << action_message
             description << diff_current(rendered_template.path)
             converge_by(description) do
-              backup
+              if not @new_resource.backup_disabled
+                backup
+              end
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
               access_controls.set_all!
