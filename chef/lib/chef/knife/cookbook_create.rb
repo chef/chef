@@ -261,12 +261,12 @@ EOH
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH
-maintainer       '#{copyright}'
-maintainer_email '#{email}'
-license          '#{license_name}'
-description      'Installs/Configures #{cookbook_name}'
+maintainer       "#{copyright}"
+maintainer_email "#{email}"
+license          "#{license_name}"
+description      "Installs/Configures #{cookbook_name}"
 #{long_description}
-version          '0.0.1'
+version          "0.0.1"
 EOH
           end
         end
