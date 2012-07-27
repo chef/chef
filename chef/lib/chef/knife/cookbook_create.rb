@@ -276,7 +276,7 @@ maintainer_email "#{email}"
 license          "#{license_name}"
 description      "Installs/Configures #{cookbook_name}"
 #{long_description}
-version          "0.0.1"
+version          "0.1.0"
 EOH
           end
         end
