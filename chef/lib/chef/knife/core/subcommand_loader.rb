@@ -21,8 +21,8 @@ class Chef
   class Knife
     class SubcommandLoader
 
-      CHEF_FILE_IN_GEM = /chef-[\d]+\.[\d]+\.[\d]+/
-      CURRENT_CHEF_GEM = /chef-#{Regexp.escape(Chef::VERSION)}/
+      CHEF_FILE_IN_GEM = /^chef-[\d]+\.[\d]+\.[\d]+/
+      CURRENT_CHEF_GEM = /^chef-#{Regexp.escape(Chef::VERSION)}/
 
       attr_reader :chef_config_dir
       attr_reader :env
