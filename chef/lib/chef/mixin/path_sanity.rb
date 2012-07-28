@@ -22,6 +22,9 @@ class Chef
 
       def enforce_path_sanity(env=ENV)
         if Chef::Config[:enforce_path_sanity]
+          # Ensure path is not nil
+          env["PATH"] ||= ""
+
           path_separator = Chef::Platform.windows? ? ';' : ':'
           existing_paths = env["PATH"].split(path_separator)
           # ensure the Ruby and Gem bindirs are included
