@@ -24,11 +24,17 @@ class Chef
       class Macosx < Chef::Provider::Service::Simple
         include Chef::Mixin::ShellOut
 
-        PLIST_DIRS = %w{~/Library/LaunchAgents
-                         /Library/LaunchAgents
+        PLIST_DIRS = %w{ /Library/LaunchAgents
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
+
+        def initialize(new_resource, run_context)
+          super
+          if Process.uid != 0
+            PLIST_DIRS << "~/Library/LaunchAgents"
+          end
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
