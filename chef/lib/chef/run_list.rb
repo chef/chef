@@ -72,9 +72,14 @@ class Chef
       if other.kind_of?(Chef::RunList)
         other.run_list_items == @run_list_items
       else
+        if other.kind_of?(String)
+          other_run_list_items = [ coerce_to_run_list_item(other) ]        
+        else          
+          other_run_list_items = other.dup
+        end
         return false unless other.respond_to?(:size) && (other.size == @run_list_items.size)
-        other_run_list_items = other.dup
-
+        return false unless other.respond_to?(:map!)
+        
         other_run_list_items.map! { |item| coerce_to_run_list_item(item) }
         other_run_list_items == @run_list_items
       end
