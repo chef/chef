@@ -112,6 +112,10 @@ class Chef::Application
       stdout_logger = Logger.new(STDOUT)
       STDOUT.sync = true
       stdout_logger.formatter = Chef::Log.logger.formatter
+      class << stdout_logger
+        def close
+        end
+      end
       Chef::Log.loggers <<  stdout_logger
     end
     Chef::Log.level = Chef::Config[:log_level]
