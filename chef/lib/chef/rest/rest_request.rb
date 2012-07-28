@@ -162,6 +162,8 @@ class Chef
           pass = Chef::Config["#{url.scheme}_proxy_pass"]
           @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
         end
+        @http_client.open_timeout = 30
+        @http_client.read_timeout = 30
         if url.scheme == HTTPS
           @http_client.use_ssl = true
           if config[:ssl_verify_mode] == :verify_none
