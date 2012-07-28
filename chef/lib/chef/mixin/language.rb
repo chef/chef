@@ -33,9 +33,10 @@ class Chef
         # platform_hash (Hash) a hash of the same structure as Chef::Platform,
         # like this:
         #   {
-        #     :debian => {:default => 'the value for all debian'}
-        #     [:centos, :redhat, :fedora] => {:default => "value for all EL variants"}
+        #     :debian => {:default => 'the value for all debian'},
+        #     [:centos, :redhat, :fedora] => {:default => "value for all EL variants"},
         #     :ubuntu => { :default => "default for ubuntu", '10.04' => "value for 10.04 only"},
+        #     :scientific => { /6\.\d+/ => "value for all 6.x variants" },
         #     :default => "the default when nothing else matches"
         #   }
         # * platforms can be specified as Symbols or Strings
@@ -53,6 +54,8 @@ class Chef
           platform, version = node[:platform].to_s, node[:platform_version].to_s
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
+          elsif @values.key?(platform) && @values[platform].find { |k,v| version =~ Regexp.new(k) }
+            @values[platform].find { |k,v| version =~ Regexp.new(k) }[1]
           elsif @values.key?(platform) && @values[platform].key?("default")
             @values[platform]["default"]
           elsif @values.key?("default")
@@ -93,8 +96,6 @@ class Chef
         end
       end
 
-
-
       # Given a hash similar to the one we use for Platforms, select a value from the hash.  Supports
       # per platform defaults, along with a single base default. Arrays may be passed as hash keys and
       # will be expanded.
@@ -127,9 +128,7 @@ class Chef
         has_platform
       end
 
-
-
-     # Implementation class for determining platform family dependent values
+      # Implementation class for determining platform family dependent values
       class PlatformFamilyDependentValue
 
         # Create a platform family dependent value object.
@@ -139,33 +138,33 @@ class Chef
         #   {
         #     :rhel => "value for all EL variants"
         #     :fedora =>  "value for fedora variants fedora and amazon" ,
-	#     [:fedora, :rhel] => "value for all known redhat variants"
+        #     [:fedora, :rhel] => "value for all known redhat variants"
         #     :debian =>  "value for debian variants including debian, ubuntu, mint" ,
         #     :default => "the default when nothing else matches"
         #   }
         # * platform families can be specified as Symbols or Strings
         # * multiple platform families can be grouped by using an Array as the key
         # * values for platform families can be any object, with no restrictions. Some examples: 
-	#   - [:stop, :start]
-	#   - "mysql-devel"
+        #   - [:stop, :start]
+        #   - "mysql-devel"
         #   - { :key => "value" }
         def initialize(platform_family_hash)
           @values = {}
-	  @values["default"] = nil
+          @values["default"] = nil
           platform_family_hash.each { |platform_families, value| set(platform_families, value)}
         end
 
         def value_for_node(node)
-	  if node.key?(:platform_family)
+          if node.key?(:platform_family)
             platform_family = node[:platform_family].to_s
             if @values.key?(platform_family)
               @values[platform_family]
-	    else
+            else
               @values["default"]
             end
-	  else
+          else
             @values["default"]
-	  end
+          end
         end
 
         private
@@ -179,7 +178,6 @@ class Chef
           end
         end
       end
-
 
       # Given a hash mapping platform families to values, select a value from the hash. Supports a single
       # base default if platform family is not in the map. Arrays may be passed as hash keys and will be 
@@ -206,10 +204,10 @@ class Chef
       def platform_family?(*args)
         has_pf = false
         args.flatten.each do |platform_family|
-	  has_pf = true if platform_family.to_s == node[:platform_family] 
+          has_pf = true if platform_family.to_s == node[:platform_family] 
         end 
         has_pf
-      end	
+      end 
       
       def search(*args, &block)
         # If you pass a block, or have at least the start argument, do raw result parsing
