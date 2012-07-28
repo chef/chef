@@ -28,6 +28,22 @@ require 'rexml/document'
 describe Expander::Solrizer do
   SEP = "__=__"
 
+  describe "when created with invalid JSON" do
+    before do
+      @log_stream = StringIO.new
+      Expander::Solrizer::LOGGER.init(@log_stream)
+      @solrizer = Expander::Solrizer.new('{!"action":"delete"}') { :no_op }
+    end
+
+    it "logs error info" do
+      @log_stream.string.should =~ /invalid JSON/
+    end
+
+    it "skips invalid request" do
+      @solrizer.action.should == "skip"
+    end
+  end
+
   describe "when created with an add request" do
     before do
       @now = Time.now.utc.to_i

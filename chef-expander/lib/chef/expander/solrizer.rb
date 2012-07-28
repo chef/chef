@@ -108,6 +108,7 @@ module Chef
         Yajl::Parser.parse(serialized_object)
       rescue Yajl::ParseError
         log.error { "cannot index object because it is invalid JSON: #{serialized_object}" }
+        nil
       end
 
       def run
