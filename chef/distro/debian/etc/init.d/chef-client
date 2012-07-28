@@ -20,7 +20,7 @@ NAME=chef-client
 DESC=chef-client
 PIDFILE=/var/run/chef/client.pid
 
-test -x $DAEMON || exit 0
+test -x $DAEMON || exit 1
 
 . /lib/lsb/init-functions
 
