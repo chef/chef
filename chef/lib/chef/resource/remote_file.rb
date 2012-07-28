@@ -82,7 +82,14 @@ class Chef
       def absolute_uri?(source)
         URI.parse(source).absolute?
       rescue URI::InvalidURIError
-        false
+				# we do a simple check if the source starts with http://
+				# in case if we are dealing with a specification invalid url, like
+				# some_invalid_url.google.com but for practical purposes they are just as valid
+				if source.strip.start_with?("http://")
+					true
+				else
+					false
+				end
       end
 
     end
