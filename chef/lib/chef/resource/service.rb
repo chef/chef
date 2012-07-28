@@ -39,6 +39,7 @@ class Chef
         @action = "nothing"
         @startup_type = :automatic
         @supports = { :restart => false, :reload => false, :status => false }
+        @error_on_policy_violation = false
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
       
@@ -116,6 +117,14 @@ class Chef
       def running(arg=nil)
         set_or_return(
           :running,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+      
+      def error_on_policy_violation(arg=nil)
+        set_or_return(
+          :error_on_policy_violation,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
