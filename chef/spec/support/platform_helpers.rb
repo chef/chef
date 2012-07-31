@@ -20,4 +20,8 @@ def os_x?
   !!(RUBY_PLATFORM =~ /darwin/)
 end
 
+def solaris?
+  !!(RUBY_PLATFORM =~ /solaris/)
+end
+
 DEV_NULL = windows? ? 'NUL' : '/dev/null'

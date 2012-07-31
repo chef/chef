@@ -318,7 +318,7 @@ describe Chef::Resource::Link do
         it 'create errors out' do
           if windows?
             lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
-          elsif os_x?
+          elsif os_x? or solaris?
             lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
           else
             lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
@@ -473,7 +473,7 @@ describe Chef::Resource::Link do
         it 'errors out' do
           if windows?
             lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
-          elsif os_x?
+          elsif os_x? or solaris?
             lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
           else
             lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
