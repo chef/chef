@@ -284,12 +284,14 @@ describe Chef::Provider::File do
          @provider.load_current_resource
          result = @provider.diff_current_from_content "foo baz"
          # remove the file name info which varies.
-         require 'pp'
-         pp result
          result.shift(2)
-         result.should == ["@@ -0,0 +1 @@", "+foo baz"] 
+	 # Result appearance seems to vary slightly under solaris diff
+         # So we'll compare the second line which is common to both.
+         # Solaris: -1,1 +1,0 @@, "+foo baz"
+	 # Linux/Mac: -1,0, +1 @@, "+foo baz"
+         result.length.should == 2
+         result[1].should == "+foo baz"
        end
     end
   end
 end
-

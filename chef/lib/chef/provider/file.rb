@@ -58,9 +58,15 @@ class Chef
 
       def diff_current source_path
         begin
-          # -N: Treat missing files as empty
+ 	  # Solaris diff doesn't support -N (treat missing files as empty) 
+          # For compatibility we'll create a temp file if the file does not exist
+          # and substitute it
+	  unless ::File.exists?(source_path) 
+	    altfile = Tempfile.new('chef-tempfile')
+            source_path = altfile.path
+          end
           # -u: Unified diff format
-          result = shell_out("diff -u -N #{@current_resource.path} #{source_path}" )
+          result = shell_out("diff -u #{@current_resource.path} #{source_path}" )
           # diff will set a non-zero return code even when there's 
           # valid stdout results, if it encounters something unexpected
           # So as long as we have output, we'll show it.
@@ -76,7 +82,7 @@ class Chef
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that 
           # an exception can be thrown even using shell_out instead of shell_out!
-          "Could not determine diff"
+          "Could not determine diff. Error: #{e.message}"
         end
       end 
 
