@@ -265,8 +265,11 @@ class Chef
 
     def self.list(inflate=false)
       if inflate
-        # TODO: index the environments and use search to inflate - don't inflate for now :(
-        chef_server_rest.get_rest("environments")
+        response = Hash.new
+        Chef::Search::Query.new.search(:environment) do |e|
+          response[e.name] = e unless e.nil?
+        end
+        response
       else
         chef_server_rest.get_rest("environments")
       end
