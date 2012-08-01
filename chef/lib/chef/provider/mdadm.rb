@@ -39,13 +39,13 @@ class Chef
         @current_resource.raid_device(@new_resource.raid_device)
         Chef::Log.debug("#{@new_resource} checking for software raid device #{@current_resource.raid_device}")
 
-        mdadm = shell_out!("mdadm --detail --scan")
-        exists = mdadm.stdout.include?(@new_resource.raid_device)
+        device_not_found = 4
+        mdadm = shell_out!("mdadm --detail --test #{@new_resource.raid_device}", :returns => [0,device_not_found])
+        exists = (mdadm.status == 0)
         @current_resource.exists(exists)
       end
 
       def action_create
-
         unless @current_resource.exists
           converge_by("create RAID device #{new_resource.raid_device}") do 
             command = "yes | mdadm --create #{@new_resource.raid_device} --chunk=#{@new_resource.chunk} --level #{@new_resource.level}"
