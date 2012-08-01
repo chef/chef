@@ -20,12 +20,14 @@ require 'open3'
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Package
       class Ips < Chef::Provider::Package
-        
+
+        include Chef::Mixin::ShellOut
         attr_accessor :virtual
 
         def define_resource_requirements
@@ -39,7 +41,7 @@ class Chef
         end
 
         def load_current_resource
-          @current_resource = Chef::Resource::Ips.new(@new_resource.name)
+          @current_resource = Chef::Resource::Package.new(@new_resource.name)
           @current_resource.package_name(@new_resource.name)
           check_package_state(@new_resource.package_name)
           @current_resource
@@ -50,18 +52,16 @@ class Chef
           installed = false
           depends = false
           
-          Open3.popen3("pkg info -r #{package}") do |stdin, stdout, stderr|
-            stdout.each do |line|
-              case line
-              when /^\s+State: Installed/
-                installed = true
-              when /^\s+Version: (.*)/
-                @candidate_version = $1
-                if installed
-                  @current_resource.version($1)
-                else
-                  @current_resource.version(nil)
-                end
+          shell_out!("pkg info -r #{package}").stdout.each_line do |line|
+            case line
+            when /^\s+State: Installed/
+              installed = true
+            when /^\s+Version: (.*)/
+              @candidate_version = $1
+              if installed
+                @current_resource.version($1)
+              else
+                @current_resource.version(nil)
               end
             end
           end
@@ -72,7 +72,7 @@ class Chef
         def install_package(name, version)
           package_name = "#{name}@#{version}"
           run_command_with_systems_locale(
-            :command => "pkg #{expand_options(@new_resource.options)} install -q --accept #{package_name}"
+            :command => "pkg#{expand_options(@new_resource.options)} install -q --accept #{package_name}"
           )
         end
 
@@ -83,7 +83,7 @@ class Chef
         def remove_package(name, version)
           package_name = "#{name}@#{version}"
           run_command_with_systems_locale(
-            :command => "pkg #{expand_options(@new_resource.options)} uninstall -q #{package_name}"
+            :command => "pkg#{expand_options(@new_resource.options)} uninstall -q #{package_name}"
           )
         end
       end
