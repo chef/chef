@@ -51,10 +51,11 @@ describe Chef::Provider::Group::Usermod do
 
       before do
         @new_resource.stub!(:members).and_return(["all", "your", "base"])
+        File.stub!(:exists?).and_return(true)
       end
 
       it "should raise an error when setting the entire group directly" do
-        lambda { @provider.modify_group_members }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}")
+        lambda { @provider.run_action(:modify) }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}")
       end
     
       platforms.each do |platform, flags|
