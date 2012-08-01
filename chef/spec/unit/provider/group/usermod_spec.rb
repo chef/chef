@@ -59,7 +59,7 @@ describe Chef::Provider::Group::Usermod do
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
         @provider.action = :modify 
-        lambda { @provider.run_action(@provider.process_resource_requirements) }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}")
+        lambda { @provider.run_action(@provider.process_resource_requirements) }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}, must set append true in group")
       end
     
       platforms.each do |platform, flags|
