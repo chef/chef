@@ -21,7 +21,7 @@ class Chef
         end
 
         def current_installed_version
-          command = "port installed #{@new_resource.package_name}"
+          command = "port installed #{@new_resource.package_name}#{expand_options(@new_resource.variants)}"
           output = get_response_from_command(command)
 
           response = nil
@@ -33,7 +33,7 @@ class Chef
         end
 
         def macports_candidate_version
-          command = "port info --version #{@new_resource.package_name}"
+          command = "port info --version #{@new_resource.package_name}#{expand_options(@new_resource.variants)}"
           output = get_response_from_command(command)
 
           match = output.match(/^version: (.+)$/)
@@ -43,7 +43,7 @@ class Chef
 
         def install_package(name, version)
           unless @current_resource.version == version
-            command = "port#{expand_options(@new_resource.options)} install #{name}"
+            command = "port#{expand_options(@new_resource.options)} install #{name}#{expand_options(@new_resource.variants)}"
             command << " @#{version}" if version and !version.empty? 
             run_command_with_systems_locale(
               :command => command
@@ -52,7 +52,7 @@ class Chef
         end
 
         def purge_package(name, version)
-          command = "port#{expand_options(@new_resource.options)} uninstall #{name}"
+          command = "port#{expand_options(@new_resource.options)} uninstall #{name}#{expand_options(@new_resource.variants)}"
           command << " @#{version}" if version and !version.empty?
           run_command_with_systems_locale(
             :command => command
@@ -60,7 +60,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          command = "port#{expand_options(@new_resource.options)} deactivate #{name}"
+          command = "port#{expand_options(@new_resource.options)} deactivate #{name}#{expand_options(@new_resource.variants)}"
           command << " @#{version}" if version and !version.empty?
 
           run_command_with_systems_locale(
@@ -79,7 +79,7 @@ class Chef
             install_package(name, version)
           elsif current_version != version
             run_command_with_systems_locale(
-              :command => "port#{expand_options(@new_resource.options)} upgrade #{name} @#{version}"
+              :command => "port#{expand_options(@new_resource.options)} upgrade #{name}#{expand_options(@new_resource.variants)} @#{version}"
             )
           end
         end

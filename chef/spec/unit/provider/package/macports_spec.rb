@@ -23,8 +23,8 @@ describe Chef::Provider::Package::Macports do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Package.new("zsh")
-    @current_resource = Chef::Resource::Package.new("zsh")
+    @new_resource = Chef::Resource::MacportsPackage.new("zsh")
+    @current_resource = Chef::Resource::MacportsPackage.new("zsh")
 
     @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
@@ -126,6 +126,15 @@ EOF
 
       @provider.install_package("zsh", "4.2.7")
     end
+
+    it "should add variants to the port name when specified" do
+      @current_resource.should_receive(:version).and_return("4.1.6")
+      @provider.current_resource = @current_resource
+      @new_resource.stub!(:variants).and_return("+mp_completion")
+      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port install zsh +mp_completion @4.2.7")
+
+      @provider.install_package("zsh", "4.2.7")
+    end
   end
 
   describe "purge_package" do
@@ -144,6 +153,12 @@ EOF
       @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f uninstall zsh @4.2.7")
       @provider.purge_package("zsh", "4.2.7")
     end
+
+    it "should add variants to the port name when specified" do
+      @new_resource.stub!(:variants).and_return("+mp_completion")
+      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port uninstall zsh +mp_completion @4.2.7")
+      @provider.purge_package("zsh", "4.2.7")
+    end
   end
 
   describe "remove_package" do
@@ -160,6 +175,12 @@ EOF
     it "should add options to the port command when specified" do
       @new_resource.stub!(:options).and_return("-f")
       @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f deactivate zsh @4.2.7")
+      @provider.remove_package("zsh", "4.2.7")
+    end
+
+    it "should add variants to the port command when specified" do
+      @new_resource.stub!(:variants).and_return("+mp_completion")
+      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port deactivate zsh +mp_completion @4.2.7")
       @provider.remove_package("zsh", "4.2.7")
     end
   end
@@ -196,6 +217,16 @@ EOF
       @provider.current_resource = @current_resource
 
       @provider.should_receive(:run_command_with_systems_locale).with(:command => "port -f upgrade zsh @4.2.7")
+
+      @provider.upgrade_package("zsh", "4.2.7")
+    end
+
+    it "should add variants to the port command when specified" do
+      @new_resource.stub!(:variants).and_return("+mp_completion")
+      @current_resource.should_receive(:version).at_least(:once).and_return("4.1.6")
+      @provider.current_resource = @current_resource
+
+      @provider.should_receive(:run_command_with_systems_locale).with(:command => "port upgrade zsh +mp_completion @4.2.7")
 
       @provider.upgrade_package("zsh", "4.2.7")
     end
