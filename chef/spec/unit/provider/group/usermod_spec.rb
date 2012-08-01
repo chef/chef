@@ -55,7 +55,11 @@ describe Chef::Provider::Group::Usermod do
       end
 
       it "should raise an error when setting the entire group directly" do
-        lambda { @provider.run_action(:modify) }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}")
+        @provider.define_resource_requirements
+        @provider.load_current_resource
+        @provider.instance_variable_set("@group_exists", true)
+        @provider.action = :modify 
+        lambda { @provider.run_action(@provider.process_resource_requirements) }.should raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider.to_s}")
       end
     
       platforms.each do |platform, flags|
