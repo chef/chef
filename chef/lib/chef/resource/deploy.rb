@@ -1,5 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -49,9 +50,12 @@ class Chef
     # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
-
+      
       provider_base Chef::Provider::Deploy
       
+      identity_attr :repository
+
+      state_attrs :deploy_to, :revision, :user, :group, :scm_provider, :repository_cache, :environment, :simlinks, :migrate
       def initialize(name, run_context=nil)
         super
         @resource_name = :deploy

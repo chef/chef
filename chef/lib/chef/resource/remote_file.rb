@@ -28,6 +28,10 @@ class Chef
 
       provides :remote_file, :on_platforms => :all
 
+      identity_attr :path
+
+      state_attrs :group, :mode, :owner, :source, :checksum
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :remote_file

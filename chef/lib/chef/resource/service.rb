@@ -22,6 +22,10 @@ class Chef
   class Resource
     class Service < Chef::Resource
       
+      identity_attr :service_name
+
+      state_attrs :pattern, :supports
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :service

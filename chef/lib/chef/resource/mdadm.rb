@@ -1,5 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Joe Williams
 # License:: Apache License, Version 2.0
 #
@@ -21,6 +22,10 @@ require 'chef/resource'
 class Chef
   class Resource
     class Mdadm < Chef::Resource
+
+      identity_attr :raid_device
+
+      state_attrs :devices, :level, :chunk
 
       def initialize(name, run_context=nil)
         super

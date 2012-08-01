@@ -23,6 +23,10 @@ class Chef
   class Resource
     class Scm < Chef::Resource
 
+      identity_attr :destination 
+      
+      state_attrs :repository, :revision, :user, :group
+
       def initialize(name, run_context=nil)
         super
         @destination = name

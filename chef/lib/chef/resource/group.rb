@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -20,6 +21,10 @@ class Chef
   class Resource
     class Group < Chef::Resource
       
+      identity_attr :group_name
+
+      state_attrs :gid, :members, :append, :system
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :group

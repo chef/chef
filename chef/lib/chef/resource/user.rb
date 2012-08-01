@@ -21,6 +21,10 @@ require 'chef/resource'
 class Chef
   class Resource
     class User < Chef::Resource
+
+      identity_attr :username
+
+      state_attrs :comment, :uid, :gid, :home
       
       def initialize(name, run_context=nil)
         super

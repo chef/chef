@@ -1,5 +1,6 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,6 +18,10 @@
 #
 class Chef
   class Resource
+
+    identity_attr :log
+
+    state_attrs :level
 
     # Sends a string from a recipe to a log provider
     #
