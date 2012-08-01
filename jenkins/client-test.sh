@@ -10,7 +10,7 @@ set -x
 export PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 
 # extract the chef source code
-tar xvzf pkg/chef*.tar.gz
+tar xvzf src/chef*.tar.gz
 
 # install all of the development gems
 cd chef/chef
