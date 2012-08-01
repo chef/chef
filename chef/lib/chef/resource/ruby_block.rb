@@ -21,6 +21,10 @@ class Chef
   class Resource
     class RubyBlock < Chef::Resource
       
+      identity_attr :ruby_block
+
+      state_attrs :block
+      
       def initialize(name, run_context=nil)
         super
         @resource_name = :ruby_block

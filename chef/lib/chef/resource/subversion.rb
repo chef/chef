@@ -1,5 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,6 +23,10 @@ class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
       
+      identity_attr :path
+
+      state_attrs :cookbook, :source, :group, :mode, :owner, :variables
+
       def initialize(name, run_context=nil)
         super
         @svn_arguments = '--no-auth-cache'

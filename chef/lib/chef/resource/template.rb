@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -25,6 +26,10 @@ class Chef
   class Resource
     class Template < Chef::Resource::File
       include Chef::Mixin::Securable
+
+      identity_attr :path
+
+      state_attrs :cookbook, :source, :group, :mode, :owner, :variables
 
       provides :template, :on_platforms => :all
 

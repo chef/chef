@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -22,6 +23,11 @@ class Chef
   class Resource
     class Script < Chef::Resource::Execute
       
+      identity_attr :command
+
+      state_attrs :interpreter, :flags
+
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :script

@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -24,7 +25,7 @@ class Chef
 
       identity_attr :package_name
 
-      state_attrs :version
+      state_attrs :version, :options
 
       def initialize(name, run_context=nil)
         super
