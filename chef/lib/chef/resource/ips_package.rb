@@ -17,7 +17,7 @@
 #
 
 require 'chef/resource/package'
-require 'chef/provider/package/ips'
+require 'chef/provider/package/ips_package'
 
 class Chef
   class Resource
