@@ -185,18 +185,14 @@ EOH
         unless File.exists?(File.join(dir,cookbook_name,'CHANGELOG.md'))
           open(File.join(dir, cookbook_name, 'CHANGELOG.md'),'w') do |file|
             file.puts <<-EOH
-# CHANGELOG for #{cookbook_name}
+#{cookbook_name} CHANGELOG
+#{'='*"#{cookbook_name} CHANGELOG".length}
 
-This file is used to list changes made in each version of #{cookbook_name}.
+This file is used to list changes made in each version of the #{cookbook_name} cookbook.
 
-## 0.1.0:
-
-* Initial release of #{cookbook_name}
-
-- - - 
-Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
-
-The [Github Flavored Markdown page](http://github.github.com/github-flavored-markdown/) describes the differences between markdown on github and standard markdown.
+0.1.0
+-----
+- [your_name] - Initial release of #{cookbook_name}
 EOH
           end
         end
