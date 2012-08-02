@@ -46,8 +46,6 @@ documentation using `knife help TOPIC`.
     Set the editor to use for interactive commands
   * `-F`, `--format` FORMAT:
     Which format to use for output. See FORMATS for details.
-  * `-V`, `--verbose`:
-    More verbose output.  Use twice for max verbosity
   * `-d`, `--disable-editing`:
     Do not open EDITOR, just accept the data as is
   * `-u`, `--user` USER:
@@ -56,6 +54,8 @@ documentation using `knife help TOPIC`.
     Show the data after a destructive operation
   * `-v`, `--version`:
     Show chef version
+  * `-V`, `--verbose`:
+    More verbose output. Use twice for max verbosity.
   * `-y`, `--yes`:
     Say yes to all prompts for confirmation
   * `--defaults`:
