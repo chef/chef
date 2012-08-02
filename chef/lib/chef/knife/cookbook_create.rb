@@ -73,10 +73,10 @@ class Chef
         email = config[:cookbook_email] || "YOUR_EMAIL"
         license = ((config[:cookbook_license] != "false") && config[:cookbook_license]) || "none"
         readme_format = ((config[:readme_format] != "false") && config[:readme_format]) || "md"
-        create_cookbook(cookbook_path,cookbook_name, copyright, license)
-        create_readme(cookbook_path,cookbook_name,readme_format)
-        create_changelog(cookbook_path,cookbook_name)
-        create_metadata(cookbook_path,cookbook_name, copyright, email, license,readme_format)
+        create_cookbook(cookbook_path, cookbook_name, copyright, license)
+        create_readme(cookbook_path, cookbook_name, readme_format)
+        create_changelog(cookbook_path, cookbook_name)
+        create_metadata(cookbook_path, cookbook_name, copyright, email, license, readme_format)
       end
 
       def create_cookbook(dir, cookbook_name, copyright, license)
@@ -202,54 +202,90 @@ EOH
         end
       end
 
-      def create_readme(dir, cookbook_name,readme_format)
+      def create_readme(dir, cookbook_name, readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
         unless File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
           open(File.join(dir, cookbook_name, "README.#{readme_format}"), "w") do |file|
             case readme_format
             when "rdoc"
               file.puts <<-EOH
-= DESCRIPTION:
+= #{cookbook_name} Cookbook
+TODO: Enter the cookbook description here.
 
-= REQUIREMENTS:
+== Requirements
+TODO: List your cookbook requirements.
 
-= ATTRIBUTES:
+== Attributes
+==== #{cookbook_name}::default
+- +default['#{cookbook_name}']['my_attribute']+ - this attribute does x, y, and z.
 
-= USAGE:
+== Usage
+==== #{cookbook_name}::default
+TODO: Write usage instructions for each cookbook.
 
+== Contributing
+TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+
+== License and Authors
+Authors: TODO: List authors
 EOH
             when "md","mkd","txt"
               file.puts <<-EOH
-Description
-===========
+#{cookbook_name} Cookbook
+#{'='*"#{cookbook_name} Cookbook".length}
+TODO: Enter the cookbook description here.
 
 Requirements
-============
+------------
+TODO: List your cookbook requirements.
 
 Attributes
-==========
+----------
+#### #{cookbook_name}::default
+- `default['#{cookbook_name}']['my_attribute']` - this attribute does x, y, and z.
 
 Usage
-=====
+-----
+#### #{cookbook_name}::default
+TODO: Write usage instructions for each cookbook.
 
+Contributing
+------------
+TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+
+License and Authors
+-------------------
+Authors: TODO: List authors
 EOH
             else
               file.puts <<-EOH
-Description
+#{cookbook_name} Cookbook
+#{'='*"#{cookbook_name} Cookbook".length}
+  TODO: Enter the cookbook description here.
 
 Requirements
+  TODO: List your cookbook requirements.
 
 Attributes
+  #{cookbook_name}
+  - `default['#{cookbook_name}']['my_attribute']` - this attribute does x, y, and z.
 
 Usage
+  #{cookbook_name}
+  TODO: Write usage instructions for each cookbook.
 
+Contributing
+  TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+
+License and Authors
+  Authors: TODO: List authors
 EOH
             end
           end
         end
       end
 
-      def create_metadata(dir, cookbook_name, copyright, email, license,readme_format)
+      def create_metadata(dir, cookbook_name, copyright, email, license, readme_format)
         msg("** Creating metadata for cookbook: #{cookbook_name}")
 
         license_name = case license
