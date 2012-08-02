@@ -124,7 +124,11 @@ class Chef
                  q = Chef::Search::Query.new
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
-                   i = format_for_display(item)[config[:attribute]]
+                   if(item["cloud"])
+                     i = item["cloud"]["public_hostname"]
+                   else
+                     i = format_for_display(item)[config[:attribute]]
+                   end
                    r.push(i) unless i.nil?
                  end
                  r
