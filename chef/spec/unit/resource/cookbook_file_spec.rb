@@ -1,7 +1,8 @@
-#
+[#
 # Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
-# License:: Apache License, Version 2.0
+#p License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,5 +45,31 @@ describe Chef::Resource::CookbookFile do
   it "sets the provider to Chef::Provider::CookbookFile" do
     @cookbook_file.provider.should == Chef::Provider::CookbookFile
   end
+  
+  describe "when it has a backup number, group, mode, owner, source, and cookbook" do
+    before do
+      @cookbook_file.path("/tmp/origin/file.txt")
+      @cookbook_file.backup(5)
+      @cookbook_file.group("wheel")
+      @cookbook_file.mode("0664")
+      @cookbook_file.owner("root")
+      @cookbook_file.source("/tmp/foo.txt")
+      @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+    end
 
+    it "describes the state" do
+      state = @cookbook_file.state
+      state[:backup].should eql(5)
+      state[:group].should == "wheel"
+      state[:mode].should == "0664"
+      state[:owner].should == "root"
+      state[:source].should == "/tmp/foo.txt"
+      state[:cookbook].should == "/tmp/cookbooks/cooked.rb"
+    end
+    
+    it "returns the path as its identity" do
+      @cookbook_file.identity.should == "/tmp/origin/file.txt"
+    end
+    
+  end
 end

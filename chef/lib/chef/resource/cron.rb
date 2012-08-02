@@ -25,7 +25,7 @@ class Chef
       
       identity_attr :command
 
-      state_attrs :minute, :hour, :day, :month, :weekday, :user, :mailto, :path, :home, :shell
+      state_attrs :minute, :hour, :day, :month, :weekday, :user
 
       def initialize(name, run_context=nil)
         super

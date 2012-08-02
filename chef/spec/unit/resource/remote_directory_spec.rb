@@ -72,4 +72,28 @@ describe Chef::Resource::RemoteDirectory do
     @resource.files_owner 1000
     @resource.files_owner.should eql(1000)
   end
+  
+  describe "when it has cookbook, files owner, files mode, and source" do
+    before do 
+      @resource.path("/var/path/")
+      @resource.cookbook("pokemon.rb")
+      @resource.files_owner("root")
+      @resource.files_group("supergroup")
+      @resource.files_mode("0664")
+      @resource.source("/var/source/")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:cookbook].should == "pokemon.rb"
+      state[:files_owner].should == "root"
+      state[:files_group].should == "supergroup"
+      state[:files_mode].should == "0664"
+      state[:source].should == "/var/source/"
+    end
+
+    it "returns the path  as its identity" do
+      @resource.identity.should == "/var/path/"
+    end
+  end
 end

@@ -27,7 +27,7 @@ class Chef
       
       identity_attr :code
 
-      state_attrs :cookie, :distributed, :name_type, :node_name
+      state_attrs :cookie, :node_name
 
       def initialize(name, run_context=nil)
         super

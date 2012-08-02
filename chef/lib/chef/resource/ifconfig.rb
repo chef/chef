@@ -25,7 +25,7 @@ class Chef
       
       identity_attr :device
 
-      state_attrs :target, :hwaddr, :inet_addr, :bcast, :bcast, :mask, :mtu, :metric, :network, :bootproto
+      state_attrs :target, :hwaddr, :inet_addr, :mask
 
       def initialize(name, run_context=nil)
         super

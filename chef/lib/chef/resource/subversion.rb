@@ -22,10 +22,6 @@ require "chef/resource/scm"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
-      
-      identity_attr :path
-
-      state_attrs :cookbook, :source, :group, :mode, :owner, :variables
 
       def initialize(name, run_context=nil)
         super

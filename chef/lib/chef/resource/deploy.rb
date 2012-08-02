@@ -56,6 +56,7 @@ class Chef
       identity_attr :repository
 
       state_attrs :deploy_to, :revision, :user, :group, :scm_provider, :repository_cache, :environment, :simlinks, :migrate
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :deploy

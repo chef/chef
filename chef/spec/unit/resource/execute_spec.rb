@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -105,4 +106,29 @@ describe Chef::Resource::Execute do
     @resource.creates.should eql("something")
   end
 
+  describe "when it has cwd, environment, group, path, return value, and a user" do
+    before do
+      @resource.command("grep")
+      @resource.cwd("/tmp/")
+      @resource.environment({ :one => :two })
+      @resource.group("legos")
+      @resource.path(["/var/local/"])
+      @resource.returns(1)
+      @resource.user("root")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:cwd].should == "/tmp/"
+      state[:environment].should eql({ :one => :two })
+      state[:group].should == "legos"
+      state[:path].should eql(["/var/local/"])
+      state[:returns].should == 1
+      state[:user].should == "root"
+    end
+
+    it "returns the command as its identity" do
+      @resource.identity.should == "grep"
+    end
+  end
 end

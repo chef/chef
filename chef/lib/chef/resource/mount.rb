@@ -25,7 +25,7 @@ class Chef
       
       identity_attr :device
 
-      state_attrs :mount_point, :device_type, :fstype, :options, :dump, :pass, :supports 
+      state_attrs :mount_point, :device_type, :fstype
 
       def initialize(name, run_context=nil)
         super

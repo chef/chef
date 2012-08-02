@@ -28,6 +28,8 @@ class Chef
       include Chef::Mixin::Securable
 
       provides :cookbook_file, :on_platforms => :all
+
+      identity_attr :path
       
       state_attrs :backup, :group, :mode, :owner, :source, :cookbook 
       
