@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -51,5 +52,24 @@ describe Chef::Resource::Script do
     @resource.flags "-f"
     @resource.flags.should eql("-f")
   end
+
+  describe "when it has interpreter and flags" do
+    before do 
+      @resource.command("grep")
+      @resource.interpreter("gcc")
+      @resource.flags("-al")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:interpreter].should == "gcc"
+      state[:flags].should == "-al"
+    end
+
+    it "returns the command as its identity" do
+      @resource.identity.should == "grep"
+    end
+  end
+
 
 end

@@ -25,7 +25,7 @@ class Chef
 
       identity_attr :command
 
-      state_attrs :creates, :cwd, :environment, :group, :path, :returns, :timeout, :user, :umask
+      state_attrs :cwd, :environment, :group, :path, :returns, :user
 
       def initialize(name, run_context=nil)
         super

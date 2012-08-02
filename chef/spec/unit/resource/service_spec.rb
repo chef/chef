@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -141,4 +142,24 @@ describe Chef::Resource::Service do
       @resource.supports.should == support_hash
     end
   end
+
+  describe "when it has pattern and supports" do
+    before do 
+      @resource.service_name("superfriend")
+      @resource.pattern("plaid")
+      @resource.supports(:status => true)
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:pattern].should == "plaid"
+      state[:supports].should eql(:status => true)
+    end
+
+    it "returns the service name as its identity" do
+      @resource.identity.should == "superfriend"
+    end
+  end
+
+  
 end

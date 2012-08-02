@@ -24,7 +24,7 @@ class Chef
 
       identity_attr :username
 
-      state_attrs :comment, :uid, :gid, :home
+      state_attrs :uid, :gid, :home
       
       def initialize(name, run_context=nil)
         super

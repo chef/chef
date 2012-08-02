@@ -27,10 +27,6 @@ class Chef
     class Template < Chef::Resource::File
       include Chef::Mixin::Securable
 
-      identity_attr :path
-
-      state_attrs :cookbook, :source, :group, :mode, :owner, :variables
-
       provides :template, :on_platforms => :all
 
       def initialize(name, run_context=nil)

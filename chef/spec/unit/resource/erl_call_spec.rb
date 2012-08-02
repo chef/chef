@@ -1,5 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Joe Williams
 # License:: Apache License, Version 2.0
 #
@@ -66,4 +67,21 @@ describe Chef::Resource::ErlCall do
     @resource.node_name.should eql("chef@erlang")
   end
 
+  describe "when it has cookie and node_name" do
+    before do 
+      @resource.code("erl-call:function()")
+      @resource.cookie("cookie")
+      @resource.node_name("raster")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:cookie].should == "cookie"
+      state[:node_name].should == "raster"
+    end
+
+    it "returns the code as its identity" do
+      @resource.identity.should == "erl-call:function()"
+    end
+  end
 end

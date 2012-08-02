@@ -23,7 +23,7 @@ class Chef
       
       identity_attr :group_name
 
-      state_attrs :gid, :members, :append, :system
+      state_attrs :members
 
       def initialize(name, run_context=nil)
         super

@@ -18,26 +18,24 @@
 #
 class Chef
   class Resource
-
-    identity_attr :log
-
-    state_attrs :level
-
-    # Sends a string from a recipe to a log provider
-    #
-    # log "some string to log" do
-    #   level :info  # (default)  also supports :warn, :debug, and :error
-    # end
-    #    
-    # === Example
-    # log "your string to log" 
-    #
-    # or 
-    #
-    # log "a debug string" { level :debug }
-    #  
     class Log < Chef::Resource
-      
+    
+      identity_attr :log_string
+
+      # Sends a string from a recipe to a log provider
+      #
+      # log "some string to log" do
+      #   level :info  # (default)  also supports :warn, :debug, and :error
+      # end
+      #    
+      # === Example
+      # log "your string to log" 
+      #
+      # or 
+      #
+      # log "a debug string" { level :debug }
+      #
+  
       # Initialize log resource with a name as the string to log 
       #
       # === Parameters
@@ -49,6 +47,7 @@ class Chef
         @resource_name = :log
         @level = :info
         @action = :write
+        @log_string = name
       end
       
       # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
@@ -59,7 +58,14 @@ class Chef
           :equal_to => [ :debug, :info, :warn, :error, :fatal ]
         )
       end
-      
+    
+      def log_string(arg=nil)
+        set_or_return(
+          :log_string,
+          arg,
+          :kind_of => String
+       )
+      end
     end
   end  
 end

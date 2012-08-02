@@ -28,7 +28,7 @@ class Chef
       
       identity_attr :path
 
-      state_attrs :group, :mode, :owner, :recursive
+      state_attrs :group, :mode, :owner
       
       include Chef::Mixin::Securable
 
