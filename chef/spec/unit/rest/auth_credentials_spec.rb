@@ -97,20 +97,42 @@ describe Chef::REST::AuthCredentials do
 
     it "generates signature headers for the request" do
       Time.stub!(:now).and_return(@request_time)
-      expected = {}
-      expected["HOST"]                  = "localhost"
-      expected["X-OPS-AUTHORIZATION-1"] = "kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/"
-      expected["X-OPS-AUTHORIZATION-2"] = "Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS"
-      expected["X-OPS-AUTHORIZATION-3"] = "yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO"
-      expected["X-OPS-AUTHORIZATION-4"] = "r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ"
-      expected["X-OPS-AUTHORIZATION-5"] =  "M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k"
-      expected["X-OPS-AUTHORIZATION-6"] = "qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA=="
-      expected["X-OPS-CONTENT-HASH"]    = "1tuzs5XKztM1ANrkGNPah6rW9GY="
-      expected["X-OPS-SIGN"]            = "version=1.0"
-      expected["X-OPS-TIMESTAMP"]       = "2010-04-10T17:34:20Z"
-      expected["X-OPS-USERID"]          = "client-name"
+      actual = @auth_credentials.signature_headers(@request_params)
+      actual["HOST"].should                    == "localhost"
+      actual["X-OPS-AUTHORIZATION-1"].should == "kBssX1ENEwKtNYFrHElN9vYGWS7OeowepN9EsYc9csWfh8oUovryPKDxytQ/"
+      actual["X-OPS-AUTHORIZATION-2"].should == "Wc2/nSSyxdWJjjfHzrE+YrqNQTaArOA7JkAf5p75eTUonCWcvNPjFrZVgKGS"
+      actual["X-OPS-AUTHORIZATION-3"].should == "yhzHJQh+lcVA9wwARg5Hu9q+ddS8xBOdm3Vp5atl5NGHiP0loiigMYvAvzPO"
+      actual["X-OPS-AUTHORIZATION-4"].should == "r9853eIxwYMhn5hLGhAGFQznJbE8+7F/lLU5Zmk2t2MlPY8q3o1Q61YD8QiJ"
+      actual["X-OPS-AUTHORIZATION-5"].should ==  "M8lIt53ckMyUmSU0DDURoiXLVkE9mag/6Yq2tPNzWq2AdFvBqku9h2w+DY5k"
+      actual["X-OPS-AUTHORIZATION-6"].should == "qA5Rnzw5rPpp3nrWA9jKkPw4Wq3+4ufO2Xs6w7GCjA=="
+      actual["X-OPS-CONTENT-HASH"].should == "1tuzs5XKztM1ANrkGNPah6rW9GY="
+      actual["X-OPS-SIGN"].should         =~ %r{(version=1\.0)|(algorithm=sha1;version=1.0;)}
+      actual["X-OPS-TIMESTAMP"].should    == "2010-04-10T17:34:20Z"
+      actual["X-OPS-USERID"].should       == "client-name"
 
-      @auth_credentials.signature_headers(@request_params).should == expected
+    end
+
+    describe "when configured for version 1.1 of the authn protocol" do
+      before do
+        Chef::Config[:authentication_protocol_version] = "1.1"
+      end
+
+      after do
+        Chef::Config[:authentication_protocol_version] = "1.0"
+      end
+
+      it "generates the correct signature for version 1.1" do
+        Time.stub!(:now).and_return(@request_time)
+        actual = @auth_credentials.signature_headers(@request_params)
+        actual["HOST"].should                    == "localhost"
+        actual["X-OPS-CONTENT-HASH"].should == "1tuzs5XKztM1ANrkGNPah6rW9GY="
+        actual["X-OPS-SIGN"].should         == "algorithm=sha1;version=1.1;"
+        actual["X-OPS-TIMESTAMP"].should    == "2010-04-10T17:34:20Z"
+        actual["X-OPS-USERID"].should       == "client-name"
+
+        # mixlib-authN will test the actual signature stuff for each version of
+        # the protocol so we won't test it again here.
+      end
     end
   end
 end

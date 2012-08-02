@@ -352,6 +352,10 @@ class Chef
 
       if Chef::Config[:node_name].nil?
         #raise ArgumentError, "No user specified, pass via -u or specifiy 'node_name' in #{config[:config_file] ? config[:config_file] : "~/.chef/knife.rb"}"
+      elsif Chef::Config[:node_name].bytesize > 90
+        # node names > 90 bytes only work with authentication protocol >= 1.1
+        # see discussion in config.rb.
+        Chef::Config[:authentication_protocol_version] = "1.1"
       end
     end
 
