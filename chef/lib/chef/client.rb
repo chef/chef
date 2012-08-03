@@ -397,18 +397,62 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
-      run_context = nil
-
-      @events.run_start(Chef::VERSION)
-      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
-      enforce_path_sanity
-      run_ohai
-      @events.ohai_completed(node)
-      register unless Chef::Config[:solo]
-
-      load_node
-
+      tmpdir = ENV["TMP"] || ENV["TEMP"] || ENV["TMPDIR"] || if Chef::Platform.windows? then "#{ENV["SYSDRIVE"]}" else "/tmp" end
+      waitlockfile = "#{tmpdir}/.chef-client-wait.lock"
+      runlockfile = "#{tmpdir}/.chef-client-run.lock"
+      waitpidfile = "#{tmpdir}/.chef-client-wait.pid"
+      runpidfile = "#{tmpdir}/.chef-client-run.pid"
+      waitlock = runlock = nil
+      # See if we can lock things
+      if File.respond_to?(:flock)
+        waitlock = File.open(waitlockfile,'w')
+        unless waitlock.flock(File::LOCK_EX|File::LOCK_NB)
+          # Another chef-client run is waiting, wait on it to finish and then exit.
+          waitpid = File.read(waitpidfile).strip.chomp
+          runpid = File.read(runpidfile).strip.chomp
+          Chef::Log.info("Chef client #{waitpid} is already waiting on #{runpid}, will wait for #{waitpid} to exit and then exit.")
+          waitlock.flock(File::LOCK_EX)
+          waitlock.flock(File::LOCK_UN)
+          waitlock.close
+          runlock = File.open(runlockfile,'w')
+          runlock.flock(File::LOCK_EX)
+          runlock.flock(File::LOCK_UN)
+          runlock.close
+          return true
+        end
+        # We grabbed the wait lock.  Save our PID to the waitpidfile, and
+        # see if we can grab the run lock
+        File.open(waitpidfile,File::CREAT|File::TRUNC|File::RDWR) do |f|
+          f.write(Process.pid.to_s)
+        end
+        runlock = File.open(runlockfile,'w')
+        unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
+          # We have the waitlock, but another chef-client process is running.
+          # Wait for it.
+          runpid = File.read(runpidfile).strip.chomp
+          Chef::Log.info("Chef client #{runpid} is running, will wait for it to finish and then run.")
+          runlock.flock(File::LOCK_EX)
+        end
+        # We grabbed the run lock.  Save our PID to the runpidfile, unlink the
+        # waitpidfile, and release the wait lock.
+        File.open(runpidfile,File::CREAT|File::TRUNC|File::RDWR) do |f|
+          f.write(Process.pid.to_s)
+        end
+        File.unlink(waitpidfile)
+        waitlock.flock(File::LOCK_UN)
+      end
       begin
+        run_context = nil
+
+        @events.run_start(Chef::VERSION)
+        Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        enforce_path_sanity
+        run_ohai
+        @events.ohai_completed(node)
+        register unless Chef::Config[:solo]
+
+        load_node
+
         build_node
 
         run_status.start_clock
@@ -441,6 +485,10 @@ class Chef
         run_status = nil
         run_context = nil
         GC.start
+        if runlock
+          File.unlink(runlockfile)
+          runlock.flock(File::LOCK_UN)
+        end
       end
       true
     end
