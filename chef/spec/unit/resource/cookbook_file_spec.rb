@@ -1,4 +1,4 @@
-[#
+#
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2010 Opscode, Inc.

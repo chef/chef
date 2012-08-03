@@ -98,23 +98,5 @@ describe Chef::Resource::Mdadm do
       @resource.identity.should == "raider"
     end
   end
-  describe "when it has cookie and node_name" do
-    before do 
-      @resource.code("erl-call:function()")
-      @resource.cookie("cookie")
-      @resource.node_name("raster")
-    end
-
-    it "describes its state" do
-      state = @resource.state
-      state[:cookie].should == "cookie"
-      state[:node_name].should == "raster"
-    end
-
-    it "returns the code as its identity" do
-      @resource.identity.should == "erl-call:function()"
-    end
-  end
-
   
 end
