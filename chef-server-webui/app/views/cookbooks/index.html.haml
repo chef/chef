@@ -10,7 +10,7 @@
             %th Latest Version
             %th Other Versions
         %tbody.cookbook_versions
-          - @cl.keys.sort.each do |cookbook|
+          - @cl.keys.sort_by {|key,value| key.downcase}.each do |cookbook|
             - versions = @cl[cookbook]
             %tr
               %td= cookbook
