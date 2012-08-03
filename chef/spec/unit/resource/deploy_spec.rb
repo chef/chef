@@ -229,4 +229,38 @@ describe Chef::Resource::Deploy do
     @resource.keep_releases.should == 1
   end
 
+  describe "when it has meta application root, revision, user, group,
+            scm provider, repository cache, environment, simlinks and migrate" do
+    before do 
+      @resource.repository("http://uri.org")
+      @resource.deploy_to("/")
+      @resource.revision("1.2.3")
+      @resource.user("root")
+      @resource.group("pokemon")
+      @resource.scm_provider(Chef::Provider::Git)
+      @resource.repository_cache("cached-copy")
+      @resource.environment({"SUDO" => "TRUE"})
+      @resource.symlinks({"system" => "public/system"})
+      @resource.migrate(false)
+      
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:deploy_to].should == "/"
+      state[:revision].should == "1.2.3"
+      state[:user].should == "root"
+      state[:group].should == "pokemon"
+      state[:scm_provider].should eql(Chef::Provider::Git)
+      state[:repository_cache].should == "cached-copy"
+      state[:environment].should eql({"SUDO" => "TRUE"})
+      state[:symlinks].should eql({"system" => "public/system"})
+      state[:migrate].should == false
+    end
+
+    it "returns the repository URI as its identity" do
+      @resource.identity.should == "http://uri.org"
+    end
+  end
+  
 end
