@@ -55,7 +55,7 @@ class Chef
       
       identity_attr :repository
 
-      state_attrs :deploy_to, :revision, :user, :group, :scm_provider, :repository_cache, :environment, :simlinks, :migrate
+      state_attrs :deploy_to, :revision, :user, :group, :scm_provider, :repository_cache, :environment, :symlinks, :migrate
 
       def initialize(name, run_context=nil)
         super

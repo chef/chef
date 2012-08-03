@@ -21,13 +21,14 @@ class Chef
   class Resource
     class Ohai < Chef::Resource
       
-      identity_attr :ohai
+      identity_attr :name
 
       state_attrs :plugin
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :ohai
+        @name = name
         @allowed_actions.push(:reload)
         @action = :reload
         @plugin = nil
@@ -36,6 +37,14 @@ class Chef
       def plugin(arg=nil)
         set_or_return(
           :plugin,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def name(arg=nil)
+        set_or_return(
+          :name,
           arg,
           :kind_of => [ String ]
         )
