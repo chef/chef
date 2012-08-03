@@ -51,31 +51,27 @@ shared_examples_for Chef::Client do
     @client.node = @node
   end
 
-  describe "when the node name is not too long for authentication protocol version 1.0" do
-    before do
-      Chef::Config[:node_name] = ("f" * 90)
-    end
-
+  describe "authentication protocol selection" do
     after do
       Chef::Config[:authentication_protocol_version] = "1.0"
     end
 
-    it "does not force the authentication protocol to 1.1" do
-      # ugly that this happens as a side effect of a getter :(
-      @client.node_name
-      Chef::Config[:authentication_protocol_version].should == "1.0"
-    end
-  end
-
-  describe "when the node name is too long for authentication protocol version 1.0" do
-    before do
-      Chef::Config[:node_name] = ("f" * 91)
+    context "when the node name is <= 90 bytes" do
+      it "does not force the authentication protocol to 1.1" do
+        Chef::Config[:node_name] = ("f" * 90)
+        # ugly that this happens as a side effect of a getter :(
+        @client.node_name
+        Chef::Config[:authentication_protocol_version].should == "1.0"
+      end
     end
 
-    it "sets the authentication protocol to version 1.1" do
-      # ugly that this happens as a side effect of a getter :(
-      @client.node_name
-      Chef::Config[:authentication_protocol_version].should == "1.1"
+    context "when the node name is > 90 bytes" do
+      it "sets the authentication protocol to version 1.1" do
+        Chef::Config[:node_name] = ("f" * 91)
+        # ugly that this happens as a side effect of a getter :(
+        @client.node_name
+        Chef::Config[:authentication_protocol_version].should == "1.1"
+      end
     end
   end
 
