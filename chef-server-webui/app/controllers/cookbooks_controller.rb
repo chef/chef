@@ -148,7 +148,12 @@ class CookbooksController < ApplicationController
     when "plain"
       show_plain_file(url)
     else
-      syntax_highlight(url)
+      begin
+        syntax_highlight(url)
+      rescue
+        Chef::Log.error("Error while parsing file #{url}")
+        show_plain_file(url)
+      end
     end
   end
 

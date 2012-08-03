@@ -11,7 +11,7 @@
             %th &nbsp;
             %th.last &nbsp;
           - even = false;
-          - @clients_list.each do |client|
+          - @clients_list.sort_by {|value| value.downcase}.each do |client|
             %tr{ :class => even ? "even" : "odd" }
               %td{:colspan => 2}= link_to(client, client_path(client))
               %td

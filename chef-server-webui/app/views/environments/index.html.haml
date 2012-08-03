@@ -11,7 +11,7 @@
             %th &nbsp;
             %th.last &nbsp;
           - even = false;
-          - @environment_list.each do |env|
+          - @environment_list.sort_by {|key,value| key.downcase}.each do |env|
             %tr{ :class => even ? "even" : "odd" }
               %td{:colspan => 2}= link_to(env[0], environment_path(env[0]))
               %td
