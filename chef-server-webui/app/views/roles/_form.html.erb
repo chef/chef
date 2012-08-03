@@ -1,16 +1,16 @@
 <div class="content roleFormContainer">
-  <%= form(:action => form_url, :method => method, :id => form_id, :class => 'form roleForm') do -%>
+  <%= form_tag form_url, :method => method, :id => form_id, :class => 'form roleForm' do %>
     <% unless form_for == 'edit' %>
       <div class="group form">
         <label class="label" for="role_name">Name</label>
-        <%= text_field :id => "role_name", :name => "name", :class => "text_field", :value => params.has_key?(:name) ? h(params[:name]) : @role.name %>
+        <%= text_field_tag "name", params.has_key?(:name) ? h(params[:name]) : @role.name, :id => "role_name", :class => "text_field" %>
         <span class="description">The name of the Role</span>
       </div>
     <% end %>
 
     <div class="group form">
       <label class="label" for="role_description">Description</label>
-      <%= text_area(params.has_key?(:description) ? h(params[:description]) : @role.description, :name => "description", :class => "text_area", :id => "role_description") %>
+      <%= text_area_tag "description", params.has_key?(:description) ? h(params[:description]) : @role.description, :class => "text_area", :id => "role_description" %>
       <span class="description">A description of this Role</span>
     </div>
 
@@ -49,12 +49,12 @@
                 <% end -%>
               </span>
               <span id="environment_run_list_selection_control">
-                <%= select :environment, :collection => [['noop','Other Environments']].concat(@environments.map {|e| [e,e]}), :id => 'activeEnvironment'%>
+                <%= select_tag :environment, options_from_collection_for_select([['noop','Other Environments']].concat(@environments.map {|e| [e,e]}), :first, :last), :id => 'activeEnvironment'%>
               </span>
             </div>
           </div>
           <% @run_lists.each do |environment, run_list| %>
-            <%= partial('run_lists', :environment => environment, :run_list => run_list)%>
+            <%= render('run_lists', :environment => environment, :run_list => run_list)%>
           <% end %>
         </div>
       </div>
@@ -77,7 +77,7 @@
 
     <div class="group form attrEditor">
       <label class="label">Default and Override Attributes</label>
-      <%= partial 'layout/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json%>
+      <%= render 'layouts/jsonedit', :json => { :defaults => @role.default_attributes, :overrides => @role.override_attributes }.to_json%>
       <span class="description">
         A JSON hash for default attributes for nodes of this role. These attributes will be applied according to the attribute precedence rules.
       </span>
@@ -85,7 +85,7 @@
 
     <div class="group">
       <div class="actions-bar">
-        <%= submit(submit_name, :id => submit_id, :class => 'button') -%>
+        <%= submit_tag submit_name, :id => submit_id, :class => 'button' %>
       </div>
     </div>
   <% end =%>

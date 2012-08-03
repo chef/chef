@@ -9,22 +9,14 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# Based on the 'merb' command, by Ezra
-
-# Add chef and chef-server-slice lib dirs to the load path
-# Load chef and chef-server slice from source rather than gem, if present
-
-require "rubygems"
-require "merb-core"
 
 # Load chef and chef-server-api from source rather than gem, if present
 $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../../chef/lib'))
@@ -41,19 +33,22 @@ end
 require 'chef'
 require 'chef-server-webui'
 
-if ARGV[0] && ARGV[0] =~ /^[^-]/
-  ARGV.push "-H"
-end 
-unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
-  ARGV.push *%w[-a thin]
+# Run the server unless console or script runner requested
+unless %w[c console r runner].any? { |o| ARGV.index(o) }
+  ARGV.unshift "server"
 end
-unless %w[-p --port].any? { |o| ARGV.index(o) }
+
+# Default to port 4040 if not specified
+unless %w[-p --port c console].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-p 4040]
 end
 
-# Tell merb where to root
-ARGV.push *[ "-m", CHEF_SERVER_WEBUI_ROOT]
+# Configure Rails environment
+if index = ARGV.index("-e")
+  ENV['RAILS_ENV'] = ARGV[index+1]
+end
 
+# Load custom config
 if index = ARGV.index("-C")
   config = ARGV[index+1]
   ARGV.delete("-C")
@@ -65,7 +60,11 @@ else
   )
 end
 
-Chef::Log.init(Chef::Config[:log_location]) 
+# Configure Chef
+Chef::Log.init(Chef::Config[:log_location])
 Chef::Log.level = Chef::Config[:log_level]
 
-Merb.start
+# Boot Rails
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require 'rails/commands'

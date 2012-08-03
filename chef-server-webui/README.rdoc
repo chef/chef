@@ -2,9 +2,9 @@
 
 = DESCRIPTION:
 
-Chef is a configuration management tool designed to bring automation to your entire infrastructure. 
+Chef is a configuration management tool designed to bring automation to your entire infrastructure.
 
-The Chef Wiki is the definitive source of user documentation. 
+The Chef Wiki is the definitive source of user documentation.
 
 * http://wiki.opscode.com/display/chef/Home
 
@@ -42,6 +42,7 @@ Install the following RubyGems.
 * rspec
 * cucumber
 * merb-core
+* rails
 
 Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
 

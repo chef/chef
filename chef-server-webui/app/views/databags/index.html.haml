@@ -2,7 +2,7 @@
   .content
     %h2.title Databags
     .inner
-      = partial('navigation', :active => 'index')
+      = render('navigation', :active => 'index')
     .content
       .inner
         %table.table
@@ -14,8 +14,8 @@
           %tbody
             - @databags.sort.each_with_index do |databag, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td{:colspan => 2}= link_to databag[0], url(:databag, { :id => databag[0] })
+                %td{:colspan => 2}= link_to databag[0], databag_path(databag[0])
                 %td
-                  = link_to('Edit', url(:databag, :id => databag[0])) 
+                  = link_to('Edit', databag_path(databag[0]))
                   |
-                  = link_to('Delete', url(:databag, :id => databag[0]), :method => "delete", :confirm => "Really delete Databag #{databag[0]}?  There is no undo.")
+                  = link_to('Delete', databag_path(databag[0]), :method => "delete", :confirm => "Really delete Databag #{databag[0]}?  There is no undo.")

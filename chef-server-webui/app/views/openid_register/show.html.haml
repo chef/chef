@@ -2,6 +2,6 @@
   .content
     %h2.title= "Registration #{@registered_node.name}"
     .inner
-      = link_to "OpenID URL", url(:openid_node, { :id => @registered_node.name.gsub(/\./, "_")})
+      = link_to "OpenID URL", openid_node_path(@registered_node.name.gsub(/\./, "_"))
       %br= "Validated: #{@registered_node.validated}"
       %br= "Admin: #{@registered_node.admin}"

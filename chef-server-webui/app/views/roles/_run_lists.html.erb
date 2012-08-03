@@ -14,7 +14,7 @@
         <a href="javascript:void(0)" class="createEmptyRunListControl" id="<%= environment -%>">Create a new empty run list</a>
       </div>
       <div class="cloneRunListOption">
-        Or, clone an existing run list: <%= select :environment_to_clone, :collection => @existing_run_list_environments, :id => environment, :class => 'environmentToClone' %>
+        Or, clone an existing run list: <%= select :environment_to_clone, options_from_collection_for_select(@existing_run_list_environments, :to_s, :to_s), :id => environment, :class => 'environmentToClone' %>
       </div>
     </div>
   </div>

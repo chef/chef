@@ -2,7 +2,7 @@
   .content
     %h2.title= "Databag Item: #{@databag_item_name}"
     .inner
-      = partial('navigation', :active => 'show')
+      = render('navigation', :active => 'show')
     .content
       .inner
         .accordion

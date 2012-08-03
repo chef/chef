@@ -1,9 +1,9 @@
 .secondary-navigation
   %ul
-    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', url(:nodes))
-    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', url(:new_node))
+    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', nodes_path)
+    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', new_node_path)
     - if active != 'create' && active != 'index'
-      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', url(:node, @node.name))
-      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', url(:edit_node, @node.name))
-      %li= link_to('Delete', url(:node, @node.name), :method => "delete", :confirm => "Really delete node #{@node.name}? There is no undo.")
+      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', node_path(@node.name))
+      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', edit_node_path(@node.name))
+      %li= link_to('Delete', node_path(@node.name), :method => "delete", :confirm => "Really delete node #{@node.name}? There is no undo.")
   .clear

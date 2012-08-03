@@ -2,5 +2,5 @@
   .content
     %h2.title= "Client: #{h @client.name}"
     .inner
-      = partial('navigation', :active => 'edit')
-  = partial('form', :header => "Edit Client #{@client.name}", :form_id => 'edit_client', :submit_name => "Save Client", :submit_id => "edit_client_button", :form_for => 'edit', :form_url => url(:client, @client.name) )
+      = render('navigation', :active => 'edit')
+  = render('form', :header => "Edit Client #{@client.name}", :form_id => 'edit_client', :submit_name => "Save Client", :submit_id => "edit_client_button", :form_for => 'edit', :form_url => client_path(@client.name) )

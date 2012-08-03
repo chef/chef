@@ -3,12 +3,12 @@
     %div.group.form
       %label.label Data
     %div.group.form{:style => "position:relative;"}
-      %label.label Attributes 
-      = partial 'layout/jsonedit', :json =>@default_data.to_json
+      %label.label Attributes
+      = render 'layouts/jsonedit', :json =>@default_data.to_json
 
 
-    = form(:action => form_url, :method => :post, :id => form_id, :class => 'form') do
+    = form_tag form_url, :method => :post, :id => form_id, :class => 'form' do
       %div.group
         .actions-bar
-          .actions= submit submit_name, :id => submit_id, :class => 'button'
+          .actions= submit_tag submit_name, :id => submit_id, :class => 'button'
 

@@ -2,7 +2,7 @@
   .content
     %h2.title= "Node #{h @node.name}"
     .inner
-      = partial('navigation', :active => 'show')
+      = render('navigation', :active => 'show')
 
       .content
         .inner

@@ -3,7 +3,7 @@
     %h2.title
       Node List
     .inner
-      = partial('navigation', :active => 'index')
+      = render('navigation', :active => 'index')
     .content
       .inner
         %table.table
@@ -20,10 +20,10 @@
           - else
             - @node_list.each do |node|
               %tr{:class => even ? "even": "odd" }
-                %td{:colspan => 2}= link_to node, url(:node, { :id => node } )
+                %td{:colspan => 2}= link_to node, node_path(node)
                 %td
-                  = link_to('Edit', url(:edit_node, node)) 
+                  = link_to('Edit', edit_node_path(node))
                   |
-                  = link_to('Delete', url(:node, node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
+                  = link_to('Delete', node_path(node), :method => "delete", :confirm => "Really delete Node #{node}?  There is no undo.")
                 - even = (not even)
 

@@ -10,4 +10,4 @@
           - @results.each do |result|
             - result.each do |o|
               %tr
-                %td= link_to(o.name, url(@type.to_sym, determine_name(@type.to_sym, o)))
+                %td= link_to(o.name, send("#{@type.to_sym}_path", determine_name(@type.to_sym, o)))

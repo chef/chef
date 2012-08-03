@@ -2,7 +2,7 @@
   .content
     %h2.title= "Databag: #{@databag_name}"
     .inner
-      = partial('item_navigation', :active => 'show')
+      = render('item_navigation', :active => 'show')
     .content
       .inner
         %table.table
@@ -12,8 +12,8 @@
             %th.last &nbsp;
             - @databag.sort.each_with_index do |databag_item_uri, index|
               %tr{:class => "#{index % 2 == 1 ? 'odd' : 'even'}"}
-                %td{:colspan => 2}= link_to databag_item_uri[0], url(:databag_databag_item, :id => databag_item_uri[0], :databag_id => @databag_name)
+                %td{:colspan => 2}= link_to databag_item_uri[0], databag_databag_item_path(@databag_name, databag_item_uri[0])
                 %td
-                  = link_to('Edit', url(:edit_databag_databag_item, :id => databag_item_uri[0], :databag_id => @databag_name)) 
+                  = link_to('Edit', edit_databag_databag_item_path(@databag_name, databag_item_uri[0]))
                   |
-                  = link_to('Delete', url(:databag_databag_item, :id => databag_item_uri[0], :databag_id => @databag_name), :method => "delete", :confirm => "Really delete Databag Item #{databag_item_uri[0]}?  There is no undo.")
+                  = link_to('Delete', databag_databag_item_path(@databag_name, databag_item_uri[0]), :method => "delete", :confirm => "Really delete Databag Item #{databag_item_uri[0]}?  There is no undo.")

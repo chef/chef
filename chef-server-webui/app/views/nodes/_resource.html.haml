@@ -16,7 +16,7 @@
             - elsif value.kind_of?(Symbol)
               = "#{h value.to_s}"
             - elsif attr_name == "actions"
-              = partial(:action, :actions => value)
+              = render(:action, :actions => value)
             - else
               = "#{h value.inspect}"
       

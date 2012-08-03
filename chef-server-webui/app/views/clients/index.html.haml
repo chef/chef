@@ -2,7 +2,7 @@
   .content
     %h2.title Clients
     .inner
-      = partial('navigation', :active => 'index')
+      = render('navigation', :active => 'index')
     .content
       .inner
         %table.table
@@ -13,9 +13,9 @@
           - even = false;
           - @clients_list.each do |client|
             %tr{ :class => even ? "even" : "odd" }
-              %td{:colspan => 2}= link_to(client, url(:client, client))
+              %td{:colspan => 2}= link_to(client, client_path(client))
               %td
-                = link_to('Edit', url(:edit_client, client)) 
+                = link_to('Edit', edit_client_path(client))
                 |
-                = link_to('Delete', url(:client, client), :method => "delete", :confirm => "Really delete Client #{client}?  there is no undo.")
+                = link_to('Delete', client_path(client), :method => "delete", :confirm => "Really delete Client #{client}?  there is no undo.")
               - even = (not even)
