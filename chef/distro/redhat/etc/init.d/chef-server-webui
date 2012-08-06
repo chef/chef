@@ -18,7 +18,7 @@
 # Source function library
 . /etc/init.d/functions
 
-exec="/usr/bin/chef-server-webui"
+exec="/usr/sbin/chef-server-webui"
 prog="chef-server-webui"
 
 [ -f /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
