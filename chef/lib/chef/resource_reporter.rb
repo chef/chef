@@ -162,9 +162,20 @@ class Chef
       end
     end
 
-    def run_failed(exception)
-      @exception = exception
-      @status = "failure"
+    def run_failed(node, exception)
+      if reporting_enabled?
+        resource_history_url = "nodes/#{@node.name}/runs/#{run_id}"
+        Chef::Log.debug(resource_history_url)
+        @exception = exception
+        @status = "failure"
+        run_data = report(node)
+        run_data["action"] = "end"
+        Chef::Log.info("Sending resource update report (run-id: #{run_id})")
+        Chef::Log.debug run_data.inspect
+        @rest_client.post_rest(resource_history_url, run_data)
+      else
+        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+      end
     end
 
     def report(node)
@@ -176,12 +187,13 @@ class Chef
       run_data["run_list"] = node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
-      if exception
-        run_data["data"]["exception"] = {}
-        run_data["data"]["exception"]["class"] = exception.inspect
-        run_data["data"]["exception"]["message"] = exception.message
-        run_data["data"]["exception"]["backtrace"] = exception.backtrace
-        run_data["data"]["exception"]["description"] = @error_descriptions
+      if @exception
+        run_data["data"]["class"] = @exception.class
+        run_data["data"]["message"] = @exception.message
+        run_data["data"]["stacktrace"] = @exception.backtrace.join('\n')
+        run_data["data"]["description"] = @error_descriptions
+      else
+        run_data["data"]["description"] = @error_descriptions
       end
       run_data
     end

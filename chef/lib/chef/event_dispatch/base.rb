@@ -37,7 +37,7 @@ class Chef
       end
 
       # Called at the end of a failed Chef run.
-      def run_failed(exception)
+      def run_failed(nod, exception)
       end
 
       # Called right after ohai runs.
