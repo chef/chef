@@ -1,6 +1,6 @@
 GIT
   remote: http://github.com/opscode/omnibus-ruby
-  revision: 649b0eedc6a037ac27f996983ce4fc577efdd38c
+  revision: a27e4edac9c61478228af0bb3d3b7ff22e3f2f60
   branch: solaris
   specs:
     omnibus (0.1)
