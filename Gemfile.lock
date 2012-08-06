@@ -1,6 +1,6 @@
 GIT
   remote: http://github.com/opscode/omnibus-ruby
-  revision: a229c844d225c981cc88e6585e3fef74494de9e1
+  revision: 0a63c769c93cd7c6e4639cedfb9bff1660745f45
   branch: solaris
   specs:
     omnibus (0.1)
@@ -34,7 +34,7 @@ GEM
     mixlib-cli (1.2.2)
     mixlib-config (1.1.2)
     mixlib-log (1.4.1)
-    mixlib-shellout (1.0.0)
+    mixlib-shellout (1.1.0)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-ssh (2.2.2)
