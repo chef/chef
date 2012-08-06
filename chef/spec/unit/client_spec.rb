@@ -51,6 +51,30 @@ shared_examples_for Chef::Client do
     @client.node = @node
   end
 
+  describe "authentication protocol selection" do
+    after do
+      Chef::Config[:authentication_protocol_version] = "1.0"
+    end
+
+    context "when the node name is <= 90 bytes" do
+      it "does not force the authentication protocol to 1.1" do
+        Chef::Config[:node_name] = ("f" * 90)
+        # ugly that this happens as a side effect of a getter :(
+        @client.node_name
+        Chef::Config[:authentication_protocol_version].should == "1.0"
+      end
+    end
+
+    context "when the node name is > 90 bytes" do
+      it "sets the authentication protocol to version 1.1" do
+        Chef::Config[:node_name] = ("f" * 91)
+        # ugly that this happens as a side effect of a getter :(
+        @client.node_name
+        Chef::Config[:authentication_protocol_version].should == "1.1"
+      end
+    end
+  end
+
   describe "run" do
 
     it "should identify the node and run ohai, then register the client" do

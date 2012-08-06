@@ -232,7 +232,36 @@ class Chef
     # (persist across rabbitmq restarts)
     amqp_consumer_id "default"
 
+    # Sets the version of the signed header authentication protocol to use (see
+    # the 'mixlib-authorization' project for more detail). Currently, versions
+    # 1.0 and 1.1 are available; however, the chef-server must first be
+    # upgraded to support version 1.1 before clients can begin using it.
+    #
+    # Version 1.1 of the protocol is required when using a `node_name` greater
+    # than ~90 bytes (~90 ascii characters), so chef-client will automatically
+    # switch to using version 1.1 when `node_name` is too large for the 1.0
+    # protocol. If you intend to use large node names, ensure that your server
+    # supports version 1.1. Automatic detection of large node names means that
+    # users will generally not need to manually configure this.
+    #
+    # In the future, this configuration option may be replaced with an
+    # automatic negotiation scheme.
+    authentication_protocol_version "1.0"
+
+    # This key will be used to sign requests to the Chef server. This location
+    # must be writable by Chef during initial setup when generating a client
+    # identity on the server.
+    #
+    # The chef-server will look up the public key for the client using the
+    # `node_name` of the client.
     client_key platform_specific_path("/etc/chef/client.pem")
+
+    # If there is no file in the location given by `client_key`, chef-client
+    # will temporarily use the "validator" identity to generate one. If the
+    # `client_key` is not present and the `validation_key` is also not present,
+    # chef-client will not be able to authenticate to the server.
+    #
+    # The `validation_key` is never used if the `client_key` exists.
     validation_key platform_specific_path("/etc/chef/validation.pem")
     validation_client_name "chef-validator"
     web_ui_client_name "chef-webui"

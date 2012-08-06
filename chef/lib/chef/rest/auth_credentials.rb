@@ -43,9 +43,10 @@ class Chef
         Chef::Log.debug("Signing the request as #{client_name}")
 
         # params_in = {:http_method => :GET, :path => "/clients", :body => "", :host => "localhost"}
-        request_params             = request_params.dup
-        request_params[:timestamp] = Time.now.utc.iso8601
-        request_params[:user_id]   = client_name
+        request_params                 = request_params.dup
+        request_params[:timestamp]     = Time.now.utc.iso8601
+        request_params[:user_id]       = client_name
+        request_params[:proto_version] = Chef::Config[:authentication_protocol_version]
         host = request_params.delete(:host) || "localhost"
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
