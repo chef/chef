@@ -12,7 +12,7 @@ GIT
 
 GIT
   remote: http://github.com/opscode/omnibus-software
-  revision: b09801a080f52cf06a89245e3870c1a2bbe6b82d
+  revision: c8fdb43a40291628118c744350d6fb4e38a953b9
   branch: solaris
   specs:
     omnibus-software (0.0.1)
