@@ -199,7 +199,9 @@ class Chef
       if @exception
         run_data["data"]["class"] = @exception.class
         run_data["data"]["message"] = @exception.message
-        run_data["data"]["stacktrace"] = @exception.backtrace.join('\n')
+        run_data["data"]["stacktrace"] = @exception.backtrace.join('</p><p>')
+        run_data["data"]["stacktrace"].insert(0, "<p>")
+        run_data["data"]["stacktrace"] << "</p>"
         run_data["data"]["description"] = @error_descriptions
       else
         run_data["data"]["description"] = @error_descriptions
