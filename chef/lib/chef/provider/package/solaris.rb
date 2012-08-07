@@ -31,6 +31,18 @@ class Chef
         #   super
         #   @current_resource = Chef::Resource::Package.new(@new_resource.name)
         # end
+        def define_resource_requirements
+          super
+          requirements.assert(:install) do |a| 
+            a.assertion { @new_resource.source }
+            a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
+          end
+          requirements.assert(:all_actions) do |a| 
+            a.assertion { !@new_resource.source || @package_source_found } 
+            a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
+            a.whyrun "would assume #{@new_resource.source} would be have previously been made available"
+          end
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(@new_resource.name)
@@ -38,21 +50,18 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            end
-
-            Chef::Log.debug("#{@new_resource} checking pkg status")
-            status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /VERSION:\s+(.+)/
-                  @new_resource.version($1)
+            @package_source_found = ::File.exists?(@new_resource.source)
+            if @package_source_found 
+              Chef::Log.debug("#{@new_resource} checking pkg status")
+              status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+                stdout.each do |line|
+                  case line
+                  when /VERSION:\s+(.+)/
+                    @new_resource.version($1)
+                  end
                 end
               end
             end
-          elsif Array(@new_resource.action).include?(:install)
-            raise Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
           end
 
           Chef::Log.debug("#{@new_resource} checking install state")
