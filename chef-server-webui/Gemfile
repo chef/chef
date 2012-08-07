@@ -5,8 +5,8 @@ source :rubygems
 
 gemspec
 
-gem "chef", ChefServerWebui::VERSION, :require => false # load individual parts as needed
-gem "chef-solr", ChefServerWebui::VERSION, :require => false
+gem "chef", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false # load individual parts as needed
+gem "chef-solr", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false
 
 group(:dev) do
   gem 'thin'
