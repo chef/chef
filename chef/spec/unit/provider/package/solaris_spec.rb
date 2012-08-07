@@ -64,7 +64,9 @@ PKGINFO
     it "should raise an exception if a source is supplied but not found" do
       @provider.stub!(:popen4).and_return(@status)
       ::File.stub!(:exists?).and_return(false)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      @provider.define_resource_requirements
+      @provider.load_current_resource
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Package)
     end
 
 
@@ -89,13 +91,13 @@ PKGINFO
     end
 
     it "should raise an exception if the source is not set but we are installing" do
-      @provider.stub!(:popen4).and_return(@status)
       @new_resource = Chef::Resource::Package.new("SUNWbash")
       @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
-      lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
+      @provider.stub!(:popen4).and_return(@status)
+      lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
 
-    it "should raise an exception if rpm fails to run" do
+    it "should raise an exception if pkginfo fails to run" do
       @status = mock("Status", :exitstatus => -1)
       @provider.stub!(:popen4).and_return(@status)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
