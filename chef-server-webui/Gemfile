@@ -3,7 +3,11 @@ require "chef-server-webui/version"
 
 source :rubygems
 
-gemspec
+gem "rails", "3.2.2"
+gem "jquery-rails"
+gem "haml-rails"
+gem "ruby-openid"
+gem "coderay"
 
 gem "chef", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false # load individual parts as needed
 gem "chef-solr", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false
