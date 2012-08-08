@@ -24,11 +24,9 @@ require 'securerandom'
 module ChefServer
   extend(Mixlib::Config)
 
-  couchdb Mash.new
   rabbitmq Mash.new
   chef_solr Mash.new
   chef_expander Mash.new
-  chef_server_api Mash.new
   erchef Mash.new
   chef_server_webui Mash.new
   lb Mash.new
@@ -116,11 +114,9 @@ module ChefServer
     def generate_hash
       results = { "chef_server" => {} }
       [
-        "couchdb",
         "rabbitmq",
         "chef_solr",
         "chef_expander",
-        "chef_server_api",
         "erchef",
         "chef_server_webui",
         "lb",

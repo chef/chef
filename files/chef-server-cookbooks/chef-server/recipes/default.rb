@@ -63,13 +63,11 @@ include_recipe "runit"
 
 # Configure Services
 [
-  "couchdb",
   "rabbitmq",
   "postgresql",
   "chef-solr",
   "chef-expander",
   "bookshelf",
-  "chef-server-api",
   "erchef",
   "chef-server-webui",
   "nginx"
@@ -115,4 +113,3 @@ file "/etc/chef-server/webui.pem" do
   group node["chef_server"]['user']['username']
   mode "0640"
 end
-

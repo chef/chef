@@ -34,7 +34,6 @@ deps << "runit"
 deps << "unicorn"
 
 # the backend
-deps << "couchdb"
 deps << "postgresql"
 deps << "rabbitmq"
 deps << "chef-solr"
@@ -43,7 +42,6 @@ deps << "chef-sql-schema" # required to migrate the DB.
 deps << "bookshelf"
 
 # the front-end services
-deps << "chef-server-api"
 deps << "erchef"
 deps << "chef-server-webui"
 

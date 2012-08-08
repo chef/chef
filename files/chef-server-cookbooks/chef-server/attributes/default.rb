@@ -33,27 +33,6 @@ default['chef_server']['user']['shell'] = "/bin/sh"
 default['chef_server']['user']['home'] = "/opt/chef-server/embedded"
 
 ####
-# CouchDB
-####
-default['chef_server']['couchdb']['enable'] = true
-default['chef_server']['couchdb']['ha'] = false
-default['chef_server']['couchdb']['dir'] = "/var/opt/chef-server/couchdb"
-default['chef_server']['couchdb']['data_dir'] = "/var/opt/chef-server/couchdb/db"
-default['chef_server']['couchdb']['log_directory'] = "/var/log/chef-server/couchdb"
-default['chef_server']['couchdb']['port'] = 5984
-default['chef_server']['couchdb']['bind_address'] = '127.0.0.1'
-default['chef_server']['couchdb']['vip'] = "127.0.0.1"
-default['chef_server']['couchdb']['max_document_size'] = '4294967296'
-default['chef_server']['couchdb']['max_attachment_chunk_size'] = '4294967296'
-default['chef_server']['couchdb']['os_process_timeout'] = '300000'
-default['chef_server']['couchdb']['max_dbs_open'] = 10000
-default['chef_server']['couchdb']['delayed_commits'] = 'true'
-default['chef_server']['couchdb']['batch_save_size'] = 1000
-default['chef_server']['couchdb']['batch_save_interval'] = 1000
-default['chef_server']['couchdb']['log_level'] = 'error'
-default['chef_server']['couchdb']['reduce_limit'] = 'false'
-
-####
 # RabbitMQ
 ####
 default['chef_server']['rabbitmq']['enable'] = true
@@ -126,37 +105,6 @@ default['chef_server']['bookshelf']['listen'] = '127.0.0.1'
 default['chef_server']['bookshelf']['port'] = 4321
 default['chef_server']['bookshelf']['access_key_id'] = "generated-by-default"
 default['chef_server']['bookshelf']['secret_access_key'] = "generated-by-default"
-
-####
-# Chef Server API
-####
-default['chef_server']['chef-server-api']['enable'] = true
-default['chef_server']['chef-server-api']['ha'] = false
-default['chef_server']['chef-server-api']['dir'] = "/var/opt/chef-server/chef-server-api"
-default['chef_server']['chef-server-api']['log_directory'] = "/var/log/chef-server/chef-server-api"
-default['chef_server']['chef-server-api']['sandbox_path'] = "/var/opt/chef-server/chef-server-api/sandbox"
-default['chef_server']['chef-server-api']['checksum_path'] = "/var/opt/chef-server/chef-server-api/checksum"
-default['chef_server']['chef-server-api']['proxy_user'] = "pivotal"
-default['chef_server']['chef-server-api']['environment'] = 'privatechef'
-default['chef_server']['chef-server-api']['url'] = "http://127.0.0.1:9460"
-default['chef_server']['chef-server-api']['upload_vip'] = "127.0.0.1"
-default['chef_server']['chef-server-api']['upload_port'] = 9460
-default['chef_server']['chef-server-api']['upload_proto'] = "http"
-default['chef_server']['chef-server-api']['upload_internal_vip'] = "127.0.0.1"
-default['chef_server']['chef-server-api']['upload_internal_port'] = 9460
-default['chef_server']['chef-server-api']['upload_internal_proto'] = "http"
-default['chef_server']['chef-server-api']['vip'] = "127.0.0.1"
-default['chef_server']['chef-server-api']['port'] = 9460
-default['chef_server']['chef-server-api']['listen'] = '127.0.0.1:9460'
-default['chef_server']['chef-server-api']['backlog'] = 1024
-default['chef_server']['chef-server-api']['tcp_nodelay'] = true
-default['chef_server']['chef-server-api']['worker_timeout'] = 3600
-default['chef_server']['chef-server-api']['validation_client_name'] = "chef-validator"
-default['chef_server']['chef-server-api']['umask'] = "0022"
-default['chef_server']['chef-server-api']['worker_processes'] = node["cpu"]["total"].to_i
-default['chef_server']['chef-server-api']['web_ui_client_name'] = "chef-webui"
-default['chef_server']['chef-server-api']['web_ui_admin_user_name'] = "admin"
-default['chef_server']['chef-server-api']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
 ####
 # Erlang Chef Server API
