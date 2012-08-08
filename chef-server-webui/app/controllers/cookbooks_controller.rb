@@ -183,7 +183,7 @@ class CookbooksController < ApplicationController
       end
     rescue => e
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
-      flash[:error] => $!
+      flash[:error] = $!
       {}
     end
   end
