@@ -25,7 +25,7 @@ source :git => "git://github.com/opscode/chef"
 project_dir = "#{source_dir}/#{name}/#{name}"
 
 build do
-  bundle "install --path=#{install_dir}/embedded/service/gem", :cwd => project_dir
+  bundle "install --without development test --path=#{install_dir}/embedded/service/gem", :cwd => project_dir
   command "mkdir -p #{install_dir}/embedded/service/chef-server-webui"
   command "#{install_dir}/embedded/bin/rsync -a #{project_dir}/ --delete --exclude=.git/*** --exclude=.gitignore #{install_dir}/embedded/service/chef-server-webui/"
 end
