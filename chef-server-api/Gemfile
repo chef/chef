@@ -15,22 +15,21 @@ gem "merb-haml", merb_gems_version
 gem "merb-helpers", merb_gems_version
 gem "merb-param-protection", merb_gems_version
 
-gem "chef", ChefServerApi::VERSION, :require => false # load individual parts as needed
-gem "chef-solr", ChefServerApi::VERSION, :require => "chef/solr"
+gem "chef", ChefServerApi::VERSION, :git => "git://github.com/opscode/chef.git", :require => false # load individual parts as needed
+gem "chef-solr", ChefServerApi::VERSION, :git => "git://github.com/opscode/chef.git", :require => "chef/solr"
 
-group(:dev) do
+group(:development) do
   gem "thin"
   gem "pry"
 end
 
-group :test do
+group(:test) do
   gem "rake"
-
   gem "rspec", "~> 2.5"
   gem "webrat"
   gem "webrat-rspec-rails"
 end
 
-group(:prod) do
+group(:production) do
   gem "unicorn", "~> 2.0.0"
 end

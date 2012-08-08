@@ -13,13 +13,13 @@ Gem::Specification.new do |s|
   s.homepage = "http://wiki.opscode.com/display/chef"
 
   s.add_dependency "chef"
-  s.add_dependency "thin"
   s.add_dependency "rails", "3.2.2"
   s.add_dependency "jquery-rails"
   s.add_dependency "haml-rails"
   s.add_dependency "ruby-openid"
   s.add_dependency "coderay"
 
+  s.add_development_dependency "thin"
   s.add_development_dependency "rspec-rails"
 
   s.bindir       = "bin"

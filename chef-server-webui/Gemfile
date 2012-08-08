@@ -1,10 +1,23 @@
-source "http://rubygems.org"
+$:.push File.expand_path("../lib", __FILE__)
+require "chef-server-webui/version"
 
-gemspec
+source :rubygems
 
-# Thin by default
-gem 'thin'
+gem "rails", "3.2.2"
+gem "jquery-rails"
+gem "haml-rails"
+gem "ruby-openid"
+gem "coderay"
 
-# Templating and Assets
-gem 'haml-rails'
-gem 'jquery-rails'
+gem "chef", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false # load individual parts as needed
+gem "chef-solr", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false
+
+group(:development) do
+  gem 'thin'
+end
+
+group(:production) do
+  gem "unicorn", "~> 2.0.0"
+  gem "therubyracer"
+  gem "uglifier"
+end
