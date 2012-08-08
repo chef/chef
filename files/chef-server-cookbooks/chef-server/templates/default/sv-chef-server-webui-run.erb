@@ -3,4 +3,4 @@
 cd /opt/chef-server/embedded/service/chef-server-webui
 
 exec 2>&1
-exec chpst -P -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /usr/bin/env HOME="<%= node['chef_server']['chef-server-webui']['dir'] %>" /opt/chef-server/embedded/bin/bundle exec unicorn -E production -c <%= File.join(node['chef_server']['chef-server-webui']['dir'], "etc", "unicorn.rb") %> /opt/chef-server/embedded/service/chef-server-webui/config.ru
+exec chpst -P -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /usr/bin/env HOME="<%= node['chef_server']['chef-server-webui']['dir'] %>" /opt/chef-server/embedded/bin/bundle exec unicorn -E <%= node['chef_server']['chef-server-webui']['environment'] %> -c <%= File.join(node['chef_server']['chef-server-webui']['dir'], "etc", "unicorn.rb") %> /opt/chef-server/embedded/service/chef-server-webui/config.ru

@@ -1,7 +1,4 @@
 # Be sure to restart your server when you modify this file.
-begin
-  require 'opscode/json_session/rails3'
-rescue LoadError
-end
-OpscodeWebui::Application.config.session_store :cookie_store, :key => '<%= @session_key %>', :domain => <%= @cookie_domain == "all" ? ':all' : "'#{@cookie_domain}'" %>
+
+ChefServerWebui::Application.config.session_store :cookie_store, :key => '<%= @session_key %>', :domain => <%= @cookie_domain == "all" ? ':all' : "'#{@cookie_domain}'" %>
 
