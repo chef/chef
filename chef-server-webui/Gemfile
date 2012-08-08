@@ -12,11 +12,11 @@ gem "coderay"
 gem "chef", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false # load individual parts as needed
 gem "chef-solr", ChefServerWebui::VERSION, :git => "git://github.com/opscode/chef.git", :require => false
 
-group(:dev) do
+group(:development) do
   gem 'thin'
 end
 
-group(:prod) do
+group(:production) do
   gem "unicorn", "~> 2.0.0"
   gem "therubyracer"
   gem "uglifier"
