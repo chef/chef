@@ -55,7 +55,6 @@ class Chef
         q.search(:node, query) do |node|
           all_nodes << node
         end
-
         all_nodes.sort { |n1, n2|
           if (config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse])
             (n2["ohai_time"] or 0) <=> (n1["ohai_time"] or 0)
@@ -75,18 +74,18 @@ class Chef
           minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
           run_list = ", #{node.run_list}." if config[:run_list]
           if hours > 24
-            color = "RED"
+            color = :red
             text = hours_text
           elsif hours >= 1
-            color = "YELLOW"
+            color = :yellow
             text = hours_text
           else
-            color = "GREEN"
+            color = :green
             text = minutes_text
           end
 
           line_parts = Array.new
-          line_parts << "<%= color('#{text}', #{color}) %> ago" << node.name
+          line_parts << @ui.color(text, color) + " ago" << node.name
           line_parts << fqdn if fqdn
           line_parts << ipaddress if ipaddress
           line_parts << run_list if run_list
@@ -98,7 +97,6 @@ class Chef
             end
             line_parts << platform
           end
-
           highline.say(line_parts.join(', ') + '.') unless (config[:hide_healthy] && hours < 1)
         end
 
