@@ -106,6 +106,11 @@ http {
       alias /opt/chef-server/docs;
     }
 
+    # bookshelf
+    location ~ "/<%= node['chef_server']['erchef']['s3_bucket'] %>/{0,1}.*$" {
+      proxy_pass http://bookshelf;
+    }
+
     location /checksum/ {
       internal;
       root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>; 

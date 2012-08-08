@@ -40,6 +40,7 @@ deps << "rabbitmq"
 deps << "chef-solr"
 deps << "chef-expander"
 deps << "chef-sql-schema" # required to migrate the DB.
+deps << "bookshelf"
 
 # the front-end services
 deps << "chef-server-api"

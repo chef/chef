@@ -68,6 +68,7 @@ include_recipe "runit"
   "postgresql",
   "chef-solr",
   "chef-expander",
+  "bookshelf",
   "chef-server-api",
   "chef-server-webui",
   "nginx"

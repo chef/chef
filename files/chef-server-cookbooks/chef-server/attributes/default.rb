@@ -194,6 +194,7 @@ default['chef_server']['lb']['cache_cookbook_files'] = false
 default['chef_server']['lb']['debug'] = false
 default['chef_server']['lb']['upstream']['chef-server-api'] = [ "127.0.0.1" ]
 default['chef_server']['lb']['upstream']['chef-server-webui'] = [ "127.0.0.1" ]
+default['chef_server']['lb']['upstream']['bookshelf'] = [ "127.0.0.1" ]
 
 ####
 # Nginx
