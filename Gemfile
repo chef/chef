@@ -7,7 +7,7 @@ omnibus_software_local_path = File.expand_path(File.join(File.dirname(__FILE__),
 gem "omnibus", :git => "http://github.com/opscode/omnibus-ruby", :branch => 'solaris'
 
 #gem "omnibus-software", :path => omnibus_software_local_path
-gem "omnibus-software", :git => "http://github.com/opscode/omnibus-software", :branch => 'solaris'
+gem "omnibus-software", :git => "http://github.com/opscode/omnibus-software", :branch => 'performance-improvements'
 
 group :development do
   gem "vagrant", "~> 1.0"
