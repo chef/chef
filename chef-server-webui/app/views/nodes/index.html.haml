@@ -16,7 +16,7 @@
             - if session[:environment]
               %td{:colspan => 4}= "The environment #{session[:environment]} has no nodes"
             - else
-              %td{:colspan => 4}= "You have no nodes - try connecting one, or creating or editing a #{link_to('node', url(:nodes))}"
+              %td{:colspan => 4}= "You have no nodes - try connecting one, or creating or editing a #{link_to('node', nodes_path)}".html_safe
           - else
             - @node_list.sort_by {|value| value.downcase}.each do |node|
               %tr{:class => even ? "even": "odd" }
