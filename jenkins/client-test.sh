@@ -46,7 +46,8 @@ else
 fi
 
 # extract the chef source code
-gzip -dc src/chef*.tar.gz | (cd src && tar xf -)
+mkdir -p src/chef
+gzip -dc src/chef*.tar.gz | (tar -C src/chef -xf -)
 
 # install all of the development gems
 cd src/chef/chef
