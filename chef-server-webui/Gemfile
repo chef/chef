@@ -17,6 +17,7 @@ group(:dev) do
 end
 
 group(:prod) do
-  gem "uglifier"
   gem "unicorn", "~> 2.0.0"
+  gem "therubyracer"
+  gem "uglifier"
 end
