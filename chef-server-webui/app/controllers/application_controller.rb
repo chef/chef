@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
      end
    else
      self.store_location
-     access_denied
+     redirect_to users_login_url, :alert => "You don't have access to that, please login."
    end
   end
 
@@ -78,16 +78,6 @@ class ApplicationController < ActionController::Base
     loc = session[:return_to] || default
     session[:return_to] = nil
     redirect_to loc
-  end
-
-  def access_denied
-    case request.format
-    when 'text/html'
-      store_location
-      redirect_to users_login_url, :alert => "You don't have access to that, please login."
-    else
-      raise Unauthorized, "You must authenticate first!"
-    end
   end
 
   def load_environments
