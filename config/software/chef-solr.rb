@@ -16,7 +16,7 @@
 #
 
 name "chef-solr"
-version ENV["CHEF_GIT_REV"] || "10.12.0"
+version ENV["CHEF_GIT_REV"] || "master"
 
 dependencies ["rsync", "jre"]
 
