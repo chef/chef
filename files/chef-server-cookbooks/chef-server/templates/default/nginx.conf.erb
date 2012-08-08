@@ -1,12 +1,12 @@
 <%-
-  def select_upstream(upstream, alternative="chef_server_webui", proto="http") 
+  def select_upstream(upstream, alternative="chef_server_webui", proto="http")
 <<-EOS
       set $my_upstream #{upstream};
       if ($http_x_ops_userid = "") {
         set $my_upstream #{alternative};
       }
-      proxy_redirect #{proto}://$my_upstream /; 
-      proxy_pass #{proto}://$my_upstream; 
+      proxy_redirect #{proto}://$my_upstream /;
+      proxy_pass #{proto}://$my_upstream;
 EOS
   end
 -%>
@@ -58,28 +58,28 @@ http {
     rewrite ^(.*) https://$server_name$1 permanent;
   }
 
-  server { 
-    listen <%= @ssl_port %>; 
-    server_name <%= @server_name %>; 
+  server {
+    listen <%= @ssl_port %>;
+    server_name <%= @server_name %>;
     access_log /var/log/chef-server/nginx/access.log opscode;
-    ssl on; 
+    ssl on;
     ssl_certificate <%= @ssl_certificate %>;
     ssl_certificate_key <%= @ssl_certificate_key %>;
 
-    ssl_session_timeout 5m; 
+    ssl_session_timeout 5m;
 
     ssl_protocols <%= node['chef_server']['nginx']['ssl_protocols'] %>;
-    ssl_ciphers <%= node['chef_server']['nginx']['ssl_ciphers'] %>; 
-    ssl_prefer_server_ciphers on; 
+    ssl_ciphers <%= node['chef_server']['nginx']['ssl_ciphers'] %>;
+    ssl_prefer_server_ciphers on;
 
     root <%= File.join(@dir, "html") %>;
 
 		client_max_body_size <%= @client_max_body_size %>;
 
-    proxy_set_header Host $host; 
-    proxy_set_header X-Real-IP $remote_addr; 
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
-    proxy_set_header X-Forwarded-Proto https; 
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
     proxy_pass_request_headers on;
     proxy_connect_timeout   1;
     proxy_send_timeout      300;
@@ -113,10 +113,10 @@ http {
 
     location /checksum/ {
       internal;
-      root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>; 
+      root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>;
     }
 
-<%- if node['chef_server']['lb']['cache_cookbook_files'] -%>    
+<%- if node['chef_server']['lb']['cache_cookbook_files'] -%>
     location ~ "^/cookbooks/[\w\.]+/(\d+\.\d+\.\d+|_latest)/files/.+$" {
 <%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
       proxy_cache webui-cache;
@@ -138,7 +138,7 @@ http {
       proxy_cache_valid 200 302 300m;
       proxy_cache_valid 404 1m;
     }
-    
+
     location / {
     <%= select_upstream("chef_server_api", "chef_server_webui") %>
     }
