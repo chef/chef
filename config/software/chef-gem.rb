@@ -5,9 +5,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,40 +15,26 @@
 # limitations under the License.
 #
 
-name "chef"
+# NOTE:
+# Although the contents of this definition are identical to the 'chef'
+# definition, we have created them seperately to prepare for the event
+# that the versions of OSS chef-client and OPC-embedded chef-client
+# are tracked differently.
 
-dependencies ["ruby", "rubygems", "yajl", "bundler"]
+name "chef-gem"
+version "0.10.8"
 
-version case project.name
-        when "chef", "chef-server"
-          ENV["CHEF_GIT_REV"] || "0.10.8"
-        else
-          "0.10.8"
-        end
-
-source :git => "git://github.com/opscode/chef"
-
-relative_path "chef"
-
-always_build true
+dependencies ["ruby", "rubygems", "yajl"]
 
 build do
-  rake "gem", :cwd => "#{self.project_dir}/chef"
-
-  gem ["install chef/pkg/chef*.gem",
+  gem ["install chef",
+      "-v #{version}",
       "-n #{install_dir}/bin",
       "--no-rdoc --no-ri"].join(" ")
 
-  gem ["install highline net-ssh-multi ruby-shadow", # TODO: include knife gems?
+  gem ["install highline net-ssh-multi", # TODO: include knife gems?
        "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" ")
-
-  #
-  # TODO: the "clean up" section below was cargo-culted from the
-  # clojure version of omnibus that depended on the build order of the
-  # tasks and not dependencies. if we really need to clean stuff up,
-  # we should probably stick the clean up steps somewhere else
-  #
 
   # clean up
   ["docs",

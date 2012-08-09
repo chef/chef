@@ -25,7 +25,7 @@ build_iteration "1"
 deps = []
 
 # global
-deps << "chef"
+deps << "chef-gem"
 deps << "preparation"
 deps << "chef-server-cookbooks"
 deps << "chef-server-scripts"
