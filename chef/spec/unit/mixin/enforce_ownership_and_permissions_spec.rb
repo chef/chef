@@ -27,7 +27,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @node.name "make_believe"
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @resource = Chef::Resource::File.new("#{Dir.tmpdir}/madeup.txt")
+    @resource = Chef::Resource::File.new("#{Dir.mktmpdir}/madeup.txt")
+    FileUtils.touch @resource.path
     @resource.owner "adam"
     @provider = Chef::Provider::File.new(@resource, @run_context)
     @provider.current_resource = @resource
