@@ -111,22 +111,6 @@ http {
       proxy_pass http://bookshelf;
     }
 
-    location /checksum/ {
-      internal;
-      root <%= node['chef_server']['chef-server-api']['checksum_path'].gsub('checksum', '') %>;
-    }
-
-<%- if node['chef_server']['lb']['cache_cookbook_files'] -%>
-    location ~ "^/cookbooks/[\w\.]+/(\d+\.\d+\.\d+|_latest)/files/.+$" {
-<%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
-      proxy_cache webui-cache;
-      proxy_cache_valid 200 300m;
-    }
-<%- end -%>
-    location ~ "^/(?:cookbooks|sandboxes)/{0,1}.*$" {
-<%= select_upstream("#{node['chef_server']['chef-server-api']['upload_vip']}:#{node['chef_server']['chef-server-api']['upload_port']}", "chef_server_webui", node['chef_server']['chef-server-api']['upload_proto']) %>
-    }
-
     location ~ "^/(?:stylesheets|javascripts|images|facebox|css)/{0,1}.*$" {
       if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
         error_page 400 =400 /400-chef_client_manage.json;
