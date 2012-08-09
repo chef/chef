@@ -86,15 +86,15 @@ file "/etc/chef-server/chef-server-running.json" do
   content Chef::JSONCompat.to_json_pretty({ "chef_server" => node['chef_server'].to_hash, "run_list" => node.run_list })
 end
 
-ruby_block "wait for certificate creation" do
-  block do
-    unless File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem")
-      raise "Still waiting on certificates!"
-    end
-  end
-  retry_delay 10
-  retries 20
-end
+# ruby_block "wait for certificate creation" do
+#   block do
+#     unless File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem")
+#       raise "Still waiting on certificates!"
+#     end
+#   end
+#   retry_delay 10
+#   retries 20
+# end
 
 directory "fix up /etc/chef-server" do
   path "/etc/chef-server"
