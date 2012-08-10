@@ -40,9 +40,10 @@ EOF
     sudo rm -rf /opt/chef/*
     # BUGBUG: we don't remove symlinks correctly so the install fails the next time
     sudo pkgadd -n -d pkg/chef*.solaris -a /tmp/nocheck chef || true
-else
-    echo "Could not determine packaging system"
-    exit 1;
+else # makeself installer
+    sudo rm  -rf /opt/chef/*
+    # BUGBUG: without an uninstaller the makeself installer fails when creating symlinks
+    sudo ./pkg/chef*.sh || true
 fi
 
 # extract the chef source code
