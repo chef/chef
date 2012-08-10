@@ -34,8 +34,8 @@
              {bulk_fetch_batch_size, <%= @bulk_fetch_batch_size %>},
              {cache_defaults, [{max_size, <%= @max_cache_size %> },
                                   {ttl, <%= @cache_ttl %> }]},
-             {couchdb_host, "<%= node['chef_server']['couchdb']['vip'] %>"},
-             {couchdb_port, <%= node['chef_server']['couchdb']['port'] %> }
+             {couchdb_host, "127.0.0.1"},
+             {couchdb_port, 6666 }
             ]},
   {chef_index, [
                 {rabbitmq_host, "<%= node['chef_server']['rabbitmq']['vip'] %>"},
