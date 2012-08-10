@@ -65,9 +65,7 @@ class Chef
 
     def current_owner
       case new_resource.owner
-      when nil
-        nil
-      when String
+      when String, nil
         lookup_uid
       when Integer
         stat.uid
@@ -90,9 +88,7 @@ class Chef
 
     def current_group
       case new_resource.group
-      when nil
-        nil
-      when String
+      when String, nil
         lookup_gid
       when Integer
         stat.gid
@@ -114,9 +110,7 @@ class Chef
 
     def current_mode
       case new_resource.mode
-      when nil
-        nil
-      when String
+      when String, nil
         (stat.mode & 007777).to_s(8)
       when Integer
         stat.mode & 007777

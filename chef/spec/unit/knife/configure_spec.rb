@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Chef::Knife::Configure do
   before do
+    @original_config = Chef::Config.configuration.dup
+
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
@@ -23,6 +25,10 @@ describe Chef::Knife::Configure do
     @ohai.stub(:require_plugin)
     @ohai[:fqdn] = "foo.example.org"
     Ohai::System.stub!(:new).and_return(@ohai)
+  end
+
+  after do
+    Chef::Config.configuration.replace(@original_config)
   end
 
   it "asks the user for the URL of the chef server" do
