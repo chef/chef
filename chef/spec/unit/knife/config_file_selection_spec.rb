@@ -60,7 +60,7 @@ describe Chef::Knife do
   end
   
   it "configure knife from HOME" do
-    home_config = File.expand_path "#{ENV['HOME']}/.chef/knife.rb"
+    home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
     File.stub!(:exist?).and_return do | arg |
       [ home_config ].include? arg
     end
@@ -83,7 +83,7 @@ describe Chef::Knife do
     pwd_config = "#{Dir.pwd}/knife.rb"
     upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
-    home_config = File.expand_path "#{ENV['HOME']}/.chef/knife.rb"
+    home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
     configs = [ env_config, pwd_config, upward_config, home_config ]
     File.stub!(:exist?).and_return do | arg |
       configs.include? arg
