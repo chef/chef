@@ -2,6 +2,7 @@
 # Author:: Stephen Delano (<stephen@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -280,7 +281,28 @@ class Chef
     end
 
     def self.load(name)
-      chef_server_rest.get_rest("environments/#{name}")
+      if Chef::Config[:solo]
+        unless File.directory?(Chef::Config[:environment_path])
+          raise Chef::Exceptions::InvalidEnvironmentPath, "Environment path '#{Chef::Config[:environment_path]}' is invalid"
+        end
+
+        js_file = File.join(Chef::Config[:environment_path], "#{name}.json")
+        rb_file = File.join(Chef::Config[:environment_path], "#{name}.rb")
+
+        if File.exists?(js_file)
+          # from_json returns object.class => json_class in the JSON.
+          Chef::JSONCompat.from_json(IO.read(js_file))
+        elsif File.exists?(rb_file)
+          environment = Chef::Environment.new
+          environment.name(name)
+          environment.from_file(rb_file)
+          environment
+        else
+          raise Chef::Exceptions::EnvironmentNotFound, "Environment '#{name}' could not be loaded from disk"
+        end
+      else
+        chef_server_rest.get_rest("environments/#{name}")
+      end
     end
 
     def self.exists?(name, couchdb)

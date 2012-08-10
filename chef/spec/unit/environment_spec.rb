@@ -2,6 +2,7 @@
 # Author:: Stephen Delano (<stephen@ospcode.com>)
 # Author:: Seth Falcon (<seth@ospcode.com>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2010-2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -288,7 +289,7 @@ describe Chef::Environment do
       recipes.should =~ ["god", "apache2", "apache2::mod_ssl"]
     end
 
-    
+
     it "should load all the cookbook versions" do
       Chef::CookbookVersion.should_receive(:cdb_list)
       Chef::Environment.cdb_load_filtered_cookbook_versions("prod")
@@ -485,6 +486,78 @@ describe Chef::Environment do
         @rest.should_receive(:get_rest).and_return({ "one" => "http://foo" })
         r = Chef::Environment.list
         r["one"].should == "http://foo"
+      end
+    end
+  end
+
+  describe "when loading" do
+    describe "in solo mode" do
+      before do
+        Chef::Config[:solo] = true
+        Chef::Config[:environment_path] = '/var/chef/environments'
+      end
+
+      after do
+        Chef::Config[:solo] = false
+      end
+
+      it "should get the environment from the environment_path" do
+        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
+        File.should_receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
+        ROLE_DSL=<<-EOR
+name "foo"
+EOR
+        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(ROLE_DSL)
+        Chef::Environment.load('foo')
+      end
+
+      it "should return a Chef::Environment object from JSON" do
+        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(true)
+        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return('{ "name": "foo", "default_attributes": { "foo": { "bar": "1" } }, "json_class": "Chef::Environment", "description": "desc", "chef_type": "environment" }')
+        environment = Chef::Environment.load('foo')
+
+        environment.should be_a_kind_of(Chef::Environment)
+        environment.name.should == 'foo'
+        environment.description.should == 'desc'
+        environment.default_attributes.should == {'foo' => {'bar' => '1'}}
+      end
+
+      it "should return a Chef::Environment object from Ruby DSL" do
+        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).exactly(2).times.and_return(true)
+        File.should_receive(:readable?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(true)
+        ROLE_DSL=<<-EOR
+name "foo"
+description "desc"
+EOR
+        IO.should_receive(:read).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(ROLE_DSL)
+        environment = Chef::Environment.load('foo')
+
+        environment.should be_a_kind_of(Chef::Environment)
+        environment.name.should == 'foo'
+        environment.description.should == 'desc'
+      end
+
+      it 'should raise an error if the configured environment_path is invalid' do
+        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
+
+        lambda {
+          Chef::Environment.load('foo')
+        }.should raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
+      end
+
+      it 'should raise an error if the file does not exist' do
+        File.should_receive(:directory?).with(Chef::Config[:environment_path]).and_return(true)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.json')).and_return(false)
+        File.should_receive(:exists?).with(File.join(Chef::Config[:environment_path], 'foo.rb')).and_return(false)
+
+        lambda {
+          Chef::Environment.load('foo')
+        }.should raise_error Chef::Exceptions::EnvironmentNotFound, "Environment 'foo' could not be loaded from disk"
       end
     end
   end
