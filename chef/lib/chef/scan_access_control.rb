@@ -65,9 +65,7 @@ class Chef
 
     def current_owner
       case new_resource.owner
-      when nil
-        nil
-      when String
+      when String, nil
         lookup_uid
       when Integer
         stat.uid
@@ -90,11 +88,9 @@ class Chef
 
     def current_group
       case new_resource.group
-      when nil
-        nil
       when String
         lookup_gid
-      when Integer
+      when Integer, nil
         stat.gid
       else
         Chef::Log.error("The `group` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.owner.inspect})")
@@ -114,11 +110,9 @@ class Chef
 
     def current_mode
       case new_resource.mode
-      when nil
-        nil
       when String
         (stat.mode & 007777).to_s(8)
-      when Integer
+      when Integer, nil
         stat.mode & 007777
       else
         Chef::Log.error("The `mode` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.mode.inspect})")

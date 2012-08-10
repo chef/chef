@@ -60,7 +60,7 @@ class Chef
       end
 
       def should_update_owner?
-        target_uid != current_uid
+        !target_uid.nil? && target_uid != current_uid
       end
 
       def set_owner!
@@ -103,7 +103,7 @@ class Chef
       end
 
       def should_update_group?
-        target_gid != current_gid
+        !target_gid.nil? && target_gid != current_gid
       end
 
       def set_group!
@@ -136,7 +136,7 @@ class Chef
       end
 
       def should_update_mode?
-        current_mode != target_mode
+        !target_mode.nil? && current_mode != target_mode 
       end
 
       def set_mode!
