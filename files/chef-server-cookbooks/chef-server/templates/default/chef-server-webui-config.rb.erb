@@ -1,6 +1,6 @@
 require 'chef'
 
-Chef::Config[:chef_server_url] = "<%= node['chef_server']['chef-server-api']['url'] %>"
+Chef::Config[:chef_server_url] = "<%= node['chef_server']['erchef']['url'] %>"
 Chef::Config[:web_ui_client_name] = "chef-webui"
 Chef::Config[:web_ui_key] = "/etc/chef-server/webui.pem"
 Chef::Config[:web_ui_admin_user_name] =  "<%= @web_ui_admin_user_name %>"
