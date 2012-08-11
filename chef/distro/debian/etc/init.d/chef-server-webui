@@ -15,7 +15,7 @@
 # description: starts up chef-server webui.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/chef-server-webui
+DAEMON=$(which chef-server-webui)
 PIDFILE=/var/run/chef/server-webui.%s.pid
 MAINPID=/var/run/chef/server-webui.main.pid
 NAME=chef-server-webui

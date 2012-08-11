@@ -15,7 +15,7 @@
 # description: starts up chef-solr in daemon mode.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/chef-solr
+DAEMON=$(which chef-solr)
 DAEMON_NAME=java
 NAME=chef-solr
 DESC=chef-solr
