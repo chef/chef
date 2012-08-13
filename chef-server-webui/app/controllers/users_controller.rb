@@ -127,6 +127,7 @@ class UsersController < ApplicationController
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @user = Chef::WebUIUser.new
       flash[:error] = "Could not complete logging in."
+      @environments = []
       render :login
     end
   end
