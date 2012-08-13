@@ -133,6 +133,7 @@ class Users < Application
       Chef::Log.error("#{e}\n#{e.backtrace.join("\n")}")
       @user = Chef::WebUIUser.new
       @_message = { :error => "Could not complete logging in." }
+      @environments = [] 
       render :login
     end   
   end
