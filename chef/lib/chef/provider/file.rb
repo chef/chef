@@ -134,7 +134,7 @@ class Chef
 
       # Compare the content of a file.  Returns true if they are the same, false if they are not.
       def compare_content
-        @current_resource.checksum == new_resource_content_checksum
+        checksum(@current_resource.path) == new_resource_content_checksum
       end
 
       # Set the content of the file, assuming it is not set correctly already.

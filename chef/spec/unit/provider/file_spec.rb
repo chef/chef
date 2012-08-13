@@ -83,10 +83,10 @@ describe Chef::Provider::File do
 
   it "should compare the current content with the requested content" do
     @provider.load_current_resource
+
     @provider.new_resource.content "foobar"
     @provider.compare_content.should eql(false)
 
-    @provider.load_current_resource
     @provider.new_resource.content IO.read(@resource.path)
     @provider.compare_content.should eql(true)
   end
@@ -106,7 +106,6 @@ describe Chef::Provider::File do
   it "should not set the content of the file if it already matches the requested content" do
     @provider.load_current_resource
     @provider.new_resource.content IO.read(@resource.path)
-    @provider.should_receive(:diff_current_from_content).and_return("")
     File.stub!(:open).and_return(1)
     File.should_not_receive(:open).with(@provider.new_resource.path, "w")
     lambda { @provider.set_content }.should_not raise_error
