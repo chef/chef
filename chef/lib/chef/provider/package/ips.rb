@@ -58,7 +58,7 @@ class Chef
             when /^\s+State: Installed/
               installed = true
             when /^\s+Version: (.*)/
-              @candidate_version = $1
+              @candidate_version = $1.split[0]
               if installed
                 @current_resource.version($1)
               else
