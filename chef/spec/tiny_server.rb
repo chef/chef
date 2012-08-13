@@ -62,7 +62,7 @@ module TinyServer
     end
 
     def block_until_started
-      20.times do
+      200.times do
         return true if started?
       end
       raise "TinyServer failed to boot :/"
