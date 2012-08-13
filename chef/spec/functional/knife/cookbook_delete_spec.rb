@@ -21,6 +21,8 @@ require 'tiny_server'
 
 describe Chef::Knife::CookbookDelete do
   before(:all) do
+    @original_config = Chef::Config.hash_dup
+
     Thin::Logging.silent = true
 
     @server = TinyServer::Manager.new
@@ -38,6 +40,7 @@ describe Chef::Knife::CookbookDelete do
   end
 
   after(:all) do
+    Chef::Config.configuration = @original_config
     @server.stop
   end
 
