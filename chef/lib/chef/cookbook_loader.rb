@@ -126,25 +126,21 @@ class Chef
     alias :key? :has_key?
 
     def each
-      load_cookbooks unless @loaded_cookbooks
       @cookbooks_by_name.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
         yield(cname, @cookbooks_by_name[cname])
       end
     end
 
     def cookbook_names
-      load_cookbooks unless @loaded_cookbooks
       @cookbooks_by_name.keys.sort
     end
 
     def values
-      load_cookbooks unless @loaded_cookbooks
       @cookbooks_by_name.values
     end
     alias :cookbooks :values
 
     def metadata
-      load_cookbooks unless @loaded_cookbooks
       @metadata
     end
 

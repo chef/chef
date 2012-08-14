@@ -47,7 +47,9 @@ class Chef
 
         checked_a_cookbook = false
         if config[:all]
-          cookbook_loader.each do |key, cookbook|
+          cl = cookbook_loader
+          cl.load_cookbooks
+          cl.each do |key, cookbook|
             checked_a_cookbook = true
             test_cookbook(key)
           end
