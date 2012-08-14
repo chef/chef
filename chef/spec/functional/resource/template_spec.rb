@@ -34,7 +34,9 @@ describe Chef::Resource::Template do
   def create_resource
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, cookbook_repo) }
-    cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo))
+    cl = Chef::CookbookLoader.new(cookbook_repo)
+    cl.load_cookbooks
+    cookbook_collection = Chef::CookbookCollection.new(cl)
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, cookbook_collection, events)
     resource = Chef::Resource::Template.new(path, run_context)

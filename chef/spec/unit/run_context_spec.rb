@@ -26,7 +26,9 @@ describe Chef::RunContext do
   before(:each) do
     Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks"))
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@chef_repo_path))
+    cl = Chef::CookbookLoader.new(@chef_repo_path)
+    cl.load_cookbooks
+    @cookbook_collection = Chef::CookbookCollection.new(cl)
     @node = Chef::Node.new
     @node.find_file("run_context")
     @events = Chef::EventDispatch::Dispatcher.new

@@ -51,22 +51,29 @@ describe Chef::Knife::CookbookMetadata do
     describe 'with -a or --all' do
       before(:each) do
         @knife.config[:all] = true
+        @foo = Chef::CookbookVersion.new('foo')
+        @foo.version = '1.0.0'
+        @bar = Chef::CookbookVersion.new('bar')
+        @bar.version = '2.0.0'
+        @cookbook_loader = {
+          "foo" => @foo,
+          "bar" => @bar
+        }
+        @cookbook_loader.should_receive(:load_cookbooks).and_return(@cookbook_loader)
         @knife.should_receive(:generate_metadata).with('foo')
         @knife.should_receive(:generate_metadata).with('bar')
       end
 
       it 'should generate the metadata for each cookbook' do
         Chef::Config[:cookbook_path] = @cookbook_dir
-        Chef::CookbookLoader.should_receive(:new).with(@cookbook_dir).
-                                                  and_return({'foo' => '1.0.0', 'bar' => '2.0.0'})
+        Chef::CookbookLoader.should_receive(:new).with(@cookbook_dir).and_return(@cookbook_loader)
         @knife.run
       end
 
       describe 'and with -o or --cookbook-path' do
         it 'should look in the provided path and generate cookbook metadata' do
           @knife.config[:cookbook_path] = '/opt/chef/cookbooks'
-          Chef::CookbookLoader.should_receive(:new).with('/opt/chef/cookbooks').
-                                                    and_return({'foo' => '1.0.0', 'bar' => '2.0.0'})
+          Chef::CookbookLoader.should_receive(:new).with('/opt/chef/cookbooks').and_return(@cookbook_loader)
           @knife.run
         end
       end

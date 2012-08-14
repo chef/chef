@@ -22,7 +22,9 @@ describe Chef::CookbookVersion do
 #  COOKBOOK_PATH = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks", "openldap"))
   before(:each) do
     @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
+    cl = Chef::CookbookLoader.new(@cookbook_repo)
+    cl.load_cookbooks
+    @cookbook_collection = Chef::CookbookCollection.new(cl)
     @cookbook = @cookbook_collection[:openldap]
     @node = Chef::Node.new
     @node.name "JuliaChild"
