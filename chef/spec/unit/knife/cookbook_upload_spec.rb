@@ -66,6 +66,44 @@ describe Chef::Knife::CookbookUpload do
       end
     end
 
+    describe 'when specifying the same cookbook name twice' do
+      it 'should upload the cookbook only once' do
+        @knife.name_args = ['test_cookbook', 'test_cookbook']
+        @knife.should_receive(:upload).once
+        @knife.run
+      end
+    end
+
+    describe 'when specifying a cookbook name among many' do
+      before(:each) do
+        @knife.name_args = ['test_cookbook1']
+        @cookbooks = {
+          'test_cookbook1' => Chef::CookbookVersion.new('test_cookbook1'),
+          'test_cookbook2' => Chef::CookbookVersion.new('test_cookbook2'),
+          'test_cookbook3' => Chef::CookbookVersion.new('test_cookbook3')
+        }
+        @cookbook_loader = {}
+        @cookbook_loader.stub!(:merged_cookbooks).and_return([])
+        @cookbook_loader.stub(:[]) { |ckbk| @cookbooks[ckbk] }
+        Chef::CookbookLoader.stub!(:new).and_return(@cookbook_loader)
+      end
+
+      it "should read only one cookbook" do
+        @cookbook_loader.should_receive(:[]).once.with('test_cookbook1')
+        @knife.run
+      end
+
+      it "should not read all cookbooks" do
+        @cookbook_loader.should_not_receive(:load_cookbooks)
+        @knife.run
+      end
+
+      it "should upload only one cookbook" do
+        @knife.should_receive(:upload).exactly(1).times
+        @knife.run
+      end
+    end
+
     # This is testing too much.  We should break it up.
     describe 'when specifying a cookbook name with dependencies' do
       it "should upload all dependencies once" do
@@ -141,5 +179,5 @@ describe Chef::Knife::CookbookUpload do
         lambda { @knife.run }.should raise_error(SystemExit)
       end
     end
-  end
-end # run
+  end # run
+end # Chef::Knife::CookbookUpload
