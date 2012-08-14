@@ -119,11 +119,11 @@ describe Chef::Mixin::Securable do
     end
 
     after(:all) do
-      load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
+      Chef::Config.configuration = @original_config if @original_config
     end
 
     after(:each) do
-      Chef::Config.configuration = @original_config
+      Chef::Config.configuration = @original_config if @original_config
     end
 
     it "should not accept a group name or id for group with spaces and multiple backslashes" do
