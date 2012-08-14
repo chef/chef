@@ -32,19 +32,31 @@ describe Chef::Knife::Bootstrap do
     @knife.ui.stub!(:stderr).and_return(@stderr)
   end
 
-  it "should load the default bootstrap template" do
-    @knife.load_template.should be_a_kind_of(String)
+  it "should return a name of default bootstrap template" do
+    @knife.find_template.should be_a_kind_of(String)
   end
 
   it "should error if template can not be found" do
     @knife.config[:template_file] = false
     @knife.config[:distro] = 'penultimate'
-    lambda { @knife.load_template }.should raise_error
+    lambda { @knife.find_template }.should raise_error
+  end
+
+  it "should look for templates early in the run" do
+    File.stub(:exists?).and_return(true)
+    @knife.name_args = ['shatner']
+    @knife.stub!(:read_template).and_return("")
+    @knife.stub!(:knife_ssh).and_return(true)
+    @knife_ssh = @knife.knife_ssh
+    @knife.should_receive(:find_template).ordered
+    @knife.should_receive(:knife_ssh).ordered
+    @knife_ssh.should_receive(:run) # rspec appears to keep order per object
+    @knife.run
   end
 
   it "should load the specified template" do
     @knife.config[:distro] = 'fedora13-gems'
-    lambda { @knife.load_template }.should_not raise_error
+    lambda { @knife.find_template }.should_not raise_error
   end
 
   it "should load the specified template from a Ruby gem" do
@@ -53,28 +65,32 @@ describe Chef::Knife::Bootstrap do
     File.stub(:exists?).and_return(true)
     IO.stub(:read).and_return('random content')
     @knife.config[:distro] = 'fake-bootstrap-template'
-    lambda { @knife.load_template }.should_not raise_error
+    lambda { @knife.find_template }.should_not raise_error
   end
 
   it "should return an empty run_list" do
-    template_string = @knife.load_template(@knife.config[:template_file])
+    @knife.instance_variable_set("@template_file", @knife.config[:template_file])
+    template_string = @knife.read_template
     @knife.render_template(template_string).should == '{"run_list":[]}'
   end
 
   it "should have role[base] in the run_list" do
-    template_string = @knife.load_template(@knife.config[:template_file])
+    @knife.instance_variable_set("@template_file", @knife.config[:template_file])
+    template_string = @knife.read_template
     @knife.parse_options(["-r","role[base]"])
     @knife.render_template(template_string).should == '{"run_list":["role[base]"]}'
   end
 
   it "should have role[base] and recipe[cupcakes] in the run_list" do
-    template_string = @knife.load_template(@knife.config[:template_file])
+    @knife.instance_variable_set("@template_file", @knife.config[:template_file])
+    template_string = @knife.read_template
     @knife.parse_options(["-r", "role[base],recipe[cupcakes]"])
     @knife.render_template(template_string).should == '{"run_list":["role[base]","recipe[cupcakes]"]}'
   end
 
   it "should have foo => {bar => baz} in the first_boot" do
-    template_string = @knife.load_template(@knife.config[:template_file])
+    @knife.instance_variable_set("@template_file", @knife.config[:template_file])
+    template_string = @knife.read_template
     @knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
     expected_hash = Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
     actual_hash = Yajl::Parser.new.parse(@knife.render_template(template_string))
@@ -83,15 +99,19 @@ describe Chef::Knife::Bootstrap do
 
   it "should create a hint file when told to" do
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test-hints.erb"))
-    template_string = @knife.load_template()
+    @knife.instance_variable_set("@template_file", @knife.config[:template_file])
+    template_string = @knife.read_template
     @knife.parse_options(["--hint", "openstack"])
     @knife.render_template(template_string).should match /\/etc\/chef\/ohai\/hints\/openstack.json/
   end
 
   it "should populate a hint file with JSON when given a file to read" do
+    @knife.stub(:find_template).and_return(true)
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test-hints.erb"))
     ::File.stub!(:read).and_return('{ "foo" : "bar" }')
-    template_string = @knife.load_template()
+    @knife.instance_variable_set("@template_file", @knife.config[:template_file])
+    template_string = @knife.read_template
+    @knife.stub!(:read_template).and_return('{ "foo" : "bar" }')
     @knife.parse_options(["--hint", "openstack=hints/openstack.json"])
     @knife.render_template(template_string).should match /\{\"foo\":\"bar\"\}/
   end
@@ -109,6 +129,7 @@ describe Chef::Knife::Bootstrap do
       @knife.config[:ssh_password]  = "open_sesame"
       Chef::Config[:knife][:ssh_port] = "4001"
       @knife.config[:identity_file] = "~/.ssh/me.rsa"
+      @knife.stub!(:read_template).and_return("")
       @knife_ssh = @knife.knife_ssh
     end
 
@@ -138,6 +159,7 @@ describe Chef::Knife::Bootstrap do
       @knife.name_args = ["foo.example.com"]
       @knife.config[:ssh_user]      = "rooty"
       @knife.config[:identity_file] = "~/.ssh/me.rsa"
+      @knife.stub!(:read_template).and_return("")
       @knife_ssh = @knife.knife_ssh
     end
 
@@ -161,6 +183,7 @@ describe Chef::Knife::Bootstrap do
       @knife.name_args = ["foo.example.com"]
       @knife.config[:ssh_user]      = "rooty"
       @knife.config[:identity_file] = "~/.ssh/me.rsa"
+      @knife.stub!(:read_template).and_return("")
       @knife_ssh = @knife.knife_ssh
       @knife.stub!(:knife_ssh).and_return(@knife_ssh)
     end

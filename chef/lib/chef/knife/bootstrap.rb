@@ -128,7 +128,7 @@ class Chef
           name, path = h.split("=")
           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
 
-      def load_template(template=nil)
+      def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
           bootstrap_files = config[:template_file]
@@ -153,7 +153,7 @@ class Chef
 
         Chef::Log.debug("Found bootstrap template in #{File.dirname(template)}")
 
-        IO.read(template).chomp
+        template
       end
 
       def render_template(template=nil)
@@ -161,13 +161,17 @@ class Chef
         Erubis::Eruby.new(template).evaluate(context)
       end
 
-      def run
+      def read_template
+        IO.read(@template_file).chomp
+      end
 
+      def run
         validate_name_args!
+        @template_file = find_template(config[:bootstrap_template])
         @node_name = Array(@name_args).first
         # back compat--templates may use this setting:
         config[:server_name] = @node_name
-
+        
         $stdout.sync = true
 
         ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
@@ -216,7 +220,7 @@ class Chef
       end
 
       def ssh_command
-        command = render_template(load_template(config[:bootstrap_template]))
+        command = render_template(read_template)
 
         if config[:use_sudo]
           command = "sudo #{command}"
