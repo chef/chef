@@ -24,7 +24,9 @@ require 'spec_helper'
 describe Chef::Recipe do
   before(:each) do
     @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
+    cl = Chef::CookbookLoader.new(@cookbook_repo)
+    cl.load_cookbooks
+    @cookbook_collection = Chef::CookbookCollection.new(cl)
     @node = Chef::Node.new
     @node[:tags] = Array.new
     @events = Chef::EventDispatch::Dispatcher.new

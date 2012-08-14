@@ -28,7 +28,9 @@ describe Chef::Provider::CookbookFile do
 
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
+    cl = Chef::CookbookLoader.new(@cookbook_repo)
+    cl.load_cookbooks
+    @cookbook_collection = Chef::CookbookCollection.new(cl)
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl', @run_context)

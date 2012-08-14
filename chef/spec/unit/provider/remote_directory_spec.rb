@@ -37,7 +37,9 @@ describe Chef::Provider::RemoteDirectory do
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
     @node = Chef::Node.new
-    @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
+    cl = Chef::CookbookLoader.new(@cookbook_repo)
+    cl.load_cookbooks
+    @cookbook_collection = Chef::CookbookCollection.new(cl)
 
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
