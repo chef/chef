@@ -69,7 +69,8 @@ include_recipe "runit"
   "chef-expander",
   "bookshelf",
   "erchef",
-  "chef-server-webui",
+ # FIXME: uncomment when we are ready to tackle the webui
+ # "chef-server-webui",
   "nginx"
 ].each do |service|
   if node["chef_server"][service]["enable"]

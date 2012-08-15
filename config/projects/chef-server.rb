@@ -43,7 +43,8 @@ deps << "bookshelf"
 
 # the front-end services
 deps << "erchef"
-deps << "chef-server-webui"
+# FIXME: uncomment when ready to tackle webui
+# deps << "chef-server-webui"
 
 # version manifest file
 deps << "version-manifest"
