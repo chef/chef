@@ -29,10 +29,7 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
-        @new_resource.path.gsub!(/\\/, "/") # for Windows
-        @current_resource.path(@new_resource.path)
-        setup_acl
-        @current_resource
+        super
       end
 
       def action_create

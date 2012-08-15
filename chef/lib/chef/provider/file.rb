@@ -123,13 +123,37 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::File.new(@new_resource.name)
+        @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        if @new_resource.content && ::File.exist?(@new_resource.path)
-          @current_resource.checksum(checksum(@new_resource.path))
+        if !::File.directory?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
+            @current_resource.checksum(checksum(@new_resource.path))
+          end
         end
+        load_current_resource_attrs
         setup_acl
+
+        @current_resource
+      end
+
+      def load_current_resource_attrs
+        if ::File.exist?(@new_resource.path)
+          stat = ::File.stat(@new_resource.path)
+          @current_resource.owner(stat.uid)
+          @current_resource.mode(stat.mode & 07777)
+          @current_resource.group(stat.gid)
+
+          if @new_resource.group.nil?
+            @new_resource.group(@current_resource.group)
+          end 
+          if @new_resource.owner.nil?
+            @new_resource.owner(@current_resource.owner)
+          end
+          if @new_resource.mode.nil?
+            @new_resource.mode(@current_resource.mode)
+          end
+        end
       end
       
       def setup_acl

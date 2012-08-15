@@ -39,7 +39,7 @@ describe Chef::Provider::Directory do
     cstats.stub!(:uid).and_return(500)
     cstats.stub!(:gid).and_return(500)
     cstats.stub!(:mode).and_return(0755)
-    File.should_receive(:stat).once.and_return(cstats)
+    File.should_receive(:stat).twice.and_return(cstats)
     @directory.load_current_resource
     @directory.current_resource.path.should eql(@new_resource.path)
     @directory.current_resource.owner.should eql(500)
@@ -48,10 +48,12 @@ describe Chef::Provider::Directory do
   end
 
   it "should create a new directory on create, setting updated to true" do
-    load_mock_provider
+    #load_mock_provider
     @new_resource.path "/tmp/foo"
-    File.should_receive(:exist?).twice.and_return(false)
+
+    File.should_receive(:exist?).exactly(3).and_return(false)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
+
     @directory.should_receive(:set_all_access_controls)
     @directory.run_action(:create)
     @directory.new_resource.should be_updated
@@ -64,10 +66,12 @@ describe Chef::Provider::Directory do
   end
 
   it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct" do
-    load_mock_provider
+    #load_mock_provider
     @new_resource.path "/path/to/dir"
     @new_resource.recursive true
     File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
+    File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
+
     File.should_receive(:exist?).with('/path/to').ordered.and_return(false)
     File.should_receive(:exist?).with('/path').ordered.and_return(true)
     File.should_receive(:writable?).with('/path').ordered.and_return(true)
@@ -94,7 +98,7 @@ describe Chef::Provider::Directory do
   it "should not create the directory if it already exists" do
     load_mock_provider
     @new_resource.path "/tmp/foo"
-    File.should_receive(:exist?).twice.and_return(true)
+    File.should_receive(:exist?).exactly(3).and_return(true)
     Dir.should_not_receive(:mkdir).with(@new_resource.path)
     @directory.should_receive(:set_all_access_controls)
     @directory.run_action(:create)
