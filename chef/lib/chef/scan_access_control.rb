@@ -46,7 +46,7 @@ class Chef
 
     # Modifies @current_resource, setting the current access control state.
     def set_all!
-      if File.exist?(new_resource.path)
+      if ::File.exist?(new_resource.path)
         set_owner
         set_group
         set_mode

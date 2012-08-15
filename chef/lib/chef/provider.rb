@@ -1,7 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -77,19 +76,6 @@ class Chef
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end
 
-    #This method "ensures" the state_attrs are being set properly by
-    #resource, and logging a warning to debug if not.
-    def ensure_state_updated
-      #TODO: is this necessary, or will the current_resource always be set if this is called?
-      if (@current_resource != nil ) 
-        @current_resource.state.each do |s_key, s_value|
-          if ( s_value == nil )
-            Chef::Log.debug("WARNING: All state_attrs for the current state should be properly set (and not be nil) by provider #{self.to_s}, failed on state :#{s_key}")
-          end
-        end
-      end
-    end
-
     def define_resource_requirements
     end
 
@@ -114,7 +100,6 @@ class Chef
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
       if !whyrun_mode? || whyrun_supported?
         load_current_resource
-        ensure_state_updated
         events.resource_current_state_loaded(@new_resource, @action, @current_resource)
       elsif whyrun_mode? && !whyrun_supported?
         events.resource_current_state_load_bypassed(@new_resource, @action, @current_resource)

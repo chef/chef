@@ -31,8 +31,8 @@ class Chef
       include Chef::Mixin::Template
 
       def load_current_resource
+        @current_resource = Chef::Resource::Template.new(@new_resource.name)
         super
-        @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
       
       def define_resource_requirements
