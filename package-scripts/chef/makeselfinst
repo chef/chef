@@ -4,7 +4,8 @@
 #
 
 PROGNAME=`basename $0`
-INSTALLER_DIR=/opt/chef
+INSTALLER_DIR=`dirname $0`
+DEST_DIR=/opt/chef
 CONFIG_DIR=/etc/chef
 USAGE="usage: $0 [-v validation_key] ([-o organization] || [-u url])"
 
@@ -31,6 +32,11 @@ do
 done
 shift `expr ${OPTIND} - 1`
 
+rm -rf $DEST_DIR/* || error_exit "Cannot remove contents of $DEST_DIR"
+mkdir -p $DEST_DIR || error_exit "Cannot create $DEST_DIR"
+cp -R $INSTALLER_DIR $DEST_DIR || error_exit "Cannot install to $DEST_DIR"
+rm -f $DEST_DIR/$PROGNAME
+
 if [ "" != "$chef_url" ]; then
   mkdir -p ${CONFIG_DIR} || error_exit "Cannot create ${CONFIG_DIR}!"
   (
@@ -53,18 +59,11 @@ if [ "" != "$validation_key" ]; then
   chmod 600 ${CONFIG_DIR}/validation.pem
 fi
 
-# rm -f before ln -sf is required for solaris 9
-rm -f $INSTALLER_DIR/bin/chef-client
-rm -f $INSTALLER_DIR/bin/chef-solo
-rm -f $INSTALLER_DIR/bin/knife
-rm -f $INSTALLER_DIR/bin/shef
-rm -f $INSTALLER_DIR/bin/ohai
-
-ln -sf $INSTALLER_DIR/bin/chef-client /usr/bin || error_exit "Cannot link chef-client to /usr/bin"
-ln -sf $INSTALLER_DIR/bin/chef-solo /usr/bin || error_exit "Cannot link chef-solo to /usr/bin"
-ln -sf $INSTALLER_DIR/bin/knife /usr/bin || error_exit "Cannot link knife to /usr/bin"
-ln -sf $INSTALLER_DIR/bin/shef /usr/bin || error_exit "Cannot link shef to /usr/bin"
-ln -sf $INSTALLER_DIR/bin/ohai /usr/bin || error_exit "Cannot link ohai to /usr/bin"
+ln -sf $DEST_DIR/bin/chef-client /usr/bin || error_exit "Cannot link chef-client to /usr/bin"
+ln -sf $DEST_DIR/bin/chef-solo /usr/bin || error_exit "Cannot link chef-solo to /usr/bin"
+ln -sf $DEST_DIR/bin/knife /usr/bin || error_exit "Cannot link knife to /usr/bin"
+ln -sf $DEST_DIR/bin/shef /usr/bin || error_exit "Cannot link shef to /usr/bin"
+ln -sf $DEST_DIR/bin/ohai /usr/bin || error_exit "Cannot link ohai to /usr/bin"
 
 echo "Thank you for installing Chef!"
 
