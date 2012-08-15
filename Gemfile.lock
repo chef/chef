@@ -1,7 +1,7 @@
 GIT
   remote: http://github.com/opscode/omnibus-ruby
-  revision: 9c6d6b2c8266a00c70b44e51f7485dbf0d8c07b2
-  branch: solaris
+  revision: 0354b17c1293a16441389fd5c530a65b49f6ce65
+  branch: master
   specs:
     omnibus (0.1)
       fpm (= 0.3.11)
@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: http://github.com/opscode/omnibus-software
-  revision: 08621799d65375148b6e49c3632a6febf579d188
-  branch: solaris
+  revision: 01df1dfee2d348933cdc0022125c58d006f6bb9e
+  branch: master
   specs:
     omnibus-software (0.0.1)
 
