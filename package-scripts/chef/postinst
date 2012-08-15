@@ -54,11 +54,11 @@ if [ "" != "$validation_key" ]; then
 fi
 
 # rm -f before ln -sf is required for solaris 9
-rm -f $INSTALLER_DIR/bin/chef-client
-rm -f $INSTALLER_DIR/bin/chef-solo
-rm -f $INSTALLER_DIR/bin/knife
-rm -f $INSTALLER_DIR/bin/shef
-rm -f $INSTALLER_DIR/bin/ohai
+rm -f /usr/bin/chef-client
+rm -f /usr/bin/chef-solo
+rm -f /usr/bin/knife
+rm -f /usr/bin/shef
+rm -f /usr/bin/ohai
 
 ln -sf $INSTALLER_DIR/bin/chef-client /usr/bin || error_exit "Cannot link chef-client to /usr/bin"
 ln -sf $INSTALLER_DIR/bin/chef-solo /usr/bin || error_exit "Cannot link chef-solo to /usr/bin"
