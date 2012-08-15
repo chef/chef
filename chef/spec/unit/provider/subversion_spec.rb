@@ -141,7 +141,7 @@ describe Chef::Provider::Subversion do
     end
 
     it "returns a helpful message if data from `svn info` can't be parsed" do
-      example_svn_info =  "some random crap from an error message\n"
+      example_svn_info =  "some random text from an error message\n"
       exitstatus = mock("exitstatus")
       exitstatus.stub!(:exitstatus).and_return(0)
       @resource.revision "HEAD"
@@ -149,7 +149,7 @@ describe Chef::Provider::Subversion do
       @stderr.stub!(:string).and_return("")
       @provider.should_receive(:popen4).and_yield("no-pid","no-stdin",@stdout,@stderr).
                                         and_return(exitstatus)
-      lambda {@provider.revision_int}.should raise_error(RuntimeError, "Could not parse `svn info` data: some random crap from an error message")
+      lambda {@provider.revision_int}.should raise_error(RuntimeError, "Could not parse `svn info` data: some random text from an error message")
 
     end
 
