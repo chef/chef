@@ -103,6 +103,26 @@ describe Chef::Provider::File do
     @provider.new_resource.mode.should eql(@provider.current_resource.mode)
   end
 
+  it "should update the new_resource when attempting to set the new state" do
+    # test setup
+    stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
+    # called once in update_new_file_state and once in checksum
+    ::File.should_receive(:stat).twice.with(@provider.new_resource.path).and_return(stat_struct)  
+    ::File.should_receive(:directory?).once.with(@provider.new_resource.path).and_return(false)
+
+    @provider.new_resource.group(nil)
+    @provider.new_resource.owner(nil)
+    @provider.new_resource.mode(nil)
+    
+    # test exectution 
+    @provider.update_new_file_state
+
+    # post-condition checks
+    @provider.new_resource.group.should == 0
+    @provider.new_resource.owner.should == 0
+    @provider.new_resource.mode.should == 0600
+end
+
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do
     resource = Chef::Resource::File.new("seattle")
     resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "woot.txt")))
@@ -165,6 +185,7 @@ describe Chef::Provider::File do
 
   it "should create the file if it is missing, then set the attributes on action_create" do
     @provider.load_current_resource
+    @provider.stub!(:update_new_file_state)
     @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.access_controls.should_receive(:set_all)
     @provider.should_receive(:diff_current_from_content).and_return("")
@@ -181,6 +202,7 @@ describe Chef::Provider::File do
     @provider.new_resource.content "foobar"
     @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.should_receive(:diff_current_from_content).and_return("")
+    @provider.stub!(:update_new_file_state)
     File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
     @provider.access_controls.should_receive(:set_all)
     @provider.run_action(:create)
@@ -210,6 +232,7 @@ describe Chef::Provider::File do
     @provider.load_current_resource
     @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
     @provider.should_receive(:diff_current_from_content).and_return("")
+    @provider.stub!(:update_new_file_state)
     File.should_receive(:utime).once.and_return(1)
     File.stub!(:open).and_return(1)
     @provider.access_controls.should_receive(:set_all).once
@@ -318,6 +341,7 @@ describe Chef::Provider::File do
       @provider = Chef::Provider::File.new(@resource, @run_context)
       @provider.should_receive(:diff_current_from_content).and_return("")
       ::File.stub!(:exists?).with(@resource.path).and_return(false)
+      @provider.stub!(:update_new_file_state)
       io = StringIO.new
       File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
       #@provider.should_receive(:action_create).and_return(true)
