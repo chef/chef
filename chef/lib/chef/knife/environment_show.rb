@@ -27,6 +27,13 @@ class Chef
         require 'chef/json_compat'
       end
 
+      @attrs_to_show = []
+      option :attribute,
+        :short => "-a [ATTR]",
+        :long => "--attribute [ATTR]",
+        :proc => lambda {|val| @attrs_to_show << val},
+        :description => "Show one or more attributes"
+
       banner "knife environment show ENVIRONMENT (options)"
 
       def run
