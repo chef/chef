@@ -1,5 +1,6 @@
 #
 # Author:: Joshua Timberman (<joshua@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc
 # License:: Apache License, Version 2.0
 #
@@ -22,6 +23,10 @@ class Chef
   class Resource
     class Mount < Chef::Resource
       
+      identity_attr :device
+
+      state_attrs :mount_point, :device_type, :fstype
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :mount

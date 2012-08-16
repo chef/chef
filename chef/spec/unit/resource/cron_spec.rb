@@ -1,5 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Bryan McLellan
 # License:: Apache License, Version 2.0
 #
@@ -149,6 +150,32 @@ describe Chef::Resource::Cron do
   it "should convert integer schedule values to a string" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
       @resource.send(x, 5).should eql("5")
+    end
+  end
+  
+  describe "when it has a time (minute, hour, day, month, weeekend) and user" do
+    before do 
+      @resource.command("tackle")
+      @resource.minute("1")
+      @resource.hour("2")
+      @resource.day("3")
+      @resource.month("4")
+      @resource.weekday("5")
+      @resource.user("root")
+    end
+
+    it "describes the state" do
+      state = @resource.state
+      state[:minute].should == "1"
+      state[:hour].should == "2"
+      state[:day].should == "3"
+      state[:month].should == "4"
+      state[:weekday].should == "5"
+      state[:user].should == "root"
+    end
+
+    it "returns the command as its identity" do
+      @resource.identity.should == "tackle"
     end
   end
 end

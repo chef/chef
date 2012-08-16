@@ -1,5 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -134,6 +135,28 @@ describe Chef::Resource::Scm do
 
   it "defaults to nil for the ssh wrapper" do
     @resource.ssh_wrapper.should be_nil
+  end
+
+  describe "when it has repository, revision, user, and group" do
+    before do 
+      @resource.destination("hell")
+      @resource.repository("apt")
+      @resource.revision("1.2.3")
+      @resource.user("root")
+      @resource.group("super_adventure_club")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:repository].should == "apt"
+      state[:revision].should == "1.2.3"
+      state[:user].should == "root"
+      state[:group].should == "super_adventure_club"
+    end
+
+    it "returns the destination as its identity" do
+      @resource.identity.should == "hell"
+    end
   end
 
 end

@@ -41,4 +41,22 @@ describe Chef::Resource::Ohai do
     @resource.plugin "passwd"
     @resource.plugin.should eql("passwd")
   end
+
+  describe "when it has a plugin value" do
+    before do 
+      @resource.name("test")
+      @resource.plugin("passwd")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:plugin].should == "passwd"
+    end
+
+    it "returns the name as its identity" do
+      @resource.identity.should == "test"
+    end
+  end
+
+
 end

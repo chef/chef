@@ -28,6 +28,10 @@ end
 describe Chef::Provider::RemoteDirectory do
   before do
     Chef::FileAccessControl.any_instance.stub(:set_all)
+    #Terrible, but we need to implement a pseduo-filesystem for testing
+    #to not have this line. Only affects updating state fields.
+    Chef::Provider::CookbookFile.any_instance.stub(:update_new_file_state)
+
     @resource = Chef::Resource::RemoteDirectory.new("/tmp/tafty")
     # in CHEF_SPEC_DATA/cookbooks/openldap/files/default/remotedir
     @resource.source "remotedir"
@@ -186,6 +190,7 @@ describe Chef::Provider::RemoteDirectory do
         ::File.open(@destination_dir + '/remotesubdir/remote_subdir_file1.txt', 'a') {|f| f.puts "blah blah blah" }
         file1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))
         subdirfile1md5 = Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))
+        @provider.stub!(:update_new_file_state)
         @provider.run_action(:create)
         file1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remote_dir_file1.txt'))).should be_true
         subdirfile1md5.eql?(Digest::MD5.hexdigest(::File.read(@destination_dir + '/remotesubdir/remote_subdir_file1.txt'))).should be_true

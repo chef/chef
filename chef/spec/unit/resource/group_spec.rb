@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>);
 # Copyright:: Copyright (c) 2008 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -128,5 +129,20 @@ describe Chef::Resource::Group, "append" do
   it "should not allow a hash" do
     lambda { @resource.send(:gid, { :aj => "is freakin awesome" }) }.should raise_error(ArgumentError)
   end
-  
+ 
+  describe "when it has members" do
+    before do 
+      @resource.group_name("pokemon")
+      @resource.members(["blastoise", "pikachu"])
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:members].should eql(["blastoise", "pikachu"])
+    end
+
+    it "returns the group name as its identity" do
+      @resource.identity.should == "pokemon"
+    end
+  end
 end

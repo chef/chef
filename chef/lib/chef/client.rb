@@ -427,11 +427,12 @@ class Chef
         @events.run_completed(node)
         true
       rescue Exception => e
+        Chef::Log.info("Exception raised!")
         run_status.stop_clock
         run_status.exception = e
         run_failed
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
-        @events.run_failed(e)
+        @events.run_failed(node, e)
         raise
       ensure
         run_status = nil

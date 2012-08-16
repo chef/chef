@@ -27,8 +27,8 @@ class Chef
     class RemoteFile < Chef::Provider::File
 
       def load_current_resource
+        @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
         super
-        @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
 
       def action_create
@@ -50,6 +50,7 @@ class Chef
               FileUtils.cp raw_file.path, @new_resource.path
               Chef::Log.info "#{@new_resource} updated"
               raw_file.close!
+              update_new_file_state
             end
             # whyrun mode cleanup - the temp file will never be used,
             # so close/unlink it here. 
