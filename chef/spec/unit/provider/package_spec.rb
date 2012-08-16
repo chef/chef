@@ -20,6 +20,10 @@ require 'spec_helper'
 
 describe Chef::Provider::Package do
   before do
+    #Terrible, but we need to implement a pseduo-filesystem for testing
+    #to not have this line. Only affects updating state fields.
+    Chef::Provider::CookbookFile.any_instance.stub(:update_new_file_state)
+
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)

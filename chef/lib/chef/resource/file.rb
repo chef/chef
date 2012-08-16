@@ -52,7 +52,7 @@ class Chef
 
       def content(arg=nil)
         set_or_return(
-          :content,
+                      :content,
           arg,
           :kind_of => String
         )

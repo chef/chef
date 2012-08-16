@@ -198,9 +198,21 @@ class Chef
       run_data["data"] = {}
       if @exception
         run_data["data"]["class"] = @exception.class
+
+        if (!@exception.message.nil?)
+          #@exception.message = "<p>" + @exception.message + "</p>"
+          #@exception.message["\\n"] = "</p><p>"
+        end
         run_data["data"]["message"] = @exception.message
-        run_data["data"]["description"] = @error_descriptions
-        run_data["data"]["stacktrace"] = @exception.backtrace.join('</p><p>')
+
+        if (!@error_description.nil?)
+          @error_description["\n"] = "<\p><p>"
+          @error_description.insert(0, "<p>")
+          @error_description << "</p>"
+        end
+        run_data["data"]["description"] = @error_description
+
+        run_data["data"]["stacktrace"] = @exception.backtrace.join("</p><p>")
         run_data["data"]["stacktrace"].insert(0, "<p>")
         run_data["data"]["stacktrace"] << "</p>"
       else

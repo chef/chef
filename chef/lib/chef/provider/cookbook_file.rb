@@ -44,6 +44,9 @@ class Chef
               Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
               tempfile.close
               FileUtils.cp(file_cache_location, tempfile.path)
+              #Since the @new_resource.path file will not be updated
+              #at the time of converge, we must use the tempfile
+              update_new_file_state(tempfile.path)
             end
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
