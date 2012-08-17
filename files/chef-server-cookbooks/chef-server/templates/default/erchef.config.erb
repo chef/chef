@@ -17,6 +17,7 @@
                          {file_size, 50}]]}
             ]},
  {chef_wm, [
+              {local_key_gen, {true, 2048}},
               {ip, "<%= @listen %>"},
               {port, <%= @port %>},
               {reqid_header_name, "X-Request-Id"},
