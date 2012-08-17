@@ -62,7 +62,7 @@ module TinyServer
     end
 
     def block_until_started
-      20.times do
+      200.times do
         return true if started?
       end
       raise "TinyServer failed to boot :/"
@@ -74,6 +74,10 @@ module TinyServer
     rescue OpenURI::HTTPError
       true
     rescue Errno::ECONNREFUSED => e
+      sleep 0.1
+      # If the host has ":::1 localhost" in its hosts file and if IPv6
+      # is not enabled we can get NetworkUnreachable exception...
+    rescue Errno::ENETUNREACH => e
       sleep 0.1
       false
     end

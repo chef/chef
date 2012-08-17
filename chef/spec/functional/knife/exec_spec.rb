@@ -21,6 +21,8 @@ require 'tiny_server'
 
 describe Chef::Knife::Exec do
   before(:all) do
+    @original_config = Chef::Config.hash_dup
+
     Thin::Logging.silent = false
 
     @server = TinyServer::Manager.new#(:debug => true)
@@ -32,14 +34,15 @@ describe Chef::Knife::Exec do
     @api = TinyServer::API.instance
     @api.clear
 
-    Chef::Config[:node_name] = false
-    Chef::Config[:client_key] = false
+    Chef::Config[:node_name] = nil
+    Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = 'http://localhost:9000'
 
     $output = StringIO.new
   end
 
   after(:all) do
+    Chef::Config.configuration = @original_config
     @server.stop
   end
 

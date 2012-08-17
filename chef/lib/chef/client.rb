@@ -427,10 +427,14 @@ class Chef
         @events.run_completed(node)
         true
       rescue Exception => e
-        run_status.stop_clock
-        run_status.exception = e
-        run_failed
+        # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
         Chef::Log.debug("Re-raising exception: #{e.class} - #{e.message}\n#{e.backtrace.join("\n  ")}")
+        # If we failed really early, we may not have a run_status yet. Too early for these to be of much use.
+        if run_status
+          run_status.stop_clock
+          run_status.exception = e
+          run_failed
+        end
         @events.run_failed(e)
         raise
       ensure

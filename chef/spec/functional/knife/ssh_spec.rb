@@ -22,6 +22,7 @@ require 'tiny_server'
 describe Chef::Knife::Ssh do
 
   before(:all) do
+    @original_config = Chef::Config.hash_dup
     Chef::Knife::Ssh.load_deps
     Thin::Logging.silent = true
     @server = TinyServer::Manager.new
@@ -29,6 +30,7 @@ describe Chef::Knife::Ssh do
   end
 
   after(:all) do
+    Chef::Config.configuration = @original_config
     @server.stop
   end
 
@@ -197,8 +199,8 @@ describe Chef::Knife::Ssh do
     @api = TinyServer::API.instance
     @api.clear
 
-    Chef::Config[:node_name] = false
-    Chef::Config[:client_key] = false
+    Chef::Config[:node_name] = nil
+    Chef::Config[:client_key] = nil
     Chef::Config[:chef_server_url] = 'http://localhost:9000'
 
     @api.get("/search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=1000", 200) {
