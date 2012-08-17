@@ -57,7 +57,7 @@ runit_service "erchef" do
 end
 
 if node['chef_server']['bootstrap']['enable']
-  execute "/opt/chef-server/bin/chef-server-ctl erchef start" do
+  execute "/opt/chef-server/bin/chef-server-ctl start erchef" do
     retries 20
   end
 end
