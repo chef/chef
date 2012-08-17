@@ -80,6 +80,9 @@ include_recipe "runit"
   end
 end
 
+# boostrap!
+include_recipe "chef-server::bootstrap"
+
 file "/etc/chef-server/chef-server-running.json" do
   owner node['chef_server']['user']['username']
   group "root"

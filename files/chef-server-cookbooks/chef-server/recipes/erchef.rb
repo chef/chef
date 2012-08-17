@@ -56,8 +56,8 @@ runit_service "erchef" do
   }.merge(params))
 end
 
-# if node['chef_server']['bootstrap']['enable']
-# 	execute "/opt/chef-server/bin/chef-server-ctl erchef start" do
-# 		retries 20
-# 	end
-# end
+if node['chef_server']['bootstrap']['enable']
+  execute "/opt/chef-server/bin/chef-server-ctl erchef start" do
+    retries 20
+  end
+end
