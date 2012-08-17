@@ -25,7 +25,7 @@ class Chef
       
       identity_attr :service_name
 
-      state_attrs :pattern, :supports
+      state_attrs :enabled, :running
 
       def initialize(name, run_context=nil)
         super
