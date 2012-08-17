@@ -38,7 +38,6 @@ class Chef
       end
 
       def load_current_resource
-
       end
 
       def define_resource_requirements
