@@ -59,8 +59,7 @@ bundle config build.eventmachine --with-cflags=-fpermissive
 # bundle install may fail if the internets are down
 retries=0
 while true; do
-  bundle install --without server --path bundle
-  if [ $? -eq 0 ];  then
+  if bundle install --without server --path bundle; then
     break
   fi
   retries=$( expr $retries + 1 )
