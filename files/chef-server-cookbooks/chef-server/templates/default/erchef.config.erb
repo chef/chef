@@ -17,6 +17,8 @@
                          {file_size, 50}]]}
             ]},
  {chef_wm, [
+              {health_ping_modules, [chef_sql, chef_solr]},
+              {health_ping_timeout, 400},
               {local_key_gen, {true, 2048}},
               {ip, "<%= @listen %>"},
               {port, <%= @port %>},
