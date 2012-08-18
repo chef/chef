@@ -207,7 +207,7 @@ E
 
       desc "prints information about chef"
       def version
-        puts  "This is shef, the Chef shell.\n" +
+        puts  "This is the chef-shell.\n" +
               " Chef Version: #{::Chef::VERSION}\n" +
               " http://www.opscode.com/chef\n" +
               " http://wiki.opscode.com/display/chef/Home"
