@@ -100,6 +100,8 @@ end
 #   retries 20
 # end
 
+include_recipe "chef-server::chef-pedant"
+
 directory "fix up /etc/chef-server" do
   path "/etc/chef-server"
   group "root"
