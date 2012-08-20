@@ -108,24 +108,38 @@ INSTALLED
   context "when installing a package" do
     it "should run pkg install with the package name and version" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg install -q --accept crypto/gnupg@2.0.17"
+        :command => "pkg install -q crypto/gnupg@2.0.17"
       })
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
 
+
     it "should run pkg install with the package name and version and options if specified" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg --no-refresh install -q --accept crypto/gnupg@2.0.17"
+        :command => "pkg --no-refresh install -q crypto/gnupg@2.0.17"
       })
       @new_resource.stub!(:options).and_return("--no-refresh")
       @provider.install_package("crypto/gnupg", "2.0.17")
+    end
+
+    context "when accept_license is true" do
+      before do
+        @new_resource.stub!(:accept_license).and_return(true)
+      end
+
+      it "should run pkg install with the --accept flag" do
+        @provider.should_receive(:run_command_with_systems_locale).with({
+          :command => "pkg install -q --accept crypto/gnupg@2.0.17"
+        })
+        @provider.install_package("crypto/gnupg", "2.0.17")
+      end
     end
   end
 
   context "when upgrading a package" do
     it "should run pkg install with the package name and version" do
       @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "pkg install -q --accept crypto/gnupg@2.0.17"
+        :command => "pkg install -q crypto/gnupg@2.0.17"
       })
       @provider.upgrade_package("crypto/gnupg", "2.0.17")
     end

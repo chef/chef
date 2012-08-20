@@ -72,7 +72,7 @@ class Chef
 
         def install_package(name, version)
           package_name = "#{name}@#{version}"
-          normal_command = "pkg #{expand_options(@new_resource.options)} install -q #{package_name}"
+          normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
           if @new_resource.accept_license
             command = normal_command.gsub('-q', '-q --accept')
           else
