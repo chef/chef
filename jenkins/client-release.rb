@@ -1,82 +1,132 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
+require 'json'
+require 'optparse'
+require 'mixlib/shellout'
 
-require 'bundler/setup'
-require 'uber-s3'
-require 'ohai'
+#
+# Usage: client-release.sh --version VERSION --bucket BUCKET
+#
 
-# Want to upload debian, ubuntu 10, ubuntu 11, centos 5, centos 6
-# Input - filename, S3 credentials, OS platform, OS version, architecture, Chef version, package iteration
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: #{$0} [options]"
 
-# debian:
-# http://opscode-full-stack.s3.amazonaws.com/debian-6.0.1-i686/chef-full_0.10.10-1_i386.deb
-# http://opscode-full-stack.s3.amazonaws.com/debian-6.0.1-x86_64/chef-full_0.10.10-1_amd64.deb
-
-# centos 5:
-# http://opscode-full-stack.s3.amazonaws.com/el-5.7-i686/chef-full-10.12.0.rc.1-1.i686.rpm
-# http://opscode-full-stack.s3.amazonaws.com/el-5.7-x86_64/chef-full-10.12.0.rc.1-1.x86_64.rpm
-
-# centos 6:
-# http://opscode-full-stack.s3.amazonaws.com/el-6.2-i686/chef-full-10.12.0.rc.1-1.i686.rpm
-# http://opscode-full-stack.s3.amazonaws.com/el-6.2-x86_64/chef-full-10.12.0.rc.1-1.x86_64.rpm
-
-# ubuntu 10.04:
-# http://opscode-full-stack.s3.amazonaws.com/ubuntu-10.04-i686/chef-full_10.12.0.rc.1-1_i386.deb
-# http://opscode-full-stack.s3.amazonaws.com/ubuntu-10.04-x86_64/chef-full_10.12.0.rc.1-1_amd64.deb
-
-# ubuntu 11.04:
-# http://opscode-full-stack.s3.amazonaws.com/ubuntu-11.04-i686/chef-full_10.12.0.rc.1-1_i386.deb
-# http://opscode-full-stack.s3.amazonaws.com/ubuntu-11.04-x86_64/chef-full_10.12.0.rc.1-1_amd64.deb
-
-# This will take in data about the OS, chef, and architecture and spit out the proper upload directory
-def package_name(filepath, os_platform, os_version, architecture)
-  filename = filepath.split("/")[-1]
-  arch_dir = if (architecture == 'i386')
-               'i686/'
-             else
-               'x86_64/'
-             end
-  case os_platform
-  when 'debian'
-    directorybase = 'debian-6.0.1-'
-  when 'ubuntu'
-    directorybase = 'ubuntu-' + os_version + '-'
-  when 'centos'
-    directorybase = 'el-' + os_version + '-'
+  opts.on("-v", "--version VERSION", "the version of the chef installer to release") do |version|
+    options[:version] = version
   end
-  packagename = directorybase + arch_dir + filename
+
+  opts.on("-b", "--bucket S3_BUCKET_NAME", "the name of the s3 bucket to release to") do |bucket|
+    options[:bucket] = bucket
+  end
 end
 
-# os_list = ['debian', 'centos', 'ubuntu']
-# arch_list = ['i386', 'x86_64']
-# os_version = ['10.04', '6.2']
+begin
+  optparse.parse!
+  required = [:version, :bucket]
+  missing = required.select {|param| options[param].nil?}
+  if !missing.empty?
+    puts "Missing required options: #{missing.join(', ')}"
+    puts optparse
+    exit 1
+  end
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+  puts $!.to_s
+  puts optparse
+  exit 1
+end
 
-# os_list.each do |os|
-#   arch_list.each do |arch|
-#     os_version.each do |osversion|
-#       puts package_name("/foo/bar/foobar/madeup.file", os, osversion, arch)
-#       end
-#   end
-# end
+#
+# == Jenkins Build Support Matrix
+#
+# :key:   - the jenkins build name
+# :value: - an Array of Arrays indicating the builds supported by the
+#           build. by convention, the first element in the array
+#           references the build itself.
+#
 
-# ARGV = [filepath, os_platform, os_version, architecture, credentials]
+jenkins_build_support = {
+  "build_os=centos-5,machine_architecture=x64,role=oss-builder" => [["el", "5", "x86_64"]],
+  "build_os=centos-5,machine_architecture=x86,role=oss-builder" => [["el", "5", "i686"]],
+  "build_os=centos-6,machine_architecture=x64,role=oss-builder" => [["el", "6", "x86_64"]],
+  "build_os=centos-6,machine_architecture=x86,role=oss-builder" => [["el", "6", "i686"]],
+  "build_os=debian-6,machine_architecture=x64,role=oss-builder" => [["debian", "6", "x86_64"]],
+  "build_os=debian-6,machine_architecture=x86,role=oss-builder" => [["debian", "6", "i686"]],
+  "build_os=mac_os_x_10_6,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.6", "x86_64"]],
+  "build_os=mac_os_x_10_7,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.7", "x86_64"]],
+  "build_os=solaris-10,machine_architecture=intel,role=oss-builder" =>
+  [
+   ["solaris", "10", "i386"],
+   ["solaris", "11", "i386"]
+  ],
+  "build_os=solaris-9,machine_architecture=sparc,role=oss-builder" =>
+  [
+   ["solaris", "9", "sparc"],
+   ["solaris", "10", "sparc"],
+   ["solaris", "11", "sparc"]
+  ],
+  "build_os=ubuntu-10-04,machine_architecture=x64,role=oss-builder" =>
+  [
+   ["ubuntu", "10.04", "x86_64"],
+   ["ubuntu", "10.10", "x86_64"]
+  ],
+  "build_os=ubuntu-10-04,machine_architecture=x86,role=oss-builder" =>
+  [
+   ["ubuntu", "10.04", "i686"],
+   ["ubuntu", "10.10", "i686"]
+  ],
+  "build_os=ubuntu-11-04,machine_architecture=x64,role=oss-builder" =>
+  [
+   ["ubuntu", "11.04", "x86_64"],
+   ["ubuntu", "11.10", "x86_64"],
+   ["ubuntu", "12.04", "x86_64"]
+  ],
+  "build_os=ubuntu-11-04,machine_architecture=x86,role=oss-builder" =>
+  [
+   ["ubuntu", "11.04", "i686"],
+   ["ubuntu", "11.10", "i686"],
+   ["ubuntu", "12.04", "i686"]
+  ]
+}
 
-o = Ohai::System.new
-o.require_plugin('os')
-o.require_plugin('platform')
-o.require_plugin('linux/cpu') if o.os == 'linux'
+# fetch the list of local packages
+local_packages = Dir['**/pkg/*']
 
-package = package_name(ARGV[0], o['platform'], o['platform_version'], o['kernel']['machine']) # format upload directory
+# generate json
+build_support_json = {}
+jenkins_build_support.each do |(build, supported_platforms)|
+  build_platform = supported_platforms.first
 
-(key, secret, bucket) = IO.read(ARGV[1]).lines.to_a  # Read in s3 credentials
+  # find the build in the local packages
+  build_package = local_packages.find {|b| b.include?(build)}
+  raise unless build_package
 
-s3 = UberS3.new({
-  :access_key         => key.chomp,
-  :secret_access_key  => secret.chomp,
-  :bucket             => bucket.chomp,
-  :adapter            => :net_http
-})
+  # upload build to build platform directory
+  build_location = "s3://#{options[:bucket]}/#{build_platform.join('/')}/#{build_package.split('/').last}"
+  puts "UPLOAD: #{build_package} -> #{build_location}"
 
-file = IO.read(ARGV[0])
+  s3_cmd = ["s3cmd", "put", build_package, build_location].join(" ")
+  shell = Mixlib::ShellOut.new(s3_cmd)
+  shell.run_command
+  shell.error!
 
-s3.store(package, file, :access => :public_read)
+  # update json with build information
+  supported_platforms.each do |(platform, platform_version, machine_architecture)|
+    build_support_json[platform] ||= {}
+    build_support_json[platform][platform_version] ||= {}
+    build_support_json[platform][platform_version][machine_architecture] = build_location
+  end
+end
+
+File.open("platform-support.json", "w") {|f| f.puts JSON.pretty_generate(build_support_json)}
+
+s3_location = "s3://#{options[:bucket]}/platform-support/#{options[:version]}.json"
+puts "UPLOAD: platform-support.json -> #{s3_location}"
+s3_cmd = ["s3cmd",
+          "put",
+          "platform-support.json",
+          s3_location].join(" ")
+shell = Mixlib::ShellOut.new(s3_cmd)
+shell.run_command
+shell.error!
