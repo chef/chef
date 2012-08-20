@@ -16,7 +16,7 @@
 #
 
 name "chef-sql-schema"
-version "master"
+version "osc-int"
 
 dependencies ["ruby",
               "bundler",
