@@ -28,7 +28,6 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @accept_license = false
         @action = :install
         @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
         @candidate_version = nil
@@ -79,15 +78,6 @@ class Chef
 	  :kind_of => [ String ]
 	)
       end
-
-      def accept_license(arg=nil)
-        set_or_return(
-          :purge,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
     end
   end
 end

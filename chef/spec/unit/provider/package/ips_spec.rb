@@ -122,16 +122,24 @@ INSTALLED
       @provider.install_package("crypto/gnupg", "2.0.17")
     end
 
-    context "when accept_license is true" do
+    context "using the ips_package resource" do
       before do
-        @new_resource.stub!(:accept_license).and_return(true)
+        @new_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
+        @current_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
+        @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
       end
 
-      it "should run pkg install with the --accept flag" do
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "pkg install -q --accept crypto/gnupg@2.0.17"
-        })
-        @provider.install_package("crypto/gnupg", "2.0.17")
+      context "when accept_license is true" do
+        before do
+          @new_resource.stub!(:accept_license).and_return(true)
+        end
+  
+        it "should run pkg install with the --accept flag" do
+          @provider.should_receive(:run_command_with_systems_locale).with({
+            :command => "pkg install -q --accept crypto/gnupg@2.0.17"
+          })
+          @provider.install_package("crypto/gnupg", "2.0.17")
+        end
       end
     end
   end
