@@ -29,7 +29,7 @@ class Chef
 
       identity_attr :target_file
 
-      state_attrs :to, :link_type, :owner, :group
+      state_attrs :to, :owner, :group
 
       def initialize(name, run_context=nil)
         super

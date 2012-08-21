@@ -25,8 +25,6 @@ class Chef
       
       identity_attr :url
 
-      state_attrs :message, :headers
-
       def initialize(name, run_context=nil)
         super
         @resource_name = :http_request
