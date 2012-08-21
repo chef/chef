@@ -37,8 +37,21 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
-          raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          sources = @new_resource.source.kind_of?(Array) ? @new_resource.source.flatten : [ @new_resource.source ]
+          raise ArgumentError, "#{@new_resource} has an empty or wrong source" if sources.empty?
+          source = sources.shift
+          begin
+            rest = Chef::REST.new(source, nil, nil, http_client_opts)
+            raw_file = rest.streaming_request(rest.create_url(source), {})
+          rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Net::HTTPFatalError => e
+            Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}")
+            if source = sources.shift
+              Chef::Log.debug("#{@new_resource} trying to download from another mirror")
+              retry
+            else
+              raise e
+            end
+          end
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else

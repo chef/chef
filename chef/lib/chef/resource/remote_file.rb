@@ -41,7 +41,7 @@ class Chef
         set_or_return(
           :source,
           args,
-          :kind_of => String
+          :kind_of => [ String, Array ]
         )
       end
 
@@ -68,7 +68,18 @@ class Chef
       # Chef::Provider::CookbookFile  when the source is a relative URI, like
       #                               'myscript.pl', 'dir/config.conf'
       def provider
-        if absolute_uri?(source)
+        if source.kind_of?(Array)
+          sources = []
+          source.each do |src|
+            if absolute_uri?(src)
+              sources.push(src)
+            else
+              Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Cookbook files inside the source array will be ignored. Use cookbook_file instead")
+            end
+          end
+          source(sources)
+          Chef::Provider::RemoteFile
+        elsif absolute_uri?(source)
           Chef::Provider::RemoteFile
         else
           Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Use cookbook_file instead")
