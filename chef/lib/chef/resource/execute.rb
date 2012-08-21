@@ -25,8 +25,6 @@ class Chef
 
       identity_attr :command
 
-      state_attrs :cwd, :environment, :group, :path, :returns, :user
-
       def initialize(name, run_context=nil)
         super
         @resource_name = :execute

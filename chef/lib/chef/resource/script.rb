@@ -25,9 +25,6 @@ class Chef
       
       identity_attr :command
 
-      state_attrs :interpreter, :flags
-
-
       def initialize(name, run_context=nil)
         super
         @resource_name = :script

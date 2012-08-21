@@ -30,7 +30,7 @@ class Chef
 
       identity_attr :path
 
-      state_attrs :cookbook, :files_owner, :files_group, :files_mode, :source
+      state_attrs :files_owner, :files_group, :files_mode
 
       def initialize(name, run_context=nil)
         super

@@ -23,7 +23,7 @@ class Chef
 
       identity_attr :key_name
 
-      state_attrs :value, :delim
+      state_attrs :value
 
       def initialize(name, run_context=nil)
         super
