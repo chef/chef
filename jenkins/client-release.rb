@@ -116,7 +116,7 @@ jenkins_build_support.each do |(build, supported_platforms)|
     build_support_json[platform] ||= {}
     build_support_json[platform][platform_version] ||= {}
     build_support_json[platform][platform_version][machine_architecture] = {}
-    build_support_jeon[platform][platform_version][machine_architecture][options[:version]] = build_location
+    build_support_json[platform][platform_version][machine_architecture][options[:version]] = build_location
   end
 end
 
