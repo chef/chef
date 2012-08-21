@@ -29,10 +29,6 @@ class Chef
 
       provides :cookbook_file, :on_platforms => :all
 
-      identity_attr :path
-      
-      state_attrs :backup, :group, :mode, :owner, :source 
-      
       def initialize(name, run_context=nil)
         super
         @provider = Chef::Provider::CookbookFile
