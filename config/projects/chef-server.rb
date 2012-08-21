@@ -43,6 +43,8 @@ deps << "bookshelf"
 
 # the front-end services
 deps << "erchef"
+deps << "chef-pedant"
+
 # FIXME: uncomment when ready to tackle webui
 # deps << "chef-server-webui"
 
