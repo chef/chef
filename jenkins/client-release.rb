@@ -57,14 +57,14 @@ jenkins_build_support = {
   "build_os=mac_os_x_10_7,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.7", "x86_64"]],
   "build_os=solaris-10,machine_architecture=intel,role=oss-builder" =>
   [
-   ["solaris", "10", "i386"],
-   ["solaris", "11", "i386"]
+   ["solaris2", "10", "i386"],
+   ["solaris2", "11", "i386"]
   ],
   "build_os=solaris-9,machine_architecture=sparc,role=oss-builder" =>
   [
-   ["solaris", "9", "sparc"],
-   ["solaris", "10", "sparc"],
-   ["solaris", "11", "sparc"]
+   ["solaris2", "9", "sparc"],
+   ["solaris2", "10", "sparc"],
+   ["solaris2", "11", "sparc"]
   ],
   "build_os=ubuntu-10-04,machine_architecture=x64,role=oss-builder" =>
   [
