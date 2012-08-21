@@ -103,10 +103,10 @@ jenkins_build_support.each do |(build, supported_platforms)|
   raise unless build_package
 
   # upload build to build platform directory
-  build_location = "/#{options[:bucket]}/#{build_platform.join('/')}/#{build_package.split('/').last}"
+  build_location = "/#{build_platform.join('/')}/#{build_package.split('/').last}"
   puts "UPLOAD: #{build_package} -> #{build_location}"
 
-  s3_cmd = ["s3cmd", "put", "--acl-public", build_package, "s3:/#{build_location}"].join(" ")
+  s3_cmd = ["s3cmd", "put", "--acl-public", build_package, "s3://#{options[:bucket]}#{build_location}"].join(" ")
   shell = Mixlib::ShellOut.new(s3_cmd)
   shell.run_command
   shell.error!
