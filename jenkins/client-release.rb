@@ -106,7 +106,7 @@ jenkins_build_support.each do |(build, supported_platforms)|
   build_location = "s3://#{options[:bucket]}/#{build_platform.join('/')}/#{build_package.split('/').last}"
   puts "UPLOAD: #{build_package} -> #{build_location}"
 
-  s3_cmd = ["s3cmd", "put", build_package, build_location].join(" ")
+  s3_cmd = ["s3cmd", "put", "--acl-public", build_package, build_location].join(" ")
   shell = Mixlib::ShellOut.new(s3_cmd)
   shell.run_command
   shell.error!
