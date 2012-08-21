@@ -1,7 +1,7 @@
 name "erchef"
 version "master"
 
-dependencies ["erlang", "rsync"]
+dependencies ["erlang", "rsync", "curl"]
 
 source :git => "git@github.com:opscode/erchef"
 
