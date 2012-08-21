@@ -3,6 +3,7 @@ version "master"
 
 dependencies ["erlang", "rebar", "rsync"]
 
+# TODO: use the public git:// uri once this repo is public
 source :git => "git@github.com:opscode/bookshelf.git"
 
 relative_path "bookshelf"

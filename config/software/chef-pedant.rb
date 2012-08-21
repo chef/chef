@@ -5,6 +5,7 @@ dependencies ["ruby",
               "bundler",
               "rsync"]
 
+# TODO: use the public git:// uri once this repo is public
 source :git => "git@github.com:opscode/chef-pedant"
 
 relative_path "chef-pedant"

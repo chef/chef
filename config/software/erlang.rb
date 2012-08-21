@@ -1,3 +1,4 @@
+# TODO: move this to omnibus-software
 name "erlang"
 version "R15B01"
 

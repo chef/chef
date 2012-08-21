@@ -1,3 +1,4 @@
+# TODO: move this to omnibus-software
 name "rebar"
 version "2.0.0"
 

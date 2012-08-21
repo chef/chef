@@ -23,6 +23,7 @@ dependencies ["ruby",
               "postgresql",
               "rsync"]
 
+# TODO: use the public git:// uri once this repo is public
 source :git => "git@github.com:opscode/chef-sql-schema.git"
 
 relative_path "chef-sql-schema"

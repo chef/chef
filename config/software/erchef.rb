@@ -3,6 +3,7 @@ version "master"
 
 dependencies ["erlang", "rsync", "curl"]
 
+# TODO: use the public git:// uri once this repo is public
 source :git => "git@github.com:opscode/erchef"
 
 relative_path "erchef"
