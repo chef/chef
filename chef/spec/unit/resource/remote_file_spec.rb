@@ -44,6 +44,18 @@ describe Chef::Resource::RemoteFile do
     Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::CookbookFile
   end
   
+  it "says its provider is RemoteFile when the source is an array of URIs" do
+    @resource.source([ 'http://www.google.com/robots.txt', 'http://stackoverflow.com/robots.txt' ])
+    @resource.provider.should == Chef::Provider::RemoteFile
+    Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
+  end
+  
+  it "should ignore cookbook files (local files) when using an array of URIs" do
+    @resource.source([ 'http://www.google.com/robots.txt', 'seattle.txt', 'http://stackoverflow.com/robots.txt' ])
+    @resource.provider.should == Chef::Provider::RemoteFile
+    @resource.source.should eql([ 'http://www.google.com/robots.txt', 'http://stackoverflow.com/robots.txt' ])
+  end
+
   describe "source" do
     it "should accept a string for the remote file source" do
       @resource.source "something"

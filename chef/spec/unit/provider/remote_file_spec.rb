@@ -79,6 +79,34 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
     end
 
+    describe "and the source specifies multiple URIs" do
+      before do
+        @resource.source([ "http://foo", "http://bar" ])
+      end
+
+      it "should try to download the next URI when the first one fails" do
+        @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+
+      it "should raise an exception when all the URIs fail" do
+        @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_raise(SocketError)
+        lambda { @provider.run_action(:create) }.should raise_error(SocketError)
+      end
+
+      it "should download from only one URI when the first one works" do
+        @rest.should_receive(:streaming_request).once.and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+
+      it "should raise and exception when source is an empty array" do
+        @resource.source([])
+        lambda {@provider.run_action(:create)}.should raise_error(ArgumentError)
+      end
+    end
+
     describe "and the resource specifies a checksum" do
 
       describe "and the existing file matches the checksum exactly" do
