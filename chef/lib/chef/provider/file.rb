@@ -110,7 +110,6 @@ class Chef
 
       def load_current_resource_attrs
         if ::File.exist?(@new_resource.path)
-          Chef::Log.info("passed exists")
           stat = ::File.stat(@new_resource.path)
           @current_resource.owner(stat.uid)
           @current_resource.mode(stat.mode & 07777)

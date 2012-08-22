@@ -60,7 +60,8 @@ class Chef
         if new_resource.respond_to?("diff")
           as_hash["delta"] = new_resource.diff
         else
-          as_hash["delta"] = nil
+          as_hash["delta"] = ""
+        end
         # TODO: rename as "action"
         as_hash["result"] = action.to_s
         if success?
