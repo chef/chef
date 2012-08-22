@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -97,9 +98,12 @@ class Chef
 
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
-   
+
     # Ifconfig failed
     class Ifconfig < RuntimeError; end
+
+    class InvalidEnvironmentPath < ArgumentError; end
+    class EnvironmentNotFound < RuntimeError; end
 
     # Backcompat with Chef::ShellOut code:
     require 'mixlib/shellout/exceptions'

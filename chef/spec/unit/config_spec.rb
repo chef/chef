@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -173,6 +174,16 @@ describe Chef::Config do
       end
 
       Chef::Config[:data_bag_path].should == data_bag_path
+    end
+
+    it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
+      environment_path = if windows?
+        "C:\\chef\\environments"
+      else
+        "/var/chef/environments"
+      end
+
+      Chef::Config[:environment_path].should == environment_path
     end
   end
 
