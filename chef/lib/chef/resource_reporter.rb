@@ -56,11 +56,8 @@ class Chef
         as_hash["after"]  = new_resource.state
         as_hash["before"] = current_resource ? current_resource.state : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
-        # TODO: include diffs, etc. here:
-        if new_resource.respond_to?("diff")
-          as_hash["delta"] = new_resource.diff
-        else
-          as_hash["delta"] = nil
+        as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
+        as_hash["delta"]  = "" if as_hash["delta"].nil?
         # TODO: rename as "action"
         as_hash["result"] = action.to_s
         if success?
