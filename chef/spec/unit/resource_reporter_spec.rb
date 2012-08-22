@@ -85,6 +85,7 @@ describe Chef::ResourceReporter do
   context "when a resource fails before loading current state" do
     before do
       @exception = Exception.new
+      @exception.set_backtrace(caller)
       @resource_reporter.resource_action_start(@new_resource, :create)
       @resource_reporter.resource_failed(@new_resource, :create, @exception)
       @resource_reporter.resource_completed(@new_resource)
@@ -148,6 +149,7 @@ describe Chef::ResourceReporter do
         before do
           @next_new_resource = Chef::Resource::Service.new("apache2")
           @exception = Exception.new
+          @exception.set_backtrace(caller)
           @resource_reporter.resource_failed(@next_new_resource, :create, @exception)
           @resource_reporter.resource_completed(@next_new_resource)
         end
@@ -203,6 +205,7 @@ describe Chef::ResourceReporter do
     context "and the resource failed to converge" do
       before do
         @exception = Exception.new
+        @exception.set_backtrace(caller)
         @resource_reporter.resource_failed(@new_resource, :create, @exception)
         @resource_reporter.resource_completed(@new_resource)
       end
