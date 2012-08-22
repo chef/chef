@@ -85,7 +85,8 @@ class Chef
         end
 
         def filtered_bt
-          r = exception.backtrace.select {|l| l =~ /^#{Chef::Config.file_cache_path}/ }
+          filters = Array(Chef::Config.cookbook_path).map {|p| /^#{Regexp.escape(p)}/ }
+          r = exception.backtrace.select {|line| filters.any? {|filter| line =~ filter }}
           return r.count > 0 ? r : exception.backtrace
         end
 
