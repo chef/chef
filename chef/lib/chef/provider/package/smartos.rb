@@ -37,6 +37,7 @@ class Chef
 
         def load_current_resource
 					Chef::Log.debug("#{@new_resource} loading current resource")
+          Chef::Log.info("#{@new_resource} WARNING - smartos_package resource is being deprecated in favor of pkgin_package")
 					@current_resource = Chef::Resource::Package.new(@new_resource.name)
 					@current_resource.package_name(@new_resource.package_name)
 					@current_resource.version(nil)
