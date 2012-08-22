@@ -56,34 +56,54 @@ class Chef
         result
       end
 
+      def is_binary?(path)
+        ::File.open(path) do |file|
+          file.read(10000000) !~ /^[[:print:]]*$/
+        end
+      end
+
       def diff_current source_path
         begin
- 	  # Solaris diff doesn't support -N (treat missing files as empty) 
+          # Solaris diff doesn't support -N (treat missing files as empty) 
           # For compatibility we'll create a temp file if the file does not exist
           # and substitute it
-	  unless ::File.exists?(source_path) 
-	    altfile = Tempfile.new('chef-tempfile')
+          unless ::File.exists?(source_path) 
+            altfile = Tempfile.new('chef-tempfile')
             source_path = altfile.path
           end
+
+          if ::File.size(@current_resource.path) > 10000000 || ::File.size(source_path) > 10000000
+            return [ "(file sizes exceed 10000000 bytes, diff output suppressed)" ]
+          end
+
+          # MacOSX diff will *sometimes* happily spit out nasty binary diffs
+          if is_binary?(@current_resource.path) || is_binary?(source_path)
+            return [ "(binary files, diff output suppressed)" ]
+          end
+
           # -u: Unified diff format
           result = shell_out("diff -u #{@current_resource.path} #{source_path}" )
           # diff will set a non-zero return code even when there's 
           # valid stdout results, if it encounters something unexpected
           # So as long as we have output, we'll show it.
           if not result.stdout.empty?
-            val = result.stdout.split("\n")
-            val.delete("\\ No newline at end of file")
-            @new_resource.diff = val            
-            val
+            if result.stdout.length > 1000000
+              [ "(long diff of over 1000000 characters, diff output suppressed)" ]
+            else
+              val = result.stdout.split("\n")
+              val.delete("\\ No newline at end of file")
+              @new_resource.diff = val            
+              val
+            end
           elsif not result.stderr.empty?
-            "Could not determine diff. Error: #{result.stderr}"
+            [ "Could not determine diff. Error: #{result.stderr}" ]
           else
-            "(no diff)"
+            [ "(no diff)" ]
           end
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that 
           # an exception can be thrown even using shell_out instead of shell_out!
-          "Could not determine diff. Error: #{e.message}"
+          [ "Could not determine diff. Error: #{e.message}" ]
         end
       end 
 
