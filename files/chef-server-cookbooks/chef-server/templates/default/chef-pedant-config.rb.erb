@@ -48,8 +48,8 @@ include_internal false
 # which should be the fully-qualified path /on the machine Pedant is
 # running on/ to a private key for that user.
 
-superuser_name 'chef-webui'
-superuser_key  '/etc/chef-server/webui.pem'
+superuser_name 'admin'
+superuser_key  '/etc/chef-server/admin.pem'
 
 requestors({
              :clients => {
