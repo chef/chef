@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-template "/etc/chef-server/chef-pedant-config.rb" do
+template "/etc/chef-server/pedant_config.rb" do
   owner "root"
   group "root"
   mode  "0755"
