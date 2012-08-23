@@ -97,7 +97,7 @@ class Chef
           else
             val = result.stdout.split("\n")
             val.delete("\\ No newline at end of file")
-            @new_resource.diff = val            
+            @new_resource.diff(val.join("\\n"))
             val
           end
         elsif not result.stderr.empty?
