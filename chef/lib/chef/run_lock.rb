@@ -20,7 +20,6 @@ class Chef
     attr_reader :runlock
     attr_reader :runlock_file
 
-    # TODO: add lockfile config option to chef/config.rb
     def initialize(config)
       @runlock_file = config[:lockfile] || "#{config[:file_cache_path]}/chef-client-running.pid"
       @runlock = nil
