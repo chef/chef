@@ -23,5 +23,5 @@ file bootstrap_status_file do
   owner "root"
   group "root"
   mode "0600"
-  content "You're bootstraps are belong to Chef"
+  content "All your bootstraps are belong to Chef"
 end
