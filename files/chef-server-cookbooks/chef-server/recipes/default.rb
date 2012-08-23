@@ -122,6 +122,7 @@ include_recipe "runit"
 [
   "rabbitmq",
   "postgresql",
+  "mysql",
   "chef-solr",
   "chef-expander",
   "bookshelf",

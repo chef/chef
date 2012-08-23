@@ -30,6 +30,7 @@ module ChefServer
   erchef Mash.new
   chef_server_webui Mash.new
   lb Mash.new
+  mysql Mash.new
   postgresql Mash.new
   bookshelf Mash.new
   bootstrap Mash.new
@@ -81,6 +82,7 @@ module ChefServer
 
       ChefServer['rabbitmq']['password'] ||= generate_hex(50)
       ChefServer['chef_server_webui']['cookie_secret'] ||= generate_hex(50)
+      ChefServer['mysql']['sql_password'] ||= generate_hex(50)
       ChefServer['postgresql']['sql_password'] ||= generate_hex(50)
       ChefServer['postgresql']['sql_ro_password'] ||= generate_hex(50)
       ChefServer['bookshelf']['access_key_id'] ||= generate_hex(20)
@@ -95,6 +97,9 @@ module ChefServer
               },
               'chef_server_webui' => {
                 'cookie_secret' => ChefServer['chef_server_webui']['cookie_secret'],
+              },
+              'mysql' => {
+                'sql_password' => ChefServer['mysql']['sql_password'],
               },
               'postgresql' => {
                 'sql_password' => ChefServer['postgresql']['sql_password'],
@@ -120,6 +125,7 @@ module ChefServer
         "erchef",
         "chef_server_webui",
         "lb",
+        "mysql",
         "postgresql",
         "nginx",
         "bookshelf",

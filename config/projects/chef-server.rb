@@ -36,6 +36,7 @@ deps << "unicorn"
 
 # the backend
 deps << "postgresql"
+deps << "mysql2"
 deps << "rabbitmq"
 deps << "chef-solr"
 deps << "chef-expander"
