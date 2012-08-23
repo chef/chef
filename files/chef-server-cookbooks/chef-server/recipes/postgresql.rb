@@ -139,8 +139,8 @@ if node['chef_server']['bootstrap']['enable']
   end
 
   execute "migrate_database" do
-    command "/opt/chef-server/embedded/bin/bundle exec /opt/chef-server/embedded/bin/rake pg:remigrate"
-    cwd "/opt/chef-server/embedded/service/chef-sql-schema"
+    command "/opt/chef-server/embedded/bin/psql opscode_chef < pgsql_schema.sql"
+    cwd "/opt/chef-server/embedded/service/chef_db/priv"
     user node['chef_server']['postgresql']['username']
     action :nothing
   end
