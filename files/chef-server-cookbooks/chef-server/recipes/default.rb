@@ -61,18 +61,18 @@ end
 
 validator_key = OpenSSL::PKey::RSA.generate(2048) unless File.exists?('/etc/chef-server/validator.pem')
 
+file "/etc/chef-server/validator_pub.pem" do
+  owner "root"
+  group "root"
+  mode "0644"
+  content validator_key.public_key.to_pem.to_s unless File.exists?('/etc/chef-server/validator.pem')
+end
+
 file "/etc/chef-server/validator.pem" do
   owner node['chef_server']['user']['username']
   group "root"
   mode "0600"
   content validator_key.to_pem.to_s unless File.exists?('/etc/chef-server/validator.pem')
-end
-
-file "/etc/chef-server/validator_pub.pem" do
-  owner node['chef_server']['user']['username']
-  group "root"
-  mode "0600"
-  content validator_key.public_key.to_pem.to_s unless File.exists?('/etc/chef-server/validator.pem')
 end
 
 unless File.exists?('/etc/chef-server/admin.pem')
@@ -86,18 +86,18 @@ file "/etc/chef-server/admin.cert" do
   content cert.to_s unless File.exists?('/etc/chef-server/admin.pem')
 end
 
+file "/etc/chef-server/admin_pub.pem" do
+  owner "root"
+  group "root"
+  mode "0644"
+  content key.public_key.to_pem.to_s unless File.exists?('/etc/chef-server/admin.pem')
+end
+
 file "/etc/chef-server/admin.pem" do
   owner node['chef_server']['user']['username']
   group "root"
   mode "0600"
   content key.to_pem.to_s unless File.exists?('/etc/chef-server/admin.pem')
-end
-
-file "/etc/chef-server/admin_pub.pem" do
-  owner node['chef_server']['user']['username']
-  group "root"
-  mode "0600"
-  content key.public_key.to_pem.to_s unless File.exists?('/etc/chef-server/admin.pem')
 end
 
 directory "/etc/chef" do
