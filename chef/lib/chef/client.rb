@@ -386,45 +386,43 @@ class Chef
 
     class RunLock
       attr_reader :runlock
+      attr_reader :runlock_file
 
-      def initialize
+      # TODO: add lockfile config option to chef/config.rb
+      def initialize(config)
+        @runlock_file = config[:lockfile] || "#{config[:file_cache_path]}/chef-client-running.pid"
         @runlock = nil
       end
 
       def acquire
-        runlock = nil
-        # See if we can lock things
-        if File.respond_to?(:flock)
-          runlock = File.open(runlockfile,'w+')
-          unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
-            # Another chef client running...
-            runpid = File.read(runpidfile).strip.chomp
-            Chef::Log.info("Chef client #{runpid} is running, will wait for it to finish and then run.")
-            runlock.flock(File::LOCK_EX)
-          end
-          # We grabbed the run lock.  Save the pid.
-          runlock.truncate(0)
-          runlock.rewind # truncate doesn't reset position to 0.
-          runlock.write(Process.pid.to_s)
-        else
-          Chef::Log.debug("This platform doesn't support `File.flock`, no protection against concurrent client runs provided.")
+        @runlock = File.open(runlock_file,'w+')
+        unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
+          # Another chef client running...
+          runpid = runlock.read.strip.chomp
+          Chef::Log.info("Chef client #{runpid} is running, will wait for it to finish and then run.")
+          runlock.flock(File::LOCK_EX)
         end
+        # We grabbed the run lock.  Save the pid.
+        runlock.truncate(0)
+        runlock.rewind # truncate doesn't reset position to 0.
+        runlock.write(Process.pid.to_s)
       end
 
       def release
         if runlock
-          File.unlink(runlockfile)
           runlock.flock(File::LOCK_UN)
+          runlock.close
+          # Don't unlink the pid file, if another chef-client was waiting, it
+          # won't be recreated. Better to leave a "dead" pid file than not have
+          # it available if you need to break the lock.
+          reset
         end
       end
 
-      def tmpdir
-        ENV["TMP"] || ENV["TEMP"] || ENV["TMPDIR"] || if Chef::Platform.windows? then "#{ENV["SYSDRIVE"]}" else "/tmp" end
-      end
+      private
 
-
-      def runlockfile
-        "#{tmpdir}/.chef-client-run.lock"
+      def reset
+        @runlock = nil
       end
 
     end
@@ -442,7 +440,7 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
-      runlock = RunLock.new
+      runlock = RunLock.new(Chef::Config)
       runlock.acquire
 
       run_context = nil
