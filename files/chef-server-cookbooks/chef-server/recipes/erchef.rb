@@ -15,15 +15,15 @@
 # limitations under the License.
 #
 
-opscode_erchef_dir = node['chef_server']['erchef']['dir']
-opscode_erchef_etc_dir = File.join(opscode_erchef_dir, "etc")
-opscode_erchef_log_dir = node['chef_server']['erchef']['log_directory']
-opscode_erchef_sasl_log_dir = File.join(opscode_erchef_log_dir, "sasl")
+erchef_dir = node['chef_server']['erchef']['dir']
+erchef_etc_dir = File.join(erchef_dir, "etc")
+erchef_log_dir = node['chef_server']['erchef']['log_directory']
+erchef_sasl_log_dir = File.join(erchef_log_dir, "sasl")
 [
-  opscode_erchef_dir,
-  opscode_erchef_etc_dir,
-  opscode_erchef_log_dir,
-  opscode_erchef_sasl_log_dir
+  erchef_dir,
+  erchef_etc_dir,
+  erchef_log_dir,
+  erchef_sasl_log_dir
 ].each do |dir_name|
   directory dir_name do
     owner node['chef_server']['user']['username']
@@ -33,7 +33,7 @@ opscode_erchef_sasl_log_dir = File.join(opscode_erchef_log_dir, "sasl")
 end
 
 link "/opt/chef-server/embedded/service/erchef/log" do
-  to opscode_erchef_log_dir
+  to erchef_log_dir
 end
 
 template "/opt/chef-server/embedded/service/erchef/bin/erchef" do
@@ -45,7 +45,7 @@ template "/opt/chef-server/embedded/service/erchef/bin/erchef" do
   notifies :restart, 'service[erchef]' if OmnibusHelper.should_notify?("erchef")
 end
 
-erchef_config = File.join(opscode_erchef_etc_dir, "app.config")
+erchef_config = File.join(erchef_etc_dir, "app.config")
 
 template erchef_config do
   source "erchef.config.erb"
@@ -61,7 +61,7 @@ end
 runit_service "erchef" do
   down node['chef_server']['erchef']['ha']
   options({
-    :log_directory => opscode_erchef_log_dir,
+    :log_directory => erchef_log_dir,
     :svlogd_size => node['chef_server']['erchef']['svlogd_size'],
     :svlogd_num  => node['chef_server']['erchef']['svlogd_num']
   }.merge(params))
