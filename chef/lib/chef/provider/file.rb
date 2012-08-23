@@ -56,34 +56,54 @@ class Chef
         result
       end
 
+      def is_binary?(path)
+        ::File.open(path) do |file|
+          file.read(Chef::Config[:diff_filesize_threshold]) !~ /^[[:print:]]*$/
+        end
+      end
+
       def diff_current source_path
+        return [ "(diff output suppressed by config)" ] if Chef::Config[:diff_disabled]
+        return [ "(creating a new file, diff output suppressed)" ] unless ::File.exists?(@current_resource.path)
+        return [ "(no source file, diff output suppressed)" ] unless ::File.exists?(source_path)
+
+        diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
+        diff_output_threshold = Chef::Config[:diff_output_threshold]
+
+        if ::File.size(@current_resource.path) > diff_filesize_threshold || ::File.size(source_path) > diff_filesize_threshold
+          return [ "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)" ]
+        end
+
+        # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
+        if is_binary?(@current_resource.path) || is_binary?(source_path)
+          return [ "(binary files, diff output suppressed)" ]
+        end
+
         begin
- 	  # Solaris diff doesn't support -N (treat missing files as empty) 
-          # For compatibility we'll create a temp file if the file does not exist
-          # and substitute it
-	  unless ::File.exists?(source_path) 
-	    altfile = Tempfile.new('chef-tempfile')
-            source_path = altfile.path
-          end
           # -u: Unified diff format
           result = shell_out("diff -u #{@current_resource.path} #{source_path}" )
-          # diff will set a non-zero return code even when there's 
-          # valid stdout results, if it encounters something unexpected
-          # So as long as we have output, we'll show it.
-          if not result.stdout.empty?
+        rescue Exception => e
+          # Should *not* receive this, but in some circumstances it seems that 
+          # an exception can be thrown even using shell_out instead of shell_out!
+          return [ "Could not determine diff. Error: #{e.message}" ]
+        end
+
+        # diff will set a non-zero return code even when there's 
+        # valid stdout results, if it encounters something unexpected
+        # So as long as we have output, we'll show it.
+        if not result.stdout.empty?
+          if result.stdout.length > diff_output_threshold
+            [ "(long diff of over #{diff_output_threshold} characters, diff output suppressed)" ]
+          else
             val = result.stdout.split("\n")
             val.delete("\\ No newline at end of file")
             @new_resource.diff = val            
             val
-          elsif not result.stderr.empty?
-            "Could not determine diff. Error: #{result.stderr}"
-          else
-            "(no diff)"
           end
-        rescue Exception => e
-          # Should *not* receive this, but in some circumstances it seems that 
-          # an exception can be thrown even using shell_out instead of shell_out!
-          "Could not determine diff. Error: #{e.message}"
+        elsif not result.stderr.empty?
+          [ "Could not determine diff. Error: #{result.stderr}" ]
+        else
+          [ "(no diff)" ]
         end
       end 
 
