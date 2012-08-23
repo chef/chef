@@ -43,19 +43,76 @@ end
 # Create the Chef User
 include_recipe "chef-server::users"
 
+webui_key = OpenSSL::PKey::RSA.generate(2048) unless File.exists?('/etc/chef-server/webui_pub.pem')
+
+file "/etc/chef-server/webui_pub.pem" do
+  owner "root"
+  group "root"
+  mode "0644"
+  content webui_key.public_key.to_s unless File.exists?('/etc/chef-server/webui_pub.pem')
+end
+
+file "/etc/chef-server/webui_priv.pem" do
+  owner node['chef_server']['user']['username']
+  group "root"
+  mode "0600"
+  content webui_key.to_pem.to_s unless File.exists?('/etc/chef-server/webui_pub.pem')
+end
+
+validator_key = OpenSSL::PKey::RSA.generate(2048) unless File.exists?('/etc/chef-server/validator.pem')
+
+file "/etc/chef-server/validator.pem" do
+  owner node['chef_server']['user']['username']
+  group "root"
+  mode "0600"
+  content validator_key.to_pem.to_s unless File.exists?('/etc/chef-server/validator.pem')
+end
+
+file "/etc/chef-server/validator_pub.pem" do
+  owner node['chef_server']['user']['username']
+  group "root"
+  mode "0600"
+  content validator_key.public_key.to_pem.to_s unless File.exists?('/etc/chef-server/validator.pem')
+end
+
+unless File.exists?('/etc/chef-server/admin.pem')
+  cert, key = OmnibusHelper.gen_certificate
+end
+
+file "/etc/chef-server/admin.cert" do
+  owner "root"
+  group "root"
+  mode "0644"
+  content cert.to_s unless File.exists?('/etc/chef-server/admin.pem')
+end
+
+file "/etc/chef-server/admin.pem" do
+  owner node['chef_server']['user']['username']
+  group "root"
+  mode "0600"
+  content key.to_pem.to_s unless File.exists?('/etc/chef-server/admin.pem')
+end
+
+file "/etc/chef-server/admin_pub.pem" do
+  owner node['chef_server']['user']['username']
+  group "root"
+  mode "0600"
+  content key.public_key.to_pem.to_s unless File.exists?('/etc/chef-server/admin.pem')
+end
+
+directory "/etc/chef" do
+  owner "root"
+  group node['chef_server']['user']['username']
+  mode "0775"
+  action :create
+end
+
 directory "/var/opt/chef-server" do
   owner "root"
   group "root"
   mode "0755"
   recursive true
   action :create
-end
-
-ruby_block "allow key creation" do
-  block do
-    system("chgrp #{node['chef_server']['user']['username']} /etc/chef-server")
-  end
-  not_if { File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem") }
 end
 
 # Install our runit instance
@@ -69,6 +126,7 @@ include_recipe "runit"
   "chef-expander",
   "bookshelf",
   "erchef",
+  "bootstrap",
  # FIXME: uncomment when we are ready to tackle the webui
  # "chef-server-webui",
   "nginx"
@@ -80,42 +138,11 @@ include_recipe "runit"
   end
 end
 
-# boostrap!
-include_recipe "chef-server::bootstrap"
+include_recipe "chef-server::chef-pedant"
 
 file "/etc/chef-server/chef-server-running.json" do
   owner node['chef_server']['user']['username']
   group "root"
   mode "0644"
   content Chef::JSONCompat.to_json_pretty({ "chef_server" => node['chef_server'].to_hash, "run_list" => node.run_list })
-end
-
-# ruby_block "wait for certificate creation" do
-#   block do
-#     unless File.exists?("/etc/chef-server/validation.pem") && File.exists?("/etc/chef-server/webui.pem")
-#       raise "Still waiting on certificates!"
-#     end
-#   end
-#   retry_delay 10
-#   retries 20
-# end
-
-include_recipe "chef-server::chef-pedant"
-
-directory "fix up /etc/chef-server" do
-  path "/etc/chef-server"
-  group "root"
-end
-
-
-file "/etc/chef-server/validation.pem" do
-  owner "root"
-  group node["chef_server"]['user']['username']
-  mode "0640"
-end
-
-file "/etc/chef-server/webui.pem" do
-  owner "root"
-  group node["chef_server"]['user']['username']
-  mode "0640"
 end
