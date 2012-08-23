@@ -18,16 +18,16 @@
 require File.expand_path('../../spec_helper', __FILE__)
 require 'chef/client'
 
-describe Chef::Client::RunLock do
+describe Chef::RunLock do
 
   describe "when first created" do
     it "locates the lockfile in the file cache path by default" do
-      run_lock = Chef::Client::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => nil)
+      run_lock = Chef::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => nil)
       run_lock.runlock_file.should == "/var/chef/cache/chef-client-running.pid"
     end
 
     it "locates the lockfile in the user-configured path when set" do
-      run_lock = Chef::Client::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
+      run_lock = Chef::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
       run_lock.runlock_file.should == "/tmp/chef-client-running.pid"
     end
   end

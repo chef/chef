@@ -18,13 +18,13 @@
 require File.expand_path('../../spec_helper', __FILE__)
 require 'chef/client'
 
-describe Chef::Client::RunLock do
+describe Chef::RunLock do
 
   # This behavior is believed to work on windows, but the tests use UNIX APIs.
   describe "when locking the chef-client run", :unix_only => true do
     it "allows only one chef client run per lockfile" do
       read, write = IO.pipe
-      run_lock = Chef::Client::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
+      run_lock = Chef::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
       p1 = fork do
         run_lock.acquire
         write.puts 1
@@ -54,7 +54,7 @@ describe Chef::Client::RunLock do
 
     it "clears the lock if the process dies unexpectedly" do
       read, write = IO.pipe
-      run_lock = Chef::Client::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
+      run_lock = Chef::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
       p1 = fork do
         run_lock.acquire
         write.puts 1

@@ -41,6 +41,7 @@ require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
 require 'chef/version'
 require 'chef/resource_reporter'
+require 'chef/run_lock'
 require 'ohai'
 require 'rbconfig'
 
@@ -382,49 +383,6 @@ class Chef
       # TODO: should this be a separate #converge_failed(exception) method?
       @events.converge_complete
       raise
-    end
-
-    class RunLock
-      attr_reader :runlock
-      attr_reader :runlock_file
-
-      # TODO: add lockfile config option to chef/config.rb
-      def initialize(config)
-        @runlock_file = config[:lockfile] || "#{config[:file_cache_path]}/chef-client-running.pid"
-        @runlock = nil
-      end
-
-      def acquire
-        @runlock = File.open(runlock_file,'w+')
-        unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
-          # Another chef client running...
-          runpid = runlock.read.strip.chomp
-          Chef::Log.info("Chef client #{runpid} is running, will wait for it to finish and then run.")
-          runlock.flock(File::LOCK_EX)
-        end
-        # We grabbed the run lock.  Save the pid.
-        runlock.truncate(0)
-        runlock.rewind # truncate doesn't reset position to 0.
-        runlock.write(Process.pid.to_s)
-      end
-
-      def release
-        if runlock
-          runlock.flock(File::LOCK_UN)
-          runlock.close
-          # Don't unlink the pid file, if another chef-client was waiting, it
-          # won't be recreated. Better to leave a "dead" pid file than not have
-          # it available if you need to break the lock.
-          reset
-        end
-      end
-
-      private
-
-      def reset
-        @runlock = nil
-      end
-
     end
 
     private
