@@ -21,7 +21,7 @@ version "mm/OC-3211"
 dependencies ["postgresql", "rsync"]
 
 # TODO: use the public git:// uri once this repo is public
-source :git => "git://github.com/opscode/chef-sql-schema.git"
+source :git => "git://github.com/opscode/chef_db.git"
 
 relative_path "chef_db"
 
