@@ -35,7 +35,6 @@ if node['chef_server']['mysql']['install_libs']
 end
 
 bundles = {
-  "chef-sql-schema" => false,
   "chef-expander" => false,
   # "chef-server-webui" => "integration_test dev" # FIXME: uncomment when we are ready to tackle the webui
 }
