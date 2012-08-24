@@ -35,6 +35,8 @@ describe Chef::RunLock do
         run_lock.release
       end
 
+      sleep 0.5
+
       p2 = fork do
         run_lock.acquire
         write.puts 3
