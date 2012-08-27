@@ -37,15 +37,6 @@ describe Chef::Knife::SubcommandLoader do
     @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}
   end
 
-  it "finds files from latest version of installed gems" do
-    gemlist = [
-        '/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb',
-        '/usr/lib/ruby/gems/knife-ec2-0.5.10/lib/chef/knife/ec2_base.rb'
-    ]
-    Gem.stub!(:find_files).and_return(gemlist) 
-    @loader.find_subcommands_via_rubygems.each {|rel_path, abs_path| abs_path.should_not match(/knife-ec2-(?!(0.5.12))/)}
-  end
-
   it "finds files using a dirglob when rubygems is not available" do
     @loader.find_subcommands_via_dirglob.should include('chef/knife/node_create')
     @loader.find_subcommands_via_dirglob.each {|rel_path, abs_path| abs_path.should match(%r[chef/knife/.+])}

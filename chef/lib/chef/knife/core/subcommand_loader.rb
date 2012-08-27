@@ -21,6 +21,9 @@ class Chef
   class Knife
     class SubcommandLoader
 
+      CHEF_FILE_IN_GEM = /chef-[\d]+\.[\d]+\.[\d]+/
+      CURRENT_CHEF_GEM = /chef-#{Regexp.escape(Chef::VERSION)}/
+
       attr_reader :chef_config_dir
       attr_reader :env
 
@@ -83,7 +86,8 @@ class Chef
       end
 
       def find_subcommands_via_rubygems
-        files = find_files_latest_gems 'chef/knife/*.rb'
+        files = Gem.find_files 'chef/knife/*.rb'
+        files.reject! {|f| from_old_gem?(f) }
         subcommand_files = {}
         files.each do |file|
           rel_path = file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 1]
@@ -94,24 +98,14 @@ class Chef
       end
 
       private
-      
-      def find_files_latest_gems(glob, check_load_path=true)
-        files = []
 
-        if check_load_path
-          files = $LOAD_PATH.map { |load_path|
-            Dir["#{File.expand_path glob, load_path}#{Gem.suffix_pattern}"]
-          }.flatten.select { |file| File.file? file.untaint }
-        end
-
-        gem_files = Gem::Specification.latest_specs.map do |spec|
-          spec.matches_for_glob("#{glob}#{Gem.suffix_pattern}")
-        end.flatten
-        
-        files.concat gem_files
-        files.uniq! if check_load_path
-
-        return files
+      # wow, this is a sad hack :(
+      # Gem.find_files finds files in all versions of a gem, which
+      # means that if chef 0.10 and 0.9.x are installed, we'll try to
+      # require, e.g., chef/knife/ec2_server_create, which will cause
+      # a gem activation error. So remove files from older chef gems.
+      def from_old_gem?(path)
+        path =~ CHEF_FILE_IN_GEM && path !~ CURRENT_CHEF_GEM
       end
     end
   end
