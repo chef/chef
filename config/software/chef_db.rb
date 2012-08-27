@@ -16,7 +16,7 @@
 #
 
 name "chef_db"
-version "mm/OC-3211"
+version "master"
 
 dependencies ["postgresql", "rsync"]
 
