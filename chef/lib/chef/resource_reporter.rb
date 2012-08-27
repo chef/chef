@@ -100,7 +100,7 @@ class Chef
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
-      resource_history_url = "nodes/#{@node.name}/runs"
+      resource_history_url = "reports/nodes/#{@node.name}/runs"
       server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
       run_uri = URI.parse(server_response["uri"])
       @run_id = ::File.basename(run_uri.path)
@@ -151,7 +151,7 @@ class Chef
 
     def run_completed(node)
       if reporting_enabled?
-        resource_history_url = "nodes/#{@node.name}/runs/#{run_id}"
+        resource_history_url = "reports/nodes/#{@node.name}/runs/#{run_id}"
         run_data = report(node)
         run_data["action"] = "end"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
