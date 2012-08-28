@@ -63,14 +63,25 @@ describe Chef::ScanAccessControl do
         @current_resource.mode.should == "644"
       end
 
-      it "sets the group of the current resource to the current group as a String" do
-        @current_resource.group.should == Etc.getgrgid(0).name
+      context "on unix", :unix_only do
+        it "sets the group of the current resource to the current group as a String" do
+          @current_resource.group.should == Etc.getgrgid(0).name
+        end
+  
+        it "sets the owner of the current resource to the current owner as a String" do
+          @current_resource.user.should == "root"
+        end
       end
 
-      it "sets the owner of the current resource to the current owner as a String" do
-        @current_resource.user.should == "root"
+      context "on windows", :windows_only do
+        it "sets the group of the current resource to the current group as a String" do
+          @current_resource.group.should == 0
+        end
+  
+        it "sets the owner of the current resource to the current owner as a String" do
+          @current_resource.user.should == 0
+        end
       end
-
     end
 
     describe "when new_resource specifies the mode with a string" do
