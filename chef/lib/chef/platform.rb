@@ -210,6 +210,7 @@ class Chef
           :solaris  => {},
           :openindiana => {
             :default => {
+              :mount => Chef::Provider::Mount::Solaris,
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
@@ -218,6 +219,7 @@ class Chef
           },
           :opensolaris => {
             :default => {
+              :mount => Chef::Provider::Mount::Solaris,
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
@@ -226,6 +228,7 @@ class Chef
           },
           :nexentacore => {
             :default => {
+              :mount => Chef::Provider::Mount::Solaris,
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
@@ -234,6 +237,7 @@ class Chef
           },
           :solaris2 => {
             :default => {
+              :mount => Chef::Provider::Mount::Solaris,
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
