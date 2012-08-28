@@ -131,8 +131,6 @@ EXPECTED
   describe "when the file exists but has incorrect content" do
     before do
       @tempfile = Tempfile.open('cookbook_file_spec')
-      # Use binary mode to avoid CRLF on windows
-      @tempfile.binmode
       @new_resource.path(@target_file = @tempfile.path)
       @tempfile.puts "the wrong content"
       @tempfile.close
@@ -182,8 +180,10 @@ EXPECTED
     before do
       Chef::FileAccessControl.any_instance.stub(:modified?).and_return(false)
       @tempfile = Tempfile.open('cookbook_file_spec')
-      # Use binary mode to avoid CRLF on windows
-      @tempfile.binmode
+      # CHEF-2991: We handle CRLF very poorly and we don't know what line endings
+      # our source file is going to have, so we use binary mode to preserve CRLF if needed.
+      source_file = CHEF_SPEC_DATA + "/cookbooks/apache2/files/default/apache2_module_conf_generate.pl"
+      @tempfile.binmode unless File.open(source_file, "rb") { |f| f.read =~ /\r/ }
       @new_resource.path(@target_file = @tempfile.path)
       @tempfile.write(@file_content)
       @tempfile.close
