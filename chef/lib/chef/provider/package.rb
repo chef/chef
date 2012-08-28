@@ -46,12 +46,14 @@ class Chef
           a.assertion { ((@new_resource.version != nil) && !(target_version_already_installed?)) \
             || !(@current_resource.version.nil? && candidate_version.nil?)  }
           a.failure_message(Chef::Exceptions::Package, "No version specified, and no candidate version available for #{@new_resource.package_name}")
+          a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
         end
 
         requirements.assert(:upgrade) do |a|
           # Can't upgrade what we don't have
           a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) } 
           a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
+          a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
         end
       end
 
