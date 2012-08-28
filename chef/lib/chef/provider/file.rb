@@ -65,6 +65,7 @@ class Chef
         end
       end
 
+
       def diff_current(temp_path)
         suppress_resource_reporting = false
 
