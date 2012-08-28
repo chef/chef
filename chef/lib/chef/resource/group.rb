@@ -43,7 +43,7 @@ class Chef
         set_or_return(
           :gid,
           arg,
-          :kind_of => [ Integer ]
+          :kind_of => [ String, Integer ]
         )
       end
 
