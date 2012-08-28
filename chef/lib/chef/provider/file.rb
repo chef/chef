@@ -46,10 +46,10 @@ class Chef
 
       private :negative_complement, :octal_mode
 
-      def diff_current_from_content source_content
+      def diff_current_from_content(new_content)
         result = nil
         Tempfile.open("chef-diff") do |file| 
-          file.write source_content
+          file.write new_content
           file.close 
           result = diff_current file.path
         end
@@ -62,26 +62,35 @@ class Chef
         end
       end
 
-      def diff_current source_path
+      def diff_current(temp_path)
+        suppress_resource_reporting = false
+
         return [ "(diff output suppressed by config)" ] if Chef::Config[:diff_disabled]
-        return [ "(creating a new file, diff output suppressed)" ] unless ::File.exists?(@current_resource.path)
-        return [ "(no source file, diff output suppressed)" ] unless ::File.exists?(source_path)
+        return [ "(no temp file with new content, diff output suppressed)" ] unless ::File.exists?(temp_path)  # should never happen?
+
+        # solaris does not support diff -N, so create tempfile to diff against if we are creating a new file
+        target_path = if ::File.exists?(@current_resource.path)
+                        @current_resource.path
+                      else
+                        suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
+                        Tempfile.new('chef-tempfile')
+                      end
 
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
         diff_output_threshold = Chef::Config[:diff_output_threshold]
 
-        if ::File.size(@current_resource.path) > diff_filesize_threshold || ::File.size(source_path) > diff_filesize_threshold
+        if ::File.size(target_path) > diff_filesize_threshold || ::File.size(temp_path) > diff_filesize_threshold
           return [ "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)" ]
         end
 
         # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
-        if is_binary?(@current_resource.path) || is_binary?(source_path)
+        if is_binary?(target_path) || is_binary?(temp_path)
           return [ "(binary files, diff output suppressed)" ]
         end
 
         begin
           # -u: Unified diff format
-          result = shell_out("diff -u #{@current_resource.path} #{source_path}" )
+          result = shell_out("diff -u #{target_path} #{temp_path}" )
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that 
           # an exception can be thrown even using shell_out instead of shell_out!
@@ -97,7 +106,7 @@ class Chef
           else
             val = result.stdout.split("\n")
             val.delete("\\ No newline at end of file")
-            @new_resource.diff = val            
+            @new_resource.diff(val.join("\\n")) unless suppress_resource_reporting
             val
           end
         elsif not result.stderr.empty?
