@@ -58,7 +58,9 @@ class Chef
 
       def is_binary?(path)
         ::File.open(path) do |file|
-          file.read(Chef::Config[:diff_filesize_threshold]) !~ /^[[:print:]]*$/
+          buff = file.read(Chef::Config[:diff_filesize_threshold])
+          buff = "" if buff.nil?
+          return buff !~ /^[[:print:]]*$/
         end
       end
 
@@ -84,9 +86,8 @@ class Chef
         end
 
         # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
-        if is_binary?(target_path) || is_binary?(temp_path)
-          return [ "(binary files, diff output suppressed)" ]
-        end
+        return [ "(current file is binary, diff output suppressed)"] if is_binary?(target_path)
+        return [ "(new content is binary, diff output suppressed)"] if is_binary?(temp_path)
 
         begin
           # -u: Unified diff format
