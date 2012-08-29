@@ -75,7 +75,8 @@ class Chef
                         @current_resource.path
                       else
                         suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
-                        Tempfile.new('chef-tempfile').path
+                        tempfile = Tempfile.new('chef-tempfile')
+                        tempfile.path
                       end
 
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
