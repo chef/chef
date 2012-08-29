@@ -276,7 +276,132 @@ describe Chef::Provider::File do
   end
 
   describe "when a diff is requested" do
-   
+
+    before(:each) do
+      @original_config = Chef::Config.hash_dup
+    end
+
+    after(:each) do
+      Chef::Config.configuration = @original_config if @original_config
+    end
+
+    describe "when identifying files as binary or text" do
+
+      it "should identify zero-length files as text" do
+        Tempfile.open("some-temp") do |file|
+          @resource.path(file.path)
+          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider.is_binary?(file.path).should be_false
+        end
+      end
+
+      it "should correctly identify text files as being text" do
+        Tempfile.open("some-temp") do |file|
+          @resource.path(file.path)
+          file.puts("This is a text file.")
+          file.puts("That has a couple of lines in it.")
+          file.puts("And lets make sure that other printable chars work too: ~!@\#$%^&*()`:\"<>?{}|_+,./;'[]\\-=")
+          file.close
+          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider.is_binary?(file.path).should be_false
+        end
+      end
+
+      it "should identify a null-terminated string as binary" do
+        Tempfile.open("some-temp") do |file|
+          @resource.path(file.path)
+          file.write("This is a binary file.\0")
+          file.close
+          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider.is_binary?(file.path).should be_true
+        end
+      end
+
+    end
+
+    it "should not return diff output when chef config has disabled it" do
+      Chef::Config[:diff_disabled] = true
+      Tempfile.open("some-temp") do |file|
+        @resource.path(file.path)
+        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider.load_current_resource
+        result = @provider.diff_current_from_content "foo baz"
+        result.should == [ "(diff output suppressed by config)" ]
+        @resource.diff.should be_nil
+      end
+    end
+
+    it "should not return diff output when there is no new file to compare it to" do
+      Tempfile.open("some-temp") do |file|
+        Tempfile.open("other-temp") do |missing_file|
+          missing_path = missing_file.path
+          missing_file.close
+          missing_file.unlink
+          @resource.path(file.path)
+          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider.load_current_resource
+          result = @provider.diff_current missing_path
+          result.should == [ "(no temp file with new content, diff output suppressed)" ]
+          @resource.diff.should be_nil
+        end
+      end
+    end
+
+    it "should produce diff output when the file does not exist yet, but suppress reporting it" do
+      Tempfile.open("some-temp") do |file|
+        @resource.path(file.path)
+        file.close
+        file.unlink
+        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider.load_current_resource
+        result = @provider.diff_current_from_content "foo baz"
+        result.length.should == 4
+        @resource.diff.should be_nil
+      end
+    end
+
+    it "should not produce a diff when the current resource file is above the filesize threshold" do
+      Chef::Config[:diff_filesize_threshold] = 5
+      Tempfile.open("some-temp") do |file|
+        @resource.path(file.path)
+        file.puts("this is a line which is longer than 5 characters")
+        file.flush
+        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider.load_current_resource
+        result = @provider.diff_current_from_content "foo"  # not longer than 5
+        result.should == [ "(file sizes exceed 5 bytes, diff output suppressed)" ]
+        @resource.diff.should be_nil
+      end
+    end
+
+    it "should not produce a diff when the new content is above the filesize threshold" do
+      Chef::Config[:diff_filesize_threshold] = 5
+      Tempfile.open("some-temp") do |file|
+        @resource.path(file.path)
+        file.puts("foo")
+        file.flush
+        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider.load_current_resource
+        result = @provider.diff_current_from_content "this is a line that is longer than 5 characters"
+        result.should == [ "(file sizes exceed 5 bytes, diff output suppressed)" ]
+        @resource.diff.should be_nil
+      end
+    end
+
+    it "should not produce a diff when the generated diff size is above the diff size threshold" do
+      Chef::Config[:diff_output_threshold] = 5
+      Tempfile.open("some-temp") do |file|
+        @resource.path(file.path)
+        file.puts("some text to increase the size of the diff")
+        file.flush
+        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider.load_current_resource
+        result = @provider.diff_current_from_content "this is a line that is longer than 5 characters"
+        result.should == [ "(long diff of over 5 characters, diff output suppressed)" ]
+        @resource.diff.should be_nil
+      end
+    end
+
     it "should return valid diff output when content does not match the string content provided" do
        Tempfile.open("some-temp") do |file|
          @resource.path file.path
@@ -285,12 +410,13 @@ describe Chef::Provider::File do
          result = @provider.diff_current_from_content "foo baz"
          # remove the file name info which varies.
          result.shift(2)
-	 # Result appearance seems to vary slightly under solaris diff
+         # Result appearance seems to vary slightly under solaris diff
          # So we'll compare the second line which is common to both.
          # Solaris: -1,1 +1,0 @@, "+foo baz"
-	 # Linux/Mac: -1,0, +1 @@, "+foo baz"
+         # Linux/Mac: -1,0, +1 @@, "+foo baz"
          result.length.should == 2
          result[1].should == "+foo baz"
+         @resource.diff.should_not be_nil
        end
     end
   end
