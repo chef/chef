@@ -75,7 +75,7 @@ class Chef
                         @current_resource.path
                       else
                         suppress_resource_reporting = true  # suppress big diffs going to resource reporting service
-                        Tempfile.new('chef-tempfile')
+                        Tempfile.new('chef-tempfile').path
                       end
 
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
@@ -91,6 +91,7 @@ class Chef
 
         begin
           # -u: Unified diff format
+          puts ("diff -u #{target_path} #{temp_path}" )
           result = shell_out("diff -u #{target_path} #{temp_path}" )
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that 
