@@ -33,6 +33,7 @@ describe Chef::Provider::Service::Freebsd do
 
     @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context)
     @provider.action = :start
+    @init_command = "/usr/local/etc/rc.d/apache22"
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
@@ -133,15 +134,12 @@ RC_SAMPLE
       end
 
       context "and the init script is not found" do
-        before do
-          ::File.stub!(:exists?).and_return(false)
-          @provider.load_current_resource
-          @provider.define_resource_requirements 
-          @provider.instance_variable_get("@rcd_script_found").should be_false
-        end
-
         [ "start", "reload", "restart", "enable" ].each do |action|
           it "should raise an exception when the action is #{action}" do
+            ::File.stub!(:exists?).and_return(false)
+            @provider.load_current_resource
+            @provider.define_resource_requirements 
+            @provider.instance_variable_get("@rcd_script_found").should be_false
             @provider.action = action
             lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
           end
@@ -162,6 +160,7 @@ RC_SAMPLE
       end 
 
       it "update state when current resource enabled state could be determined" do
+        ::File.stub!(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
         ::File.should_receive(:exists?).with("/etc/rc.conf").and_return  true
         @provider.load_current_resource
         @provider.instance_variable_get("@enabled_state_found").should be_false
@@ -320,6 +319,7 @@ RCVAR_SAMPLE
 
         [ "stop", "disable" ].each do |action|
           it "should not raise an error when the action is #{action}" do
+            ::File.stub!(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
             @provider.action = action
             @provider.load_current_resource
             @provider.define_resource_requirements
