@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+require 'chef/exceptions'
 require 'chef/mixin/params_validate'
 require 'chef/node'
 require 'chef/resource_collection'
@@ -81,15 +82,78 @@ class Chef
         Array(resource.action).each {|action| run_action(resource, action)}
       end
 
-      # Run all our :delayed actions
-      delayed_actions.each do |notification|
-        Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\
-                        " action to #{notification.resource} (delayed)")
-        # Struct of resource/action to call
-        run_action(notification.resource, notification.action, :delayed)
+    rescue Exception => e
+      Chef::Log.info "Running queued delayed notifications before re-raising exception"
+      run_delayed_notifications(e)
+    else
+      run_delayed_notifications(nil)
+      true
+    end
+
+    class CollectedFailures < StandardError
+      def initialize(*args)
+        super
+        @all_failures = []
       end
 
+      def message
+        base = "Multiple failures occurred:\n"
+        @all_failures.inject(base) do |message, (location, error)|
+          message << "* #{error.class} occurred in #{location}: #{error.message}\n"
+        end
+      end
+
+      def client_run_failure(exception)
+        set_backtrace(exception.backtrace)
+        @all_failures << [ "chef run", exception ]
+      end
+
+      def notification_failure(exception)
+        @all_failures << [ "delayed notification", exception ]
+      end
+
+      def raise!
+        unless empty?
+          raise self.for_raise
+        end
+      end
+
+      def empty?
+        @all_failures.empty?
+      end
+
+      def for_raise
+        if @all_failures.size == 1
+          @all_failures[0][1]
+        else
+          self
+        end
+      end
+    end
+
+    private
+
+    # Run all our :delayed actions
+    def run_delayed_notifications(error=nil)
+      collected_failures = Exceptions::MultipleFailures.new
+      collected_failures.client_run_failure(error) unless error.nil?
+      delayed_actions.each do |notification|
+        result = run_delayed_notification(notification)
+        if result.kind_of?(Exception)
+          collected_failures.notification_failure(result)
+        end
+      end
+      collected_failures.raise!
+    end
+
+    def run_delayed_notification(notification)
+      Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\
+                      " action to #{notification.resource} (delayed)")
+      # Struct of resource/action to call
+      run_action(notification.resource, notification.action, :delayed)
       true
+    rescue Exception => e
+      e
     end
   end
 end

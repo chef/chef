@@ -126,6 +126,49 @@ class Chef
 
 
     end
+    # Exception class for collecting multiple failures. Used when running
+    # delayed notifications so that chef can process each delayed
+    # notification even if chef client or other notifications fail.
+    class MultipleFailures < StandardError
+      def initialize(*args)
+        super
+        @all_failures = []
+      end
+
+      def message
+        base = "Multiple failures occurred:\n"
+        @all_failures.inject(base) do |message, (location, error)|
+          message << "* #{error.class} occurred in #{location}: #{error.message}\n"
+        end
+      end
+
+      def client_run_failure(exception)
+        set_backtrace(exception.backtrace)
+        @all_failures << [ "chef run", exception ]
+      end
+
+      def notification_failure(exception)
+        @all_failures << [ "delayed notification", exception ]
+      end
+
+      def raise!
+        unless empty?
+          raise self.for_raise
+        end
+      end
+
+      def empty?
+        @all_failures.empty?
+      end
+
+      def for_raise
+        if @all_failures.size == 1
+          @all_failures[0][1]
+        else
+          self
+        end
+      end
+    end
 
     class CookbookVersionSelection
 
@@ -187,6 +230,8 @@ class Chef
           result.to_json(*a)
         end
       end
-    end
+
+    end # CookbookVersionSelection
+
   end
 end
