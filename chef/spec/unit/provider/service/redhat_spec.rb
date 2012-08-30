@@ -74,15 +74,30 @@ describe "Chef::Provider::Service::Redhat" do
         @provider.define_resource_requirements
         lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
       end
-  
-      it "should raise an error if the service does not exist" do
-        status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")
-        @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
-        chkconfig = mock("Chkconfig", :existatus=> 1, :stdout => "", :stderr => "error reading information on service chef: No such file or directory")
-        @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
-        @provider.load_current_resource
-        @provider.define_resource_requirements
-        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+ 
+      context "when the service does not exist" do
+        before do
+          status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")
+          @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+          chkconfig = mock("Chkconfig", :existatus=> 1, :stdout => "", :stderr => "error reading information on service chef: No such file or directory")
+          @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+          @provider.load_current_resource
+          @provider.define_resource_requirements
+        end
+
+        [ "start", "enable" ].each do |action|
+          it "should raise an error when the action is #{action}" do
+            @provider.action = action
+            lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+          end
+        end
+
+        [ "stop", "disable" ].each do |action|
+          it "should not raise an error when the action is #{action}" do
+            @provider.action = action
+            lambda { @provider.process_resource_requirements }.should_not raise_error
+          end
+        end
       end
     
       it "should not raise an error if the service exists but is not added to any runlevels" do
