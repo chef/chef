@@ -32,6 +32,7 @@ describe Chef::Provider::Service::Freebsd do
     @current_resource = Chef::Resource::Service.new("apache22")
 
     @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context)
+    @provider.action = :start
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
@@ -131,12 +132,27 @@ RC_SAMPLE
         @provider.load_current_resource
       end
 
-      it "should raise an exception when init script is not found" do
-        ::File.stub!(:exists?).and_return(false)
-        @provider.load_current_resource
-        @provider.define_resource_requirements 
-        @provider.instance_variable_get("@rcd_script_found").should be_false
-        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+      context "and the init script is not found" do
+        before do
+          ::File.stub!(:exists?).and_return(false)
+          @provider.load_current_resource
+          @provider.define_resource_requirements 
+          @provider.instance_variable_get("@rcd_script_found").should be_false
+        end
+
+        [ "start", "reload", "restart", "enable" ].each do |action|
+          it "should raise an exception when the action is #{action}" do
+            @provider.action = action
+            lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+          end
+        end
+
+        [ "stop", "disable" ].each do |action|
+          it "should not raise an error when the action is #{action}" do
+            @provider.action = action
+            lambda { @provider.process_resource_requirements }.should_not raise_error
+          end
+        end
       end
 
       it "update state when current resource enabled state could not be determined" do
@@ -293,10 +309,22 @@ RCVAR_SAMPLE
           @provider.stub!(:shell_out!).with("/usr/local/etc/rc.d/#{@current_resource.service_name} rcvar").and_return(@status)
         end
 
-        it "should raise an exception if rcvar does not return foobar_enable" do
-          @provider.load_current_resource
-          @provider.define_resource_requirements
-          lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+        [ "start", "reload", "restart", "enable" ].each do |action|
+          it "should raise an exception when the action is #{action}" do
+            @provider.action = action
+            @provider.load_current_resource
+            @provider.define_resource_requirements
+            lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+          end
+        end
+
+        [ "stop", "disable" ].each do |action|
+          it "should not raise an error when the action is #{action}" do
+            @provider.action = action
+            @provider.load_current_resource
+            @provider.define_resource_requirements
+            lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Service)
+          end
         end
       end
     end
