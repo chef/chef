@@ -98,7 +98,7 @@ describe "Chef::Provider::Service::Redhat" do
           @provider.define_resource_requirements
         end
 
-        [ "start", "enable" ].each do |action|
+        [ "start", "reload", "restart", "enable" ].each do |action|
           it "should raise an error when the action is #{action}" do
             @provider.action = action
             lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
