@@ -19,6 +19,27 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper"))
 require 'ostruct'
 
+shared_examples_for "define_resource_requirements_common" do
+  it "should raise an error if /sbin/chkconfig does not exist" do
+    File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
+    @provider.stub!(:shell_out).with("/sbin/service chef status").and_raise(Errno::ENOENT)
+    @provider.stub!(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_raise(Errno::ENOENT)
+    @provider.load_current_resource
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
+  end
+
+  it "should not raise an error if the service exists but is not added to any runlevels" do
+    status = mock("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
+    @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
+    chkconfig = mock("Chkconfig", :exitstatus => 0, :stdout => "", :stderr => "service chef supports chkconfig, but is not referenced in any runlevel (run 'chkconfig --add chef')")
+    @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
+    @provider.load_current_resource
+    @provider.define_resource_requirements
+    lambda { @provider.process_resource_requirements }.should_not raise_error
+  end
+end
+
 describe "Chef::Provider::Service::Redhat" do
 
   before(:each) do
@@ -65,16 +86,8 @@ describe "Chef::Provider::Service::Redhat" do
     end
   
     describe "define resource requirements" do
+      it_should_behave_like "define_resource_requirements_common"
     
-      it "should raise an error if /sbin/chkconfig does not exist" do
-        File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
-        @provider.stub!(:shell_out).with("/sbin/service chef status").and_raise(Errno::ENOENT)
-        @provider.stub!(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_raise(Errno::ENOENT)
-        @provider.load_current_resource
-        @provider.define_resource_requirements
-        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
-      end
- 
       context "when the service does not exist" do
         before do
           status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")
@@ -99,16 +112,6 @@ describe "Chef::Provider::Service::Redhat" do
           end
         end
       end
-    
-      it "should not raise an error if the service exists but is not added to any runlevels" do
-        status = mock("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
-        @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
-        chkconfig = mock("Chkconfig", :exitstatus => 0, :stdout => "", :stderr => "service chef supports chkconfig, but is not referenced in any runlevel (run 'chkconfig --add chef')")
-        @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
-        @provider.load_current_resource
-        @provider.define_resource_requirements
-        lambda { @provider.process_resource_requirements }.should_not raise_error
-      end
     end
   end
 
@@ -122,29 +125,12 @@ describe "Chef::Provider::Service::Redhat" do
     end
 
     describe "define resource requirements" do
-      it "should raise an error if /sbin/chkconfig does not exist" do
-        File.stub!(:exists?).with("/sbin/chkconfig").and_return(false)
-        @provider.stub!(:shell_out).with("/sbin/service chef status").and_raise(Errno::ENOENT)
-        @provider.stub!(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_raise(Errno::ENOENT)
-        @provider.load_current_resource
-        @provider.define_resource_requirements
-        lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
-      end
-  
+      it_should_behave_like "define_resource_requirements_common"
+
       it "should not raise an error if the service does not exist" do
         status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")
         @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
         chkconfig = mock("Chkconfig", :existatus=> 1, :stdout => "", :stderr => "error reading information on service chef: No such file or directory")
-        @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
-        @provider.load_current_resource
-        @provider.define_resource_requirements
-        lambda { @provider.process_resource_requirements }.should_not raise_error
-      end
-    
-      it "should not raise an error if the service exists but is not added to any runlevels" do
-        status = mock("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
-        @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
-        chkconfig = mock("Chkconfig", :exitstatus => 0, :stdout => "", :stderr => "service chef supports chkconfig, but is not referenced in any runlevel (run 'chkconfig --add chef')")
         @provider.should_receive(:shell_out!).with("/sbin/chkconfig --list chef", :returns => [0,1]).and_return(chkconfig)
         @provider.load_current_resource
         @provider.define_resource_requirements
