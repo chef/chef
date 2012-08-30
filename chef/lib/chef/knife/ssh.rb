@@ -191,7 +191,7 @@ class Chef
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
-        command.force_encoding('binary')
+        command.force_encoding('binary') if command.respond_to?(:force_encoding)
         subsession.open_channel do |ch|
           ch.request_pty
           ch.exec command do |ch, success|
@@ -382,7 +382,7 @@ class Chef
       end
 
       def configure_identity_file
-        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] || 
+        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
                              Chef::Config[:knife][:ssh_identity_file])
       end
 
@@ -423,4 +423,3 @@ class Chef
     end
   end
 end
-
