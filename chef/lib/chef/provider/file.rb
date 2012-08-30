@@ -60,7 +60,7 @@ class Chef
         ::File.open(path) do |file|
           buff = file.read(Chef::Config[:diff_filesize_threshold])
           buff = "" if buff.nil?
-          return buff !~ /^[[:print:]]*$/
+          return buff !~ /^[\r[:print:]]*$/
         end
       end
 
