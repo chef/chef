@@ -52,6 +52,33 @@ class SnitchyProvider < Chef::Provider
 
 end
 
+class FailureResource < Chef::Resource
+
+  attr_accessor :action
+
+  def initialize(*args)
+    super
+    @action = :fail
+  end
+
+  def provider
+    FailureProvider
+  end
+end
+
+class FailureProvider < Chef::Provider
+
+  class ChefClientFail < StandardError; end
+
+  def load_current_resource
+    true
+  end
+
+  def action_fail
+    raise ChefClientFail, "chef had an error of some sort"
+  end
+end
+
 describe Chef::Runner do
 
   before(:each) do
@@ -163,6 +190,78 @@ describe Chef::Runner do
     second_resource.notifies(:purr, @first_resource, :delayed)
 
     @runner.converge
+
+    @first_resource.should be_updated
+  end
+
+  it "should execute delayed notifications when a failure occurs in the chef client run" do
+    @first_resource.action = :nothing
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :purr
+
+    @run_context.resource_collection << second_resource
+    second_resource.notifies(:purr, @first_resource, :delayed)
+
+    third_resource = FailureResource.new("explode", @run_context)
+    @run_context.resource_collection << third_resource
+
+    lambda {@runner.converge}.should raise_error(FailureProvider::ChefClientFail)
+
+    @first_resource.should be_updated
+  end
+
+  it "should execute delayed notifications when a failure occurs in a notification" do
+    @first_resource.action = :nothing
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :purr
+
+    @run_context.resource_collection << second_resource
+
+    third_resource = FailureResource.new("explode", @run_context)
+    third_resource.action = :nothing
+    @run_context.resource_collection << third_resource
+
+    second_resource.notifies(:fail, third_resource, :delayed)
+    second_resource.notifies(:purr, @first_resource, :delayed)
+
+    lambda {@runner.converge}.should raise_error(FailureProvider::ChefClientFail)
+
+    @first_resource.should be_updated
+  end
+
+  it "should execute delayed notifications when a failure occurs in multiple notifications" do
+    @first_resource.action = :nothing
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.action = :purr
+
+    @run_context.resource_collection << second_resource
+
+    third_resource = FailureResource.new("explode", @run_context)
+    third_resource.action = :nothing
+    @run_context.resource_collection << third_resource
+
+    fourth_resource = FailureResource.new("explode again", @run_context)
+    fourth_resource.action = :nothing
+    @run_context.resource_collection << fourth_resource
+
+    second_resource.notifies(:fail, third_resource, :delayed)
+    second_resource.notifies(:fail, fourth_resource, :delayed)
+    second_resource.notifies(:purr, @first_resource, :delayed)
+
+    exception = nil
+    begin
+      @runner.converge
+    rescue => e
+      exception = e
+    end
+    exception.should be_a(Chef::Exceptions::MultipleFailures)
+
+    expected_message =<<-E
+Multiple failures occurred:
+* FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
+* FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
+E
+    exception.message.should == expected_message
 
     @first_resource.should be_updated
   end
