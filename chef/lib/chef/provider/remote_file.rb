@@ -41,7 +41,7 @@ class Chef
           raise ArgumentError, "#{@new_resource} has an empty or wrong source" if sources.empty?
           source = sources.shift
           begin
-            rest = Chef::REST.new(source, nil, nil, http_client_opts)
+            rest = Chef::REST.new(source, nil, nil, http_client_opts(source))
             raw_file = rest.streaming_request(rest.create_url(source), {})
           rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Net::HTTPFatalError => e
             Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}")
@@ -110,7 +110,7 @@ class Chef
         end
       end
 
-      def http_client_opts
+      def http_client_opts(source)
         opts={}
         # CHEF-3140
         # 1. If it's already compressed, trying to compress it more will
@@ -120,7 +120,7 @@ class Chef
         # which tricks Chef::REST into decompressing the response body. In this
         # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
         # which is not what you wanted.
-        if @new_resource.path =~ /gz$/ or @new_resource.source =~ /gz$/
+        if @new_resource.path =~ /gz$/ or source =~ /gz$/
           opts[:disable_gzip] = true
         end
         opts
