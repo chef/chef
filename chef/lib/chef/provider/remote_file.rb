@@ -37,7 +37,7 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          sources = @new_resource.source.kind_of?(Array) ? @new_resource.source.flatten : [ @new_resource.source ]
+          sources = @new_resource.source(Array(@new_resource.source).flatten)
           raise ArgumentError, "#{@new_resource} has an empty or wrong source" if sources.empty?
           source = sources.shift
           begin
