@@ -79,11 +79,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
     end
 
-    describe "and the source specifies multiple URIs" do
-      before do
-        @resource.source([ "http://foo", "http://bar" ])
-      end
-
+    shared_examples_for "source specified with multiple URIs" do
       it "should try to download the next URI when the first one fails" do
         @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
         @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_return(@tempfile)
@@ -104,6 +100,22 @@ describe Chef::Provider::RemoteFile, "action_create" do
       it "should raise and exception when source is an empty array" do
         @resource.source([])
         lambda {@provider.run_action(:create)}.should raise_error(ArgumentError)
+      end
+    end
+
+    describe "and the source specifies multiple URIs using multiple arguments" do
+      it_should_behave_like "source specified with multiple URIs"
+
+      before(:each) do
+        @resource.source("http://foo", "http://bar")
+      end
+    end
+
+    describe "and the source specifies multiple URIs using an array" do
+      it_should_behave_like "source specified with multiple URIs"
+
+      before(:each) do
+        @resource.source([ "http://foo", "http://bar" ])
       end
     end
 
