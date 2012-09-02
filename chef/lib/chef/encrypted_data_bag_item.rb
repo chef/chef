@@ -22,6 +22,8 @@ require 'chef/data_bag_item'
 require 'yaml'
 require 'open-uri'
 
+YAML::ENGINE.yamler = 'syck' if RUBY_VERSION > '1.9'
+
 # An EncryptedDataBagItem represents a read-only data bag item where
 # all values, except for the value associated with the id key, have
 # been encrypted.
