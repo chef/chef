@@ -65,10 +65,10 @@ class Chef
           @upstart_command_success = true
         end
 
-        def define_resource_requirements 
-          super
-
-          requirements.assert(:all_actions) do |a| 
+        def define_resource_requirements
+          # Do not call super, only call shared requirements
+          shared_resource_requirements
+          requirements.assert(:all_actions) do |a|
             if !@command_success
               whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." : 
                 "Could not determine upstart state for service"
