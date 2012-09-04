@@ -18,6 +18,7 @@
 #
 # Enable MySQL support by adding the following to '/etc/chef-server/chef-server.rb':
 #
+#   database_type = 'mysql'
 #   postgresql['enable'] = false
 #   mysql['enable'] = true
 #   mysql['destructive_migrate'] = true
