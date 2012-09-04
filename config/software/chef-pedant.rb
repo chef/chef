@@ -15,23 +15,20 @@
 # limitations under the License.
 #
 
-name "chef-server-api"
-version ENV["CHEF_GIT_REV"] || "master"
+name "chef-pedant"
+version "master"
 
 dependencies ["ruby",
               "bundler",
-              "gecode",
-              "libxml2",
-              "libxslt",
-              "curl",
               "rsync"]
 
-source :git => "git://github.com/opscode/chef"
+# TODO: use the public git:// uri once this repo is public
+source :git => "git@github.com:opscode/chef-pedant"
 
-project_dir = "#{source_dir}/#{name}/#{name}"
+relative_path "chef-pedant"
 
 build do
-  bundle "install --without development test --path=#{install_dir}/embedded/service/gem", :cwd => project_dir
-  command "mkdir -p #{install_dir}/embedded/service/chef-server-api"
-  command "#{install_dir}/embedded/bin/rsync -a #{project_dir}/ --delete --exclude=.git/*** --exclude=.gitignore #{install_dir}/embedded/service/chef-server-api/"
+  bundle "install --path=#{install_dir}/embedded/service/gem"
+  command "mkdir -p #{install_dir}/embedded/service/chef-pedant"
+  command "#{install_dir}/embedded/bin/rsync -a --delete --exclude=.git/*** --exclude=.gitignore ./ #{install_dir}/embedded/service/chef-pedant/"
 end

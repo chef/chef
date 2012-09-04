@@ -15,13 +15,6 @@
 # limitations under the License.
 #
 
-name "chef-server-scripts"
+# exclude SASL logs which are in binary format from tail sub-command
 
-dependencies [ "rsync" ]
-
-source :path => File.expand_path("files/chef-server-scripts", Omnibus.root)
-
-build do
-  command "mkdir -p #{install_dir}/embedded/bin"
-  command "#{install_dir}/embedded/bin/rsync -a ./ #{install_dir}/bin/"
-end
+@log_exclude = "(lock|@|sasl)"

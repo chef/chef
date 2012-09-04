@@ -15,13 +15,12 @@
 # limitations under the License.
 #
 
-name "chef-server-scripts"
-
-dependencies [ "rsync" ]
-
-source :path => File.expand_path("files/chef-server-scripts", Omnibus.root)
-
-build do
-  command "mkdir -p #{install_dir}/embedded/bin"
-  command "#{install_dir}/embedded/bin/rsync -a ./ #{install_dir}/bin/"
+add_command "test", "Run the API test suite against localhost." do
+  ENV["PATH"] = "#{File.join(base_path, "bin")}:#{ENV['PATH']}"
+  pedant_args = ARGV[3..-1]
+  pedant_args = ["--smoke"] unless pedant_args.any?
+  Dir.chdir(File.join(base_path, "embedded", "service", "chef-pedant"))
+  pedant_config = File.join(etc_path, "pedant_config.rb")
+  bundle = File.join(base_path, "embedded", "bin", "bundle")
+  exec("#{bundle} exec ./opscode-pedant -c #{pedant_config} #{pedant_args.join(' ')}")
 end

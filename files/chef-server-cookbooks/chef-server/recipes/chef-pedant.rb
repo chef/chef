@@ -15,13 +15,10 @@
 # limitations under the License.
 #
 
-name "chef-server-scripts"
-
-dependencies [ "rsync" ]
-
-source :path => File.expand_path("files/chef-server-scripts", Omnibus.root)
-
-build do
-  command "mkdir -p #{install_dir}/embedded/bin"
-  command "#{install_dir}/embedded/bin/rsync -a ./ #{install_dir}/bin/"
+template "/etc/chef-server/pedant_config.rb" do
+  owner "root"
+  group "root"
+  mode  "0755"
+  variables :api_url  => node['chef_server']['nginx']['url'],
+            :solr_url => node['chef_server']['chef-solr']['url']
 end

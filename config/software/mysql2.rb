@@ -15,13 +15,27 @@
 # limitations under the License.
 #
 
-name "chef-server-scripts"
+#
+# Enable MySQL support by adding the following to '/etc/chef-server/chef-server.rb':
+#
+#   database_type = 'mysql'
+#   postgresql['enable'] = false
+#   mysql['enable'] = true
+#   mysql['destructive_migrate'] = true
+#
+# Then run 'chef-server-ctl reconfigure'
+#
 
-dependencies [ "rsync" ]
+name "mysql2"
+versions_to_install = [ "0.3.6", "0.3.7" ]
+version versions_to_install.join("-")
 
-source :path => File.expand_path("files/chef-server-scripts", Omnibus.root)
+dependencies ["ruby", "bundler"]
 
 build do
-  command "mkdir -p #{install_dir}/embedded/bin"
-  command "#{install_dir}/embedded/bin/rsync -a ./ #{install_dir}/bin/"
+  gem "install rake-compiler"
+  command "mkdir -p #{install_dir}/embedded/service/gem/ruby/1.9.1/cache"
+  versions_to_install.each do |ver|
+    gem "fetch mysql2 --version #{ver}", :cwd => "#{install_dir}/embedded/service/gem/ruby/1.9.1/cache"
+  end
 end

@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -P -U <%= node['chef_server']['postgresql']['username'] %> -u <%= node['chef_server']['postgresql']['username'] %> /opt/chef-server/embedded/bin/postgres -D <%= File.join(node['chef_server']['postgresql']['dir'], "data") %>
+

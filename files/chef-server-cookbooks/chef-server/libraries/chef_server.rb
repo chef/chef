@@ -24,13 +24,15 @@ require 'securerandom'
 module ChefServer
   extend(Mixlib::Config)
 
-  couchdb Mash.new
   rabbitmq Mash.new
   chef_solr Mash.new
   chef_expander Mash.new
-  chef_server_api Mash.new
+  erchef Mash.new
   chef_server_webui Mash.new
   lb Mash.new
+  mysql Mash.new
+  postgresql Mash.new
+  bookshelf Mash.new
   bootstrap Mash.new
   nginx Mash.new
   api_fqdn nil
@@ -80,6 +82,11 @@ module ChefServer
 
       ChefServer['rabbitmq']['password'] ||= generate_hex(50)
       ChefServer['chef_server_webui']['cookie_secret'] ||= generate_hex(50)
+      ChefServer['mysql']['sql_password'] ||= generate_hex(50)
+      ChefServer['postgresql']['sql_password'] ||= generate_hex(50)
+      ChefServer['postgresql']['sql_ro_password'] ||= generate_hex(50)
+      ChefServer['bookshelf']['access_key_id'] ||= generate_hex(20)
+      ChefServer['bookshelf']['secret_access_key'] ||= generate_hex(40)
 
       if File.directory?("/etc/chef-server")
         File.open("/etc/chef-server/chef-server-secrets.json", "w") do |f|
@@ -90,6 +97,17 @@ module ChefServer
               },
               'chef_server_webui' => {
                 'cookie_secret' => ChefServer['chef_server_webui']['cookie_secret'],
+              },
+              'mysql' => {
+                'sql_password' => ChefServer['mysql']['sql_password'],
+              },
+              'postgresql' => {
+                'sql_password' => ChefServer['postgresql']['sql_password'],
+                'sql_ro_password' => ChefServer['postgresql']['sql_ro_password']
+              },
+              'bookshelf' => {
+                'access_key_id' => ChefServer['bookshelf']['access_key_id'],
+                'secret_access_key' => ChefServer['bookshelf']['secret_access_key']
               }
             })
           )
@@ -101,15 +119,16 @@ module ChefServer
     def generate_hash
       results = { "chef_server" => {} }
       [
-        "couchdb",
         "rabbitmq",
         "chef_solr",
         "chef_expander",
-        "chef_server_api",
+        "erchef",
         "chef_server_webui",
         "lb",
+        "mysql",
         "postgresql",
         "nginx",
+        "bookshelf",
         "bootstrap"
       ].each do |key|
         rkey = key.gsub('_', '-')

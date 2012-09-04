@@ -1,0 +1,102 @@
+%% -*- mode: erlang -*-
+%% -*- tab-width: 4;erlang-indent-level: 4;indent-tabs-mode: nil -*-
+%% ex: ts=4 sw=4 ft=erlang et
+[
+ %% SASL config
+ {sasl, [
+         {sasl_error_logger, {file, "<%= File.join(@log_directory, 'sasl-error.log') %>"}},
+         {errlog_type, error},
+         {error_logger_mf_dir, "<%= File.join(@log_directory, 'sasl') %>"},      % Log directory
+         {error_logger_mf_maxbytes, 104857600},   % 10 MB max file size
+         {error_logger_mf_maxfiles, 5}           % 5 files max
+        ]},
+ {fast_log, [
+             {loggers, [[{name, erchef},
+                         {file, "<%= File.join(@log_directory, 'erchef.log') %>"},
+                         {files, 5},
+                         {file_size, 50}]]}
+            ]},
+ {chef_wm, [
+              {health_ping_modules, [chef_sql, chef_solr]},
+              {health_ping_timeout, 400},
+              {local_key_gen, {true, 2048}},
+              {ip, "<%= @listen %>"},
+              {port, <%= @port %>},
+              {reqid_header_name, "X-Request-Id"},
+              {auth_skew, <%= @auth_skew %>},
+              %% currently only used by the search endpoint to bound
+              %% how many nodes are deserialized at a time in
+              %% preparing a response.
+              {bulk_fetch_batch_size, <%= @bulk_fetch_batch_size %>},
+              {superusers, [<<"chef-webui">>]}
+             ]},
+  {chef_authn, [
+                {keyring, [{default, "/etc/chef-server/webui_pub.pem"}]}
+               ]},
+  {chef_db, [
+             {bulk_fetch_batch_size, <%= @bulk_fetch_batch_size %>},
+             {cache_defaults, [{max_size, <%= @max_cache_size %> },
+                                  {ttl, <%= @cache_ttl %> }]},
+             {couchdb_host, "127.0.0.1"},
+             {couchdb_port, 6666 }
+            ]},
+  {chef_index, [
+                {rabbitmq_host, "<%= node['chef_server']['rabbitmq']['vip'] %>"},
+                {rabbitmq_port, <%= node['chef_server']['rabbitmq']['node_port'] %> },
+                {rabbitmq_user, <<"<%= node['chef_server']['rabbitmq']['user'] %>">>},
+                {rabbitmq_password, <<"<%= node['chef_server']['rabbitmq']['password'] %>">>},
+                {rabbitmq_vhost, <<"<%= node['chef_server']['rabbitmq']['vhost'] %>">>},
+                {rabbitmq_exchange, <<"">>},
+                {solr_url, "http://<%= node['chef_server']['chef-solr']['vip'] %>:<%= node['chef_server']['chef-solr']['port'] %>/solr"}
+               ]},
+  {chef_objects, [
+                  {s3_access_key_id, "<%= node['chef_server']['bookshelf']['access_key_id'] %>"},
+                  {s3_secret_key_id, "<%= node['chef_server']['bookshelf']['secret_access_key'] %>"},
+                  %% this is hard-coded until bookshelf gets integrated.
+                  {s3_url, "https://<%= node['fqdn'] %>"},
+                  {s3_platform_bucket_name, "<%= node['chef_server']['erchef']['s3_bucket'] %>"}
+                 ]},
+  {stats_hero, [
+               {udp_socket_pool_size, 1 },
+               {estatsd_host, "127.0.0.1" },
+               {estatsd_port, 5665 }
+              ]},
+  {sqerl, [
+           %% The database system you are using (e.g., mysql, pgsql)
+           {db_type, <%= node['chef_server']['database_type'] == "postgresql" ? "pgsql" : "mysql" %> },
+
+           %% Database connection parameters
+           {db_host, "<%= node['chef_server'][node['chef_server']['database_type']]['vip'] %>"},
+           {db_port, <%= node['chef_server']['database_type'] == "postgresql" ? 5432 : 3306 %>},
+           {db_user, "<%= node['chef_server'][node['chef_server']['database_type']]['sql_user'] %>"},
+           {db_pass, "<%= node['chef_server'][node['chef_server']['database_type']]['sql_password'] %>"},
+           {db_name, "opscode_chef" },
+
+           {prepared_statements, {chef_sql, statements, [<%= node['chef_server']['database_type'] == "postgresql" ? "pgsql" : "mysql" %>]}},
+           {column_transforms,
+           <%-if node['chef_server']['database_type'] == "mysql" %>
+                              [{<<"frozen">>,
+                                {sqerl_transformers, convert_integer_to_boolean}},
+                               {<<"admin">>,
+                                {sqerl_transformers, convert_integer_to_boolean}},
+                               {<<"validator">>,
+                                {sqerl_transformers, convert_integer_to_boolean}}]
+           <%- elsif node['chef_server']['database_type'] == "postgresql" %>
+                              [{<<"created_at">>,
+                                {sqerl_transformers, convert_YMDHMS_tuple_to_datetime}},
+                               {<<"updated_at">>,
+                                {sqerl_transformers, convert_YMDHMS_tuple_to_datetime}}]
+           <% else %>
+                              undefined
+           <%- end %>
+           }
+          ]},
+  {pooler, [
+           {pools, [[{name, "sqerl"},
+                     {max_count, <%= @db_pool_size %>},
+                     {init_count, <%= @db_pool_size %>},
+                     {start_mfa, {sqerl_client, start_link, []}}]]},
+           {metrics_module, folsom_metrics}
+          ]}
+
+].

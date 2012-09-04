@@ -1,0 +1,26 @@
+%% -*- mode: erlang -*-
+%% -*- tab-width: 4;erlang-indent-level: 4;indent-tabs-mode: nil -*-
+%% ex: ts=4 sw=4 ft=erlang et
+
+[
+ %% SASL config
+ {sasl, [
+         {sasl_error_logger, {file, "<%= File.join(@log_directory, 'sasl-error.log') %>"}},
+         {errlog_type, error},
+         {error_logger_mf_dir, "<%= File.join(@log_directory, 'sasl') %>"},      % Log directory
+         {error_logger_mf_maxbytes, 10485760},   % 10 MB max file size
+         {error_logger_mf_maxfiles, 5}           % 5 files max
+        ]},
+
+ %% bookshelf_store Config
+ {bookshelf_store, [
+                   ]},
+
+ %% bookshelf_wi Config
+ {bookshelf_wi, [{ip, "<%= @listen %>"},
+                 {port, <%= @port %>},
+                 {keys, {"<%= @access_key_id %>",
+                         "<%= @secret_access_key %>"}},
+                 {disk_store, "<%= @data_dir %>"}
+                ]}
+].

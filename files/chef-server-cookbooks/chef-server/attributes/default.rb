@@ -19,6 +19,7 @@
 # High level options
 ###
 default['chef_server']['notification_email'] = "info@example.com"
+default['chef_server']['database_type'] = "postgresql"
 default['chef_server']['bootstrap']['enable'] = true
 
 ####
@@ -30,27 +31,6 @@ default['chef_server']['user']['username'] = "chef_server"
 default['chef_server']['user']['shell'] = "/bin/sh"
 # The home directory for the chef services user
 default['chef_server']['user']['home'] = "/opt/chef-server/embedded"
-
-####
-# CouchDB
-####
-default['chef_server']['couchdb']['enable'] = true
-default['chef_server']['couchdb']['ha'] = false
-default['chef_server']['couchdb']['dir'] = "/var/opt/chef-server/couchdb"
-default['chef_server']['couchdb']['data_dir'] = "/var/opt/chef-server/couchdb/db"
-default['chef_server']['couchdb']['log_directory'] = "/var/log/chef-server/couchdb"
-default['chef_server']['couchdb']['port'] = 5984
-default['chef_server']['couchdb']['bind_address'] = '127.0.0.1'
-default['chef_server']['couchdb']['vip'] = "127.0.0.1"
-default['chef_server']['couchdb']['max_document_size'] = '4294967296'
-default['chef_server']['couchdb']['max_attachment_chunk_size'] = '4294967296'
-default['chef_server']['couchdb']['os_process_timeout'] = '300000'
-default['chef_server']['couchdb']['max_dbs_open'] = 10000
-default['chef_server']['couchdb']['delayed_commits'] = 'true'
-default['chef_server']['couchdb']['batch_save_size'] = 1000
-default['chef_server']['couchdb']['batch_save_interval'] = 1000
-default['chef_server']['couchdb']['log_level'] = 'error'
-default['chef_server']['couchdb']['reduce_limit'] = 'false'
 
 ####
 # RabbitMQ
@@ -111,35 +91,60 @@ default['chef_server']['chef-expander']['consumer_id'] = "default"
 default['chef_server']['chef-expander']['nodes'] = 2
 
 ####
-# Chef Server API
+# Bookshelf
 ####
-default['chef_server']['chef-server-api']['enable'] = true
-default['chef_server']['chef-server-api']['ha'] = false
-default['chef_server']['chef-server-api']['dir'] = "/var/opt/chef-server/chef-server-api"
-default['chef_server']['chef-server-api']['log_directory'] = "/var/log/chef-server/chef-server-api"
-default['chef_server']['chef-server-api']['sandbox_path'] = "/var/opt/chef-server/chef-server-api/sandbox"
-default['chef_server']['chef-server-api']['checksum_path'] = "/var/opt/chef-server/chef-server-api/checksum"
-default['chef_server']['chef-server-api']['proxy_user'] = "pivotal"
-default['chef_server']['chef-server-api']['environment'] = 'privatechef'
-default['chef_server']['chef-server-api']['url'] = "http://127.0.0.1:9460"
-default['chef_server']['chef-server-api']['upload_vip'] = "127.0.0.1"
-default['chef_server']['chef-server-api']['upload_port'] = 9460
-default['chef_server']['chef-server-api']['upload_proto'] = "http"
-default['chef_server']['chef-server-api']['upload_internal_vip'] = "127.0.0.1"
-default['chef_server']['chef-server-api']['upload_internal_port'] = 9460
-default['chef_server']['chef-server-api']['upload_internal_proto'] = "http"
-default['chef_server']['chef-server-api']['vip'] = "127.0.0.1"
-default['chef_server']['chef-server-api']['port'] = 9460
-default['chef_server']['chef-server-api']['listen'] = '127.0.0.1:9460'
-default['chef_server']['chef-server-api']['backlog'] = 1024
-default['chef_server']['chef-server-api']['tcp_nodelay'] = true
-default['chef_server']['chef-server-api']['worker_timeout'] = 3600
-default['chef_server']['chef-server-api']['validation_client_name'] = "chef-validator"
-default['chef_server']['chef-server-api']['umask'] = "0022"
-default['chef_server']['chef-server-api']['worker_processes'] = node["cpu"]["total"].to_i
-default['chef_server']['chef-server-api']['web_ui_client_name'] = "chef-webui"
-default['chef_server']['chef-server-api']['web_ui_admin_user_name'] = "admin"
-default['chef_server']['chef-server-api']['web_ui_admin_default_password'] = "p@ssw0rd1"
+default['chef_server']['bookshelf']['enable'] = true
+default['chef_server']['bookshelf']['ha'] = false
+default['chef_server']['bookshelf']['dir'] = "/var/opt/chef-server/bookshelf"
+default['chef_server']['bookshelf']['data_dir'] = "/var/opt/chef-server/bookshelf/data"
+default['chef_server']['bookshelf']['log_directory'] = "/var/log/chef-server/bookshelf"
+default['chef_server']['bookshelf']['svlogd_size'] = 1000000
+default['chef_server']['bookshelf']['svlogd_num'] = 10
+default['chef_server']['bookshelf']['vip'] = '127.0.0.1'
+default['chef_server']['bookshelf']['listen'] = '127.0.0.1'
+default['chef_server']['bookshelf']['port'] = 4321
+default['chef_server']['bookshelf']['access_key_id'] = "generated-by-default"
+default['chef_server']['bookshelf']['secret_access_key'] = "generated-by-default"
+
+####
+# Erlang Chef Server API
+####
+default['chef_server']['erchef']['enable'] = true
+default['chef_server']['erchef']['enable'] = true
+default['chef_server']['erchef']['ha'] = false
+default['chef_server']['erchef']['dir'] = "/var/opt/chef-server/erchef"
+default['chef_server']['erchef']['log_directory'] = "/var/log/chef-server/erchef"
+default['chef_server']['erchef']['svlogd_size'] = 1000000
+default['chef_server']['erchef']['svlogd_num'] = 10
+default['chef_server']['erchef']['vip'] = '127.0.0.1'
+default['chef_server']['erchef']['listen'] = '127.0.0.1'
+default['chef_server']['erchef']['port'] = 8000
+default['chef_server']['erchef']['auth_skew'] = '900'
+default['chef_server']['erchef']['bulk_fetch_batch_size'] = '5'
+default['chef_server']['erchef']['max_cache_size'] = '10000'
+default['chef_server']['erchef']['cache_ttl'] = '3600'
+default['chef_server']['erchef']['db_pool_size'] = '20'
+default['chef_server']['erchef']['couchdb_max_conn'] = '100'
+default['chef_server']['erchef']['s3_bucket'] = 'bookshelf'
+default['chef_server']['erchef']['proxy_user'] = "pivotal"
+#default['chef_server']['chef-server-api']['environment'] = 'privatechef'
+default['chef_server']['erchef']['url'] = "http://127.0.0.1:8000"
+# default['chef_server']['chef-server-api']['upload_vip'] = "127.0.0.1"
+# default['chef_server']['chef-server-api']['upload_port'] = 9460
+# default['chef_server']['chef-server-api']['upload_proto'] = "http"
+# default['chef_server']['chef-server-api']['upload_internal_vip'] = "127.0.0.1"
+# default['chef_server']['chef-server-api']['upload_internal_port'] = 9460
+# default['chef_server']['chef-server-api']['upload_internal_proto'] = "http"
+# default['chef_server']['chef-server-api']['listen'] = '127.0.0.1:9460'
+# default['chef_server']['chef-server-api']['backlog'] = 1024
+# default['chef_server']['chef-server-api']['tcp_nodelay'] = true
+# default['chef_server']['chef-server-api']['worker_timeout'] = 3600
+default['chef_server']['erchef']['validation_client_name'] = "chef-validator"
+default['chef_server']['erchef']['umask'] = "0022"
+# default['chef_server']['chef-server-api']['worker_processes'] = node["cpu"]["total"].to_i
+default['chef_server']['erchef']['web_ui_client_name'] = "chef-webui"
+default['chef_server']['erchef']['web_ui_admin_user_name'] = "admin"
+default['chef_server']['erchef']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
 ####
 # Chef Server WebUI
@@ -175,8 +180,9 @@ default['chef_server']['lb']['api_fqdn'] = node['fqdn']
 default['chef_server']['lb']['web_ui_fqdn'] = node['fqdn']
 default['chef_server']['lb']['cache_cookbook_files'] = false
 default['chef_server']['lb']['debug'] = false
-default['chef_server']['lb']['upstream']['chef-server-api'] = [ "127.0.0.1" ]
-default['chef_server']['lb']['upstream']['chef-server-webui'] = [ "127.0.0.1" ]
+default['chef_server']['lb']['upstream']['erchef'] = [ "127.0.0.1" ]
+# default['chef_server']['lb']['upstream']['chef-server-webui'] = [ "127.0.0.1" ]
+default['chef_server']['lb']['upstream']['bookshelf'] = [ "127.0.0.1" ]
 
 ####
 # Nginx
@@ -221,3 +227,39 @@ default['chef_server']['nginx']['keepalive_timeout'] = 65
 default['chef_server']['nginx']['client_max_body_size'] = '250m'
 default['chef_server']['nginx']['cache_max_size'] = '5000m'
 
+###
+# MySQL
+###
+default['chef_server']['mysql']['enable'] = false
+default['chef_server']['mysql']['sql_user'] = "opscode_chef"
+default['chef_server']['mysql']['sql_password'] = "snakepliskin"
+default['chef_server']['mysql']['vip'] = "127.0.0.1"
+default['chef_server']['mysql']['destructive_migrate'] = false
+default['chef_server']['mysql']['install_libs'] = true
+default['chef_server']['mysql']['mysql2_versions'] = IO.readlines("/opt/chef-server/version-manifest.txt").detect { |l| l =~ /^mysql2/ }.gsub(/^mysql2:\s+(\d.+)$/, '\1').chomp.split("-")
+
+###
+# PostgreSQL
+###
+default['chef_server']['postgresql']['enable'] = true
+default['chef_server']['postgresql']['ha'] = false
+default['chef_server']['postgresql']['dir'] = "/var/opt/chef-server/postgresql"
+default['chef_server']['postgresql']['data_dir'] = "/var/opt/chef-server/postgresql/data"
+default['chef_server']['postgresql']['log_directory'] = "/var/log/chef-server/postgresql"
+default['chef_server']['postgresql']['svlogd_size'] = 1000000
+default['chef_server']['postgresql']['svlogd_num'] = 10
+default['chef_server']['postgresql']['username'] = "opscode-pgsql"
+default['chef_server']['postgresql']['shell'] = "/bin/sh"
+default['chef_server']['postgresql']['home'] = "/opt/chef-server/embedded"
+default['chef_server']['postgresql']['sql_user'] = "opscode_chef"
+default['chef_server']['postgresql']['sql_password'] = "snakepliskin"
+default['chef_server']['postgresql']['sql_ro_user'] = "opscode_chef_ro"
+default['chef_server']['postgresql']['sql_ro_password'] = "shmunzeltazzen"
+default['chef_server']['postgresql']['vip'] = "127.0.0.1"
+default['chef_server']['postgresql']['port'] = 5432
+default['chef_server']['postgresql']['listen_address'] = 'localhost'
+default['chef_server']['postgresql']['max_connections'] = 200
+default['chef_server']['postgresql']['md5_auth_cidr_addresses'] = [ ]
+default['chef_server']['postgresql']['trust_auth_cidr_addresses'] = [ '127.0.0.1/32', '::1/128' ]
+default['chef_server']['postgresql']['shmmax'] = 17179869184
+default['chef_server']['postgresql']['shmall'] = 4194304
