@@ -1,5 +1,5 @@
 GIT
-  remote: http://github.com/opscode/omnibus-ruby
+  remote: git://github.com/opscode/omnibus-ruby.git
   revision: 07438ccb8c405e8e040fcbd41b7bae4a36bdfb4f
   branch: master
   specs:
@@ -11,7 +11,7 @@ GIT
       uber-s3
 
 GIT
-  remote: http://github.com/opscode/omnibus-software
+  remote: git://github.com/opscode/omnibus-software.git
   revision: f115459cdb157d77ad7840b6ab553f350f289b51
   branch: master
   specs:
