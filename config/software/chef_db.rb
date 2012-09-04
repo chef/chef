@@ -20,7 +20,6 @@ version "master"
 
 dependencies ["postgresql", "rsync"]
 
-# TODO: use the public git:// uri once this repo is public
 source :git => "git://github.com/opscode/chef_db.git"
 
 relative_path "chef_db"
