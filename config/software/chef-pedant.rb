@@ -16,7 +16,7 @@
 #
 
 name "chef-pedant"
-version "osc"
+version "master"
 
 dependencies ["ruby",
               "bundler",
