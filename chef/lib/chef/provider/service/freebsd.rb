@@ -70,7 +70,7 @@ class Chef
         def define_resource_requirements
           super
 
-          requirements.assert(:all_actions) do |a| 
+          requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { @rcd_script_found } 
             a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the rc.d script"
           end
@@ -82,7 +82,7 @@ class Chef
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled." 
           end
 
-          requirements.assert(:all_actions) do |a| 
+          requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { @rcd_script_found && service_enable_variable_name != nil } 
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{@init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.

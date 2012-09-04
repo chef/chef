@@ -27,6 +27,15 @@ class Chef
         @resource_name = :ips_package
         @provider      = Chef::Provider::Package::Ips
         @allowed_actions = [ :install, :remove, :upgrade ]
+        @accept_license = false
+      end
+
+      def accept_license(arg=nil)
+        set_or_return(
+          :purge,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
       end
     end
   end

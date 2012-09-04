@@ -218,6 +218,13 @@ describe Chef::Provider::RemoteFile, "action_create" do
     describe "when the target file already exists" do
       before do
         ::File.stub!(:exists?).with(@resource.path).and_return(true)
+        @provider.stub!(:diff_current).and_return([
+         "--- /tmp/foo  2012-08-30 21:28:17.632782551 +0000",
+         "+++ /tmp/bar 2012-08-30 21:28:20.816975437 +0000",
+         "@@ -1 +1 @@",
+         "-foo bar",
+         "+bar foo"
+        ])
         @provider.stub!(:get_from_server).and_return(@tempfile)
       end
 

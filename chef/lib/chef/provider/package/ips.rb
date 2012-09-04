@@ -1,5 +1,6 @@
 #
 # Author:: Jason J. W. Williams (<williamsjj@digitar.com>)
+# Author:: Stephen Nelson-Smith (<sns@opscode.com>)
 # Copyright:: Copyright (c) 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -57,7 +58,7 @@ class Chef
             when /^\s+State: Installed/
               installed = true
             when /^\s+Version: (.*)/
-              @candidate_version = $1
+              @candidate_version = $1.split[0]
               if installed
                 @current_resource.version($1)
               else
@@ -71,9 +72,16 @@ class Chef
 
         def install_package(name, version)
           package_name = "#{name}@#{version}"
-          run_command_with_systems_locale(
-            :command => "pkg#{expand_options(@new_resource.options)} install -q --accept #{package_name}"
-          )
+          normal_command = "pkg#{expand_options(@new_resource.options)} install -q #{package_name}"
+          if @new_resource.respond_to?(:accept_license) and @new_resource.accept_license
+            command = normal_command.gsub('-q', '-q --accept')
+          else
+            command = normal_command
+          end
+          begin
+            run_command_with_systems_locale(:command => command)
+          rescue
+          end
         end
 
         def upgrade_package(name, version)

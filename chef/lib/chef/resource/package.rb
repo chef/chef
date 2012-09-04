@@ -28,15 +28,15 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
-        @resource_name = :package
-        @package_name = name
-        @version = nil
+        @action = :install
+        @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
         @candidate_version = nil
+        @options = nil
+        @package_name = name
+        @resource_name = :package
         @response_file = nil
         @source = nil
-        @action = :install
-        @options = nil
-        @allowed_actions.push(:install, :upgrade, :remove, :purge, :reconfig)
+        @version = nil
       end
 
       def package_name(arg=nil)
@@ -78,7 +78,6 @@ class Chef
 	  :kind_of => [ String ]
 	)
       end
-
     end
   end
 end
