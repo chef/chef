@@ -21,6 +21,21 @@ class Chef
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
+
+    # Backcompat with Chef::ShellOut code:
+    require 'mixlib/shellout/exceptions'
+
+    def self.const_missing(const_name)
+      if const_name == :ShellCommandFailed
+        Chef::Log.warn("Chef::Exceptions::ShellCommandFailed is deprecated, use Mixlib::ShellOut::ShellCommandFailed")
+        called_from = caller[0..3].inject("Called from:\n") {|msg, trace_line| msg << "  #{trace_line}\n" }
+        Chef::Log.warn(called_from)
+        Mixlib::ShellOut::ShellCommandFailed
+      else
+        super
+      end
+    end
+
     class Application < RuntimeError; end
     class Cron < RuntimeError; end
     class Env < RuntimeError; end
@@ -101,9 +116,6 @@ class Chef
     # Ifconfig failed
     class Ifconfig < RuntimeError; end
 
-    # Backcompat with Chef::ShellOut code:
-    require 'mixlib/shellout/exceptions'
-    class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
