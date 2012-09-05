@@ -550,10 +550,10 @@ F
     end
 
     def defined_at
+      (file, line_no) = source_line.match(/(.*):(\d+)$/).matches
       if cookbook_name && recipe_name && source_line
-        "#{cookbook_name}::#{recipe_name} line #{source_line.split(':')[1]}"
+        "#{cookbook_name}::#{recipe_name} line #{line_no}"
       elsif source_line
-        file, line_no = source_line.split(':')
         "#{file} line #{line_no}"
       else
         "dynamically defined"
