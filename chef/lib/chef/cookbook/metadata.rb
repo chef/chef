@@ -363,6 +363,14 @@ class Chef
       # === Returns
       # description<String>:: Returns the current description
       def recipe(name, description)
+      # verifies the first part of the recipe name matches the cookbook name
+      if @name != name.split('::').first && @name.to_s != "#{name.split('::').first}/"
+        raise "Cookbook name #{@name} does not match first field in metadata: #{name.split('::').first}"
+      end
+      #verifies the recipe file exists in the recipe directory. 
+      if !File.exists?("#{File.join(name.split('::').first, "recipes", name.split('::').last)}.rb")
+        raise "Recipe file #{File.join(name.split('::').first, "recipes", name.split('::').last)}.rb does not exist!"
+      end 
         @recipes[name] = description
       end
 
