@@ -25,20 +25,29 @@ require 'chef/cookbook_version'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'
 
+#
+# CookbookLoader class loads the cookbooks lazily as readed
+#
 class Chef
   class CookbookLoader
 
     attr_reader :merged_cookbooks
     attr_reader :cookbook_paths
+    attr_reader :metadata
 
     include Enumerable
 
     def initialize(*repo_paths)
-      @repo_paths = repo_paths.flatten
-      raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
+      repo_paths = repo_paths.flatten
+      raise ArgumentError, "You must specify at least one cookbook repo path" if repo_paths.empty?
       @cookbooks_by_name = Mash.new
+      @loaded_cookbooks = {}
       @metadata = Mash.new
       @cookbooks_paths = Hash.new {|h,k| h[k] = []} # for deprecation warnings
+      @chefignores = {}
+      @repo_paths = repo_paths.map do |repo_path|
+        repo_path = File.expand_path(repo_path)
+      end
 
       # Used to track which cookbooks appear in multiple places in the cookbook repos
       # and are merged in to a single cookbook by file shadowing. This behavior is
@@ -54,41 +63,21 @@ class Chef
     end
 
     def load_cookbooks
-      @loaded_cookbooks = {}
       @repo_paths.each do |repo_path|
-        repo_path = File.expand_path(repo_path)
-        chefignore = Cookbook::Chefignore.new(repo_path)
         Dir[File.join(repo_path, "*")].each do |cookbook_path|
-          next unless File.directory?(cookbook_path)
-          loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore)
-          loader.load_cookbooks
-          next if loader.empty?
-          @cookbooks_paths[loader.cookbook_name] << cookbook_path # for deprecation warnings
-          if @loaded_cookbooks.key?(loader.cookbook_name)
-            @merged_cookbooks << loader.cookbook_name # for deprecation warnings
-            @loaded_cookbooks[loader.cookbook_name].merge!(loader)
-          else
-            @loaded_cookbooks[loader.cookbook_name] = loader
-          end
+          load_cookbook(File.basename(cookbook_path), repo_path)
         end
-      end
-
-      @loaded_cookbooks.each do |cookbook, loader|
-        cookbook_version = loader.cookbook_version
-        @cookbooks_by_name[cookbook] = cookbook_version
-        @metadata[cookbook] = cookbook_version.metadata
       end
       @cookbooks_by_name
     end
 
-    def load_cookbook(cookbook_name)
-      @loaded_cookbooks ||= {}
-      @repo_paths.each do |repo_path|
-        repo_path = File.expand_path(repo_path)
-        chefignore = Cookbook::Chefignore.new(repo_path)
+    def load_cookbook(cookbook_name, repo_paths=nil)
+      repo_paths ||= @repo_paths
+      repo_paths.each do |repo_path|
+        @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
         cookbook_path = File.join(repo_path, cookbook_name.to_s)
         next unless File.directory?(cookbook_path) and Dir[File.join(repo_path, "*")].include?(cookbook_path)
-        loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore)
+        loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
         loader.load_cookbooks
         next if loader.empty?
         cookbook_name = loader.cookbook_name
@@ -139,10 +128,6 @@ class Chef
       @cookbooks_by_name.values
     end
     alias :cookbooks :values
-
-    def metadata
-      @metadata
-    end
 
   end
 end
