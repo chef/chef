@@ -12,7 +12,7 @@ if [ "$CLEAN" = "true" ]; then
   sudo rm -rf /opt/chef || true
   sudo mkdir -p /opt/chef && sudo chown jenkins-node /opt/chef
   sudo rm -rf /opt/chef-server || true
-  sudo mkdir -p /opt/chef-server && sudo chown jenkins-node /opt/chef
+  sudo mkdir -p /opt/chef-server && sudo chown jenkins-node /opt/chef-server
   sudo rm -r /var/cache/omnibus/pkg/* || true
   sudo rm /var/cache/omnibus/build/*/*.manifest || true
   sudo rm pkg/* || true 
