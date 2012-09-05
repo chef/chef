@@ -15,13 +15,13 @@ if [ "$CLEAN" = "true" ]; then
   sudo mkdir -p /opt/chef-server && sudo chown jenkins-node /opt/chef-server
   sudo rm -r /var/cache/omnibus/pkg/* || true
   sudo rm /var/cache/omnibus/build/*/*.manifest || true
-  sudo rm pkg/* || true 
+  sudo rm pkg/* || true
   bundle update
 else
   bundle install
 fi
 
-# Omnibus build server prep tasks, including build ruby 
+# Omnibus build server prep tasks, including build ruby
 sudo env OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c jenkins-solo.rb -j jenkins-dna.json -l debug
 
 # copy config into place
@@ -33,7 +33,7 @@ if [ "$CLEAN" = "true" ]; then
   bundle update
 else
   bundle install
-fi 
+fi
 
 rake projects:$1
 
