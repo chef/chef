@@ -97,6 +97,9 @@
                      {init_count, <%= @db_pool_size %>},
                      {start_mfa, {sqerl_client, start_link, []}}]]},
            {metrics_module, folsom_metrics}
-          ]}
-
+          ]},
+  {ibrowse, [
+             {default_max_sessions, <%= @ibrowse_max_sessions %>},
+             {default_max_pipeline_size, <%= @ibrowse_max_pipeline_size %>}
+            ]}
 ].
