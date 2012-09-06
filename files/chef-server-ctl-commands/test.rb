@@ -22,5 +22,5 @@ add_command "test", "Run the API test suite against localhost." do
   Dir.chdir(File.join(base_path, "embedded", "service", "chef-pedant"))
   pedant_config = File.join(etc_path, "pedant_config.rb")
   bundle = File.join(base_path, "embedded", "bin", "bundle")
-  exec("#{bundle} exec ./opscode-pedant -c #{pedant_config} #{pedant_args.join(' ')}")
+  exec("#{bundle} exec ./chef-pedant -c #{pedant_config} #{pedant_args.join(' ')}")
 end
