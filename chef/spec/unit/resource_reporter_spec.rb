@@ -434,9 +434,15 @@ describe Chef::ResourceReporter do
 
         response = {"result"=>"ok"}
 
-        @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs/ABC123", @expected_data).
-          and_return(response)
+        @rest_client.should_receive(:post_rest) do |url, data, headers|
+          url.should eq("reports/nodes/spitfire/runs/ABC123")
+          headers.should eq({'Content-Encoding' => 'gzip'})
+
+          data_stream = Zlib::GzipReader.new(StringIO.new(data))
+          data = data_stream.read
+          data.should eq(@expected_data.to_json)
+          response
+        end
 
         @resource_reporter.run_completed(@node)
       end
