@@ -84,7 +84,7 @@ class Chef
         output = edit_item(item)
         rest.put_rest("data/#{@name_args[0]}/#{@name_args[1]}", output)
         stdout.puts("Saved data_bag_item[#{@name_args[1]}]")
-        output(format_for_display(object.raw_data)) if config[:print_after]
+        output(format_for_display(output)) if config[:print_after]
       end
     end
   end
