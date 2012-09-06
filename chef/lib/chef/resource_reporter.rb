@@ -86,7 +86,11 @@ class Chef
     attr_reader :error_descriptions
 
     def initialize(rest_client)
-      @reporting_enabled = true
+      if Chef::Config[:disable_reporting]
+        @reporting_enabled = false
+      else
+        @reporting_enabled = true
+      end
       @updated_resources = []
       @total_res_count = 0
       @pending_update  = nil
@@ -100,15 +104,20 @@ class Chef
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
-      resource_history_url = "nodes/#{@node.name}/runs"
-      server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
-      run_uri = URI.parse(server_response["uri"])
-      @run_id = ::File.basename(run_uri.path)
-      Chef::Log.info("Chef server generated run history id: #{@run_id}")
-    rescue Net::HTTPServerException => e
-      raise unless e.response.code.to_s == "404"
-      Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
-      @reporting_enabled = false
+
+      if reporting_enabled?
+        begin
+          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
+          run_uri = URI.parse(server_response["uri"])
+          @run_id = ::File.basename(run_uri.path)
+          Chef::Log.info("Chef server generated run history id: #{@run_id}")
+        rescue Net::HTTPServerException => e
+          raise unless e.response.code.to_s == "404"
+          Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
+          @reporting_enabled = false
+        end
+      end
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
@@ -151,7 +160,7 @@ class Chef
 
     def run_completed(node)
       if reporting_enabled?
-        resource_history_url = "nodes/#{@node.name}/runs/#{run_id}"
+        resource_history_url = "reports/nodes/#{@node.name}/runs/#{run_id}"
         run_data = report(node)
         run_data["action"] = "end"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
