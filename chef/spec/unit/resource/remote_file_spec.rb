@@ -38,37 +38,21 @@ describe Chef::Resource::RemoteFile do
     Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
   end
 
-  it "says its provider is CookbookFile when the source is a relative URI" do
-    @resource.source('seattle.txt')
-    @resource.provider.should == Chef::Provider::CookbookFile
-    Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::CookbookFile
-  end
-  
+
   describe "source" do
-    it "should accept a string for the remote file source" do
-      @resource.source "something"
-      @resource.source.should eql("something")
+    it "does not have a default value for 'source'" do
+      @resource.source.should be_nil
     end
 
-    it "should have a default based on the param name" do
-      @resource.source.should eql("fakey_fakerton")
+    it "should accept a URI for the remote file source" do
+      @resource.source "http://opscode.com/"
+      @resource.source.should eql("http://opscode.com/")
     end
 
-    it "should use only the basename of the file as the default" do
-      r = Chef::Resource::RemoteFile.new("/tmp/obit/fakey_fakerton")
-      r.source.should eql("fakey_fakerton")
+    it "does not accept a non-URI as the source" do
+      lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
-  end
-  
-  describe "cookbook" do
-    it "should accept a string for the cookbook name" do
-      @resource.cookbook "something"
-      @resource.cookbook.should eql("something")
-    end
-    
-    it "should default to nil" do
-      @resource.cookbook.should == nil
-    end
+
   end
 
   describe "checksum" do

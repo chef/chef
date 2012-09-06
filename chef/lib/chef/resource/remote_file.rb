@@ -32,22 +32,15 @@ class Chef
         super
         @resource_name = :remote_file
         @action = "create"
-        @source = ::File.basename(name)
-        @cookbook = nil
+        @source = nil
         @provider = Chef::Provider::RemoteFile
       end
 
       def source(args=nil)
+        validate_source(args) unless args.nil?
+
         set_or_return(
           :source,
-          args,
-          :kind_of => String
-        )
-      end
-
-      def cookbook(args=nil)
-        set_or_return(
-          :cookbook,
           args,
           :kind_of => String
         )
@@ -61,23 +54,18 @@ class Chef
         )
       end
 
-      # The provider that should be used for this resource.
-      # === Returns:
-      # Chef::Provider::RemoteFile    when the source is an absolute URI, like
-      #                               http://www.google.com/robots.txt
-      # Chef::Provider::CookbookFile  when the source is a relative URI, like
-      #                               'myscript.pl', 'dir/config.conf'
-      def provider
-        if absolute_uri?(source)
-          Chef::Provider::RemoteFile
-        else
-          Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Use cookbook_file instead")
-          Chef::Log.warn("From #{self.to_s} on #{source_line}")
-          Chef::Provider::CookbookFile
-        end
+      def after_created
+        validate_source(@source)
       end
 
       private
+
+      def validate_source(source)
+        unless absolute_uri?(source)
+          raise Exceptions::InvalidRemoteFileURI,
+            "'#{source}' is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI"
+        end
+      end
 
       def absolute_uri?(source)
         URI.parse(source).absolute?

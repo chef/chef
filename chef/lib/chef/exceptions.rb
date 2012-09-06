@@ -116,6 +116,12 @@ class Chef
     # Ifconfig failed
     class Ifconfig < RuntimeError; end
 
+    # Invalid "source" parameter to a remote_file resource
+    class InvalidRemoteFileURI < ArgumentError; end
+
+    # Backcompat with Chef::ShellOut code:
+    require 'mixlib/shellout/exceptions'
+    class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
