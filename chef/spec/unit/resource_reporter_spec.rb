@@ -23,6 +23,14 @@ require File.expand_path("../../spec_helper", __FILE__)
 require 'chef/resource_reporter'
 
 describe Chef::ResourceReporter do
+  before(:all) do
+    @reporting_toggle_default = Chef::Config[:disable_reporting]
+    Chef::Config[:disable_reporting] = false
+  end
+
+  after(:all) do
+    Chef::Config[:disable_reporting] = @reporting_toggle_default
+  end
 
   before do
     @rest_client = mock("Chef::REST (mock)")
