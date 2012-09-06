@@ -43,7 +43,7 @@ build do
 # limitations under the License.
 #
 
-#{install_dir}/embedded/bin/omnibus-ctl chef-server #{install_dir}/embedded/service/omnibus-ctl $1 $2
+#{install_dir}/embedded/bin/omnibus-ctl chef-server #{install_dir}/embedded/service/omnibus-ctl $@
        EOH
     end
   end
