@@ -165,7 +165,9 @@ class Chef
         run_data["action"] = "end"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
         Chef::Log.debug run_data.inspect
-        @rest_client.post_rest(resource_history_url, run_data)
+        compressed_data = encode_gzip(run_data)
+        Chef::Log.debug("Compressed Data: #{compressed_data.inspect}")
+        @rest_client.post_rest(resource_history_url, compressed_data, {'Content-Encoding' => 'gzip'})
       else
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
@@ -224,5 +226,11 @@ class Chef
       @pending_update && @pending_update.new_resource != new_resource
     end
 
+    def encode_gzip(data)
+      "".tap do |out|
+        Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+      end
+    end
+    
   end
 end
