@@ -103,6 +103,7 @@ default['chef_server']['bookshelf']['svlogd_num'] = 10
 default['chef_server']['bookshelf']['vip'] = '127.0.0.1'
 default['chef_server']['bookshelf']['listen'] = '127.0.0.1'
 default['chef_server']['bookshelf']['port'] = 4321
+default['chef_server']['bookshelf']['stream_download'] = true
 default['chef_server']['bookshelf']['access_key_id'] = "generated-by-default"
 default['chef_server']['bookshelf']['secret_access_key'] = "generated-by-default"
 
