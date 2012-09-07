@@ -34,8 +34,10 @@ class Chef
         end
         
         def manage_user
-          command = compile_command("usermod") { |u| u << universal_options }
-          command << " -m" if managing_home_dir?
+          command = compile_command("usermod") do |u|
+            u << " -m" if managing_home_dir?
+            u << universal_options
+          end
           run_command(:command => command)
         end
         
