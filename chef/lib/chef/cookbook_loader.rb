@@ -99,7 +99,7 @@ class Chef
     end
 
     def [](cookbook)
-      if self.has_key?(cookbook.to_sym)
+      if @cookbooks_by_name.has_key?(cookbook.to_sym) or load_cookbook(cookbook.to_sym)
         @cookbooks_by_name[cookbook.to_sym]
       else
         raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook.to_s}; did you forget to add metadata to a cookbook? (http://wiki.opscode.com/display/chef/Metadata)"
@@ -109,7 +109,7 @@ class Chef
     alias :fetch :[]
 
     def has_key?(cookbook_name)
-      @cookbooks_by_name.has_key?(cookbook_name) or load_cookbook(cookbook_name) != nil
+      not self[cookbook_name.to_sym].nil?
     end
     alias :cookbook_exists? :has_key?
     alias :key? :has_key?
