@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE" "1" "June 2012" "Chef 10.12.0" "Chef Manual"
+.TH "KNIFE" "1" "September 2012" "Chef 11.0.0.alpha" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\fR \- Chef Server API client utility
@@ -92,10 +92,6 @@ Set the editor to use for interactive commands
 Which format to use for output\. See FORMATS for details\.
 .
 .TP
-\fB\-V\fR, \fB\-\-verbose\fR
-More verbose output\. Use twice for max verbosity
-.
-.TP
 \fB\-d\fR, \fB\-\-disable\-editing\fR
 Do not open EDITOR, just accept the data as is
 .
@@ -110,6 +106,10 @@ Show the data after a destructive operation
 .TP
 \fB\-v\fR, \fB\-\-version\fR
 Show chef version
+.
+.TP
+\fB\-V\fR, \fB\-\-verbose\fR
+More verbose output\. Use twice for max verbosity\.
 .
 .TP
 \fB\-y\fR, \fB\-\-yes\fR
@@ -255,7 +255,7 @@ A note about git: Opscode and many folks in the Chef community use git, but it i
 The text editor to use for editing data\. The \-\-editor option takes precedence over this value, and the \-\-disable\-editing option supresses data editing entirely\.
 .
 .SH "SEE ALSO"
-\fBchef\-client(8)\fR \fBchef\-server(8)\fR \fBshef(1)\fR
+\fBchef\-client(8)\fR \fBchef\-server(8)\fR \fBchef\-shell(1)\fR
 .
 .P
 \fBknife\-bootstrap(1)\fR \fBknife\-client(1)\fR \fBknife\-configure(1)\fR \fBknife\-cookbook\-site(1)\fR \fBknife\-cookbook(1)\fR \fBknife\-data\-bag(1)\fR \fBknife\-environment(1)\fR \fBknife\-exec(1)\fR \fBknife\-index(1)\fR \fBknife\-node(1)\fR \fBknife\-recipe(1)\fR \fBknife\-role(1)\fR \fBknife\-search(1)\fR \fBknife\-ssh(1)\fR \fBknife\-tag(1)\fR

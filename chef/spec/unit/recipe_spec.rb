@@ -31,7 +31,7 @@ describe Chef::Recipe do
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @recipe = Chef::Recipe.new("hjk", "test", @run_context)
 
-    # Shef/ext.rb is on the run path, and it defines
+    # Shell/ext.rb is on the run path, and it defines
     # Chef::Recipe#resources to call pp, which we don't want when
     # we're running tests.
     @recipe.stub!(:pp)

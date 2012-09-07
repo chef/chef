@@ -19,7 +19,7 @@ require 'spec_helper'
 require "ostruct"
 
 ObjectTestHarness = Proc.new do
-  extend Shef::Extensions::ObjectCoreExtensions
+  extend Shell::Extensions::ObjectCoreExtensions
 
   def conf=(new_conf)
     @conf = new_conf
@@ -38,36 +38,36 @@ class TestJobManager
   attr_accessor :jobs
 end
 
-describe Shef do
+describe Shell do
 
   before do
-    Shef.irb_conf = {}
-    Shef::ShefSession.instance.rspec_reset
-    Shef::ShefSession.instance.stub!(:reset!)
+    Shell.irb_conf = {}
+    Shell::ShellSession.instance.rspec_reset
+    Shell::ShellSession.instance.stub!(:reset!)
   end
 
   describe "reporting its status" do
 
     it "alway says it is running" do
-      Shef.should be_running
+      Shell.should be_running
     end
 
   end
 
   describe "configuring IRB" do
     it "configures irb history" do
-      Shef.configure_irb
-      Shef.irb_conf[:HISTORY_FILE].should == "~/.shef_history"
-      Shef.irb_conf[:SAVE_HISTORY].should == 1000
+      Shell.configure_irb
+      Shell.irb_conf[:HISTORY_FILE].should == "~/.chef/chef_shell_history"
+      Shell.irb_conf[:SAVE_HISTORY].should == 1000
     end
 
     it "has a prompt like ``chef > '' in the default context" do
-      Shef.configure_irb
+      Shell.configure_irb
 
       conf = OpenStruct.new
       conf.main = Object.new
       conf.main.instance_eval(&ObjectTestHarness)
-      Shef.irb_conf[:IRB_RC].call(conf)
+      Shell.irb_conf[:IRB_RC].call(conf)
       conf.prompt_c.should      == "chef > "
       conf.return_format.should == " => %s \n"
       conf.prompt_i.should      == "chef > "
@@ -77,12 +77,12 @@ describe Shef do
     end
 
     it "has a prompt like ``chef:recipe > '' in recipe context" do
-      Shef.configure_irb
+      Shell.configure_irb
 
       conf = OpenStruct.new
       events = Chef::EventDispatch::Dispatcher.new
       conf.main = Chef::Recipe.new(nil,nil,Chef::RunContext.new(Chef::Node.new, {}, events))
-      Shef.irb_conf[:IRB_RC].call(conf)
+      Shell.irb_conf[:IRB_RC].call(conf)
       conf.prompt_c.should      == "chef:recipe > "
       conf.prompt_i.should      == "chef:recipe > "
       conf.prompt_n.should      == "chef:recipe ?> "
@@ -90,11 +90,11 @@ describe Shef do
     end
 
     it "has a prompt like ``chef:attributes > '' in attributes/node context" do
-      Shef.configure_irb
+      Shell.configure_irb
 
       conf = OpenStruct.new
       conf.main = Chef::Node.new
-      Shef.irb_conf[:IRB_RC].call(conf)
+      Shell.irb_conf[:IRB_RC].call(conf)
       conf.prompt_c.should      == "chef:attributes > "
       conf.prompt_i.should      == "chef:attributes > "
       conf.prompt_n.should      == "chef:attributes ?> "
@@ -111,7 +111,7 @@ describe Shef do
     end
 
     it "creates help text for methods with descriptions" do
-      @chef_object.help_descriptions.should == [Shef::Extensions::Help.new("rspec_method", "rspecin'", nil)]
+      @chef_object.help_descriptions.should == [Shell::Extensions::Help.new("rspec_method", "rspecin'", nil)]
     end
 
     it "adds help text when a new method is described then defined" do
@@ -121,8 +121,8 @@ describe Shef do
         end
       EVAL
       @chef_object.instance_eval describe_define
-      @chef_object.help_descriptions.should == [Shef::Extensions::Help.new("rspec_method", "rspecin'"),
-                                                Shef::Extensions::Help.new("baz", "foo2the Bar")]
+      @chef_object.help_descriptions.should == [Shell::Extensions::Help.new("rspec_method", "rspecin'"),
+                                                Shell::Extensions::Help.new("baz", "foo2the Bar")]
     end
 
     it "adds help text for subcommands" do
@@ -132,8 +132,8 @@ describe Shef do
         end
       EVAL
       @chef_object.instance_eval describe_define
-      expected_help_text_fragments = [Shef::Extensions::Help.new("rspec_method", "rspecin'")]
-      expected_help_text_fragments << Shef::Extensions::Help.new("baz.baz_obj_command", "something you can do with baz.baz_obj_command")
+      expected_help_text_fragments = [Shell::Extensions::Help.new("rspec_method", "rspecin'")]
+      expected_help_text_fragments << Shell::Extensions::Help.new("baz.baz_obj_command", "something you can do with baz.baz_obj_command")
       @chef_object.help_descriptions.should == expected_help_text_fragments
     end
 

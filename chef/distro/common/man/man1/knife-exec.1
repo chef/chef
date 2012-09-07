@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-EXEC" "1" "June 2012" "Chef 10.12.0" "Chef Manual"
+.TH "KNIFE\-EXEC" "1" "September 2012" "Chef 11.0.0.alpha" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-exec\fR \- Run user scripts using the Chef API DSL
@@ -14,16 +14,13 @@
 Provide a snippet of code to evaluate on the command line
 .
 .SH "DESCRIPTION"
-\fBknife exec\fR runs arbitrary ruby scripts in a context similar to that of the shef(1) DSL\. See the shef documentation for a description of the commands available\.
+\fBknife exec\fR runs arbitrary ruby scripts in a context similar to that of the chef\-shell(1) DSL\. See the chef\-shell documentation for a description of the commands available\.
 .
 .SH "EXAMPLES"
 .
 .TP
 Make an API call against an arbitrary endpoint
-knife exec \-E \'api\.get("nodes/fluke\.localdomain/cookbooks")\'
-.
-.br
-=> list of cookbooks for the node \fIfluke\.localdomain\fR
+knife exec \-E \'api\.get("nodes/fluke\.localdomain/cookbooks")\' => list of cookbooks for the node \fIfluke\.localdomain\fR
 .
 .TP
 Remove the role \fIobsolete\fR from all nodes
@@ -34,7 +31,7 @@ Generate the expanded run list for hosts in the \fBwebserver\fR role
 knife exec \-E \'nodes\.find(:roles => "webserver") {|n| n\.expand!; n[:recipes]}\'
 .
 .SH "SEE ALSO"
-\fBshef(1)\fR
+\fBchef\-shell(1)\fR
 .
 .SH "AUTHOR"
 Chef was written by Adam Jacob \fIadam@opscode\.com\fR with many contributions from the community\.

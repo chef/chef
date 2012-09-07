@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Knife::Help do
   before(:each) do
     # Perilously use the build in list even though it is dynamic so we don't get warnings about the constant
-    # HELP_TOPICS = [ "foo", "bar", "knife-kittens", "ceiling-cat", "shef" ]
+    # HELP_TOPICS = [ "foo", "bar", "knife-kittens", "ceiling-cat", "shell" ]
     @knife = Chef::Knife::Help.new
   end
 
@@ -30,8 +30,8 @@ describe Chef::Knife::Help do
   end
 
   it "should run man for you" do
-    @knife.name_args = [ "shef" ]
-    @knife.should_receive(:exec).with(/^man \/.*\/shef.1$/)
+    @knife.name_args = [ "shell" ]
+    @knife.should_receive(:exec).with(/^man \/.*\/shell.1$/)
     @knife.run
   end
 
@@ -47,9 +47,9 @@ describe Chef::Knife::Help do
 
   describe "find_manpage_path" do
     it "should find the man page in the gem" do
-      @knife.find_manpage_path("shef").should =~ /distro\/common\/man\/man1\/shef.1$/
+      @knife.find_manpage_path("shell").should =~ /distro\/common\/man\/man1\/chef-shell.1$/
     end
-  
+
     it "should provide the man page name if not in the gem" do
       @knife.find_manpage_path("foo").should == "foo"
     end
