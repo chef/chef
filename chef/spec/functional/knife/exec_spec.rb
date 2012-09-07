@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,9 +46,9 @@ describe Chef::Knife::Exec do
     @server.stop
   end
 
-  pending "executes a script in the context of the shef main context", :ruby_18_only
+  pending "executes a script in the context of the chef-shell main context", :ruby_18_only
 
-  it "executes a script in the context of the shef main context", :ruby_19_only do
+  it "executes a script in the context of the chef-shell main context", :ruby_19_only do
     @node = Chef::Node.new
     @node.name("ohai-world")
     response = {"rows" => [@node],"start" => 0,"total" => 1}

@@ -19,16 +19,16 @@
 require 'spec_helper'
 require 'ostruct'
 
-describe Shef::ModelWrapper do
+describe Shell::ModelWrapper do
   before do
     @model = OpenStruct.new(:name=>"Chef::Node")
-    @wrapper = Shef::ModelWrapper.new(@model)
+    @wrapper = Shell::ModelWrapper.new(@model)
   end
 
   describe "when created with an explicit model_symbol" do
     before do
       @model = OpenStruct.new(:name=>"Chef::ApiClient")
-      @wrapper = Shef::ModelWrapper.new(@model, :client)
+      @wrapper = Shell::ModelWrapper.new(@model, :client)
     end
 
     it "uses the explicit model symbol" do
@@ -47,7 +47,7 @@ describe Shef::ModelWrapper do
       @node_2 = Chef::Node.new
       @node_2.name("yummy")
       @server_response = {:node_1 => @node_1, :node_2 => @node_2}
-      @wrapper = Shef::ModelWrapper.new(Chef::Node)
+      @wrapper = Shell::ModelWrapper.new(Chef::Node)
       Chef::Node.stub(:list).and_return(@server_response)
     end
 
@@ -68,7 +68,7 @@ describe Shef::ModelWrapper do
       @node_2 = Chef::Node.new
       @node_2.name("yummy")
       @server_response = {:node_1 => @node_1, :node_2 => @node_2}
-      @wrapper = Shef::ModelWrapper.new(Chef::Node)
+      @wrapper = Shell::ModelWrapper.new(Chef::Node)
 
       # Creating a Chef::Search::Query object tries to read the private key...
       @searcher = mock("Chef::Search::Query #{__FILE__}:#{__LINE__}")

@@ -1,9 +1,9 @@
-shef(1) -- Interactive Chef Console
-========================================
+chef-shell(1) -- Interactive Chef Console
+=========================================
 
 ## SYNOPSIS
 
-__shef__ [_named configuration_] _(options)_
+__chef-shell__ [_named configuration_] _(options)_
 
   * `-S`, `--server CHEF_SERVER_URL`:
     The chef server URL
@@ -16,33 +16,37 @@ __shef__ [_named configuration_] _(options)_
   * `-l`, `--log-level LOG_LEVEL`:
     Set the logging level
   * `-s`, `--solo`:
-    chef-solo shef session
+    chef-solo session
   * `-a`, `--standalone`:
-    standalone shef session
+    standalone session
   * `-v`, `--version`:
     Show chef version
   * `-h`, `--help`:
     Show command options
 
-When no --config option is specified, shef attempts to load a default configuration file:
+When no --config option is specified, chef-shell attempts to load a
+default configuration file:
 
-* If a _named configuration_ is given, shef will load ~/.chef/_named
-  configuration_/shef.rb
-* If no _named configuration_ is given shef will load ~/.chef/shef.rb if it exists
-* Shef falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
-  -s options are given and no shef.rb can be found.
+* If a _named configuration_ is given, chef-shell will load ~/.chef/_named
+  configuration_/chef_shell.rb
+* If no _named configuration_ is given chef-shell will load
+  ~/.chef/chef_shell.rb if it exists
+* chef-shell falls back to loading /etc/chef/client.rb or
+/etc/chef/solo.rb if -z or -s options are given and no chef_shell.rb
+can be found.
 * The --config option takes precedence over implicit configuration
   paths.
 
 ## DESCRIPTION
 
-`shef` is an irb(1) (interactive ruby) session customized for Chef.
-`shef` serves two primary functions: it provides a means to
+`chef-shell` is an irb(1) (interactive ruby) session customized for Chef.
+`chef-shell` serves two primary functions: it provides a means to
 interact with a Chef Server interactively using a convenient DSL; it
 allows you to define and run Chef recipes interactively.
 
 ## SYNTAX
-Shef uses irb's subsession feature to provide multiple modes of
+
+chef-shell uses irb's subsession feature to provide multiple modes of
 interaction. In addition to the primary mode which is entered on start,
 `recipe` and `attributes` modes are available.
 
@@ -61,7 +65,7 @@ session:
   * `run_chef`:
     Initiates a chef run
   * `reset`:
-    reinitializes shef
+    reinitializes chef-shell session
   * `echo :on|:off`:
     Turns irb's echo function on or off. Echo is _on_ by default.
   * `tracing :on|:off`:
@@ -73,10 +77,11 @@ session:
   * `ohai`:
     Prints the attributes of _node_
 
-In addition to these commands, shef provides a DSL for accessing data on
-the Chef Server. When working with remote data in shef, you chain method
-calls in the form _object type_._operation_, where _object type_ is in
-plural form. The following object types are available:
+In addition to these commands, chef-shell provides a DSL for accessing
+data on the Chef Server. When working with remote data in chef-shell, you
+chain method calls in the form _object type_._operation_, where
+_object type_ is in plural form. The following object types are
+available:
 
   * `nodes`
   * `roles`
@@ -136,54 +141,55 @@ convergence run via `run_chef`
 
 * A "Hello World" interactive recipe
 
-  chef > recipe  
-  chef:recipe > echo :off  
-  chef:recipe > file "/tmp/hello\_world"  
-  chef:recipe > run\_chef  
-  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello\_world] action create ((irb#1) line 2)  
-  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello\_world] created file /tmp/hello\_world  
-  chef:recipe > pp ls '/tmp'  
-  [".",  
-  "..",  
-  "hello\_world"]  
+  chef > recipe
+  chef:recipe > echo :off
+  chef:recipe > file "/tmp/hello\_world"
+  chef:recipe > run\_chef
+  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello\_world] action create ((irb#1) line 2)
+  [Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello\_world] created file /tmp/hello\_world
+  chef:recipe > pp ls '/tmp'
+  [".",
+  "..",
+  "hello\_world"]
 
 * Search for _nodes_ by role, and print their IP addresses
 
-  chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }  
-  => ["10.254.199.5"]  
+  chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }
+  => ["10.254.199.5"]
 
 * Remove the role _obsolete_ from every node in the system
 
-  chef > nodes.transform(:all) {|n| n.run\_list.delete('role[obsolete]') }  
-   => [node[chef098b2.opschef.com], node[ree-woot], node[graphite-dev], node[fluke.localdomain], node[ghost.local], node[kallistec]]  
+  chef > nodes.transform(:all) {|n| n.run\_list.delete('role[obsolete]') }
+   => [node[chef098b2.opschef.com], node[ree-woot], node[graphite-dev], node[fluke.localdomain], node[ghost.local], node[kallistec]]
 
 
 ## BUGS
-The name `shef` is clever in print but is confusing when spoken aloud.
-Pronouncing `shef` as `chef console` is an imperfect workaround.
 
-`shef` often does not perfectly replicate the context in which
+`chef-shell` often does not perfectly replicate the context in which
 chef-client(8) configures a host, which may lead to discrepancies in
 observed behavior.
 
-`shef` has to duplicate much code from chef-client's internal libraries
-and may become out of sync with the behavior of those libraries.
+`chef-shell` has to duplicate much code from chef-client's internal
+libraries and may become out of sync with the behavior of those
+libraries.
 
 ## SEE ALSO
+
   chef-client(8) knife(1)
-  <http://wiki.opscode.com/display/chef/Shef>
+  <http://wiki.opscode.com/display/chef/Chef+Shell>
 
 ## AUTHOR
+
    Chef was written by Adam Jacob <adam@opscode.com> with many
-   contributions from the community. Shef was written by Daniel DeLeo.
+   contributions from the community. chef-shell was written by Daniel
+   DeLeo.
 
 ## DOCUMENTATION
+
    This manual page was written by Daniel DeLeo <dan@opscode.com>.
    Permission is granted to copy, distribute and / or modify this
    document under the terms of the Apache 2.0 License.
 
 ## CHEF
-   Shef is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>
 
-
-
+   chef-shell is distributed with Chef. <http://wiki.opscode.com/display/chef/Home>

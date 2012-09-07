@@ -19,7 +19,7 @@ require 'spec_helper'
 require "ostruct"
 
 
-class TestableShefSession < Shef::ShefSession
+class TestableShellSession < Shell::ShellSession
 
   def rebuild_node
     nil
@@ -39,22 +39,22 @@ class TestableShefSession < Shef::ShefSession
 
 end
 
-describe Shef::ShefSession do
+describe Shell::ShellSession do
 
   it "is a singleton object" do
-    Shef::ShefSession.should include(Singleton)
+    Shell::ShellSession.should include(Singleton)
   end
 
 end
 
-describe Shef::StandAloneSession do
+describe Shell::StandAloneSession do
   before do
-    @session = Shef::StandAloneSession.instance
+    @session = Shell::StandAloneSession.instance
     @node = @session.node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = @session.run_context = Chef::RunContext.new(@node, {}, @events)
     @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
-    Shef::Extensions.extend_context_recipe(@recipe)
+    Shell::Extensions.extend_context_recipe(@recipe)
   end
 
   it "has a run_context" do
@@ -86,23 +86,23 @@ describe Shef::StandAloneSession do
 
 end
 
-describe Shef::SoloSession do
+describe Shell::SoloSession do
   before do
-    Chef::Config[:shef_solo] = true
-    @session = Shef::SoloSession.instance
+    Chef::Config[:shell_solo] = true
+    @session = Shell::SoloSession.instance
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = @session.run_context = Chef::RunContext.new(@node, {}, @events)
     @session.node = @node
     @recipe = @session.recipe = Chef::Recipe.new(nil, nil, @run_context)
-    Shef::Extensions.extend_context_recipe(@recipe)
+    Shell::Extensions.extend_context_recipe(@recipe)
   end
 
   after do
-    Chef::Config[:shef_solo] = nil
+    Chef::Config[:shell_solo] = nil
   end
 
-  it "returns a collection based on it's compilation object and the extra recipe provided by shef" do
+  it "returns a collection based on it's compilation object and the extra recipe provided by chef-shell" do
     @session.stub!(:node_built?).and_return(true)
     kitteh = Chef::Resource::Cat.new("keyboard")
     @recipe.run_context.resource_collection << kitteh

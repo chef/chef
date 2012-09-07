@@ -183,7 +183,7 @@ recommended though, and git fits with a lot of the workflow paradigms.
     data editing entirely.
 
 ## SEE ALSO
-  __chef-client(8)__ __chef-server(8)__ __shef(1)__
+  __chef-client(8)__ __chef-server(8)__ __chef-shell(1)__
 
   __knife-bootstrap(1)__ __knife-client(1)__ __knife-configure(1)__
   __knife-cookbook-site(1)__ __knife-cookbook(1)__ __knife-data-bag(1)__

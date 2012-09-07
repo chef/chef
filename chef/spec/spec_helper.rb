@@ -19,7 +19,7 @@
 # Add it to one of the files in spec/support
 
 # Abuse ruby's constant lookup to avoid undefined constant errors
-module Shef
+module Shell
   JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
   IRB = nil unless defined? IRB
 end
@@ -41,7 +41,7 @@ require 'chef/mixins'
 require 'chef/application'
 require 'chef/applications'
 
-require 'chef/shef'
+require 'chef/shell'
 require 'chef/util/file_edit'
 
 # If you want to load anything into the testing environment

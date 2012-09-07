@@ -18,16 +18,16 @@
 
 require 'spec_helper'
 
-describe Shef::Extensions do
+describe Shell::Extensions do
   describe "extending object for top level methods" do
 
     before do
-      @shef_client = TestableShefSession.instance
-      Shef.stub!(:session).and_return(@shef_client)
+      @shell_client = TestableShellSession.instance
+      Shell.stub!(:session).and_return(@shell_client)
       @job_manager = TestJobManager.new
       @root_context = Object.new
       @root_context.instance_eval(&ObjectTestHarness)
-      Shef::Extensions.extend_context_object(@root_context)
+      Shell::Extensions.extend_context_object(@root_context)
       @root_context.conf = mock("irbconf")
     end
 
@@ -39,37 +39,37 @@ describe Shef::Extensions do
       @job_manager.jobs = [[:thread, irb_session]]
       @root_context.stub!(:jobs).and_return(@job_manager)
       @root_context.ensure_session_select_defined
-      @root_context.jobs.select_shef_session(target_context_obj).should == irb_session
-      @root_context.jobs.select_shef_session(:idontexist).should be_nil
+      @root_context.jobs.select_shell_session(target_context_obj).should == irb_session
+      @root_context.jobs.select_shell_session(:idontexist).should be_nil
     end
 
     it "finds, then switches to a session" do
       @job_manager.jobs = []
       @root_context.stub!(:ensure_session_select_defined)
       @root_context.stub!(:jobs).and_return(@job_manager)
-      @job_manager.should_receive(:select_shef_session).and_return(:the_shef_session)
-      @job_manager.should_receive(:switch).with(:the_shef_session)
+      @job_manager.should_receive(:select_shell_session).and_return(:the_shell_session)
+      @job_manager.should_receive(:switch).with(:the_shell_session)
       @root_context.find_or_create_session_for(:foo)
     end
 
     it "creates a new session if an existing one isn't found" do
       @job_manager.jobs = []
       @root_context.stub!(:jobs).and_return(@job_manager)
-      @job_manager.stub!(:select_shef_session).and_return(nil)
+      @job_manager.stub!(:select_shell_session).and_return(nil)
       @root_context.should_receive(:irb).with(:foo)
       @root_context.find_or_create_session_for(:foo)
     end
 
     it "switches to recipe context" do
       @root_context.should respond_to(:recipe)
-      @shef_client.recipe = :monkeyTime
+      @shell_client.recipe = :monkeyTime
       @root_context.should_receive(:find_or_create_session_for).with(:monkeyTime)
       @root_context.recipe
     end
 
     it "switches to attribute context" do
       @root_context.should respond_to(:attributes)
-      @shef_client.node = "monkeyNodeTime"
+      @shell_client.node = "monkeyNodeTime"
       @root_context.should_receive(:find_or_create_session_for).with("monkeyNodeTime")
       @root_context.attributes
     end
@@ -93,7 +93,7 @@ describe Shef::Extensions do
 
     it "prints node attributes" do
       node = mock("node", :attribute => {:foo => :bar})
-      @shef_client.node = node
+      @shell_client.node = node
       @root_context.should_receive(:pp).with({:foo => :bar})
       @root_context.ohai
       @root_context.should_receive(:pp).with(:bar)
@@ -101,7 +101,7 @@ describe Shef::Extensions do
     end
 
     it "resets the recipe and reloads ohai data" do
-      @shef_client.should_receive(:reset!)
+      @shell_client.should_receive(:reset!)
       @root_context.reset
     end
 
@@ -117,12 +117,12 @@ describe Shef::Extensions do
     end
 
     it "gives access to the stepable iterator" do
-      Shef::StandAloneSession.instance.stub!(:reset!)
-      Shef.session.stub!(:rebuild_context)
+      Shell::StandAloneSession.instance.stub!(:reset!)
+      Shell.session.stub!(:rebuild_context)
       events = Chef::EventDispatch::Dispatcher.new
       run_context = Chef::RunContext.new(Chef::Node.new, {}, events)
       run_context.resource_collection.instance_variable_set(:@iterator, :the_iterator)
-      Shef.session.run_context = run_context
+      Shell.session.run_context = run_context
       @root_context.chef_run.should == :the_iterator
     end
 
@@ -140,7 +140,7 @@ describe Shef::Extensions do
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(Chef::Node.new, {}, @events)
       @recipe_object = Chef::Recipe.new(nil, nil, @run_context)
-      Shef::Extensions.extend_context_recipe(@recipe_object)
+      Shell::Extensions.extend_context_recipe(@recipe_object)
     end
 
     it "gives a list of the resources" do
