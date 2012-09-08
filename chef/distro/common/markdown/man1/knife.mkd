@@ -15,7 +15,7 @@ subcommand is documented in its own manual page. Available topics are:
   * bootstrap
   * client
   * configure
-  * cookbook-site
+  * community-site
   * cookbook
   * data-bag
   * environment
@@ -160,15 +160,17 @@ When working with Chef and Knife in the local repository, the recommended workfl
 
 * Create repository. A skeleton sample is provided at _http://github.com/opscode/chef-repo/_.
 * Configure knife, see __CONFIGURATION__.
-* Download cookbooks from the Opscode cookbooks site, see __COOKBOOK SITE SUB-COMMANDS__.
+* Download cookbooks from the Opscode Chef Community Site, see
+  __COMMUNITY SITE SUB-COMMANDS__.
 * Or, create new cookbooks, see `cookbook create` sub-command.
 * Commit changes to the version control system. See your tool's documentation.
 * Upload cookbooks to the Chef Server, see __COOKBOOK SUB-COMMANDS__.
-* Launch instances in the Cloud, OR provision new hosts; see __CLOUD COMPUTING SUB-COMMANDS__ and __BOOTSTRAP SUB-COMMANDS__.
+* Launch instances in the Cloud, OR provision new hosts; see __CLOUD
+  COMPUTING SUB-COMMANDS__ and __BOOTSTRAP SUB-COMMANDS__.
 * Watch Chef configure systems!
 
 A note about git: Opscode and many folks in the Chef community use git,
-but it is not required, except in the case of the `cookbook site vendor`
+but it is not required, except in the case of the `community site install`
 sub-command, as it uses git directly. Version control is strongly
 recommended though, and git fits with a lot of the workflow paradigms.
 
@@ -186,7 +188,7 @@ recommended though, and git fits with a lot of the workflow paradigms.
   __chef-client(8)__ __chef-server(8)__ __shef(1)__
 
   __knife-bootstrap(1)__ __knife-client(1)__ __knife-configure(1)__
-  __knife-cookbook-site(1)__ __knife-cookbook(1)__ __knife-data-bag(1)__
+  __knife-community-site(1)__ __knife-cookbook(1)__ __knife-data-bag(1)__
   __knife-environment(1)__ __knife-exec(1)__ __knife-index(1)__
   __knife-node(1)__ __knife-recipe(1)__ __knife-role(1)__
   __knife-search(1)__ __knife-ssh(1)__ __knife-tag(1)__

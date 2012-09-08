@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>knife-cookbook-site(1) - Install and update open source cookbooks</title>
+  <title>knife-community-site(1) - Install and update open source cookbooks</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -61,7 +61,7 @@
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
-    <a href="#COOKBOOK-SITE-SUB-COMMANDS">COOKBOOK SITE SUB-COMMANDS</a>
+    <a href="#COMMUNITY-SITE-SUB-COMMANDS">COMMUNITY SITE SUB-COMMANDS</a>
     <a href="#INSTALL">INSTALL</a>
     <a href="#DOWNLOAD">DOWNLOAD</a>
     <a href="#LIST">LIST</a>
@@ -78,27 +78,27 @@
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>knife-cookbook-site(1)</li>
+    <li class='tl'>knife-community-site(1)</li>
     <li class='tc'>Chef Manual</li>
-    <li class='tr'>knife-cookbook-site(1)</li>
+    <li class='tr'>knife-community-site(1)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>knife-cookbook-site</code> - <span class="man-whatis">Install and update open source cookbooks</span>
+  <code>knife-community-site</code> - <span class="man-whatis">Install and update open source cookbooks</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p><strong>knife</strong> <strong>cookbook site</strong> <em>sub-command</em> <em>(options)</em></p>
+<p><strong>knife</strong> <strong>community site</strong> <em>sub-command</em> <em>(options)</em></p>
 
-<h2 id="COOKBOOK-SITE-SUB-COMMANDS">COOKBOOK SITE SUB-COMMANDS</h2>
+<h2 id="COMMUNITY-SITE-SUB-COMMANDS">COMMUNITY SITE SUB-COMMANDS</h2>
 
-<p><code>knife cookbook site</code> provides the following subcommands:</p>
+<p><code>knife community site</code> provides the following subcommands:</p>
 
 <h2 id="INSTALL">INSTALL</h2>
 
-<p><strong>cookbook site install COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+<p><strong>community site install COOKBOOK [VERSION]</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-D</code>, <code>--skip-dependencies</code></dt><dd>Skip automatic installation of dependencies.</dd>
@@ -107,15 +107,16 @@
 </dl>
 
 
-<p>Uses <span class="man-ref">git<span class="s">(1)</span></span> version control in conjunction with the cookbook site to
-install community contributed cookbooks to your local cookbook
-repository. Running <code>knife cookbook site install</code> does the following:</p>
+<p>Uses <span class="man-ref">git<span class="s">(1)</span></span> version control in conjunction with the Opscode Chef
+Community Site to install community contributed cookbooks to your
+local cookbook repository. Running <code>knife community site install</code> does
+the following:</p>
 
 <ol>
 <li>A new "pristine copy" branch is created in git for tracking the
 upstream;</li>
 <li>All existing cookbooks are removed from the branch;</li>
-<li>The cookbook is downloaded from the cookbook site in tarball form;</li>
+<li>The cookbook is downloaded from the community site in tarball form;</li>
 <li>The downloaded cookbook is untarred, and its contents commited via git;</li>
 <li>The pristine copy branch is merged into the master branch.</li>
 </ol>
@@ -127,12 +128,13 @@ changes as a separate patch.  When an updated upstream version becomes
 available, you will be able to merge the upstream changes while
 maintaining your local modifications.</p>
 
-<p>Unless <em>--skip-dependencies</em> is specified, the process is applied recursively to all the
-cookbooks <em>COOKBOOK</em> depends on (via metadata <em>dependencies</em>).</p>
+<p>Unless <em>--skip-dependencies</em> is specified, the process is applied
+recursively to all the cookbooks <em>COOKBOOK</em> depends on (via metadata
+<em>dependencies</em>).</p>
 
 <h2 id="DOWNLOAD">DOWNLOAD</h2>
 
-<p><strong>knife cookbook site download COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+<p><strong>knife community site download COOKBOOK [VERSION]</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-f</code>, <code>--file FILE</code></dt><dd>The filename to write to</dd>
@@ -140,12 +142,12 @@ cookbooks <em>COOKBOOK</em> depends on (via metadata <em>dependencies</em>).</p>
 </dl>
 
 
-<p>Downloads a specific cookbook from the Community site, optionally
-specifying a certain version.</p>
+<p>Downloads a specific cookbook from the Opscode Chef Community site,
+optionally specifying a certain version.</p>
 
 <h2 id="LIST">LIST</h2>
 
-<p><strong>knife cookbook site list</strong> <em>(options)</em></p>
+<p><strong>knife community site list</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-w</code>, <code>--with-uri</code></dt><dd>Show corresponding URIs</dd>
@@ -156,13 +158,13 @@ specifying a certain version.</p>
 
 <h2 id="SEARCH">SEARCH</h2>
 
-<p><strong>knife cookbook site search QUERY</strong> <em>(options)</em></p>
+<p><strong>knife community site search QUERY</strong> <em>(options)</em></p>
 
 <p>Searches for available cookbooks matching the specified query.</p>
 
 <h2 id="SHARE">SHARE</h2>
 
-<p><strong>knife cookbook site share COOKBOOK CATEGORY</strong> <em>(options)</em></p>
+<p><strong>knife community site share COOKBOOK CATEGORY</strong> <em>(options)</em></p>
 
 <dl>
 <dt><code>-k</code>, <code>--key KEY</code></dt><dd>API Client Key</dd>
@@ -172,43 +174,44 @@ specifying a certain version.</p>
 
 
 <p>Uploads the specified cookbook using the given category to the Opscode
-cookbooks site. Requires a login user and certificate for the Opscode
-Cookbooks site. By default, knife will use the username and API key
-you've configured in your configuration file; otherwise you must
-explicitly set these values on the command line or use an alternate
-configuration file.</p>
+Chef Community Site. Requires a login user and certificate for the
+Opscode Chef Community Site. By default, knife will use the username
+and API key you've configured in your configuration file; otherwise
+you must explicitly set these values on the command line or use an
+alternate configuration file.</p>
 
 <h2 id="UNSHARE">UNSHARE</h2>
 
-<p><strong>knife cookbook site unshare COOKBOOK</strong></p>
+<p><strong>knife community site unshare COOKBOOK</strong></p>
 
-<p>Stops sharing the specified cookbook on the Opscode cookbooks site.</p>
+<p>Stops sharing the specified cookbook on the Opscode Chef Community
+Site.</p>
 
 <h2 id="SHOW">SHOW</h2>
 
-<p><strong>knife cookbook site show COOKBOOK [VERSION]</strong> <em>(options)</em></p>
+<p><strong>knife community site show COOKBOOK [VERSION]</strong> <em>(options)</em></p>
 
 <p>Shows information from the site about a particular cookbook.</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>The cookbook site, <a href="http://community.opscode.com/" data-bare-link="true">http://community.opscode.com/</a>, is a cookbook
-distribution service operated by Opscode. This service provides users
-with a central location to publish cookbooks for sharing with other
-community members.</p>
+<p>The Opscode Chef Community site, <a href="http://community.opscode.com/" data-bare-link="true">http://community.opscode.com/</a>, is a
+cookbook distribution service operated by Opscode. This service
+provides users with a central location to publish cookbooks for
+sharing with other community members.</p>
 
-<p><code>knife cookbook site</code> commands provide an interface to the cookbook
-site's HTTP API. For commands that read data from the API, no account is
-required. In order to upload cookbooks using the <code>knife cookbook site
-share</code> command, you must create an account on the cookbook site and
+<p><code>knife community site</code> commands provide an interface to the site's
+HTTP API. For commands that read data from the API, no account is
+required. In order to upload cookbooks using the <code>knife community site
+share</code> command, you must create an account on the community site and
 configure your credentials via command line option or in your knife
 configuration file.</p>
 
 <h2 id="EXAMPLES">EXAMPLES</h2>
 
-<p>Uploading cookbooks to the Opscode cookbooks site:</p>
+<p>Uploading cookbooks to the Opscode Chef Community Site:</p>
 
-<pre><code>knife cookbook site share example Other -k ~/.chef/USERNAME.pem -u USERNAME
+<pre><code>knife community site share example Other -k ~/.chef/USERNAME.pem -u USERNAME
 </code></pre>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
@@ -218,12 +221,14 @@ configuration file.</p>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#97;&#x64;&#97;&#x6d;&#x40;&#x6f;&#x70;&#x73;&#99;&#x6f;&#100;&#x65;&#46;&#x63;&#x6f;&#109;" data-bare-link="true">&#x61;&#x64;&#x61;&#109;&#x40;&#x6f;&#112;&#x73;&#x63;&#111;&#x64;&#101;&#46;&#x63;&#x6f;&#109;</a> with many contributions from the community.</p>
+<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#x61;&#x64;&#97;&#x6d;&#64;&#111;&#x70;&#x73;&#99;&#111;&#x64;&#101;&#46;&#99;&#x6f;&#x6d;" data-bare-link="true">&#x61;&#100;&#x61;&#109;&#64;&#111;&#x70;&#115;&#99;&#x6f;&#x64;&#101;&#46;&#x63;&#111;&#x6d;</a> with many contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x6a;&#111;&#115;&#104;&#117;&#x61;&#x40;&#111;&#x70;&#115;&#x63;&#x6f;&#x64;&#x65;&#x2e;&#99;&#111;&#x6d;" data-bare-link="true">&#x6a;&#111;&#x73;&#x68;&#x75;&#97;&#64;&#x6f;&#x70;&#115;&#x63;&#111;&#100;&#101;&#46;&#99;&#x6f;&#109;</a>.
-   Permission is granted to copy, distribute and / or modify this document under the terms of the Apache 2.0 License.</p>
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#58;&#x6a;&#111;&#x73;&#x68;&#117;&#x61;&#64;&#111;&#112;&#115;&#x63;&#x6f;&#100;&#x65;&#46;&#x63;&#x6f;&#109;" data-bare-link="true">&#106;&#111;&#115;&#x68;&#117;&#x61;&#x40;&#111;&#112;&#x73;&#99;&#x6f;&#x64;&#x65;&#x2e;&#x63;&#x6f;&#109;</a>.</p>
+
+<p>   Permission is granted to copy, distribute and / or modify this
+   document under the terms of the Apache 2.0 License.</p>
 
 <h2 id="CHEF">CHEF</h2>
 
@@ -231,9 +236,9 @@ configuration file.</p>
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 10.12.0</li>
-    <li class='tc'>June 2012</li>
-    <li class='tr'>knife-cookbook-site(1)</li>
+    <li class='tl'>Chef 11.0.0.alpha</li>
+    <li class='tc'>September 2012</li>
+    <li class='tr'>knife-community-site(1)</li>
   </ol>
 
   </div>

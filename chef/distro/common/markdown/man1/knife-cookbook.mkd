@@ -6,9 +6,11 @@ knife-cookbook(1) -- upload and manage chef cookbooks
 __knife__ __cookbook__ _sub-command_ _(options)_
 
 ## SUB-COMMANDS
+
 `knife cookbook` supports the following sub commands:
 
 ## LIST
+
 __knife cookbook list__ _(options)_
 
   * `-a`, `--all`:
@@ -19,6 +21,7 @@ __knife cookbook list__ _(options)_
 Lists the cookbooks available on the Chef server.
 
 ## SHOW
+
 __knife cookbook show cookbook [version] [part] [filename]__ _(options)_
 
   * `-f`, `--fqdn fqdn               `:
@@ -150,10 +153,10 @@ which can be easily changed with find/replace.
 
 specify `-i` or `--license` with the license that the cookbook is
 distributed under for sharing with other people or posting to the
-opscode cookbooks site. be aware of the licenses of files you put inside
-the cookbook and follow any restrictions they describe. when using
-`none` (default) or `apachev2`, comment header text and metadata file
-are pre-filled. the `none` license will be treated as
+Opscode Chef Community Site. be aware of the licenses of files you put
+inside the cookbook and follow any restrictions they describe. when
+using `none` (default) or `apachev2`, comment header text and metadata
+file are pre-filled. the `none` license will be treated as
 non-redistributable.
 
 specify `-e` or `--email` with the email address of the cookbook's
@@ -247,7 +250,8 @@ cookbooks must be distributed to a given host when it requires a
 cookbook.
 
 ## SEE ALSO
-   __knife-environment(1)__ __knife-cookbook-site(1)__
+
+   __knife-environment(1)__ __knife-community-site(1)__
    <http://wiki.opscode.com/display/chef/Cookbooks>
    <http://wiki.opscode.com/display/chef/Metadata>
 

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-COOKBOOK" "1" "June 2012" "Chef 10.12.0" "Chef Manual"
+.TH "KNIFE\-COOKBOOK" "1" "September 2012" "Chef 11.0.0.alpha" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-cookbook\fR \- upload and manage chef cookbooks
@@ -227,7 +227,7 @@ supported readme formats are \'md\' (default), \'mkd\', \'txt\', \'rdoc\'\. the 
 specify \fB\-c\fR or \fB\-\-copyright\fR with the name of the copyright holder as your name or your company/organization name in a quoted string\. if this value is not specified an all\-caps string \fByour_company_name\fR is used which can be easily changed with find/replace\.
 .
 .P
-specify \fB\-i\fR or \fB\-\-license\fR with the license that the cookbook is distributed under for sharing with other people or posting to the opscode cookbooks site\. be aware of the licenses of files you put inside the cookbook and follow any restrictions they describe\. when using \fBnone\fR (default) or \fBapachev2\fR, comment header text and metadata file are pre\-filled\. the \fBnone\fR license will be treated as non\-redistributable\.
+specify \fB\-i\fR or \fB\-\-license\fR with the license that the cookbook is distributed under for sharing with other people or posting to the Opscode Chef Community Site\. be aware of the licenses of files you put inside the cookbook and follow any restrictions they describe\. when using \fBnone\fR (default) or \fBapachev2\fR, comment header text and metadata file are pre\-filled\. the \fBnone\fR license will be treated as non\-redistributable\.
 .
 .P
 specify \fB\-e\fR or \fB\-\-email\fR with the email address of the cookbook\'s maintainer\. if this value is not specified, an all\-caps string \fByour_email\fR is used which can easily be changed with find/replace\.
@@ -333,7 +333,7 @@ ERuby (ERb) template files\. These are referenced by \fIrecipes\fR and evaluated
 Cookbooks also contain a metadata file that defines various properties of the cookbook\. The most important of these are the \fIversion\fR and the \fIdependencies\fR\. The \fIversion\fR is used in combination with environments to select which copy of a given cookbook is distributed to a node\. The \fIdependencies\fR are used by the server to determine which additional cookbooks must be distributed to a given host when it requires a cookbook\.
 .
 .SH "SEE ALSO"
-\fBknife\-environment(1)\fR \fBknife\-cookbook\-site(1)\fR \fIhttp://wiki\.opscode\.com/display/chef/Cookbooks\fR \fIhttp://wiki\.opscode\.com/display/chef/Metadata\fR
+\fBknife\-environment(1)\fR \fBknife\-community\-site(1)\fR \fIhttp://wiki\.opscode\.com/display/chef/Cookbooks\fR \fIhttp://wiki\.opscode\.com/display/chef/Metadata\fR
 .
 .SH "AUTHOR"
 Chef was written by Adam Jacob \fIadam@opscode\.com\fR with many contributions from the community\.

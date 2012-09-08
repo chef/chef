@@ -20,15 +20,15 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class CookbookSiteShare < Knife
+    class CommunitySiteShare < Knife
 
       deps do
         require 'chef/cookbook_uploader'
-        require 'chef/cookbook_site_streaming_uploader'
+        require 'chef/community_site_streaming_uploader'
       end
 
-      banner "knife cookbook site share COOKBOOK CATEGORY (options)"
-      category "cookbook site"
+      banner "knife community site share COOKBOOK CATEGORY (options)"
+      category "community site"
 
       option :cookbook_path,
         :short => "-o PATH:PATH",
@@ -51,7 +51,7 @@ class Chef
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
           Chef::CookbookUploader.new(cookbook,config[:cookbook_path]).validate_cookbooks
-          tmp_cookbook_dir = Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
+          tmp_cookbook_dir = Chef::CommunitySiteStreamingUploader.create_build_dir(cookbook)
           begin
             Chef::Log.debug("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
@@ -68,7 +68,7 @@ class Chef
             Chef::Log.debug("Removing local staging directory at #{tmp_cookbook_dir}")
             FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
-            ui.error("Error uploading cookbook #{cookbook_name} to the Opscode Cookbook Site: #{e.message}. Set log level to debug (-l debug) for more information.")
+            ui.error("Error uploading cookbook #{cookbook_name} to the Opscode Chef Community Site: #{e.message}. Set log level to debug (-l debug) for more information.")
             Chef::Log.debug("\n#{e.backtrace.join("\n")}")
             exit(1)
           end
@@ -85,7 +85,7 @@ class Chef
 
          category_string = { 'category'=>cookbook_category }.to_json
 
-         http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
+         http_resp = Chef::CommunitySiteStreamingUploader.post(uri, user_id, user_secret_filename, {
            :tarball => File.open(cookbook_filename),
            :cookbook => category_string
          })
@@ -94,7 +94,7 @@ class Chef
          if http_resp.code.to_i != 201
            if res['error_messages']
              if res['error_messages'][0] =~ /Version already exists/
-               ui.error "The same version of this cookbook already exists on the Opscode Cookbook Site."
+               ui.error "The same version of this cookbook already exists on the Opscode Chef Community Site."
                exit(1)
              else
                ui.error "#{res['error_messages'][0]}"

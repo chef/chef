@@ -21,14 +21,14 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class CookbookSiteUnshare < Knife
+    class CommunitySiteUnshare < Knife
 
       deps do
         require 'chef/json_compat'
       end
 
-      banner "knife cookbook site unshare COOKBOOK"
-      category "cookbook site"
+      banner "knife community site unshare COOKBOOK"
+      category "community site"
 
       def run
         @cookbook_name = @name_args[0]

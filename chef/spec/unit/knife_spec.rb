@@ -61,7 +61,7 @@ describe Chef::Knife do
     end
 
     it "has an explictly defined category if set" do
-      KnifeSpecs::TestExplicitCategory.subcommand_category.should == 'cookbook site'
+      KnifeSpecs::TestExplicitCategory.subcommand_category.should == 'community site'
     end
 
     it "can reference the subcommand by its snake cased name" do
@@ -73,7 +73,7 @@ describe Chef::Knife do
     end
 
     it "lists subcommands by category when the subcommands have explicit categories" do
-      Chef::Knife.subcommands_by_category['cookbook site'].should include('test_explicit_category')
+      Chef::Knife.subcommands_by_category['community site'].should include('test_explicit_category')
     end
 
   end
@@ -96,16 +96,16 @@ describe Chef::Knife do
 
     it "guesses a category from a given ARGV" do
       Chef::Knife.subcommands_by_category["cookbook"] << :cookbook
-      Chef::Knife.subcommands_by_category["cookbook site"] << :cookbook_site
+      Chef::Knife.subcommands_by_category["community site"] << :cookbook_site
       Chef::Knife.guess_category(%w{cookbook foo bar baz}).should == 'cookbook'
-      Chef::Knife.guess_category(%w{cookbook site foo bar baz}).should == 'cookbook site'
-      Chef::Knife.guess_category(%w{cookbook site --help}).should == 'cookbook site'
+      Chef::Knife.guess_category(%w{community site foo bar baz}).should == 'community site'
+      Chef::Knife.guess_category(%w{community site --help}).should == 'community site'
     end
 
     it "finds a subcommand class based on ARGV" do
-      Chef::Knife.subcommands["cookbook_site_vendor"] = :CookbookSiteVendor
+      Chef::Knife.subcommands["community_site_install"] = :CommunitySiteInstall
       Chef::Knife.subcommands["cookbook"] = :Cookbook
-      Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz}).should == :CookbookSiteVendor
+      Chef::Knife.subcommand_class_from(%w{community site install --help foo bar baz}).should == :CommunitySiteInstall
     end
 
   end

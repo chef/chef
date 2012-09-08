@@ -1,3 +1,4 @@
+#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -19,21 +20,23 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class CookbookSiteShow < Knife
+    class CommunitySiteList < Knife
 
-      banner "knife cookbook site show COOKBOOK [VERSION] (options)"
-      category "cookbook site"
+      banner "knife community site list (options)"
+      category "community site"
+
+      option :with_uri,
+        :short => "-w",
+        :long => "--with-uri",
+        :description => "Show corresponding URIs"
 
       def run
-        output(format_for_display(get_cookbook_data))
-      end
-      
-      def get_cookbook_data
-        case @name_args.length
-        when 1 
-          noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
-        when 2
-          noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
+        if config[:with_uri]
+          cookbooks = Hash.new
+          get_cookbook_list.each{ |k,v| cookbooks[k] = v['cookbook'] }
+          ui.output(format_for_display(cookbooks))
+        else
+          ui.msg(ui.list(get_cookbook_list.keys.sort, :columns_down))
         end
       end
 
@@ -45,7 +48,7 @@ class Chef
         end
         new_start = start + cr["items"].length
         if new_start < cr["total"]
-          get_cookbook_list(items, new_start, cookbook_collection) 
+          get_cookbook_list(items, new_start, cookbook_collection)
         else
           cookbook_collection
         end
@@ -53,7 +56,6 @@ class Chef
     end
   end
 end
-
 
 
 

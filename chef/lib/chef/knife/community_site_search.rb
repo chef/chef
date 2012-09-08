@@ -19,10 +19,10 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class CookbookSiteSearch < Knife
+    class CommunitySiteSearch < Knife
 
-      banner "knife cookbook site search QUERY (options)"
-      category "cookbook site"
+      banner "knife community site search QUERY (options)"
+      category "community site"
 
       def run
         output(search_cookbook(name_args[0]))
