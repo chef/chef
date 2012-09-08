@@ -83,7 +83,7 @@ BRANCHES
           it "exits when the git repo is dirty" do
             @dirty_status = Mixlib::ShellOut.new
             @dirty_status.stdout.replace(<<-DIRTY)
- M chef/lib/chef/knife/cookbook_site_vendor.rb
+ M chef/lib/chef/knife/community_site_vendor.rb
 DIRTY
             @cookbook_repo.should_receive(:shell_out!).with('git status --porcelain', :cwd => @repo_path).and_return(@dirty_status)
             lambda {@cookbook_repo.sanity_check}.should raise_error(SystemExit)
@@ -169,7 +169,7 @@ DIRTY
     it "commits the changes to the repo and tags the commit" do
       @cookbook_repo.should_receive(:shell_out!).with("git add apache2", :cwd => @repo_path)
       @cookbook_repo.should_receive(:shell_out!).with("git commit -m \"Import apache2 version 1.2.3\" -- apache2", :cwd => @repo_path)
-      @cookbook_repo.should_receive(:shell_out!).with("git tag -f cookbook-site-imported-apache2-1.2.3", :cwd => @repo_path)
+      @cookbook_repo.should_receive(:shell_out!).with("git tag -f community-site-imported-apache2-1.2.3", :cwd => @repo_path)
       @cookbook_repo.finalize_updates_to("apache2", "1.2.3").should be_true
     end
   end

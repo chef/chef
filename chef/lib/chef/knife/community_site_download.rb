@@ -19,14 +19,14 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class CookbookSiteDownload < Knife
+    class CommunitySiteDownload < Knife
 
       deps do
         require 'fileutils'
       end
 
-      banner "knife cookbook site download COOKBOOK [VERSION] (options)"
-      category "cookbook site"
+      banner "knife community site download COOKBOOK [VERSION] (options)"
+      category "community site"
 
       option :file,
         :short => "-f FILE",
@@ -84,7 +84,7 @@ class Chef
       end
 
       def download_cookbook
-        ui.info "Downloading #{@name_args[0]} from the cookbooks site at version #{version} to #{download_location}"
+        ui.info "Downloading #{@name_args[0]} from the Community Site at version #{version} to #{download_location}"
         noauth_rest.sign_on_redirect = false
         tf = noauth_rest.get_rest desired_cookbook_data["file"], true
 

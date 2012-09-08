@@ -22,7 +22,7 @@ require 'shellwords'
 class Chef
   class Knife
 
-    class CookbookSiteInstall < Knife
+    class CommunitySiteInstall < Knife
 
       deps do
         require 'chef/mixin/shell_out'
@@ -30,8 +30,8 @@ class Chef
         require 'chef/cookbook/metadata'
       end
 
-      banner "knife cookbook site install COOKBOOK [VERSION] (options)"
-      category "cookbook site"
+      banner "knife community site install COOKBOOK [VERSION] (options)"
+      category "community site"
 
       option :no_deps,
        :short => "-D",
@@ -134,7 +134,7 @@ class Chef
       end
 
       def download_cookbook_to(download_path)
-        downloader = Chef::Knife::CookbookSiteDownload.new
+        downloader = Chef::Knife::CommunitySiteDownload.new
         downloader.config[:file] = download_path
         downloader.name_args = name_args
         downloader.run

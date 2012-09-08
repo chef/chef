@@ -19,12 +19,12 @@
 require 'spec_helper'
 
 require 'chef/cookbook_uploader'
-require 'chef/cookbook_site_streaming_uploader'
+require 'chef/community_site_streaming_uploader'
 
-describe Chef::Knife::CookbookSiteShare do
+describe Chef::Knife::CommunitySiteShare do
 
   before(:each) do
-    @knife = Chef::Knife::CookbookSiteShare.new
+    @knife = Chef::Knife::CommunitySiteShare.new
     @knife.name_args = ['cookbook_name', 'AwesomeSausage']
 
     @cookbook = Chef::CookbookVersion.new('cookbook_name')
@@ -37,7 +37,7 @@ describe Chef::Knife::CookbookSiteShare do
     @cookbook_uploader = Chef::CookbookUploader.new('herpderp', File.join(CHEF_SPEC_DATA, 'cookbooks'), :rest => "norest")
     Chef::CookbookUploader.stub!(:new).and_return(@cookbook_uploader)
     @cookbook_uploader.stub!(:validate_cookbooks).and_return(true)
-    Chef::CookbookSiteStreamingUploader.stub!(:create_build_dir).and_return(Dir.mktmpdir)
+    Chef::CommunitySiteStreamingUploader.stub!(:create_build_dir).and_return(Dir.mktmpdir)
 
     Chef::Mixin::Command.stub(:run_command).and_return(true)
     @stdout = StringIO.new
@@ -99,7 +99,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     before(:each) do
       @upload_response = mock('Net::HTTPResponse')
-      Chef::CookbookSiteStreamingUploader.stub!(:post).and_return(@upload_response)
+      Chef::CommunitySiteStreamingUploader.stub!(:post).and_return(@upload_response)
 
       @stdout = StringIO.new
       @stderr = StringIO.new
@@ -112,7 +112,7 @@ describe Chef::Knife::CookbookSiteShare do
       response_text = {:uri => 'http://cookbooks.opscode.com/cookbooks/cookbook_name'}.to_json
       @upload_response.stub!(:body).and_return(response_text)
       @upload_response.stub!(:code).and_return(201)
-      Chef::CookbookSiteStreamingUploader.should_receive(:post).with(/cookbooks\.opscode\.com/, anything(), anything(), anything())
+      Chef::CommunitySiteStreamingUploader.should_receive(:post).with(/cookbooks\.opscode\.com/, anything(), anything(), anything())
       @knife.run
     end
 

@@ -103,7 +103,7 @@ subcommand is documented in its own manual page. Available topics are:</p>
 <li>bootstrap</li>
 <li>client</li>
 <li>configure</li>
-<li>cookbook-site</li>
+<li>community-site</li>
 <li>cookbook</li>
 <li>data-bag</li>
 <li>environment</li>
@@ -132,11 +132,11 @@ documentation using <code>knife help TOPIC</code>.</p>
 <dt><code>-E</code>, <code>--environment ENVIRONMENT</code></dt><dd>Set the Chef environment</dd>
 <dt><code>-e</code>, <code>--editor</code> EDITOR</dt><dd>Set the editor to use for interactive commands</dd>
 <dt><code>-F</code>, <code>--format</code> FORMAT</dt><dd>Which format to use for output. See FORMATS for details.</dd>
-<dt><code>-V</code>, <code>--verbose</code></dt><dd>More verbose output.  Use twice for max verbosity</dd>
 <dt><code>-d</code>, <code>--disable-editing</code></dt><dd>Do not open EDITOR, just accept the data as is</dd>
 <dt><code>-u</code>, <code>--user</code> USER</dt><dd>API Client Username, corresponds to <code>Chef::Config</code> <code>node_name</code>.</dd>
 <dt><code>-p</code>, <code>--print-after</code></dt><dd>Show the data after a destructive operation</dd>
 <dt><code>-v</code>, <code>--version</code></dt><dd>Show chef version</dd>
+<dt><code>-V</code>, <code>--verbose</code></dt><dd>More verbose output. Use twice for max verbosity.</dd>
 <dt><code>-y</code>, <code>--yes</code></dt><dd>Say yes to all prompts for confirmation</dd>
 <dt><code>--defaults</code></dt><dd>Accept default values for all questions</dd>
 <dt><code>--[no-]color</code></dt><dd>Use colored output. Color enabled by default.</dd>
@@ -244,17 +244,19 @@ example, -Fj will produce JSON format output.</p>
 <ul>
 <li>Create repository. A skeleton sample is provided at <em>http://github.com/opscode/chef-repo/</em>.</li>
 <li>Configure knife, see <strong>CONFIGURATION</strong>.</li>
-<li>Download cookbooks from the Opscode cookbooks site, see <strong>COOKBOOK SITE SUB-COMMANDS</strong>.</li>
+<li>Download cookbooks from the Opscode Chef Community Site, see
+<strong>COMMUNITY SITE SUB-COMMANDS</strong>.</li>
 <li>Or, create new cookbooks, see <code>cookbook create</code> sub-command.</li>
 <li>Commit changes to the version control system. See your tool's documentation.</li>
 <li>Upload cookbooks to the Chef Server, see <strong>COOKBOOK SUB-COMMANDS</strong>.</li>
-<li>Launch instances in the Cloud, OR provision new hosts; see <strong>CLOUD COMPUTING SUB-COMMANDS</strong> and <strong>BOOTSTRAP SUB-COMMANDS</strong>.</li>
+<li>Launch instances in the Cloud, OR provision new hosts; see <strong>CLOUD
+COMPUTING SUB-COMMANDS</strong> and <strong>BOOTSTRAP SUB-COMMANDS</strong>.</li>
 <li>Watch Chef configure systems!</li>
 </ul>
 
 
 <p>A note about git: Opscode and many folks in the Chef community use git,
-but it is not required, except in the case of the <code>cookbook site vendor</code>
+but it is not required, except in the case of the <code>community site install</code>
 sub-command, as it uses git directly. Version control is strongly
 recommended though, and git fits with a lot of the workflow paradigms.</p>
 
@@ -274,7 +276,7 @@ data editing entirely.</dd>
 <p>  <strong><span class="man-ref">chef-client<span class="s">(8)</span></span></strong> <strong><span class="man-ref">chef-server<span class="s">(8)</span></span></strong> <strong><span class="man-ref">shef<span class="s">(1)</span></span></strong></p>
 
 <p>  <strong><span class="man-ref">knife-bootstrap<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-client<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-configure<span class="s">(1)</span></span></strong>
-  <strong><span class="man-ref">knife-cookbook-site<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-cookbook<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-data-bag<span class="s">(1)</span></span></strong>
+  <strong><span class="man-ref">knife-community-site<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-cookbook<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-data-bag<span class="s">(1)</span></span></strong>
   <strong><span class="man-ref">knife-environment<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-exec<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-index<span class="s">(1)</span></span></strong>
   <strong><span class="man-ref">knife-node<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-recipe<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-role<span class="s">(1)</span></span></strong>
   <strong><span class="man-ref">knife-search<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-ssh<span class="s">(1)</span></span></strong> <strong><span class="man-ref">knife-tag<span class="s">(1)</span></span></strong></p>
@@ -291,12 +293,12 @@ data editing entirely.</dd>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#97;&#x64;&#97;&#x6d;&#x40;&#x6f;&#x70;&#x73;&#99;&#x6f;&#100;&#x65;&#46;&#x63;&#x6f;&#109;" data-bare-link="true">&#x61;&#x64;&#x61;&#109;&#x40;&#x6f;&#112;&#x73;&#x63;&#111;&#x64;&#101;&#46;&#x63;&#x6f;&#109;</a> of Opscode
+<p>   Chef was written by Adam Jacob <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#111;&#x3a;&#x61;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#115;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#x6f;&#109;" data-bare-link="true">&#97;&#100;&#x61;&#109;&#x40;&#x6f;&#112;&#115;&#x63;&#111;&#x64;&#x65;&#x2e;&#x63;&#111;&#109;</a> of Opscode
    (<a href="http://www.opscode.com" data-bare-link="true">http://www.opscode.com</a>), with contributions from the community.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Joshua Timberman <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x6a;&#111;&#115;&#104;&#117;&#x61;&#x40;&#111;&#x70;&#115;&#x63;&#x6f;&#x64;&#x65;&#x2e;&#99;&#111;&#x6d;" data-bare-link="true">&#x6a;&#111;&#x73;&#x68;&#x75;&#97;&#64;&#x6f;&#x70;&#115;&#x63;&#111;&#100;&#101;&#46;&#99;&#x6f;&#109;</a>.</p>
+<p>   This manual page was written by Joshua Timberman <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#106;&#111;&#x73;&#104;&#x75;&#97;&#x40;&#111;&#x70;&#x73;&#x63;&#x6f;&#x64;&#x65;&#x2e;&#x63;&#111;&#x6d;" data-bare-link="true">&#106;&#x6f;&#115;&#104;&#x75;&#97;&#64;&#111;&#112;&#115;&#99;&#x6f;&#100;&#101;&#x2e;&#x63;&#111;&#109;</a>.</p>
 
 <h2 id="LICENSE">LICENSE</h2>
 
@@ -310,8 +312,8 @@ data editing entirely.</dd>
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 10.12.0</li>
-    <li class='tc'>June 2012</li>
+    <li class='tl'>Chef 11.0.0.alpha</li>
+    <li class='tc'>September 2012</li>
     <li class='tr'>knife(1)</li>
   </ol>
 

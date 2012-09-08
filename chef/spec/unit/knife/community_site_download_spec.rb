@@ -18,11 +18,11 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Chef::Knife::CookbookSiteDownload do
+describe Chef::Knife::CommunitySiteDownload do
 
   describe 'run' do
     before do
-      @knife            = Chef::Knife::CookbookSiteDownload.new
+      @knife            = Chef::Knife::CommunitySiteDownload.new
       @knife.name_args  = ['apache2']
       @noauth_rest      = mock 'no auth rest'
       @stdout           = StringIO.new

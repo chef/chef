@@ -19,10 +19,10 @@
 
 require 'spec_helper'
 
-describe Chef::Knife::CookbookSiteUnshare do
+describe Chef::Knife::CommunitySiteUnshare do
 
   before(:each) do
-    @knife = Chef::Knife::CookbookSiteUnshare.new
+    @knife = Chef::Knife::CommunitySiteUnshare.new
     @knife.name_args = ['cookbook_name']
     @knife.stub!(:confirm).and_return(true)
 
@@ -49,7 +49,7 @@ describe Chef::Knife::CookbookSiteUnshare do
       @knife.run
     end
 
-    it 'should send a delete request to the cookbook site' do
+    it 'should send a delete request to the community site' do
       @rest.should_receive(:delete_rest)
       @knife.run
     end

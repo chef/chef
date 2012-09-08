@@ -18,10 +18,10 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Knife::CookbookSiteInstall do
+describe Chef::Knife::CommunitySiteInstall do
   before(:each) do
     require 'chef/knife/core/cookbook_scm_repo'
-    @knife = Chef::Knife::CookbookSiteInstall.new
+    @knife = Chef::Knife::CommunitySiteInstall.new
     @knife.config = {}
     if Chef::Platform.windows?
       @install_path = 'C:/tmp/chef'
@@ -40,7 +40,7 @@ describe Chef::Knife::CookbookSiteInstall do
     File.stub!(:rmtree)
     @knife.stub!(:shell_out!).and_return(true)
 
-    #CookbookSiteDownload Stup
+    #CommunitySiteDownload Stup
     @downloader = {}
     @knife.stub!(:download_cookbook_to).and_return(@downloader)
     @downloader.stub!(:version).and_return do
