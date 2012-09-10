@@ -35,7 +35,6 @@ class Chef
         
         def manage_user
           command = compile_command("usermod") do |u|
-            u << " -m" if managing_home_dir?
             u << universal_options
           end
           run_command(:command => command)
@@ -110,7 +109,7 @@ class Chef
           if updating_home?
             if managing_home_dir?
               Chef::Log.debug("#{@new_resource} managing the users home directory")
-              opts << " -d '#{@new_resource.home}'"
+              opts << " -m -d '#{@new_resource.home}'"
             else
               Chef::Log.debug("#{@new_resource} setting home to #{@new_resource.home}")
               opts << " -d '#{@new_resource.home}'"
@@ -122,7 +121,6 @@ class Chef
 
         def useradd_options
           opts = ''
-          opts << " -m" if updating_home? && managing_home_dir?
           opts << " -r" if @new_resource.system
           opts
         end
