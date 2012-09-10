@@ -26,11 +26,12 @@ require 'chef/cookbook/chefignore'
 require 'chef/cookbook/metadata'
 
 #
-# CookbookLoader class loads the cookbooks lazily as readed
+# CookbookLoader class loads the cookbooks lazily as read
 #
 class Chef
   class CookbookLoader
 
+    attr_reader :cookbooks_by_name
     attr_reader :merged_cookbooks
     attr_reader :cookbook_paths
     attr_reader :metadata
