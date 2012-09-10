@@ -11,7 +11,7 @@
             %th &nbsp;
             %th.last &nbsp;
           - even = false;
-          - @role_list.sort_by {|value| value.downcase}.each do |role|
+          - @role_list.sort_by {|value| value[0].downcase}.each do |role|
             %tr{ :class => even ? "even" : "odd" }
               %td{:colspan => 2}= link_to(role[0], role_path(role[0]))
               %td
