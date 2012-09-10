@@ -92,8 +92,8 @@ class Chef
 
         def format_line(line_nr, line)
           # Print line number as 1-indexed not zero
-          line_nr_string = (line_nr + 1).to_s.rjust(3) + ": "
-          line_nr_string + line
+          line_nr_string = (line_nr + 1).to_s.rjust(3).to_s + ": "
+          line_nr_string + line.to_s
         end
 
       end
