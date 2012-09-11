@@ -48,7 +48,7 @@ class Chef
       option :attribute,
         :short => "-a ATTR",
         :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default is fqdn",
+        :description => "The attribute to use for opening the connection - default depends on the context",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key }
 
       option :manual,
@@ -346,7 +346,7 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute]
+        config[:override_attribute] = Chef::Config[:knife][:ssh_attribute] || config[:attribute]
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
                               config[:attribute] ||
                               "fqdn").strip
