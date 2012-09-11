@@ -16,7 +16,10 @@
 #
 
 add_command "test", "Run the API test suite against localhost.", 2 do
-  ENV["PATH"] = "#{File.join(base_path, "bin")}:#{ENV['PATH']}"
+  omnibus_path = [File.join(base_path, "bin"),
+                  File.join(base_path, "embedded","bin"),
+                  ENV['PATH']]
+  ENV["PATH"] = omnibus_path.join(":")
   pedant_args = ARGV[3..-1]
   pedant_args = ["--smoke"] unless pedant_args.any?
   Dir.chdir(File.join(base_path, "embedded", "service", "chef-pedant"))
