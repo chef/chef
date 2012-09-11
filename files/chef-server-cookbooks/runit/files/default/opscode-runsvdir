@@ -1,7 +1,10 @@
 start on runlevel [2345]
 stop on shutdown
 respawn
-post-stop script 
-   ps ax | egrep 'runsv .+' | grep -v egrep | awk '{ print $1 }' | xargs kill -TERM
+post-stop script
+   # To avoid stomping on runsv's owned by a different runsvdir
+   # process, kill any runsv process that has been orphaned, and is
+   # now owned by init (process 1).
+   pkill -HUP -P 1 runsv$
 end script
 exec /opt/chef-server/embedded/bin/runsvdir-start
