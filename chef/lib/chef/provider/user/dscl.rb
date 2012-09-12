@@ -179,6 +179,10 @@ class Chef
         end
         
         def dscl_set_gid
+          unless @new_resource.gid && @new_resource.gid.to_s.match(/^\d+$/)
+            possible_gid = safe_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
+            @new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
+          end
           safe_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
         end
         
