@@ -54,6 +54,12 @@ describe Chef::Provider::User::Dscl do
       @provider.should_receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
       lambda { @provider.safe_dscl("cmd /Path args") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
     end
+
+    it "raises an exception when dscl reports 'eDSRecordNotFound'" do
+      shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
+      @provider.should_receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
+      lambda { @provider.safe_dscl("cmd /Path args") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
+    end
   end
 
   describe "get_free_uid" do
@@ -374,10 +380,10 @@ describe Chef::Provider::User::Dscl do
         @provider.dscl_set_gid
       end
 
-      it "should run safe_dscl with the string group name when the group does not exist" do
-        @provider.should_receive(:safe_dscl).with("read /Groups/newgroup PrimaryGroupID").ordered.and_return("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)\n")
-        @provider.should_receive(:safe_dscl).with("create /Users/toor PrimaryGroupID 'newgroup'").ordered.and_return(true)
-        @provider.dscl_set_gid
+      it "should raise an exception when the group does not exist" do
+        shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
+        @provider.should_receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
+        lambda { @provider.dscl_set_gid }.should raise_error(Chef::Exceptions::DsclCommandFailed)
       end
     end
   end
