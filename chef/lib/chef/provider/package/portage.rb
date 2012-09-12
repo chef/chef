@@ -58,14 +58,19 @@ class Chef
 
         def parse_emerge(package, txt)
           availables = {}
-          package_without_category = package.split("/").last
           found_package_name = nil
 
           txt.each_line do |line|
             if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
-              found_package_name = $&.strip
-              if found_package_name == package || found_package_name.split("/").last == package_without_category
-                availables[found_package_name] = nil
+              found_package_name = $&.gsub(/\*/, '').strip
+              if package =~ /\// #the category is specified
+                if found_package_name == package
+                  availables[found_package_name] = nil
+                end
+              else #the category is not specified
+                if found_package_name.split("/").last == package
+                  availables[found_package_name] = nil
+                end
               end
             end
 
