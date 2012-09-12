@@ -70,8 +70,8 @@ else
   bash "add shm settings" do
     user "root"
     code <<-EOF
-      echo 'kernel.shmmax = 17179869184' >> /etc/sysctl.conf
-      echo 'kernel.shmall = 4194304' >> /etc/sysctl.conf
+      echo 'kernel.shmmax = #{node['chef_server']['postgresql']['shmmax']}' >> /etc/sysctl.conf
+      echo 'kernel.shmall = #{node['chef_server']['postgresql']['shmall']}' >> /etc/sysctl.conf
     EOF
     notifies :run, 'execute[sysctl]', :immediately
     not_if "egrep '^kernel.shmmax = ' /etc/sysctl.conf"
