@@ -23,7 +23,7 @@ class Chef
   class Provider
     class User 
       class Useradd < Chef::Provider::User
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 
         def create_user
           command = compile_command("useradd") do |useradd|
@@ -47,7 +47,12 @@ class Chef
         end
         
         def check_lock
-          status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
+          if ['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            status_flag = "-s"
+          else
+            status_flag = "-S"
+          end
+            status = popen4("passwd #{status_flag} #{@new_resource.username}") do |pid, stdin, stdout, stderr|
             status_line = stdout.gets.split(' ')
             case status_line[1]
             when /^P/
@@ -81,11 +86,19 @@ class Chef
         end
         
         def lock_user
-          run_command(:command => "usermod -L #{@new_resource.username}")
+          if ['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            run_command(:command => "passwd -l #{@new_resource.username}")
+          else
+            run_command(:command => "usermod -L #{@new_resource.username}")
+          end
         end
         
         def unlock_user
-          run_command(:command => "usermod -U #{@new_resource.username}")
+          if ['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            run_command(:command => "passwd -u #{@new_resource.username}")
+          else
+            run_command(:command => "usermod -U #{@new_resource.username}")
+          end
         end
 
         def compile_command(base_command)
@@ -96,6 +109,10 @@ class Chef
         
         def universal_options
           opts = ''
+
+          if !['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            UNIVERSAL_OPTIONS << [:password, "-p"]
+          end
           
           UNIVERSAL_OPTIONS.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
