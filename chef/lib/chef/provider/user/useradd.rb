@@ -25,10 +25,6 @@ class Chef
       class Useradd < Chef::Provider::User
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 
-#        if !['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
-#          UNIVERSAL_OPTIONS << [:password, "-p"]
-#        end
-
         def create_user
           command = compile_command("useradd") do |useradd|
             useradd << universal_options
@@ -113,6 +109,10 @@ class Chef
         
         def universal_options
           opts = ''
+
+          if !['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            UNIVERSAL_OPTIONS << [:password, "-p"]
+          end
           
           UNIVERSAL_OPTIONS.each do |field, option|
             if @current_resource.send(field) != @new_resource.send(field)
