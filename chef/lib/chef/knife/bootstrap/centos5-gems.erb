@@ -7,6 +7,10 @@ if [ ! -f /usr/bin/chef-client ]; then
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://rpm.aegisco.com/aegisco/rhel/aegisco-rhel.rpm
   rpm -Uvh aegisco-rhel.rpm
 
+  if [[ ! $(grep -w exclude=ruby* /etc/yum.repos.d/CentOS-Base.repo) ]]; then
+    sed -i "s/\[base\]/\0\n\exclude=ruby*/g" /etc/yum.repos.d/CentOS-Base.repo
+  fi
+
   yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make
 
   cd /tmp
