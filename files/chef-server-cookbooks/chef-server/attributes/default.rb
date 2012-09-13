@@ -264,5 +264,5 @@ default['chef_server']['postgresql']['listen_address'] = 'localhost'
 default['chef_server']['postgresql']['max_connections'] = 200
 default['chef_server']['postgresql']['md5_auth_cidr_addresses'] = [ ]
 default['chef_server']['postgresql']['trust_auth_cidr_addresses'] = [ '127.0.0.1/32', '::1/128' ]
-default['chef_server']['postgresql']['shmmax'] = 17179869184
-default['chef_server']['postgresql']['shmall'] = 4194304
+default['chef_server']['postgresql']['shmmax'] = kernel['machine'] =~ /x86_64/ ? 17179869184 : 4294967295
+default['chef_server']['postgresql']['shmall'] = kernel['machine'] =~ /x86_64/ ? 4194304 : 1048575
