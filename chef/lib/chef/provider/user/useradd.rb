@@ -25,9 +25,9 @@ class Chef
       class Useradd < Chef::Provider::User
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 
-        if !['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
-          UNIVERSAL_OPTIONS << [:password, "-p"]
-        end
+#        if !['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+#          UNIVERSAL_OPTIONS << [:password, "-p"]
+#        end
 
         def create_user
           command = compile_command("useradd") do |useradd|
@@ -51,7 +51,12 @@ class Chef
         end
         
         def check_lock
-          status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
+          if ['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            status_flag = "-s"
+          else
+            status_flag = "-S"
+          end
+            status = popen4("passwd #{status_flag} #{@new_resource.username}") do |pid, stdin, stdout, stderr|
             status_line = stdout.gets.split(' ')
             case status_line[1]
             when /^P/
