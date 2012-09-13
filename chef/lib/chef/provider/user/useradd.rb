@@ -23,7 +23,11 @@ class Chef
   class Provider
     class User 
       class Useradd < Chef::Provider::User
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
+
+        if !['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+          UNIVERSAL_OPTIONS << [:password, "-p"]
+        end
 
         def create_user
           command = compile_command("useradd") do |useradd|
@@ -81,11 +85,19 @@ class Chef
         end
         
         def lock_user
-          run_command(:command => "usermod -L #{@new_resource.username}")
+          if ['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            run_command(:command => "passwd -l #{@new_resource.username}")
+          else
+            run_command(:command => "usermod -L #{@new_resource.username}")
+          end
         end
         
         def unlock_user
-          run_command(:command => "usermod -U #{@new_resource.username}")
+          if ['solaris2','smartos','openindiana','opensolaris','nexentacore','omnios'].include?(node[:platform])
+            run_command(:command => "passwd -u #{@new_resource.username}")
+          else
+            run_command(:command => "usermod -U #{@new_resource.username}")
+          end
         end
 
         def compile_command(base_command)
