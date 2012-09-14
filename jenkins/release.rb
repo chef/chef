@@ -97,8 +97,6 @@ jenkins_build_support = {
 # fetch the list of local packages
 local_packages = Dir['**/pkg/*']
 
-project_version = [options[:project], options[:version]].join('-')
-
 # generate json
 build_support_json = {}
 jenkins_build_support.each do |(build, supported_platforms)|
@@ -122,13 +120,13 @@ jenkins_build_support.each do |(build, supported_platforms)|
     build_support_json[platform] ||= {}
     build_support_json[platform][platform_version] ||= {}
     build_support_json[platform][platform_version][machine_architecture] = {}
-    build_support_json[platform][platform_version][machine_architecture][project_version] = build_location
+    build_support_json[platform][platform_version][machine_architecture][options[:version]] = build_location
   end
 end
 
 File.open("platform-support.json", "w") {|f| f.puts JSON.pretty_generate(build_support_json)}
 
-s3_location = "s3://#{options[:bucket]}/platform-support/#{project_version}.json"
+s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:version]}.json"
 puts "UPLOAD: platform-support.json -> #{s3_location}"
 s3_cmd = ["s3cmd",
           "put",
