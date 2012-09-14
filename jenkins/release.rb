@@ -100,3 +100,23 @@ s3_cmd = ["s3cmd",
 shell = Mixlib::ShellOut.new(s3_cmd)
 shell.run_command
 shell.error!
+
+###############################################################################
+# BACKWARD COMPAT HACK
+#
+# TODO: DELETE EVERYTHING BELOW THIS COMMENT WHEN UPDATED OMNITRUCK IS LIVE
+#
+# See https://github.com/opscode/omnibus-chef/pull/12#issuecomment-8572411
+# for more info.
+###############################################################################
+if options[:project] == 'chef'
+  s3_location = "s3://#{options[:bucket]}/platform-support/#{options[:version]}.json"
+  puts "UPLOAD: platform-support.json -> #{s3_location}"
+  s3_cmd = ["s3cmd",
+            "put",
+            "platform-support.json",
+            s3_location].join(" ")
+  shell = Mixlib::ShellOut.new(s3_cmd)
+  shell.run_command
+  shell.error!
+end
