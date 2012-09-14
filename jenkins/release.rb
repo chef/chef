@@ -6,14 +6,18 @@ require 'optparse'
 require 'mixlib/shellout'
 
 #
-# Usage: client-release.sh --version VERSION --bucket BUCKET
+# Usage: release.sh --project PROJECT --version VERSION --bucket BUCKET
 #
 
 options = {}
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
 
-  opts.on("-v", "--version VERSION", "the version of the chef installer to release") do |version|
+  opts.on("-p", "--project PROJECT", "the project to release") do |project|
+    options[:project] = project
+  end
+
+  opts.on("-v", "--version VERSION", "the version of the installer to release") do |version|
     options[:version] = version
   end
 
@@ -24,7 +28,7 @@ end
 
 begin
   optparse.parse!
-  required = [:version, :bucket]
+  required = [:project, :version, :bucket]
   missing = required.select {|param| options[param].nil?}
   if !missing.empty?
     puts "Missing required options: #{missing.join(', ')}"
@@ -46,49 +50,14 @@ end
 #           references the build itself.
 #
 
-jenkins_build_support = {
-  "build_os=centos-5,machine_architecture=x64,role=oss-builder" => [["el", "5", "x86_64"]],
-  "build_os=centos-5,machine_architecture=x86,role=oss-builder" => [["el", "5", "i686"]],
-  "build_os=centos-6,machine_architecture=x64,role=oss-builder" => [["el", "6", "x86_64"]],
-  "build_os=centos-6,machine_architecture=x86,role=oss-builder" => [["el", "6", "i686"]],
-  "build_os=debian-6,machine_architecture=x64,role=oss-builder" => [["debian", "6", "x86_64"]],
-  "build_os=debian-6,machine_architecture=x86,role=oss-builder" => [["debian", "6", "i686"]],
-  "build_os=mac_os_x_10_6,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.6", "x86_64"]],
-  "build_os=mac_os_x_10_7,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.7", "x86_64"]],
-  "build_os=solaris-10,machine_architecture=intel,role=oss-builder" =>
-  [
-   ["solaris2", "5.10", "i386"],
-   ["solaris2", "5.11", "i386"]
-  ],
-  "build_os=solaris-9,machine_architecture=sparc,role=oss-builder" =>
-  [
-   ["solaris2", "5.9", "sparc"],
-   ["solaris2", "5.10", "sparc"],
-   ["solaris2", "5.11", "sparc"]
-  ],
-  "build_os=ubuntu-10-04,machine_architecture=x64,role=oss-builder" =>
-  [
-   ["ubuntu", "10.04", "x86_64"],
-   ["ubuntu", "10.10", "x86_64"]
-  ],
-  "build_os=ubuntu-10-04,machine_architecture=x86,role=oss-builder" =>
-  [
-   ["ubuntu", "10.04", "i686"],
-   ["ubuntu", "10.10", "i686"]
-  ],
-  "build_os=ubuntu-11-04,machine_architecture=x64,role=oss-builder" =>
-  [
-   ["ubuntu", "11.04", "x86_64"],
-   ["ubuntu", "11.10", "x86_64"],
-   ["ubuntu", "12.04", "x86_64"]
-  ],
-  "build_os=ubuntu-11-04,machine_architecture=x86,role=oss-builder" =>
-  [
-   ["ubuntu", "11.04", "i686"],
-   ["ubuntu", "11.10", "i686"],
-   ["ubuntu", "12.04", "i686"]
-  ]
-}
+build_support_file = File.join(File.dirname(__FILE__), "#{options[:project]}.json")
+
+if File.exists?(build_support_file)
+  jenkins_build_support = JSON.load(IO.read(build_support_file))
+else
+  error_msg = "Could not locate build support file for %s at %s."
+  raise error_msg % [options[:project], File.expand_path(build_support_file)]
+end
 
 # fetch the list of local packages
 local_packages = Dir['**/pkg/*']
@@ -122,7 +91,7 @@ end
 
 File.open("platform-support.json", "w") {|f| f.puts JSON.pretty_generate(build_support_json)}
 
-s3_location = "s3://#{options[:bucket]}/platform-support/#{options[:version]}.json"
+s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:version]}.json"
 puts "UPLOAD: platform-support.json -> #{s3_location}"
 s3_cmd = ["s3cmd",
           "put",
@@ -131,3 +100,23 @@ s3_cmd = ["s3cmd",
 shell = Mixlib::ShellOut.new(s3_cmd)
 shell.run_command
 shell.error!
+
+###############################################################################
+# BACKWARD COMPAT HACK
+#
+# TODO: DELETE EVERYTHING BELOW THIS COMMENT WHEN UPDATED OMNITRUCK IS LIVE
+#
+# See https://github.com/opscode/omnibus-chef/pull/12#issuecomment-8572411
+# for more info.
+###############################################################################
+if options[:project] == 'chef'
+  s3_location = "s3://#{options[:bucket]}/platform-support/#{options[:version]}.json"
+  puts "UPLOAD: platform-support.json -> #{s3_location}"
+  s3_cmd = ["s3cmd",
+            "put",
+            "platform-support.json",
+            s3_location].join(" ")
+  shell = Mixlib::ShellOut.new(s3_cmd)
+  shell.run_command
+  shell.error!
+end
