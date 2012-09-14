@@ -130,6 +130,23 @@ describe Chef::REST do
       @rest.sign_requests?.should be_false
     end
 
+    it "raises PrivateKeyMissing when the key file doesn't exist" do
+      lambda {Chef::REST.new(@url, "client-name", "/dev/null/nothing_here")}.should raise_error(Chef::Exceptions::PrivateKeyMissing)
+    end
+
+    it "raises InvalidPrivateKey when the key file doesnt' look like a key" do
+      invalid_key_file = CHEF_SPEC_DATA + "/bad-config.rb"
+      lambda {Chef::REST.new(@url, "client-name", invalid_key_file)}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
+    end
+
+    it "can take private key as a sting :raw_key in options during initializaton" do
+      Chef::REST.new(@url, "client-name", nil, :raw_key => SIGNING_KEY_DOT_PEM).signing_key.should == SIGNING_KEY_DOT_PEM
+    end
+
+    it "raises InvalidPrivateKey when the key passed as string :raw_key in options doesnt' look like a key" do
+      lambda {Chef::REST.new(@url, "client-name", nil, :raw_key => "bad key string")}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
+    end
+
   end
 
   context "when making REST requests" do
