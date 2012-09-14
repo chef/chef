@@ -6,14 +6,18 @@ require 'optparse'
 require 'mixlib/shellout'
 
 #
-# Usage: client-release.sh --version VERSION --bucket BUCKET
+# Usage: release.sh --project PROJECT --version VERSION --bucket BUCKET
 #
 
 options = {}
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
 
-  opts.on("-v", "--version VERSION", "the version of the chef installer to release") do |version|
+  opts.on("-p", "--project PROJECT", "the project to release") do |project|
+    options[:project] = project
+  end
+
+  opts.on("-v", "--version VERSION", "the version of the installer to release") do |version|
     options[:version] = version
   end
 
@@ -24,7 +28,7 @@ end
 
 begin
   optparse.parse!
-  required = [:version, :bucket]
+  required = [:project, :version, :bucket]
   missing = required.select {|param| options[param].nil?}
   if !missing.empty?
     puts "Missing required options: #{missing.join(', ')}"
@@ -93,6 +97,8 @@ jenkins_build_support = {
 # fetch the list of local packages
 local_packages = Dir['**/pkg/*']
 
+project_version = [options[:project], options[:version]].join('-')
+
 # generate json
 build_support_json = {}
 jenkins_build_support.each do |(build, supported_platforms)|
@@ -116,13 +122,13 @@ jenkins_build_support.each do |(build, supported_platforms)|
     build_support_json[platform] ||= {}
     build_support_json[platform][platform_version] ||= {}
     build_support_json[platform][platform_version][machine_architecture] = {}
-    build_support_json[platform][platform_version][machine_architecture][options[:version]] = build_location
+    build_support_json[platform][platform_version][machine_architecture][project_version] = build_location
   end
 end
 
 File.open("platform-support.json", "w") {|f| f.puts JSON.pretty_generate(build_support_json)}
 
-s3_location = "s3://#{options[:bucket]}/platform-support/#{options[:version]}.json"
+s3_location = "s3://#{options[:bucket]}/platform-support/#{project_version}.json"
 puts "UPLOAD: platform-support.json -> #{s3_location}"
 s3_cmd = ["s3cmd",
           "put",
