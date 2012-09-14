@@ -50,49 +50,14 @@ end
 #           references the build itself.
 #
 
-jenkins_build_support = {
-  "build_os=centos-5,machine_architecture=x64,role=oss-builder" => [["el", "5", "x86_64"]],
-  "build_os=centos-5,machine_architecture=x86,role=oss-builder" => [["el", "5", "i686"]],
-  "build_os=centos-6,machine_architecture=x64,role=oss-builder" => [["el", "6", "x86_64"]],
-  "build_os=centos-6,machine_architecture=x86,role=oss-builder" => [["el", "6", "i686"]],
-  "build_os=debian-6,machine_architecture=x64,role=oss-builder" => [["debian", "6", "x86_64"]],
-  "build_os=debian-6,machine_architecture=x86,role=oss-builder" => [["debian", "6", "i686"]],
-  "build_os=mac_os_x_10_6,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.6", "x86_64"]],
-  "build_os=mac_os_x_10_7,machine_architecture=x64,role=oss-builder" => [["mac_os_x", "10.7", "x86_64"]],
-  "build_os=solaris-10,machine_architecture=intel,role=oss-builder" =>
-  [
-   ["solaris2", "5.10", "i386"],
-   ["solaris2", "5.11", "i386"]
-  ],
-  "build_os=solaris-9,machine_architecture=sparc,role=oss-builder" =>
-  [
-   ["solaris2", "5.9", "sparc"],
-   ["solaris2", "5.10", "sparc"],
-   ["solaris2", "5.11", "sparc"]
-  ],
-  "build_os=ubuntu-10-04,machine_architecture=x64,role=oss-builder" =>
-  [
-   ["ubuntu", "10.04", "x86_64"],
-   ["ubuntu", "10.10", "x86_64"]
-  ],
-  "build_os=ubuntu-10-04,machine_architecture=x86,role=oss-builder" =>
-  [
-   ["ubuntu", "10.04", "i686"],
-   ["ubuntu", "10.10", "i686"]
-  ],
-  "build_os=ubuntu-11-04,machine_architecture=x64,role=oss-builder" =>
-  [
-   ["ubuntu", "11.04", "x86_64"],
-   ["ubuntu", "11.10", "x86_64"],
-   ["ubuntu", "12.04", "x86_64"]
-  ],
-  "build_os=ubuntu-11-04,machine_architecture=x86,role=oss-builder" =>
-  [
-   ["ubuntu", "11.04", "i686"],
-   ["ubuntu", "11.10", "i686"],
-   ["ubuntu", "12.04", "i686"]
-  ]
-}
+build_support_file = File.join(File.dirname(__FILE__), "#{options[:project]}.json")
+
+if File.exists?(build_support_file)
+  jenkins_build_support = JSON.load(IO.read(build_support_file))
+else
+  error_msg = "Could not locate build support file for %s at %s."
+  raise error_msg % [options[:project], File.expand_path(build_support_file)]
+end
 
 # fetch the list of local packages
 local_packages = Dir['**/pkg/*']
