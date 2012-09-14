@@ -49,7 +49,7 @@ class Chef
         :short => "-a ATTR",
         :long => "--attribute ATTR",
         :description => "The attribute to use for opening the connection - default depends on the context",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key }
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
 
       option :manual,
         :short => "-m",
