@@ -18,11 +18,11 @@
 # NOTE:
 # Although the contents of this definition are identical to the 'chef'
 # definition, we have created them seperately to prepare for the event
-# that the versions of OSS chef-client and OPC-embedded chef-client
+# that the versions of OSS chef-client and OSC server-embedded chef-client
 # are tracked differently.
 
 name "chef-gem"
-version "0.10.8"
+version "10.14.2"
 
 dependencies ["ruby", "rubygems", "yajl"]
 
