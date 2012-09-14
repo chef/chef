@@ -32,29 +32,18 @@ class Chef
         super
         @resource_name = :remote_file
         @action = "create"
-        source(::File.basename(name))
-        @cookbook = nil
+        @source = nil
         @provider = Chef::Provider::RemoteFile
       end
 
       def source(*args)
         if not args.empty?
           args = Array(args).flatten
-          args.each do |arg|
-            raise Exceptions::ValidationFailed, "Option source must be a kind of String!  You passed #{arg.inspect}." unless arg.kind_of?(String)
-          end
+          validate_source(args)
           @source = args
         elsif self.instance_variable_defined?(:@source) == true
           @source
         end
-      end
-
-      def cookbook(args=nil)
-        set_or_return(
-          :cookbook,
-          args,
-          :kind_of => String
-        )
       end
 
       def checksum(args=nil)
@@ -65,39 +54,24 @@ class Chef
         )
       end
 
-      # The provider that should be used for this resource.
-      # === Returns:
-      # Chef::Provider::RemoteFile    when the source is an absolute URI, like
-      #                               http://www.google.com/robots.txt or an Array of URIs.
-      # Chef::Provider::CookbookFile  when the source is a relative URI, like
-      #                               'myscript.pl', 'dir/config.conf'.
-      #                               Array of CookbookFiles is not currently supported.
-      def provider
-        if source.kind_of?(String)
-          Chef::Provider::CookbookFile
-        elsif source.length == 1 and not absolute_uri?(source[0])
-          @source = source[0]
-          Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Use cookbook_file instead")
-          Chef::Log.warn("From #{self.to_s} on #{source_line}")
-          Chef::Provider::CookbookFile
-        else
-          sources = []
-          source.each do |src|
-            if absolute_uri?(src)
-              sources.push(src)
-            else
-              Chef::Log.warn("remote_file is deprecated for fetching files from cookbooks. Cookbook files inside the source array will be ignored. Use cookbook_file instead")
-            end
-          end
-          source(sources)
-          Chef::Provider::RemoteFile
-        end
+      def after_created
+        validate_source(@source)
       end
 
       private
 
+      def validate_source(source)
+        raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
+        source.each do |src|
+          unless absolute_uri?(src)
+            raise Exceptions::InvalidRemoteFileURI,
+              "#{src.inspect} is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI or an array of URIs."
+          end
+        end
+      end
+
       def absolute_uri?(source)
-        URI.parse(source).absolute?
+        source.kind_of?(String) and URI.parse(source).absolute?
       rescue URI::InvalidURIError
         false
       end

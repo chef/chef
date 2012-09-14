@@ -157,6 +157,15 @@ class Chef
     # Where chef's cache files should be stored
     file_cache_path platform_specific_path("/var/chef/cache")
 
+    # By default, chef-client (or solo) creates a lockfile in
+    # `file_cache_path`/chef-client-running.pid
+    # If `lockfile` is explicitly set, this path will be used instead.
+    #
+    # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
+    # fs), it's recommended to set this to something like
+    # '/tmp/chef-client-running.pid'
+    lockfile nil
+
     # Where backups of chef-managed files should go
     file_backup_path platform_specific_path("/var/chef/backup")
 
@@ -177,6 +186,9 @@ class Chef
     verbose_logging true
     node_name nil
     node_path "/var/chef/node"
+    diff_disable            false
+    diff_filesize_threshold 10000000
+    diff_output_threshold   1000000
 
     pid_file nil
 

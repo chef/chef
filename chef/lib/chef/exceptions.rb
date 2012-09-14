@@ -21,6 +21,21 @@ class Chef
   # Chef's custom exceptions are all contained within the Chef::Exceptions
   # namespace.
   class Exceptions
+
+    # Backcompat with Chef::ShellOut code:
+    require 'mixlib/shellout/exceptions'
+
+    def self.const_missing(const_name)
+      if const_name == :ShellCommandFailed
+        Chef::Log.warn("Chef::Exceptions::ShellCommandFailed is deprecated, use Mixlib::ShellOut::ShellCommandFailed")
+        called_from = caller[0..3].inject("Called from:\n") {|msg, trace_line| msg << "  #{trace_line}\n" }
+        Chef::Log.warn(called_from)
+        Mixlib::ShellOut::ShellCommandFailed
+      else
+        super
+      end
+    end
+
     class Application < RuntimeError; end
     class Cron < RuntimeError; end
     class Env < RuntimeError; end
@@ -101,9 +116,8 @@ class Chef
     # Ifconfig failed
     class Ifconfig < RuntimeError; end
 
-    # Backcompat with Chef::ShellOut code:
-    require 'mixlib/shellout/exceptions'
-    class ShellCommandFailed < Mixlib::ShellOut::ShellCommandFailed; end
+    # Invalid "source" parameter to a remote_file resource
+    class InvalidRemoteFileURI < ArgumentError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
@@ -125,6 +139,49 @@ class Chef
       end
 
 
+    end
+    # Exception class for collecting multiple failures. Used when running
+    # delayed notifications so that chef can process each delayed
+    # notification even if chef client or other notifications fail.
+    class MultipleFailures < StandardError
+      def initialize(*args)
+        super
+        @all_failures = []
+      end
+
+      def message
+        base = "Multiple failures occurred:\n"
+        @all_failures.inject(base) do |message, (location, error)|
+          message << "* #{error.class} occurred in #{location}: #{error.message}\n"
+        end
+      end
+
+      def client_run_failure(exception)
+        set_backtrace(exception.backtrace)
+        @all_failures << [ "chef run", exception ]
+      end
+
+      def notification_failure(exception)
+        @all_failures << [ "delayed notification", exception ]
+      end
+
+      def raise!
+        unless empty?
+          raise self.for_raise
+        end
+      end
+
+      def empty?
+        @all_failures.empty?
+      end
+
+      def for_raise
+        if @all_failures.size == 1
+          @all_failures[0][1]
+        else
+          self
+        end
+      end
     end
 
     class CookbookVersionSelection
@@ -187,6 +244,8 @@ class Chef
           result.to_json(*a)
         end
       end
-    end
+
+    end # CookbookVersionSelection
+
   end
 end

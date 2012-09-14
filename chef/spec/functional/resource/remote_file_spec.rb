@@ -17,12 +17,13 @@
 #
 
 require 'spec_helper'
+require 'tiny_server'
 
 describe Chef::Resource::RemoteFile do
   include_context Chef::Resource::File
 
   let(:file_base) { "remote_file_spec" }
-  let(:source) { 'http://opscode-chef-spec-data.s3.amazonaws.com/integration/remote_file/nyan_cat.png' }
+  let(:source) { 'http://localhost:9000/nyan_cat.png' }
   let(:expected_content) { IO.read(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png')) }
 
   def create_resource
@@ -36,6 +37,21 @@ describe Chef::Resource::RemoteFile do
 
   let!(:resource) do
     create_resource
+  end
+
+  before(:all) do
+    Thin::Logging.silent = false
+    @server = TinyServer::Manager.new
+    @server.start
+    @api = TinyServer::API.instance
+    @api.clear
+    @api.get("/nyan_cat.png", 200) {
+      IO.read(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png'))
+    }
+  end
+
+  after(:all) do
+    @server.stop
   end
 
   it_behaves_like "a file resource"

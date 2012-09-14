@@ -45,7 +45,7 @@ class Chef
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
 
-          requirements.assert(:all_actions) do |a|
+          requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { !@service_missing }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the init.d script!"
             a.whyrun "Assuming service would be disabled. The init script is not presently installed." 

@@ -38,7 +38,6 @@ class Chef
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
           sources = @new_resource.source
-          raise ArgumentError, "#{@new_resource} has an empty or wrong source" if sources.empty?
           source = sources.shift
           begin
             rest = Chef::REST.new(source, nil, nil, http_client_opts(source))

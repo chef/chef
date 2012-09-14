@@ -87,7 +87,7 @@ shared_examples_for "a securable resource" do
       mode_string = '776'
       resource.mode mode_string
       resource.run_action(:create)
-      pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x?) do
+      pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
         (File.lstat(path).mode & 007777).should == (mode_string.oct & 007777)
       end
     end
@@ -96,7 +96,7 @@ shared_examples_for "a securable resource" do
       mode_integer = 0776
       resource.mode mode_integer
       resource.run_action(:create)
-      pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x?) do
+      pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
         (File.lstat(path).mode & 007777).should == (mode_integer & 007777)
       end
     end

@@ -36,7 +36,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
     @outputter = Chef::Formatters::Outputter.new(StringIO.new, STDERR)
     #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
-    Chef::Config.stub!(:file_cache_path).and_return("/var/chef/cache")
+
+    Chef::Config.stub!(:cookbook_path).and_return([ "/var/chef/cache" ])
   end
 
   describe "when explaining an error converging a resource" do
@@ -54,12 +55,22 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
       @trace = [
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
-        "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'"
+        "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
+        "/usr/local/lib/ruby/gems/chef/lib/chef/client.rb:123:in `run'" # should not display
       ]
       @exception = Chef::Exceptions::Package.new("No such package 'non-existing-package'")
       @exception.set_backtrace(@trace)
       @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
       @inspector.add_explanation(@description)
+    end
+
+    it "filters chef core code from the backtrace" do
+      @expected_filtered_trace = [
+        "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
+        "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
+      ]
+
+      @inspector.filtered_bt.should == @expected_filtered_trace
     end
 
     it "prints a pretty message" do

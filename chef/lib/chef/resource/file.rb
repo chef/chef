@@ -46,6 +46,7 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
+        @diff = nil
       end
 
 
@@ -80,6 +81,15 @@ class Chef
           :kind_of => String
         )
       end
+      
+      def diff(arg=nil)
+        set_or_return(
+          :diff,
+          arg,
+          :kind_of => String
+        )
+      end
+
 
     end
   end

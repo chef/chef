@@ -345,6 +345,11 @@ class Chef
           elsif is_omnibus? && (!@new_resource.instance_of? Chef::Resource::ChefGem)
             # Opscode Omnibus - The ruby that ships inside omnibus is only used for Chef
             # Default to installing somewhere more functional
+            if new_resource.options && new_resource.options.kind_of?(Hash)
+              msg = "options should be a string instead of a hash\n"
+              msg << "in #{new_resource} from #{new_resource.source_line}"
+              raise ArgumentError, msg
+            end
             gem_location = find_gem_by_path
             @new_resource.gem_binary gem_location
             @gem_env = AlternateGemEnvironment.new(gem_location)

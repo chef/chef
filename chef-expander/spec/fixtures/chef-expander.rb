@@ -36,7 +36,7 @@ amqp_vhost  '/config-file'
 
 ## Cluster Config, should be overridden by command line ##
 node_count 42
-## Extraneous Crap (should be ignored and not raise an error) ##
+## Extraneous Config (should be ignored and not raise an error) ##
 
 solr_ram_use "1024T"
 another_setting "#{solr_ram_use} is an alot"

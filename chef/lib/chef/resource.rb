@@ -270,7 +270,7 @@ F
           end
         end
         true
-      rescue Chef::Exceptions::ResourceNotFound => e
+      rescue Chef::Exceptions::ResourceNotFound
         true
       end
     end
@@ -358,31 +358,11 @@ F
       ignore_failure(arg)
     end
 
-    def notifies(*args)
-      unless ( args.size > 0 && args.size < 4)
-        raise ArgumentError, "Wrong number of arguments for notifies: should be 1-3 arguments, you gave #{args.inspect}"
-      end
-
-      if args.size > 1 # notifies(:action, resource) OR notifies(:action, resource, :immediately)
-        add_notification(*args)
-      else
-        # This syntax is so weird. surely people will just give us one hash?
-        notifications = args.flatten
-        notifications.each do |resources_notifications|
-          resources_notifications.each do |resource, notification|
-            action, timing = notification[0], notification[1]
-            Chef::Log.debug "Adding notification from resource #{self} to `#{resource.inspect}' => `#{notification.inspect}'"
-            add_notification(action, resource, timing)
-          end
-        end
-      end
-    rescue NoMethodError
-      Chef::Log.fatal("Error processing notifies(#{args.inspect}) on #{self}")
-      raise
-    end
-
-    def add_notification(action, resources, timing=:delayed)
-      resources = [resources].flatten
+    # Sets up a notification from this resource to the resource specified by +resource_spec+.
+    def notifies(action, resource_spec, timing=:delayed)
+      # when using old-style resources(:template => "/foo.txt") style, you
+      # could end up with multiple resources.
+      resources = [ resource_spec ].flatten
       resources.each do |resource|
         case timing.to_s
         when 'delayed'
@@ -435,7 +415,7 @@ F
         if resource.run_context.nil?
           resource.run_context = run_context
         end
-        resource.add_notification(action, self, timing)
+        resource.notifies(action, self, timing)
       end
       true
     end
@@ -484,7 +464,7 @@ F
       safe_ivars.each do |iv|
         instance_vars[iv.to_s.sub(/^@/, '')] = instance_variable_get(iv)
       end
-      results = {
+      {
         'json_class' => self.class.name,
         'instance_vars' => instance_vars
       }

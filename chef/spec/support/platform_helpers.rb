@@ -24,4 +24,8 @@ def solaris?
   !!(RUBY_PLATFORM =~ /solaris/)
 end
 
+def freebsd?
+  !!(RUBY_PLATFORM =~ /freebsd/)
+end
+
 DEV_NULL = windows? ? 'NUL' : '/dev/null'

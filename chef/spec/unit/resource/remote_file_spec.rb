@@ -38,49 +38,35 @@ describe Chef::Resource::RemoteFile do
     Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
   end
 
-  it "says its provider is CookbookFile when the source is a relative URI" do
-    @resource.source('seattle.txt')
-    @resource.provider.should == Chef::Provider::CookbookFile
-    Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::CookbookFile
-  end
-  
-  it "says its provider is RemoteFile when the source is an array of URIs" do
-    @resource.source([ 'http://www.google.com/robots.txt', 'http://stackoverflow.com/robots.txt' ])
-    @resource.provider.should == Chef::Provider::RemoteFile
-    Chef::Platform.find_provider(:noplatform, 'noversion', @resource).should == Chef::Provider::RemoteFile
-  end
-  
-  it "should ignore cookbook files (local files) when using an array of URIs" do
-    @resource.source([ 'http://www.google.com/robots.txt', 'seattle.txt', 'http://stackoverflow.com/robots.txt' ])
-    @resource.provider.should == Chef::Provider::RemoteFile
-    @resource.source.should eql([ 'http://www.google.com/robots.txt', 'http://stackoverflow.com/robots.txt' ])
-  end
 
   describe "source" do
-    it "should accept a string for the remote file source" do
-      @resource.source "something"
-      @resource.source.should eql([ "something" ])
+    it "does not have a default value for 'source'" do
+      @resource.source.should be_nil
     end
 
-    it "should have a default based on the param name" do
-      @resource.source.should eql([ "fakey_fakerton" ])
+    it "should accept a URI for the remote file source" do
+      @resource.source "http://opscode.com/"
+      @resource.source.should eql([ "http://opscode.com/" ])
     end
 
-    it "should use only the basename of the file as the default" do
-      r = Chef::Resource::RemoteFile.new("/tmp/obit/fakey_fakerton")
-      r.source.should eql([ "fakey_fakerton" ])
+    it "should accept an array of URIs for the remote file source" do
+      @resource.source([ "http://opscode.com/", "http://puppetlabs.com/" ])
+      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
-  end
-  
-  describe "cookbook" do
-    it "should accept a string for the cookbook name" do
-      @resource.cookbook "something"
-      @resource.cookbook.should eql("something")
+
+    it "should accept an multiple URIs as arguments for the remote file source" do
+      @resource.source("http://opscode.com/", "http://puppetlabs.com/")
+      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
-    
-    it "should default to nil" do
-      @resource.cookbook.should == nil
+
+    it "does not accept a non-URI as the source" do
+      lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
+
+    it "should raise and exception when source is an empty array" do
+      lambda { @resource.source([]) }.should raise_error(ArgumentError)
+    end
+
   end
 
   describe "checksum" do
