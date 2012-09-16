@@ -44,15 +44,18 @@ describe Chef::Provider::Deploy do
   end
 
   it "creates deploy_to dir if it does not exist yet" do
-    FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to)
-    FileUtils.should_receive(:mkdir_p).with(@resource.shared_path)
+    function_call_log = []
+    FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to) { function_call_log << :deploy_to }
+    FileUtils.should_receive(:mkdir_p).with(@resource.shared_path) { function_call_log << :shared_path }
     ::File.stub!(:directory?).and_return(false)
-    @provider.stub(:copy_cached_repo)
-    @provider.stub(:update_cached_repo)
+    @provider.stub(:copy_cached_repo) 
+    @provider.stub(:run_scm_sync) { function_call_log << :update_cached_repo }
     @provider.stub(:symlink)
     @provider.stub(:migrate)
     @provider.deploy
     @provider.converge
+    # TODO There must be a better way to test function call order
+    function_call_log.should == [:deploy_to, :shared_path, :update_cached_repo]
   end
 
   it "does not create deploy_to dir if it exists" do

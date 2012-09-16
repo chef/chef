@@ -149,7 +149,7 @@ class Chef
 
       def deploy
         verify_directories_exist
-        update_cached_repo # no converge-by - scm provider will dothis
+        update_cached_repo
         enforce_ownership
         copy_cached_repo
         install_gems
@@ -241,11 +241,13 @@ class Chef
       end
 
       def update_cached_repo
-        if @new_resource.svn_force_export
-        # TODO assertion, non-recoverable - @scm_provider must be svn if force_export?
-          svn_force_export
-        else
-          run_scm_sync
+        converge_by("update cached repo") do
+          if @new_resource.svn_force_export
+            # TODO assertion, non-recoverable - @scm_provider must be svn if force_export?
+            svn_force_export
+          else
+            run_scm_sync
+          end
         end
       end
 
