@@ -5,6 +5,11 @@ require 'json'
 require 'optparse'
 require 'mixlib/shellout'
 
+STDOUT.sync = true
+# bump mixlib-shellout's default timeout to 20 minutes
+# and stream output from forked process
+shellout_opts = {:timeout => 1200, :live_stream => STDOUT}
+
 #
 # Usage: release.sh --project PROJECT --version VERSION --bucket BUCKET
 #
@@ -75,8 +80,13 @@ jenkins_build_support.each do |(build, supported_platforms)|
   build_location = "/#{build_platform.join('/')}/#{build_package.split('/').last}"
   puts "UPLOAD: #{build_package} -> #{build_location}"
 
-  s3_cmd = ["s3cmd", "put", "--acl-public", build_package, "s3://#{options[:bucket]}#{build_location}"].join(" ")
-  shell = Mixlib::ShellOut.new(s3_cmd)
+  s3_cmd = ["s3cmd",
+            "put",
+            "--progress",
+            "--acl-public",
+            build_package,
+            "s3://#{options[:bucket]}#{build_location}"].join(" ")
+  shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
   shell.run_command
   shell.error!
 
@@ -97,7 +107,7 @@ s3_cmd = ["s3cmd",
           "put",
           "platform-support.json",
           s3_location].join(" ")
-shell = Mixlib::ShellOut.new(s3_cmd, {:timeout => 1200})
+shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
 shell.run_command
 shell.error!
 
@@ -116,7 +126,7 @@ if options[:project] == 'chef'
             "put",
             "platform-support.json",
             s3_location].join(" ")
-  shell = Mixlib::ShellOut.new(s3_cmd, {:timeout => 1200})
+  shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
   shell.run_command
   shell.error!
 end
