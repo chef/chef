@@ -79,6 +79,42 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
     end
 
+    shared_examples_for "source specified with multiple URIs" do
+      it "should try to download the next URI when the first one fails" do
+        @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+
+      it "should raise an exception when all the URIs fail" do
+        @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_raise(SocketError)
+        lambda { @provider.run_action(:create) }.should raise_error(SocketError)
+      end
+
+      it "should download from only one URI when the first one works" do
+        @rest.should_receive(:streaming_request).once.and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+
+    end
+
+    describe "and the source specifies multiple URIs using multiple arguments" do
+      it_should_behave_like "source specified with multiple URIs"
+
+      before(:each) do
+        @resource.source("http://foo", "http://bar")
+      end
+    end
+
+    describe "and the source specifies multiple URIs using an array" do
+      it_should_behave_like "source specified with multiple URIs"
+
+      before(:each) do
+        @resource.source([ "http://foo", "http://bar" ])
+      end
+    end
+
     describe "and the resource specifies a checksum" do
 
       describe "and the existing file matches the checksum exactly" do
