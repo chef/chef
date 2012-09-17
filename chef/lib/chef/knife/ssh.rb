@@ -135,7 +135,16 @@ class Chef
                  end
                  r
                end
-        (ui.fatal("No nodes returned from search!"); exit 10) if list.length == 0
+        if list.length == 0
+          if @action_nodes.length == 0
+            ui.fatal("No nodes returned from search!")
+          else
+            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes":"node"} found, " +
+                     "but do not have the required attribute to stablish the connection. " +
+                     "Try setting another attribute to open the connection using --attribute.")
+          end
+          exit 10
+        end
         session_from_list(list)
       end
 
