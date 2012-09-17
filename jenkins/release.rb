@@ -97,7 +97,7 @@ s3_cmd = ["s3cmd",
           "put",
           "platform-support.json",
           s3_location].join(" ")
-shell = Mixlib::ShellOut.new(s3_cmd)
+shell = Mixlib::ShellOut.new(s3_cmd, {:timeout => 1200})
 shell.run_command
 shell.error!
 
@@ -116,7 +116,7 @@ if options[:project] == 'chef'
             "put",
             "platform-support.json",
             s3_location].join(" ")
-  shell = Mixlib::ShellOut.new(s3_cmd)
+  shell = Mixlib::ShellOut.new(s3_cmd, {:timeout => 1200})
   shell.run_command
   shell.error!
 end
