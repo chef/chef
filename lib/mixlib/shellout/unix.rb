@@ -35,6 +35,15 @@ module Mixlib
         @child_pid = fork_subprocess
 
         configure_parent_process_file_descriptors
+
+        # Ruby 1.8.7 and 1.8.6 from mid 2009 try to allocate objects during GC
+        # when calling IO.select and IO#read. Some OS Vendors are not interested
+        # in updating their ruby packages (Apple, *cough*) and we *have to*
+        # make it work. So I give you this epic hack:
+        GC.disable
+
+        # CHEF-3390: Marshall.load on Ruby < 1.8.7p369 also has a GC bug related
+        # to Marshall.load, so try disabling GC first.
         propagate_pre_exec_failure
 
         @result = nil
@@ -42,11 +51,6 @@ module Mixlib
 
         write_to_child_stdin
 
-        # Ruby 1.8.7 and 1.8.6 from mid 2009 try to allocate objects during GC
-        # when calling IO.select and IO#read. Some OS Vendors are not interested
-        # in updating their ruby packages (Apple, *cough*) and we *have to*
-        # make it work. So I give you this epic hack:
-        GC.disable
         until @status
           ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
           unless ready
