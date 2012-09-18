@@ -383,7 +383,7 @@ describe Chef::Provider::User::Dscl do
       it "should raise an exception when the group does not exist" do
         shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
         @provider.should_receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
-        lambda { @provider.dscl_set_gid }.should raise_error(Chef::Exceptions::DsclCommandFailed)
+        lambda { @provider.dscl_set_gid }.should raise_error(Chef::Exceptions::GroupIDNotFound)
       end
     end
   end
