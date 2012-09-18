@@ -180,7 +180,11 @@ class Chef
         
         def dscl_set_gid
           unless @new_resource.gid && @new_resource.gid.to_s.match(/^\d+$/)
-            possible_gid = safe_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
+            begin
+              possible_gid = safe_dscl("read /Groups/#{@new_resource.gid} PrimaryGroupID").split(" ").last
+            rescue Chef::Exceptions::DsclCommandFailed => e
+              raise Chef::Exceptions::GroupIDNotFound.new("Group not found for #{@new_resource.gid} when creating user #{@new_resource.username}")
+            end
             @new_resource.gid(possible_gid) if possible_gid && possible_gid.match(/^\d+$/)
           end
           safe_dscl("create /Users/#{@new_resource.username} PrimaryGroupID '#{@new_resource.gid}'")
