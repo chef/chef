@@ -23,11 +23,13 @@ require 'net/ssh/multi'
 describe Chef::Knife::Ssh do
   before(:all) do
     @original_config = Chef::Config.hash_dup
+    @original_knife_config = Chef::Config[:knife].dup
     Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
   end
 
   after(:all) do
     Chef::Config.configuration = @original_config
+    Chef::Config[:knife] = @original_knife_config
   end
 
   before do
@@ -36,8 +38,10 @@ describe Chef::Knife::Ssh do
     @knife.config[:attribute] = "fqdn"
     @node_foo = Chef::Node.new('foo')
     @node_foo[:fqdn] = "foo.example.org"
-    @node_bar = Chef::Node.new('foo')
+    @node_foo[:ipaddress] = "10.0.0.1"
+    @node_bar = Chef::Node.new('bar')
     @node_bar[:fqdn] = "bar.example.org"
+    @node_bar[:ipaddress] = "10.0.0.2"
   end
 
   describe "#configure_session" do
@@ -47,27 +51,36 @@ describe Chef::Knife::Ssh do
         @query = Chef::Search::Query.new
       end
 
-      def self.should_return_array_of_attributes
-        it "returns an array of the specified attributes if configured" do
+      def configure_query(node_array)
+        @query.stub!(:search).and_return([node_array])
+        Chef::Search::Query.stub!(:new).and_return(@query)
+      end
+
+      def self.should_return_specified_attributes
+        it "returns an array of the attributes specified on the command line OR config file, if only one is set" do
           @knife.config[:attribute] = "ipaddress"
           @knife.config[:override_attribute] = "ipaddress"
-          @node_foo[:ipaddress] = "10.0.0.1"
-          @node_bar[:ipaddress] = "10.0.0.2"
-          @query.stub!(:search).and_return([[@node_foo, @node_bar]])
-          Chef::Search::Query.stub!(:new).and_return(@query)
+          configure_query([@node_foo, @node_bar])
+          @knife.should_receive(:session_from_list).with(['10.0.0.1', '10.0.0.2'])
+          @knife.configure_session
+        end
+        
+        it "returns an array of the attributes specified on the command line even when a config value is set" do
+          @knife.config[:attribute] = "config_file" # this value will be the config file
+          @knife.config[:override_attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
+          configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with(['10.0.0.1', '10.0.0.2'])
           @knife.configure_session
         end
       end
 
       it "searchs for and returns an array of fqdns" do
-        @query.stub!(:search).and_return([[@node_foo, @node_bar]])
-        Chef::Search::Query.stub!(:new).and_return(@query)
+        configure_query([@node_foo, @node_bar])
         @knife.should_receive(:session_from_list).with(['foo.example.org', 'bar.example.org'])
         @knife.configure_session
       end
 
-      should_return_array_of_attributes
+      should_return_specified_attributes
 
       context "when cloud hostnames are available" do
         before do
@@ -78,18 +91,16 @@ describe Chef::Knife::Ssh do
         end
 
         it "returns an array of cloud public hostnames" do
-          @query.stub!(:search).and_return([[@node_foo, @node_bar]])
-          Chef::Search::Query.stub!(:new).and_return(@query)
+          configure_query([@node_foo, @node_bar])
           @knife.should_receive(:session_from_list).with(['ec2-10-0-0-1.compute-1.amazonaws.com', 'ec2-10-0-0-2.compute-1.amazonaws.com'])
           @knife.configure_session
         end
-  
-        should_return_array_of_attributes
+
+        should_return_specified_attributes
       end
 
       it "should raise an error if no host are found" do
-          @query.stub!(:search).and_return([[ ]])
-          Chef::Search::Query.stub!(:new).and_return(@query)
+          configure_query([ ])
           @knife.ui.should_receive(:fatal)
           @knife.should_receive(:exit).with(10)
           @knife.configure_session
@@ -121,24 +132,37 @@ describe Chef::Knife::Ssh do
     end
 
     it "should return the value set in the configuration file" do
-      Chef::Config[:knife][:ssh_attribute] = "magic"
+      Chef::Config[:knife][:ssh_attribute] = "config_file"
       @knife.configure_attribute
-      @knife.config[:attribute].should == "magic"
+      @knife.config[:attribute].should == "config_file"
     end
 
     it "should return the value set on the command line" do
-      @knife.config[:attribute] = "penguins"
+      @knife.config[:attribute] = "command_line"
       @knife.configure_attribute
-      @knife.config[:attribute].should == "penguins"
+      @knife.config[:attribute].should == "command_line"
     end
 
-    it "should set override_attribute to the value of attribute" do
-      @knife.config[:attribute] = "penguins"
+    it "should set override_attribute to the value of attribute from the command line" do
+      @knife.config[:attribute] = "command_line"
       @knife.configure_attribute
-      @knife.config[:attribute].should == "penguins"
-      @knife.config[:override_attribute].should == "penguins"
+      @knife.config[:attribute].should == "command_line"
+      @knife.config[:override_attribute].should == "command_line"
     end
 
+    it "should set override_attribute to the value of attribute from the config file" do
+      Chef::Config[:knife][:ssh_attribute] = "config_file"
+      @knife.configure_attribute
+      @knife.config[:attribute].should == "config_file"
+      @knife.config[:override_attribute].should == "config_file"
+    end
+
+    it "should prefer the command line over the config file for the value of override_attribute" do
+      Chef::Config[:knife][:ssh_attribute] = "config_file"
+      @knife.config[:attribute] = "command_line"
+      @knife.configure_attribute
+      @knife.config[:override_attribute].should == "command_line"
+    end
   end
 
 end

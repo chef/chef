@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", ">= 0.6.0"
 
   s.add_dependency "rest-client", ">= 1.0.4", "< 1.7.0"
-  s.add_dependency "bunny", ">= 0.6.0"
+  s.add_dependency "bunny", ">= 0.6.0", "< 0.8.0"
   s.add_dependency "json", ">= 1.4.4", "<= 1.6.1"
   s.add_dependency "yajl-ruby", "~> 1.1"
   s.add_dependency "treetop", "~> 1.4.9"

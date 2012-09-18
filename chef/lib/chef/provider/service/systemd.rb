@@ -48,7 +48,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   def define_resource_requirements
-    super
+    shared_resource_requirements
     requirements.assert(:all_actions) do |a|
       a.assertion { @status_check_success } 
       # We won't stop in any case, but in whyrun warn and tell what we're doing.

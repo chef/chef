@@ -48,8 +48,8 @@ class Chef
       option :attribute,
         :short => "-a ATTR",
         :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default is fqdn",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key }
+        :description => "The attribute to use for opening the connection - default depends on the context",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
 
       option :manual,
         :short => "-m",
@@ -127,7 +127,9 @@ class Chef
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
-                     i = format_for_display(item)[:cloud][:public_hostname]
+                     i = item[:cloud][:public_hostname]
+                   elsif config[:override_attribute]
+                     i = format_for_display(item)[config[:override_attribute]]
                    else
                      i = format_for_display(item)[config[:attribute]]
                    end
@@ -191,7 +193,7 @@ class Chef
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
-        command.force_encoding('binary')
+        command.force_encoding('binary') if command.respond_to?(:force_encoding)
         subsession.open_channel do |ch|
           ch.request_pty
           ch.exec command do |ch, success|
@@ -346,7 +348,7 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute]
+        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute] 
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
                               config[:attribute] ||
                               "fqdn").strip
@@ -382,7 +384,7 @@ class Chef
       end
 
       def configure_identity_file
-        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] || 
+        config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
                              Chef::Config[:knife][:ssh_identity_file])
       end
 
@@ -423,4 +425,3 @@ class Chef
     end
   end
 end
-

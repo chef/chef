@@ -23,6 +23,14 @@ require File.expand_path("../../spec_helper", __FILE__)
 require 'chef/resource_reporter'
 
 describe Chef::ResourceReporter do
+  before(:all) do
+    @reporting_toggle_default = Chef::Config[:disable_reporting]
+    Chef::Config[:disable_reporting] = false
+  end
+
+  after(:all) do
+    Chef::Config[:disable_reporting] = @reporting_toggle_default
+  end
 
   before do
     @rest_client = mock("Chef::REST (mock)")
@@ -393,7 +401,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("nodes/spitfire/runs", {:action => :begin}).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_raise(@error)
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       end
@@ -411,9 +419,9 @@ describe Chef::ResourceReporter do
 
     context "after creating the run history document" do
       before do
-        response = {"uri"=>"https://example.com/nodes/spitfire/runs/ABC123"}
+        response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"}
         @rest_client.should_receive(:post_rest).
-          with("nodes/spitfire/runs", {:action => :begin}).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_return(response)
 
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
@@ -435,7 +443,7 @@ describe Chef::ResourceReporter do
         response = {"result"=>"ok"}
 
         @rest_client.should_receive(:post_rest).
-          with("nodes/spitfire/runs/ABC123", @expected_data).
+          with("reports/nodes/spitfire/runs/ABC123", @expected_data).
           and_return(response)
 
         @resource_reporter.run_completed(@node)
