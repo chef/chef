@@ -98,5 +98,35 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @inspector.recipe_snippet.should match(/^# In \/home\/btm/)
       end
     end
+
+    describe "when examining a resource that confuses the parser" do
+      before do
+        angry_bash_recipe = File.expand_path("cookbooks/angrybash/recipes/default.rb", CHEF_SPEC_DATA)
+        source_line = "#{angry_bash_recipe}:1:in `<main>'"
+
+        # source_line = caller(0)[0]; @resource = bash "go off the rails" do
+        #   code <<-END
+        #     for i in localhost 127.0.0.1 #{Socket.gethostname()}
+        #     do
+        #       echo "grant all on *.* to root@'$i' identified by 'a_password'; flush privileges;" | mysql -u root -h 127.0.0.1
+        #     done
+        #    END
+        # end
+        @resource = eval(IO.read(angry_bash_recipe))
+        @resource.source_line = source_line
+        @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
+
+        @exception.set_backtrace(@trace)
+        @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
+        @inspector.add_explanation(@description)
+      end
+
+      it "does not generate an error" do
+        @description.display(@outputter)
+      end
+    end
+
   end
+
+
 end
