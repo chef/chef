@@ -4,12 +4,22 @@
             "el",
             "5",
             "x86_64"
+        ],
+        [
+            "sles",
+            "11.2",
+            "x86_64"
         ]
     ],
     "build_os=centos-5,machine_architecture=x86,role=oss-builder": [
         [
             "el",
             "5",
+            "i686"
+        ],
+        [
+            "sles",
+            "11.2",
             "i686"
         ]
     ],
@@ -18,12 +28,22 @@
             "el",
             "6",
             "x86_64"
+        ],
+        [
+            "suse",
+            "12.1",
+            "x86_64"
         ]
     ],
     "build_os=centos-6,machine_architecture=x86,role=oss-builder": [
         [
             "el",
             "6",
+            "i686"
+        ],
+        [
+            "suse",
+            "12.1",
             "i686"
         ]
     ],
