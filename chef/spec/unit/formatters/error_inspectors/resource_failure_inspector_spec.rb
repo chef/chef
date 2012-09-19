@@ -118,10 +118,10 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
         @exception.set_backtrace(@trace)
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-        @inspector.add_explanation(@description)
       end
 
       it "does not generate an error" do
+        lambda { @inspector.add_explanation(@description) }.should_not raise_error(TypeError)
         @description.display(@outputter)
       end
     end
