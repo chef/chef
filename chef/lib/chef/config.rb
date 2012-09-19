@@ -67,6 +67,7 @@ class Chef
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
     config_attr_writer :chef_server_url do |url|
+      url.strip!
       configure do |c|
         [ :registration_url,
           :template_url,
