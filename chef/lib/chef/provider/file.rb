@@ -92,7 +92,6 @@ class Chef
 
         begin
           # -u: Unified diff format
-          puts ("diff -u #{target_path} #{temp_path}" )
           result = shell_out("diff -u #{target_path} #{temp_path}" )
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that 
