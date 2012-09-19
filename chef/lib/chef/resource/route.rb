@@ -24,9 +24,9 @@ class Chef
     class Route < Chef::Resource
 
       identity_attr :target
-      
-      state_attrs :netmask, :gateway, :device
-      
+
+      state_attrs :netmask, :gateway
+     
       def initialize(name, run_context=nil)
         super
         @resource_name = :route

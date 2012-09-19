@@ -27,8 +27,6 @@ class Chef
       
       identity_attr :code
 
-      state_attrs :cookie, :node_name
-
       def initialize(name, run_context=nil)
         super
         @resource_name = :erl_call

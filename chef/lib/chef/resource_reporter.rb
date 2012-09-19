@@ -105,7 +105,6 @@ class Chef
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
-
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{@node.name}/runs"
@@ -174,7 +173,7 @@ class Chef
 
     def run_failed(node, exception)
       if reporting_enabled?
-        resource_history_url = "nodes/#{@node.name}/runs/#{run_id}"
+        resource_history_url = "reports/nodes/#{@node.name}/runs/#{run_id}"
         Chef::Log.debug(resource_history_url)
         @exception = exception
         @status = "failure"

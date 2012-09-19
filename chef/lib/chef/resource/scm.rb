@@ -25,7 +25,7 @@ class Chef
 
       identity_attr :destination 
       
-      state_attrs :repository, :revision, :user, :group
+      state_attrs :revision
 
       def initialize(name, run_context=nil)
         super
