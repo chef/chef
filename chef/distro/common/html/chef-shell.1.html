@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>shef(1) - Interactive Chef Console</title>
+  <title>chef-shell(1) - Interactive Chef Console</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -74,19 +74,19 @@
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>shef(1)</li>
+    <li class='tl'>chef-shell(1)</li>
     <li class='tc'>Chef Manual</li>
-    <li class='tr'>shef(1)</li>
+    <li class='tr'>chef-shell(1)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>shef</code> - <span class="man-whatis">Interactive Chef Console</span>
+  <code>chef-shell</code> - <span class="man-whatis">Interactive Chef Console</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p><strong>shef</strong> [<em>named configuration</em>] <em>(options)</em></p>
+<p><strong>chef-shell</strong> [<em>named configuration</em>] <em>(options)</em></p>
 
 <dl>
 <dt><code>-S</code>, <code>--server CHEF_SERVER_URL</code></dt><dd>The chef server URL</dd>
@@ -94,21 +94,24 @@
 <dt><code>-c</code>, <code>--config CONFIG</code></dt><dd>The configuration file to use</dd>
 <dt><code>-j</code>, <code>--json-attributes JSON_ATTRIBS</code></dt><dd>Load attributes from a JSON file or URL</dd>
 <dt><code>-l</code>, <code>--log-level LOG_LEVEL</code></dt><dd>Set the logging level</dd>
-<dt><code>-s</code>, <code>--solo</code></dt><dd>chef-solo shef session</dd>
-<dt><code>-a</code>, <code>--standalone</code></dt><dd>standalone shef session</dd>
+<dt><code>-s</code>, <code>--solo</code></dt><dd>chef-solo session</dd>
+<dt><code>-a</code>, <code>--standalone</code></dt><dd>standalone session</dd>
 <dt><code>-v</code>, <code>--version</code></dt><dd>Show chef version</dd>
 <dt><code>-h</code>, <code>--help</code></dt><dd>Show command options</dd>
 </dl>
 
 
-<p>When no --config option is specified, shef attempts to load a default configuration file:</p>
+<p>When no --config option is specified, chef-shell attempts to load a
+default configuration file:</p>
 
 <ul>
-<li>If a <em>named configuration</em> is given, shef will load ~/.chef/<em>named
-configuration</em>/shef.rb</li>
-<li>If no <em>named configuration</em> is given shef will load ~/.chef/shef.rb if it exists</li>
-<li>Shef falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
--s options are given and no shef.rb can be found.</li>
+<li>If a <em>named configuration</em> is given, chef-shell will load ~/.chef/<em>named
+configuration</em>/chef_shell.rb</li>
+<li>If no <em>named configuration</em> is given chef-shell will load
+~/.chef/chef_shell.rb if it exists</li>
+<li>chef-shell falls back to loading /etc/chef/client.rb or
+/etc/chef/solo.rb if -z or -s options are given and no chef_shell.rb
+can be found.</li>
 <li>The --config option takes precedence over implicit configuration
 paths.</li>
 </ul>
@@ -116,14 +119,14 @@ paths.</li>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p><code>shef</code> is an <span class="man-ref">irb<span class="s">(1)</span></span> (interactive ruby) session customized for Chef.
-<code>shef</code> serves two primary functions: it provides a means to
+<p><code>chef-shell</code> is an <span class="man-ref">irb<span class="s">(1)</span></span> (interactive ruby) session customized for Chef.
+<code>chef-shell</code> serves two primary functions: it provides a means to
 interact with a Chef Server interactively using a convenient DSL; it
 allows you to define and run Chef recipes interactively.</p>
 
 <h2 id="SYNTAX">SYNTAX</h2>
 
-<p>Shef uses irb's subsession feature to provide multiple modes of
+<p>chef-shell uses irb's subsession feature to provide multiple modes of
 interaction. In addition to the primary mode which is entered on start,
 <code>recipe</code> and <code>attributes</code> modes are available.</p>
 
@@ -138,7 +141,7 @@ session:</p>
 <dt class="flush"><code>recipe</code></dt><dd>Switches to <code>recipe</code> mode</dd>
 <dt><code>attributes</code></dt><dd>Switches to <code>attributes</code> mode</dd>
 <dt><code>run_chef</code></dt><dd>Initiates a chef run</dd>
-<dt class="flush"><code>reset</code></dt><dd>reinitializes shef</dd>
+<dt class="flush"><code>reset</code></dt><dd>reinitializes chef-shell session</dd>
 <dt><code>echo :on|:off</code></dt><dd>Turns irb's echo function on or off. Echo is <em>on</em> by default.</dd>
 <dt><code>tracing :on|:off</code></dt><dd>Turns irb's function tracing feature on or off. Tracing is extremely
 verbose and expected to be of interest primarily to developers.</dd>
@@ -148,10 +151,11 @@ for more information about nodes.</dd>
 </dl>
 
 
-<p>In addition to these commands, shef provides a DSL for accessing data on
-the Chef Server. When working with remote data in shef, you chain method
-calls in the form <em>object type</em>.<em>operation</em>, where <em>object type</em> is in
-plural form. The following object types are available:</p>
+<p>In addition to these commands, chef-shell provides a DSL for accessing
+data on the Chef Server. When working with remote data in chef-shell, you
+chain method calls in the form <em>object type</em>.<em>operation</em>, where
+<em>object type</em> is in plural form. The following object types are
+available:</p>
 
 <ul>
 <li><code>nodes</code></li>
@@ -218,64 +222,63 @@ convergence run via <code>run_chef</code></p>
 <ul>
 <li><p>A "Hello World" interactive recipe</p>
 
-<p>chef > recipe<br />
-chef:recipe > echo :off<br />
-chef:recipe > file "/tmp/hello_world"<br />
-chef:recipe > run_chef<br />
-[Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello_world] action create ((irb#1) line 2)<br />
-[Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello_world] created file /tmp/hello_world<br />
-chef:recipe > pp ls '/tmp'<br />
-[".",<br />
-"..",<br />
+<p>chef > recipe
+chef:recipe > echo :off
+chef:recipe > file "/tmp/hello_world"
+chef:recipe > run_chef
+[Sat, 09 Apr 2011 08:56:56 -0700] INFO: Processing file[/tmp/hello_world] action create ((irb#1) line 2)
+[Sat, 09 Apr 2011 08:56:56 -0700] INFO: file[/tmp/hello_world] created file /tmp/hello_world
+chef:recipe > pp ls '/tmp'
+[".",
+"..",
 "hello_world"]</p></li>
 <li><p>Search for <em>nodes</em> by role, and print their IP addresses</p>
 
-<p>chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }<br />
+<p>chef > nodes.find(:roles => 'monitoring-server') {|n| n[:ipaddress] }
 => ["10.254.199.5"]</p></li>
 <li><p>Remove the role <em>obsolete</em> from every node in the system</p>
 
-<p>chef > nodes.transform(:all) {|n| n.run_list.delete('role[obsolete]') }<br />
+<p>chef > nodes.transform(:all) {|n| n.run_list.delete('role[obsolete]') }
  => [node[chef098b2.opschef.com], node[ree-woot], node[graphite-dev], node[fluke.localdomain], node[ghost.local], node[kallistec]]</p></li>
 </ul>
 
 
 <h2 id="BUGS">BUGS</h2>
 
-<p>The name <code>shef</code> is clever in print but is confusing when spoken aloud.
-Pronouncing <code>shef</code> as <code>chef console</code> is an imperfect workaround.</p>
-
-<p><code>shef</code> often does not perfectly replicate the context in which
+<p><code>chef-shell</code> often does not perfectly replicate the context in which
 <span class="man-ref">chef-client<span class="s">(8)</span></span> configures a host, which may lead to discrepancies in
 observed behavior.</p>
 
-<p><code>shef</code> has to duplicate much code from chef-client's internal libraries
-and may become out of sync with the behavior of those libraries.</p>
+<p><code>chef-shell</code> has to duplicate much code from chef-client's internal
+libraries and may become out of sync with the behavior of those
+libraries.</p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
 <p>  <span class="man-ref">chef-client<span class="s">(8)</span></span> <span class="man-ref">knife<span class="s">(1)</span></span>
-  <a href="http://wiki.opscode.com/display/chef/Shef" data-bare-link="true">http://wiki.opscode.com/display/chef/Shef</a></p>
+  <a href="http://wiki.opscode.com/display/chef/Chef+Shell" data-bare-link="true">http://wiki.opscode.com/display/chef/Chef+Shell</a></p>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#97;&#x64;&#97;&#109;&#x40;&#x6f;&#112;&#115;&#99;&#111;&#100;&#x65;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#97;&#x64;&#x61;&#x6d;&#x40;&#111;&#x70;&#115;&#99;&#x6f;&#100;&#x65;&#x2e;&#x63;&#x6f;&#x6d;</a> with many
-   contributions from the community. Shef was written by Daniel DeLeo.</p>
+<p>   Chef was written by Adam Jacob <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#58;&#97;&#x64;&#97;&#109;&#64;&#x6f;&#112;&#x73;&#x63;&#x6f;&#100;&#101;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#97;&#x64;&#97;&#x6d;&#x40;&#x6f;&#112;&#115;&#x63;&#111;&#100;&#101;&#x2e;&#99;&#111;&#x6d;</a> with many
+   contributions from the community. chef-shell was written by Daniel
+   DeLeo.</p>
 
 <h2 id="DOCUMENTATION">DOCUMENTATION</h2>
 
-<p>   This manual page was written by Daniel DeLeo <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#x64;&#97;&#x6e;&#x40;&#x6f;&#112;&#x73;&#x63;&#111;&#x64;&#101;&#x2e;&#99;&#111;&#109;" data-bare-link="true">&#100;&#x61;&#x6e;&#64;&#111;&#x70;&#x73;&#x63;&#111;&#x64;&#101;&#46;&#x63;&#x6f;&#109;</a>.
+<p>   This manual page was written by Daniel DeLeo <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#x64;&#x61;&#x6e;&#x40;&#111;&#x70;&#x73;&#99;&#111;&#x64;&#101;&#x2e;&#99;&#111;&#x6d;" data-bare-link="true">&#100;&#x61;&#110;&#64;&#x6f;&#x70;&#115;&#99;&#x6f;&#x64;&#101;&#x2e;&#x63;&#111;&#x6d;</a>.
    Permission is granted to copy, distribute and / or modify this
    document under the terms of the Apache 2.0 License.</p>
 
 <h2 id="CHEF">CHEF</h2>
 
-<p>   Shef is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
+<p>   chef-shell is distributed with Chef. <a href="http://wiki.opscode.com/display/chef/Home" data-bare-link="true">http://wiki.opscode.com/display/chef/Home</a></p>
 
 
   <ol class='man-decor man-foot man foot'>
-    <li class='tl'>Chef 10.12.0</li>
-    <li class='tc'>June 2012</li>
-    <li class='tr'>shef(1)</li>
+    <li class='tl'>Chef 11.0.0.alpha</li>
+    <li class='tc'>September 2012</li>
+    <li class='tr'>chef-shell(1)</li>
   </ol>
 
   </div>

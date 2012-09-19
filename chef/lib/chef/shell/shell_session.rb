@@ -29,8 +29,8 @@ require 'chef/formatters/base'
 require 'chef/formatters/doc'
 require 'chef/formatters/minimal'
 
-module Shef
-  class ShefSession
+module Shell
+  class ShellSession
     include Singleton
 
     def self.session_type(type=nil)
@@ -55,11 +55,11 @@ module Shef
         rebuild_node
         @node = client.node
         shorten_node_inspect
-        Shef::Extensions.extend_context_node(@node)
+        Shell::Extensions.extend_context_node(@node)
         rebuild_context
         node.consume_attributes(node_attributes) if node_attributes
         @recipe = Chef::Recipe.new(nil, nil, run_context)
-        Shef::Extensions.extend_context_recipe(@recipe)
+        Shell::Extensions.extend_context_recipe(@recipe)
         @node_built = true
       end
     end
@@ -86,7 +86,7 @@ module Shef
     end
 
     def save_node
-      raise "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run shef in client mode?"
+      raise "Not Supported! #{self.class.name} doesn't support #save_node, maybe you need to run chef-shell in client mode?"
     end
 
     def rebuild_context
@@ -137,7 +137,7 @@ module Shef
 
   end
 
-  class StandAloneSession < ShefSession
+  class StandAloneSession < ShellSession
 
     session_type :standalone
 
@@ -159,7 +159,7 @@ module Shef
 
   end
 
-  class SoloSession < ShefSession
+  class SoloSession < ShellSession
 
     session_type :solo
 
@@ -277,7 +277,7 @@ module Shef
       puts
       Chef::Config[:doppelganger] = false
       @node_built = false
-      Shef.session
+      Shell.session
     end
 
     def rebuild_node

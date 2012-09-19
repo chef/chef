@@ -1,6 +1,6 @@
-#
-# Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+#--
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,13 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
-    class Breakpoint < Chef::Provider
+module Shell
+  class ShellREST < Chef::REST
 
-      def load_current_resource
-      end
+    alias :get    :get_rest
+    alias :put    :put_rest
+    alias :post   :post_rest
+    alias :delete :delete_rest
 
-      def action_break
-        if defined?(Shell) && Shell.running?
-          run_context.resource_collection.iterator.pause
-          @new_resource.updated_by_last_action(true)
-          run_context.resource_collection.iterator
-        end
-      end
-
-    end
   end
 end
