@@ -85,6 +85,10 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       @inspector.add_explanation(@description)
     end
 
+    it "finds the line number of the error from the stacktrace" do
+      @inspector.culprit_line.should == 14
+    end
+
     it "prints a pretty message" do
       @description.display(@outputter)
     end
@@ -122,6 +126,14 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
       @inspector = described_class.new(@path, @exception)
       @inspector.add_explanation(@description)
+    end
+
+    it "finds the culprit recipe name from the stacktrace" do
+      @inspector.culprit_file.should == "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+    end
+
+    it "finds the line number of the error from the stack trace" do
+      @inspector.culprit_line.should == 14
     end
 
     it "prints a pretty message" do

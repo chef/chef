@@ -77,7 +77,7 @@ class Chef
         end
 
         def culprit_line
-          @culprit_line ||= culprit_backtrace_entry[/^(?:[A-Z]\:)[^:]+:([\d]+)/,1].to_i
+          @culprit_line ||= culprit_backtrace_entry[/^(?:[A-Z]\:)?[^:]+:([\d]+)/,1].to_i
         end
 
         def culprit_file
