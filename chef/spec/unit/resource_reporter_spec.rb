@@ -34,6 +34,7 @@ describe Chef::ResourceReporter do
 
   before do
     @rest_client = mock("Chef::REST (mock)")
+    @rest_client.stub!(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @new_resource.cookbook_name = "monkey"
@@ -352,8 +353,7 @@ describe Chef::ResourceReporter do
     context "for an unsuccessful run" do
 
       before do
-
-        @backtrace = "foo.rb:1 in `foo!'\nbar.rb:2 in `bar!\n'baz.rb:3 in `baz!'"
+        @backtrace = ["foo.rb:1 in `foo!'","bar.rb:2 in `bar!","'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = mock("ArgumentError")
@@ -367,24 +367,23 @@ describe Chef::ResourceReporter do
 
       it "includes the exception type in the event data" do
         @report.should have_key("data")
-        @report["data"].should have_key("exception")
-        @report["data"]["exception"].should have_key("class")
-        @report["data"]["exception"]["class"].should == "Net::HTTPServerException"
+        @report["data"].should have_key("class")
+        @report["data"]["class"].should == RSpec::Mocks::Mock
       end
 
       it "includes the exception message in the event data" do
-        @report["data"]["exception"].should have_key("message")
-        @report["data"]["exception"]["message"].should == "Object not found"
+        @report["data"].should have_key("message")
+        @report["data"]["message"].should == "Object not found"
       end
 
       it "includes the exception trace in the event data" do
-        @report["data"]["exception"].should have_key("backtrace")
-        @report["data"]["exception"]["backtrace"].should == @backtrace
+        @report["data"].should have_key("stacktrace")
+        @report["data"]["stacktrace"].should == "foo.rb:1 in `foo!'\nbar.rb:2 in `bar!\n'baz.rb:3 in `baz!'"
       end
 
       it "includes the error inspector output in the event data" do
-        @report["data"]["exception"].should have_key("description")
-        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
+        @report["data"].should have_key("description")
+        @report["data"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
       end
 
 

@@ -199,7 +199,7 @@ class Chef
       if @exception
         run_data["data"]["class"] = @exception.class
         run_data["data"]["message"] = @exception.message
-        run_data["data"]["description"] = @error_description
+        run_data["data"]["description"] = @error_descriptions
         # if in array format, we join it on newline
         if @exception.backtrace.respond_to?("join")
           run_data["data"]["stacktrace"] = @exception.backtrace.join("\n")
