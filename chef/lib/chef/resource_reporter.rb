@@ -107,7 +107,7 @@ class Chef
       @node = node
       if reporting_enabled?
         begin
-          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          resource_history_url = "reports/nodes/#{node.name}/runs"
           server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
           run_uri = URI.parse(server_response["uri"])
           @run_id = ::File.basename(run_uri.path)
@@ -160,7 +160,7 @@ class Chef
 
     def run_completed(node)
       if reporting_enabled?
-        resource_history_url = "reports/nodes/#{@node.name}/runs/#{run_id}"
+        resource_history_url = "reports/nodes/#{node.name}/runs/#{run_id}"
         run_data = report(node)
         run_data["action"] = "end"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
@@ -172,8 +172,9 @@ class Chef
     end
 
     def run_failed(node, exception)
+      pp node
       if reporting_enabled?
-        resource_history_url = "reports/nodes/#{@node.name}/runs/#{run_id}"
+        resource_history_url = "reports/nodes/#{node.name}/runs/#{run_id}"
         Chef::Log.debug(resource_history_url)
         @exception = exception
         @status = "failure"
@@ -200,7 +201,12 @@ class Chef
         run_data["data"]["class"] = @exception.class
         run_data["data"]["message"] = @exception.message
         run_data["data"]["description"] = @error_description
-        run_data["data"]["stacktrace"] = @exception.backtrace.join("\n")
+        # if in array format, we join it on newline
+        if @exception.backtrace.respond_to?("join")
+          run_data["data"]["stacktrace"] = @exception.backtrace.join("\n")
+        else
+          run_data["data"]["stacktrace"] = @exception.backtrace
+        end
       else
         run_data["data"]["description"] = @error_descriptions
       end

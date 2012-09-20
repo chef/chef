@@ -77,7 +77,9 @@ describe Chef::ResourceReporter do
   context "when chef fails before converging any resources" do
     before do
       @exception = Exception.new
-      @resource_reporter.run_failed(@exception)
+      @node = Chef::Node.new
+      @node.name("spitfire")
+      @resource_reporter.run_failed(@node, @exception)
     end
 
     it "sets the run status to 'failure'" do
@@ -269,7 +271,8 @@ describe Chef::ResourceReporter do
         #    "status" : "success"
         #    "data" : ""
         # }
-
+        
+        @exception = false
         @node = Chef::Node.new
         @node.name("spitfire")
         @resource_reporter.resource_action_start(@new_resource, :create)
@@ -337,7 +340,7 @@ describe Chef::ResourceReporter do
 
       it "includes the data hash" do
         @report.should have_key("data")
-        @report["data"].should == {}
+        @report["data"].should eql({"description" => nil})
       end
 
       it "includes the run_list" do
@@ -357,7 +360,7 @@ describe Chef::ResourceReporter do
         @exception.stub!(:inspect).and_return("Net::HTTPServerException")
         @exception.stub!(:message).and_return("Object not found")
         @exception.stub!(:backtrace).and_return(@backtrace)
-        @resource_reporter.run_failed(@exception)
+        @resource_reporter.run_failed(@node, @exception)
         @resource_reporter.run_list_expand_failed(@node, @exception)
         @report = @resource_reporter.report(@node)
       end
