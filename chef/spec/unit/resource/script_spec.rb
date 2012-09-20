@@ -60,12 +60,6 @@ describe Chef::Resource::Script do
       @resource.flags("-al")
     end
 
-    it "describes its state" do
-      state = @resource.state
-      state[:interpreter].should == "gcc"
-      state[:flags].should == "-al"
-    end
-
     it "returns the command as its identity" do
       @resource.identity.should == "grep"
     end

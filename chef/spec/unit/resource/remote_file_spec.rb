@@ -89,7 +89,7 @@ describe Chef::Resource::RemoteFile do
       @resource.group("pokemon")
       @resource.mode("0664")
       @resource.owner("root")
-      @resource.source("/this/source/")
+      @resource.source("https://www.google.com/images/srpr/logo3w.png")
       @resource.checksum("1"*26)
     end
 
@@ -98,7 +98,6 @@ describe Chef::Resource::RemoteFile do
       state[:group].should == "pokemon"
       state[:mode].should == "0664"
       state[:owner].should == "root"
-      state[:source].should == "/this/source/"
       state[:checksum].should == "1"*26
     end
 

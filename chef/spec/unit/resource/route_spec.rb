@@ -98,7 +98,6 @@ describe Chef::Resource::Route do
       state = @resource.state
       state[:netmask].should == "lemask"
       state[:gateway].should == "111.111.111"
-      state[:device].should == "forcefield"
     end
 
     it "returns the target  as its identity" do

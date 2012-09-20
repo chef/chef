@@ -148,10 +148,7 @@ describe Chef::Resource::Scm do
 
     it "describes its state" do
       state = @resource.state
-      state[:repository].should == "apt"
       state[:revision].should == "1.2.3"
-      state[:user].should == "root"
-      state[:group].should == "super_adventure_club"
     end
 
     it "returns the destination as its identity" do

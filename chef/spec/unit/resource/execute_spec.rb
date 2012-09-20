@@ -117,16 +117,6 @@ describe Chef::Resource::Execute do
       @resource.user("root")
     end
 
-    it "describes its state" do
-      state = @resource.state
-      state[:cwd].should == "/tmp/"
-      state[:environment].should eql({ :one => :two })
-      state[:group].should == "legos"
-      state[:path].should eql(["/var/local/"])
-      state[:returns].should == 1
-      state[:user].should == "root"
-    end
-
     it "returns the command as its identity" do
       @resource.identity.should == "grep"
     end

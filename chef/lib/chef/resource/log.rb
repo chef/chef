@@ -20,7 +20,7 @@ class Chef
   class Resource
     class Log < Chef::Resource
     
-      identity_attr :resource_name
+      identity_attr :name
 
       # Sends a string from a recipe to a log provider
       #

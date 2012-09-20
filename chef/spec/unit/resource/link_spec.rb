@@ -107,7 +107,6 @@ describe Chef::Resource::Link do
     it "describes its state" do
       state = @resource.state
       state[:to].should == "/to/dir/file.tar"
-      state[:link_type].should eql(:symbolic)
       state[:owner].should == "root"
       state[:group].should == "0664"
     end

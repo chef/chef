@@ -249,13 +249,6 @@ describe Chef::Resource::Deploy do
       state = @resource.state
       state[:deploy_to].should == "/"
       state[:revision].should == "1.2.3"
-      state[:user].should == "root"
-      state[:group].should == "pokemon"
-      state[:scm_provider].should eql(Chef::Provider::Git)
-      state[:repository_cache].should == "cached-copy"
-      state[:environment].should eql({"SUDO" => "TRUE"})
-      state[:symlinks].should eql({"system" => "public/system"})
-      state[:migrate].should == false
     end
 
     it "returns the repository URI as its identity" do

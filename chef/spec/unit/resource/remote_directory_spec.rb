@@ -85,11 +85,9 @@ describe Chef::Resource::RemoteDirectory do
 
     it "describes its state" do
       state = @resource.state
-      state[:cookbook].should == "pokemon.rb"
       state[:files_owner].should == "root"
       state[:files_group].should == "supergroup"
       state[:files_mode].should == "0664"
-      state[:source].should == "/var/source/"
     end
 
     it "returns the path  as its identity" do

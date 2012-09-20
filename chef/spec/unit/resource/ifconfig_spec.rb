@@ -35,8 +35,6 @@ describe Chef::Resource::Ifconfig do
 
     it "describes its state" do
       state = @resource.state
-      state[:target].should == "team_rocket"
-      state[:hwaddr].should == "11.2223.223"
       state[:inet_addr].should == "434.2343.23"
       state[:mask].should == "255.255.545"
     end

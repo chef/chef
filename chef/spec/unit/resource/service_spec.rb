@@ -146,14 +146,14 @@ describe Chef::Resource::Service do
   describe "when it has pattern and supports" do
     before do 
       @resource.service_name("superfriend")
-      @resource.pattern("plaid")
-      @resource.supports(:status => true)
+      @resource.enabled(true)
+      @resource.running(false)
     end
 
     it "describes its state" do
       state = @resource.state
-      state[:pattern].should == "plaid"
-      state[:supports].should eql(:status => true)
+      state[:enabled].should eql(true)
+      state[:running].should eql(false)
     end
 
     it "returns the service name as its identity" do

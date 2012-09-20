@@ -75,7 +75,6 @@ describe Chef::Resource::Env do
     it "describes its state" do
       state = @resource.state
       state[:value].should == "level7"
-      state[:delim].should == "hi"
     end
 
     it "returns the key name as its identity" do

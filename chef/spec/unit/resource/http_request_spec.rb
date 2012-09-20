@@ -51,12 +51,6 @@ describe Chef::Resource::HttpRequest do
       @resource.headers({"head" => "tail"})
     end
 
-    it "describes its state" do
-      state = @resource.state
-      state[:message].should == "Get sum post brah."
-      state[:headers].should eql({"head" => "tail"})
-    end
-
     it "returns the url as its identity" do
       @resource.identity.should == "http://www.trololol.net"
     end

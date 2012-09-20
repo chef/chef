@@ -49,22 +49,20 @@ describe Chef::Resource::CookbookFile do
   describe "when it has a backup number, group, mode, owner, source, and cookbook" do
     before do
       @cookbook_file.path("/tmp/origin/file.txt")
-      @cookbook_file.backup(5)
       @cookbook_file.group("wheel")
       @cookbook_file.mode("0664")
       @cookbook_file.owner("root")
       @cookbook_file.source("/tmp/foo.txt")
       @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+      @cookbook_file.checksum("1" * 64)
     end
 
     it "describes the state" do
       state = @cookbook_file.state
-      state[:backup].should eql(5)
       state[:group].should == "wheel"
       state[:mode].should == "0664"
       state[:owner].should == "root"
-      state[:source].should == "/tmp/foo.txt"
-      state[:cookbook].should == "/tmp/cookbooks/cooked.rb"
+      state[:checksum].should == "1" * 64
     end
     
     it "returns the path as its identity" do
