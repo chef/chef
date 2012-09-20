@@ -54,6 +54,12 @@ describe Chef::Provider::User::Dscl do
       @provider.should_receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
       lambda { @provider.safe_dscl("cmd /Path args") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
     end
+
+    it "raises an exception when dscl reports 'eDSRecordNotFound'" do
+      shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
+      @provider.should_receive(:shell_out).with('dscl . -cmd /Path args').and_return(shell_return)
+      lambda { @provider.safe_dscl("cmd /Path args") }.should raise_error(Chef::Exceptions::DsclCommandFailed)
+    end
   end
 
   describe "get_free_uid" do
@@ -324,42 +330,62 @@ describe Chef::Provider::User::Dscl do
   end
 
   describe "when the user does not yet exist and chef is creating it" do
-    before do
-      @new_resource.comment "#mockssuck"
-      @new_resource.gid 1001
-    end
-    
-    it "creates the user, comment field, sets uid, gid, configures the home directory, sets the shell, and sets the password" do
-      @provider.should_receive :dscl_create_user
-      @provider.should_receive :dscl_create_comment
-      @provider.should_receive :set_uid
-      @provider.should_receive :dscl_set_gid
-      @provider.should_receive :modify_home
-      @provider.should_receive :dscl_set_shell
-      @provider.should_receive :modify_password
-      @provider.create_user
+    context "with a numeric gid" do
+      before do
+        @new_resource.comment "#mockssuck"
+        @new_resource.gid 1001
+      end
+
+      it "creates the user, comment field, sets uid, gid, configures the home directory, sets the shell, and sets the password" do
+        @provider.should_receive :dscl_create_user
+        @provider.should_receive :dscl_create_comment
+        @provider.should_receive :set_uid
+        @provider.should_receive :dscl_set_gid
+        @provider.should_receive :modify_home
+        @provider.should_receive :dscl_set_shell
+        @provider.should_receive :modify_password
+        @provider.create_user
+      end
+
+      it "creates the user and sets the comment field" do
+        @provider.should_receive(:safe_dscl).with("create /Users/toor").and_return(true)
+        @provider.dscl_create_user
+      end
+
+      it "sets the comment field" do
+        @provider.should_receive(:safe_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
+        @provider.dscl_create_comment
+      end
+
+      it "should run safe_dscl with create /Users/user PrimaryGroupID to set the users primary group" do
+        @provider.should_receive(:safe_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
+        @provider.dscl_set_gid
+      end
+
+      it "should run safe_dscl with create /Users/user UserShell to set the users login shell" do
+        @provider.should_receive(:safe_dscl).with("create /Users/toor UserShell '/usr/bin/false'").and_return(true)
+        @provider.dscl_set_shell
+      end
     end
 
-    it "creates the user and sets the comment field" do
-      @provider.should_receive(:safe_dscl).with("create /Users/toor").and_return(true)
-      @provider.dscl_create_user
-    end
-    
-    it "sets the comment field" do
-      @provider.should_receive(:safe_dscl).with("create /Users/toor RealName '#mockssuck'").and_return(true)
-      @provider.dscl_create_comment
-    end
+    context "with a non-numeric gid" do
+      before do
+        @new_resource.comment "#mockssuck"
+        @new_resource.gid "newgroup"
+      end
 
-    it "should run safe_dscl with create /Users/user PrimaryGroupID to set the users primary group" do
-      @provider.should_receive(:safe_dscl).with("create /Users/toor PrimaryGroupID '1001'").and_return(true)
-      @provider.dscl_set_gid
-    end
+      it "should map the group name to a numeric ID when the group exists" do
+        @provider.should_receive(:safe_dscl).with("read /Groups/newgroup PrimaryGroupID").ordered.and_return("PrimaryGroupID: 1001\n")
+        @provider.should_receive(:safe_dscl).with("create /Users/toor PrimaryGroupID '1001'").ordered.and_return(true)
+        @provider.dscl_set_gid
+      end
 
-    it "should run safe_dscl with create /Users/user UserShell to set the users login shell" do
-      @provider.should_receive(:safe_dscl).with("create /Users/toor UserShell '/usr/bin/false'").and_return(true)
-      @provider.dscl_set_shell
+      it "should raise an exception when the group does not exist" do
+        shell_return = ShellCmdResult.new("<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)", 'err', -14136)
+        @provider.should_receive(:shell_out).with('dscl . -read /Groups/newgroup PrimaryGroupID').and_return(shell_return)
+        lambda { @provider.dscl_set_gid }.should raise_error(Chef::Exceptions::GroupIDNotFound)
+      end
     end
-
   end
 
   describe "when the user exists and chef is managing it" do
