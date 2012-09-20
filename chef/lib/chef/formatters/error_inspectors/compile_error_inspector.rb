@@ -82,14 +82,14 @@ class Chef
 
         def culprit_line
           @culprit_line ||= begin
-            line_number = culprit_backtrace_entry[/^(?:[A-Z]\:)?[^:]+:([\d]+)/,1].to_i
+            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:([\d]+)/,1].to_i
             Chef::Log.debug("Line number of compile error: '#{line_number}'")
             line_number
           end
         end
 
         def culprit_file
-          @culprit_file ||= culprit_backtrace_entry[/^((?:[A-Z]\:)?[^:]+):([\d]+)/,1]
+          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):([\d]+)/,1]
         end
 
         def filtered_bt
