@@ -42,7 +42,7 @@ E
 validation_key "#{api_key}"
 E
           else
-            "#{e.class.name}: #{e.message}"
+            "#{exception.class.name}: #{exception.message}"
           end
         end
 

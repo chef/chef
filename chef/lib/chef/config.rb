@@ -67,6 +67,7 @@ class Chef
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
     config_attr_writer :chef_server_url do |url|
+      url.strip!
       configure do |c|
         [ :registration_url,
           :template_url,
@@ -200,7 +201,7 @@ class Chef
     why_run false
     color false
     client_fork false
-    disable_reporting false
+    disable_reporting true
     
     # Set these to enable SSL authentication / mutual-authentication
     # with the server

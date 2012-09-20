@@ -63,7 +63,6 @@ all of the cookbooks in its expanded run list.
 E
             error_description.section("Expanded Run List:", expanded_run_list_ul)
             error_description.section("Server Response:", format_rest_error)
-E
           when Net::HTTPPreconditionFailed
             describe_412_error(error_description)
           when Net::HTTPBadRequest

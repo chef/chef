@@ -48,8 +48,8 @@ class Chef
       option :attribute,
         :short => "-a ATTR",
         :long => "--attribute ATTR",
-        :description => "The attribute to use for opening the connection - default is fqdn",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key }
+        :description => "The attribute to use for opening the connection - default depends on the context",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_attribute] = key.strip }
 
       option :manual,
         :short => "-m",
@@ -127,7 +127,9 @@ class Chef
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
-                     i = format_for_display(item)[:cloud][:public_hostname]
+                     i = item[:cloud][:public_hostname]
+                   elsif config[:override_attribute]
+                     i = format_for_display(item)[config[:override_attribute]]
                    else
                      i = format_for_display(item)[config[:attribute]]
                    end
@@ -135,7 +137,16 @@ class Chef
                  end
                  r
                end
-        (ui.fatal("No nodes returned from search!"); exit 10) if list.length == 0
+        if list.length == 0
+          if @action_nodes.length == 0
+            ui.fatal("No nodes returned from search!")
+          else
+            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes":"node"} found, " +
+                     "but do not have the required attribute to stablish the connection. " +
+                     "Try setting another attribute to open the connection using --attribute.")
+          end
+          exit 10
+        end
         session_from_list(list)
       end
 
@@ -346,7 +357,7 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute]
+        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute] 
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
                               config[:attribute] ||
                               "fqdn").strip

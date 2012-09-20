@@ -115,9 +115,9 @@ describe Chef::Provider::User::Useradd do
                                                    :non_unique => false})
       end
 
-      it "should set -d /homedir -m" do
-        @provider.universal_options.should == " -d '/wowaweea'"
-        @provider.useradd_options.should == " -m"
+      it "should set -m -d /homedir" do
+        @provider.universal_options.should == " -m -d '/wowaweea'"
+        @provider.useradd_options.should == ""
       end
     end
 
@@ -128,9 +128,9 @@ describe Chef::Provider::User::Useradd do
         @new_resource.stub!(:non_unique).and_return(false)
       end
 
-      it "should set -d /homedir -m" do
-        @provider.universal_options.should eql(" -d '/wowaweea'")
-        @provider.useradd_options.should == " -m"
+      it "should set -m -d /homedir" do
+        @provider.universal_options.should eql(" -m -d '/wowaweea'")
+        @provider.useradd_options.should == ""
       end
     end
 
@@ -168,7 +168,7 @@ describe Chef::Provider::User::Useradd do
     end
 
     it "runs useradd with the computed command options" do
-      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -d '/Users/mud' -m adam"
+      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' adam"
       @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
       @provider.create_user
     end
@@ -181,7 +181,7 @@ describe Chef::Provider::User::Useradd do
         @provider.new_resource.instance_variable_set("@home", nil)
       end
 
-      it "should not include -d in the command options" do
+      it "should not include -m or -d in the command options" do
         command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -r adam"
         @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
         @provider.create_user
@@ -198,17 +198,23 @@ describe Chef::Provider::User::Useradd do
       @provider.new_resource.gid '23'
     end
 
+    # CHEF-3423, -m must come before the username
     it "runs usermod with the computed command options" do
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam -m" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -m -d '/Users/mud' adam" }).and_return(true)
       @provider.manage_user
     end
 
     it "does not set the -r option to usermod" do
       @new_resource.system(true)
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -d '/Users/mud' adam -m" }).and_return(true)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -m -d '/Users/mud' adam" }).and_return(true)
       @provider.manage_user
     end
 
+    it "CHEF-3429: does not set -m if we aren't changing the home directory" do
+      @provider.should_receive(:updating_home?).and_return(false)
+      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' adam" }).and_return(true)
+      @provider.manage_user
+    end
   end
 
   describe "when removing a user" do

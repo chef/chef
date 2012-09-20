@@ -1,3 +1,3 @@
 module ChefServerApi
-  VERSION = '10.14.0.rc.2'
+  VERSION = '10.14.3'
 end

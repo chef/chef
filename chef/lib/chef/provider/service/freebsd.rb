@@ -68,8 +68,7 @@ class Chef
         end
 
         def define_resource_requirements
-          super
-
+          shared_resource_requirements
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { @rcd_script_found } 
             a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the rc.d script"

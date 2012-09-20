@@ -55,13 +55,11 @@ class Chef
               relevant_lines = ["# In #{file}\n\n"]
 
 
-              current_line = line - 2
+              current_line = line - 1
+              current_line = 0 if current_line < 0
               nesting = 0
 
-              relevant_lines << format_line(current_line, lines[current_line])
-
               loop do
-                current_line += 1
 
                 # low rent parser. try to gracefully handle nested blocks in resources
                 nesting += 1 if lines[current_line] =~ /[\s]+do[\s]*/
@@ -69,9 +67,11 @@ class Chef
 
                 relevant_lines << format_line(current_line, lines[current_line])
 
-                break if lines[current_line].nil?
+                break if lines[current_line + 1].nil?
                 break if current_line >= (line + 50)
                 break if nesting <= 0
+
+                current_line += 1
               end
               relevant_lines << format_line(current_line + 1, lines[current_line + 1]) if lines[current_line + 1]
               relevant_lines.join("")

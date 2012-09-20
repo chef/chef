@@ -43,16 +43,26 @@ describe Chef::Provider::Deploy do
     @provider.should respond_to(:action_rollback)
   end
 
-  it "creates deploy_to dir if it does not exist yet" do
-    FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to)
-    FileUtils.should_receive(:mkdir_p).with(@resource.shared_path)
-    ::File.stub!(:directory?).and_return(false)
-    @provider.stub(:copy_cached_repo)
-    @provider.stub(:update_cached_repo)
-    @provider.stub(:symlink)
-    @provider.stub(:migrate)
-    @provider.deploy
-    @provider.converge
+  context "when the deploy_to dir does not exist yet" do
+    before do
+      FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to).ordered
+      FileUtils.should_receive(:mkdir_p).with(@resource.shared_path).ordered
+      ::File.stub!(:directory?).and_return(false)
+      @provider.stub(:symlink)
+      @provider.stub(:migrate)
+      @provider.stub(:copy_cached_repo)
+    end
+
+    it "creates deploy_to dir" do
+      @provider.stub(:update_cached_repo)
+      @provider.deploy
+    end
+
+    it "creates deploy_to dir before calling update_cached_repo (CHEF-3435)" do
+      @provider.send(:converge_actions).should_receive(:empty?).and_return(false)
+      @provider.should_receive(:update_cached_repo).ordered
+      @provider.deploy
+    end
   end
 
   it "does not create deploy_to dir if it exists" do
