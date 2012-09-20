@@ -172,7 +172,6 @@ class Chef
     end
 
     def run_failed(node, exception)
-      pp node
       if reporting_enabled?
         resource_history_url = "reports/nodes/#{node.name}/runs/#{run_id}"
         Chef::Log.debug(resource_history_url)
