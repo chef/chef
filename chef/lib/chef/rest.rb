@@ -30,6 +30,7 @@ require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
+require 'chef/exceptions'
 
 
 
@@ -61,7 +62,9 @@ class Chef
       @url = url
       @cookies = CookieJar.instance
       @default_headers = options[:headers] || {}
-      @auth_credentials = AuthCredentials.new(client_name, signing_key_filename)
+      @signing_key_filename = signing_key_filename
+      @key = load_signing_key(@signing_key_filename, options[:raw_key])
+      @auth_credentials = AuthCredentials.new(client_name, @key)
       @sign_on_redirect, @sign_request = true, true
       @redirects_followed = 0
       @redirect_limit = 10
@@ -70,7 +73,7 @@ class Chef
     end
 
     def signing_key_filename
-      @auth_credentials.key_file
+      @signing_key_filename
     end
 
     def client_name
@@ -78,7 +81,7 @@ class Chef
     end
 
     def signing_key
-      @auth_credentials.raw_key
+      @raw_key
     end
 
     # Register the client
@@ -495,6 +498,24 @@ class Chef
           @disable_gzip = value
         end
       end
+    end
+
+    def load_signing_key(key_file, raw_key = nil)
+      if (!!key_file)
+        @raw_key = IO.read(key_file).strip
+      elsif (!!raw_key)
+        @raw_key = raw_key.strip
+      else
+        return nil
+      end
+      @key = OpenSSL::PKey::RSA.new(@raw_key)
+    rescue SystemCallError, IOError => e
+      Chef::Log.warn "Failed to read the private key #{key_file}: #{e.inspect}"
+      raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
+    rescue OpenSSL::PKey::RSAError
+      msg = "The file #{key_file} or :raw_key option does not contain a correctly formatted private key.\n"
+      msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
+      raise Chef::Exceptions::InvalidPrivateKey, msg
     end
 
   end

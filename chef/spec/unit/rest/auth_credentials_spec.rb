@@ -57,11 +57,8 @@ Y6S6MeZ69Rp89ma4ttMZ+kwi1+XyHqC/dlcVRW42Zl5Dc7BALRlJjQ==
 describe Chef::REST::AuthCredentials do
   before do
     @key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key.pem'
-    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)
-  end
-
-  it "has a key file value" do
-    @auth_credentials.key_file.should == @key_file_fixture
+    @key = OpenSSL::PKey::RSA.new(IO.read(@key_file_fixture).strip)
+    @auth_credentials = Chef::REST::AuthCredentials.new("client-name", @key)
   end
 
   it "has a client name" do
@@ -74,15 +71,6 @@ describe Chef::REST::AuthCredentials do
   end
 
   describe "when loading the private key" do
-    it "raises PrivateKeyMissing when the key file doesn't exist" do
-      lambda {Chef::REST::AuthCredentials.new("client-name", "/dev/null/nothing_here")}.should raise_error(Chef::Exceptions::PrivateKeyMissing)
-    end
-
-    it "raises InvalidPrivateKey when the key file doesnt' look like a key" do
-      invalid_key_file = CHEF_SPEC_DATA + "/bad-config.rb"
-      lambda {Chef::REST::AuthCredentials.new("client-name", invalid_key_file)}.should raise_error(Chef::Exceptions::InvalidPrivateKey)
-    end
-
     it "strips extra whitespace before checking the key" do
       key_file_fixture = CHEF_SPEC_DATA + '/ssl/private_key_with_whitespace.pem'
       lambda {Chef::REST::AuthCredentials.new("client-name", @key_file_fixture)}.should_not raise_error

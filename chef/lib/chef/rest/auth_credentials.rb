@@ -20,22 +20,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'chef/exceptions'
 require 'chef/log'
 require 'mixlib/authentication/signedheaderauth'
 
 class Chef
   class REST
     class AuthCredentials
-      attr_reader :key_file, :client_name, :key, :raw_key
+      attr_reader :client_name, :key
 
-      def initialize(client_name=nil, key_file=nil)
-        @client_name, @key_file = client_name, key_file
-        load_signing_key if sign_requests?
+      def initialize(client_name=nil, key=nil)
+        @client_name, @key = client_name, key
       end
 
       def sign_requests?
-        !!key_file
+        !!key
       end
 
       def signature_headers(request_params={})
@@ -52,20 +50,6 @@ class Chef
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
         signed =  sign_obj.sign(key).merge({:host => host})
         signed.inject({}){|memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1];memo}
-      end
-
-      private
-
-      def load_signing_key
-        @raw_key = IO.read(key_file).strip
-        @key = OpenSSL::PKey::RSA.new(@raw_key)
-      rescue SystemCallError, IOError => e
-        Chef::Log.warn "Failed to read the private key #{key_file}: #{e.inspect}"
-        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
-      rescue OpenSSL::PKey::RSAError
-        msg = "The file #{key_file} does not contain a correctly formatted private key.\n"
-        msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
-        raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
     end
