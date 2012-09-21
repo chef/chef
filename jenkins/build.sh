@@ -6,6 +6,18 @@
 set -e
 set -x
 
+# Check whether a command exists - returns 0 if it does, 1 if it does not
+exists()
+{
+  if command -v $1 &>/dev/null
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
+
 mkdir -p chef-solo/cache
 
 if [ "$CLEAN" = "true" ]; then
@@ -35,3 +47,8 @@ fi
 
 rake projects:$1
 
+# Sign the package on some platforms:
+if exists rpm;
+then
+  sudo ./jenkins/sign-rpm "" "pkg/*rpm"
+fi
