@@ -167,7 +167,10 @@ class Chef
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
         Chef::Log.debug("Compressed Run Data: #{compressed_data}")
-        @rest_client.post_rest(resource_history_url, compressed_data, {'Content-Encoding' => 'gzip'})
+        # Since we're posting compressed data we can not directly call
+        # post_rest which expects JSON
+        reporting_url = @rest_client.create_url(resource_history_url)
+        @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
       else
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
