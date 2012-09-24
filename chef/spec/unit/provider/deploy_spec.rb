@@ -47,6 +47,7 @@ describe Chef::Provider::Deploy do
     before do
       FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to).ordered
       FileUtils.should_receive(:mkdir_p).with(@resource.shared_path).ordered
+      ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
       ::File.stub!(:directory?).and_return(false)
       @provider.stub(:symlink)
       @provider.stub(:migrate)
@@ -67,6 +68,7 @@ describe Chef::Provider::Deploy do
 
   it "does not create deploy_to dir if it exists" do
     ::File.stub!(:directory?).and_return(true)
+    ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
     FileUtils.should_not_receive(:mkdir_p).with(@resource.deploy_to)
     FileUtils.should_not_receive(:mkdir_p).with(@resource.shared_path)
     @provider.stub(:copy_cached_repo)
@@ -78,6 +80,7 @@ describe Chef::Provider::Deploy do
   end
 
   it "ensures the deploy_to dir ownership after the verfication that it exists" do
+    ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
     @provider.should_receive(:verify_directories_exist).ordered
     @provider.should_receive(:enforce_ownership).ordered
     @provider.stub(:copy_cached_repo)
@@ -291,6 +294,7 @@ describe Chef::Provider::Deploy do
   it "skips an eval callback if the file doesn't exist" do
     barbaz_callback = @expected_release_dir + "/deploy/barbaz.rb"
     ::File.should_receive(:exist?).with(barbaz_callback).and_return(false)
+    ::Dir.should_receive(:chdir).with(@expected_release_dir).and_yield
     @provider.should_not_receive(:from_file)
     @provider.callback(:barbaz, nil)
     @provider.converge
