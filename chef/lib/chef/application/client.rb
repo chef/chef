@@ -179,8 +179,8 @@ class Chef::Application::Client < Chef::Application
   option :enable_reporting,
     :short        => "-R",
     :long         => "--enable-reporting",
-    :description  => "Disable reporting data collection for chef runs",
-    :boolean      => false
+    :description  => "Enable reporting data collection for chef runs",
+    :boolean      => true
 
   attr_reader :chef_client_json
 
