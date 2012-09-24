@@ -408,11 +408,9 @@ class Chef
       end
 
       def run_callback_from_file(callback_file)
-        if ::File.exist?(callback_file)
-          Dir.chdir(release_path) do
-            Chef::Log.info "#{@new_resource} running deploy hook #{callback_file}"
-            recipe_eval { from_file(callback_file) }
-          end
+        Dir.chdir(release_path) do
+          Chef::Log.info "#{@new_resource} queueing checkdeploy hook #{callback_file}"
+          recipe_eval { from_file(callback_file) if ::File.exist?(callback_file) }
         end
       end
 
