@@ -86,7 +86,7 @@ class Chef
     attr_reader :error_descriptions
 
     def initialize(rest_client)
-      if Chef::Config[:enable_reporting]
+      if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
         @reporting_enabled = true
       else
         @reporting_enabled = false
