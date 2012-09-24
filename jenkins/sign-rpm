@@ -27,7 +27,12 @@ PTY.spawn(rpm_cmd) do |r,w,pid|
   # Keep printing output unti the command exits
   loop do
     begin
-      puts r.gets
+      line = r.gets
+      puts line
+      if line =~ /failed/
+        STDERR.puts "RPM signing failure"
+        exit 1
+      end
     rescue Errno::EIO
       break
     end
