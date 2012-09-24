@@ -50,5 +50,5 @@ rake projects:$1
 # Sign the package on some platforms:
 if exists rpm;
 then
-  sudo -i ./jenkins/sign-rpm "" "pkg/*rpm"
+  sudo -i $(pwd)/jenkins/sign-rpm "foo" $(pwd)/pkg/*rpm
 fi
