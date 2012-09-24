@@ -176,11 +176,11 @@ class Chef::Application::Client < Chef::Application
     :description  => "Fork client",
     :boolean      => true
 
-  option :disable_reporting,
+  option :enable_reporting,
     :short        => "-R",
-    :long         => "--disable-reporting",
+    :long         => "--enable-reporting",
     :description  => "Disable reporting data collection for chef runs",
-    :boolean      => true
+    :boolean      => false
 
   attr_reader :chef_client_json
 

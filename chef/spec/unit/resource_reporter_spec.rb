@@ -24,12 +24,12 @@ require 'chef/resource_reporter'
 
 describe Chef::ResourceReporter do
   before(:all) do
-    @reporting_toggle_default = Chef::Config[:disable_reporting]
-    Chef::Config[:disable_reporting] = false
+    @reporting_toggle_default = Chef::Config[:enable_reporting]
+    Chef::Config[:enable_reporting] = true
   end
 
   after(:all) do
-    Chef::Config[:disable_reporting] = @reporting_toggle_default
+    Chef::Config[:enable_reporting] = @reporting_toggle_default
   end
 
   before do
