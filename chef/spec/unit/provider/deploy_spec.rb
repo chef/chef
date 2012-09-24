@@ -300,6 +300,27 @@ describe Chef::Provider::Deploy do
     @provider.converge
   end
 
+  # CHEF-3449 #converge_by is called in #recipe_eval and must happen in sequence
+  # with the other calls to #converge_by to keep the train on the tracks
+  it "evaluates a callback file before the corresponding step" do
+    ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times.and_yield
+    @provider.should_receive(:verify_directories_exist)
+    @provider.should_receive(:update_cached_repo)
+    @provider.should_receive(:enforce_ownership)
+    @provider.should_receive(:copy_cached_repo)
+    @provider.should_receive(:install_gems)
+    @provider.should_receive(:enforce_ownership)
+    @provider.should_receive(:converge_by).ordered # before_migrate
+    @provider.should_receive(:migrate).ordered
+    @provider.should_receive(:converge_by).ordered # before_symlink
+    @provider.should_receive(:symlink).ordered
+    @provider.should_receive(:converge_by).ordered # before_restart
+    @provider.should_receive(:restart).ordered
+    @provider.should_receive(:converge_by).ordered # after_restart
+    @provider.should_receive(:cleanup!)
+    @provider.deploy
+  end
+
   it "gets a SCM provider as specified by its resource" do
     @provider.scm_provider.should be_an_instance_of(Chef::Provider::Git)
     @provider.scm_provider.new_resource.destination.should eql("/my/deploy/dir/shared/cached-copy")
