@@ -63,8 +63,12 @@ class Chef
               end
             end
           elsif data.kind_of?(Array)
-            data.each do |item|
-              buffer << text_format(item)
+            data.each_index do |index|
+              item = data[index]
+              buffer << text_format(data[index])
+              # Separate items with newlines if it's an array of hashes or an
+              # array of arrays
+              buffer << "\n" if !is_singleton(data[index]) && index != data.size-1
             end
           else
             buffer << "#{data}\n"

@@ -40,7 +40,7 @@ describe Chef::Knife::UI do
     end
   end
 
-  describe "output", :focus do
+  describe "output" do
     it "formats strings appropriately" do
       @ui.output("hi")
       @out.string.should == "hi\n"
@@ -48,7 +48,10 @@ describe Chef::Knife::UI do
 
     it "formats hashes appropriately" do
       @ui.output({'hi' => 'a', 'lo' => 'b' })
-      @out.string.should == "hi: a\nlo: b\n"
+      @out.string.should == <<EOM
+hi: a
+lo: b
+EOM
     end
 
     it "formats empty hashes appropriately" do
@@ -58,7 +61,10 @@ describe Chef::Knife::UI do
 
     it "formats arrays appropriately" do
       @ui.output([ 'a', 'b' ])
-      @out.string.should == "a\nb\n"
+      @out.string.should == <<EOM
+a
+b
+EOM
     end
 
     it "formats empty arrays appropriately" do
@@ -78,47 +84,106 @@ describe Chef::Knife::UI do
 
     it "formats nested arrays appropriately" do
       @ui.output([ [ 'a', 'b' ], [ 'c', 'd' ]])
-      @out.string.should == "a\nb\nc\nd\n"
+      @out.string.should == <<EOM
+a
+b
+
+c
+d
+EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
       @ui.output([ [ 'a', 'b' ], [ 'c' ], [], [ 'd', 'e' ]])
-      @out.string.should == "a\nb\nc\nd\ne\n"
+      @out.string.should == <<EOM
+a
+b
+
+c
+
+
+d
+e
+EOM
+    end
+
+    it "formats arrays of hashes with extra lines in between for readability" do
+      @ui.output([ { 'a' => 'b', 'c' => 'd' }, { 'x' => 'y' }, { 'm' => 'n', 'o' => 'p' }])
+      @out.string.should == <<EOM
+a: b
+c: d
+
+x: y
+
+m: n
+o: p
+EOM
     end
 
     it "formats hashes with empty array members appropriately" do
       @ui.output({ 'a' => [], 'b' => 'c' })
-      @out.string.should == "a:\nb: c\n"
+      @out.string.should == <<EOM
+a:
+b: c
+EOM
     end
 
     it "formats hashes with single-member array values appropriately" do
       @ui.output({ 'a' => [ 'foo' ], 'b' => 'c' })
-      @out.string.should == "a: foo\nb: c\n"
+      @out.string.should == <<EOM
+a: foo
+b: c
+EOM
     end
 
     it "formats hashes with array members appropriately" do
       @ui.output({ 'a' => [ 'foo', 'bar' ], 'b' => 'c' })
-      @out.string.should == "a:\n  foo\n  bar\nb: c\n"
+      @out.string.should == <<EOM
+a:
+  foo
+  bar
+b: c
+EOM
     end
 
     it "formats hashes with single-member nested array values appropriately" do
       @ui.output({ 'a' => [ [ 'foo' ] ], 'b' => 'c' })
-      @out.string.should == "a:\n  foo\nb: c\n"
+      @out.string.should == <<EOM
+a:
+  foo
+b: c
+EOM
     end
 
     it "formats hashes with nested array values appropriately" do
       @ui.output({ 'a' => [ [ 'foo', 'bar' ], [ 'baz', 'bjork' ] ], 'b' => 'c' })
-      @out.string.should == "a:\n  foo\n  bar\n  baz\n  bjork\nb: c\n"
+      @out.string.should == <<EOM
+a:
+  foo
+  bar
+  
+  baz
+  bjork
+b: c
+EOM
     end
 
     it "formats hashes with hash values appropriately" do
       @ui.output({ 'a' => { 'aa' => 'bb', 'cc' => 'dd' }, 'b' => 'c' })
-      @out.string.should == "a:\n  aa: bb\n  cc: dd\nb: c\n"
+      @out.string.should == <<EOM
+a:
+  aa: bb
+  cc: dd
+b: c
+EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
       @ui.output({ 'a' => { }, 'b' => 'c' })
-      @out.string.should == "a:\nb: c\n"
+      @out.string.should == <<EOM
+a:
+b: c
+EOM
     end
   end
 
