@@ -33,6 +33,8 @@ describe Chef::ResourceReporter do
   end
 
   before do
+    @node = Chef::Node.new
+    @node.name("spitfire")
     @rest_client = mock("Chef::REST (mock)")
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
@@ -57,7 +59,7 @@ describe Chef::ResourceReporter do
     end
 
     it "should have no error_descriptions" do
-      @resource_reporter.error_descriptions.should be_nil
+      @resource_reporter.error_descriptions.should eq({})
       # @resource_reporter.error_descriptions.should be_empty
       # @resource_reporter.should have(0).error_descriptions
     end
@@ -65,6 +67,7 @@ describe Chef::ResourceReporter do
   end
 
   context "after the chef run completes" do
+
     before do
     end
 
@@ -72,148 +75,38 @@ describe Chef::ResourceReporter do
       pending "refactor how node gets set."
       @resource_reporter.status.should == "success"
     end
-  end
-
-  context "when chef fails before converging any resources" do
-    before do
-      @exception = Exception.new
-      @resource_reporter.run_failed(@exception)
-    end
-
-    it "sets the run status to 'failure'" do
-      @resource_reporter.status.should == "failure"
-    end
-
-    it "keeps the exception data" do
-      @resource_reporter.exception.should == @exception
-    end
 
   end
 
-  context "when a resource fails before loading current state" do
+  context "when chef fails" do
     before do
-      @exception = Exception.new
-      @exception.set_backtrace(caller)
-      @resource_reporter.resource_action_start(@new_resource, :create)
-      @resource_reporter.resource_failed(@new_resource, :create, @exception)
-      @resource_reporter.resource_completed(@new_resource)
+      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/ABC123");
+      @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
+      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"});
+
+      @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
     end
 
-    it "collects the resource as an updated resource" do
-      @resource_reporter.should have(1).updated_resources
-    end
-
-    it "collects the desired state of the resource" do
-      update_record = @resource_reporter.updated_resources.first
-      update_record.new_resource.should == @new_resource
-
-    end
-  end
-
-  # TODO: make sure a resource that is skipped because of `not_if` doesn't
-  # leave us in a bad state.
-
-  context "once the a resource's current state is loaded" do
-    before do
-      @resource_reporter.resource_action_start(@new_resource, :create)
-      @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
-    end
-
-    context "and the resource was not updated" do
+    context "before converging any resources" do
       before do
-        @resource_reporter.resource_up_to_date(@new_resource, :create)
+        @exception = Exception.new
+        @resource_reporter.run_failed(@exception)
       end
-
-      it "has no updated resources" do
-        @resource_reporter.should have(0).updated_resources
+      
+      it "sets the run status to 'failure'" do
+        @resource_reporter.status.should == "failure"
       end
-    end
-
-    context "and the resource was updated" do
-      before do
-        @new_resource.content("this is the old content")
-        @current_resource.content("this is the new hotness")
-        @resource_reporter.resource_updated(@new_resource, :create)
-        @resource_reporter.resource_completed(@new_resource)
-      end
-
-      it "collects the updated resource" do
-        @resource_reporter.should have(1).updated_resources
-      end
-
-      it "collects the old state of the resource" do
-        update_record = @resource_reporter.updated_resources.first
-
-        update_record.current_resource.should == @current_resource
-      end
-
-      it "collects the new state of the resource" do
-        update_record = @resource_reporter.updated_resources.first
-
-        update_record.new_resource.should == @new_resource
-      end
-
-      context "and a subsequent resource fails before loading current resource" do
-        before do
-          @next_new_resource = Chef::Resource::Service.new("apache2")
-          @exception = Exception.new
-          @exception.set_backtrace(caller)
-          @resource_reporter.resource_failed(@next_new_resource, :create, @exception)
-          @resource_reporter.resource_completed(@next_new_resource)
-        end
-
-        it "collects the desired state of the failed resource" do
-          failed_resource_update = @resource_reporter.updated_resources.last
-          failed_resource_update.new_resource.should == @next_new_resource
-        end
-
-        it "does not have the current state of the failed resource" do
-          failed_resource_update = @resource_reporter.updated_resources.last
-          failed_resource_update.current_resource.should be_nil
-        end
+      
+      it "keeps the exception data" do
+        @resource_reporter.exception.should == @exception
       end
     end
 
-    # Some providers, such as RemoteDirectory and some LWRPs use other
-    # resources for their implementation. These should be hidden from reporting
-    # since we only care about the top-level resource and not the sub-resources
-    # used for implementation.
-    context "and a nested resource is updated" do
-      before do
-        @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
-        @resource_reporter.resource_action_start(@implementation_resource , :create)
-        @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
-        @resource_reporter.resource_updated(@implementation_resource, :create)
-        @resource_reporter.resource_completed(@implementation_resource)
-        @resource_reporter.resource_updated(@new_resource, :create)
-        @resource_reporter.resource_completed(@new_resource)
-      end
-
-      it "does not collect data about the nested resource" do
-        @resource_reporter.should have(1).updated_resources
-      end
-    end
-
-    context "and a nested resource runs but is not updated" do
-      before do
-        @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
-        @resource_reporter.resource_action_start(@implementation_resource , :create)
-        @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
-        @resource_reporter.resource_up_to_date(@implementation_resource, :create)
-        @resource_reporter.resource_completed(@implementation_resource)
-        @resource_reporter.resource_updated(@new_resource, :create)
-        @resource_reporter.resource_completed(@new_resource)
-      end
-
-      it "does not collect data about the nested resource" do
-        @resource_reporter.should have(1).updated_resources
-      end
-    end
-
-    context "and the resource failed to converge" do
+    context "when a resource fails before loading current state" do
       before do
         @exception = Exception.new
         @exception.set_backtrace(caller)
+        @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_failed(@new_resource, :create, @exception)
         @resource_reporter.resource_completed(@new_resource)
       end
@@ -224,19 +117,144 @@ describe Chef::ResourceReporter do
 
       it "collects the desired state of the resource" do
         update_record = @resource_reporter.updated_resources.first
-        update_record.new_resource.should == @new_resource
-      end
-
-      it "collects the current state of the resource" do
-        update_record = @resource_reporter.updated_resources.first
-        update_record.current_resource.should == @current_resource
+        update_record.new_resource.should == @new_resource        
       end
     end
 
+    # TODO: make sure a resource that is skipped because of `not_if` doesn't
+    # leave us in a bad state.
+    
+    context "once the a resource's current state is loaded" do
+      before do
+        @resource_reporter.resource_action_start(@new_resource, :create)
+        @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
+      end
+
+      context "and the resource was not updated" do
+        before do
+          @resource_reporter.resource_up_to_date(@new_resource, :create)
+        end
+
+        it "has no updated resources" do
+          @resource_reporter.should have(0).updated_resources
+        end
+      end
+
+      context "and the resource was updated" do
+        before do
+          @new_resource.content("this is the old content")
+          @current_resource.content("this is the new hotness")
+          @resource_reporter.resource_updated(@new_resource, :create)
+          @resource_reporter.resource_completed(@new_resource)
+        end
+
+        it "collects the updated resource" do
+          @resource_reporter.should have(1).updated_resources
+        end
+        
+        it "collects the old state of the resource" do
+          update_record = @resource_reporter.updated_resources.first          
+          update_record.current_resource.should == @current_resource
+        end
+        
+        it "collects the new state of the resource" do
+          update_record = @resource_reporter.updated_resources.first
+          update_record.new_resource.should == @new_resource
+        end
+
+        context "and a subsequent resource fails before loading current resource" do
+          before do
+            @next_new_resource = Chef::Resource::Service.new("apache2")
+            @exception = Exception.new
+            @exception.set_backtrace(caller)
+            @resource_reporter.resource_failed(@next_new_resource, :create, @exception)
+            @resource_reporter.resource_completed(@next_new_resource)
+          end
+          
+          it "collects the desired state of the failed resource" do
+            failed_resource_update = @resource_reporter.updated_resources.last
+            failed_resource_update.new_resource.should == @next_new_resource
+          end
+          
+          it "does not have the current state of the failed resource" do
+            failed_resource_update = @resource_reporter.updated_resources.last
+            failed_resource_update.current_resource.should be_nil
+          end
+        end
+      end
+    
+      # Some providers, such as RemoteDirectory and some LWRPs use other
+      # resources for their implementation. These should be hidden from reporting
+      # since we only care about the top-level resource and not the sub-resources
+      # used for implementation.
+      context "and a nested resource is updated" do
+        before do
+          @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
+        @resource_reporter.resource_action_start(@implementation_resource , :create)
+        @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
+        @resource_reporter.resource_updated(@implementation_resource, :create)
+        @resource_reporter.resource_completed(@implementation_resource)
+        @resource_reporter.resource_updated(@new_resource, :create)
+        @resource_reporter.resource_completed(@new_resource)
+      end
+
+        it "does not collect data about the nested resource" do
+          @resource_reporter.should have(1).updated_resources
+        end
+      end
+
+      context "and a nested resource runs but is not updated" do
+        before do
+          @implementation_resource = Chef::Resource::CookbookFile.new("/preseed-file.txt")
+          @resource_reporter.resource_action_start(@implementation_resource , :create)
+          @resource_reporter.resource_current_state_loaded(@implementation_resource, :create, @implementation_resource)
+          @resource_reporter.resource_up_to_date(@implementation_resource, :create)
+          @resource_reporter.resource_completed(@implementation_resource)
+          @resource_reporter.resource_updated(@new_resource, :create)
+          @resource_reporter.resource_completed(@new_resource)
+        end
+        
+        it "does not collect data about the nested resource" do
+          @resource_reporter.should have(1).updated_resources
+        end
+      end
+
+      context "and the resource failed to converge" do
+        before do
+          @exception = Exception.new
+          @exception.set_backtrace(caller)
+          @resource_reporter.resource_failed(@new_resource, :create, @exception)
+          @resource_reporter.resource_completed(@new_resource)
+        end
+        
+        it "collects the resource as an updated resource" do
+          @resource_reporter.should have(1).updated_resources
+        end
+        
+        it "collects the desired state of the resource" do
+          update_record = @resource_reporter.updated_resources.first
+          update_record.new_resource.should == @new_resource
+        end
+        
+        it "collects the current state of the resource" do
+          update_record = @resource_reporter.updated_resources.first
+          update_record.current_resource.should == @current_resource
+        end
+      end
+
+    end
   end
 
   describe "when generating a report for the server" do
 
+    before do
+      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/ABC123");
+      @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
+      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"});
+      
+      @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+    end
+    
     context "for a successful client run" do
       before do
         # TODO: add inputs to generate expected output.
@@ -270,13 +288,11 @@ describe Chef::ResourceReporter do
         #    "data" : ""
         # }
 
-        @node = Chef::Node.new
-        @node.name("spitfire")
         @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
         @resource_reporter.resource_completed(@new_resource)
-        @report = @resource_reporter.report(@node)
+        @report = @resource_reporter.prepare_run_data
         @first_update_report = @report["resources"].first
       end
 
@@ -349,17 +365,16 @@ describe Chef::ResourceReporter do
     context "for an unsuccessful run" do
 
       before do
-
-        @backtrace = "foo.rb:1 in `foo!'\nbar.rb:2 in `bar!\n'baz.rb:3 in `baz!'"
+        @backtrace = ["foo.rb:1 in `foo!'", "bar.rb:2 in `bar!", "\n'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = mock("ArgumentError")
         @exception.stub!(:inspect).and_return("Net::HTTPServerException")
         @exception.stub!(:message).and_return("Object not found")
         @exception.stub!(:backtrace).and_return(@backtrace)
-        @resource_reporter.run_failed(@exception)
         @resource_reporter.run_list_expand_failed(@node, @exception)
-        @report = @resource_reporter.report(@node)
+        @resource_reporter.run_failed(@exception)
+        @report = @resource_reporter.prepare_run_data
       end
 
       it "includes the exception type in the event data" do
@@ -376,7 +391,7 @@ describe Chef::ResourceReporter do
 
       it "includes the exception trace in the event data" do
         @report["data"]["exception"].should have_key("backtrace")
-        @report["data"]["exception"]["backtrace"].should == @backtrace
+        @report["data"]["exception"]["backtrace"].should == @backtrace.to_json
       end
 
       it "includes the error inspector output in the event data" do
@@ -384,15 +399,12 @@ describe Chef::ResourceReporter do
         @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
       end
 
-
     end
 
   end
 
   describe "when updating resource history on the server" do
     before do
-      @node = Chef::Node.new
-      @node.name("spitfire")
     end
 
     context "when the server does not support storing resource history" do
@@ -437,7 +449,7 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
 
-        @expected_data = @resource_reporter.report(@node)
+        @expected_data = @resource_reporter.prepare_run_data
         @expected_data["action"] = "end"
 
         post_url = "https://chef_server/example_url"
