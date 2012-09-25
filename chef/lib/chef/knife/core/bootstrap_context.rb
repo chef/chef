@@ -25,7 +25,7 @@ class Chef
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap
-      # 
+      #
       class BootstrapContext
 
         def initialize(config, run_list, chef_config)
@@ -94,9 +94,13 @@ CONFIG
         def chef_version
           knife_config[:bootstrap_version] || Chef::VERSION
         end
-        
+
         def first_boot
-          (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
+          bootstrap = {"bootstrap" => {
+              "client" => @chef_config[:node_name],
+              "time" => Time.now.to_i,
+              "user" => ENV['USER'] }}
+          bootstrap.merge(@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
         end
 
       end
