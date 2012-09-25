@@ -88,14 +88,7 @@ class Chef
               # If we've stopped, then bail out now, instead of going on to run Chef
               next if state != RUNNING
 
-              @chef_client = Chef::Client.new(
-                @chef_client_json, 
-                :override_runlist => config[:override_runlist]
-              )
-              @chef_client_json = nil
-
-              @chef_client.run
-              @chef_client = nil
+              run_chef_client
 
               Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
               client_sleep Chef::Config[:interval]
@@ -224,6 +217,20 @@ class Chef
           return unless state == RUNNING
           sleep chunk_length
         end
+      end
+      
+      private
+
+      # Initializes Chef::Client instance and runs it
+      def run_chef_client
+        @chef_client = Chef::Client.new(
+          @chef_client_json, 
+          :override_runlist => config[:override_runlist]
+        )
+        @chef_client_json = nil
+
+        @chef_client.run
+        @chef_client = nil
       end
 
     end
