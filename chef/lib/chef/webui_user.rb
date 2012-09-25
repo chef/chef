@@ -19,7 +19,6 @@
 
 require 'chef/config'
 require 'chef/mixin/params_validate'
-require 'chef/couchdb'
 require 'chef/index_queue'
 require 'digest/sha1'
 require 'chef/json_compat'
@@ -33,37 +32,11 @@ class Chef
     
     include Chef::Mixin::ParamsValidate
     
-    DESIGN_DOCUMENT = {
-      "version" => 3,
-      "language" => "javascript",
-      "views" => {
-        "all" => {
-          "map" => <<-EOJS
-            function(doc) {
-              if (doc.chef_type == "webui_user") {
-                emit(doc.name, doc);
-              }
-            }
-          EOJS
-        },
-        "all_id" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "webui_user") {
-              emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        },
-      },
-    }
-    
     # Create a new Chef::WebUIUser object.
     def initialize(opts={})
       @name, @salt, @password = opts['name'], opts['salt'], opts['password']
-      @openid, @couchdb_rev, @couchdb_id = opts['openid'], opts['_rev'], opts['_id']
+      @openid = opts['openid']
       @admin = false
-      @couchdb = Chef::CouchDB.new
     end
     
     def name=(n)
@@ -115,20 +88,16 @@ class Chef
       me.admin = o["admin"]
       me
     end
-    
-    # List all the Chef::WebUIUser objects in the CouchDB.  If inflate is set to true, you will get
-    # the full list of all registration objects.  Otherwise, you'll just get the IDs
-    def self.cdb_list(inflate=false)
-      rs = Chef::CouchDB.new.list("users", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
+
+    def chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
+    def self.chef_server_rest
+      Chef::REST.new(Chef::Config[:chef_server_url])
     end
     
     def self.list(inflate=false)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       if inflate
         response = Hash.new
         Chef::Search::Query.new.search(:user) do |n|
@@ -136,52 +105,27 @@ class Chef
         end
         response
       else
-        r.get_rest("users")
+        chef_server_rest.get_rest("users")
       end
-    end
-    
-    # Load an WebUIUser by name from CouchDB
-    def self.cdb_load(name)
-      Chef::CouchDB.new.load("webui_user", name)
     end
     
     # Load a User by name
     def self.load(name)
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("users/#{name}")
-    end
-    
-    
-    # Whether or not there is an WebUIUser with this key.
-    def self.has_key?(name)
-      Chef::CouchDB.new.has_key?("webui_user", name)
-    end
-    
-    # Remove this WebUIUser from the CouchDB
-    def cdb_destroy
-      couchdb.delete("webui_user", @name, @couchdb_rev)
+      chef_server_rest.get_rest("users/#{name}")
     end
     
     # Remove this WebUIUser via the REST API
     def destroy
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("users/#{@name}")
-    end
-    
-    # Save this WebUIUser to the CouchDB
-    def cdb_save
-      results = couchdb.store("webui_user", @name, self)
-      @couchdb_rev = results["rev"]
+      chef_server_rest.delete_rest("users/#{@name}")
     end
     
     # Save this WebUIUser via the REST API
     def save
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("users/#{@name}", self)
+        chef_server_rest.put_rest("users/#{@name}", self)
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
-          r.post_rest("users", self)
+          chef_server_rest.post_rest("users", self)
         else
           raise e
         end
@@ -191,27 +135,8 @@ class Chef
     
     # Create the WebUIUser via the REST API
     def create
-      r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.post_rest("users", self)
+      chef_server_rest.post_rest("users", self)
       self
-    end
-    
-    # Set up our CouchDB design document
-    def self.create_design_document(couchdb=nil)
-      couchdb ||= Chef::CouchDB.new
-      couchdb.create_design_document("users", DESIGN_DOCUMENT)
-    end
-    
-    #return true if an admin user exists. this is pretty expensive (O(n)), should think of a better way (nuo)
-    def self.admin_exist
-      users = self.cdb_list
-      users.each do |u|
-        user = self.cdb_load(u)
-        if user.admin
-          return user.name
-        end
-      end
-      nil
     end
     
     protected
