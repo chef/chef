@@ -16,7 +16,8 @@
 #
 
 name "chef-server-webui"
-version ENV["CHEF_GIT_REV"] || "master"
+#version ENV["CHEF_GIT_REV"] || "master"
+version "erchef-webui"
 
 dependencies ["ruby", "bundler", "libxml2", "libxslt", "curl", "rsync"]
 
