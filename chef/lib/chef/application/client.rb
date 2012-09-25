@@ -274,14 +274,7 @@ class Chef::Application::Client < Chef::Application
           Chef::Log.debug("Splay sleep #{splay} seconds")
           sleep splay
         end
-        @chef_client = Chef::Client.new(
-          @chef_client_json, 
-          :override_runlist => config[:override_runlist]
-        )
-        @chef_client_json = nil
-
-        @chef_client.run
-        @chef_client = nil
+        run_chef_client
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           unless SELF_PIPE.empty?
@@ -319,6 +312,18 @@ class Chef::Application::Client < Chef::Application
   end
 
   private
+
+  # Initializes Chef::Client instance and runs it
+  def run_chef_client
+    @chef_client = Chef::Client.new(
+      @chef_client_json, 
+      :override_runlist => config[:override_runlist]
+    )
+    @chef_client_json = nil
+
+    @chef_client.run
+    @chef_client = nil
+  end
 
   def client_sleep(sec)
     IO.select([ SELF_PIPE[0] ], nil, nil, sec) or return

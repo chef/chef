@@ -223,12 +223,7 @@ class Chef::Application::Solo < Chef::Application
           sleep splay
         end
 
-        @chef_solo = Chef::Client.new(
-          @chef_solo_json, 
-          :override_runlist => config[:override_runlist]
-        )
-        @chef_solo.run
-        @chef_solo = nil
+        run_chef_client
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           sleep Chef::Config[:interval]
@@ -250,5 +245,17 @@ class Chef::Application::Solo < Chef::Application
         end
       end
     end
+  end
+
+  private
+
+  # Initializes Chef::Client instance and runs it
+  def run_chef_client
+    @chef_solo = Chef::Client.new(
+      @chef_solo_json, 
+      :override_runlist => config[:override_runlist]
+    )
+    @chef_solo.run
+    @chef_solo = nil
   end
 end
