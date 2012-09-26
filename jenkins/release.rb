@@ -111,6 +111,17 @@ shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
 shell.run_command
 shell.error!
 
+s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-name.json"
+puts "UPLOAD: #{options[:project]}-platform-name.json -> #{s3_location}"
+s3_cmd = ["s3cmd",
+          "put",
+          "#{options[:project]}-platform-name.json",
+          s3_location].join(" ")
+shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
+shell.run_command
+shell.error!
+
+
 ###############################################################################
 # BACKWARD COMPAT HACK
 #
