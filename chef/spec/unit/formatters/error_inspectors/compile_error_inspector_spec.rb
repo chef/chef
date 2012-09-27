@@ -137,6 +137,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       it "find the culprit recipe name when the drive letter is lower case" do
         @trace.each { |line| line.gsub!(/^C:/, "c:") }
         @exception.set_backtrace(@trace)
+        @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
         @inspector = described_class.new(@path, @exception)
         @inspector.add_explanation(@description)
         @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
