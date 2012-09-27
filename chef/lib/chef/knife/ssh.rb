@@ -124,6 +124,8 @@ class Chef
                  q = Chef::Search::Query.new
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
+                   # we should skip the loop to next iteration if the item returned by the search is nil
+                   next if item.nil?
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
@@ -133,7 +135,8 @@ class Chef
                    else
                      i = format_for_display(item)[config[:attribute]]
                    end
-                   r.push(i) unless i.nil?
+                   # we no longer need a check for nil as we are skipping nil items
+                   r.push(i)
                  end
                  r
                end
