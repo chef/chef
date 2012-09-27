@@ -128,9 +128,20 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       @inspector.add_explanation(@description)
     end
 
-    it "finds the culprit recipe name from the stacktrace" do
-      @inspector.culprit_file.should == "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
-    end
+
+    describe "and examining the stack trace for a recipe" do
+      it "find the culprit recipe name when the drive letter is upper case" do
+        @inspector.culprit_file.should == "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+      end
+
+      it "find the culprit recipe name when the drive letter is lower case" do
+        @trace.each { |line| line.gsub!(/^C:/, "c:") }
+        @exception.set_backtrace(@trace)
+        @inspector = described_class.new(@path, @exception)
+        @inspector.add_explanation(@description)
+        @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+      end
+    end 
 
     it "finds the line number of the error from the stack trace" do
       @inspector.culprit_line.should == 14
