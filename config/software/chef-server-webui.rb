@@ -16,12 +16,11 @@
 #
 
 name "chef-server-webui"
-#version ENV["CHEF_GIT_REV"] || "master"
-version "erchef-webui"
+version "master"
 
 dependencies ["ruby", "bundler", "libxml2", "libxslt", "curl", "rsync"]
 
-source :git => "git://github.com/opscode/chef"
+source :git => "git://github.com/opscode/chef-server-webui"
 
 project_dir = "#{source_dir}/#{name}/#{name}"
 
