@@ -87,10 +87,10 @@ class Chef
     attr_reader :error_descriptions
 
     def initialize(rest_client)
-      if Chef::Config[:disable_reporting]
-        @reporting_enabled = false
-      else
+      if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
         @reporting_enabled = true
+      else
+        @reporting_enabled = false
       end
       @updated_resources = []
       @total_res_count = 0
@@ -100,7 +100,7 @@ class Chef
       @run_id = nil
       @rest_client = rest_client
       @node = nil
-      @error_descriptions = nil
+      @error_descriptions = {}
     end
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
@@ -159,55 +159,51 @@ class Chef
     end
 
     def run_completed(node)
+      @status = "success"
+      post_reporting_data
+    end
+
+    def run_failed(exception)
+      @exception = exception
+      @status = "failure"
+      post_reporting_data
+    end
+
+    def post_reporting_data
       if reporting_enabled?
-        resource_history_url = "reports/nodes/#{node.name}/runs/#{run_id}"
-        run_data = report(node)
-        run_data["action"] = "end"
-        Chef::Log.info("Sending resource update report (run-id: #{run_id})")
+        run_data = prepare_run_data
+        resource_history_url = "reports/nodes/#{@node.name}/runs/#{@run_id}"        
+        Chef::Log.info("Sending resource update report (run-id: #{@run_id})")
         Chef::Log.debug run_data.inspect
-        @rest_client.post_rest(resource_history_url, run_data)
+        compressed_data = encode_gzip(run_data.to_json)
+        Chef::Log.debug("Sending Compressed Run Data...")
+        # Since we're posting compressed data we can not directly call
+        # post_rest which expects JSON
+        reporting_url = @rest_client.create_url(resource_history_url)
+        @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
       else
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
     end
-
-    def run_failed(node, exception)
-      if reporting_enabled?
-        resource_history_url = "reports/nodes/#{node.name}/runs/#{run_id}"
-        Chef::Log.debug(resource_history_url)
-        @exception = exception
-        @status = "failure"
-        run_data = report(node)
-        run_data["action"] = "end"
-        Chef::Log.info("Sending resource update report (run-id: #{run_id})")
-        Chef::Log.debug run_data.inspect
-        @rest_client.post_rest(resource_history_url, run_data)
-      else
-        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
-      end
-    end
-
-    def report(node)
+    
+    def prepare_run_data
       run_data = {}
+      run_data["action"] = "end"
       run_data["resources"] = updated_resources.map do |resource_record|
         resource_record.for_json
       end
-      run_data["status"] = status
-      run_data["run_list"] = node.run_list.to_json
+      run_data["status"] = @status
+      run_data["run_list"] = @node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
-      if @exception
-        run_data["data"]["class"] = @exception.class
-        run_data["data"]["message"] = @exception.message
-        run_data["data"]["description"] = @error_descriptions
-        # if in array format, we join it on newline
-        if @exception.backtrace.respond_to?("join")
-          run_data["data"]["stacktrace"] = @exception.backtrace.join("\n")
-        else
-          run_data["data"]["stacktrace"] = @exception.backtrace
-        end
-      else
-        run_data["data"]["description"] = @error_descriptions
+
+      if exception
+        exception_data = {}
+        exception_data["class"] = exception.inspect
+        exception_data["message"] = exception.message
+        exception_data["backtrace"] = exception.backtrace.to_json
+        exception_data["description"] =  @error_descriptions
+        run_data["data"]["exception"] = exception_data
       end
       run_data
     end
@@ -239,6 +235,12 @@ class Chef
     # output.
     def nested_resource?(new_resource)
       @pending_update && @pending_update.new_resource != new_resource
+    end
+
+    def encode_gzip(data)
+      "".tap do |out|
+        Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+      end
     end
 
   end
