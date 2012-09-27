@@ -352,7 +352,7 @@ describe Chef::ResourceReporter do
 
       it "includes the data hash" do
         @report.should have_key("data")
-        @report["data"].should eql({"description" => nil})
+        @report["data"].should == {}
       end
 
       it "includes the run_list" do
@@ -378,13 +378,13 @@ describe Chef::ResourceReporter do
 
       it "includes the exception type in the event data" do
         @report.should have_key("data")
-        @report["data"].should have_key("class")
-        @report["data"]["class"].should == RSpec::Mocks::Mock
+        @report["data"]["exception"].should have_key("class")
+        @report["data"]["exception"]["class"].should == "Net::HTTPServerException"
       end
 
       it "includes the exception message in the event data" do
-        @report["data"].should have_key("message")
-        @report["data"]["message"].should == "Object not found"
+        @report["data"]["exception"].should have_key("message")
+        @report["data"]["exception"]["message"].should == "Object not found"
       end
 
       it "includes the exception trace in the event data" do
@@ -393,8 +393,8 @@ describe Chef::ResourceReporter do
       end
 
       it "includes the error inspector output in the event data" do
-        @report["data"].should have_key("description")
-        @report["data"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
+        @report["data"]["exception"].should have_key("description")
+        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
       end
 
     end
