@@ -47,7 +47,6 @@ describe Chef::Provider::Deploy do
     before do
       FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to).ordered
       FileUtils.should_receive(:mkdir_p).with(@resource.shared_path).ordered
-      ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
       ::File.stub!(:directory?).and_return(false)
       @provider.stub(:symlink)
       @provider.stub(:migrate)
@@ -80,7 +79,6 @@ describe Chef::Provider::Deploy do
   end
 
   it "ensures the deploy_to dir ownership after the verfication that it exists" do
-    ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
     @provider.should_receive(:verify_directories_exist).ordered
     @provider.should_receive(:enforce_ownership).ordered
     @provider.stub(:copy_cached_repo)
@@ -303,7 +301,6 @@ describe Chef::Provider::Deploy do
   # CHEF-3449 #converge_by is called in #recipe_eval and must happen in sequence
   # with the other calls to #converge_by to keep the train on the tracks
   it "evaluates a callback file before the corresponding step" do
-    ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times.and_yield
     @provider.should_receive(:verify_directories_exist)
     @provider.should_receive(:update_cached_repo)
     @provider.should_receive(:enforce_ownership)
