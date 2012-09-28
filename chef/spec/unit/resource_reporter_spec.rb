@@ -24,12 +24,12 @@ require 'chef/resource_reporter'
 
 describe Chef::ResourceReporter do
   before(:all) do
-    @reporting_toggle_default = Chef::Config[:disable_reporting]
-    Chef::Config[:disable_reporting] = false
+    @reporting_toggle_default = Chef::Config[:enable_reporting]
+    Chef::Config[:enable_reporting] = true
   end
 
   after(:all) do
-    Chef::Config[:disable_reporting] = @reporting_toggle_default
+    Chef::Config[:enable_reporting] = @reporting_toggle_default
   end
 
   before do
@@ -440,11 +440,22 @@ describe Chef::ResourceReporter do
         @expected_data = @resource_reporter.report(@node)
         @expected_data["action"] = "end"
 
+        post_url = "https://chef_server/example_url"
         response = {"result"=>"ok"}
 
-        @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs/ABC123", @expected_data).
-          and_return(response)
+        @rest_client.should_receive(:create_url).
+          with("reports/nodes/spitfire/runs/ABC123").
+          ordered.
+          and_return(post_url)
+        @rest_client.should_receive(:raw_http_request).ordered do |method, url, headers, data|
+          method.should eq(:POST)
+          url.should eq(post_url)
+          headers.should eq({'Content-Encoding' => 'gzip'})
+          data_stream = Zlib::GzipReader.new(StringIO.new(data))
+          data = data_stream.read
+          data.should eq(@expected_data.to_json)
+          response
+        end
 
         @resource_reporter.run_completed(@node)
       end

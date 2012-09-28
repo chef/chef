@@ -86,10 +86,10 @@ class Chef
     attr_reader :error_descriptions
 
     def initialize(rest_client)
-      if Chef::Config[:disable_reporting]
-        @reporting_enabled = false
-      else
+      if Chef::Config[:enable_reporting]
         @reporting_enabled = true
+      else
+        @reporting_enabled = false
       end
       @updated_resources = []
       @total_res_count = 0
@@ -100,6 +100,7 @@ class Chef
       @rest_client = rest_client
       @node = nil
       @error_descriptions = nil
+      @summary_only
     end
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
@@ -108,10 +109,11 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{@node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin}, {'X-Chef-ReportingSummary' => 'true'})
           run_uri = URI.parse(server_response["uri"])
           @run_id = ::File.basename(run_uri.path)
           Chef::Log.info("Chef server generated run history id: #{@run_id}")
+          @summary_only = server_response["summary_only"]
         rescue Net::HTTPServerException => e
           raise unless e.response.code.to_s == "404"
           Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
@@ -165,7 +167,23 @@ class Chef
         run_data["action"] = "end"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
         Chef::Log.debug run_data.inspect
-        @rest_client.post_rest(resource_history_url, run_data)
+        #if summary only is enabled we do the following :
+        # 1) send the size of the gzipped data - but do not send the run_data["resources"]
+        # 2) send the updated_res_count
+        # 3) send the uncompressed data
+        if @summary_only
+          run_data = report_summary(run_data, node)
+          Chef::Log.info("run_data_summary: #{run_data}")
+          @rest_client.post_rest(resource_history_url, run_data)
+        else
+          Chef::Log.info("run_data: #{run_data}")
+          compressed_data = encode_gzip(run_data.to_json)
+          Chef::Log.debug("Compressed Run Data: #{compressed_data}")
+          # Since we're posting compressed data we can not directly call
+          # post_rest which expects JSON
+          reporting_url = @rest_client.create_url(resource_history_url)
+          @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
+        end
       else
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
@@ -174,6 +192,13 @@ class Chef
     def run_failed(exception)
       @exception = exception
       @status = "failure"
+    end
+
+    def report_summary(run_data, node)
+      run_data["updated_res_count"] = updated_resources.count.to_s
+      run_data["post_size"] = encode_gzip(run_data.to_json).bytesize.to_s
+      run_data["resources"] = []
+      run_data
     end
 
     def report(node)
@@ -222,6 +247,12 @@ class Chef
     # output.
     def nested_resource?(new_resource)
       @pending_update && @pending_update.new_resource != new_resource
+    end
+
+    def encode_gzip(data)
+      "".tap do |out|
+        Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+      end
     end
 
   end
