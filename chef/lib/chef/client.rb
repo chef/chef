@@ -435,7 +435,7 @@ class Chef
           run_status.exception = e
           run_failed
         end
-        @events.run_failed(node, e)
+        @events.run_failed(e)
         raise
       ensure
         run_status = nil
