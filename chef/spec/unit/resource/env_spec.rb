@@ -1,5 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2010 VMware, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -63,4 +64,22 @@ describe Chef::Resource::Env do
     @resource.value "bar"
     @resource.value.should eql("bar")
   end
+
+  describe "when it has key name and value" do
+    before do 
+      @resource.key_name("charmander")
+      @resource.value("level7")
+      @resource.delim("hi")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:value].should == "level7"
+    end
+
+    it "returns the key name as its identity" do
+      @resource.identity.should == "charmander"
+    end
+  end
+
 end

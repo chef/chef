@@ -58,11 +58,13 @@ class Chef
 
       def is_binary?(path)
         ::File.open(path) do |file|
+
           buff = file.read(Chef::Config[:diff_filesize_threshold])
           buff = "" if buff.nil?
           return buff !~ /^[\r[:print:]]*$/
         end
       end
+
 
       def diff_current(temp_path)
         suppress_resource_reporting = false
@@ -123,13 +125,39 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::File.new(@new_resource.name)
+        # Every child should be specifying their own constructor, so this
+        # should only be run in the file case.
+        @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        if @new_resource.content && ::File.exist?(@new_resource.path)
-          @current_resource.checksum(checksum(@new_resource.path))
+        if !::File.directory?(@new_resource.path)
+          if ::File.exist?(@new_resource.path)
+            @current_resource.checksum(checksum(@new_resource.path))
+          end
         end
+        load_current_resource_attrs
         setup_acl
+        
+        @current_resource
+      end
+
+      def load_current_resource_attrs
+        if ::File.exist?(@new_resource.path)
+          stat = ::File.stat(@new_resource.path)
+          @current_resource.owner(stat.uid)
+          @current_resource.mode(stat.mode & 07777)
+          @current_resource.group(stat.gid)
+
+          if @new_resource.group.nil?
+            @new_resource.group(@current_resource.group)
+          end 
+          if @new_resource.owner.nil?
+            @new_resource.owner(@current_resource.owner)
+          end
+          if @new_resource.mode.nil?
+            @new_resource.mode(@current_resource.mode)
+          end
+        end
       end
       
       def setup_acl
@@ -179,7 +207,21 @@ class Chef
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
             Chef::Log.info("#{@new_resource} contents updated")
+            update_new_file_state
           end
+        end
+      end
+
+      # if you are using a tempfile before creating, you must
+      # override the default with the tempfile, since the 
+      # file at @new_resource.path will not be updated on converge
+      def update_new_file_state(path=@new_resource.path)
+        stat = ::File.stat(path)
+        @new_resource.owner(stat.uid)
+        @new_resource.mode(stat.mode & 07777)
+        @new_resource.group(stat.gid)
+        if !::File.directory?(path)
+          @new_resource.checksum(checksum(path))
         end
       end
 
@@ -190,10 +232,13 @@ class Chef
           desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
           description << desc
           description << diff_current_from_content(@new_resource.content) 
+          
           converge_by(description) do
+            Chef::Log.info("entered create")
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
             access_controls.set_all
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+            update_new_file_state
           end
         else
           set_content unless @new_resource.content.nil?
@@ -205,6 +250,8 @@ class Chef
         if access_controls.requires_changes?
           converge_by(access_controls.describe_changes) do 
             access_controls.set_all
+            #Update file state with new access values
+            update_new_file_state
           end
         end
       end

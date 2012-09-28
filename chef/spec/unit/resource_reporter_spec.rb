@@ -36,6 +36,7 @@ describe Chef::ResourceReporter do
     @node = Chef::Node.new
     @node.name("spitfire")
     @rest_client = mock("Chef::REST (mock)")
+    @rest_client.stub!(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @new_resource.cookbook_name = "monkey"
@@ -75,7 +76,6 @@ describe Chef::ResourceReporter do
       pending "refactor how node gets set."
       @resource_reporter.status.should == "success"
     end
-
   end
 
   context "when chef fails" do
@@ -287,7 +287,6 @@ describe Chef::ResourceReporter do
         #    "status" : "success"
         #    "data" : ""
         # }
-
         @resource_reporter.resource_action_start(@new_resource, :create)
         @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
         @resource_reporter.resource_updated(@new_resource, :create)
@@ -365,7 +364,7 @@ describe Chef::ResourceReporter do
     context "for an unsuccessful run" do
 
       before do
-        @backtrace = ["foo.rb:1 in `foo!'", "bar.rb:2 in `bar!", "\n'baz.rb:3 in `baz!'"]
+        @backtrace = ["foo.rb:1 in `foo!'","bar.rb:2 in `bar!","'baz.rb:3 in `baz!'"]
         @node = Chef::Node.new
         @node.name("spitfire")
         @exception = mock("ArgumentError")
@@ -379,7 +378,6 @@ describe Chef::ResourceReporter do
 
       it "includes the exception type in the event data" do
         @report.should have_key("data")
-        @report["data"].should have_key("exception")
         @report["data"]["exception"].should have_key("class")
         @report["data"]["exception"]["class"].should == "Net::HTTPServerException"
       end

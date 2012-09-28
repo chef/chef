@@ -29,11 +29,11 @@ class Chef
 
       identity_attr :path
 
-      state_attrs :checksum, :owner, :group, :mode
-
-      # By default, windows gets `state_attrs :rights, :deny_rights`
       if Platform.windows?
-        state_attrs :rights, :deny_rights
+        # Use Windows rights instead of standard *nix permissions
+        state_attrs :checksum, :rights, :deny_rights
+      else
+        state_attrs :checksum, :owner, :group, :mode
       end
 
       provides :file, :on_platforms => :all
@@ -52,7 +52,7 @@ class Chef
 
       def content(arg=nil)
         set_or_return(
-          :content,
+                      :content,
           arg,
           :kind_of => String
         )

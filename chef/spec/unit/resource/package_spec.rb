@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -62,11 +63,13 @@ describe Chef::Resource::Package do
    before do
      @resource.package_name("tomcat")
      @resource.version("10.9.8")
+     @resource.options("-al")
    end
 
    it "describes its state" do
      state = @resource.state
      state[:version].should == "10.9.8"
+     state[:options].should == "-al"
    end
    
    it "returns the file path as its identity" do

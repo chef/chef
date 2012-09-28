@@ -1,5 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2010 VMware, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,6 +20,10 @@
 class Chef
   class Resource
     class Env < Chef::Resource
+
+      identity_attr :key_name
+
+      state_attrs :value
 
       def initialize(name, run_context=nil)
         super

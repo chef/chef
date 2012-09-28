@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -24,6 +25,11 @@ require 'chef/mixin/securable'
 class Chef
   class Resource
     class Directory < Chef::Resource
+      
+      identity_attr :path
+
+      state_attrs :group, :mode, :owner
+      
       include Chef::Mixin::Securable
 
       provides :directory, :on_platforms => :all
