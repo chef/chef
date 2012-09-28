@@ -17,5 +17,5 @@
 #
 
 module ChefServer
-  VERSION = '10.14.4'
+  VERSION = '10.14.5'
 end
