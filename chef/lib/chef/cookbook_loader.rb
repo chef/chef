@@ -66,7 +66,7 @@ class Chef
     def load_cookbooks
       @repo_paths.each do |repo_path|
         Dir[File.join(repo_path, "*")].each do |cookbook_path|
-          load_cookbook(File.basename(cookbook_path), @repo_paths)
+          load_cookbook(File.basename(cookbook_path), [repo_path])
         end
       end
       @cookbooks_by_name
