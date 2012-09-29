@@ -142,10 +142,20 @@ describe Chef::CookbookLoader do
         @cookbook_loader.metadata[:openldap].name.should == :openldap
         @cookbook_loader.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
       end
-  
-    end
 
-  end
+      it "should check each cookbook directory only once (CHEF-3487)" do
+        cookbooks = []
+        @repo_paths.each do |repo_path|
+          cookbooks |= Dir[File.join(repo_path, "*")]
+        end
+        cookbooks.each do |cookbook|
+            File.should_receive(:directory?).with(cookbook).once;
+        end
+        @cookbook_loader.load_cookbooks
+      end
+    end # load_cookbooks
+
+  end # loading all cookbooks
 
   describe "loading only one cookbook" do
     before(:each) do
@@ -192,5 +202,5 @@ describe Chef::CookbookLoader do
         seen.should have_key("apache2")
       end   
     end
-  end
+  end # loading only one cookbook
 end
