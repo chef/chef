@@ -20,7 +20,7 @@ version "master"
 
 dependencies ["ruby", "bundler", "libxml2", "libxslt", "curl", "rsync"]
 
-source :git => "git://github.com/opscode/chef-server-webui"
+source :git => "git://github.com/opscode/chef-server-webui.git"
 
 project_dir = "#{source_dir}/#{name}/#{name}"
 
