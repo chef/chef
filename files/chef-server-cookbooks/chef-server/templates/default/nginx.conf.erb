@@ -124,7 +124,7 @@ http {
     }
 
     location / {
-    <%= select_upstream("chef_server_api", "chef_server_webui") %>
+    <%= select_upstream("erchef", "chef_server_webui") %>
     }
   }
 }
