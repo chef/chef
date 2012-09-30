@@ -22,10 +22,10 @@ dependencies ["ruby", "bundler", "libxml2", "libxslt", "curl", "rsync"]
 
 source :git => "git://github.com/opscode/chef-server-webui.git"
 
-project_dir = "#{source_dir}/#{name}/#{name}"
+relative_path "chef-server-webui"
 
 build do
-  bundle "install --without development test --path=#{install_dir}/embedded/service/gem", :cwd => project_dir
+  bundle "install --without development test --path=#{install_dir}/embedded/service/gem"
   command "mkdir -p #{install_dir}/embedded/service/chef-server-webui"
-  command "#{install_dir}/embedded/bin/rsync -a #{project_dir}/ --delete --exclude=.git/*** --exclude=.gitignore #{install_dir}/embedded/service/chef-server-webui/"
+  command "#{install_dir}/embedded/bin/rsync -a --delete --exclude=.git/*** --exclude=.gitignore ./ #{install_dir}/embedded/service/chef-server-webui/"
 end
