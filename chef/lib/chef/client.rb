@@ -447,7 +447,10 @@ class Chef
 
     # Ensures runlist override contains RunListItem instances
     def runlist_override_sanity_check!
-      @override_runlist = @override_runlist.split(',') if @override_runlist.is_a?(String)
+      # Convert to array and remove whitespace
+      if @override_runlist.is_a?(String)
+        @override_runlist = @override_runlist.split(',').map { |e| e.strip }
+      end
       @override_runlist = [@override_runlist].flatten.compact
       @override_runlist.map! do |item|
         if(item.is_a?(Chef::RunList::RunListItem))

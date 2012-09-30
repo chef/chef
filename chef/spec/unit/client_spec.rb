@@ -239,12 +239,16 @@ shared_examples_for Chef::Client do
       @node.chef_environment("_default")
       @node[:platform] = "example-platform"
       @node[:platform_version] = "example-platform-1.0"
+    end
 
-      @client = Chef::Client.new(nil, :override_runlist => 'role[test_role]')
-      @client.node = @node
+    it "should permit spaces in overriding run list" do
+      @client = Chef::Client.new(nil, :override_runlist => 'role[a], role[b]')
     end
 
     it "should override the run list and save original runlist" do
+      @client = Chef::Client.new(nil, :override_runlist => 'role[test_role]')
+      @client.node = @node
+
       @node.run_list << "role[role_containing_cookbook1]"
 
       override_role = Chef::Role.new
