@@ -71,4 +71,4 @@ while true; do
 done
 
 # run the tests
-sudo env PATH=$PATH /opt/chef/embedded/bin/bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
+sudo env PATH=$PATH TERM=xterm /opt/chef/embedded/bin/bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
