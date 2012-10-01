@@ -54,12 +54,12 @@ gzip -dc src/chef*.tar.gz | (tar -C src/chef -xf -)
 cd src/chef/chef
 mkdir bundle
 export PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
-bundle config build.eventmachine --with-cflags=-fpermissive
+/opt/chef/embedded/bin/bundle config build.eventmachine --with-cflags=-fpermissive
 
 # bundle install may fail if the internets are down
 retries=0
 while true; do
-  if bundle install --without server --path bundle; then
+  if /opt/chef/embedded/bin/bundle install --without server --path bundle; then
     break
   fi
   retries=$( expr $retries + 1 )
@@ -71,4 +71,4 @@ while true; do
 done
 
 # run the tests
-sudo env PATH=$PATH bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
+sudo env PATH=$PATH /opt/chef/embedded/bin/bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
