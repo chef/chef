@@ -64,6 +64,13 @@ else
   raise error_msg % [options[:project], File.expand_path(build_support_file)]
 end
 
+platform_names_file = File.join(File.dirname(__FILE__), "#{options[:project]}-platform-names.json")
+
+if not File.exists?(platform_names_file)
+  error_msg = "Could not locate platform names file for %s at %s."
+  raise error_msg % [options[:project], File.expand_path(platform_names_file)]
+end
+
 # fetch the list of local packages
 local_packages = Dir['**/pkg/*']
 
@@ -110,6 +117,17 @@ s3_cmd = ["s3cmd",
 shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
 shell.run_command
 shell.error!
+
+s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-names.json"
+puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
+s3_cmd = ["s3cmd",
+          "put",
+          platform_names_file,
+          s3_location].join(" ")
+shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
+shell.run_command
+shell.error!
+
 
 ###############################################################################
 # BACKWARD COMPAT HACK

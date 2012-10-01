@@ -1,0 +1,9 @@
+{
+    "el" : "Enterprise Linux",
+    "debian" : "Debian",
+    "mac_os_x" : "OS X",
+    "ubuntu" : "Ubuntu", 
+    "solaris2" : "Solaris",
+    "sles" : "SUSE Enterprise",
+    "suse" : "openSUSE"
+}
