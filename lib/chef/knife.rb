@@ -164,7 +164,6 @@ class Chef
       subcommand_class.options = options.merge!(subcommand_class.options)
       subcommand_class.load_deps
       instance = subcommand_class.new(args)
-      instance.configure_chef
       instance.run_with_pretty_exceptions
     end
 
@@ -264,6 +263,8 @@ class Chef
 
       command_name_words = self.class.snake_case_name.split('_')
 
+      configure_chef
+      configure_from_file_settings!
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
       @name_args.delete(command_name_words.join('-'))
@@ -290,6 +291,14 @@ class Chef
       puts "Error: " + e.to_s
       show_usage
       exit(1)
+    end
+
+    def configure_from_file_settings!
+      if(Chef::Config[:knife])
+        self.class.options.keys.each do |key|
+          config[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+        end
+      end
     end
 
     def configure_chef
