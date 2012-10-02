@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -41,6 +42,18 @@ describe Chef::Resource::HttpRequest do
   it "should set message to a string" do
     @resource.message "monkeybars"
     @resource.message.should eql("monkeybars")
+  end
+
+  describe "when it has a message and headers" do
+    before do 
+      @resource.url("http://www.trololol.net")
+      @resource.message("Get sum post brah.")
+      @resource.headers({"head" => "tail"})
+    end
+
+    it "returns the url as its identity" do
+      @resource.identity.should == "http://www.trololol.net"
+    end
   end
   
 end

@@ -1,5 +1,6 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -47,5 +48,14 @@ describe Chef::Resource::Log do
     lambda { @resource.level :unsupported }.should raise_error(ArgumentError)
   end
 
+  describe "when the identity is defined" do
+    before do 
+      @resource = Chef::Resource::Log.new("ery day I'm loggin-in")
+    end
+
+    it "returns the log string as its identity" do
+      @resource.identity.should == "ery day I'm loggin-in"
+    end
+  end
 end
   
