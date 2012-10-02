@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -24,7 +25,11 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-       provides :link, :on_platform  => :all
+      provides :link, :on_platform  => :all
+
+      identity_attr :target_file
+
+      state_attrs :to, :owner, :group
 
       def initialize(name, run_context=nil)
         super

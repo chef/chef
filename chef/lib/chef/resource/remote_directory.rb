@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -26,6 +27,10 @@ class Chef
       include Chef::Mixin::Securable
 
       provides :remote_directory, :on_platforms => :all
+
+      identity_attr :path
+
+      state_attrs :files_owner, :files_group, :files_mode
 
       def initialize(name, run_context=nil)
         super

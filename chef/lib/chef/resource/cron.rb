@@ -1,5 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Bryan McLellan
 # License:: Apache License, Version 2.0
 #
@@ -22,6 +23,10 @@ class Chef
   class Resource
     class Cron < Chef::Resource
       
+      identity_attr :command
+
+      state_attrs :minute, :hour, :day, :month, :weekday, :user
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :cron

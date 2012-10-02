@@ -1,5 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Bryan McLellan
 # License:: Apache License, Version 2.0
 #
@@ -21,7 +22,11 @@ require 'chef/resource'
 class Chef
   class Resource
     class Route < Chef::Resource
-      
+
+      identity_attr :target
+
+      state_attrs :netmask, :gateway
+     
       def initialize(name, run_context=nil)
         super
         @resource_name = :route

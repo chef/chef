@@ -1,5 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Joe Williams
 # License:: Apache License, Version 2.0
 #
@@ -77,4 +78,25 @@ describe Chef::Resource::Mdadm do
     @resource.exists true
     @resource.exists.should eql(true)
   end
+
+  describe "when it has devices, level, and chunk" do
+    before do 
+      @resource.raid_device("raider")
+      @resource.devices(["device1", "device2"])
+      @resource.level(1)
+      @resource.chunk(42)
+    end
+    
+    it "describes its state" do
+      state = @resource.state
+      state[:devices].should eql(["device1", "device2"])
+      state[:level].should == 1
+      state[:chunk].should == 42
+    end
+
+    it "returns the raid device as its identity" do
+      @resource.identity.should == "raider"
+    end
+  end
+  
 end

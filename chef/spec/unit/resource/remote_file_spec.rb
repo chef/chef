@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -82,4 +83,27 @@ describe Chef::Resource::RemoteFile do
     end
   end
   
+  describe "when it has group, mode, owner, source, and checksum" do
+    before do 
+      @resource.path("/this/path/")
+      @resource.group("pokemon")
+      @resource.mode("0664")
+      @resource.owner("root")
+      @resource.source("https://www.google.com/images/srpr/logo3w.png")
+      @resource.checksum("1"*26)
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:group].should == "pokemon"
+      state[:mode].should == "0664"
+      state[:owner].should == "root"
+      state[:checksum].should == "1"*26
+    end
+
+    it "returns the path as its identity" do
+      @resource.identity.should == "/this/path/"
+    end
+  end
+ 
 end

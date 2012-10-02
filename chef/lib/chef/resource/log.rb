@@ -1,5 +1,6 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,22 +18,24 @@
 #
 class Chef
   class Resource
-
-    # Sends a string from a recipe to a log provider
-    #
-    # log "some string to log" do
-    #   level :info  # (default)  also supports :warn, :debug, and :error
-    # end
-    #    
-    # === Example
-    # log "your string to log" 
-    #
-    # or 
-    #
-    # log "a debug string" { level :debug }
-    #  
     class Log < Chef::Resource
-      
+    
+      identity_attr :name
+
+      # Sends a string from a recipe to a log provider
+      #
+      # log "some string to log" do
+      #   level :info  # (default)  also supports :warn, :debug, and :error
+      # end
+      #    
+      # === Example
+      # log "your string to log" 
+      #
+      # or 
+      #
+      # log "a debug string" { level :debug }
+      #
+  
       # Initialize log resource with a name as the string to log 
       #
       # === Parameters
@@ -54,7 +57,7 @@ class Chef
           :equal_to => [ :debug, :info, :warn, :error, :fatal ]
         )
       end
-      
+    
     end
   end  
 end

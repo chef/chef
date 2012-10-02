@@ -34,6 +34,17 @@ class Chef
         true
       end
 
+     def load_new_resource_state
+        # If the user didn't specify a change in enabled state, 
+        # it will be the same as the old resource
+       if ( @new_resource.enabled.nil? )
+         @new_resource.enabled(@current_resource.enabled)
+       end
+       if ( @new_resource.running.nil? )
+         @new_resource.running(@current_resource.running)
+       end
+     end
+
       def shared_resource_requirements
       end
 
@@ -56,6 +67,8 @@ class Chef
             Chef::Log.info("#{@new_resource} enabled")
           end
         end
+        load_new_resource_state
+        @new_resource.enabled(true)
       end
 
       def action_disable
@@ -67,6 +80,8 @@ class Chef
         else
           Chef::Log.debug("#{@new_resource} already disabled - nothing to do")
         end
+        load_new_resource_state
+        @new_resource.enabled(false)
       end
 
       def action_start
@@ -78,6 +93,8 @@ class Chef
         else
           Chef::Log.debug("#{@new_resource} already running - nothing to do")
         end
+        load_new_resource_state
+        @new_resource.running(true)
       end
 
       def action_stop
@@ -89,6 +106,8 @@ class Chef
         else
           Chef::Log.debug("#{@new_resource} already stopped - nothing to do")
         end
+        load_new_resource_state
+        @new_resource.running(false)
       end
 
       def action_restart
@@ -96,6 +115,8 @@ class Chef
           restart_service
           Chef::Log.info("#{@new_resource} restarted")
         end
+        load_new_resource_state
+        @new_resource.running(true)
       end
 
       def action_reload
@@ -105,6 +126,7 @@ class Chef
             Chef::Log.info("#{@new_resource} reloaded")
           end
         end
+        load_new_resource_state
       end
 
       def enable_service
