@@ -207,7 +207,6 @@ class Chef
             backup @new_resource.path if ::File.exists?(@new_resource.path)
             ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
             Chef::Log.info("#{@new_resource} contents updated")
-            update_new_file_state
           end
         end
       end
@@ -220,7 +219,7 @@ class Chef
         @new_resource.owner(stat.uid)
         @new_resource.mode(stat.mode & 07777)
         @new_resource.group(stat.gid)
-        if !::File.directory?(path)
+        if !::File.directory?(path) 
           @new_resource.checksum(checksum(path))
         end
       end

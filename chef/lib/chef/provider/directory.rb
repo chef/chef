@@ -104,7 +104,6 @@ class Chef
             else
               ::Dir.mkdir(@new_resource.path)
             end
-            update_new_file_state
             Chef::Log.info("#{@new_resource} created directory #{@new_resource.path}")
           end 
         end
