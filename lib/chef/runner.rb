@@ -47,6 +47,15 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+
+      # Execute any before notifications if the conditions are met
+      if not resource.should_skip?(action)
+        run_context.before_notifications(resource).each do |notification|
+          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
+          run_action(notification.resource, notification.action, :before, resource)
+        end
+      end
+
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications

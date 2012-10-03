@@ -209,7 +209,13 @@ describe Chef::Resource do
       @resource.immediate_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
     end
 
-    it "should raise an exception if told to act in other than :delay or :immediate(ly)" do
+    it "should make notified resources be capable of acting before" do
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :before
+      @resource.before_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
+    end
+
+    it "should raise an exception if told to act in other than :delay, :immediate(ly) or :before" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       lambda {
         @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :someday
@@ -236,6 +242,12 @@ describe Chef::Resource do
       @resource.notifies_immediately(:restart, :service => 'apache')
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
       @resource.immediate_notifications.should include(expected_notification)
+    end
+
+    it "notifies another resource before" do
+      @resource.notifies_before(:restart, :service => 'apache')
+      expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
+      @resource.before_notifications.should include(expected_notification)
     end
 
     it "notifies a resource to take action at the end of the chef run" do
@@ -271,6 +283,13 @@ describe Chef::Resource do
       @resource.subscribes :reload, zr, :immediately
       zr.immediate_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
     end
+
+    it "should make subscribed resources be capable of acting before" do
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      zr = @run_context.resource_collection.find(:zen_master => "coffee")
+      @resource.subscribes :reload, zr, :before
+      zr.before_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
+    end
   end
 
   describe "to_s" do
@@ -304,7 +323,7 @@ describe Chef::Resource do
     it "should convert to a hash" do
       hash = @resource.to_hash
       expected_keys = [ :allowed_actions, :params, :provider, :updated,
-        :updated_by_last_action, :before, :supports,
+        :updated_by_last_action, :supports,
         :noop, :ignore_failure, :name, :source_line,
         :action, :retries, :retry_delay, :elapsed_time]
       (hash.keys - expected_keys).should == []
@@ -434,7 +453,7 @@ describe Chef::Resource do
       @resource.run_action(:purr)
     end
 
-    it "runs runs an only_if when one is given" do
+    it "runs an only_if when one is given" do
       snitch_variable = nil
       @resource.only_if { snitch_variable = true }
       @resource.only_if.first.positivity.should == :only_if

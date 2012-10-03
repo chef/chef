@@ -326,6 +326,109 @@ E
     SnitchyProvider.all_actions_called.should == [:first, :first, :second, :third]
   end
 
+  it "executes :before when only_if and not_if conditions are met" do
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :second_action
+
+    # unnecessary, they are just to clarify
+    @first_resource.only_if { true }
+    @first_resource.not_if { false }
+
+    before_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    before_resource.action = :first_action
+
+    @first_resource.notifies(:first_action, before_resource, :before)
+
+    @runner.converge
+    SnitchyProvider.all_actions_called.should == [:first, :second]
+  end
+
+  it "executes :before and :immediate notifications in the correct order" do
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :nothing
+
+    before_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    before_resource.action = :second_action
+    @run_context.resource_collection << before_resource
+
+    second_resource = Chef::Resource::Cat.new("snickers", @run_context)
+    second_resource.action = :second_action
+    @run_context.resource_collection << second_resource
+
+    second_resource.notifies(:third_action, @first_resource, :immediate)
+
+    before_resource.notifies(:first_action, @first_resource, :before)
+
+    @runner.converge
+    SnitchyProvider.all_actions_called.should == [:first, :second, :second, :third]
+  end
+
+  it "does not execute :before when only_if is not met" do
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :second_action
+    @first_resource.only_if { false }
+
+    before_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    before_resource.action = :first_action
+
+    @first_resource.notifies(:first_action, before_resource, :before)
+
+    @runner.converge
+    SnitchyProvider.all_actions_called.should == []
+  end
+
+  it "does not execute :before when not_if is met" do
+    SnitchyProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => SnitchyProvider
+    )
+
+    @first_resource.action = :second_action
+    @first_resource.not_if { true }
+
+    before_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    before_resource.action = :first_action
+
+    @first_resource.notifies(:first_action, before_resource, :before)
+
+    @runner.converge
+    SnitchyProvider.all_actions_called.should == []
+  end
+
+  it "should execute before actions on changed resources" do
+    notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    notifying_resource.action = :purr # only action that will set updated on the resource
+
+    @run_context.resource_collection << notifying_resource
+    @first_resource.action = :nothing # won't be updated unless notified by other resource
+
+    notifying_resource.notifies(:purr, @first_resource, :before)
+
+    @runner.converge
+
+    @first_resource.should be_updated
+  end
+
   it "does not fire notifications if the resource was not updated by the last action executed" do
     # REGRESSION TEST FOR CHEF-1452
     SnitchyProvider.clear_action_record
