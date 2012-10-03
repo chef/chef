@@ -127,13 +127,24 @@ class Chef::Application
     raise Chef::Exceptions::Application, "#{self.to_s}: you must override run_application"
   end
 
+  # Initializes Chef::Client instance and runs it
+  def run_chef_client
+    @chef_client = Chef::Client.new(
+      @chef_client_json, 
+      :override_runlist => config[:override_runlist]
+    )
+    @chef_client_json = nil
+
+    @chef_client.run
+    @chef_client = nil
+  end
+
   private
 
   def apply_config(config_file_path)
     Chef::Config.from_file(config_file_path)
     Chef::Config.merge!(config)
   end
-
 
   class << self
     def debug_stacktrace(e)
