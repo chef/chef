@@ -46,28 +46,44 @@ describe Chef::Resource::CookbookFile do
     @cookbook_file.provider.should == Chef::Provider::CookbookFile
   end
   
-  describe "when it has a backup number, group, mode, owner, source, and cookbook" do
+  describe "when it has a backup number, group, mode, owner, source, checksum, and cookbook on nix or path, rights, deny_rights, checksum on windows" do
     before do
-      @cookbook_file.path("/tmp/origin/file.txt")
-      @cookbook_file.group("wheel")
-      @cookbook_file.mode("0664")
-      @cookbook_file.owner("root")
-      @cookbook_file.source("/tmp/foo.txt")
-      @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+       if Chef::Platform.windows?
+         @cookbook_file.path("C:/temp/origin/file.txt")
+         @cookbook_file.rights(:read, "Everyone")
+         @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
+       else
+         @cookbook_file.path("/tmp/origin/file.txt")
+         @cookbook_file.group("wheel")
+         @cookbook_file.mode("0664")
+         @cookbook_file.owner("root")
+         @cookbook_file.source("/tmp/foo.txt")
+         @cookbook_file.cookbook("/tmp/cookbooks/cooked.rb")
+       end
       @cookbook_file.checksum("1" * 64)
     end
 
+    
     it "describes the state" do
       state = @cookbook_file.state
-      state[:group].should == "wheel"
-      state[:mode].should == "0664"
-      state[:owner].should == "root"
+      if Chef::Platform.windows?
+        puts state
+        state[:rights].should == [{:permissions => :read, :principals => "Everyone"}]
+        state[:deny_rights].should == [{:permissions => :full_control, :principals => "Clumsy_Sam"}]
+      else        
+        state[:group].should == "wheel"
+        state[:mode].should == "0664"
+        state[:owner].should == "root"
+      end
       state[:checksum].should == "1" * 64
     end
     
     it "returns the path as its identity" do
-      @cookbook_file.identity.should == "/tmp/origin/file.txt"
+      if Chef::Platform.windows?
+        @cookbook_file.identity.should == "C:/temp/origin/file.txt"
+      else
+        @cookbook_file.identity.should == "/tmp/origin/file.txt"
+      end
     end
-    
   end
 end
