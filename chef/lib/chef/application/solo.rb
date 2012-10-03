@@ -149,8 +149,6 @@ class Chef::Application::Solo < Chef::Application
 
   def initialize
     super
-    @chef_client = nil
-    @chef_client_json = nil
   end
 
   def reconfigure
