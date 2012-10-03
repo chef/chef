@@ -35,7 +35,7 @@ class Chef
 
     # Needs to be settable so deploy can run a resource_collection independent
     # of any cookbooks.
-    attr_accessor :resource_collection, :immediate_notification_collection, :delayed_notification_collection
+    attr_accessor :resource_collection, :immediate_notification_collection, :delayed_notification_collection, :before_notification_collection
 
     attr_reader :events
 
@@ -50,6 +50,7 @@ class Chef
       @resource_collection = Chef::ResourceCollection.new
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
+      @before_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
       @events = events
 
@@ -97,36 +98,29 @@ class Chef
 
     def notifies_immediately(notification)
       nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        @immediate_notification_collection[nr.name] << notification
-      else
-        @immediate_notification_collection[nr.to_s] << notification
-      end
+      @immediate_notification_collection[resource_name_key(nr)] << notification
     end
 
     def notifies_delayed(notification)
       nr = notification.notifying_resource
-      if nr.instance_of?(Chef::Resource)
-        @delayed_notification_collection[nr.name] << notification
-      else
-        @delayed_notification_collection[nr.to_s] << notification
-      end
+      @delayed_notification_collection[resource_name_key(nr)] << notification
+    end
+
+    def notifies_before(notification)
+      nr = notification.notifying_resource
+      @before_notification_collection[resource_name_key(nr)] << notification
     end
 
     def immediate_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return @immediate_notification_collection[resource.name]
-      else
-        return @immediate_notification_collection[resource.to_s]
-      end
+      return @immediate_notification_collection[resource_name_key(resource)]
     end
 
     def delayed_notifications(resource)
-      if resource.instance_of?(Chef::Resource)
-        return @delayed_notification_collection[resource.name]
-      else
-        return @delayed_notification_collection[resource.to_s]
-      end
+      return @delayed_notification_collection[resource_name_key(resource)]
+    end
+
+    def before_notifications(resource)
+      return @before_notification_collection[resource_name_key(resource)]
     end
 
     private
@@ -229,6 +223,14 @@ class Chef
         segment_filenames.each do |segment_filename|
           block.call(cookbook_name, segment_filename)
         end
+      end
+    end
+
+    def resource_name_key(resource)
+      if resource.instance_of?(Chef::Resource)
+        resource.name
+      else
+        resource.to_s
       end
     end
 
