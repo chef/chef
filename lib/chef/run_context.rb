@@ -61,6 +61,13 @@ class Chef
     # during the converge phase of the chef run.
     attr_accessor :before_notification_collection
 
+    # A Hash containing the depends notifications triggered by resources
+    # during the converge phase of the chef run.
+    attr_accessor :depends_notification_collection
+
+    # A Hash containing the list of the already executed depends resources
+    attr_accessor :depends_executed
+
     # Event dispatcher for this run.
     attr_reader :events
 
@@ -76,6 +83,8 @@ class Chef
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @before_notification_collection = Hash.new {|h,k| h[k] = []}
+      @depends_notification_collection = Hash.new {|h,k| h[k] = []}
+      @depends_executed = Hash.new {|h,k| h[k] = {}}
       @definitions = Hash.new
       @loaded_recipes = {}
       @loaded_attributes = {}
@@ -111,6 +120,27 @@ class Chef
       @before_notification_collection[resource_name_key(nr)] << notification
     end
 
+    def notifies_depends(notification)
+      nr = notification.notifying_resource
+      @depends_notification_collection[resource_name_key(nr)] << notification
+
+      name = resource_name_key(notification.resource)
+      @depends_executed[name][notification.action] ||= false
+    end
+
+    def depends_executed(resource, action, value=nil)
+      if value.nil?
+        @depends_executed[resource_name_key(resource)][action] if is_depends_resource(resource, action)
+      else
+        @depends_executed[resource_name_key(resource)][action] = value
+      end
+    end
+
+    def is_depends_resource(resource, action)
+      name = resource_name_key(resource)
+      @depends_executed.has_key?(name) and @depends_executed[name].has_key?(action)
+    end
+
     def immediate_notifications(resource)
       return @immediate_notification_collection[resource_name_key(resource)]
     end
@@ -121,6 +151,10 @@ class Chef
 
     def before_notifications(resource)
       return @before_notification_collection[resource_name_key(resource)]
+    end
+
+    def depends_notifications(resource)
+      return @depends_notification_collection[resource_name_key(resource)]
     end
 
     # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe

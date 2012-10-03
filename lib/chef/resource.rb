@@ -415,6 +415,8 @@ F
           notifies_immediately(action, resource)
         when 'before'
           notifies_before(action, resource)
+        when 'depends', 'before_once'
+          notifies_depends(action, resource)
         else
           raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
                                 "Valid timings are: :delayed, :immediate, :immediately"
@@ -424,10 +426,15 @@ F
       true
     end
 
-    # Iterates over all immediate, delayed and before notifications,
+    def depends(action, resource_spec)
+      notifies(action, resource_spec, :depends)
+    end
+
+    # Iterates over all immediate, delayed, before and depends notifications,
     # calling resolve_resource_reference on each in turn, causing them
     # to resolve lazy/forward references.
     def resolve_notification_references
+      run_context.depends_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
       run_context.before_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
       run_context.immediate_notifications(self).each { |n| n.resolve_resource_reference(run_context.resource_collection) }
       run_context.delayed_notifications(self).each {|n| n.resolve_resource_reference(run_context.resource_collection) }
@@ -445,6 +452,10 @@ F
       run_context.notifies_before(Notification.new(resource_spec, action, self))
     end
 
+    def notifies_depends(action, resource_spec)
+      run_context.notifies_depends(Notification.new(resource_spec, action, self))
+    end
+
     def immediate_notifications
       run_context.immediate_notifications(self)
     end
@@ -455,6 +466,10 @@ F
 
     def before_notifications
       run_context.before_notifications(self)
+    end
+
+    def depends_notifications
+      run_context.depends_notifications(self)
     end
 
     def resources(*args)
