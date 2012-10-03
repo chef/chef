@@ -34,5 +34,11 @@ describe Chef::Provider::RubyBlock, "initialize" do
     $evil_global_evil_laugh.should == :mwahahaha
     @new_resource.should be_updated
   end
+
+  it "accepts `run' as an alias for `create'" do
+    @provider.run_action(:run)
+    $evil_global_evil_laugh.should == :mwahahaha
+    @new_resource.should be_updated
+  end
 end
 

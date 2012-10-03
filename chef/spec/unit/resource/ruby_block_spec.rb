@@ -22,7 +22,7 @@ describe Chef::Resource::RubyBlock do
 
   before(:each) do
     @resource = Chef::Resource::RubyBlock.new("fakey_fakerton")
-  end  
+  end
 
   it "should create a new Chef::Resource::RubyBlock" do
     @resource.should be_a_kind_of(Chef::Resource)
@@ -41,6 +41,11 @@ describe Chef::Resource::RubyBlock do
     @resource.block do
       "foo"
     end.call.should eql("foo")
+  end
+
+  it "allows the action to be 'run'" do
+    @resource.action :run
+    @resource.action.should == [:run]
   end
 
 end

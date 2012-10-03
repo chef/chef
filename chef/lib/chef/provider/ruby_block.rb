@@ -34,6 +34,9 @@ class Chef
           Chef::Log.info("#{@new_resource} called")
         end
       end
+
+      alias :action_run :action_create
+
     end
   end
 end

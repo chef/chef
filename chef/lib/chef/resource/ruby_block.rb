@@ -25,7 +25,7 @@ class Chef
         super
         @resource_name = :ruby_block
         @action = "create"
-        @allowed_actions.push(:create)
+        @allowed_actions << :create << :run
       end
 
       def block(&block)
