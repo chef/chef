@@ -215,7 +215,13 @@ describe Chef::Resource do
       @resource.before_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
     end
 
-    it "should raise an exception if told to act in other than :delay, :immediate(ly) or :before" do
+    it "should make notified resources be capable of acting as :depends" do
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :depends
+      @resource.depends_notifications.detect{|e| e.resource.name == "coffee" && e.action == :reload}.should_not be_nil
+   end
+
+    it "should raise an exception if told to act in other than :delay, :immediate(ly), :before or :depends" do
       @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       lambda {
         @resource.notifies :reload, @run_context.resource_collection.find(:zen_master => "coffee"), :someday
@@ -248,6 +254,17 @@ describe Chef::Resource do
       @resource.notifies_before(:restart, :service => 'apache')
       expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
       @resource.before_notifications.should include(expected_notification)
+    end
+
+    it "notifies another resource as depends" do
+      @resource.notifies_depends(:restart, :service => 'apache')
+      expected_notification = Chef::Resource::Notification.new({:service => "apache"}, :restart, @resource)
+      @resource.depends_notifications.should include(expected_notification)
+    end
+
+    it "notifies another resource properly setting it as a dependent using #depends()" do
+      @resource.should_receive(:notifies_depends).with(:restart, :service => 'apache')
+      @resource.depends(:restart, :service => 'apache')
     end
 
     it "notifies a resource to take action at the end of the chef run" do
@@ -289,6 +306,13 @@ describe Chef::Resource do
       zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr, :before
       zr.before_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
+    end
+
+    it "should make subscribed resources be capable of acting as a dependency" do
+      @run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      zr = @run_context.resource_collection.find(:zen_master => "coffee")
+      @resource.subscribes :reload, zr, :depends
+      zr.depends_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
     end
   end
 
