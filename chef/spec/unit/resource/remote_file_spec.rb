@@ -86,9 +86,9 @@ describe Chef::Resource::RemoteFile do
   describe "when it has group, mode, owner, source, and checksum" do
     before do 
       if Chef::Platform.windows?
-        @cookbook_file.path("C:/temp/origin/file.txt")
-        @cookbook_file.rights(:read, "Everyone")
-        @cookbook_file.deny_rights(:full_control, "Clumsy_Sam")
+        @resource.path("C:/temp/origin/file.txt")
+        @resource.rights(:read, "Everyone")
+        @resource.deny_rights(:full_control, "Clumsy_Sam")
       else
         @resource.path("/this/path/")
         @resource.group("pokemon")
@@ -115,7 +115,7 @@ describe Chef::Resource::RemoteFile do
 
     it "returns the path as its identity" do
       if Chef::Platform.windows?
-        @cookbook_file.identity.should == "C:/temp/origin/file.txt"
+        @resource.identity.should == "C:/temp/origin/file.txt"
       else
         @resource.identity.should == "/this/path/"
       end
