@@ -201,7 +201,7 @@ class Chef
     why_run false
     color false
     client_fork false
-    enable_reporting false
+    enable_reporting true
     
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
