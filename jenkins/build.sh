@@ -20,6 +20,12 @@ exists()
 
 mkdir -p chef-solo/cache
 
+# ensure bundler is installed
+if ! exists bundle;
+then
+  sudo gem install bundler --no-ri --no-rdoc
+fi
+
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf /opt/$1 || true
   sudo mkdir -p /opt/$1 && sudo chown jenkins-node /opt/$1
