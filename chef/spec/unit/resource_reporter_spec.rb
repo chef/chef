@@ -448,7 +448,6 @@ describe Chef::ResourceReporter do
         @resource_reporter.resource_updated(@new_resource, :create)
 
         @expected_data = @resource_reporter.prepare_run_data
-        @expected_data["action"] = "end"
 
         post_url = "https://chef_server/example_url"
         response = {"result"=>"ok"}
@@ -470,6 +469,66 @@ describe Chef::ResourceReporter do
         @resource_reporter.run_completed(@node)
       end
     end
+
+    context "after creating the run history document when summary_only is set to true" do
+      before do
+        response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123", "summary_only"=>"true"}
+        @rest_client.should_receive(:post_rest).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          and_return(response)
+
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+      end
+
+      it "enables summary only reporting" do
+        @resource_reporter.summary_only.should == "true"
+      end
+
+      it "updates the run document with resource updates at the end of the run" do
+        # update some resources...
+        @resource_reporter.resource_action_start(@new_resource, :create)
+        @resource_reporter.resource_current_state_loaded(@new_resource, :create, @current_resource)
+        @resource_reporter.resource_updated(@new_resource, :create)
+
+        post_url = "reports/nodes/spitfire/runs/ABC123"
+        response = {"result"=>"ok"}
+
+        @rest_client.should_receive(:post_rest).ordered do |url, data|
+          url.should eq(post_url)
+          data.should have_key("action")
+          data["action"].should == "end"
+          data.should have_key("status")
+          data.should have_key("resources")
+          data["resources"].should == []
+          data.should have_key("total_res_count")
+          data["total_res_count"].should == "1"
+          data.should have_key("data")
+          data["data"].should == {}
+          data.should have_key("updated_res_count")
+          data["updated_res_count"].should == "0"
+          data.should have_key("post_size")
+          response
+        end
+
+        @resource_reporter.run_completed(@node)
+      end
+    end
+
+    context "after creating the run history document when summary_only is set to false" do
+      before do
+        response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123", "summary_only"=>"false"}
+        @rest_client.should_receive(:post_rest).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          and_return(response)
+
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+      end
+
+      it "disables summary_only reporting" do
+        @resource_reporter.summary_only.should == "false"
+      end
+     end
+
   end
 
 end
