@@ -28,14 +28,14 @@ class Chef
         true
       end
 
-      def action_create
+      def action_run
         converge_by("execute the ruby block #{@new_resource.name}") do 
           @new_resource.block.call
           Chef::Log.info("#{@new_resource} called")
         end
       end
 
-      alias :action_run :action_create
+      alias :action_create :action_run
 
     end
   end

@@ -30,7 +30,7 @@ describe Chef::Resource::RubyBlock do
   end
 
   it "should have a default action of 'create'" do
-    @resource.action.should eql("create")
+    @resource.action.should eql("run")
   end
   
   it "should have a resource name of :ruby_block" do
@@ -43,9 +43,9 @@ describe Chef::Resource::RubyBlock do
     end.call.should eql("foo")
   end
 
-  it "allows the action to be 'run'" do
-    @resource.action :run
-    @resource.action.should == [:run]
+  it "allows the action to be 'create'" do
+    @resource.action :create
+    @resource.action.should == [:create]
   end
 
 end
