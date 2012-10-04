@@ -129,7 +129,7 @@ class Chef
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
-                     i = item[:cloud][:public_ipv4]
+                     i = item[:cloud][:public_hostname]
                    elsif config[:override_attribute]
                      i = format_for_display(item)[config[:override_attribute]]
                    else
