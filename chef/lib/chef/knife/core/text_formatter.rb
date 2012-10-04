@@ -41,58 +41,44 @@ class Chef
           @formatted_data ||= text_format(data)
         end
 
-        def text_format(data, indent=0)
+        def text_format(data)
           buffer = ''
 
           if data.respond_to?(:keys)
-            justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 2
+            justify_width = data.keys.map {|k| k.to_s.size }.max.to_i + 1
             data.sort.each do |key, value|
-              justified_key = ui.color("#{key}:".ljust(justify_width), :cyan)
-              if should_enumerate?(value)
-                buffer << indent_line(justified_key, indent)
-                buffer << text_format(value, indent + 1)
+              # key: ['value'] should be printed as key: value
+              if value.kind_of?(Array) && value.size == 1 && is_singleton(value[0])
+                value = value[0]
+              end
+              if is_singleton(value)
+                # Strings are printed as key: value.
+                justified_key = ui.color("#{key}:".ljust(justify_width), :cyan)
+                buffer << "#{justified_key} #{value}\n"
               else
-                buffer << indent_key_value(justified_key, value, justify_width, indent)
+                # Arrays and hashes get indented on their own lines.
+                buffer << ui.color("#{key}:\n", :cyan)
+                lines = text_format(value).split("\n")
+                lines.each { |line| buffer << "  #{line}\n" }
               end
             end
           elsif data.kind_of?(Array)
-            data.each do |item|
-              if should_enumerate?(data)
-                buffer << text_format(item, indent + 1)
-              else
-                buffer << indent_line(item, indent)
-              end
+            data.each_index do |index|
+              item = data[index]
+              buffer << text_format(data[index])
+              # Separate items with newlines if it's an array of hashes or an
+              # array of arrays
+              buffer << "\n" if !is_singleton(data[index]) && index != data.size-1
             end
           else
-            buffer << indent_line(stringify_value(data), indent)
+            buffer << "#{data}\n"
           end
           buffer
         end
 
-        # Ruby 1.8 Strings include enumberable, which is not what we want. So
-        # we have this heuristic to detect hashes and arrays instead.
-        def should_enumerate?(value)
-          ((value.respond_to?(:keys) && !value.empty? ) || ( value.kind_of?(Array) && (value.size > 1 || should_enumerate?(value.first) )))
+        def is_singleton(value)
+          !(value.kind_of?(Array) || value.respond_to?(:keys))
         end
-
-        def indent_line(string, indent)
-          ("  " * indent) << "#{string}\n"
-        end
-
-        def indent_key_value(key, value, justify_width, indent)
-          lines = value.to_s.split("\n")
-          if lines.size > 1
-            total_indent = (2 * indent) + justify_width + 1
-            indent_line("#{key} #{lines.shift}", indent) << lines.map {|l| (" " * total_indent) + l << "\n" }.join("")
-          else
-            indent_line("#{key} #{stringify_value(value)}", indent)
-          end
-        end
-
-        def stringify_value(data)
-          data.kind_of?(String) ? data : data.to_s
-        end
-
       end
     end
   end
