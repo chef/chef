@@ -1,9 +1,0 @@
-.secondary-navigation
-  %ul
-    %li{ :class => "first #{active == 'index' ? "active" : ''}"}= link_to('List', clients_path)
-    %li{ :class => (active == 'create' ? "active" : '')}= link_to('Create', new_client_path)
-    - if active != 'create' && active != 'index'
-      %li{ :class => (active == 'show' ? "active" : '')}= link_to('Show', client_path(@client.name))
-      %li{ :class => (active == 'edit' ? "active" : '')}= link_to('Edit', edit_client_path(@client.name))
-      %li= link_to('Delete', client_path(@client.name), :method => "delete", :confirm => "Really delete Client #{@client.name}? There is no undo.")
-  .clear

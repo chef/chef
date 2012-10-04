@@ -1,6 +1,0 @@
-.block#block-tables
-  .content
-    %h2.title= "Client"
-    .inner
-      = render('navigation', :active => 'create')
-  = render('form', :header => "Create new Client", :form_id => 'create_client', :submit_name => "Create Client", :submit_id => "create_client_button", :form_for => 'create', :form_url => clients_path)

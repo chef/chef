@@ -1,9 +1,0 @@
-.block#block-tables
-  .content
-    %h2.title= "Databag Item: #{@databag_item_name}"
-    .inner
-      = render('navigation', :active => 'show')
-    .content
-      .inner
-        .accordion
-          = build_tree('attrs', @databag_item)

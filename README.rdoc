@@ -79,7 +79,7 @@ Make sure the RubyGems for the Chef Server are installed (should be from the +ra
 * chef-expander
 * chef-server
 * chef-server-api
-* chef-server-webui
+* chef-server-webui (now in its own repository at https://github.com/opscode/chef-server-webui)
 * chef-solr
 
 === Starting the Environment:
