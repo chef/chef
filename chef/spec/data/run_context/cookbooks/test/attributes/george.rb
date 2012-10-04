@@ -1,1 +1,1 @@
-george "washington"
+default[:george] = "washington"

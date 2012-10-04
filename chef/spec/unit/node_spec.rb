@@ -167,12 +167,12 @@ describe Chef::Node do
     end
 
     it "should allow you to set an attribute via method_missing" do
-      @node.sunshine "is bright"
+      @node.sunshine = "is bright"
       @node.attribute[:sunshine].should eql("is bright")
     end
 
     it "should allow you get get an attribute via method_missing" do
-      @node.sunshine "is bright"
+      @node.sunshine = "is bright"
       @node.sunshine.should eql("is bright")
     end
 
@@ -253,8 +253,8 @@ describe Chef::Node do
     end
 
     it "should allow you to iterate over attributes with each_attribute" do
-      @node.sunshine "is bright"
-      @node.canada "is a nice place"
+      @node.sunshine = "is bright"
+      @node.canada = "is a nice place"
       seen_attributes = Hash.new
       @node.each_attribute do |a,v|
         seen_attributes[a] = v
@@ -446,7 +446,7 @@ describe Chef::Node do
       @node.name.should eql("test.example.com-short")
       @node.sunshine.should eql("in")
       @node.something.should eql("else")
-      @node.recipes.should == ["operations-master", "operations-monitoring"]
+      @node.run_list.should == ["operations-master", "operations-monitoring"]
     end
 
     it "should raise an exception if the file cannot be found or read" do

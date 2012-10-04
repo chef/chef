@@ -6,12 +6,12 @@ name "test.example.com"
 ##
 # Nodes can set arbitrary arguments
 ##
-sunshine "in"
-something "else"
+normal[:sunshine] = "in"
+normal[:something] = "else"
 
 ##
 # Nodes should have recipes
 ##
-recipes "operations-master", "operations-monitoring"
+run_list "operations-master", "operations-monitoring"
 
 chef_environment "dev"

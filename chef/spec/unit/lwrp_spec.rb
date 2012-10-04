@@ -113,8 +113,8 @@ describe "LWRP" do
   describe "Lightweight Chef::Provider" do
     before do
       @node = Chef::Node.new
-      @node.platform(:ubuntu)
-      @node.platform_version('8.10')
+      @node.automatic[:platform] = :ubuntu
+      @node.automatic[:platform_version] = '8.10'
       @events = Chef::EventDispatch::Dispatcher.new
       @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @events)
       @runner = Chef::Runner.new(@run_context)

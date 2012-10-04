@@ -110,8 +110,8 @@ describe Chef::Recipe do
 
         it "locate resource for particular platform" do
           Object.const_set('ShaunTheSheep', Class.new(Chef::Resource){ provides :laughter, :on_platforms => ["television"] })
-          @node.platform("television")
-          @node.platform_version("123")
+          @node.automatic[:platform] = "television"
+          @node.automatic[:platform_version] = "123"
           res = @recipe.laughter "timmy"
           res.name.should eql("timmy")
           res.kind_of?(ShaunTheSheep)

@@ -427,9 +427,11 @@ class Chef
           else
             raise ArgumentError, "Attribute #{symbol} is not defined!" unless auto_vivifiy_on_read
           end
-        else
+        elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1] || symbol
           self[key_to_set] = (args.length == 1 ? args[0] : args)
+        else
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
         end
       end
 

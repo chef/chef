@@ -473,12 +473,6 @@ describe Chef::Node::Attribute do
       @attributes.music.mastodon.should == "rocks"
     end
 
-    it "should behave like a []= lookup if the last method has an argument" do
-      @attributes.music.mastodon(["dream", "still", "shining"])
-      @attributes.reset
-      @attributes.music.mastodon.should == ["dream", "still", "shining"]
-    end
-
     it "should allow the last method to set a value if it has an = sign on the end" do
       @attributes.music.mastodon = [ "dream", "still", "shining" ]
       @attributes.reset

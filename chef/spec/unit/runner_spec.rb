@@ -84,8 +84,8 @@ describe Chef::Runner do
   before(:each) do
     @node = Chef::Node.new
     @node.name "latte"
-    @node.platform "mac_os_x"
-    @node.platform_version "10.5.1"
+    @node.automatic[:platform] = "mac_os_x"
+    @node.automatic[:platform_version] = "10.5.1"
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, Chef::CookbookCollection.new({}), @events)
     @first_resource = Chef::Resource::Cat.new("loulou1", @run_context)

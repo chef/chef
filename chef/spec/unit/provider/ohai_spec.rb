@@ -57,7 +57,7 @@ describe Chef::Provider::Ohai do
     @new_resource = Chef::Resource::Ohai.new("ohai_reload")
     ohai = Ohai::System.new
     ohai.all_plugins
-    @node.process_external_attrs(ohai.data,{})
+    @node.consume_external_attrs(ohai.data,{})
 
     @provider = Chef::Provider::Ohai.new(@new_resource, @run_context)
   end

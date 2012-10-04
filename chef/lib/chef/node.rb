@@ -233,6 +233,8 @@ class Chef
       )
     end
 
+    alias :environment :chef_environment
+
     # Used by the DSL
     def attribute
       construct_attributes
@@ -339,8 +341,7 @@ class Chef
       construct_attributes.each_attribute(&block)
     end
 
-    # Encouraged to only get used for lookups - while you can do sets from here, it's not as explicit
-    # as using the normal/default/override interface.
+    # Only works for attribute fetches, setting is no longer supported
     def method_missing(symbol, *args)
       attrs = construct_attributes
       attrs.send(symbol, *args)

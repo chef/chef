@@ -522,8 +522,8 @@ describe Chef::Resource do
     before(:each) do
       @node = Chef::Node.new
       @node.name("bumblebee")
-      @node.platform("autobots")
-      @node.platform_version("6.1")
+      @node.automatic[:platform] = "autobots"
+      @node.automatic[:platform_version] = "6.1"
       Object.const_set('Soundwave', Class.new(Chef::Resource))
       Object.const_set('Grimlock', Class.new(Chef::Resource){ provides :dinobot, :on_platforms => ['autobots'] })
     end
