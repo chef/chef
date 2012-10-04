@@ -202,6 +202,7 @@ class Chef
     color false
     client_fork false
     enable_reporting false
+    enable_reporting_url_fatals false
     
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
