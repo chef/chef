@@ -50,20 +50,25 @@ include_internal false
 
 superuser_name 'admin'
 superuser_key  '/etc/chef-server/admin.pem'
+webui_key '/etc/chef-server/webui_priv.pem'
 
 requestors({
              :clients => {
                # The the admin user, for the purposes of getting things rolling
                :admin => {
                  :name => "pedant_admin_client",
-                 :create_me => true
+                 :create_me => true,
+                 :create_knife => true,
+                 :admin => true
                },
                :non_admin => {
                  :name => 'pedant_client',
-                 :create_me => true
+                 :create_me => true,
+                 :create_knife => true
                },
                :bad => {
-                 :name => 'bad_client'
+                 :name => 'bad_client',
+                 :bogus => true
                }
              },
              :users => {
@@ -71,21 +76,8 @@ requestors({
                # for this user
                :knife_user => {
                  :name => "knifey",
-                 :create_me => true
+                 :create_me => true,
+                 :create_knife => true
                }
              }
            })
-
-# To facilitate testing as we transition from Ruby to Erlang endpoint
-# implementations, you can specify in your configuration which
-# implementation for each endpoint is currently active on the system
-# under test.  Tests should be written to fork on this value if
-# necessary.  A common reason is to take into account different error
-# message formatting between the two implementations.
-#
-ruby_environment_endpoint? false
-ruby_client_endpoint? false
-ruby_sandbox_endpoint? false
-ruby_data_endpoint? false
-ruby_role_endpoint? false
-ruby_cookbook_endpoint? false
