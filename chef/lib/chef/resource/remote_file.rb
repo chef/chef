@@ -36,14 +36,14 @@ class Chef
         @provider = Chef::Provider::RemoteFile
       end
 
-      def source(args=nil)
-        validate_source(args) unless args.nil?
-
-        set_or_return(
-          :source,
-          args,
-          :kind_of => String
-        )
+      def source(*args)
+        if not args.empty?
+          args = Array(args).flatten
+          validate_source(args)
+          @source = args
+        elsif self.instance_variable_defined?(:@source) == true
+          @source
+        end
       end
 
       def checksum(args=nil)
@@ -61,14 +61,17 @@ class Chef
       private
 
       def validate_source(source)
-        unless absolute_uri?(source)
-          raise Exceptions::InvalidRemoteFileURI,
-            "'#{source}' is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI"
+        raise ArgumentError, "#{resource_name} has an empty source" if source.empty?
+        source.each do |src|
+          unless absolute_uri?(src)
+            raise Exceptions::InvalidRemoteFileURI,
+              "#{src.inspect} is not a valid `source` parameter for #{resource_name}. `source` must be an absolute URI or an array of URIs."
+          end
         end
       end
 
       def absolute_uri?(source)
-        URI.parse(source).absolute?
+        source.kind_of?(String) and URI.parse(source).absolute?
       rescue URI::InvalidURIError
         false
       end

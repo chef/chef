@@ -46,11 +46,25 @@ describe Chef::Resource::RemoteFile do
 
     it "should accept a URI for the remote file source" do
       @resource.source "http://opscode.com/"
-      @resource.source.should eql("http://opscode.com/")
+      @resource.source.should eql([ "http://opscode.com/" ])
+    end
+
+    it "should accept an array of URIs for the remote file source" do
+      @resource.source([ "http://opscode.com/", "http://puppetlabs.com/" ])
+      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
+    end
+
+    it "should accept an multiple URIs as arguments for the remote file source" do
+      @resource.source("http://opscode.com/", "http://puppetlabs.com/")
+      @resource.source.should eql([ "http://opscode.com/", "http://puppetlabs.com/" ])
     end
 
     it "does not accept a non-URI as the source" do
       lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
+    end
+
+    it "should raise and exception when source is an empty array" do
+      lambda { @resource.source([]) }.should raise_error(ArgumentError)
     end
 
   end

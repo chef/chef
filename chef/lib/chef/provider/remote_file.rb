@@ -37,8 +37,20 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
-          raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          sources = @new_resource.source
+          source = sources.shift
+          begin
+            rest = Chef::REST.new(source, nil, nil, http_client_opts(source))
+            raw_file = rest.streaming_request(rest.create_url(source), {})
+          rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Net::HTTPFatalError => e
+            Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}")
+            if source = sources.shift
+              Chef::Log.debug("#{@new_resource} trying to download from another mirror")
+              retry
+            else
+              raise e
+            end
+          end
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
@@ -97,7 +109,7 @@ class Chef
         end
       end
 
-      def http_client_opts
+      def http_client_opts(source)
         opts={}
         # CHEF-3140
         # 1. If it's already compressed, trying to compress it more will
@@ -107,7 +119,7 @@ class Chef
         # which tricks Chef::REST into decompressing the response body. In this
         # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
         # which is not what you wanted.
-        if @new_resource.path =~ /gz$/ or @new_resource.source =~ /gz$/
+        if @new_resource.path =~ /gz$/ or source =~ /gz$/
           opts[:disable_gzip] = true
         end
         opts
