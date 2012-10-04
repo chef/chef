@@ -1,5 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Bryan McLellan
 # License:: Apache License, Version 2.0
 #
@@ -85,4 +86,22 @@ describe Chef::Resource::Route do
     lambda { @resource.route_type "lolcat" }.should raise_error(ArgumentError)
   end
   
+  describe "when it has netmask, gateway, and device" do
+    before do 
+      @resource.target("charmander")
+      @resource.netmask("lemask")
+      @resource.gateway("111.111.111")
+      @resource.device("forcefield")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:netmask].should == "lemask"
+      state[:gateway].should == "111.111.111"
+    end
+
+    it "returns the target  as its identity" do
+      @resource.identity.should == "charmander"
+    end
+  end
 end

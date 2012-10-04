@@ -78,6 +78,7 @@ class Chef
         end
         description = install_version ? "version #{install_version} of" : ""
         converge_by("install #{description} package #{@new_resource.package_name}") do
+          @new_resource.version(install_version)
           install_package(@new_resource.package_name, install_version)
         end
       end
@@ -88,6 +89,7 @@ class Chef
         elsif @current_resource.version == candidate_version
           Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
         else
+          @new_resource.version(candidate_version)
           orig_version = @current_resource.version || "uninstalled"
           converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
             status = upgrade_package(@new_resource.package_name, candidate_version)

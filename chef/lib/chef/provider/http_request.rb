@@ -34,18 +34,21 @@ class Chef
 
       # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
       def action_head
-        converge_by("#{@new_resource} HEAD to #{@new_resource.url}") do
-          message = check_message(@new_resource.message)
-          modified = @rest.run_request(
-            :HEAD,
-            @rest.create_url("#{@new_resource.url}?message=#{message}"),
-            @new_resource.headers,
-            false,
-            10,
-            false
-          )
-          Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
-          Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
+        message = check_message(@new_resource.message)
+        # returns true from Chef::REST if returns 2XX (Net::HTTPSuccess)
+        modified = @rest.run_request(
+          :HEAD,
+          @rest.create_url("#{@new_resource.url}?message=#{message}"),
+          @new_resource.headers,
+          false,
+          10,
+          false
+        )
+        Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
+        Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
+        # :head is usually used to trigger notifications, which converge_by now does
+        if modified
+          converge_by("#{@new_resource} HEAD to #{@new_resource.url} returned modified, trigger notifications") {}
         end
       end
 

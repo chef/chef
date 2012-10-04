@@ -98,4 +98,25 @@ end
       lambda { @resource.send(attrib, { :woot => "i found it" }) }.should raise_error(ArgumentError)
     end
   end
+  
+  describe "when it has uid, gid, and home" do
+    before do
+      @resource = Chef::Resource::User.new("root")
+      @resource.uid(123)
+      @resource.gid(456)
+      @resource.home("/usr/local/root/")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:uid].should == 123
+      state[:gid].should == 456
+      state[:home].should == "/usr/local/root/"
+    end
+
+    it "returns the username as its identity" do
+      @resource.identity.should == "root"
+    end
+  end
+
 end

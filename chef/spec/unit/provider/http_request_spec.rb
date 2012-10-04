@@ -167,6 +167,12 @@ describe Chef::Provider::HttpRequest do
         @rest.should_receive(:run_request).with(:HEAD, @rest.create_url, @new_resource.headers, false, 10, false)
         @provider.run_action(:head)
       end
+
+      it "doesn't call converge_by if HEAD does not return modified" do
+        @rest.should_receive(:run_request).and_return(false)
+        @provider.should_not_receive(:converge_by)
+        @provider.run_action(:head)
+      end
     end
   end
 end

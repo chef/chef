@@ -58,6 +58,7 @@ class Chef
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
         as_hash["delta"]  = "" if as_hash["delta"].nil?
+
         # TODO: rename as "action"
         as_hash["result"] = action.to_s
         if success?
@@ -87,7 +88,7 @@ class Chef
     attr_reader :summary_only
 
     def initialize(rest_client)
-      if Chef::Config[:enable_reporting]
+      if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
         @reporting_enabled = true
       else
         @reporting_enabled = false
@@ -106,10 +107,9 @@ class Chef
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
-
       if reporting_enabled?
         begin
-          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          resource_history_url = "reports/nodes/#{node.name}/runs"
           server_response = @rest_client.post_rest(resource_history_url, {:action => :begin}, {'X-Chef-ReportingSummary' => 'true'})
           run_uri = URI.parse(server_response["uri"])
           @run_id = ::File.basename(run_uri.path)
@@ -210,6 +210,7 @@ class Chef
       run_data["run_list"] = @node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
+
       if exception
         exception_data = {}
         exception_data["class"] = exception.inspect

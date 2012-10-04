@@ -1,5 +1,6 @@
 #
 # Author:: Joshua Timberman (<joshua@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc
 # License:: Apache License, Version 2.0
 #
@@ -135,4 +136,23 @@ describe Chef::Resource::Mount do
     @resource.supports.should == support_hash
   end
 
+  describe "when it has mount point, device type, and fstype" do
+    before do 
+      @resource.device("charmander")
+      @resource.mount_point("123.456")
+      @resource.device_type(:device)
+      @resource.fstype("ranked")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:mount_point].should == "123.456"
+      state[:device_type].should eql(:device)
+      state[:fstype].should == "ranked"
+    end
+
+    it "returns the device as its identity" do
+      @resource.identity.should == "charmander"
+    end
+  end
 end

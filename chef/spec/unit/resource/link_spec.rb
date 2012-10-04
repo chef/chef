@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -94,4 +95,24 @@ describe Chef::Resource::Link do
     lambda { @resource.owner "root*goo" }.should raise_error(ArgumentError)
   end
 
+  describe "when it has to, link_type, owner, and group" do
+    before do 
+      @resource.target_file("/var/target.tar")
+      @resource.to("/to/dir/file.tar")
+      @resource.link_type(:symbolic)
+      @resource.owner("root")
+      @resource.group("0664")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:to].should == "/to/dir/file.tar"
+      state[:owner].should == "root"
+      state[:group].should == "0664"
+    end
+
+    it "returns the target file as its identity" do
+      @resource.identity.should == "/var/target.tar"
+    end
+  end
 end

@@ -1,3 +1,3 @@
 module ChefServerWebui
-  VERSION = '10.14.3'
+  VERSION = '10.14.5'
 end

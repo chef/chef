@@ -1,5 +1,6 @@
 #
 # Author:: Joe Williams (<joe@joetify.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2009 Joe Williams
 # License:: Apache License, Version 2.0
 #
@@ -24,6 +25,8 @@ class Chef
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
       
+      identity_attr :code
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :erl_call
