@@ -249,7 +249,7 @@ describe Chef::Node do
     end
 
     it "should raise an ArgumentError if you ask for an attribute that doesn't exist via method_missing" do
-      lambda { @node.sunshine }.should raise_error(ArgumentError)
+      lambda { @node.sunshine }.should raise_error(NoMethodError)
     end
 
     it "should allow you to iterate over attributes with each_attribute" do

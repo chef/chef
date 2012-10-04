@@ -425,7 +425,7 @@ class Chef
             self[symbol] = Mash.new
             self[symbol]
           else
-            raise ArgumentError, "Attribute #{symbol} is not defined!" unless auto_vivifiy_on_read
+            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1] || symbol
