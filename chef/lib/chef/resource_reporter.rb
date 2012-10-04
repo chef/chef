@@ -179,21 +179,17 @@ class Chef
         Chef::Log.info("Sending resource update report (run-id: #{@run_id})")
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
-        #if summary only is enabled we do the following :
-        # 1) send the run_data excluding the run_data["reesources"]
-        # 2) send the size of the gzipped data
-        # 3) send the updated_res_count
-        # 4) send the uncompressed data
+        #if summary only is enabled send the uncompressed run_data excluding the run_data["resources"] and some additional metrics.
         if @summary_only
           run_data = report_summary(run_data, compressed_data)
           Chef::Log.info("run_data_summary: #{run_data}")
           @rest_client.post_rest(resource_history_url, run_data)
         else
-         Chef::Log.debug("Sending Compressed Run Data...")
-         # Since we're posting compressed data we can not directly call
-         # post_rest which expects JSON
-         reporting_url = @rest_client.create_url(resource_history_url)
-         @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
+          Chef::Log.debug("Sending Compressed Run Data...")
+          # Since we're posting compressed data we can not directly call
+          # post_rest which expects JSON
+          reporting_url = @rest_client.create_url(resource_history_url)
+          @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
         end
       else
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
