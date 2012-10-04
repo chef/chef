@@ -38,7 +38,7 @@ else
 fi
 
 # Omnibus build server prep tasks, including build ruby
-sudo env OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c jenkins-solo.rb -j jenkins-dna.json -l debug
+sudo -i env OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c $(pwd)/jenkins-solo.rb -j $(pwd)/jenkins-dna.json -l debug
 
 # copy config into place
 cp omnibus.rb.example omnibus.rb
