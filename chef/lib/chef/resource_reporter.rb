@@ -110,7 +110,7 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin}, {'X-Chef-ReportingSummary' => 'true'})
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
           run_uri = URI.parse(server_response["uri"])
           @run_id = ::File.basename(run_uri.path)
           Chef::Log.info("Chef server generated run history id: #{@run_id}")

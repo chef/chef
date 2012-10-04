@@ -411,7 +411,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}, {"X-Chef-ReportingSummary"=>"true"}).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_raise(@error)
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       end
@@ -431,7 +431,7 @@ describe Chef::ResourceReporter do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"}
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}, {"X-Chef-ReportingSummary"=>"true"}).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_return(response)
 
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
@@ -474,7 +474,7 @@ describe Chef::ResourceReporter do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123", "summary_only"=>"true"}
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}, {"X-Chef-ReportingSummary"=>"true"}).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_return(response)
 
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
@@ -518,7 +518,7 @@ describe Chef::ResourceReporter do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123", "summary_only"=>"false"}
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}, {"X-Chef-ReportingSummary"=>"true"}).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_return(response)
 
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
