@@ -25,7 +25,7 @@ log_level                :info
 log_location             STDOUT
 node_name                username 
 client_key               "#{current_dir}/#{username}.pem"
-validation_client_name   "<%= node['chef_server']['chef-server-api']['validation_client_name'] %>"
+validation_client_name   "<%= node['chef_server']['erchef']['validation_client_name'] %>"
 validation_key           "#{current_dir}/validation.pem"
 chef_server_url          "<%= node['chef_server']['nginx']['url'] %>"
 cache_type               'BasicFile'
