@@ -23,6 +23,10 @@ require 'chef/log'
 class Chef
   class Node
     class Attribute
+
+      class ImmutableAttribute < NoMethodError
+      end
+
       HIDDEN_ATTRIBUES = [:@override, :@attribute, :@default, :@normal, :@automatic]
 
       attr_accessor :normal,
@@ -53,14 +57,6 @@ class Chef
         @set_unless_value_present = false
         @set_type = nil
         @has_been_read = false
-      end
-
-      def attribute
-        normal
-      end
-
-      def attribute=(value)
-        normal = value
       end
 
       def set_type_hash
@@ -317,8 +313,12 @@ class Chef
       end
 
       def []=(key, value)
-        # If we don't have one, then we'll pretend we're normal
-        @set_type ||= :normal
+        if @set_type.nil?
+          # @set_type = :normal
+          raise ImmutableAttribute, "Attributes may only be set by specifying the precedence level, e.g., node.normal[:foo] = 'bar'"
+        elsif @set_type == false
+          raise "WTF"
+        end
 
         if set_unless_value_present
           if get_value(set_type_hash, key) != nil

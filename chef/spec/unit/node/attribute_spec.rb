@@ -282,9 +282,9 @@ describe Chef::Node::Attribute do
 
     it "should return the merged hash if all three have values" do
       result = @attributes["music"]
-      result["mars_volta"] = "cicatriz"
-      result["jimmy_eat_world"] = "nice"
-      result["mastodon"] = "rocks"
+      result["mars_volta"].should == "cicatriz"
+      result["jimmy_eat_world"].should == "nice"
+      result["mastodon"].should == "rocks"
     end
   end
 
@@ -325,17 +325,24 @@ describe Chef::Node::Attribute do
   end
 
   describe "[]=" do
+    it "should error out when the type of attribute to set has not been specified" do
+      @attributes.normal["the_ghost"] = {  }
+      @attributes.set_type = nil
+      @attributes.auto_vivifiy_on_read = true
+      lambda { @attributes["the_ghost"]["exterminate"] = false }.should raise_error(Chef::Node::Attribute::ImmutableAttribute)
+    end
+
     it "should let you set an attribute value when another hash has an intermediate value" do
       @attributes.normal["the_ghost"] = { "exterminate" => "the future" }
       @attributes.set_type = :default
       @attributes.auto_vivifiy_on_read = true
-      lambda { @attributes["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error(NoMethodError)
+      lambda { @attributes.normal["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error(NoMethodError)
     end
 
     it "should set the attribute value" do
-      @attributes["longboard"] = "surfing"
-      @attributes["longboard"].should == "surfing"
-      @attributes.attribute["longboard"].should == "surfing"
+      @attributes.normal["longboard"] = "surfing"
+      @attributes.normal["longboard"].should == "surfing"
+      @attributes.normal["longboard"].should == "surfing"
     end
 
     it "should set deeply nested attribute value when auto_vivifiy_on_read is true" do
@@ -351,21 +358,22 @@ describe Chef::Node::Attribute do
     end
 
     it "should let you set attributes manually without vivification" do
-      @attributes["foo"] = Mash.new
-      @attributes["foo"]["bar"] = :baz
-      @attributes["foo"]["bar"].should == :baz
+      @attributes.normal["foo"] = Mash.new
+      @attributes.normal["foo"]["bar"] = :baz
+      @attributes.normal["foo"]["bar"].should == :baz
     end
 
     it "should optionally skip setting the value if one already exists" do
       @attributes.set_unless_value_present = true
+      @attributes.set_type = :normal
       @attributes["hostname"] = "bar"
       @attributes["hostname"].should == "latte"
     end
 
     it "should write to an attribute that has been read before properly" do
-      @attributes["foo"] = Mash.new
-      @attributes["foo"]["bar"] ||= "stop the world"
-      @attributes["foo"]["bar"].should == "stop the world"
+      @attributes.normal["foo"] = Mash.new
+      @attributes.normal["foo"]["bar"] ||= "stop the world"
+      @attributes.normal["foo"]["bar"].should == "stop the world"
     end
   end
 
@@ -474,9 +482,10 @@ describe Chef::Node::Attribute do
     end
 
     it "should allow the last method to set a value if it has an = sign on the end" do
-      @attributes.music.mastodon = [ "dream", "still", "shining" ]
+      pending "requires support in Mash to work now that set type is mandatory"
+      @attributes.normal.music.mastodon = [ "dream", "still", "shining" ]
       @attributes.reset
-      @attributes.music.mastodon.should == [ "dream", "still", "shining" ]
+      @attributes.normal.music.mastodon.should == [ "dream", "still", "shining" ]
     end
   end
 
