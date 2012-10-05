@@ -338,7 +338,7 @@ describe Chef::Node::Attribute do
       @attributes.normal["the_ghost"] = {  }
       @attributes.set_type = nil
       @attributes.auto_vivify_on_read = true
-      lambda { @attributes["the_ghost"]["exterminate"] = false }.should raise_error(Chef::Node::ImmutableAttributeModification)
+      lambda { @attributes["the_ghost"]["exterminate"] = false }.should raise_error(Chef::ImmutableAttributeModification)
     end
 
     it "should let you set an attribute value when another hash has an intermediate value" do
@@ -357,7 +357,7 @@ describe Chef::Node::Attribute do
     it "should set deeply nested attribute value when auto_vivify_on_read is true" do
       @attributes.set_type = :normal
       @attributes.auto_vivify_on_read = true
-      @attributes["deftones"]["hunters"]["nap"] = "surfing"
+      @attributes.normal["deftones"]["hunters"]["nap"] = "surfing"
       @attributes.reset
       @attributes.normal["deftones"]["hunters"]["nap"].should == "surfing"
     end
@@ -558,7 +558,7 @@ describe Chef::Node::Attribute do
 
   describe "each" do
     before(:each) do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -1057,23 +1057,135 @@ describe Chef::Node::Attribute do
 
   describe "TODO - new behaviors or tests" do
     it "makes values read only for reading" do
-      pending
-      # Test all mutator methods on immutable hash and array
-      # make sure #dup returns a mutable version of the same
-      # test that attrs[:foo] returns immutabilized version of the data
-    end
-
-    it "delegates enumeration methods to merged attributes" do
-      pending
+      @attributes.reset
+      lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::InvalidAttributeSetterContext)
     end
 
     it "delegates all to_hash-like methods supported by original Attribute to merged attributes" do
       pending
     end
 
-    it "supports all methods that Mash supports and does the right thing with them" do
-      pending
-    end
   end
 
 end
+
+describe Chef::ImmutableMash do
+  before do
+    @data_in = {:top => {:second_level => "some value"},
+                "top_level_2" => %w[array of values],
+                :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
+                :top_level_4 => {:level2 => {:key => "value"}}
+    }
+    @immutable_mash = Chef::ImmutableMash.new(@data_in)
+  end
+
+  it "element references like regular hash" do
+    @immutable_mash[:top][:second_level].should == "some value"
+  end
+
+  it "elelment references like a regular Mash" do
+    @immutable_mash[:top_level_2].should == %w[array of values]
+  end
+
+  it "converts Hash-like inputs into ImmutableMash's" do
+    @immutable_mash[:top].should be_a(Chef::ImmutableMash)
+  end
+
+  it "converts array inputs into ImmutableArray's" do
+    @immutable_mash[:top_level_2].should be_a(Chef::ImmutableArray)
+  end
+
+  it "converts arrays of hashes to ImmutableArray's of ImmutableMashes" do
+    @immutable_mash[:top_level_3].first.should be_a(Chef::ImmutableMash)
+  end
+
+  it "converts nested hashes to ImmutableMashes" do
+    @immutable_mash[:top_level_4].should be_a(Chef::ImmutableMash)
+    @immutable_mash[:top_level_4][:level2].should be_a(Chef::ImmutableMash)
+  end
+
+
+  [
+    :[]=,
+    :clear,
+    :collect!,
+    :default=,
+    :default_proc=,
+    :delete,
+    :delete_if,
+    :keep_if,
+    :map!,
+    :merge!,
+    :update,
+    :reject!,
+    :replace,
+    :select!,
+    :shift!
+  ].each do |mutator|
+    it "doesn't allow mutation via `#{mutator}'" do
+      lambda { @immutable_mash.send(mutator) }.should raise_error(Chef::ImmutableAttributeModification)
+    end
+  end
+
+  it "returns a mutable version of itself when duped" do
+    mutable = @immutable_mash.dup
+    mutable[:new_key] = :value
+    mutable[:new_key].should == :value
+  end
+
+end
+
+describe Chef::ImmutableArray do
+
+  before do
+    @immutable_array = Chef::ImmutableArray.new(%w[foo bar baz])
+  end
+
+  ##
+  # Note: other behaviors, such as immutibilizing input data, are tested along
+  # with ImmutableMash, above
+  ###
+
+  [
+    :<<,
+    :[]=,
+    :clear,
+    :collect!,
+    :compact!,
+    :default=,
+    :default_proc=,
+    :delete,
+    :delete_at,
+    :delete_if,
+    :fill,
+    :flatten!,
+    :insert,
+    :keep_if,
+    :map!,
+    :merge!,
+    :pop,
+    :push,
+    :update,
+    :reject!,
+    :reverse!,
+    :replace,
+    :select!,
+    :shift!,
+    :slice!,
+    :sort!,
+    :sort_by!,
+    :uniq!,
+    :unshift
+  ].each do |mutator|
+    it "does not allow mutation via `#{mutator}" do
+      lambda { @immutable_array.send(mutator)}.should raise_error(Chef::ImmutableAttributeModification)
+    end
+  end
+
+  it "returns a mutable version of itself when duped" do
+    mutable = @immutable_array.dup
+    mutable[0] = :value
+    mutable[0].should == :value
+  end
+end
+

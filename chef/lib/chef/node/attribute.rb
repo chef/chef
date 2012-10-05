@@ -21,7 +21,6 @@ require 'chef/mixin/deep_merge'
 require 'chef/log'
 
 class Chef
-  class Node
 
     class InvalidAttributeSetterContext < ArgumentError
     end
@@ -163,6 +162,12 @@ class Chef
         end
       end
 
+      # Mash uses #convert_value to mashify values on input.
+      # Since we're handling this ourselves, override it to be a no-op
+      def convert_value(value)
+        value
+      end
+
       # NOTE: #default and #default= are likely to be pretty confusing. For a
       # regular ruby Hash, they control what value is returned for, e.g.,
       #   hash[:no_such_key] #=> hash.default
@@ -173,9 +178,12 @@ class Chef
       end
     end
 
+
+  class Node
     class AttrProperties
       attr_accessor :auto_vivify_on_read
       attr_accessor :set_unless_present
+      attr_accessor :set_type
 
       def auto_vivify_on_read?
         !!@auto_vivify_on_read
@@ -184,6 +192,7 @@ class Chef
       def set_unless?
         !!@set_unless_present
       end
+
     end
 
     class VividMash < Mash
@@ -201,6 +210,14 @@ class Chef
           self[key] = value
         end
         value
+      end
+
+      def []=(key, value)
+        if @properties.set_unless? && key?(key)
+          self[key]
+        else
+          super
+        end
       end
 
       alias :attribute? :has_key?
@@ -243,9 +260,89 @@ class Chef
                     :default,
                     :override,
                     :automatic,
-                    :set_unless_value_present,
-                    :set_type,
                     :properties
+
+      [
+      
+       :all?,
+       :any?,
+       :assoc,
+       :chunk, #?
+       :collect,
+       :collect_concat,
+       :compare_by_identity,
+       :compare_by_identity?,
+       :count,
+       :cycle,
+       :detect,
+       :drop,
+       :drop_while,
+       :each,
+       :each_cons,
+       :each_entry,
+       :each_key,
+       :each_pair,
+       :each_slice,
+       :each_value,
+       :each_with_index,
+       :each_with_object,
+       :empty?,
+       :entries,
+       :except,
+       :fetch,
+       :find,
+       :find_all,
+       :find_index,
+       :first,
+       :flat_map,
+       :flatten,
+       :grep,
+       :group_by,
+       :has_value?,
+       :include?,
+       :index,
+       :inject,
+       :invert,
+       :key,
+       :keys,
+       :length,
+       :map,
+       :max,
+       :max_by,
+       :merge,
+       :min,
+       :min_by,
+       :minmax,
+       :minmax_by,
+       :none?,
+       :one?,
+       :partition, #?
+       :rassoc,
+       :reduce,
+       :reject,
+       :reverse_each,
+       :select,
+       :size,
+       :slice_before, #?
+       :sort,
+       :sort_by,
+       :store,
+       :symbolize_keys,
+       :take,
+       :take_while,
+       :to_a,
+       :to_hash,
+       :to_set,
+       :value?,
+       :values,
+       :values_at,
+       :zip].each do |delegated_method|
+         class_eval(<<-METHOD_DEFN)
+            def #{delegated_method}(*args, &block)
+              merged_attributes.send(:#{delegated_method}, *args, &block)
+            end
+         METHOD_DEFN
+       end
 
       def initialize(normal, default, override, automatic)
         @properties = AttrProperties.new
@@ -254,15 +351,20 @@ class Chef
         @override = VividMash.new(properties, override)
         @automatic = VividMash.new(properties, automatic)
 
-        @auto_vivifiy_on_read = false
-        @set_unless_value_present = false
-        @set_type = nil
-        @has_been_read = false
         @merged_attributes = nil
+      end
+
+      def set_type=(set_type)
+        @properties.set_type = set_type
+      end
+
+      def set_unless_value_present=(setting)
+        @properties.set_unless_present = setting
       end
 
       def reset
         @merged_attributes = nil
+        @properties.set_type = nil
       end
 
       def auto_vivify_on_read
@@ -314,6 +416,10 @@ class Chef
         value
       end
 
+      def []=(key, value)
+        set_type_hash[key] = value
+      end
+
       def has_key?(key)
         COMPONENTS.any? do |component_ivar|
           instance_variable_get(component_ivar).has_key?(key)
@@ -326,14 +432,15 @@ class Chef
       alias :key? :has_key?
 
       def setting_a_value?
-        !@set_type.nil?
+        !properties.set_type.nil?
       end
 
       def set_type_hash
-        if ivar = COMPONENT_ACCESSORS[@set_type]
+        if ivar = COMPONENT_ACCESSORS[@properties.set_type]
           instance_variable_get(ivar)
         else
-          raise InvalidAttributeSetterContext, "Cannot set an attribute without first specifying the precedence"
+          raise InvalidAttributeSetterContext, "Cannot set an attribute without first specifying the precedence. " +
+            %Q(To set an attribute, use code like `node.default["key"] = "value"')
         end
       end
 
