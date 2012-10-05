@@ -60,7 +60,7 @@ class Chef
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          package_repos = repos.join("|")
+          package_repos = repos.map {|r| Regexp.escape(r) }.join('|')
 
           status = popen4("pacman -Ss #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
