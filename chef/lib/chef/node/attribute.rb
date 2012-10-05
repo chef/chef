@@ -22,6 +22,344 @@ require 'chef/log'
 
 class Chef
   class Node
+
+    class InvalidAttributeSetterContext < ArgumentError
+    end
+
+    class ImmutableAttributeModification < NoMethodError
+    end
+
+    module Immutablize
+      def immutablize(value)
+        case value
+        when Hash
+          ImmutableMash.new(value)
+        when Array
+          ImmutableArray.new(value)
+        else
+          value
+        end
+      end
+    end
+
+    class ImmutableArray < Array
+      include Immutablize
+
+      alias :internal_push :<<
+      private :internal_push
+
+      DISALLOWED_MUTATOR_METHODS = [
+        :<<,
+        :[]=,
+        :clear,
+        :collect!,
+        :compact!,
+        :default=,
+        :default_proc=,
+        :delete,
+        :delete_at,
+        :delete_if,
+        :fill,
+        :flatten!,
+        :insert,
+        :keep_if,
+        :map!,
+        :merge!,
+        :pop,
+        :push,
+        :update,
+        :reject!,
+        :reverse!,
+        :replace,
+        :select!,
+        :shift!,
+        :slice!,
+        :sort!,
+        :sort_by!,
+        :uniq!,
+        :unshift
+      ]
+
+      def initialize(array_data)
+        array_data.each do |value|
+          internal_push(immutablize(value))
+        end
+      end
+
+      # Redefine all of the methods that mutate a Hash to raise an error when called.
+      # This is the magic that makes this object "Immutable"
+      DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
+        # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
+        class_eval(<<-METHOD_DEFN)
+        def #{mutator_method_name}(*args, &block)
+          msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
+          %Q(To set an attribute use code like `node.default["key"] = "value"')
+          raise ImmutableAttributeModification, msg
+        end
+        METHOD_DEFN
+      end
+
+      def dup
+        Array.new(self)
+      end
+    end
+
+    class ImmutableMash < Mash
+
+      include Immutablize
+
+      alias :internal_set :[]=
+      private :internal_set
+
+      DISALLOWED_MUTATOR_METHODS = [
+        :[]=,
+        :clear,
+        :collect!,
+        :default=,
+        :default_proc=,
+        :delete,
+        :delete_if,
+        :keep_if,
+        :map!,
+        :merge!,
+        :update,
+        :reject!,
+        :replace,
+        :select!,
+        :shift!
+      ]
+
+      def initialize(mash_data)
+        mash_data.each do |key, value|
+          internal_set(key, immutablize(value))
+        end
+      end
+
+      # Redefine all of the methods that mutate a Hash to raise an error when called.
+      # This is the magic that makes this object "Immutable"
+      DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
+        # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
+        class_eval(<<-METHOD_DEFN)
+        def #{mutator_method_name}(*args, &block)
+          msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
+          %Q(To set an attribute use code like `node.default["key"] = "value"')
+          raise ImmutableAttributeModification, msg
+        end
+        METHOD_DEFN
+      end
+
+      def method_missing(symbol, *args)
+        if args.empty?
+          if key?(symbol)
+            self[symbol]
+          else
+            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
+          end
+        elsif symbol.to_s =~ /=$/
+          key_to_set = symbol.to_s[/^(.+)=$/, 1]
+          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        else
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+        end
+      end
+
+      # NOTE: #default and #default= are likely to be pretty confusing. For a
+      # regular ruby Hash, they control what value is returned for, e.g.,
+      #   hash[:no_such_key] #=> hash.default
+      # Of course, 'default' has a specific meaning in Chef-land
+
+      def dup
+        Mash.new(self)
+      end
+    end
+
+    class AttrProperties
+      attr_accessor :auto_vivify_on_read
+      attr_accessor :set_unless_present
+
+      def auto_vivify_on_read?
+        !!@auto_vivify_on_read
+      end
+
+      def set_unless?
+        !!@set_unless_present
+      end
+    end
+
+    class VividMash < Mash
+      attr_reader :properties
+
+      def initialize(properties, data={})
+        @properties = properties
+        super(data)
+      end
+
+      def [](key)
+        value = super
+        if value.nil? && auto_vivify_on_read?
+          value = self.class.new(properties)
+          self[key] = value
+        end
+        value
+      end
+
+      alias :attribute? :has_key?
+
+      def method_missing(symbol, *args)
+        if args.empty?
+          if key?(symbol)
+            self[symbol]
+          else
+            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
+          end
+        elsif symbol.to_s =~ /=$/
+          key_to_set = symbol.to_s[/^(.+)=$/, 1]
+          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        else
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+        end
+      end
+
+      def auto_vivify_on_read?
+        @properties.auto_vivify_on_read?
+      end
+
+    end
+
+    class Attribute2 < Mash
+
+      include Immutablize
+
+      include Enumerable
+
+      COMPONENTS = [:@default, :@normal, :@override, :@automatic].freeze
+      COMPONENT_ACCESSORS = {:default   => :@default,
+                             :normal    => :@normal,
+                             :override  => :@override,
+                             :automatic => :@automatic
+                            }
+
+      attr_accessor :normal,
+                    :default,
+                    :override,
+                    :automatic,
+                    :set_unless_value_present,
+                    :set_type,
+                    :properties
+
+      def initialize(normal, default, override, automatic, state=[])
+        @properties = AttrProperties.new
+        @normal = VividMash.new(properties, normal)
+        @default = VividMash.new(properties, default)
+        @override = VividMash.new(properties, override)
+        @automatic = VividMash.new(properties, automatic)
+
+        @current_nesting_level = state
+        @auto_vivifiy_on_read = false
+        @set_unless_value_present = false
+        @set_type = nil
+        @has_been_read = false
+        @merged_attributes = nil
+      end
+
+      def reset
+        @merged_attributes = nil
+      end
+
+      def auto_vivify_on_read
+        @properties.auto_vivify_on_read?
+      end
+
+      def auto_vivify_on_read=(setting)
+        @properties.auto_vivify_on_read = setting
+      end
+
+      def default
+        @merged_attributes = nil
+        @default
+      end
+
+      def normal
+        @merged_attributes = nil
+        @normal
+      end
+
+      def override
+        @merged_attributes = nil
+        @override
+      end
+
+      def automatic
+        @merged_attributes = nil
+        @automatic
+      end
+
+      def merged_attributes
+        @merged_attributes ||= begin
+          resolved_attrs = COMPONENTS.inject(Mash.new) do |merged, component_ivar|
+            component_value = instance_variable_get(component_ivar)
+            Chef::Mixin::DeepMerge.merge(merged, component_value)
+          end
+          immutablize(resolved_attrs)
+        end
+      end
+
+      def [](key)
+        return merged_attributes[key] unless setting_a_value?
+        value = set_type_hash[key]
+        if value.nil? && auto_vivify_on_read?
+          value = Mash.new
+          set_type_hash[key] = value
+        end
+
+        value
+      end
+
+      def has_key?(key)
+        COMPONENTS.any? do |component_ivar|
+          instance_variable_get(component_ivar).has_key?(key)
+        end
+      end
+
+      alias :attribute? :has_key?
+      alias :member? :has_key?
+      alias :include? :has_key?
+      alias :key? :has_key?
+
+      def setting_a_value?
+        !@set_type.nil?
+      end
+
+      def set_type_hash
+        if ivar = COMPONENT_ACCESSORS[@set_type]
+          instance_variable_get(ivar)
+        else
+          raise InvalidAttributeSetterContext, "Cannot set an attribute without first specifying the precedence"
+        end
+      end
+
+      def method_missing(symbol, *args)
+        if args.empty?
+          if key?(symbol) || setting_a_value?
+            self[symbol]
+          else
+            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
+          end
+        elsif setting_a_value? and symbol.to_s =~ /=$/
+          key_to_set = symbol.to_s[/^(.+)=$/, 1]
+          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        else
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+        end
+      end
+
+      def inspect
+        "#<#{self.class} " << COMPONENTS.map{|iv|
+          "#{iv}=#{instance_variable_get(iv)}"
+        }.join(', ') << ">"
+      end
+    end
+
     class Attribute
 
       class ImmutableAttribute < NoMethodError
