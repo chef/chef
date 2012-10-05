@@ -225,14 +225,15 @@ describe Chef::Node::Attribute do
 
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
-        na.send(accessor).should == { accessor => true } 
+        na = Chef::Node::Attribute2.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
+        na.send(accessor).should == { accessor.to_s => true } 
       end
     end
 
     it "should allow you to set the initial state" do
+      pending "implementation test"
       attrs = {"first" => {"second" => {"third" => {"jackpot" => "jackpot!"}}}}
-      na = Chef::Node::Attribute.new(attrs, {}, {}, {}, [ "first", "second", "third" ])
+      na = Chef::Node::Attribute2.new(attrs, {}, {}, {}, [ "first", "second", "third" ])
       na.should have_key("jackpot")
     end
 
@@ -509,7 +510,7 @@ describe Chef::Node::Attribute do
 
   describe "keys" do
     before(:each) do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
@@ -596,7 +597,7 @@ describe Chef::Node::Attribute do
 
   describe "each_key" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -632,7 +633,7 @@ describe Chef::Node::Attribute do
 
   describe "each_pair" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -668,7 +669,7 @@ describe Chef::Node::Attribute do
   
   describe "each_value" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -712,7 +713,7 @@ describe Chef::Node::Attribute do
 
   describe "empty?" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -727,7 +728,7 @@ describe Chef::Node::Attribute do
         },
         {}
       )
-      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
+      @empty = Chef::Node::Attribute2.new({}, {}, {}, {})
     end
 
     it "should respond to empty?" do
@@ -746,7 +747,7 @@ describe Chef::Node::Attribute do
 
   describe "fetch" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -803,7 +804,7 @@ describe Chef::Node::Attribute do
 
   describe "has_value?" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -839,7 +840,7 @@ describe Chef::Node::Attribute do
 
   describe "index" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -877,7 +878,7 @@ describe Chef::Node::Attribute do
 
   describe "values" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -913,7 +914,7 @@ describe Chef::Node::Attribute do
 
   describe "select" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -944,8 +945,8 @@ describe Chef::Node::Attribute do
       end
     end
 
-    it "should return an empty array for a block containing nil" do
-      @attributes.select { nil }.should == []
+    it "should return an empty hash/array (ruby-version-dependent) for a block containing nil" do
+      @attributes.select { nil }.should == {}.select { nil }
     end
 
     # sorted for spec clarity
@@ -963,7 +964,7 @@ describe Chef::Node::Attribute do
 
   describe "size" do
     before do
-      @attributes = Chef::Node::Attribute.new(
+      @attributes = Chef::Node::Attribute2.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -979,7 +980,7 @@ describe Chef::Node::Attribute do
         {}
       )
 
-      @empty = Chef::Node::Attribute.new({},{},{},{})
+      @empty = Chef::Node::Attribute2.new({},{},{},{})
     end
 
     it "should respond to size" do
@@ -1028,32 +1029,6 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "when a value has been set at all four precedence levels" do
-    before do
-      @default_attrs = {"foo" => {"bar" => "default_value"}}
-      @normal_attrs = {"foo" => {"bar" => "normal_value"}}
-      @override_attrs = {"foo" => {"bar" => "override_value"}}
-      @automatic_attrs = {"foo" => {"bar" => "automatic_value"}}
-
-                                            #(normal, default, override, automatic, state=[])
-      @attributes = Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs, @automatic_attrs)
-    end
-
-    it "deletes a key from all precedence levels" do
-      @attributes["foo"].delete("bar")
-      @attributes.reset
-      @attributes["foo"].should_not have_key("bar")
-      @default_attrs["foo"].should_not have_key("bar")
-      @normal_attrs["foo"].should_not have_key("bar")
-      @override_attrs["foo"].should_not have_key("bar")
-      @automatic_attrs["foo"].should_not have_key("bar")
-    end
-
-    it "returns the automatic (highest precedence) value when deleting a key" do
-      @attributes["foo"].delete("bar").should == "automatic_value"
-    end
-
-  end
 
   describe "TODO - new behaviors or tests" do
     it "makes values read only for reading" do
