@@ -43,19 +43,19 @@ class Chef
         :description => "Create an initial API Client"
 
       option :admin_client_name,
-        :long => "--admin_client_name NAME",
+        :long => "--admin-client-name NAME",
         :description => "The existing admin clientname (usually chef-webui)"
 
       option :admin_client_key,
-        :long => "--admin_client_key PATH",
+        :long => "--admin-client-key PATH",
         :description => "The path to the admin client's private key (usually a file named webui.pem)"
 
       option :validation_client_name,
-        :long => "--validation_client_name NAME",
+        :long => "--validation-client-name NAME",
         :description => "The validation clientname (usually chef-validator)"
 
       option :validation_key,
-        :long => "--validation_key PATH",
+        :long => "--validation-key PATH",
         :description => "The location of the location of the validation key (usually a file named validation.pem)"
 
       def configure_chef
