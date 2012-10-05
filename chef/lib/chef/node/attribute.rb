@@ -247,14 +247,13 @@ class Chef
                     :set_type,
                     :properties
 
-      def initialize(normal, default, override, automatic, state=[])
+      def initialize(normal, default, override, automatic)
         @properties = AttrProperties.new
         @normal = VividMash.new(properties, normal)
         @default = VividMash.new(properties, default)
         @override = VividMash.new(properties, override)
         @automatic = VividMash.new(properties, automatic)
 
-        @current_nesting_level = state
         @auto_vivifiy_on_read = false
         @set_unless_value_present = false
         @set_type = nil
