@@ -210,7 +210,7 @@ describe Chef::Node::Attribute do
       }
     }
     @automatic_hash = {"week" => "friday"}
-    @attributes = Chef::Node::Attribute2.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
+    @attributes = Chef::Node::Attribute.new(@attribute_hash, @default_hash, @override_hash, @automatic_hash)
   end
 
   describe "initialize" do
@@ -225,7 +225,7 @@ describe Chef::Node::Attribute do
 
     [ :normal, :default, :override, :automatic ].each do |accessor|
       it "should set #{accessor}" do
-        na = Chef::Node::Attribute2.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
+        na = Chef::Node::Attribute.new({ :normal => true }, { :default => true }, { :override => true }, { :automatic => true })
         na.send(accessor).should == { accessor.to_s => true } 
       end
     end
@@ -233,7 +233,7 @@ describe Chef::Node::Attribute do
     it "should allow you to set the initial state" do
       pending "implementation test"
       attrs = {"first" => {"second" => {"third" => {"jackpot" => "jackpot!"}}}}
-      na = Chef::Node::Attribute2.new(attrs, {}, {}, {}, [ "first", "second", "third" ])
+      na = Chef::Node::Attribute.new(attrs, {}, {}, {}, [ "first", "second", "third" ])
       na.should have_key("jackpot")
     end
 
@@ -510,7 +510,7 @@ describe Chef::Node::Attribute do
 
   describe "keys" do
     before(:each) do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  { "two" => "three" },
           "hut" =>  { "two" => "three" },
@@ -559,7 +559,7 @@ describe Chef::Node::Attribute do
 
   describe "each" do
     before(:each) do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -597,7 +597,7 @@ describe Chef::Node::Attribute do
 
   describe "each_key" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -633,7 +633,7 @@ describe Chef::Node::Attribute do
 
   describe "each_pair" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -669,7 +669,7 @@ describe Chef::Node::Attribute do
   
   describe "each_value" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -713,7 +713,7 @@ describe Chef::Node::Attribute do
 
   describe "empty?" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -728,7 +728,7 @@ describe Chef::Node::Attribute do
         },
         {}
       )
-      @empty = Chef::Node::Attribute2.new({}, {}, {}, {})
+      @empty = Chef::Node::Attribute.new({}, {}, {}, {})
     end
 
     it "should respond to empty?" do
@@ -747,7 +747,7 @@ describe Chef::Node::Attribute do
 
   describe "fetch" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -804,7 +804,7 @@ describe Chef::Node::Attribute do
 
   describe "has_value?" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -840,7 +840,7 @@ describe Chef::Node::Attribute do
 
   describe "index" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -878,7 +878,7 @@ describe Chef::Node::Attribute do
 
   describe "values" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -914,7 +914,7 @@ describe Chef::Node::Attribute do
 
   describe "select" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -964,7 +964,7 @@ describe Chef::Node::Attribute do
 
   describe "size" do
     before do
-      @attributes = Chef::Node::Attribute2.new(
+      @attributes = Chef::Node::Attribute.new(
         {
           "one" =>  "two",
           "hut" =>  "three",
@@ -980,7 +980,7 @@ describe Chef::Node::Attribute do
         {}
       )
 
-      @empty = Chef::Node::Attribute2.new({},{},{},{})
+      @empty = Chef::Node::Attribute.new({},{},{},{})
     end
 
     it "should respond to size" do
