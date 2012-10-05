@@ -205,8 +205,8 @@ describe Chef::Provider::Ifconfig do
       @provider.stub!(:run_command)
       config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
       File.should_receive(:exist?).with(config_filename).and_return(true)
-      FileUtils.should_receive(:rm_f)#.with(config_filename, :verbose => false, :force => true)
-      
+      FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)
+
       @provider.run_action(:delete)
     end
   end
