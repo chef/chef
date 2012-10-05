@@ -427,6 +427,52 @@ describe Chef::ResourceReporter do
 
     end
 
+    context "when the server returns a 500 to the client" do
+      before do
+        # 500 getting the run_id
+        @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
+        @error = Net::HTTPServerException.new("500 message", @response)
+        @rest_client.should_receive(:post_rest).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          and_raise(@error)
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+      end
+
+      it "assumes the feature is not enabled" do
+        @resource_reporter.reporting_enabled?.should be_false
+      end
+
+      it "does not send a resource report to the server" do
+        @rest_client.should_not_receive(:post_rest)
+        @resource_reporter.run_completed(@node)
+      end
+
+    end
+
+    context "when the server returns a 500 to the client and enable_reporting_url_fatals is true" do
+      before do
+        @enable_reporting_url_fatals = Chef::Config[:enable_reporting_url_fatals]
+        Chef::Config[:enable_reporting_url_fatals] = true
+        # 500 getting the run_id
+        @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
+        @error = Net::HTTPServerException.new("500 message", @response)
+        @rest_client.should_receive(:post_rest).
+          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          and_raise(@error)
+      end
+
+      after do
+        Chef::Config[:enable_reporting_url_fatals] = @enable_reporting_url_fatals
+      end
+
+      it "fails the run" do
+        lambda {
+          @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+        }.should raise_error(Net::HTTPServerException)
+      end
+
+    end
+
     context "after creating the run history document" do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"}
