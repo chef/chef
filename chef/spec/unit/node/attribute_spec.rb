@@ -1036,8 +1036,8 @@ describe Chef::Node::Attribute do
       lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::InvalidAttributeSetterContext)
     end
 
-    it "delegates all to_hash-like methods supported by original Attribute to merged attributes" do
-      pending
+    it "does the internal rejiggering required to modify values when it gives you a reference to a component" do
+      pending "write the tests"
     end
 
   end

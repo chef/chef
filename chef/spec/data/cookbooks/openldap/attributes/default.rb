@@ -9,6 +9,7 @@ when "corp"
   default[:ldap_basedn] = "dc=hjksolutions,dc=com"
   default[:ldap_replication_password] = "yougotit"
 else
+
   default[:ldap_server] = "ops1prod"
   default[:ldap_basedn] = "dc=hjksolutions,dc=com"
   default[:ldap_replication_password] = "forsure" 

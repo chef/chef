@@ -46,7 +46,6 @@ class Chef
     def_delegators :construct_attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
-    attr_accessor :override_attrs, :default_attrs, :normal_attrs, :automatic_attrs
     attr_reader :couchdb_id
 
     # TODO: 5/18/2010 cw/timh. cookbook_collection should be removed
@@ -235,91 +234,117 @@ class Chef
 
     alias :environment :chef_environment
 
-    # Used by the DSL
-    def attribute
-      construct_attributes
+
+
+    def attributes
+      @attributes ||=
+      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs, @automatic_attrs)
     end
 
-    def construct_attributes
-      Chef::Node::Attribute.new(normal_attrs, default_attrs, override_attrs, automatic_attrs)
+    def reset_attributes!
+      @attributes = nil
     end
 
-    def attribute=(value)
-      self.normal_attrs = value
-    end
+    alias :attribute :attributes
+    alias :construct_attributes :attributes
 
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      construct_attributes[attrib]
+      attributes.reset
+      attributes[attrib]
     end
 
-    # Set an attribute of this node
-    def []=(attrib, value)
-      construct_attributes[attrib] = value
-    end
-
-    def store(attrib, value)
-      self[attrib] = value
-    end
-
-    # Set a normal attribute of this node, but auto-vivifiy any Mashes that
+    # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
       attrs = construct_attributes
       attrs.set_type = :normal
-      attrs.auto_vivifiy_on_read = true
+      attrs.auto_vivify_on_read = true
       attrs
     end
 
     alias_method :set, :normal
 
-    # Set a normal attribute of this node, auto-vivifiying any mashes that are
+    # Set a normal attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def normal_unless
       attrs = construct_attributes
       attrs.set_type = :normal
-      attrs.auto_vivifiy_on_read = true
+      attrs.auto_vivify_on_read = true
       attrs.set_unless_value_present = true
       attrs
     end
     alias_method :set_unless, :normal_unless
 
-    # Set a default of this node, but auto-vivifiy any Mashes that might
+    # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
       attrs = construct_attributes
       attrs.set_type = :default
-      attrs.auto_vivifiy_on_read = true
+      attrs.auto_vivify_on_read = true
       attrs
     end
 
-    # Set a default attribute of this node, auto-vivifiying any mashes that are
+    # Set a default attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def default_unless
       attrs = construct_attributes
       attrs.set_type = :default
-      attrs.auto_vivifiy_on_read = true
+      attrs.auto_vivify_on_read = true
       attrs.set_unless_value_present = true
       attrs
     end
 
-    # Set an override attribute of this node, but auto-vivifiy any Mashes that
+    # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
       attrs = construct_attributes
       attrs.set_type = :override
-      attrs.auto_vivifiy_on_read = true
+      attrs.auto_vivify_on_read = true
       attrs
     end
 
-    # Set an override attribute of this node, auto-vivifiying any mashes that
+    # Set an override attribute of this node, auto-vivifying any mashes that
     # are missing, but if the final value already exists, don't set it
     def override_unless
       attrs = construct_attributes
       attrs.set_type = :override
-      attrs.auto_vivifiy_on_read = true
+      attrs.auto_vivify_on_read = true
       attrs.set_unless_value_present = true
       attrs
+    end
+
+
+    def override_attrs
+     attributes.override
+    end
+
+    def override_attrs=(new_values)
+      attributes.override = new_values
+    end
+
+    def default_attrs
+      attributes.default
+    end
+
+    def default_attrs=(new_values)
+      attributes.default = new_values
+    end
+
+    def normal_attrs
+      attributes.normal
+    end
+
+    def normal_attrs=(new_values)
+      attributes.normal = new_values
+    end
+
+    def automatic_attrs
+      attributes.automatic
+    end
+
+    def automatic_attrs=(new_values)
+      attributes.automatic = new_values
     end
 
     # Return true if this Node has a given attribute, false if not.  Takes either a symbol or
@@ -328,23 +353,22 @@ class Chef
     # Only works on the top level. Preferred way is to use the normal [] style
     # lookup and call attribute?()
     def attribute?(attrib)
-      construct_attributes.attribute?(attrib)
+      attributes.attribute?(attrib)
     end
 
     # Yield each key of the top level to the block.
     def each(&block)
-      construct_attributes.each(&block)
+      attributes.each(&block)
     end
 
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)
-      construct_attributes.each_attribute(&block)
+      attributes.each_attribute(&block)
     end
 
     # Only works for attribute fetches, setting is no longer supported
     def method_missing(symbol, *args)
-      attrs = construct_attributes
-      attrs.send(symbol, *args)
+      attributes.send(symbol, *args)
     end
 
     # Returns true if this Node expects a given recipe, false if not.
@@ -386,20 +410,22 @@ class Chef
       Chef::Log.debug("Platform is #{platform} version #{version}")
       @automatic_attrs[:platform] = platform
       @automatic_attrs[:platform_version] = version
+      reset_attributes!
     end
 
     # Consumes the combined run_list and other attributes in +attrs+
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
-      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
+      @normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
       self.tags # make sure they're defined
+      reset_attributes!
     end
 
     # Lazy initializer for tags attribute
     def tags
-      self[:tags] = [] unless attribute?(:tags)
-      self[:tags]
+      normal[:tags] = [] unless attribute?(:tags)
+      normal[:tags]
     end
 
     # Extracts the run list from +attrs+ and applies it. Returns the remaining attributes
@@ -440,8 +466,9 @@ class Chef
 
       self.tags # make sure they're defined
 
-      @automatic_attrs[:recipes] = expansion.recipes
-      @automatic_attrs[:roles] = expansion.roles
+      automatic[:recipes] = expansion.recipes
+      automatic[:roles] = expansion.roles
+
 
       expansion
     end
@@ -491,11 +518,11 @@ class Chef
         "name" => name,
         "chef_environment" => chef_environment,
         'json_class' => self.class.name,
-        "automatic" => automatic_attrs,
-        "normal" => normal_attrs,
+        "automatic" => attributes.automatic,
+        "normal" => attributes.normal,
         "chef_type" => "node",
-        "default" => default_attrs,
-        "override" => override_attrs,
+        "default" => attributes.default,
+        "override" => attributes.override,
         #Render correctly for run_list items so malformed json does not result
         "run_list" => run_list.run_list.map { |item| item.to_s }
       }
@@ -505,10 +532,10 @@ class Chef
 
     def update_from!(o)
       run_list.reset!(o.run_list)
-      @automatic_attrs = o.automatic_attrs
-      @normal_attrs = o.normal_attrs
-      @override_attrs = o.override_attrs
-      @default_attrs = o.default_attrs
+      self.automatic_attrs = o.automatic_attrs
+      self.normal_attrs = o.normal_attrs
+      self.override_attrs = o.override_attrs
+      self.default_attrs = o.default_attrs
       chef_environment(o.chef_environment)
       self
     end

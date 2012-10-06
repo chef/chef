@@ -140,7 +140,7 @@ describe Chef::Node do
     end
 
     it "should allow attributes to be accessed by name or symbol directly on node[]" do
-      @node.attribute["locust"] = "something"
+      @node.default["locust"] = "something"
       @node[:locust].should eql("something")
       @node["locust"].should eql("something")
     end
@@ -149,13 +149,12 @@ describe Chef::Node do
       @node["secret"].should eql(nil)
     end
 
-    it "should allow you to set an attribute via node[]=" do
-      @node["secret"] = "shush"
-      @node["secret"].should eql("shush")
+    it "does not allow you to set an attribute via node[]=" do
+      lambda  { @node["secret"] = "shush" }.should raise_error(Chef::InvalidAttributeSetterContext)
     end
 
     it "should allow you to query whether an attribute exists with attribute?" do
-      @node.attribute["locust"] = "something"
+      @node.default["locust"] = "something"
       @node.attribute?("locust").should eql(true)
       @node.attribute?("no dice").should eql(false)
     end
@@ -166,13 +165,12 @@ describe Chef::Node do
       @node["battles"]["people"].attribute?("snozzberry").should == false
     end
 
-    it "should allow you to set an attribute via method_missing" do
-      @node.sunshine = "is bright"
-      @node.attribute[:sunshine].should eql("is bright")
+    it "does not allow you to set an attribute via method_missing" do
+      lambda { @node.sunshine = "is bright"}.should raise_error(Chef::InvalidAttributeSetterContext)
     end
 
     it "should allow you get get an attribute via method_missing" do
-      @node.sunshine = "is bright"
+      @node.default.sunshine = "is bright"
       @node.sunshine.should eql("is bright")
     end
 
@@ -253,8 +251,8 @@ describe Chef::Node do
     end
 
     it "should allow you to iterate over attributes with each_attribute" do
-      @node.sunshine = "is bright"
-      @node.canada = "is a nice place"
+      @node.default.sunshine = "is bright"
+      @node.default.canada = "is a nice place"
       seen_attributes = Hash.new
       @node.each_attribute do |a,v|
         seen_attributes[a] = v
@@ -312,7 +310,7 @@ describe Chef::Node do
     end
 
     it "should not set the tags attribute to an empty array if it is already defined" do
-      @node[:tags] = [ "radiohead" ]
+      @node.normal[:tags] = [ "radiohead" ]
       @node.consume_external_attrs(@ohai_data, {})
       @node.tags.should eql([ "radiohead" ])
     end
@@ -378,6 +376,19 @@ describe Chef::Node do
       @node.automatic_attrs[:roles].sort.should == ['arf', 'countersnark']
     end
 
+  end
+
+  describe "Code cleanup TODO" do
+    it "TODO" do
+      pending(<<-E)
+        remove all ivar access of attributes in Chef::Node
+        Chef::Node::Attribute needs to manage them
+      E
+    end
+
+    it "makes #reset_defaults_and_overrides work correctly" do
+      pending "TODO"
+    end
   end
 
   # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb

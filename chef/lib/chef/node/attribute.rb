@@ -134,6 +134,9 @@ class Chef
         end
       end
 
+
+      alias :attribute? :has_key?
+
       # Redefine all of the methods that mutate a Hash to raise an error when called.
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
@@ -208,12 +211,13 @@ class Chef
         if value.nil? && auto_vivify_on_read?
           value = self.class.new(properties)
           self[key] = value
+        else
+          value
         end
-        value
       end
 
       def []=(key, value)
-        if @properties.set_unless? && key?(key)
+        if set_unless? && key?(key)
           self[key]
         else
           super
@@ -224,7 +228,7 @@ class Chef
 
       def method_missing(symbol, *args)
         if args.empty?
-          if key?(symbol)
+          if key?(symbol) or setting_a_value? && auto_vivify_on_read?
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
@@ -237,10 +241,17 @@ class Chef
         end
       end
 
+      def set_unless?
+        @properties.set_unless?
+      end
+
       def auto_vivify_on_read?
         @properties.auto_vivify_on_read?
       end
 
+      def setting_a_value?
+        !properties.set_type.nil?
+      end
     end
 
     class Attribute < Mash
@@ -256,18 +267,12 @@ class Chef
                              :automatic => :@automatic
                             }
 
-      attr_accessor :normal,
-                    :default,
-                    :override,
-                    :automatic,
-                    :properties
+      attr_accessor :properties
 
-      [
-      
-       :all?,
+      [:all?,
        :any?,
        :assoc,
-       :chunk, #?
+       :chunk,
        :collect,
        :collect_concat,
        :compare_by_identity,
@@ -316,14 +321,14 @@ class Chef
        :minmax_by,
        :none?,
        :one?,
-       :partition, #?
+       :partition,
        :rassoc,
        :reduce,
        :reject,
        :reverse_each,
        :select,
        :size,
-       :slice_before, #?
+       :slice_before,
        :sort,
        :sort_by,
        :store,
@@ -376,23 +381,47 @@ class Chef
       end
 
       def default
-        @merged_attributes = nil
+        reset
+        properties.set_type = :default
         @default
       end
 
+      def default=(new_data)
+        reset
+        @default = new_data
+      end
+
       def normal
-        @merged_attributes = nil
+        reset
+        properties.set_type = :normal
         @normal
       end
 
+      def normal=(new_data)
+        reset
+        @normal = new_data
+      end
+
       def override
-        @merged_attributes = nil
+        reset
+        properties.set_type = :override
         @override
       end
 
+      def override=(new_data)
+        reset
+        @override = new_data
+      end
+
       def automatic
-        @merged_attributes = nil
+        reset
+        properties.set_type = :automatic
         @automatic
+      end
+
+      def automatic=(new_data)
+        reset
+        @automatic = new_data
       end
 
       def merged_attributes
@@ -409,7 +438,7 @@ class Chef
         return merged_attributes[key] unless setting_a_value?
         value = set_type_hash[key]
         if value.nil? && auto_vivify_on_read?
-          value = Mash.new
+          value = VividMash.new
           set_type_hash[key] = value
         end
 
@@ -431,9 +460,8 @@ class Chef
       alias :include? :has_key?
       alias :key? :has_key?
 
-      def setting_a_value?
-        !properties.set_type.nil?
-      end
+      alias :each_attribute :each
+
 
       def set_type_hash
         if ivar = COMPONENT_ACCESSORS[@properties.set_type]
@@ -446,14 +474,19 @@ class Chef
 
       def method_missing(symbol, *args)
         if args.empty?
-          if key?(symbol) || setting_a_value?
+          if key?(symbol) or setting_a_value? && auto_vivify_on_read?
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
-        elsif setting_a_value? and symbol.to_s =~ /=$/
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
+        elsif symbol.to_s =~ /=$/
+          if setting_a_value?
+            key_to_set = symbol.to_s[/^(.+)=$/, 1]
+            self[key_to_set] = (args.length == 1 ? args[0] : args)
+          else
+            raise InvalidAttributeSetterContext, "Cannot set an attribute without first specifying the precedence. " +
+            %Q(To set an attribute, use code like `node.default["key"] = "value"')
+          end
         else
           raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
         end
@@ -464,6 +497,15 @@ class Chef
           "#{iv}=#{instance_variable_get(iv)}"
         }.join(', ') << ">"
       end
+
+      def auto_vivify_on_read?
+        @properties.auto_vivify_on_read?
+      end
+
+      def setting_a_value?
+        !properties.set_type.nil?
+      end
+
     end
 
   end
