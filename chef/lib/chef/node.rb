@@ -43,7 +43,7 @@ class Chef
 
     extend Forwardable
 
-    def_delegators :construct_attributes, :keys, :each_key, :each_value, :key?, :has_key?
+    def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_reader :couchdb_id
@@ -157,11 +157,9 @@ class Chef
       @name = nil
 
       @chef_environment = '_default'
-      @normal_attrs = Mash.new
-      @override_attrs = Mash.new
-      @default_attrs = Mash.new
-      @automatic_attrs = Mash.new
       @run_list = Chef::RunList.new
+
+      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
 
       @couchdb_rev = nil
       @couchdb_id = nil
@@ -237,12 +235,7 @@ class Chef
 
 
     def attributes
-      @attributes ||=
-      Chef::Node::Attribute.new(@normal_attrs, @default_attrs, @override_attrs, @automatic_attrs)
-    end
-
-    def reset_attributes!
-      @attributes = nil
+      @attributes
     end
 
     alias :attribute :attributes
@@ -250,7 +243,7 @@ class Chef
 
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      attributes.reset
+      attributes.reset_for_read
       attributes[attrib]
     end
 
@@ -368,6 +361,7 @@ class Chef
 
     # Only works for attribute fetches, setting is no longer supported
     def method_missing(symbol, *args)
+      attributes.reset_for_read
       attributes.send(symbol, *args)
     end
 
@@ -404,22 +398,21 @@ class Chef
       Chef::Log.debug("Extracting run list from JSON attributes provided on command line")
       consume_attributes(json_cli_attrs)
 
-      @automatic_attrs = ohai_data
+      self.automatic_attrs = ohai_data
 
       platform, version = Chef::Platform.find_platform_and_version(self)
       Chef::Log.debug("Platform is #{platform} version #{version}")
-      @automatic_attrs[:platform] = platform
-      @automatic_attrs[:platform_version] = version
-      reset_attributes!
+      self.automatic[:platform] = platform
+      self.automatic[:platform_version] = version
     end
 
     # Consumes the combined run_list and other attributes in +attrs+
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
-      @normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
+      self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
       self.tags # make sure they're defined
-      reset_attributes!
+      attributes.reset
     end
 
     # Lazy initializer for tags attribute
@@ -444,8 +437,8 @@ class Chef
     # Clear defaults and overrides, so that any deleted attributes
     # between runs are still gone.
     def reset_defaults_and_overrides
-      @default_attrs = Mash.new
-      @override_attrs = Mash.new
+      self.default.clear
+      self.override.clear
     end
 
     # Expands the node's run list and sets the default and override
@@ -479,10 +472,10 @@ class Chef
       load_chef_environment_object = (chef_environment == "_default" ? nil : Chef::Environment.load(chef_environment))
       environment_default_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.default_attributes
       default_before_roles = Chef::Mixin::DeepMerge.merge(default_attrs, environment_default_attrs)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_before_roles, expansion.default_attrs)
+      self.default_attrs = Chef::Mixin::DeepMerge.merge(default_before_roles, expansion.default_attrs)
       environment_override_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.override_attributes
       overrides_before_environments = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_override_attrs)
+      self.override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_override_attrs)
     end
 
     # Transform the node to a Hash

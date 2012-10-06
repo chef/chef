@@ -370,6 +370,12 @@ class Chef
       def reset
         @merged_attributes = nil
         @properties.set_type = nil
+        @properties.auto_vivify_on_read = nil
+      end
+
+      def reset_for_read
+        @properties.set_type = nil
+        @properties.auto_vivify_on_read = nil
       end
 
       def auto_vivify_on_read
@@ -438,7 +444,7 @@ class Chef
         return merged_attributes[key] unless setting_a_value?
         value = set_type_hash[key]
         if value.nil? && auto_vivify_on_read?
-          value = VividMash.new
+          value = VividMash.new({})
           set_type_hash[key] = value
         end
 
@@ -493,8 +499,8 @@ class Chef
       end
 
       def inspect
-        "#<#{self.class} " << COMPONENTS.map{|iv|
-          "#{iv}=#{instance_variable_get(iv)}"
+        "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map{|iv|
+          "#{iv}=#{instance_variable_get(iv).inspect}"
         }.join(', ') << ">"
       end
 

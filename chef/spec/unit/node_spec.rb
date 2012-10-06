@@ -389,6 +389,10 @@ describe Chef::Node do
     it "makes #reset_defaults_and_overrides work correctly" do
       pending "TODO"
     end
+
+    it "has tests for merging environment attrs" do
+      pending
+    end
   end
 
   # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb
