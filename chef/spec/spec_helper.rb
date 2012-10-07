@@ -60,7 +60,7 @@ Dir["spec/support/**/*.rb"].
   each { |f| require f }
 
 RSpec.configure do |config|
-  config.include(Matchers)
+  config.include(RSpec::Matchers)
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
