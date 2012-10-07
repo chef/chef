@@ -215,7 +215,6 @@ describe Chef::Node::Attribute do
 
   describe "initialize" do
     it "should return a Chef::Node::Attribute" do
-      pending "class renaming shenanigans"
       @attributes.should be_a_kind_of(Chef::Node::Attribute)
     end
 
@@ -230,28 +229,8 @@ describe Chef::Node::Attribute do
       end
     end
 
-    it "should allow you to set the initial state" do
-      pending "implementation test"
-      attrs = {"first" => {"second" => {"third" => {"jackpot" => "jackpot!"}}}}
-      na = Chef::Node::Attribute.new(attrs, {}, {}, {}, [ "first", "second", "third" ])
-      na.should have_key("jackpot")
-    end
-
     it "should be enumerable" do
       @attributes.should be_is_a(Enumerable)
-    end
-  end
-
-  describe "hash_and_not_cna" do
-    it "should return false if we pass it a Chef::Node::Attribute" do
-      pending "implementation, may not be necessary"
-      @attributes.hash_and_not_cna?(@attributes).should == false
-    end
-
-    it "should return true if we pass it something that responds to has_key?" do
-      pending "implementation, may not be necessary"
-      hashy = mock("Hashlike", :has_key? => true)
-      @attributes.hash_and_not_cna?(hashy).should == true
     end
   end
 
@@ -289,48 +268,6 @@ describe Chef::Node::Attribute do
       result["mars_volta"].should == "cicatriz"
       result["jimmy_eat_world"].should == "nice"
       result["mastodon"].should == "rocks"
-    end
-  end
-
-  describe "auto_vivify" do
-    it "should set the hash key to a mash if it does not exist" do
-      pending "implementation test"
-      @attributes.auto_vivify({}, "one")["one"].should be_a_kind_of(Mash)
-    end
-
-    it "should raise an exception if the key does exist and does not respond to has_key?" do
-      pending "implementation test"
-      lambda { @attributes.auto_vivify({ "one" => "value" }) }.should raise_error(ArgumentError)
-    end
-
-    it "should not alter the value if the key exists and responds to has_key?" do
-      pending "implementation test"
-      @attributes.auto_vivify({ "one" => { "will" => true } }, "one")["one"].should have_key("will")
-    end
-  end
-
-  describe "set_value" do
-    it "should set the value for a top level key" do
-      pending "implementation test"
-      to_check = {}
-      @attributes.set_value(to_check, "one", "some value")
-      to_check["one"].should == "some value"
-    end
-
-    it "should set the value for a second level key" do
-      pending "implementation test"
-      to_check = {}
-      @attributes[ "one" ]
-      @attributes.set_value(to_check, "two", "some value")
-      to_check["one"]["two"].should == "some value"
-    end
-
-    it "should set the value for a very deep key" do
-      pending "implementation test"
-      to_check = {}
-      attributes = Chef::Node::Attribute.new({}, {}, {}, {}, %w{one two three four five})
-      attributes.set_value(to_check, "six", "some value")
-      to_check["one"]["two"]["three"]["four"]["five"]["six"].should == "some value"
     end
   end
 
@@ -389,37 +326,6 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "get_value" do
-    it "should get a value from a top level key" do
-      pending "implementation test"
-      @attributes.get_value(@default_hash, "domain").should == "opscode.com"
-    end
-
-    it "should return nil for a top level key that does not exist" do
-      pending "implementation test"
-      @attributes.get_value(@default_hash, "domain").should == "opscode.com"
-      @attributes.get_value(@default_hash, "domainz").should == nil
-    end
-
-    it "should get a value based on the state of the object" do
-      pending "implementation test"
-      @attributes.get_value(@default_hash, "domain").should == "opscode.com"
-      @attributes.auto_vivify_on_read = true
-      @attributes.set_type = :normal
-      @attributes[:foo][:bar][:baz] = "snack"
-      @attributes.get_value(@attribute_hash, :baz).should == "snack"
-    end
-
-    it "should return nil based on the state of the object if the key does not exist" do
-      pending "implementation test"
-      @attributes.get_value(@default_hash, "domain").should == "opscode.com"
-      @attributes.auto_vivify_on_read = true
-      @attributes.set_type = :normal
-      @attributes[:foo][:bar][:baz] = "snack"
-      @attributes.get_value(@attribute_hash, :baznatch).should == nil
-    end
-  end
-
   describe "to_hash" do
     it "should convert to a hash" do
       @attributes.to_hash.class.should == Hash
@@ -453,13 +359,6 @@ describe Chef::Node::Attribute do
       @attributes.has_key?("music")
       @attributes["music"].has_key?("apophis").should == true
     end
-    
-    it "should find keys at the current nesting level" do
-      pending "implementation test, and also wrong"
-      @attributes["music"]
-      @attributes.has_key?("mastodon").should == true 
-      @attributes.has_key?("whitesnake").should == false
-    end
 
     it "does not find keys above the current nesting level" do
       @attributes["music"]["this"]["apparatus"].should_not have_key("this")
@@ -489,12 +388,6 @@ describe Chef::Node::Attribute do
       @attributes.attribute?("ninja").should == false
     end
 
-    it "should be looking at the current position of the object" do
-      pending "implementation crap"
-      @attributes["music"]
-      @attributes.attribute?("mastodon").should == true 
-      @attributes.attribute?("whitesnake").should == false
-    end
   end
 
   describe "method_missing" do
@@ -503,7 +396,6 @@ describe Chef::Node::Attribute do
     end
 
     it "should allow the last method to set a value if it has an = sign on the end" do
-      pending "requires support in Mash to work now that set type is mandatory"
       @attributes.normal.music.mastodon = [ "dream", "still", "shining" ]
       @attributes.reset
       @attributes.normal.music.mastodon.should == [ "dream", "still", "shining" ]
@@ -1012,7 +904,6 @@ describe Chef::Node::Attribute do
     end
 
     it "should inform you that it is a Chef::Node::Attribute" do
-      pending "class renaming shenanigans"
       @attributes.should be_a_kind_of(Chef::Node::Attribute)
     end
 
