@@ -28,13 +28,16 @@ class Chef
     class ImmutableAttributeModification < NoMethodError
     end
 
+    class StaleAttributeRead < StandardError
+    end
+
     module Immutablize
-      def immutablize(value)
+      def immutablize(root, value)
         case value
         when Hash
-          ImmutableMash.new(value)
+          ImmutableMash.new(root, value)
         when Array
-          ImmutableArray.new(value)
+          ImmutableArray.new(root, value)
         else
           value
         end
@@ -43,6 +46,8 @@ class Chef
 
     class ImmutableArray < Array
       include Immutablize
+
+      attr_reader :root
 
       alias :internal_push :<<
       private :internal_push
@@ -79,9 +84,9 @@ class Chef
         :unshift
       ]
 
-      def initialize(array_data)
+      def initialize(root, array_data)
         array_data.each do |value|
-          internal_push(immutablize(value))
+          internal_push(immutablize(root, value))
         end
       end
 
@@ -107,6 +112,8 @@ class Chef
 
       include Immutablize
 
+      attr_reader :root
+
       alias :internal_set :[]=
       private :internal_set
 
@@ -128,9 +135,89 @@ class Chef
         :shift
       ]
 
-      def initialize(mash_data)
+      READER_METHODS = [
+        :[],
+        :all?,
+        :any?,
+        :assoc,
+        :chunk,
+        :collect,
+        :collect_concat,
+        :count,
+        :cycle,
+        :detect,
+        :drop,
+        :drop_while,
+        :each,
+        :each_cons,
+        :each_entry,
+        :each_key,
+        :each_pair,
+        :each_slice,
+        :each_value,
+        :each_with_index,
+        :each_with_object,
+        :empty?,
+        :entries,
+        :except,
+        :fetch,
+        :find,
+        :find_all,
+        :find_index,
+        :first,
+        :flat_map,
+        :flatten,
+        :grep,
+        :group_by,
+        :has_key?,
+        :has_value?,
+        :include?,
+        :index,
+        :inject,
+        :invert,
+        :key,
+        :key?,
+        :keys,
+        :length,
+        :map,
+        :max,
+        :max_by,
+        :member?,
+        :merge,
+        :min,
+        :min_by,
+        :minmax,
+        :minmax_by,
+        :none?,
+        :one?,
+        :partition,
+        :rassoc,
+        :reduce,
+        :reject,
+        :reverse_each,
+        :select,
+        :size,
+        :slice_before,
+        :sort,
+        :sort_by,
+        :store,
+        :symbolize_keys,
+        :take,
+        :take_while,
+        :to_a,
+        :to_hash,
+        :to_set,
+        :value?,
+        :values,
+        :values_at,
+        :zip
+      ]
+
+      def initialize(root, mash_data)
+        @serial_number = root.serial_number
+        @root = root
         mash_data.each do |key, value|
-          internal_set(key, immutablize(value))
+          internal_set(key, immutablize(root, value))
         end
       end
 
@@ -146,6 +233,17 @@ class Chef
           %Q(To set an attribute use code like `node.default["key"] = "value"')
           raise ImmutableAttributeModification, msg
         end
+        METHOD_DEFN
+      end
+
+      READER_METHODS.each do |reader_method|
+        class_eval(<<-METHOD_DEFN)
+          def #{reader_method}(*args, &block)
+            if root.stale_subtree?(@serial_number)
+              raise StaleAttributeRead, "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
+            end
+            super
+          end
         METHOD_DEFN
       end
 
@@ -374,6 +472,7 @@ class Chef
                             }
 
       attr_accessor :properties
+      attr_reader :serial_number
 
       [:all?,
        :any?,
@@ -456,6 +555,8 @@ class Chef
        end
 
       def initialize(normal, default, override, automatic)
+        @serial_number = 0
+
         @properties = AttrProperties.new
         @normal = VividMash.new(self, normal)
         @default = VividMash.new(self, default)
@@ -470,10 +571,12 @@ class Chef
       end
 
       def reset_cache
+        @serial_number += 1
         @merged_attributes = nil
       end
 
       def reset
+        @serial_number += 1
         @merged_attributes = nil
       end
 
@@ -522,7 +625,7 @@ class Chef
             component_value = instance_variable_get(component_ivar)
             Chef::Mixin::DeepMerge.merge(merged, component_value)
           end
-          immutablize(resolved_attrs)
+          immutablize(self, resolved_attrs)
         end
       end
 
@@ -570,6 +673,10 @@ class Chef
 
       def set_unless?
         properties.set_unless?
+      end
+
+      def stale_subtree?(serial_number)
+        serial_number != @serial_number
       end
 
     end

@@ -970,15 +970,25 @@ describe Chef::Node::Attribute do
   end
 
 
-  describe "TODO - new behaviors or tests" do
+  describe "when reading from a stale sub tree" do
+    before do
+      @attributes.default[:sub_tree] = {:key => "old value", :ary => %w[foo bar]}
+      @sub_tree = @attributes[:sub_tree]
+      @sub_array = @attributes[:sub_tree][:ary]
+      @attributes.default[:sub_tree] = {:key => "new value"}
+    end
+
     it "detects reads from a no-longer-valid merged attributes sub-tree" do
-      pending "write behavior and tests"
-      # basic idea: merged attributes are given a freshly created object each
-      # time they are generated. whenever the cache is invalidated, "something"
-      # happens that indicates that the cache is no longer valid.
-      # possible implementation is to increment a serial number on C::N::A,
-      # and merged attributes know what their serial number is. Check the
-      # serial number before reading.
+      lambda { @sub_tree[:key] }.should raise_error(Chef::StaleAttributeRead)
+    end
+
+    it "detects reads from a no-longer-valid array value" do
+      pending
+      lambda {@sub_array.first}.should raise_error(Chef::StaleAttributeRead)
+    end
+
+    it "tests all reader methods for detecting stale attributes" do
+      pending
     end
 
   end
@@ -987,12 +997,13 @@ end
 
 describe Chef::ImmutableMash do
   before do
+    @root = Chef::Node::Attribute.new({}, {}, {}, {})
     @data_in = {:top => {:second_level => "some value"},
                 "top_level_2" => %w[array of values],
                 :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
                 :top_level_4 => {:level2 => {:key => "value"}}
     }
-    @immutable_mash = Chef::ImmutableMash.new(@data_in)
+    @immutable_mash = Chef::ImmutableMash.new(@root, @data_in)
   end
 
   it "element references like regular hash" do
@@ -1052,7 +1063,8 @@ end
 describe Chef::ImmutableArray do
 
   before do
-    @immutable_array = Chef::ImmutableArray.new(%w[foo bar baz])
+    @root = Chef::Node::Attribute.new({}, {}, {}, {})
+    @immutable_array = Chef::ImmutableArray.new(@root, %w[foo bar baz])
   end
 
   ##
