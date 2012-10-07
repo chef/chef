@@ -916,47 +916,46 @@ describe Chef::Node::Attribute do
 
   # For expedience, this test is implementation-heavy.
   describe "when a component attribute is mutated" do
-      [
-        :clear,
-        :shift
-      ].each do |mutator|
-        it "resets the cache when the mutator #{mutator} is called" do
-          @attributes.should_receive(:reset_cache)
-          @attributes.default.send(mutator)
-        end
-      end
-
-      it "resets the cache when the mutator delete is called" do
+    [
+      :clear,
+      :shift
+    ].each do |mutator|
+      it "resets the cache when the mutator #{mutator} is called" do
         @attributes.should_receive(:reset_cache)
-        @attributes.default.delete(:music)
+        @attributes.default.send(mutator)
       end
+    end
 
-      [
-        :merge,
-        :update,
-        :replace
-      ].each do |mutator|
-        it "resets the cache when the mutator #{mutator} is called" do
-          # Implementation of Mash means that this could get called many times. That's okay.
-          @attributes.should_receive(:reset_cache).at_least(1).times
-          @attributes.default.send(mutator, {:foo => :bar})
-        end
+    it "resets the cache when the mutator delete is called" do
+      @attributes.should_receive(:reset_cache)
+      @attributes.default.delete(:music)
+    end
+
+    [
+      :merge,
+      :update,
+      :replace
+    ].each do |mutator|
+      it "resets the cache when the mutator #{mutator} is called" do
+        # Implementation of Mash means that this could get called many times. That's okay.
+        @attributes.should_receive(:reset_cache).at_least(1).times
+        @attributes.default.send(mutator, {:foo => :bar})
       end
+    end
 
-      [
-        :delete_if,
-        :keep_if,
-        :reject!,
-        :select!,
-      ].each do |mutator|
-        it "resets the cache when the mutator #{mutator} is called" do
-          # Implementation of Mash means that this could get called many times. That's okay.
-          @attributes.should_receive(:reset_cache)
-          block = lambda {|k,v| true }
-          @attributes.default.send(mutator, &block)
-        end
+    [
+      :delete_if,
+      :keep_if,
+      :reject!,
+      :select!,
+    ].each do |mutator|
+      it "resets the cache when the mutator #{mutator} is called" do
+        # Implementation of Mash means that this could get called many times. That's okay.
+        @attributes.should_receive(:reset_cache)
+        block = lambda {|k,v| true }
+        @attributes.default.send(mutator, &block)
       end
-
+    end
   end
 
 
