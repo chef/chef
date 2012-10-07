@@ -250,10 +250,7 @@ class Chef
     # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
-      attrs = construct_attributes
-      attrs.set_type = :normal
-      attrs.auto_vivify_on_read = true
-      attrs
+      attributes.normal
     end
 
     alias_method :set, :normal
@@ -261,50 +258,35 @@ class Chef
     # Set a normal attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def normal_unless
-      attrs = construct_attributes
-      attrs.set_type = :normal
-      attrs.auto_vivify_on_read = true
-      attrs.set_unless_value_present = true
-      attrs
+      attributes.set_unless_value_present = true
+      attributes.normal
     end
     alias_method :set_unless, :normal_unless
 
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
-      attrs = construct_attributes
-      attrs.set_type = :default
-      attrs.auto_vivify_on_read = true
-      attrs
+      attributes.default
     end
 
     # Set a default attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def default_unless
-      attrs = construct_attributes
-      attrs.set_type = :default
-      attrs.auto_vivify_on_read = true
-      attrs.set_unless_value_present = true
-      attrs
+      attributes.set_unless_value_present = true
+      attributes.default
     end
 
     # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
-      attrs = construct_attributes
-      attrs.set_type = :override
-      attrs.auto_vivify_on_read = true
-      attrs
+      attributes.override
     end
 
     # Set an override attribute of this node, auto-vivifying any mashes that
     # are missing, but if the final value already exists, don't set it
     def override_unless
-      attrs = construct_attributes
-      attrs.set_type = :override
-      attrs.auto_vivify_on_read = true
-      attrs.set_unless_value_present = true
-      attrs
+      attributes.set_unless_value_present = true
+      attributes.override
     end
 
 
