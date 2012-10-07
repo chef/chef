@@ -387,8 +387,15 @@ describe Chef::Node do
     end
 
     it "removes default attributes" do
-      pp @node.default
       @node.default.should be_empty
+    end
+
+    it "removes override attributes" do
+      @node.override.should be_empty
+    end
+
+    it "leaves normal level attributes untouched" do
+      @node[:foo].should == "normal"
     end
 
   end
@@ -399,10 +406,6 @@ describe Chef::Node do
         remove all ivar access of attributes in Chef::Node
         Chef::Node::Attribute needs to manage them
       E
-    end
-
-    it "makes #reset_defaults_and_overrides work correctly" do
-      pending "TODO"
     end
 
     it "has tests for merging environment attrs" do
