@@ -185,7 +185,6 @@ class Chef
   class Node
     class AttrProperties
       attr_accessor :set_unless_present
-      attr_accessor :set_type
 
       def set_unless?
         !!@set_unless_present
@@ -227,6 +226,9 @@ class Chef
         :unshift
       ]
 
+      # For all of the methods that may mutate an Array, we override them to
+      # also invalidate the cached merged_attributes on the root
+      # Node::Attribute object.
       MUTATOR_METHODS.each do |mutator|
         class_eval(<<-METHOD_DEFN)
           def #{mutator}(*args, &block)
@@ -255,7 +257,7 @@ class Chef
 
       def [](key)
         value = super
-        if value.nil?
+        if value.nil? && !key?(key)
           root.reset_cache
           value = self.class.new(root)
           self[key] = value
@@ -288,6 +290,10 @@ class Chef
 
       def set_unless?
         @root.set_unless?
+      end
+
+      def update(other_hash)
+        super
       end
 
       def convert_key(key)
@@ -418,10 +424,6 @@ class Chef
         @merged_attributes = nil
       end
 
-      def set_type=(set_type)
-        @properties.set_type = set_type
-      end
-
       def set_unless_value_present=(setting)
         @properties.set_unless_present = setting
       end
@@ -432,25 +434,12 @@ class Chef
 
       def reset
         @merged_attributes = nil
-        @properties.set_type = nil
       end
 
       def reset_for_read
-        @properties.set_type = nil
-      end
-
-      # TODO: deprecated, no longer necessary.
-      def auto_vivify_on_read
-        nil
-      end
-
-      # TODO: deprecated, no longer necessary.
-      def auto_vivify_on_read=(setting)
-        nil
       end
 
       def default
-        properties.set_type = :default
         @default
       end
 
@@ -460,7 +449,6 @@ class Chef
       end
 
       def normal
-        properties.set_type = :normal
         @normal
       end
 
@@ -470,7 +458,6 @@ class Chef
       end
 
       def override
-        properties.set_type = :override
         @override
       end
 
@@ -480,7 +467,6 @@ class Chef
       end
 
       def automatic
-        properties.set_type = :automatic
         @automatic
       end
 
@@ -500,15 +486,11 @@ class Chef
       end
 
       def [](key)
-        if setting_a_value?
-          set_type_hash[key]
-        else
-          merged_attributes[key]
-        end
+        merged_attributes[key]
       end
 
       def []=(key, value)
-        set_type_hash[key] = value
+        merged_attributes[key] = value
       end
 
       def has_key?(key)
@@ -524,31 +506,16 @@ class Chef
 
       alias :each_attribute :each
 
-
-      def set_type_hash
-        if ivar = COMPONENT_ACCESSORS[@properties.set_type]
-          instance_variable_get(ivar)
-        else
-          raise InvalidAttributeSetterContext, "Cannot set an attribute without first specifying the precedence. " +
-            %Q(To set an attribute, use code like `node.default["key"] = "value"')
-        end
-      end
-
       def method_missing(symbol, *args)
         if args.empty?
-          if key?(symbol) or setting_a_value?
+          if key?(symbol)
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
         elsif symbol.to_s =~ /=$/
-          if setting_a_value?
-            key_to_set = symbol.to_s[/^(.+)=$/, 1]
-            self[key_to_set] = (args.length == 1 ? args[0] : args)
-          else
-            raise InvalidAttributeSetterContext, "Cannot set an attribute without first specifying the precedence. " +
-            %Q(To set an attribute, use code like `node.default["key"] = "value"')
-          end
+          key_to_set = symbol.to_s[/^(.+)=$/, 1]
+          self[key_to_set] = (args.length == 1 ? args[0] : args)
         else
           raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
         end
@@ -558,10 +525,6 @@ class Chef
         "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map{|iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
         }.join(', ') << ">"
-      end
-
-      def setting_a_value?
-        !properties.set_type.nil?
       end
 
       def set_unless?

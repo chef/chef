@@ -150,7 +150,7 @@ describe Chef::Node do
     end
 
     it "does not allow you to set an attribute via node[]=" do
-      lambda  { @node["secret"] = "shush" }.should raise_error(Chef::InvalidAttributeSetterContext)
+      lambda  { @node["secret"] = "shush" }.should raise_error(Chef::ImmutableAttributeModification)
     end
 
     it "should allow you to query whether an attribute exists with attribute?" do
@@ -166,7 +166,7 @@ describe Chef::Node do
     end
 
     it "does not allow you to set an attribute via method_missing" do
-      lambda { @node.sunshine = "is bright"}.should raise_error(Chef::InvalidAttributeSetterContext)
+      lambda { @node.sunshine = "is bright"}.should raise_error(Chef::ImmutableAttributeModification)
     end
 
     it "should allow you get get an attribute via method_missing" do
@@ -374,6 +374,21 @@ describe Chef::Node do
       @expansion.instance_variable_set(:@applied_roles, {'arf' => nil, 'countersnark' => nil})
       @node.expand!
       @node.automatic_attrs[:roles].sort.should == ['arf', 'countersnark']
+    end
+
+  end
+
+  describe "when clearing computed state at the beginning of a run" do
+    before do
+      @node.default[:foo] = "default"
+      @node.normal[:foo] = "normal"
+      @node.override[:foo] = "override"
+      @node.reset_defaults_and_overrides
+    end
+
+    it "removes default attributes" do
+      pp @node.default
+      @node.default.should be_empty
     end
 
   end

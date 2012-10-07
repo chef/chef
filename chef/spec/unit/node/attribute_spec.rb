@@ -274,15 +274,11 @@ describe Chef::Node::Attribute do
   describe "[]=" do
     it "should error out when the type of attribute to set has not been specified" do
       @attributes.normal["the_ghost"] = {  }
-      @attributes.set_type = nil
-      @attributes.auto_vivify_on_read = true
       lambda { @attributes["the_ghost"]["exterminate"] = false }.should raise_error(Chef::ImmutableAttributeModification)
     end
 
     it "should let you set an attribute value when another hash has an intermediate value" do
       @attributes.normal["the_ghost"] = { "exterminate" => "the future" }
-      @attributes.set_type = :default
-      @attributes.auto_vivify_on_read = true
       lambda { @attributes.normal["the_ghost"]["exterminate"]["tomorrow"] = false }.should_not raise_error(NoMethodError)
     end
 
@@ -292,11 +288,8 @@ describe Chef::Node::Attribute do
       @attributes.normal["longboard"].should == "surfing"
     end
 
-    it "should set deeply nested attribute value when auto_vivify_on_read is true" do
-      @attributes.set_type = :normal
-      @attributes.auto_vivify_on_read = true
+    it "should set deeply nested attribute values when a precedence level is specified" do
       @attributes.normal["deftones"]["hunters"]["nap"] = "surfing"
-      @attributes.reset
       @attributes.normal["deftones"]["hunters"]["nap"].should == "surfing"
     end
 
@@ -312,8 +305,7 @@ describe Chef::Node::Attribute do
 
     it "should optionally skip setting the value if one already exists" do
       @attributes.set_unless_value_present = true
-      @attributes.set_type = :normal
-      @attributes["hostname"] = "bar"
+      @attributes.normal["hostname"] = "bar"
       @attributes["hostname"].should == "latte"
     end
 
@@ -926,7 +918,7 @@ describe Chef::Node::Attribute do
   describe "TODO - new behaviors or tests" do
     it "makes values read only for reading" do
       @attributes.reset
-      lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::InvalidAttributeSetterContext)
+      lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::ImmutableAttributeModification)
     end
 
     it "invalidates the merged_attribute cache when a value is written" do
