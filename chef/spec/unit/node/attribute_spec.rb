@@ -958,13 +958,19 @@ describe Chef::Node::Attribute do
     end
   end
 
-
-  describe "TODO - new behaviors or tests" do
-    it "makes values read only for reading" do
-      @attributes.reset
+  describe "when attemping to write without specifying precedence" do
+    it "raises an error when using []=" do
       lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::ImmutableAttributeModification)
     end
 
+    it "raises an error when using `attr=value`" do
+      lambda { @attributes.new_key = "new value" }.should raise_error(Chef::ImmutableAttributeModification)
+    end
+
+  end
+
+
+  describe "TODO - new behaviors or tests" do
     it "detects reads from a no-longer-valid merged attributes sub-tree" do
       pending "write behavior and tests"
       # basic idea: merged attributes are given a freshly created object each
