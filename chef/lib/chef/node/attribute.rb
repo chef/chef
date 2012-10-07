@@ -192,6 +192,10 @@ class Chef
 
     end
 
+    # == AttrArray
+    # AttrArray is identical to Array, except that it keeps a reference to the
+    # "root" (Chef::Node::Attribute) object, and will trigger a cache
+    # invalidation on that object when mutated.
     class AttrArray < Array
 
       MUTATOR_METHODS = [
@@ -247,6 +251,17 @@ class Chef
 
     end
 
+    # == VividMash
+    # VividMash is identical to a Mash, with a few exceptions:
+    # * It has a reference to the root Chef::Node::Attribute to which it
+    #   belongs, and will trigger cache invalidation on that object when
+    #   mutated.
+    # * It auto-vivifies, that is a reference to a missing element will result
+    #   in the creation of a new VividMash for that key.
+    # * It supports a set_unless flag (via the root Attribute object) which
+    #   allows `||=` style behavior (otherwise this does not work with
+    #   auto-vivification).
+    # * attr_accessor style element set and get are supported via method_missing
     class VividMash < Mash
       attr_reader :root
 
