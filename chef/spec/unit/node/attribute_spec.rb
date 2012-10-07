@@ -1044,6 +1044,16 @@ describe Chef::Node::Attribute do
       # AttrArray should do this for each mutator method
     end
 
+    it "detects reads from a no-longer-valid merged attributes sub-tree" do
+      pending "write behavior and tests"
+      # basic idea: merged attributes are given a freshly created object each
+      # time they are generated. whenever the cache is invalidated, "something"
+      # happens that indicates that the cache is no longer valid.
+      # possible implementation is to increment a serial number on C::N::A,
+      # and merged attributes know what their serial number is. Check the
+      # serial number before reading.
+    end
+
   end
 
 end
