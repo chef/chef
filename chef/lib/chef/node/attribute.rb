@@ -84,7 +84,99 @@ class Chef
         :unshift
       ]
 
+      READER_METHODS =
+      [
+        :&,
+        :*,
+        :+,
+        :-,
+        :[],
+        :all?,
+        :any?,
+        :assoc,
+        :at,
+        :chunk,
+        :collect,
+        :collect_concat,
+        :combination,
+        :compact,
+        :concat,
+        :count,
+        :cycle,
+        :detect,
+        :drop,
+        :drop_while,
+        :each,
+        :each_cons,
+        :each_entry,
+        :each_index,
+        :each_slice,
+        :each_with_index,
+        :each_with_object,
+        :empty?,
+        :entries,
+        :fetch,
+        :find,
+        :find_all,
+        :find_index,
+        :first,
+        :flat_map,
+        :flatten,
+        :grep,
+        :group_by,
+        :include?,
+        :index,
+        :inject,
+        :join,
+        :last,
+        :length,
+        :map,
+        :max,
+        :max_by,
+        :member?,
+        :min,
+        :min_by,
+        :minmax,
+        :minmax_by,
+        :none?,
+        :one?,
+        :pack,
+        :partition,
+        :permutation,
+        :product,
+        :rassoc,
+        :reduce,
+        :reject,
+        :repeated_combination,
+        :repeated_permutation,
+        :reverse,
+        :reverse_each,
+        :rindex,
+        :rotate,
+        :sample,
+        :select,
+        :shelljoin,
+        :shuffle,
+        :size,
+        :slice,
+        :slice_before,
+        :sort,
+        :sort_by,
+        :take,
+        :take_while,
+        :to_a,
+        :to_ary,
+        :to_set,
+        :transpose,
+        :uniq,
+        :values_at,
+        :zip,
+        :|
+      ]
+
       def initialize(root, array_data)
+        @root = root
+        @serial_number = root.serial_number
         array_data.each do |value|
           internal_push(immutablize(root, value))
         end
@@ -95,11 +187,22 @@ class Chef
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
         class_eval(<<-METHOD_DEFN)
-        def #{mutator_method_name}(*args, &block)
-          msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
-          %Q(To set an attribute use code like `node.default["key"] = "value"')
-          raise ImmutableAttributeModification, msg
-        end
+          def #{mutator_method_name}(*args, &block)
+            msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
+            %Q(To set an attribute use code like `node.default["key"] = "value"')
+            raise ImmutableAttributeModification, msg
+          end
+        METHOD_DEFN
+      end
+
+      READER_METHODS.each do |reader|
+        class_eval(<<-METHOD_DEFN)
+          def #{reader}(*args, &block)
+            if root.stale_subtree?(@serial_number)
+              raise StaleAttributeRead, "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
+            end
+            super
+          end
         METHOD_DEFN
       end
 

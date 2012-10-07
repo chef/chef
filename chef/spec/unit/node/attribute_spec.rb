@@ -983,7 +983,6 @@ describe Chef::Node::Attribute do
     end
 
     it "detects reads from a no-longer-valid array value" do
-      pending
       lambda {@sub_array.first}.should raise_error(Chef::StaleAttributeRead)
     end
 
