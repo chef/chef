@@ -134,7 +134,6 @@ class Chef
         end
       end
 
-
       alias :attribute? :has_key?
 
       # Redefine all of the methods that mutate a Hash to raise an error when called.
@@ -157,6 +156,7 @@ class Chef
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
           end
+        # This will raise a ImmutableAttributeModification error:
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
@@ -184,13 +184,8 @@ class Chef
 
   class Node
     class AttrProperties
-      attr_accessor :auto_vivify_on_read
       attr_accessor :set_unless_present
       attr_accessor :set_type
-
-      def auto_vivify_on_read?
-        !!@auto_vivify_on_read
-      end
 
       def set_unless?
         !!@set_unless_present
@@ -208,7 +203,7 @@ class Chef
 
       def [](key)
         value = super
-        if value.nil? && auto_vivify_on_read?
+        if value.nil?
           value = self.class.new(properties)
           self[key] = value
         else
@@ -228,16 +223,12 @@ class Chef
 
       def method_missing(symbol, *args)
         if args.empty?
-          if key?(symbol) or setting_a_value? && auto_vivify_on_read?
-            self[symbol]
-          else
-            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
-          end
+          self[symbol]
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
         else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
         end
       end
 
@@ -245,13 +236,10 @@ class Chef
         @properties.set_unless?
       end
 
-      def auto_vivify_on_read?
-        @properties.auto_vivify_on_read?
+      def convert_key(key)
+        super
       end
 
-      def setting_a_value?
-        !properties.set_type.nil?
-      end
     end
 
     class Attribute < Mash
@@ -370,20 +358,20 @@ class Chef
       def reset
         @merged_attributes = nil
         @properties.set_type = nil
-        @properties.auto_vivify_on_read = nil
       end
 
       def reset_for_read
         @properties.set_type = nil
-        @properties.auto_vivify_on_read = nil
       end
 
+      # TODO: deprecated, no longer necessary.
       def auto_vivify_on_read
-        @properties.auto_vivify_on_read?
+        nil
       end
 
+      # TODO: deprecated, no longer necessary.
       def auto_vivify_on_read=(setting)
-        @properties.auto_vivify_on_read = setting
+        nil
       end
 
       def default
@@ -441,14 +429,11 @@ class Chef
       end
 
       def [](key)
-        return merged_attributes[key] unless setting_a_value?
-        value = set_type_hash[key]
-        if value.nil? && auto_vivify_on_read?
-          value = VividMash.new({})
-          set_type_hash[key] = value
+        if setting_a_value?
+          set_type_hash[key]
+        else
+          merged_attributes[key]
         end
-
-        value
       end
 
       def []=(key, value)
@@ -480,7 +465,7 @@ class Chef
 
       def method_missing(symbol, *args)
         if args.empty?
-          if key?(symbol) or setting_a_value? && auto_vivify_on_read?
+          if key?(symbol) or setting_a_value?
             self[symbol]
           else
             raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
@@ -502,10 +487,6 @@ class Chef
         "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map{|iv|
           "#{iv}=#{instance_variable_get(iv).inspect}"
         }.join(', ') << ">"
-      end
-
-      def auto_vivify_on_read?
-        @properties.auto_vivify_on_read?
       end
 
       def setting_a_value?
