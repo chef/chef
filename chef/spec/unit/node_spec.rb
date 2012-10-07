@@ -401,13 +401,6 @@ describe Chef::Node do
   end
 
   describe "Code cleanup TODO" do
-    it "TODO" do
-      pending(<<-E)
-        remove all ivar access of attributes in Chef::Node
-        Chef::Node::Attribute needs to manage them
-      E
-    end
-
     it "has tests for merging environment attrs" do
       pending
     end

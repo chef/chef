@@ -232,8 +232,6 @@ class Chef
 
     alias :environment :chef_environment
 
-
-
     def attributes
       @attributes
     end
