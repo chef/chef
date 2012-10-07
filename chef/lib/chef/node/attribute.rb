@@ -71,7 +71,7 @@ class Chef
         :reverse!,
         :replace,
         :select!,
-        :shift!,
+        :shift,
         :slice!,
         :sort!,
         :sort_by!,
@@ -125,7 +125,7 @@ class Chef
         :reject!,
         :replace,
         :select!,
-        :shift!
+        :shift
       ]
 
       def initialize(mash_data)
@@ -222,7 +222,7 @@ class Chef
         :reverse!,
         :replace,
         :select!,
-        :shift!,
+        :shift,
         :slice!,
         :sort!,
         :sort_by!,
@@ -257,13 +257,44 @@ class Chef
     #   belongs, and will trigger cache invalidation on that object when
     #   mutated.
     # * It auto-vivifies, that is a reference to a missing element will result
-    #   in the creation of a new VividMash for that key.
+    #   in the creation of a new VividMash for that key. (This only works when
+    #   using the element reference method, `[]` -- other methods, such as
+    #   #fetch, work as normal).
     # * It supports a set_unless flag (via the root Attribute object) which
-    #   allows `||=` style behavior (otherwise this does not work with
-    #   auto-vivification).
+    #   allows `||=` style behavior (`||=` does not work with
+    #   auto-vivification). This is only implemented for #[]=; methods such as
+    #   #store work as normal.
     # * attr_accessor style element set and get are supported via method_missing
     class VividMash < Mash
       attr_reader :root
+
+      # Methods that mutate a VividMash. Each of them is overridden so that it
+      # also invalidates the cached merged_attributes on the root Attribute
+      # object.
+      MUTATOR_METHODS = [
+        :clear,
+        :delete,
+        :delete_if,
+        :keep_if,
+        :merge!,
+        :update,
+        :reject!,
+        :replace,
+        :select!,
+        :shift
+      ]
+
+      # For all of the mutating methods on Mash, override them so that they
+      # also invalidate the cached `merged_attributes` on the root Attribute
+      # object.
+      MUTATOR_METHODS.each do |mutator|
+        class_eval(<<-METHOD_DEFN)
+          def #{mutator}(*args, &block)
+            root.reset_cache
+            super
+          end
+        METHOD_DEFN
+      end
 
       def initialize(root, data={})
         @root = root
@@ -272,8 +303,7 @@ class Chef
 
       def [](key)
         value = super
-        if value.nil? && !key?(key)
-          root.reset_cache
+        if !key?(key)
           value = self.class.new(root)
           self[key] = value
         else
@@ -305,10 +335,6 @@ class Chef
 
       def set_unless?
         @root.set_unless?
-      end
-
-      def update(other_hash)
-        super
       end
 
       def convert_key(key)

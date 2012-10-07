@@ -914,17 +914,56 @@ describe Chef::Node::Attribute do
     end
   end
 
+  # For expedience, this test is implementation-heavy.
+  describe "when a component attribute is mutated" do
+      [
+        :clear,
+        :shift
+      ].each do |mutator|
+        it "resets the cache when the mutator #{mutator} is called" do
+          @attributes.should_receive(:reset_cache)
+          @attributes.default.send(mutator)
+        end
+      end
+
+      it "resets the cache when the mutator delete is called" do
+        @attributes.should_receive(:reset_cache)
+        @attributes.default.delete(:music)
+      end
+
+      [
+        :merge,
+        :update,
+        :replace
+      ].each do |mutator|
+        it "resets the cache when the mutator #{mutator} is called" do
+          # Implementation of Mash means that this could get called many times. That's okay.
+          @attributes.should_receive(:reset_cache).at_least(1).times
+          @attributes.default.send(mutator, {:foo => :bar})
+        end
+      end
+
+      [
+        :delete_if,
+        :keep_if,
+        :reject!,
+        :select!,
+      ].each do |mutator|
+        it "resets the cache when the mutator #{mutator} is called" do
+          # Implementation of Mash means that this could get called many times. That's okay.
+          @attributes.should_receive(:reset_cache)
+          block = lambda {|k,v| true }
+          @attributes.default.send(mutator, &block)
+        end
+      end
+
+  end
+
 
   describe "TODO - new behaviors or tests" do
     it "makes values read only for reading" do
       @attributes.reset
       lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::ImmutableAttributeModification)
-    end
-
-    it "invalidates the merged_attribute cache when a value is written" do
-      pending "write the tests"
-      # vivid mash should do this for each mutator method
-      # AttrArray should do this for each mutator method
     end
 
     it "detects reads from a no-longer-valid merged attributes sub-tree" do
@@ -980,19 +1019,17 @@ describe Chef::ImmutableMash do
   [
     :[]=,
     :clear,
-    :collect!,
     :default=,
     :default_proc=,
     :delete,
     :delete_if,
     :keep_if,
-    :map!,
     :merge!,
     :update,
     :reject!,
     :replace,
     :select!,
-    :shift!
+    :shift
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
       lambda { @immutable_mash.send(mutator) }.should raise_error(Chef::ImmutableAttributeModification)
@@ -1042,7 +1079,7 @@ describe Chef::ImmutableArray do
     :reverse!,
     :replace,
     :select!,
-    :shift!,
+    :shift,
     :slice!,
     :sort!,
     :sort_by!,
