@@ -400,9 +400,43 @@ describe Chef::Node do
 
   end
 
-  describe "Code cleanup TODO" do
-    it "has tests for merging environment attrs" do
-      pending
+  describe "when merging environment attributes" do
+    before do
+      @node.chef_environment = "rspec"
+      @expansion = Chef::RunList::RunListExpansion.new("rspec", [])
+      @expansion.default_attrs.replace({:default => "from role", :d_role => "role only"})
+      @expansion.override_attrs.replace({:override => "from role", :o_role => "role only"})
+
+
+      @environment = Chef::Environment.new
+      @environment.default_attributes = {:default => "from env", :d_env => "env only" }
+      @environment.override_attributes = {:override => "from env", :o_env => "env only"}
+      Chef::Environment.stub!(:load).and_return(@environment)
+      @node.apply_expansion_attributes(@expansion)
+    end
+
+    it "does not nuke role-only default attrs" do
+      @node[:d_role].should == "role only"
+    end
+
+    it "does not nuke role-only override attrs" do
+      @node[:o_role].should == "role only"
+    end
+
+    it "does not nuke env-only default attrs" do
+      @node[:o_env].should == "env only"
+    end
+
+    it "does not nuke role-only override attrs" do
+      @node[:o_env].should == "env only"
+    end
+
+    it "gives role defaults precedence over env defaults" do
+      @node[:default].should == "from role"
+    end
+
+    it "gives env overrides precedence over role overrides" do
+      @node[:override].should == "from env"
     end
   end
 

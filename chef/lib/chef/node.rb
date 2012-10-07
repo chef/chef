@@ -230,6 +230,10 @@ class Chef
       )
     end
 
+    def chef_environment=(environment)
+      chef_environment(environment)
+    end
+
     alias :environment :chef_environment
 
     def attributes

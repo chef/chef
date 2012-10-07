@@ -113,12 +113,20 @@ class Chef
       )
     end
 
+    def default_attributes=(attrs)
+      default_attributes(attrs)
+    end
+
     def override_attributes(arg=nil)
       set_or_return(
         :override_attributes,
         arg,
         :kind_of => Hash
       )
+    end
+
+    def override_attributes=(attrs)
+      override_attributes(attrs)
     end
 
     def cookbook_versions(arg=nil)
