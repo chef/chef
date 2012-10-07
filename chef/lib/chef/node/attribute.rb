@@ -193,18 +193,71 @@ class Chef
 
     end
 
-    class VividMash < Mash
-      attr_reader :properties
+    class AttrArray < Array
 
-      def initialize(properties, data={})
-        @properties = properties
+      MUTATOR_METHODS = [
+        :<<,
+        :[]=,
+        :clear,
+        :collect!,
+        :compact!,
+        :default=,
+        :default_proc=,
+        :delete,
+        :delete_at,
+        :delete_if,
+        :fill,
+        :flatten!,
+        :insert,
+        :keep_if,
+        :map!,
+        :merge!,
+        :pop,
+        :push,
+        :update,
+        :reject!,
+        :reverse!,
+        :replace,
+        :select!,
+        :shift!,
+        :slice!,
+        :sort!,
+        :sort_by!,
+        :uniq!,
+        :unshift
+      ]
+
+      MUTATOR_METHODS.each do |mutator|
+        class_eval(<<-METHOD_DEFN)
+          def #{mutator}(*args, &block)
+            root.reset_cache
+            super
+          end
+        METHOD_DEFN
+      end
+
+      attr_reader :root
+
+      def initialize(root, data)
+        @root = root
+        super(data)
+      end
+
+    end
+
+    class VividMash < Mash
+      attr_reader :root
+
+      def initialize(root, data={})
+        @root = root
         super(data)
       end
 
       def [](key)
         value = super
         if value.nil?
-          value = self.class.new(properties)
+          root.reset_cache
+          value = self.class.new(root)
           self[key] = value
         else
           value
@@ -215,6 +268,7 @@ class Chef
         if set_unless? && key?(key)
           self[key]
         else
+          root.reset_cache
           super
         end
       end
@@ -233,11 +287,28 @@ class Chef
       end
 
       def set_unless?
-        @properties.set_unless?
+        @root.set_unless?
       end
 
       def convert_key(key)
         super
+      end
+
+      # Mash uses #convert_value to mashify values on input.
+      # We override it here to convert hash or array values to VividMash or
+      # AttrArray for consistency and to ensure that the added parts of the
+      # attribute tree will have the correct cache invalidation behavior.
+      def convert_value(value)
+        case value
+        when VividMash
+          value
+        when Hash
+          VividMash.new(root, value)
+        when Array
+          AttrArray.new(root, value)
+        else
+          value
+        end
       end
 
     end
@@ -339,10 +410,10 @@ class Chef
 
       def initialize(normal, default, override, automatic)
         @properties = AttrProperties.new
-        @normal = VividMash.new(properties, normal)
-        @default = VividMash.new(properties, default)
-        @override = VividMash.new(properties, override)
-        @automatic = VividMash.new(properties, automatic)
+        @normal = VividMash.new(self, normal)
+        @default = VividMash.new(self, default)
+        @override = VividMash.new(self, override)
+        @automatic = VividMash.new(self, automatic)
 
         @merged_attributes = nil
       end
@@ -353,6 +424,10 @@ class Chef
 
       def set_unless_value_present=(setting)
         @properties.set_unless_present = setting
+      end
+
+      def reset_cache
+        @merged_attributes = nil
       end
 
       def reset
@@ -375,7 +450,6 @@ class Chef
       end
 
       def default
-        reset
         properties.set_type = :default
         @default
       end
@@ -386,7 +460,6 @@ class Chef
       end
 
       def normal
-        reset
         properties.set_type = :normal
         @normal
       end
@@ -397,7 +470,6 @@ class Chef
       end
 
       def override
-        reset
         properties.set_type = :override
         @override
       end
@@ -408,7 +480,6 @@ class Chef
       end
 
       def automatic
-        reset
         properties.set_type = :automatic
         @automatic
       end
@@ -491,6 +562,10 @@ class Chef
 
       def setting_a_value?
         !properties.set_type.nil?
+      end
+
+      def set_unless?
+        properties.set_unless?
       end
 
     end

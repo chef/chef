@@ -412,7 +412,6 @@ class Chef
       Chef::Log.debug("Applying attributes from json file")
       self.normal_attrs = Chef::Mixin::DeepMerge.merge(normal_attrs,normal_attrs_to_merge)
       self.tags # make sure they're defined
-      attributes.reset
     end
 
     # Lazy initializer for tags attribute

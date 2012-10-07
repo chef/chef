@@ -380,10 +380,12 @@ describe Chef::Node::Attribute do
       @attributes["hostname"].should == "latte"
     end
 
-    it "should write to an attribute that has been read before properly" do
+    it "does not support ||= when setting" do
+      # This is a limitation of auto-vivification.
+      # Users who need this behavior can use set_unless and friends
       @attributes.normal["foo"] = Mash.new
       @attributes.normal["foo"]["bar"] ||= "stop the world"
-      @attributes.normal["foo"]["bar"].should == "stop the world"
+      @attributes.normal["foo"]["bar"].should == {}
     end
   end
 
@@ -1036,8 +1038,10 @@ describe Chef::Node::Attribute do
       lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::InvalidAttributeSetterContext)
     end
 
-    it "does the internal rejiggering required to modify values when it gives you a reference to a component" do
+    it "invalidates the merged_attribute cache when a value is written" do
       pending "write the tests"
+      # vivid mash should do this for each mutator method
+      # AttrArray should do this for each mutator method
     end
 
   end
