@@ -52,18 +52,15 @@ class Chef
         end
 
         def easy_install_binary_path
-          path = @new_resource.easy_install_binary
-          path ? path : 'easy_install'
+          @new_resource.respond_to?("easy_install_binary") ? @new_resource.easy_install_binary : 'easy_install'
         end
 
         def python_binary_path
-          path = @new_resource.python_binary
-          path ? path : 'python'
+          @new_resource.respond_to?("python_binary") ?  @new_resource.python_binary : 'python'
         end
 
         def module_name
-          m = @new_resource.module_name
-          m ? m : @new_resource.name
+          @new_resource.respond_to?("package_name") ? @new_resource.package_name : @new_resource.name
         end
 
         def load_current_resource
