@@ -16,25 +16,24 @@
 #
 
 name "chef-solr"
-version ENV["CHEF_GIT_REV"] || "master"
+version "master"
 
 dependencies ["rsync", "jre"]
 
-source :git => "git://github.com/opscode/chef"
+source :git => "git://github.com/opscode/chef-solr"
 
 service_dir = "#{install_dir}/embedded/service/chef-solr"
+relative_path "chef-solr"
 
 build do
   # TODO: when we upgrade solr to > 1.4.1, we should think about
   # building it from source
 
-  command "mkdir -p #{service_dir}"
-
   # copy solr jetty
   command "mkdir -p #{service_dir}/jetty"
-  command "#{install_dir}/embedded/bin/rsync -a chef-solr/solr/solr-jetty/ #{service_dir}/jetty/"
+  command "#{install_dir}/embedded/bin/rsync -a --delete --exclude=.git/*** --exclude=.gitignore ./solr/solr-jetty/ #{service_dir}/jetty/"
 
   # copy solr home
   command "mkdir -p #{service_dir}/home"
-  command "#{install_dir}/embedded/bin/rsync -a chef-solr/solr/solr-home/ #{service_dir}/home/"
+  command "#{install_dir}/embedded/bin/rsync -a --delete --exclude=.git/*** --exclude=.gitignore ./solr/solr-home/ #{service_dir}/home/"
 end
