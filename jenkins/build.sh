@@ -17,6 +17,36 @@ exists()
   fi
 }
 
+usage()
+{
+  echo >&2 \
+  "usage: $0 [-p project_name]"
+}
+
+# Get command line arguments
+while getopts sv: opt
+do
+  case "$opt" in
+    p)  project_name="$OPTARG";;
+    \?) usage; exit 1;;
+  esac
+done
+
+if [ -z $projec_name ]
+then
+  usage
+  exit 1
+fi
+
+# create the build timestamp file for fingerprinting if it doesn't exist (manual build execution)
+if [ ! -f build_timestamp ]
+then
+  date > build_timstamp
+  echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
+fi
+
+rm -f $WORKSPACE/pkg/*
+rm -f $WORKSPACE/src/*
 
 mkdir -p chef-solo/cache
 
@@ -27,8 +57,8 @@ then
 fi
 
 if [ "$CLEAN" = "true" ]; then
-  sudo rm -rf /opt/$1 || true
-  sudo mkdir -p /opt/$1 && sudo chown jenkins-node /opt/$1
+  sudo rm -rf "/opt/${project_name}" || true
+  sudo mkdir -p "/opt/${project_name}" && sudo chown jenkins-node "/opt/${project_name}"
   sudo rm -r /var/cache/omnibus/pkg/* || true
   sudo rm /var/cache/omnibus/build/*/*.manifest || true
   sudo rm pkg/* || true
@@ -51,7 +81,7 @@ else
   bundle install
 fi
 
-rake projects:$1
+rake "projects:${project_name}"
 
 # Sign the package on some platforms:
 if exists rpm;
