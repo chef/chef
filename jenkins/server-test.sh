@@ -24,15 +24,16 @@ usage()
 }
 
 # Get command line arguments
-while getopts sv: opt
+while getopts :p: opt
 do
+  echo $opt
   case "$opt" in
     p)  project_name="$OPTARG";;
-    \?) usage; exit 1;;
+    [\?]|[\:]) usage; exit 1;;
   esac
 done
 
-if [ -z $projec_name ]
+if [ -z $project_name ]
 then
   usage
   exit 1
