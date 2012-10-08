@@ -76,7 +76,7 @@ These are available in most common distribution packaging systems, including Deb
 
 Make sure the RubyGems for the Chef Server are installed (should be from the +rake install+ earlier):
 
-* chef-expander
+* chef-expander (now in its own repository at https://github.com/opscode/chef-expander)
 * chef-server
 * chef-server-api
 * chef-server-webui (now in its own repository at https://github.com/opscode/chef-server-webui)
