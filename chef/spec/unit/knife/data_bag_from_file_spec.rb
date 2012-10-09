@@ -33,11 +33,12 @@ describe Chef::Knife::DataBagFromFile do
     @knife.stub!(:rest).and_return(@rest)
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
-    @db_folder = File.join(Dir.tmpdir, 'data_bags', 'bag_name')
+    @tmp_dir = Dir.mktmpdir
+    @db_folder = File.join(@tmp_dir, 'data_bags', 'bag_name')
     FileUtils.mkdir_p(@db_folder)
     @db_file = Tempfile.new(["data_bag_from_file_test", ".json"], @db_folder)
     @db_file2 = Tempfile.new(["data_bag_from_file_test2", ".json"], @db_folder)
-    @db_folder2 = File.join(Dir.tmpdir, 'data_bags', 'bag_name2')
+    @db_folder2 = File.join(@tmp_dir, 'data_bags', 'bag_name2')
     FileUtils.mkdir_p(@db_folder2)
     @db_file3 = Tempfile.new(["data_bag_from_file_test3", ".json"], @db_folder2)
     @plain_data = {
@@ -57,6 +58,7 @@ describe Chef::Knife::DataBagFromFile do
     @db_file3.close
     FileUtils.rm_rf(@db_folder)
     FileUtils.rm_rf(@db_folder2)
+    FileUtils.remove_entry_secure @tmp_dir
   end
 
   it "loads from a file and saves" do
@@ -98,7 +100,7 @@ describe Chef::Knife::DataBagFromFile do
 
     before do
       @pwd = Dir.pwd
-      Dir.chdir(Dir.tmpdir)
+      Dir.chdir(@tmp_dir)
     end
 
     after do
