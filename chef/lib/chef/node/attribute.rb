@@ -44,6 +44,16 @@ class Chef
       end
     end
 
+    # == ImmutableArray
+    # ImmutableArray is used to implement Array collections when reading node
+    # attributes.
+    #
+    # ImmutableArray acts like an ordinary Array, except:
+    # * Methods that mutate the array are overridden to raise an error, making
+    #   the collection more or less immutable.
+    # * Since this class stores values computed from a parent
+    #   Chef::Node::Attribute's values, it overrides all reader methods to
+    #   detect staleness and raise an error if accessed when stale.
     class ImmutableArray < Array
       include Immutablize
 
@@ -52,6 +62,9 @@ class Chef
       alias :internal_push :<<
       private :internal_push
 
+      # A list of methods that mutate Array. Each of these is overridden to
+      # raise an error, making this instances of this class more or less
+      # immutable.
       DISALLOWED_MUTATOR_METHODS = [
         :<<,
         :[]=,
@@ -84,6 +97,9 @@ class Chef
         :unshift
       ]
 
+      # A list of methods that read values from the Array. Each of these is
+      # overridden to verify that the Chef::Node::Attribute object that this
+      # object belongs to has not been modified since the value was computed.
       READER_METHODS =
       [
         :&,
@@ -211,6 +227,18 @@ class Chef
       end
     end
 
+    # == ImmutableMash
+    # ImmutableMash implements Hash/Dict behavior for reading values from node
+    # attributes.
+    #
+    # ImmutableMash acts like a Mash (Hash that is indifferent to String or
+    # Symbol keys), with some important exceptions:
+    # * Methods that mutate state are overridden to raise an error instead.
+    # * Methods that read from the collection are overriden so that they check
+    #   if the Chef::Node::Attribute has been modified since an instance of
+    #   this class was generated. An error is raised if the object detects that
+    #   it is stale.
+    # * Values can be accessed in attr_reader-like fashion via method_missing.
     class ImmutableMash < Mash
 
       include Immutablize
@@ -561,6 +589,11 @@ class Chef
 
     end
 
+    # == Attribute
+    # Attribute implements a nested key-value (Hash) and flat collection
+    # (Array) data structure supporting multiple levels of precedence, such
+    # that a given key may have multiple values internally, but will only
+    # return the highest precedence value when reading.
     class Attribute < Mash
 
       include Immutablize
