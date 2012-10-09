@@ -25,7 +25,7 @@ source :git => "git://github.com/opscode/chef-expander"
 relative_path "chef-expander"
 
 build do
-  bundle "install --path=#{install_dir}/embedded/service/gem", :cwd => project_dir
+  bundle "install --path=#{install_dir}/embedded/service/gem"
   command "mkdir -p #{install_dir}/embedded/service/chef-expander"
   command "#{install_dir}/embedded/bin/rsync -a --delete --exclude=.git/*** --exclude=.gitignore ./ #{install_dir}/embedded/service/chef-expander/"
 end
