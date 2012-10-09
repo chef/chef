@@ -50,9 +50,9 @@ else
   sudo rpm -Uvh pkg/$project_name*rpm
 fi
 
-OMNIBUS_BIN = "$(printf "%s:" /opt/*/bin)"
-OMNIBUS_EMBEDDED_BIN = "$(printf "%s:" /opt/*/embedded/bin)"
-export PATH=$OMNIBUS_BIN:OMNIBUS_EMBEDDED_BIN:$PATH
+export OMNIBUS_BIN="$(printf "%s:" /opt/*/bin)"
+export OMNIBUS_EMBEDDED_BIN="$(printf "%s:" /opt/*/embedded/bin)"
+export PATH=$OMNIBUS_BIN$OMNIBUS_EMBEDDED_BIN$PATH
 
 sudo "${project_name}-ctl" reconfigure
 sleep 120
