@@ -21,9 +21,9 @@ require 'spec_helper'
 describe Chef::Provider::Service::Upstart do
   before(:each) do
     @node =Chef::Node.new
-    @node[:name] = 'upstarter'
-    @node[:platform] = 'ubuntu'
-    @node[:platform_version] = '9.10'
+    @node.name('upstarter')
+    @node.automatic_attrs[:platform] = 'ubuntu'
+    @node.automatic_attrs[:platform_version] = '9.10'
 
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
@@ -38,7 +38,7 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should return /etc/event.d as the upstart job directory when running on Ubuntu 9.04" do
-      @node[:platform_version] = '9.04'
+      @node.automatic_attrs[:platform_version] = '9.04'
       #Chef::Platform.stub!(:find_platform_and_version).and_return([ "ubuntu", "9.04" ])
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       @provider.instance_variable_get(:@upstart_job_dir).should == "/etc/event.d"
@@ -46,14 +46,14 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should return /etc/init as the upstart job directory when running on Ubuntu 9.10" do
-      @node[:platform_version] = '9.10'
+      @node.automatic_attrs[:platform_version] = '9.10'
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       @provider.instance_variable_get(:@upstart_job_dir).should == "/etc/init"
       @provider.instance_variable_get(:@upstart_conf_suffix).should == ".conf"
     end
 
     it "should return /etc/init as the upstart job directory by default" do
-      @node[:platform_version] = '9000'
+      @node.automatic_attrs[:platform_version] = '9000'
       @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
       @provider.instance_variable_get(:@upstart_job_dir).should == "/etc/init"
       @provider.instance_variable_get(:@upstart_conf_suffix).should == ".conf"
@@ -62,7 +62,7 @@ describe Chef::Provider::Service::Upstart do
 
   describe "load_current_resource" do
     before(:each) do
-      @node[:command] = {:ps => "ps -ax"}
+      @node.automatic_attrs[:command] = {:ps => "ps -ax"}
 
       @current_resource = Chef::Resource::Service.new("rsyslog")
       Chef::Resource::Service.stub!(:new).and_return(@current_resource)

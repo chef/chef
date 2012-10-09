@@ -35,17 +35,15 @@ shared_examples_for Chef::Client do
     ohai_data = { :fqdn             => @fqdn,
                   :hostname         => @hostname,
                   :platform         => 'example-platform',
-                  :platform_version => 'example-platform',
+                  :platform_version => 'example-platform-1.0',
                   :data             => {} }
     ohai_data.stub!(:all_plugins).and_return(true)
-    ohai_data.stub!(:data).and_return(ohai_data[:data])
+    ohai_data.stub!(:data).and_return(ohai_data)
     Ohai::System.stub!(:new).and_return(ohai_data)
 
     @node = Chef::Node.new(@hostname)
     @node.name(@fqdn)
     @node.chef_environment("_default")
-    @node[:platform] = "example-platform"
-    @node[:platform_version] = "example-platform-1.0"
 
     @client = Chef::Client.new
     @client.node = @node
@@ -240,8 +238,8 @@ shared_examples_for Chef::Client do
       @node = Chef::Node.new(@hostname)
       @node.name(@fqdn)
       @node.chef_environment("_default")
-      @node[:platform] = "example-platform"
-      @node[:platform_version] = "example-platform-1.0"
+      @node.automatic_attrs[:platform] = "example-platform"
+      @node.automatic_attrs[:platform_version] = "example-platform-1.0"
 
       @client = Chef::Client.new(nil, :override_runlist => 'role[test_role]')
       @client.node = @node

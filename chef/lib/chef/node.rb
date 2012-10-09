@@ -440,9 +440,8 @@ class Chef
 
       self.tags # make sure they're defined
 
-      automatic[:recipes] = expansion.recipes
-      automatic[:roles] = expansion.roles
-
+      automatic_attrs[:recipes] = expansion.recipes
+      automatic_attrs[:roles] = expansion.roles
 
       expansion
     end

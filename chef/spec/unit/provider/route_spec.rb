@@ -51,7 +51,7 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "load_current_resource" do
     context "on linux" do
       before do
-        @node[:os] = 'linux'
+        @node.automatic_attrs[:os] = 'linux'
         routing_table = "Iface	Destination	Gateway 	Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT\n" +
                         "eth0	0064A8C0	0984A8C0	0003	0	0	0	00FFFFFF	0	0	0\n"
         route_file = StringIO.new(routing_table)
@@ -198,7 +198,7 @@ describe Chef::Provider::Route do
   describe Chef::Provider::Route, "generate_config method" do
     %w[ centos redhat fedora ].each do |platform|
       it "should write a route file on #{platform} platform" do
-        @node[:platform] = platform
+        @node.automatic_attrs[:platform] = platform
 
         route_file = StringIO.new
         File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
@@ -211,7 +211,7 @@ describe Chef::Provider::Route do
     end
 
     it "should put all routes for a device in a route config file" do
-      @node[:platform] = 'centos'
+      @node.automatic_attrs[:platform] = 'centos'
 
       route_file = StringIO.new
       File.should_receive(:new).and_return(route_file)

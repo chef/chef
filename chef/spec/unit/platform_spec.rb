@@ -129,8 +129,8 @@ describe Chef::Platform do
     kitty = Chef::Resource::Cat.new("loulou")    
     node = Chef::Node.new
     node.name("Intel")
-    node[:platform] = "mac_os_x"
-    node[:platform_version] = "9.2.2"
+    node.automatic_attrs[:platform] = "mac_os_x"
+    node.automatic_attrs[:platform_version] = "9.2.2"
     Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
   end
 
@@ -139,8 +139,8 @@ describe Chef::Platform do
     kitty.stub!(:provider).and_return(Chef::Provider::File)
     node = Chef::Node.new
     node.name("Intel")
-    node[:platform] = "mac_os_x"
-    node[:platform_version] = "9.2.2"
+    node.automatic_attrs[:platform] = "mac_os_x"
+    node.automatic_attrs[:platform_version] = "9.2.2"
     Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::File)
   end
 
@@ -150,15 +150,15 @@ describe Chef::Platform do
     Chef::Platform.platforms[:default].delete(:cat)
     node = Chef::Node.new
     node.name("Intel")
-    node[:platform] = "mac_os_x"
-    node[:platform_version] = "8.5"
+    node.automatic_attrs[:platform] = "mac_os_x"
+    node.automatic_attrs[:platform_version] = "8.5"
     Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::Cat)
   end
   
   it "returns a provider object given a Chef::Resource object which has a valid run context" do
     node = Chef::Node.new
-    node[:platform] = "mac_os_x"
-    node[:platform_version] = "9.2.2"
+    node.automatic_attrs[:platform] = "mac_os_x"
+    node.automatic_attrs[:platform_version] = "9.2.2"
     run_context = Chef::RunContext.new(node, {}, @events)
     file = Chef::Resource::File.new("whateva", run_context)
     provider = Chef::Platform.provider_for_resource(file, :foo)

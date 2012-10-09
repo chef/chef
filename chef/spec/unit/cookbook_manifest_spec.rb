@@ -205,9 +205,9 @@ describe "Chef::CookbookVersion manifest" do
   
   it "should return a manifest record based on priority preference: host" do
     node = Chef::Node.new
-    node[:platform] = "ubuntu"
-    node[:platform_version] = "9.10"
-    node[:fqdn] = "examplehost.example.org"
+    node.automatic_attrs[:platform] = "ubuntu"
+    node.automatic_attrs[:platform_version] = "9.10"
+    node.automatic_attrs[:fqdn] = "examplehost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
@@ -216,9 +216,9 @@ describe "Chef::CookbookVersion manifest" do
   
   it "should return a manifest record based on priority preference: platform & full version" do
     node = Chef::Node.new
-    node[:platform] = "ubuntu"
-    node[:platform_version] = "9.10"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "ubuntu"
+    node.automatic_attrs[:platform_version] = "9.10"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
@@ -227,9 +227,9 @@ describe "Chef::CookbookVersion manifest" do
 
   it "should return a manifest record based on priority preference: platform & partial version" do
     node = Chef::Node.new
-    node[:platform] = "newubuntu"
-    node[:platform_version] = "9.10"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "newubuntu"
+    node.automatic_attrs[:platform_version] = "9.10"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
@@ -238,9 +238,9 @@ describe "Chef::CookbookVersion manifest" do
   
   it "should return a manifest record based on priority preference: platform only" do
     node = Chef::Node.new
-    node[:platform] = "ubuntu"
-    node[:platform_version] = "1.0"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "ubuntu"
+    node.automatic_attrs[:platform_version] = "1.0"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
@@ -249,9 +249,9 @@ describe "Chef::CookbookVersion manifest" do
   
   it "should return a manifest record based on priority preference: default" do
     node = Chef::Node.new
-    node[:platform] = "notubuntu"
-    node[:platform_version] = "1.0"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "notubuntu"
+    node.automatic_attrs[:platform_version] = "1.0"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "afile.rb")
     manifest_record.should_not be_nil
@@ -260,9 +260,9 @@ describe "Chef::CookbookVersion manifest" do
 
   it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
     node = Chef::Node.new
-    node[:platform] = "fakeos"
-    node[:platform_version] = "2.0.rc.1"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "fakeos"
+    node.automatic_attrs[:platform_version] = "2.0.rc.1"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
     manifest_record.should_not be_nil
@@ -271,9 +271,9 @@ describe "Chef::CookbookVersion manifest" do
 
   it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
     node = Chef::Node.new
-    node[:platform] = "newfakeos"
-    node[:platform_version] = "2.0.rc.1"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "newfakeos"
+    node.automatic_attrs[:platform_version] = "2.0.rc.1"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
     manifest_record.should_not be_nil
@@ -282,9 +282,9 @@ describe "Chef::CookbookVersion manifest" do
 
   it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
     node = Chef::Node.new
-    node[:platform] = "fakeos"
-    node[:platform_version] = "maple tree"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "fakeos"
+    node.automatic_attrs[:platform_version] = "maple tree"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
     manifest_record.should_not be_nil
@@ -293,9 +293,9 @@ describe "Chef::CookbookVersion manifest" do
 
   it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
     node = Chef::Node.new
-    node[:platform] = "fakeos"
-    node[:platform_version] = "1"
-    node[:fqdn] = "differenthost.example.org"
+    node.automatic_attrs[:platform] = "fakeos"
+    node.automatic_attrs[:platform_version] = "1"
+    node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
     manifest_record = @cookbook.preferred_manifest_record(node, :files, "bfile.rb")
     manifest_record.should_not be_nil
@@ -306,9 +306,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a directory of manifest records based on priority preference: host" do
       node = Chef::Node.new
-      node[:platform] = "ubuntu"
-      node[:platform_version] = "9.10"
-      node[:fqdn] = "examplehost.example.org"
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "examplehost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -320,9 +320,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a directory of manifest records based on priority preference: platform & full version" do
       node = Chef::Node.new
-      node[:platform] = "ubuntu"
-      node[:platform_version] = "9.10"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -334,9 +334,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a directory of manifest records based on priority preference: platform & partial version" do
       node = Chef::Node.new
-      node[:platform] = "newubuntu"
-      node[:platform_version] = "9.10"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "newubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -348,9 +348,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a directory of manifest records based on priority preference: platform only" do
       node = Chef::Node.new
-      node[:platform] = "ubuntu"
-      node[:platform_version] = "1.0"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "1.0"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -362,9 +362,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a directory of manifest records based on priority preference: default" do
       node = Chef::Node.new
-      node[:platform] = "notubuntu"
-      node[:platform_version] = "1.0"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "notubuntu"
+      node.automatic_attrs[:platform_version] = "1.0"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -376,9 +376,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
       node = Chef::Node.new
-      node[:platform] = "fakeos"
-      node[:platform_version] = "2.0.rc.1"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "fakeos"
+      node.automatic_attrs[:platform_version] = "2.0.rc.1"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -390,9 +390,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
       node = Chef::Node.new
-      node[:platform] = "newfakeos"
-      node[:platform_version] = "2.0.rc.1"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "newfakeos"
+      node.automatic_attrs[:platform_version] = "2.0.rc.1"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -404,9 +404,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
       node = Chef::Node.new
-      node[:platform] = "fakeos"
-      node[:platform_version] = "maple tree"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "fakeos"
+      node.automatic_attrs[:platform_version] = "maple tree"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -418,9 +418,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
       node = Chef::Node.new
-      node[:platform] = "fakeos"
-      node[:platform_version] = "1"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "fakeos"
+      node.automatic_attrs[:platform_version] = "1"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       manifest_records = @cookbook.preferred_manifest_records_for_directory(node, :files, "adirectory")
       manifest_records.should_not be_nil
@@ -436,9 +436,9 @@ describe "Chef::CookbookVersion manifest" do
   describe "when globbing for relative file paths based on filespecificity" do
     it "should return a list of relative paths based on priority preference: host" do
       node = Chef::Node.new
-      node[:platform] = "ubuntu"
-      node[:platform_version] = "9.10"
-      node[:fqdn] = "examplehost.example.org"
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "examplehost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -449,9 +449,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform & full version" do
       node = Chef::Node.new
-      node[:platform] = "ubuntu"
-      node[:platform_version] = "9.10"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -462,9 +462,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform & partial version" do
       node = Chef::Node.new
-      node[:platform] = "newubuntu"
-      node[:platform_version] = "9.10"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "newubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -475,9 +475,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform only" do
       node = Chef::Node.new
-      node[:platform] = "ubuntu"
-      node[:platform_version] = "1.0"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "1.0"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -488,9 +488,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: default" do
       node = Chef::Node.new
-      node[:platform] = "notubuntu"
-      node[:platform_version] = "1.0"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "notubuntu"
+      node.automatic_attrs[:platform_version] = "1.0"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -501,9 +501,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 1" do
       node = Chef::Node.new
-      node[:platform] = "fakeos"
-      node[:platform_version] = "2.0.rc.1"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "fakeos"
+      node.automatic_attrs[:platform_version] = "2.0.rc.1"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -514,9 +514,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform & partial version - platform_version variant 1" do
       node = Chef::Node.new
-      node[:platform] = "newfakeos"
-      node[:platform_version] = "2.0.rc.1"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "newfakeos"
+      node.automatic_attrs[:platform_version] = "2.0.rc.1"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -527,9 +527,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 2" do
       node = Chef::Node.new
-      node[:platform] = "fakeos"
-      node[:platform_version] = "maple tree"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "fakeos"
+      node.automatic_attrs[:platform_version] = "maple tree"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil
@@ -540,9 +540,9 @@ describe "Chef::CookbookVersion manifest" do
 
     it "should return a list of relative paths based on priority preference: platform & full version - platform_version variant 3" do
       node = Chef::Node.new
-      node[:platform] = "fakeos"
-      node[:platform_version] = "1"
-      node[:fqdn] = "differenthost.example.org"
+      node.automatic_attrs[:platform] = "fakeos"
+      node.automatic_attrs[:platform_version] = "1"
+      node.automatic_attrs[:fqdn] = "differenthost.example.org"
 
       filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "adirectory")
       filenames.should_not be_nil

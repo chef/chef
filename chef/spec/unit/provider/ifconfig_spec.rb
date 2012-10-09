@@ -183,7 +183,7 @@ describe Chef::Provider::Ifconfig do
      
      it "should write network-script for centos" do
       @provider.stub!(:load_current_resource)
-      @node[:platform] = "centos"
+      @node.automatic_attrs[:platform] = "centos"
       @provider.stub!(:run_command)
       config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
       config_file = StringIO.new
@@ -199,7 +199,7 @@ describe Chef::Provider::Ifconfig do
   describe Chef::Provider::Ifconfig, "delete_config for action_delete" do
 
     it "should delete network-script if it exists for centos" do
-      @node[:platform] = "centos"
+      @node.automatic_attrs[:platform] = "centos"
       @current_resource.device "eth0"
       @provider.stub!(:load_current_resource)
       @provider.stub!(:run_command)

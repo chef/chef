@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Service::Freebsd do
   before do
     @node = Chef::Node.new
-    @node[:command] = {:ps => "ps -ax"}
+    @node.automatic_attrs[:command] = {:ps => "ps -ax"}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -115,13 +115,13 @@ RC_SAMPLE
     end
 
     it "should raise error if the node has a nil ps attribute and no other means to get status" do
-      @node[:command] = {:ps => nil}
+      @node.automatic_attrs[:command] = {:ps => nil}
       @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
     it "should raise error if the node has an empty ps attribute and no other means to get status" do
-      @node[:command] = {:ps => ""}
+      @node.automatic_attrs[:command] = {:ps => ""}
       @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
@@ -180,7 +180,7 @@ RC_SAMPLE
 
     describe "when we have a 'ps' attribute" do
       before do
-        @node[:command] = {:ps => "ps -ax"}
+        @node.automatic_attrs[:command] = {:ps => "ps -ax"}
       end
 
       it "should shell_out! the node's ps command" do

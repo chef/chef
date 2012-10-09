@@ -22,8 +22,8 @@ require 'highline'
 describe Chef::Knife::Status do
   before(:each) do
     node = Chef::Node.new.tap do |n|
-      n["fqdn"] = "foobar"
-      n["ohai_time"] = 1343845969
+      n.automatic_attrs["fqdn"] = "foobar"
+      n.automatic_attrs["ohai_time"] = 1343845969
     end
     query = mock("Chef::Search::Query")
     query.stub!(:search).and_yield(node)

@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Service::Simple, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -51,13 +51,13 @@ NOMOCKINGSTRINGSPLZ
   end
 
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
-    @node[:command] = {:ps => nil}
+    @node.automatic_attrs[:command] = {:ps => nil}
     @provider.define_resource_requirements
     lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps attribute and no other means to get status" do
-    @node[:command] = {:ps => ""}
+    @node.automatic_attrs[:command] = {:ps => ""}
     @provider.define_resource_requirements
     lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
   end

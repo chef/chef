@@ -37,11 +37,11 @@ describe Chef::Knife::Ssh do
     @knife.config.clear
     @knife.config[:attribute] = "fqdn"
     @node_foo = Chef::Node.new('foo')
-    @node_foo[:fqdn] = "foo.example.org"
-    @node_foo[:ipaddress] = "10.0.0.1"
+    @node_foo.automatic_attrs[:fqdn] = "foo.example.org"
+    @node_foo.automatic_attrs[:ipaddress] = "10.0.0.1"
     @node_bar = Chef::Node.new('bar')
-    @node_bar[:fqdn] = "bar.example.org"
-    @node_bar[:ipaddress] = "10.0.0.2"
+    @node_bar.automatic_attrs[:fqdn] = "bar.example.org"
+    @node_bar.automatic_attrs[:ipaddress] = "10.0.0.2"
   end
 
   describe "#configure_session" do
@@ -84,10 +84,8 @@ describe Chef::Knife::Ssh do
 
       context "when cloud hostnames are available" do
         before do
-          @node_foo[:cloud] = Mash.new
-          @node_bar[:cloud] = Mash.new
-          @node_foo[:cloud][:public_hostname] = "ec2-10-0-0-1.compute-1.amazonaws.com"
-          @node_bar[:cloud][:public_hostname] = "ec2-10-0-0-2.compute-1.amazonaws.com"
+          @node_foo.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-1.compute-1.amazonaws.com"
+          @node_bar.automatic_attrs[:cloud][:public_hostname] = "ec2-10-0-0-2.compute-1.amazonaws.com"
         end
 
         it "returns an array of cloud public hostnames" do

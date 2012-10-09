@@ -87,8 +87,8 @@ describe Chef::Provider::RemoteDirectory do
 
   describe "when creating the remote directory" do
     before do
-      @node[:platform] = :just_testing
-      @node[:platform_version] = :just_testing
+      @node.automatic_attrs[:platform] = :just_testing
+      @node.automatic_attrs[:platform_version] = :just_testing
 
       @destination_dir = Dir.tmpdir << "/remote_directory_test"
       @resource.path(@destination_dir)

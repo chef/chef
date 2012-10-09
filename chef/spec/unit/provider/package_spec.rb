@@ -347,8 +347,8 @@ describe Chef::Provider::Package do
       @cookbook_collection = Chef::CookbookCollection.new(cl)
       @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
-      @node[:platform] = 'PLATFORM: just testing'
-      @node[:platform_version] = 'PLATFORM VERSION: just testing'
+      @node.automatic_attrs[:platform] = 'PLATFORM: just testing'
+      @node.automatic_attrs[:platform_version] = 'PLATFORM VERSION: just testing'
 
       @new_resource.response_file('java.response')
       @new_resource.cookbook_name = 'java'
@@ -384,8 +384,8 @@ describe Chef::Provider::Package do
 
     describe "when installing the preseed file to the cache location" do
       before do
-        @node[:platform] = :just_testing
-        @node[:platform_version] = :just_testing
+        @node.automatic_attrs[:platform] = :just_testing
+        @node.automatic_attrs[:platform_version] = :just_testing
 
         @response_file_destination = Dir.tmpdir + '/preseed--java--java-6.seed'
 

@@ -267,7 +267,12 @@ describe Chef::CookbookVersion do
 
     describe "raises an error when attempting to load a missing cookbook_file and" do
       before do
-        node = Chef::Node.new.tap {|n| n.name("sample.node"); n[:fqdn] = "sample.example.com"; n[:platform] = "ubuntu"; n[:platform_version] = "10.04"}
+        node = Chef::Node.new.tap do |n|
+          n.name("sample.node")
+          n.automatic_attrs[:fqdn] = "sample.example.com"
+          n.automatic_attrs[:platform] = "ubuntu"
+          n.automatic_attrs[:platform_version] = "10.04"
+        end
         @attempt_to_load_file = lambda { @cookbook_version.preferred_manifest_record(node, :files, "no-such-thing.txt") }
       end
 

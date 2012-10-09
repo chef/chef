@@ -23,8 +23,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
   def run_context
     node = Chef::Node.new
-    node[:platform] = "ubuntu"
-    node[:platform_version] = "10.04"
+    node.automatic_attrs[:platform] = "ubuntu"
+    node.automatic_attrs[:platform_version] = "10.04"
     Chef::RunContext.new(node, {}, nil)
   end
 

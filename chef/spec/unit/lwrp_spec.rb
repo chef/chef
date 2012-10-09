@@ -95,7 +95,7 @@ describe "LWRP" do
 
     it "should have access to the run context and node during class definition" do
       node = Chef::Node.new(nil)
-      node[:penguin_name] = "jackass"
+      node.normal[:penguin_name] = "jackass"
       run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @events)
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|

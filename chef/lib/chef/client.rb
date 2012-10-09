@@ -208,7 +208,7 @@ class Chef
         Chef::Log.debug("Saving the current state of node #{node_name}")
         if(@original_runlist)
           @node.run_list(*@original_runlist)
-          @node[:runlist_override_history] = {Time.now.to_i => @override_runlist.inspect}
+          @node.automatic_attrs[:runlist_override_history] = {Time.now.to_i => @override_runlist.inspect}
         end
         @node.save
       end

@@ -27,7 +27,7 @@ describe Chef::Resource::Template do
 
   let(:node) do
     node = Chef::Node.new
-    node[:slappiness] = "a warm gun"
+    node.normal[:slappiness] = "a warm gun"
     node
   end
 

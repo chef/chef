@@ -425,8 +425,8 @@ describe Chef::Resource do
     before do
       @resource = Chef::Resource.new("provided", @run_context)
       @resource.provider = Chef::Provider::SnakeOil
-      @node[:platform] = "fubuntu"
-      @node[:platform_version] = '10.04'
+      @node.automatic_attrs[:platform] = "fubuntu"
+      @node.automatic_attrs[:platform_version] = '10.04'
     end
 
     it "does not run only_if if no only_if command is given" do

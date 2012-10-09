@@ -158,7 +158,7 @@ class Chef
 
       def default=(new_data)
         reset
-        @default = new_data
+        @default = VividMash.new(self, new_data)
       end
 
       def normal
@@ -167,7 +167,7 @@ class Chef
 
       def normal=(new_data)
         reset
-        @normal = new_data
+        @normal = VividMash.new(self, new_data)
       end
 
       def override
@@ -176,7 +176,7 @@ class Chef
 
       def override=(new_data)
         reset
-        @override = new_data
+        @override = VividMash.new(self, new_data)
       end
 
       def automatic
@@ -185,7 +185,7 @@ class Chef
 
       def automatic=(new_data)
         reset
-        @automatic = new_data
+        @automatic = VividMash.new(self, new_data)
       end
 
       def merged_attributes

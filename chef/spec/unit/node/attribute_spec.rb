@@ -958,6 +958,12 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when setting a component attribute to a new value" do
+    it "converts the imput in to a VividMash tree" do
+      pending
+    end
+  end
+
   describe "when attemping to write without specifying precedence" do
     it "raises an error when using []=" do
       lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
@@ -1164,125 +1170,5 @@ describe Chef::Node::Attribute do
 
   end
 
-end
-
-describe Chef::Node::ImmutableMash do
-  before do
-    @root = Chef::Node::Attribute.new({}, {}, {}, {})
-    @data_in = {:top => {:second_level => "some value"},
-                "top_level_2" => %w[array of values],
-                :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
-                :top_level_4 => {:level2 => {:key => "value"}}
-    }
-    @immutable_mash = Chef::Node::ImmutableMash.new(@root, @data_in)
-  end
-
-  it "element references like regular hash" do
-    @immutable_mash[:top][:second_level].should == "some value"
-  end
-
-  it "elelment references like a regular Mash" do
-    @immutable_mash[:top_level_2].should == %w[array of values]
-  end
-
-  it "converts Hash-like inputs into ImmutableMash's" do
-    @immutable_mash[:top].should be_a(Chef::Node::ImmutableMash)
-  end
-
-  it "converts array inputs into ImmutableArray's" do
-    @immutable_mash[:top_level_2].should be_a(Chef::Node::ImmutableArray)
-  end
-
-  it "converts arrays of hashes to ImmutableArray's of ImmutableMashes" do
-    @immutable_mash[:top_level_3].first.should be_a(Chef::Node::ImmutableMash)
-  end
-
-  it "converts nested hashes to ImmutableMashes" do
-    @immutable_mash[:top_level_4].should be_a(Chef::Node::ImmutableMash)
-    @immutable_mash[:top_level_4][:level2].should be_a(Chef::Node::ImmutableMash)
-  end
-
-
-  [
-    :[]=,
-    :clear,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_if,
-    :keep_if,
-    :merge!,
-    :update,
-    :reject!,
-    :replace,
-    :select!,
-    :shift
-  ].each do |mutator|
-    it "doesn't allow mutation via `#{mutator}'" do
-      lambda { @immutable_mash.send(mutator) }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
-    end
-  end
-
-  it "returns a mutable version of itself when duped" do
-    mutable = @immutable_mash.dup
-    mutable[:new_key] = :value
-    mutable[:new_key].should == :value
-  end
-
-end
-
-describe Chef::Node::ImmutableArray do
-
-  before do
-    @root = Chef::Node::Attribute.new({}, {}, {}, {})
-    @immutable_array = Chef::Node::ImmutableArray.new(@root, %w[foo bar baz])
-  end
-
-  ##
-  # Note: other behaviors, such as immutibilizing input data, are tested along
-  # with ImmutableMash, above
-  ###
-
-  [
-    :<<,
-    :[]=,
-    :clear,
-    :collect!,
-    :compact!,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_at,
-    :delete_if,
-    :fill,
-    :flatten!,
-    :insert,
-    :keep_if,
-    :map!,
-    :merge!,
-    :pop,
-    :push,
-    :update,
-    :reject!,
-    :reverse!,
-    :replace,
-    :select!,
-    :shift,
-    :slice!,
-    :sort!,
-    :sort_by!,
-    :uniq!,
-    :unshift
-  ].each do |mutator|
-    it "does not allow mutation via `#{mutator}" do
-      lambda { @immutable_array.send(mutator)}.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
-    end
-  end
-
-  it "returns a mutable version of itself when duped" do
-    mutable = @immutable_array.dup
-    mutable[0] = :value
-    mutable[0].should == :value
-  end
 end
 

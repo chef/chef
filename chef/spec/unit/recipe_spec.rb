@@ -28,7 +28,7 @@ describe Chef::Recipe do
     cl.load_cookbooks
     @cookbook_collection = Chef::CookbookCollection.new(cl)
     @node = Chef::Node.new
-    @node[:tags] = Array.new
+    @node.normal[:tags] = Array.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @recipe = Chef::Recipe.new("hjk", "test", @run_context)
@@ -153,7 +153,7 @@ describe Chef::Recipe do
           end
         end
         @run_context.definitions[:crow] = crow_define
-        @node[:foo] = false
+        @node.normal[:foo] = false
         @recipe.crow "mine" do
           something node[:foo]
         end

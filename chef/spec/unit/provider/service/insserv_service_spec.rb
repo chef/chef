@@ -23,7 +23,7 @@ describe Chef::Provider::Service::Insserv do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @node[:command] = {:ps => "ps -ax"}
+    @node.automatic_attrs[:command] = {:ps => "ps -ax"}
 
     @new_resource = Chef::Resource::Service.new("initgrediant")
     @current_resource = Chef::Resource::Service.new("initgrediant")

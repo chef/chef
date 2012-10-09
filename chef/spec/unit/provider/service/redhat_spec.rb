@@ -44,7 +44,7 @@ describe "Chef::Provider::Service::Redhat" do
 
   before(:each) do
     @node = Chef::Node.new
-    @node[:command] = {:ps => 'foo'}
+    @node.automatic_attrs[:command] = {:ps => 'foo'}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
  

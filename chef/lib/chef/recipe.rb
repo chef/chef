@@ -89,7 +89,7 @@ class Chef
       if tags.length > 0
         tags.each do |tag|
           tag = tag.to_s
-          run_context.node[:tags] << tag unless run_context.node[:tags].include?(tag)
+          run_context.node.normal[:tags] << tag unless run_context.node[:tags].include?(tag)
         end
         run_context.node[:tags]
       else
@@ -121,7 +121,7 @@ class Chef
     # tags<Array>:: The current list of run_context.node[:tags]
     def untag(*tags)
       tags.each do |tag|
-        run_context.node[:tags].delete(tag)
+        run_context.node.normal[:tags].delete(tag)
       end
     end
 

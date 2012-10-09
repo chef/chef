@@ -89,7 +89,7 @@ describe Chef::Provider::Template do
       it "creates the template with the rendered content" do
         @access_controls.stub!(:requires_changes?).and_return(true)
         @access_controls.should_receive(:set_all!)
-        @node[:slappiness] = "a warm gun"
+        @node.normal[:slappiness] = "a warm gun"
         @provider.should_receive(:backup)
         @provider.run_action(:create)
         IO.read(@rendered_file_location).should == "slappiness is a warm gun"
@@ -109,7 +109,7 @@ describe Chef::Provider::Template do
       it "creates the template with the rendered content for the create if missing action" do
         @access_controls.stub!(:requires_changes?).and_return(true)
         @access_controls.should_receive(:set_all!)
-        @node[:slappiness] = "happiness"
+        @node.normal[:slappiness] = "happiness"
         @provider.should_receive(:backup)
         @provider.run_action(:create_if_missing)
         IO.read(@rendered_file_location).should == "slappiness is happiness"
@@ -123,7 +123,7 @@ describe Chef::Provider::Template do
       end
 
       it "overwrites the file with the updated content when the create action is run" do
-        @node[:slappiness] = "a warm gun"
+        @node.normal[:slappiness] = "a warm gun"
         @access_controls.stub!(:requires_changes?).and_return(false)
         @access_controls.should_receive(:set_all!)
         @provider.should_receive(:backup)
@@ -146,7 +146,7 @@ describe Chef::Provider::Template do
       it "doesn't overwrite the file when the create if missing action is run" do
         @access_controls.stub!(:requires_changes?).and_return(false)
         @access_controls.should_not_receive(:set_all!)
-        @node[:slappiness] = "a warm gun"
+        @node.normal[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
         @provider.run_action(:create_if_missing)
         IO.read(@rendered_file_location).should == "blargh"
@@ -164,7 +164,7 @@ describe Chef::Provider::Template do
       end
 
       it "does not backup the original or overwrite it" do
-        @node[:slappiness] = "a warm gun"
+        @node.normal[:slappiness] = "a warm gun"
         @access_controls.stub!(:requires_changes?).and_return(false)
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)
@@ -173,7 +173,7 @@ describe Chef::Provider::Template do
       end
 
       it "does not backup the original or overwrite it on create if missing" do
-        @node[:slappiness] = "a warm gun"
+        @node.normal[:slappiness] = "a warm gun"
         @access_controls.stub!(:requires_changes?).and_return(false)
         @provider.should_not_receive(:backup)
         FileUtils.should_not_receive(:mv)

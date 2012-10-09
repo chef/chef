@@ -21,7 +21,7 @@ require 'spec_helper'
 describe Chef::Provider::Service::Init, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node[:command] = {:ps => "ps -ef"}
+    @node.automatic_attrs[:command] = {:ps => "ps -ef"}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -96,7 +96,7 @@ PS
   describe "when the node has not specified a ps command" do
     
     it "should raise an error if the node has a nil ps attribute" do
-      @node[:command] = {:ps => nil}
+      @node.automatic_attrs[:command] = {:ps => nil}
       @provider.load_current_resource
       @provider.action = :start
       @provider.define_resource_requirements
@@ -104,7 +104,7 @@ PS
     end
 
     it "should raise an error if the node has an empty ps attribute" do
-      @node[:command] = {:ps => ""}
+      @node.automatic_attrs[:command] = {:ps => ""}
       @provider.load_current_resource
       @provider.action = :start
       @provider.define_resource_requirements

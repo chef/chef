@@ -64,7 +64,7 @@ describe Chef::Provider::Ohai do
 
   describe "when reloading ohai" do
     before do
-      @node[:origdata] = 'somevalue'
+      @node.automatic_attrs[:origdata] = 'somevalue'
     end
 
     it "applies updated ohai data to the node" do

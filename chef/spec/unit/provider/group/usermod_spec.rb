@@ -64,7 +64,7 @@ describe Chef::Provider::Group::Usermod do
     
       platforms.each do |platform, flags|
         it "should usermod each user when the append option is set on #{platform}" do
-          @node[:platform] = platform
+          @node.automatic_attrs[:platform] = platform
           @new_resource.stub!(:append).and_return(true)
           @provider.should_receive(:run_command).with({:command => "usermod #{flags} wheel all"})
           @provider.should_receive(:run_command).with({:command => "usermod #{flags} wheel your"})
@@ -76,7 +76,7 @@ describe Chef::Provider::Group::Usermod do
   end
 
   describe "when loading the current resource" do
-    before (:each) do
+    before(:each) do
       File.stub!(:exists?).and_return(false)
       @provider.define_resource_requirements
     end
