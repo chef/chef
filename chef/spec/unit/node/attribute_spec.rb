@@ -958,9 +958,29 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "when setting a component attribute to a new value" do
-    it "converts the imput in to a VividMash tree" do
-      pending
+  describe "when setting a component attribute to a new value", :focus => true do
+    it "converts the input in to a VividMash tree (default)" do
+      @attributes.default = {}
+      @attributes.default.foo = "bar"
+      @attributes.merged_attributes[:foo].should == "bar"
+    end
+
+    it "converts the input in to a VividMash tree (normal)" do
+      @attributes.normal = {}
+      @attributes.normal.foo = "bar"
+      @attributes.merged_attributes[:foo].should == "bar"
+    end
+
+    it "converts the input in to a VividMash tree (override)" do
+      @attributes.override = {}
+      @attributes.override.foo = "bar"
+      @attributes.merged_attributes[:foo].should == "bar"
+    end
+
+    it "converts the input in to a VividMash tree (automatic)" do
+      @attributes.automatic = {}
+      @attributes.automatic.foo = "bar"
+      @attributes.merged_attributes[:foo].should == "bar"
     end
   end
 
