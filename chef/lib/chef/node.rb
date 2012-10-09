@@ -245,7 +245,6 @@ class Chef
 
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      attributes.reset_for_read
       attributes[attrib]
     end
 
@@ -345,7 +344,6 @@ class Chef
 
     # Only works for attribute fetches, setting is no longer supported
     def method_missing(symbol, *args)
-      attributes.reset_for_read
       attributes.send(symbol, *args)
     end
 

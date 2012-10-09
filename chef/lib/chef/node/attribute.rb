@@ -172,9 +172,6 @@ class Chef
         @merged_attributes = nil
       end
 
-      def reset_for_read
-      end
-
       def default
         @default
       end
