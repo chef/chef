@@ -1166,7 +1166,7 @@ describe Chef::Node::Attribute do
 
 end
 
-describe Chef::ImmutableMash do
+describe Chef::Node::ImmutableMash do
   before do
     @root = Chef::Node::Attribute.new({}, {}, {}, {})
     @data_in = {:top => {:second_level => "some value"},
@@ -1174,7 +1174,7 @@ describe Chef::ImmutableMash do
                 :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
                 :top_level_4 => {:level2 => {:key => "value"}}
     }
-    @immutable_mash = Chef::ImmutableMash.new(@root, @data_in)
+    @immutable_mash = Chef::Node::ImmutableMash.new(@root, @data_in)
   end
 
   it "element references like regular hash" do
@@ -1186,20 +1186,20 @@ describe Chef::ImmutableMash do
   end
 
   it "converts Hash-like inputs into ImmutableMash's" do
-    @immutable_mash[:top].should be_a(Chef::ImmutableMash)
+    @immutable_mash[:top].should be_a(Chef::Node::ImmutableMash)
   end
 
   it "converts array inputs into ImmutableArray's" do
-    @immutable_mash[:top_level_2].should be_a(Chef::ImmutableArray)
+    @immutable_mash[:top_level_2].should be_a(Chef::Node::ImmutableArray)
   end
 
   it "converts arrays of hashes to ImmutableArray's of ImmutableMashes" do
-    @immutable_mash[:top_level_3].first.should be_a(Chef::ImmutableMash)
+    @immutable_mash[:top_level_3].first.should be_a(Chef::Node::ImmutableMash)
   end
 
   it "converts nested hashes to ImmutableMashes" do
-    @immutable_mash[:top_level_4].should be_a(Chef::ImmutableMash)
-    @immutable_mash[:top_level_4][:level2].should be_a(Chef::ImmutableMash)
+    @immutable_mash[:top_level_4].should be_a(Chef::Node::ImmutableMash)
+    @immutable_mash[:top_level_4][:level2].should be_a(Chef::Node::ImmutableMash)
   end
 
 
@@ -1231,11 +1231,11 @@ describe Chef::ImmutableMash do
 
 end
 
-describe Chef::ImmutableArray do
+describe Chef::Node::ImmutableArray do
 
   before do
     @root = Chef::Node::Attribute.new({}, {}, {}, {})
-    @immutable_array = Chef::ImmutableArray.new(@root, %w[foo bar baz])
+    @immutable_array = Chef::Node::ImmutableArray.new(@root, %w[foo bar baz])
   end
 
   ##
