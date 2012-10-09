@@ -86,7 +86,11 @@ describe Chef::Knife::Configure do
     @knife.config[:initial] = true
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]"))
-    @knife.admin_client_key.should == '/etc/chef/webui.pem'
+    if windows?
+      @knife.admin_client_key.should == 'C:/etc/chef/webui.pem'
+    else
+      @knife.admin_client_key.should == '/etc/chef/webui.pem'
+    end
   end
 
   it "should not ask the user for the location of the existing admin key if -i and --admin_client_key are specified" do
@@ -94,13 +98,21 @@ describe Chef::Knife::Configure do
     @knife.config[:admin_client_key] = '/home/you/.chef/my-webui.pem'
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key:"))
-    @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
+    if windows?
+      @knife.admin_client_key.should == 'C:/home/you/.chef/my-webui.pem'
+    else
+      @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
+    end
   end
 
   it "should not ask the user for the location of the existing admin key if -i is not specified" do
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]"))
-    @knife.admin_client_key.should_not == '/etc/chef/webui.pem'
+    if windows?
+      @knife.admin_client_key.should_not == 'C:/etc//chef/webui.pem'
+    else
+      @knife.admin_client_key.should_not == '/etc/chef/webui.pem' 
+    end
   end
 
   it "asks the user for the location of a chef repo" do
@@ -125,14 +137,22 @@ describe Chef::Knife::Configure do
   it "asks the users for the location of the validation key" do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the validation key: [/etc/chef/validation.pem]"))
-    @knife.validation_key.should == '/etc/chef/validation.pem'
+    if windows?
+      @knife.validation_key.should == 'C:/etc/chef/validation.pem'
+    else
+      @knife.validation_key.should == '/etc/chef/validation.pem' 
+    end
   end
 
   it "should not ask the users for the location of the validation key if --validation_key is specified" do
     @knife.config[:validation_key] = '/home/you/.chef/my-validation.pem'
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the validation key:"))
-    @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
+    if windows?
+      @knife.validation_key.should == 'C:/home/you/.chef/my-validation.pem'
+    else
+      @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
+    end
   end
 
   it "should not ask the user for anything if -i and all other properties are specified" do
@@ -153,11 +173,17 @@ describe Chef::Knife::Configure do
     @knife.new_client_name.should == 'testnode'
     @knife.chef_server.should == 'http://localhost:5000'
     @knife.admin_client_name.should == 'my-webui'
-    @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
+    if windows?
+      @knife.admin_client_key.should == 'C:/home/you/.chef/my-webui.pem'
+      @knife.validation_key.should == 'C:/home/you/.chef/my-validation.pem'
+      @knife.new_client_key.should == 'C:/home/you/a-new-user.pem'
+    else
+      @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
+      @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
+      @knife.new_client_key.should == '/home/you/a-new-user.pem'
+    end
     @knife.validation_client_name.should == 'my-validator'
-    @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
     @knife.chef_repo.should == ''
-    @knife.new_client_key.should == '/home/you/a-new-user.pem'
   end
 
   it "writes the new data to a config file" do
