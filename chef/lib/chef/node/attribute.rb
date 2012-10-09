@@ -23,15 +23,6 @@ require 'chef/mixin/deep_merge'
 require 'chef/log'
 
 class Chef
-
-    class ImmutableAttributeModification < NoMethodError
-    end
-
-    class StaleAttributeRead < StandardError
-    end
-
-
-
   class Node
 
     # == Attribute

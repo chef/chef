@@ -177,7 +177,7 @@ class Chef
           def #{mutator_method_name}(*args, &block)
             msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
             %Q(To set an attribute use code like `node.default["key"] = "value"')
-            raise ImmutableAttributeModification, msg
+            raise Exceptions::ImmutableAttributeModification, msg
           end
         METHOD_DEFN
       end
@@ -186,7 +186,8 @@ class Chef
         class_eval(<<-METHOD_DEFN)
           def #{reader}(*args, &block)
             if root.stale_subtree?(@serial_number)
-              raise StaleAttributeRead, "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
+              raise Exceptions::StaleAttributeRead,
+                "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
             end
             super
           end
@@ -333,7 +334,7 @@ class Chef
         def #{mutator_method_name}(*args, &block)
           msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
           %Q(To set an attribute use code like `node.default["key"] = "value"')
-          raise ImmutableAttributeModification, msg
+          raise Exceptions::ImmutableAttributeModification, msg
         end
         METHOD_DEFN
       end
@@ -342,7 +343,8 @@ class Chef
         class_eval(<<-METHOD_DEFN)
           def #{reader_method}(*args, &block)
             if root.stale_subtree?(@serial_number)
-              raise StaleAttributeRead, "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
+              raise Exceptions::StaleAttributeRead,
+                "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
             end
             super
           end

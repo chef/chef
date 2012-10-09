@@ -119,6 +119,16 @@ class Chef
     # Invalid "source" parameter to a remote_file resource
     class InvalidRemoteFileURI < ArgumentError; end
 
+    # Node::Attribute computes the merged version of of attributes
+    # and makes it read-only. Attempting to modify a read-only
+    # attribute will cause this error.
+    class ImmutableAttributeModification < NoMethodError; end
+
+    # Merged node attributes are invalidated when the component
+    # attributes are updated. Attempting to read from a stale copy
+    # of merged attributes will trigger this error.
+    class StaleAttributeRead < StandardError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

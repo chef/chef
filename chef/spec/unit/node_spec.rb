@@ -150,7 +150,7 @@ describe Chef::Node do
     end
 
     it "does not allow you to set an attribute via node[]=" do
-      lambda  { @node["secret"] = "shush" }.should raise_error(Chef::ImmutableAttributeModification)
+      lambda  { @node["secret"] = "shush" }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "should allow you to query whether an attribute exists with attribute?" do
@@ -166,7 +166,7 @@ describe Chef::Node do
     end
 
     it "does not allow you to set an attribute via method_missing" do
-      lambda { @node.sunshine = "is bright"}.should raise_error(Chef::ImmutableAttributeModification)
+      lambda { @node.sunshine = "is bright"}.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "should allow you get get an attribute via method_missing" do

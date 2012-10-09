@@ -274,7 +274,7 @@ describe Chef::Node::Attribute do
   describe "[]=" do
     it "should error out when the type of attribute to set has not been specified" do
       @attributes.normal["the_ghost"] = {  }
-      lambda { @attributes["the_ghost"]["exterminate"] = false }.should raise_error(Chef::ImmutableAttributeModification)
+      lambda { @attributes["the_ghost"]["exterminate"] = false }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "should let you set an attribute value when another hash has an intermediate value" do
@@ -960,11 +960,11 @@ describe Chef::Node::Attribute do
 
   describe "when attemping to write without specifying precedence" do
     it "raises an error when using []=" do
-      lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::ImmutableAttributeModification)
+      lambda { @attributes[:new_key] = "new value" }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
     it "raises an error when using `attr=value`" do
-      lambda { @attributes.new_key = "new value" }.should raise_error(Chef::ImmutableAttributeModification)
+      lambda { @attributes.new_key = "new value" }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
   end
@@ -979,11 +979,11 @@ describe Chef::Node::Attribute do
     end
 
     it "detects reads from a no-longer-valid merged attributes sub-tree" do
-      lambda { @sub_tree[:key] }.should raise_error(Chef::StaleAttributeRead)
+      lambda { @sub_tree[:key] }.should raise_error(Chef::Exceptions::StaleAttributeRead)
     end
 
     it "detects reads from a no-longer-valid array value" do
-      lambda {@sub_array.first}.should raise_error(Chef::StaleAttributeRead)
+      lambda {@sub_array.first}.should raise_error(Chef::Exceptions::StaleAttributeRead)
     end
     [
       :[],
@@ -1063,7 +1063,7 @@ describe Chef::Node::Attribute do
       :zip
     ].each do |reader|
       it "detects dirty reads from a no-longer-valid Mash via Mash##{reader}" do
-        lambda { @sub_tree.send(:reader) }.should raise_error(Chef::StaleAttributeRead)
+        lambda { @sub_tree.send(:reader) }.should raise_error(Chef::Exceptions::StaleAttributeRead)
       end
     end
 
@@ -1158,7 +1158,7 @@ describe Chef::Node::Attribute do
     ].each do |reader|
 
         it "detects dirty reads via Array##{reader}" do
-          lambda {@sub_array.send(reader)}.should raise_error(Chef::StaleAttributeRead)
+          lambda {@sub_array.send(reader)}.should raise_error(Chef::Exceptions::StaleAttributeRead)
         end
       end
 
@@ -1219,7 +1219,7 @@ describe Chef::Node::ImmutableMash do
     :shift
   ].each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
-      lambda { @immutable_mash.send(mutator) }.should raise_error(Chef::ImmutableAttributeModification)
+      lambda { @immutable_mash.send(mutator) }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 
@@ -1275,7 +1275,7 @@ describe Chef::Node::ImmutableArray do
     :unshift
   ].each do |mutator|
     it "does not allow mutation via `#{mutator}" do
-      lambda { @immutable_array.send(mutator)}.should raise_error(Chef::ImmutableAttributeModification)
+      lambda { @immutable_array.send(mutator)}.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
   end
 
