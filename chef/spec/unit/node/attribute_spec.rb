@@ -951,14 +951,14 @@ describe Chef::Node::Attribute do
     ].each do |mutator|
       it "resets the cache when the mutator #{mutator} is called" do
         # Implementation of Mash means that this could get called many times. That's okay.
-        @attributes.should_receive(:reset_cache)
+        @attributes.should_receive(:reset_cache).at_least(1).times
         block = lambda {|k,v| true }
         @attributes.default.send(mutator, &block)
       end
     end
   end
 
-  describe "when setting a component attribute to a new value", :focus => true do
+  describe "when setting a component attribute to a new value" do
     it "converts the input in to a VividMash tree (default)" do
       @attributes.default = {}
       @attributes.default.foo = "bar"
