@@ -24,9 +24,6 @@ require 'chef/log'
 
 class Chef
 
-    class InvalidAttributeSetterContext < ArgumentError
-    end
-
     class ImmutableAttributeModification < NoMethodError
     end
 
