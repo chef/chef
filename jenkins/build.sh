@@ -46,9 +46,6 @@ then
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
 
-rm -f $WORKSPACE/pkg/*
-rm -f $WORKSPACE/src/*
-
 mkdir -p chef-solo/cache
 
 # ensure bundler is installed
@@ -61,6 +58,7 @@ if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}" && sudo chown jenkins-node "/opt/${project_name}"
   sudo rm -r /var/cache/omnibus/pkg/* || true
+  sudo rm -r /var/cache/omnibus/src/* || true
   sudo rm /var/cache/omnibus/build/*/*.manifest || true
   sudo rm pkg/* || true
   bundle update
