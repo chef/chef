@@ -36,14 +36,6 @@ class Chef
 
 
   class Node
-    class AttrProperties
-      attr_accessor :set_unless_present
-
-      def set_unless?
-        !!@set_unless_present
-      end
-
-    end
 
     # == Attribute
     # Attribute implements a nested key-value (Hash) and flat collection
@@ -148,8 +140,8 @@ class Chef
 
       def initialize(normal, default, override, automatic)
         @serial_number = 0
+        @set_unless_present = false
 
-        @properties = AttrProperties.new
         @normal = VividMash.new(self, normal)
         @default = VividMash.new(self, default)
         @override = VividMash.new(self, override)
@@ -159,7 +151,7 @@ class Chef
       end
 
       def set_unless_value_present=(setting)
-        @properties.set_unless_present = setting
+        @set_unless_present = setting
       end
 
       def reset_cache
@@ -261,7 +253,7 @@ class Chef
       end
 
       def set_unless?
-        properties.set_unless?
+        @set_unless_present
       end
 
       def stale_subtree?(serial_number)
