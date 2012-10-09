@@ -61,17 +61,17 @@ describe Shell::Extensions do
     end
 
     it "switches to recipe context" do
-      @root_context.should respond_to(:recipe)
+      @root_context.should respond_to(:recipe_mode)
       @shell_client.recipe = :monkeyTime
       @root_context.should_receive(:find_or_create_session_for).with(:monkeyTime)
-      @root_context.recipe
+      @root_context.recipe_mode
     end
 
     it "switches to attribute context" do
-      @root_context.should respond_to(:attributes)
+      @root_context.should respond_to(:attributes_mode)
       @shell_client.node = "monkeyNodeTime"
       @root_context.should_receive(:find_or_create_session_for).with("monkeyNodeTime")
-      @root_context.attributes
+      @root_context.attributes_mode
     end
 
     it "has a help command" do

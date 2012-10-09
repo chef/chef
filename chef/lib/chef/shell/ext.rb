@@ -217,13 +217,13 @@ E
       alias :shell :version
 
       desc "switch to recipe mode"
-      def recipe
+      def recipe_mode
         find_or_create_session_for Shell.session.recipe
         :recipe
       end
 
       desc "switch to attributes mode"
-      def attributes
+      def attributes_mode
         find_or_create_session_for Shell.session.node
         :attributes
       end
