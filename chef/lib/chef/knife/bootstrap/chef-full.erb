@@ -25,6 +25,8 @@ fi
 
 mkdir -p /etc/chef
 
+umask 077
+
 (
 cat <<'EOP'
 <%= validation_key %>

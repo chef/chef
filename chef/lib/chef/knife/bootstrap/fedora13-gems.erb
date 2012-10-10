@@ -10,6 +10,8 @@ gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
 
+umask 077
+
 (
 cat <<'EOP'
 <%= validation_key %>
