@@ -19,6 +19,7 @@ EOP
 ) > /tmp/validation.pem
 awk NF /tmp/validation.pem > /etc/chef/validation.pem
 rm /tmp/validation.pem
+chmod 0600 /etc/chef/validation.pem
 
 <% if @chef_config[:encrypted_data_bag_secret] -%>
 (
@@ -28,6 +29,7 @@ EOP
 ) > /tmp/encrypted_data_bag_secret
 awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
 rm /tmp/encrypted_data_bag_secret
+chmod 0600 /etc/chef/encrypted_data_bag_secret
 <% end -%>
 
 <%# Generate Ohai Hints -%>
