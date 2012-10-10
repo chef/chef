@@ -66,10 +66,6 @@ describe Chef::Node do
     it "should have a template_cache hash" do
       @node.run_state[:template_cache].should be_a_kind_of(Hash)
     end
-
-    it "should have a seen_recipes hash" do
-      @node.run_state[:seen_recipes].should be_a_kind_of(Hash)
-    end
   end
 
   describe "initialize" do
@@ -450,11 +446,6 @@ describe Chef::Node do
   #     @node.recipes << "sunrise"
   #     @node.recipe?("sunrise").should eql(true)
   #     @node.recipe?("not at home").should eql(false)
-  #   end
-  #
-  #   it "should allow you to query whether or not a recipe has been applied, even if it was included" do
-  #     @node.run_state[:seen_recipes]["snakes"] = true
-  #     @node.recipe?("snakes").should eql(true)
   #   end
   #
   #   it "should return false if a recipe has not been seen" do

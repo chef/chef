@@ -23,29 +23,12 @@ class Chef
     module LanguageIncludeRecipe
 
       def include_recipe(*recipe_names)
-        result_recipes = Array.new
-        recipe_names.flatten.each do |recipe_name|
-          if node.run_state[:seen_recipes].has_key?(recipe_name) or node.run_state[:seen_recipes].has_key?(recipe_name + "::default")
-            Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
-            next
-          end
-
-          result_recipes << load_recipe(recipe_name)
-        end
-        result_recipes
+        run_context.include_recipe(*recipe_names)
       end
 
       def load_recipe(recipe_name)
-        Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
-        node.run_state[:seen_recipes][recipe_name] = true
-
-        cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
-
-        run_context = self.is_a?(Chef::RunContext) ? self : self.run_context
-        cookbook = run_context.cookbook_collection[cookbook_name]
-        cookbook.load_recipe(recipe_short_name, run_context)
+        run_context.load_recipe(recipe_name)
       end
-
 
       def require_recipe(*args)
         Chef::Log.warn("require_recipe is deprecated and will be removed in a future release, please use include_recipe")
@@ -55,4 +38,4 @@ class Chef
     end
   end
 end
-      
+

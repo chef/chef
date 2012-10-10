@@ -167,7 +167,6 @@ class Chef
 
       @run_state = {
         :template_cache => Hash.new,
-        :seen_recipes => Hash.new,
         :seen_attributes => Hash.new
       }
       # TODO: 5/20/2010 need this here as long as other objects try to access
@@ -351,12 +350,11 @@ class Chef
     #
     # First, the run list is consulted to see whether the recipe is
     # explicitly included. If it's not there, it looks in
-    # run_state[:seen_recipes], which is populated by include_recipe
-    # statements in the DSL (and thus would not be in the run list).
+    # `node[:recipes]`, which is populated when the run_list is expanded
     #
     # NOTE: It's used by cookbook authors
     def recipe?(recipe_name)
-      run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
+      run_list.include?(recipe_name) || self[recipes].include?(recipe_name)
     end
 
     # Returns true if this Node expects a given role, false if not.
