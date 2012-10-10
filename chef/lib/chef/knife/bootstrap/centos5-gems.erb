@@ -5,6 +5,8 @@ if [ ! -f /usr/bin/chef-client ]; then
   tmp_dir=$(mktemp -d) || exit 1
   pushd "$tmp_dir"
 
+  yum install -y wget
+
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
   rpm -Uvh epel-release-5-4.noarch.rpm
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://rpm.aegisco.com/aegisco/rhel/aegisco-rhel.rpm
