@@ -199,7 +199,7 @@ class Chef
           ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
           if ::File.exist?(ifcfg_file)
             converge_by ("delete the #{ifcfg_file}") do
-              FileUtils.rm_f(ifcfg_file, :verbose => false, :force => true)
+              FileUtils.rm_f(ifcfg_file, :verbose => false)
             end
           end
         when "debian","ubuntu"
