@@ -109,9 +109,9 @@ class Chef
         begin
           q.search(@name_args[0], query, config[:sort], start, rows) do |item|
             formatted_item = format_for_display(item)
-            if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
-              formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
-            end
+            # if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
+            #   formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
+            # end
             result_items << formatted_item
             result_count += 1
           end
