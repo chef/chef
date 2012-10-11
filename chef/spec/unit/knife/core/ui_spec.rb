@@ -195,20 +195,21 @@ EOM
 
     describe "with --attribute passed" do
       it "should return the deeply nested attribute" do
-        input = { "gi" => { "go" => "ge" } }
+        input = { "gi" => { "go" => "ge" }, "id" => "sample-data-bag-item" }
         @ui.config[:attribute] = "gi.go"
-        @ui.format_for_display(input).should == { "gi.go" => "ge" }
+        @ui.format_for_display(input).should == { "sample-data-bag-item" => { "gi.go" => "ge" } }
       end
     end
 
     describe "with --run-list passed" do
       it "should return the run list" do
         input = Chef::Node.new
+        input.name("sample-node")
         input.run_list("role[monkey]", "role[churchmouse]")
         @ui.config[:run_list] = true
         response = @ui.format_for_display(input)
-        response["run_list"][0].should == "role[monkey]"
-        response["run_list"][1].should == "role[churchmouse]"
+        response["sample-node"]["run_list"][0].should == "role[monkey]"
+        response["sample-node"]["run_list"][1].should == "role[churchmouse]"
       end
     end
   end

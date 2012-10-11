@@ -121,7 +121,19 @@ class Chef
         end
 
         def format_for_display(data)
-          if config[:attribute]
+          if formatting_subset_of_data?
+            format_data_subset_for_display(data)
+          elsif config[:id_only]
+            name_or_id_for(data)
+          elsif config[:environment] && data.respond_to?(:chef_environment)
+            {"chef_environment" => data.chef_environment}
+          else
+            data
+          end
+        end
+
+        def format_data_subset_for_display(data)
+          subset = if config[:attribute]
             result = {}
             Array(config[:attribute]).each do |nested_value_spec|
               nested_value = extract_nested_value(data, nested_value_spec)
@@ -129,21 +141,22 @@ class Chef
             end
             result
           elsif config[:run_list]
-            data = data.run_list.run_list
-            { "run_list" => data }
-          elsif config[:environment]
-            if data.respond_to?(:chef_environment)
-              {"chef_environment" => data.chef_environment}
-            else
-              # this is a place holder for now. Feel free to modify (i.e. add other cases). [nuo]
-              data
-            end
-          elsif config[:id_only]
-            data.respond_to?(:name) ? data.name : data["id"]
+            run_list = data.run_list.run_list
+            { "run_list" => run_list }
           else
-            data
+            raise ArgumentError, "format_data_subset_for_display requires attribute, run_list, or id_only config option to be set"
           end
+          {name_or_id_for(data) => subset }
         end
+
+        def name_or_id_for(data)
+          data.respond_to?(:name) ? data.name : data["id"]
+        end
+
+        def formatting_subset_of_data?
+          config[:attribute] || config[:run_list]
+        end
+
 
         def extract_nested_value(data, nested_value_spec)
           nested_value_spec.split(".").each do |attr|

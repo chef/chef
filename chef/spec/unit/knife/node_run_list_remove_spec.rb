@@ -25,6 +25,7 @@ describe Chef::Knife::NodeRunListRemove do
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam", "role[monkey]" ]
     @node = Chef::Node.new()
+    @node.name("knifetest-node")
     @node.run_list << "role[monkey]"
     @node.stub!(:save).and_return(true)
 
@@ -52,7 +53,7 @@ describe Chef::Knife::NodeRunListRemove do
 
     it "should print the run list" do
       @knife.config[:print_after] = true
-      @knife.ui.should_receive(:output).with({ 'run_list' => [] })
+      @knife.ui.should_receive(:output).with({ "knifetest-node" => { 'run_list' => [] } })
       @knife.run
     end
 
