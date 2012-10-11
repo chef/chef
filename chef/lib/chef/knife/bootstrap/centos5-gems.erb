@@ -2,6 +2,9 @@ bash -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
 if [ ! -f /usr/bin/chef-client ]; then
+  tmp_dir=$(mktemp -d) || exit 1
+  pushd "$tmp_dir"
+
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
   rpm -Uvh epel-release-5-4.noarch.rpm
   wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://rpm.aegisco.com/aegisco/rhel/aegisco-rhel.rpm
@@ -9,11 +12,11 @@ if [ ! -f /usr/bin/chef-client ]; then
 
   yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make
 
-  cd /tmp
-  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://production.cf.rubygems.org/rubygems/rubygems-1.6.2.tgz
-  tar zxf rubygems-1.6.2.tgz
-  cd rubygems-1.6.2
-  ruby setup.rb --no-format-executable
+  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://production.cf.rubygems.org/rubygems/rubygems-1.6.2.tgz -O - | tar zxf -
+  (cd rubygems-1.6.2 && ruby setup.rb --no-format-executable)
+
+  popd
+  rm -r "$tmp_dir"
 fi
 
 gem update --system
@@ -27,9 +30,7 @@ mkdir -p /etc/chef
 cat <<'EOP'
 <%= validation_key %>
 EOP
-) > /tmp/validation.pem
-awk NF /tmp/validation.pem > /etc/chef/validation.pem
-rm /tmp/validation.pem
+) | awk NF > /etc/chef/validation.pem
 chmod 0600 /etc/chef/validation.pem
 
 <% if @chef_config[:encrypted_data_bag_secret] -%>
@@ -37,9 +38,7 @@ chmod 0600 /etc/chef/validation.pem
 cat <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-) > /tmp/encrypted_data_bag_secret
-awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
-rm /tmp/encrypted_data_bag_secret
+) | awk NF > /etc/chef/encrypted_data_bag_secret
 chmod 0600 /etc/chef/encrypted_data_bag_secret
 <% end -%>
 
