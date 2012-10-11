@@ -34,7 +34,7 @@ describe Chef::Knife::Ssh do
 
   before do
     @knife = Chef::Knife::Ssh.new
-    @knife.config = {}
+    @knife.config.clear
     @knife.config[:attribute] = "fqdn"
     @node_foo = Chef::Node.new('foo')
     @node_foo[:fqdn] = "foo.example.org"

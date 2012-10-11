@@ -124,14 +124,15 @@ class Chef
                  q = Chef::Search::Query.new
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
+
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
                      i = item[:cloud][:public_hostname]
                    elsif config[:override_attribute]
-                     i = format_for_display(item)[config[:override_attribute]]
+                     i = extract_nested_value(item, config[:override_attribute])
                    else
-                     i = format_for_display(item)[config[:attribute]]
+                     i = extract_nested_value(item, config[:attribute])
                    end
                    r.push(i) unless i.nil?
                  end
@@ -386,6 +387,10 @@ class Chef
       def configure_identity_file
         config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
                              Chef::Config[:knife][:ssh_identity_file])
+      end
+
+      def extract_nested_value(data_structure, path_spec)
+        ui.presenter.extract_nested_value(data_structure, path_spec)
       end
 
       def run

@@ -36,6 +36,8 @@ class Chef
       attr_reader :stdin
       attr_reader :config
 
+      attr_reader :presenter
+
       def_delegator :@presenter, :format_list_for_display
       def_delegator :@presenter, :format_for_display
       def_delegator :@presenter, :format_cookbook_list_for_display
