@@ -48,6 +48,12 @@ fi
 
 mkdir -p chef-solo/cache
 
+export PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
+if ! exists chef-solo;
+then
+  sudo gem install chef --no-ri --no-rdoc
+fi
+
 # ensure bundler is installed
 if ! exists bundle;
 then
