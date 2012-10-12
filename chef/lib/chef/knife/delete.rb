@@ -22,7 +22,7 @@ class Chef
               result.delete(config[:recurse])
               puts "Deleted #{result.path_for_printing}"
             rescue Chef::ChefFS::FileSystem::NotFoundError
-              STDERR.puts "result.path_for_printing}: No such file or directory"
+              STDERR.puts "#{result.path_for_printing}: No such file or directory"
             end
           end
         end
