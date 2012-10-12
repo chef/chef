@@ -50,8 +50,16 @@ fi
 mkdir -p src/chef
 gzip -dc src/chef*.tar.gz | (tar -C src/chef -xf -)
 
+# COMPAT HACK - Chef 11 finally has the core Chef code in the root of the
+# project repo. Since the Chef Client pipeline needs to build/test Chef 10.x
+# and 11 releases our test script need to handle both cases gracefully.
+if [ -d "src/chef/chef" ]; then
+  cd src/chef/chef
+else
+  cd src/chef
+fi
+
 # install all of the development gems
-cd src/chef/chef
 mkdir bundle
 export PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 /opt/chef/embedded/bin/bundle config build.eventmachine --with-cflags=-fpermissive
