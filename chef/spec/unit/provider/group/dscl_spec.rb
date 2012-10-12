@@ -25,7 +25,7 @@ describe Chef::Provider::Group::Dscl do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
     @current_resource = Chef::Resource::Group.new("aj")
-    @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Dscl.new(@new_resource, @run_context, :create)
     @provider.current_resource = @current_resource
     @status = mock("Process::Status", :exitstatus => 0) 
     @pid = 2342
@@ -49,7 +49,7 @@ describe Chef::Provider::Group::Dscl do
   describe "safe_dscl" do
     before do
       @node = Chef::Node.new
-      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
+      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource, :create)
       @provider.stub!(:dscl).and_return(["cmd", @status, "stdout", "stderr"])
     end
  
@@ -97,7 +97,7 @@ describe Chef::Provider::Group::Dscl do
   describe "get_free_gid" do
     before do
       @node = Chef::Node.new
-      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
+      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource, :create)
       @provider.stub!(:safe_dscl).and_return("\naj      200\njt      201\n")
     end
   
@@ -119,7 +119,7 @@ describe Chef::Provider::Group::Dscl do
   describe "gid_used?" do
     before do
       @node = Chef::Node.new
-      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource)
+      @provider = Chef::Provider::Group::Dscl.new(@node, @new_resource, :create)
       @provider.stub!(:safe_dscl).and_return("\naj      500\n")
     end
 

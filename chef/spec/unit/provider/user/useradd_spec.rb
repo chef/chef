@@ -47,7 +47,7 @@ describe Chef::Provider::User::Useradd do
     @current_resource.manage_home false
     @current_resource.non_unique false
     @current_resource.supports({:manage_home => false, :non_unique => false})
-    @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context, :create)
     @provider.current_resource = @current_resource
   end
 
@@ -375,7 +375,7 @@ describe Chef::Provider::User::Useradd do
     it "should return true if the current home does not exist but a home is specified by the new resource" do
       @new_resource = Chef::Resource::User.new("adam", @run_context)
       @current_resource = Chef::Resource::User.new("adam", @run_context)
-      @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
+      @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context, :create)
       @provider.current_resource = @current_resource
       @current_resource.home nil
       @new_resource.home "/home/kitten"

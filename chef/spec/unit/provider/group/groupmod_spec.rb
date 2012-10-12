@@ -27,7 +27,7 @@ describe Chef::Provider::Group::Groupmod do
       @new_resource.gid 123
       @new_resource.members %w{lobster rage fist}
       @new_resource.append false
-      @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context, :create)
     end
   
   describe "manage_group" do

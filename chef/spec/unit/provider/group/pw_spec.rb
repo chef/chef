@@ -31,7 +31,7 @@ describe Chef::Provider::Group::Pw do
     @current_resource = Chef::Resource::Group.new("aj")
     @current_resource.gid 50
     @current_resource.members [ "root", "aj"]
-    @provider = Chef::Provider::Group::Pw.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource, @run_context, :create)
     @provider.current_resource = @current_resource
   end
   

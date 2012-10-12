@@ -33,7 +33,7 @@ describe Chef::Provider::Log::ChefLog do
 
   it "should write the string to the Chef::Log object at default level (info)" do
       @new_resource = Chef::Resource::Log.new(@log_str)
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context, :write)
       Chef::Log.should_receive(:info).with(@log_str).and_return(true)
       @provider.action_write
   end
@@ -41,7 +41,7 @@ describe Chef::Provider::Log::ChefLog do
   it "should write the string to the Chef::Log object at debug level" do
       @new_resource = Chef::Resource::Log.new(@log_str)
       @new_resource.level :debug
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context, :write)
       Chef::Log.should_receive(:debug).with(@log_str).and_return(true)
       @provider.action_write
   end
@@ -49,7 +49,7 @@ describe Chef::Provider::Log::ChefLog do
   it "should write the string to the Chef::Log object at info level" do
       @new_resource = Chef::Resource::Log.new(@log_str)
       @new_resource.level :info
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context, :write)
       Chef::Log.should_receive(:info).with(@log_str).and_return(true)
       @provider.action_write
   end
@@ -57,7 +57,7 @@ describe Chef::Provider::Log::ChefLog do
   it "should write the string to the Chef::Log object at warn level" do
       @new_resource = Chef::Resource::Log.new(@log_str)
       @new_resource.level :warn
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context, :write)
       Chef::Log.should_receive(:warn).with(@log_str).and_return(true)
       @provider.action_write
   end
@@ -65,7 +65,7 @@ describe Chef::Provider::Log::ChefLog do
   it "should write the string to the Chef::Log object at error level" do
       @new_resource = Chef::Resource::Log.new(@log_str)
       @new_resource.level :error
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context, :write)
       Chef::Log.should_receive(:error).with(@log_str).and_return(true)
       @provider.action_write
   end
@@ -73,7 +73,7 @@ describe Chef::Provider::Log::ChefLog do
   it "should write the string to the Chef::Log object at fatal level" do
       @new_resource = Chef::Resource::Log.new(@log_str)
       @new_resource.level :fatal
-      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Log::ChefLog.new(@new_resource, @run_context, :write)
       Chef::Log.should_receive(:fatal).with(@log_str).and_return(true)
       @provider.action_write
   end

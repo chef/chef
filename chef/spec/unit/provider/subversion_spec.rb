@@ -31,7 +31,7 @@ describe Chef::Provider::Subversion do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @provider = Chef::Provider::Subversion.new(@resource, @run_context)
+    @provider = Chef::Provider::Subversion.new(@resource, @run_context, :sync)
   end
 
   it "converts resource attributes to options for run_command and popen4" do

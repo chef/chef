@@ -29,7 +29,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @provider = Chef::Provider::RemoteFile.new(@resource, @run_context)
+    @provider = Chef::Provider::RemoteFile.new(@resource, @run_context, :create)
     #To prevent the current_resource.checksum from being overridden.
     @provider.stub!(:load_current_resource)
   end

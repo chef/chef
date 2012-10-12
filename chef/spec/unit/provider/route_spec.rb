@@ -30,7 +30,7 @@ describe Chef::Provider::Route do
     @current_resource = Chef::Resource::Route.new('10.0.0.10')
     @current_resource.gateway "10.0.0.9"
 
-    @provider = Chef::Provider::Route.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Route.new(@new_resource, @run_context, :add)
     @provider.current_resource = @current_resource
   end
 
@@ -62,7 +62,7 @@ describe Chef::Provider::Route do
         resource = Chef::Resource::Route.new('10.10.10.0/24')
         resource.stub!(:gateway).and_return("10.0.0.1")
         resource.stub!(:device).and_return("eth0")
-        provider = Chef::Provider::Route.new(resource, @run_context)
+        provider = Chef::Provider::Route.new(resource, @run_context, :add)
 
         provider.load_current_resource
         provider.is_running.should be_false
@@ -72,7 +72,7 @@ describe Chef::Provider::Route do
         resource = Chef::Resource::Route.new('192.168.100.0/24')
         resource.stub!(:gateway).and_return("192.168.132.9")
         resource.stub!(:device).and_return("eth0")
-        provider = Chef::Provider::Route.new(resource, @run_context)
+        provider = Chef::Provider::Route.new(resource, @run_context, :add)
 
         provider.load_current_resource
         provider.is_running.should be_true
@@ -82,7 +82,7 @@ describe Chef::Provider::Route do
         resource = Chef::Resource::Route.new('192.168.100.0/24')
         resource.stub!(:gateway).and_return("10.10.10.10")
         resource.stub!(:device).and_return("eth0")
-        provider = Chef::Provider::Route.new(resource, @run_context)
+        provider = Chef::Provider::Route.new(resource, @run_context, :add)
 
         provider.load_current_resource
         provider.is_running.should be_false

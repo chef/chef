@@ -37,7 +37,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
     @new_resource.supports({:status => false})
 
 
-    @provider = Chef::Provider::Service::Arch.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Arch.new(@new_resource, @run_context, :start)
 
     ::File.stub!(:exists?).with("/etc/rc.conf").and_return(true)
     ::File.stub!(:read).with("/etc/rc.conf").and_return("DAEMONS=(network apache sshd)")

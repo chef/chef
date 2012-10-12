@@ -28,7 +28,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     @new_resource     = Chef::Resource::Package.new("zsh")
     @current_resource = Chef::Resource::Package.new("zsh")
 
-    @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context, :install)
     @provider.current_resource = @current_resource
     ::File.stub!(:exist?).with('/usr/ports/Makefile').and_return(false)
   end
@@ -39,7 +39,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     end
 
     it "should create a current resource with the name of the new_resource" do
-      current_resource = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context).current_resource
+      current_resource = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context, :install).current_resource
       current_resource.name.should == "zsh"
     end
 
@@ -144,7 +144,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
       #@node = Chef::Node.new
       @new_resource = Chef::Resource::Package.new("zsh")
       @new_resource.cookbook_name = "adventureclub"
-      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context, :install)
     end
 
     it "should figure out the port path from the package_name using whereis" do
@@ -155,7 +155,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
     it "should use the package_name as the port path when it starts with /" do
       new_resource = Chef::Resource::Package.new("/usr/ports/www/wordpress")
-      provider = Chef::Provider::Package::Freebsd.new(new_resource, @run_context)
+      provider = Chef::Provider::Package::Freebsd.new(new_resource, @run_context, :install)
       provider.should_not_receive(:popen4)
       provider.port_path.should == "/usr/ports/www/wordpress"
     end
@@ -165,7 +165,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
       #                       :package_name => "www/wordpress",
       #                       :cookbook_name => "xenoparadox")
       new_resource = Chef::Resource::Package.new("www/wordpress")
-      provider = Chef::Provider::Package::Freebsd.new(new_resource, @run_context)
+      provider = Chef::Provider::Package::Freebsd.new(new_resource, @run_context, :install)
       provider.should_not_receive(:popen4)
       provider.port_path.should == "/usr/ports/www/wordpress"
     end
@@ -175,7 +175,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     before(:each) do
       @new_resource     = Chef::Resource::Package.new("ruby-iconv")
       @current_resource = Chef::Resource::Package.new("ruby-iconv")
-      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context, :install)
       @provider.current_resource = @current_resource
       @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
       @provider.stub!(:package_name).and_return("ruby18-iconv")
@@ -232,7 +232,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     it "should install the perl binary package with the correct name" do
       @new_resource = Chef::Resource::Package.new("perl5.8")
       @current_resource = Chef::Resource::Package.new("perl5.8")
-      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context, :install)
       @provider.current_resource = @current_resource
       @provider.stub!(:package_name).and_return("perl")
       @provider.stub!(:latest_link_name).and_return("perl")
@@ -246,7 +246,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
 
       @new_resource     = Chef::Resource::Package.new("mysql50-server")
       @current_resource = Chef::Resource::Package.new("mysql50-server")
-      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context, :install)
       @provider.current_resource = @current_resource
       @provider.stub!(:package_name).and_return("mysql-server")
       @provider.stub!(:latest_link_name).and_return("mysql50-server")

@@ -35,7 +35,7 @@ describe Chef::Provider::CookbookFile do
 
     @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl', @run_context)
     @new_resource.cookbook_name = 'apache2'
-    @provider = Chef::Provider::CookbookFile.new(@new_resource, @run_context)
+    @provider = Chef::Provider::CookbookFile.new(@new_resource, @run_context, :create)
 
     @file_content=<<-EXPECTED
 # apache2_module_conf_generate.pl

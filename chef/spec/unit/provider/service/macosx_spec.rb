@@ -22,7 +22,7 @@ describe Chef::Provider::Service::Macosx do
   let(:node) { Chef::Node.new }
   let(:events) {Chef::EventDispatch::Dispatcher.new}
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:provider) { described_class.new(new_resource, run_context) }
+  let(:provider) { described_class.new(new_resource, run_context, :install) }
   let(:stdout) { StringIO.new }
 
   before do

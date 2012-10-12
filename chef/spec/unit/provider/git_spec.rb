@@ -34,7 +34,7 @@ describe Chef::Provider::Git do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @provider = Chef::Provider::Git.new(@resource, @run_context)
+    @provider = Chef::Provider::Git.new(@resource, @run_context, :sync)
     @provider.current_resource = @current_resource
   end
 

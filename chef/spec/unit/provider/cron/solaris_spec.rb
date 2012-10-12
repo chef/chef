@@ -30,7 +30,7 @@ describe Chef::Provider::Cron::Solaris do
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
 
-    @provider = Chef::Provider::Cron::Solaris.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Cron::Solaris.new(@new_resource, @run_context, :create)
   end
 
   it "should inherit from Chef::Provider:Cron" do

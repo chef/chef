@@ -32,7 +32,7 @@ describe Chef::Provider::Ifconfig do
     @new_resource.metric "1"
     @new_resource.mtu "1500"
     @new_resource.device "eth0"
-    @provider = Chef::Provider::Ifconfig.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Ifconfig.new(@new_resource, @run_context, :add)
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
     status = mock("Status", :exitstatus => 0)

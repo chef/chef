@@ -28,7 +28,7 @@ describe Chef::Provider::Service::Solaris do
 
     @current_resource = Chef::Resource::Service.new('chef')
 
-    @provider = Chef::Provider::Service::Solaris.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Solaris.new(@new_resource, @run_context, :start)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @stdin = StringIO.new

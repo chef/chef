@@ -26,7 +26,7 @@ describe Chef::Provider::Package::Solaris do
     @new_resource = Chef::Resource::Package.new("SUNWbash")
     @new_resource.source("/tmp/bash.pkg")
 
-    @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context, :install)
     ::File.stub!(:exists?).and_return(true)
   end
 
@@ -92,7 +92,7 @@ PKGINFO
 
     it "should raise an exception if the source is not set but we are installing" do
       @new_resource = Chef::Resource::Package.new("SUNWbash")
-      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context, :install)
       @provider.stub!(:popen4).and_return(@status)
       lambda { @provider.run_action(:install) }.should raise_error(Chef::Exceptions::Package)
     end
@@ -144,7 +144,7 @@ PKGINFO
 
     it "should run pkgadd -n -d when the package is a path to install" do
       @new_resource = Chef::Resource::Package.new("/tmp/bash.pkg")
-      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Solaris.new(@new_resource, @run_context, :install)
       @new_resource.source.should == "/tmp/bash.pkg"
       @provider.should_receive(:run_command_with_systems_locale).with({
         :command => "pkgadd -n -d /tmp/bash.pkg all"

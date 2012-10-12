@@ -29,7 +29,7 @@ describe Chef::Provider::Service::Upstart do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Service.new("rsyslog")
-    @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context, :install)
   end
 
   describe "when first created" do
@@ -40,21 +40,21 @@ describe Chef::Provider::Service::Upstart do
     it "should return /etc/event.d as the upstart job directory when running on Ubuntu 9.04" do
       @node.automatic_attrs[:platform_version] = '9.04'
       #Chef::Platform.stub!(:find_platform_and_version).and_return([ "ubuntu", "9.04" ])
-      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context, :install)
       @provider.instance_variable_get(:@upstart_job_dir).should == "/etc/event.d"
       @provider.instance_variable_get(:@upstart_conf_suffix).should == ""
     end
 
     it "should return /etc/init as the upstart job directory when running on Ubuntu 9.10" do
       @node.automatic_attrs[:platform_version] = '9.10'
-      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context, :install)
       @provider.instance_variable_get(:@upstart_job_dir).should == "/etc/init"
       @provider.instance_variable_get(:@upstart_conf_suffix).should == ".conf"
     end
 
     it "should return /etc/init as the upstart job directory by default" do
       @node.automatic_attrs[:platform_version] = '9000'
-      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context, :install)
       @provider.instance_variable_get(:@upstart_job_dir).should == "/etc/init"
       @provider.instance_variable_get(:@upstart_conf_suffix).should == ".conf"
     end
@@ -254,7 +254,7 @@ describe Chef::Provider::Service::Upstart do
     it "should pass parameters to the start command if they are provided" do
       @new_resource = Chef::Resource::Service.new("rsyslog")
       @new_resource.parameters({ "OSD_ID" => "2" })
-      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Service::Upstart.new(@new_resource, @run_context, :install)
       @provider.current_resource = @current_resource
       @provider.should_receive(:run_command_with_systems_locale).with({:command => "/sbin/start rsyslog OSD_ID=2"}).and_return(0)
       @provider.start_service()

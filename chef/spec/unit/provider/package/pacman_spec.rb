@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Pacman do
     @current_resource = Chef::Resource::Package.new("nano")
 
     @status = mock("Status", :exitstatus => 0)
-    @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context, :install)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = StringIO.new

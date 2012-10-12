@@ -47,7 +47,7 @@ describe Chef::Provider::Mount::Windows do
     @vol = mock("Chef::Util::Windows::Volume")
     Chef::Util::Windows::Volume.stub!(:new).and_return(@vol)
 
-    @provider = Chef::Provider::Mount::Windows.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Mount::Windows.new(@new_resource, @run_context, :mount)
     @provider.current_resource = @current_resource
   end
 

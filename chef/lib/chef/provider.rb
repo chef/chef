@@ -44,6 +44,8 @@ class Chef
     end
 
     def initialize(new_resource, run_context, action=nil)
+      warn_on_deprecated_initializer_arity if action.nil?
+
       @new_resource = new_resource
       @action = action
       @current_resource = nil
@@ -174,6 +176,23 @@ class Chef
         instance_eval(&block)
         Chef::Runner.new(@run_context).converge
         @run_context = saved_run_context
+      end
+    end
+
+    def warn_on_deprecated_initializer_arity
+      base_warning=<<-W
+As of Chef 11.0.0, The #initialize method for a Provider should accept an
+`action' argument. The provider `#{self.class}' or a call to `#{self.class}.new'
+needs to be updated for this change.
+
+Called from:
+W
+      warning = caller(2)[0..3].inject(base_warning) {|msg, l| msg << l << "\n" }
+      if $0 =~ /spec/
+        raise warning
+      else
+        puts warning
+        Chef::Log.warn(warning)
       end
     end
 

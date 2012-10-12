@@ -29,14 +29,11 @@ class Chef
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 
-      attr_reader :scm_provider, :release_path, :previous_release_path
+      attr_reader :release_path, :previous_release_path
 
-      def initialize(new_resource, run_context)
-        super(new_resource, run_context)
+      def initialize(new_resource, run_context, action)
+        super
 
-        # will resolve to ither git or svn based on resource attributes , 
-        # and will create a resource corresponding to that provider 
-        @scm_provider = new_resource.scm_provider.new(new_resource, run_context)
 
         # @configuration is not used by Deploy, it is only for backwards compat with
         # chef-deploy or capistrano hooks that might use it to get environment information
@@ -48,8 +45,14 @@ class Chef
         true
       end
 
+      def scm_provider
+        # will resolve to either git or svn based on resource attributes,
+        # and will create a resource corresponding to that provider 
+        @scm_provider ||= new_resource.scm_provider.new(new_resource, run_context, scm_provider_action)
+      end
+
       def load_current_resource
-        @scm_provider.load_current_resource
+        scm_provider.load_current_resource
         @release_path = @new_resource.deploy_to + "/releases/#{release_slug}"
       end
 
@@ -246,22 +249,17 @@ class Chef
         Dir.glob(@new_resource.deploy_to + "/releases/*").sort
       end
 
-      def update_cached_repo
+      def scm_provider_action
         if @new_resource.svn_force_export
         # TODO assertion, non-recoverable - @scm_provider must be svn if force_export?
-          svn_force_export
+          :force_export
         else
-          run_scm_sync
+          :sync
         end
       end
 
-      def run_scm_sync
-        @scm_provider.run_action(:sync)
-      end
-
-      def svn_force_export
-        Chef::Log.info "#{@new_resource} exporting source repository"
-        @scm_provider.run_action(:force_export)
+      def update_cached_repo
+        scm_provider.run_action
       end
 
       def copy_cached_repo

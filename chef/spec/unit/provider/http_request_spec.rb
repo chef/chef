@@ -29,7 +29,7 @@ describe Chef::Provider::HttpRequest do
     @new_resource.url "http://www.opscode.com"
     @new_resource.message "is cool"
 
-    @provider = Chef::Provider::HttpRequest.new(@new_resource, @run_context)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource, @run_context, :get)
   end
 
   describe "load_current_resource" do  

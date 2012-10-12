@@ -30,7 +30,7 @@ describe Chef::Provider::File do
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
 
-    @provider = Chef::Provider::File.new(@resource, @run_context)
+    @provider = Chef::Provider::File.new(@resource, @run_context, :create)
   end
 
   it "should return a Chef::Provider::File" do
@@ -128,7 +128,7 @@ end
     resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "woot.txt")))
     node = Chef::Node.new
     node.name "latte"
-    provider = Chef::Provider::File.new(resource, @run_context)
+    provider = Chef::Provider::File.new(resource, @run_context, :create)
     provider.load_current_resource
     provider.current_resource.should be_a_kind_of(Chef::Resource::File)
     provider.current_resource.name.should eql(resource.name)
@@ -144,7 +144,7 @@ end
     @resource.path(path)
     @node = Chef::Node.new
     @node.name "latte"
-    @provider = Chef::Provider::File.new(@resource, @run_context)
+    @provider = Chef::Provider::File.new(@resource, @run_context, :create)
 
     ::File.stub!(:symlink?).and_return(true)
     @provider.should_not_receive(:backup)
@@ -330,7 +330,7 @@ end
   describe "when creating a file which may be missing" do
     it "should not call action create if the file exists" do
       @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "seattle.txt")))
-      @provider = Chef::Provider::File.new(@resource, @run_context)
+      @provider = Chef::Provider::File.new(@resource, @run_context, :create)
       File.should_not_receive(:open)
       @provider.run_action(:create_if_missing)
       @resource.should_not be_updated_by_last_action
@@ -338,7 +338,7 @@ end
 
     it "should call action create if the does not file exist" do
       @resource.path("/tmp/non_existant_file")
-      @provider = Chef::Provider::File.new(@resource, @run_context)
+      @provider = Chef::Provider::File.new(@resource, @run_context, :create)
       @provider.should_receive(:diff_current_from_content).and_return("")
       ::File.stub!(:exists?).with(@resource.path).and_return(false)
       @provider.stub!(:update_new_file_state)
@@ -365,7 +365,7 @@ end
       it "should identify zero-length files as text" do
         Tempfile.open("some-temp") do |file|
           @resource.path(file.path)
-          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider = Chef::Provider::File.new(@resource, @run_context, :create)
           @provider.is_binary?(file.path).should be_false
         end
       end
@@ -377,7 +377,7 @@ end
           file.puts("That has a couple of lines in it.")
           file.puts("And lets make sure that other printable chars work too: ~!@\#$%^&*()`:\"<>?{}|_+,./;'[]\\-=")
           file.close
-          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider = Chef::Provider::File.new(@resource, @run_context, :create)
           @provider.is_binary?(file.path).should be_false
         end
       end
@@ -387,7 +387,7 @@ end
           @resource.path(file.path)
           file.write("This is a binary file.\0")
           file.close
-          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider = Chef::Provider::File.new(@resource, @run_context, :create)
           @provider.is_binary?(file.path).should be_true
         end
       end
@@ -398,7 +398,7 @@ end
       Chef::Config[:diff_disabled] = true
       Tempfile.open("some-temp") do |file|
         @resource.path(file.path)
-        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider = Chef::Provider::File.new(@resource, @run_context, :create)
         @provider.load_current_resource
         result = @provider.diff_current_from_content "foo baz"
         result.should == [ "(diff output suppressed by config)" ]
@@ -413,7 +413,7 @@ end
           missing_file.close
           missing_file.unlink
           @resource.path(file.path)
-          @provider = Chef::Provider::File.new(@resource, @run_context)
+          @provider = Chef::Provider::File.new(@resource, @run_context, :create)
           @provider.load_current_resource
           result = @provider.diff_current missing_path
           result.should == [ "(no temp file with new content, diff output suppressed)" ]
@@ -427,7 +427,7 @@ end
         @resource.path(file.path)
         file.close
         file.unlink
-        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider = Chef::Provider::File.new(@resource, @run_context, :create)
         @provider.load_current_resource
         result = @provider.diff_current_from_content "foo baz"
         result.length.should == 4
@@ -441,7 +441,7 @@ end
         @resource.path(file.path)
         file.puts("this is a line which is longer than 5 characters")
         file.flush
-        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider = Chef::Provider::File.new(@resource, @run_context, :create)
         @provider.load_current_resource
         result = @provider.diff_current_from_content "foo"  # not longer than 5
         result.should == [ "(file sizes exceed 5 bytes, diff output suppressed)" ]
@@ -455,7 +455,7 @@ end
         @resource.path(file.path)
         file.puts("foo")
         file.flush
-        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider = Chef::Provider::File.new(@resource, @run_context, :create)
         @provider.load_current_resource
         result = @provider.diff_current_from_content "this is a line that is longer than 5 characters"
         result.should == [ "(file sizes exceed 5 bytes, diff output suppressed)" ]
@@ -469,7 +469,7 @@ end
         @resource.path(file.path)
         file.puts("some text to increase the size of the diff")
         file.flush
-        @provider = Chef::Provider::File.new(@resource, @run_context)
+        @provider = Chef::Provider::File.new(@resource, @run_context, :create)
         @provider.load_current_resource
         result = @provider.diff_current_from_content "this is a line that is longer than 5 characters"
         result.should == [ "(long diff of over 5 characters, diff output suppressed)" ]
@@ -480,7 +480,7 @@ end
     it "should return valid diff output when content does not match the string content provided" do
        Tempfile.open("some-temp") do |file|
          @resource.path file.path
-         @provider = Chef::Provider::File.new(@resource, @run_context) 
+         @provider = Chef::Provider::File.new(@resource, @run_context, :create)
          @provider.load_current_resource
          result = @provider.diff_current_from_content "foo baz"
          # remove the file name info which varies.

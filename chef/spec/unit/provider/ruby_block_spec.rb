@@ -26,7 +26,7 @@ describe Chef::Provider::RubyBlock, "initialize" do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::RubyBlock.new("bloc party")
     @new_resource.block { $evil_global_evil_laugh = :mwahahaha}
-    @provider = Chef::Provider::RubyBlock.new(@new_resource, @run_context)
+    @provider = Chef::Provider::RubyBlock.new(@new_resource, @run_context, :run)
   end
 
   it "should call the block and flag the resource as updated" do

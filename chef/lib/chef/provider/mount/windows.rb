@@ -31,7 +31,7 @@ class Chef
           name =~ /^\\\\\?\\Volume\{[\w-]+\}\\$/ ? true : false
         end
 
-        def initialize(new_resource, run_context)
+        def initialize(*args)
           super
           @mount = nil
         end

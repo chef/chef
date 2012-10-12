@@ -28,9 +28,7 @@ describe Chef::Provider::Execute do
     @new_resource.timeout 3600
     @new_resource.returns 0
     @new_resource.creates "foo_resource"
-    @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
-    @current_resource = Chef::Resource::Ifconfig.new("foo_resource", @run_context)
-    @provider.current_resource = @current_resource
+    @provider = Chef::Provider::Execute.new(@new_resource, @run_context, :run)
     Chef::Log.level = :info 
     # FIXME: There should be a test for how STDOUT.tty? changes the live_stream option being passed
     STDOUT.stub!(:tty?).and_return(true)

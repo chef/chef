@@ -27,7 +27,7 @@ describe Chef::Provider::Breakpoint do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @collection = mock("resource collection")
     @run_context.stub!(:resource_collection).and_return(@collection)
-    @provider = Chef::Provider::Breakpoint.new(@resource, @run_context)
+    @provider = Chef::Provider::Breakpoint.new(@resource, @run_context, :break)
   end
 
   it "responds to load_current_resource" do

@@ -25,10 +25,6 @@ class Chef
     class ErlCall < Chef::Provider
       include Chef::Mixin::Command
 
-      def initialize(node, new_resource)
-        super(node, new_resource)
-      end
-
       def whyrun_supported?
         true
       end

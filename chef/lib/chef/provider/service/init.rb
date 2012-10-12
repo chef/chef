@@ -28,7 +28,7 @@ class Chef
 
         include Chef::Mixin::ShellOut
 
-        def initialize(new_resource, run_context)
+        def initialize(*args)
           super
           @init_command = "/etc/init.d/#{@new_resource.service_name}"
         end

@@ -28,7 +28,8 @@ class Chef
       include Chef::Mixin::Command
 
       attr_accessor :candidate_version
-      def initialize(new_resource, run_context)
+
+      def initialize(*args)
         super
         @candidate_version = nil
       end

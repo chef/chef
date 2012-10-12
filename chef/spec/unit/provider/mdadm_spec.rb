@@ -31,7 +31,7 @@ describe Chef::Provider::Mdadm do
     @new_resource.level   1
     @new_resource.chunk   256
 
-    @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context, :create)
   end
 
   describe "when determining the current metadevice status" do

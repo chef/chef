@@ -36,7 +36,7 @@ class Chef
         # [1] http://upstart.ubuntu.com/wiki/JobStates
         # [2] http://www.netsplit.com/2008/04/27/upstart-05-events/
 
-        def initialize(new_resource, run_context)
+        def initialize(new_resource, run_context, action)
           # TODO: re-evaluate if this is needed after integrating cookbook fix
           raise ArgumentError, "run_context cannot be nil" unless run_context
           super

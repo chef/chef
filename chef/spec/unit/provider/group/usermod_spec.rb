@@ -25,7 +25,7 @@ describe Chef::Provider::Group::Usermod do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.members [ "all", "your", "base" ]
-    @provider = Chef::Provider::Group::Usermod.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Usermod.new(@new_resource, @run_context, :create)
     @provider.stub!(:run_command)
   end
   
@@ -89,6 +89,7 @@ describe Chef::Provider::Group::Usermod do
   
     it "shouldn't raise an error if the required binaries exist" do
       File.stub!(:exists?).and_return(true)
+      @new_resource.append true
       lambda { @provider.process_resource_requirements }.should_not raise_error(Chef::Exceptions::Group)
     end
   end

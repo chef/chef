@@ -59,7 +59,7 @@ describe Chef::Provider::Ohai do
     ohai.all_plugins
     @node.consume_external_attrs(ohai.data,{})
 
-    @provider = Chef::Provider::Ohai.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Ohai.new(@new_resource, @run_context, :reload)
   end
 
   describe "when reloading ohai" do

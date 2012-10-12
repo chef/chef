@@ -28,7 +28,7 @@ describe Chef::Provider::Deploy::Revision do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @provider = Chef::Provider::Deploy::Revision.new(@resource, @run_context)
+    @provider = Chef::Provider::Deploy::Revision.new(@resource, @run_context, :nothing)
     @provider.load_current_resource
     @runner = mock("runnah")
     Chef::Runner.stub!(:new).and_return(@runner)

@@ -600,7 +600,7 @@ F
       # which requires explicitly setting provider in
       # resource class
       if self.provider
-        provider = self.provider.new(self, self.run_context)
+        provider = self.provider.new(self, self.run_context, action)
         provider.action = action
         provider
       else # fall back to old provider resolution

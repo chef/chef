@@ -52,7 +52,7 @@ describe "Chef::Provider::Service::Redhat" do
 
     @current_resource = Chef::Resource::Service.new("chef")
 
-    @provider = Chef::Provider::Service::Redhat.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Redhat.new(@new_resource, @run_context, :start)
     @provider.action = :start
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     File.stub!(:exists?).with("/sbin/chkconfig").and_return(true)

@@ -32,7 +32,7 @@ describe Chef::Provider::Mount::Mount do
 
     @new_resource.supports :remount => false
 
-    @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context, :mount)
 
     ::File.stub!(:exists?).with("/dev/sdz1").and_return true
     ::File.stub!(:exists?).with("/tmp/foo").and_return true

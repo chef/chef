@@ -916,7 +916,7 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
-        def initialize(new_resource, run_context)
+        def initialize(*args)
           super
 
           @yum = YumCache.instance

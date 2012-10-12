@@ -32,7 +32,7 @@ class Chef
         true
       end
 
-      def initialize(new_resource, run_context)
+      def initialize(*args)
         super
         @group_exists = true
       end

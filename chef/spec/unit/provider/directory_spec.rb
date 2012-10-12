@@ -30,7 +30,7 @@ describe Chef::Provider::Directory do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
+    @directory = Chef::Provider::Directory.new(@new_resource, @run_context, :create)
   end
 
   it "should load the current resource based on the new resource" do

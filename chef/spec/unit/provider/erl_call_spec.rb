@@ -29,18 +29,13 @@ describe Chef::Provider::ErlCall do
     @new_resource.node_name("chef@localhost")
     @new_resource.name("test")
 
-    @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
+    @provider = Chef::Provider::ErlCall.new(@new_resource, @run_context, :run)
 
     @provider.stub!(:popen4).and_return(@status)
     @stdin = StringIO.new
     @stdout = StringIO.new('{ok, woohoo}')
     @stderr = StringIO.new
     @pid = 2342999
-  end
-
-  it "should return a Chef::Provider::ErlCall object" do
-    provider = Chef::Provider::ErlCall.new(@new_resource, @run_context)
-    provider.should be_a_kind_of(Chef::Provider::ErlCall)
   end
 
   it "should return true" do

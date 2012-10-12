@@ -29,7 +29,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
 
     @current_resource = Chef::Resource::Service.new("chef")
 
-    @provider = Chef::Provider::Service::Debian.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Debian.new(@new_resource, @run_context, :start)
     @provider.current_resource = @current_resource
 
     @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil

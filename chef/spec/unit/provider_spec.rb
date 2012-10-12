@@ -58,7 +58,21 @@ describe Chef::Provider do
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
     @resource = Chef::Resource.new("funk", @run_context)
     @resource.cookbook_name = "a_delicious_pie"
-    @provider = Chef::Provider.new(@resource, @run_context)
+    @provider = Chef::Provider.new(@resource, @run_context, :nothing)
+  end
+
+  describe "when initialized" do
+    it "should warn if no action argument is given" do
+      expected=<<-E
+As of Chef 11.0.0, The #initialize method for a Provider should accept an
+`action' argument. The provider `Chef::Provider' or a call to `Chef::Provider.new'
+needs to be updated for this change.
+
+Called from:
+E
+      Chef::Log.should_receive(:warn).with(Regexp.new(Regexp.escape(expected)))
+      @provider = Chef::Provider.new(@resource, @run_context)
+    end
   end
 
   it "should store the resource passed to new as new_resource" do
@@ -112,7 +126,7 @@ describe Chef::Provider do
   context "when converge actions have been added to the queue" do
     describe "and provider supports whyrun mode" do
       before do
-        @provider = ConvergeActionDemonstrator.new(@resource, @run_context)
+        @provider = ConvergeActionDemonstrator.new(@resource, @run_context, :foo)
       end
 
       it "should tell us that it does support whyrun" do
@@ -139,7 +153,7 @@ describe Chef::Provider do
     describe "and provider does not support whyrun mode" do
       before do
         Chef::Config[:why_run] = true
-        @provider = NoWhyrunDemonstrator.new(@resource, @run_context)
+        @provider = NoWhyrunDemonstrator.new(@resource, @run_context, :foo)
       end
 
       after do

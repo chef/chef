@@ -28,7 +28,7 @@ describe Chef::Provider::Deploy do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @provider = Chef::Provider::Deploy.new(@resource, @run_context)
+    @provider = Chef::Provider::Deploy.new(@resource, @run_context, :deploy)
     @provider.stub!(:release_slug)
     @provider.stub!(:release_path).and_return(@expected_release_dir)
   end
@@ -132,9 +132,10 @@ describe Chef::Provider::Deploy do
 
   it "runs action svn_force_export when new_resource.svn_force_export is true" do
     @resource.svn_force_export true
-    @provider.scm_provider.should_receive(:run_action).with(:force_export)
+    @provider.scm_provider.should_receive(:run_action)
     @provider.update_cached_repo
     @provider.converge
+    @provider.scm_provider.action.should == :force_export
   end
 
   it "Removes the old release before deploying when force deploying over it" do
@@ -324,7 +325,8 @@ describe Chef::Provider::Deploy do
   end
 
   it "syncs the cached copy of the repo" do
-    @provider.scm_provider.should_receive(:run_action).with(:sync)
+    @provider.scm_provider.action.should == :sync
+    @provider.scm_provider.should_receive(:run_action)
     @provider.update_cached_repo
     @provider.converge
   end
@@ -507,7 +509,7 @@ describe Chef::Provider::Deploy do
   it "sets @configuration[:environment] to the value of RAILS_ENV for backwards compat reasons" do
     resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     resource.environment "production"
-    provider = Chef::Provider::Deploy.new(resource, @run_context)
+    provider = Chef::Provider::Deploy.new(resource, @run_context, :deploy)
     provider.instance_variable_get(:@configuration)[:environment].should eql("production")
     @provider.converge
   end
