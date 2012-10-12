@@ -600,7 +600,7 @@ describe Chef::Provider::Package::Yum do
       @provider.stub!(:output_of_command).and_return([@status, "", ""])
       @provider.should_receive(:output_of_command).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {}
+        {:timeout => Chef::Config[:yum_timeout]}
       )
       @provider.yum_command("yum -d0 -e0 -y install emacs-1.0")
     end
@@ -610,7 +610,7 @@ describe Chef::Provider::Package::Yum do
       @provider.stub!(:output_of_command).and_return([@status, "failure failure", "problem problem"])
       @provider.should_receive(:output_of_command).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {}
+        {:timeout => Chef::Config[:yum_timeout]}
       )
       lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
     end
@@ -620,7 +620,7 @@ describe Chef::Provider::Package::Yum do
       @provider.stub!(:output_of_command).and_return([@status, "error: %pre(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
       @provider.should_receive(:output_of_command).once.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {}
+        {:timeout => Chef::Config[:yum_timeout]}
       )
       # will still raise an exception, can't stub out the subsequent call
       lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
@@ -631,7 +631,7 @@ describe Chef::Provider::Package::Yum do
       @provider.stub!(:output_of_command).and_return([@status, "error: %post(demo-1-1.el5.centos.x86_64) scriptlet failed, exit status 2", ""])
       @provider.should_receive(:output_of_command).twice.with(
         "yum -d0 -e0 -y install emacs-1.0",
-        {}
+        {:timeout => Chef::Config[:yum_timeout]}
       )
       # will still raise an exception, can't stub out the subsequent call
       lambda { @provider.yum_command("yum -d0 -e0 -y install emacs-1.0") }.should raise_error(Chef::Exceptions::Exec)
@@ -1584,22 +1584,34 @@ file: file://///etc/yum.repos.d/CentOS-Base.repo, line: 12
 'qeqwewe\n'
 EOF
 
-    @status = mock("Status", :exitstatus => 0)
-    @status_bad = mock("Status", :exitstatus => 1)
     @stdin = mock("STDIN", :nil_object => true)
     @stdout = mock("STDOUT", :nil_object => true)
-    @stdout_good = yum_dump_good_output.split("\n")
-    @stdout_bad_type = yum_dump_bad_output_type.split("\n")
-    @stdout_bad_separators = yum_dump_bad_output_separators.split("\n")
+    @stdout_good = mock("STDOUT", :nil_object => true)
+    s = @stdout_good.stub!(:each_line)
+    yum_dump_good_output.split("\n").each do |line|
+      s.and_yield(line)
+    end
+    @stdout_bad_type = mock("STDOUT", :nil_object => true)
+    s = @stdout_bad_type.stub!(:each_line)
+    yum_dump_bad_output_type.split("\n").each do |line|
+      s.and_yield(line)
+    end
+    @stdout_bad_separators = mock("STDOUT", :nil_object => true)
+    s = @stdout_bad_separators.stub!(:each_line)
+    yum_dump_bad_output_separators.split("\n").each do |line|
+      s.and_yield(line)
+    end
+    @stdout_no_output = mock("STDOUT", :nil_object => true)
+    @stdout_no_output.stub!(:each_line).and_return(nil)
     @stderr = mock("STDERR", :nil_object => true)
     @stderr.stub!(:readlines).and_return(yum_dump_error.split("\n"))
-    @pid = mock("PID", :nil_object => true)
+    @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
 
     # new singleton each time
     Chef::Provider::Package::Yum::YumCache.reset_instance
     @yc = Chef::Provider::Package::Yum::YumCache.instance
     # load valid data
-    @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_good, @stderr).and_return(@status)
+    @yc.stub!(:shell_out!).and_return(@status)
   end
 
   describe "initialize" do
@@ -1618,7 +1630,7 @@ EOF
 
   describe "refresh" do
     it "should implicitly call yum-dump.py only once by default after being instantiated" do
-      @yc.should_receive(:popen4).once
+      @yc.should_receive(:shell_out!).once
       @yc.installed_version("zlib")
       @yc.reset
       @yc.installed_version("zlib")
@@ -1626,48 +1638,52 @@ EOF
 
     it "should run yum-dump.py using the system python when next_refresh is for :all" do
       @yc.reload
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides$}, :waitlast=>true)
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the installed flag when next_refresh is for :installed" do
       @yc.reload_installed
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --installed$}, :waitlast=>true)
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --installed$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should run yum-dump.py with the all-provides flag when next_refresh is for :provides" do
       @yc.reload_provides
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides$}, :waitlast=>true)
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --all-provides$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should pass extra_repo_control args to yum-dump.py" do
       @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
-      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar$}, :waitlast=>true)
+      @yc.should_receive(:shell_out!).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar$}, :timeout=>Chef::Config[:yum_timeout])
       @yc.refresh
     end
 
     it "should warn about invalid data with too many separators" do
-      @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_separators, @stderr).and_return(@status)
+      @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_separators, :stderr => @stderr)
+      @yc.stub!(:shell_out!).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(3).times.with(%r{Problem parsing})
       @yc.refresh
     end
 
     it "should warn about invalid data with an incorrect type" do
-      @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_type, @stderr).and_return(@status)
+      @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_bad_type, :stderr => @stderr)
+      @yc.stub!(:shell_out!).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(2).times.with(%r{Problem parsing})
       @yc.refresh
     end
 
     it "should warn about no output from yum-dump.py" do
-      @yc.stub!(:popen4).and_yield(@pid, @stdin, [], @stderr).and_return(@status)
+      @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
+      @yc.stub!(:shell_out!).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(1).times.with(%r{no output from yum-dump.py})
       @yc.refresh
     end
 
     it "should raise exception yum-dump.py exits with a non zero status" do
-      @yc.stub!(:popen4).and_yield(@pid, @stdin, [], @stderr).and_return(@status_bad)
+      @status = mock("Status", :exitstatus => 1, :stdin => @stdin, :stdout => @stdout_no_output, :stderr => @stderr)
+      @yc.stub!(:shell_out!).and_return(@status)
       lambda { @yc.refresh}.should raise_error(Chef::Exceptions::Package, %r{CentOS-Base.repo, line: 12})
     end
 
