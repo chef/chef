@@ -115,8 +115,7 @@ include_recipe "runit"
   "bookshelf",
   "erchef",
   "bootstrap",
- # FIXME: uncomment when we are ready to tackle the webui
- # "chef-server-webui",
+  "chef-server-webui",
   "nginx"
 ].each do |service|
   if node["chef_server"][service]["enable"]

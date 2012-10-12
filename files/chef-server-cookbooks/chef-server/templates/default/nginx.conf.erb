@@ -111,21 +111,20 @@ http {
       proxy_pass http://bookshelf;
     }
 
-    # location ~ "^/(?:stylesheets|javascripts|images|facebox|css)/{0,1}.*$" {
-    #   if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
-    #     error_page 400 =400 /400-chef_client_manage.json;
-    #     return 400;
-    #   }
-    #   proxy_pass http://chef_server_webui;
-    #   proxy_pass_request_headers off;
-    #   proxy_cache webui-cache;
-    #   proxy_cache_valid 200 302 300m;
-    #   proxy_cache_valid 404 1m;
-    # }
+    location ~ "^/(?:stylesheets|javascripts|images|facebox|css|favicon|robots|humans)/{0,1}.*$" {
+      if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
+        error_page 400 =400 /400-chef_client_manage.json;
+        return 400;
+      }
+      proxy_pass http://chef_server_webui;
+      proxy_pass_request_headers off;
+      proxy_cache webui-cache;
+      proxy_cache_valid 200 302 300m;
+      proxy_cache_valid 404 1m;
+    }
 
     location / {
-    # FIXME: webui temp disable
-    <%= select_upstream("erchef", "erchef") %>
+    <%= select_upstream("erchef", "chef_server_webui") %>
     }
   }
 }
