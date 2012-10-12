@@ -1,2 +1,0 @@
-This file should NOT be transferred, since it's not referred to in the default recipe.
-

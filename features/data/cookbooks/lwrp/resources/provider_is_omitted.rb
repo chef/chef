@@ -1,1 +1,0 @@
-actions :print_classes
