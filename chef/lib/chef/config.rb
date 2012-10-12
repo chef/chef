@@ -194,6 +194,7 @@ class Chef
     client_url "http://localhost:4042"
 
     rest_timeout 300
+    yum_timeout 120
     run_command_stderr_timeout 120
     run_command_stdout_timeout 120
     solo  false
