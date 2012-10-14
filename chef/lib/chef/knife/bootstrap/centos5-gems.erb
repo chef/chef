@@ -26,19 +26,15 @@ gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
 
-(
-cat <<'EOP'
+awk NF > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-) | awk NF > /etc/chef/validation.pem
 chmod 0600 /etc/chef/validation.pem
 
 <% if @chef_config[:encrypted_data_bag_secret] -%>
-(
-cat <<'EOP'
+awk NF > /etc/chef/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-) | awk NF > /etc/chef/encrypted_data_bag_secret
 chmod 0600 /etc/chef/encrypted_data_bag_secret
 <% end -%>
 
@@ -47,24 +43,18 @@ chmod 0600 /etc/chef/encrypted_data_bag_secret
 mkdir -p /etc/chef/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-(
-cat <<'EOP'
+cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
 <%= hash.to_json %>
 EOP
-) > /etc/chef/ohai/hints/<%= name %>.json
 <% end -%>
 <% end -%>
 
-(
-cat <<'EOP'
+cat > /etc/chef/client.rb <<'EOP'
 <%= config_content %>
 EOP
-) > /etc/chef/client.rb
 
-(
-cat <<'EOP'
+cat > /etc/chef/first-boot.json <<'EOP'
 <%= first_boot.to_json %>
 EOP
-) > /etc/chef/first-boot.json
 
 <%= start_chef %>'
