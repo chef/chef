@@ -177,4 +177,17 @@ shared_examples_for "an api error inspector" do
     end
   end
 
+  describe "when explaining any other exception" do
+    before do
+      @response_body = "I haz an error"
+      @exception = Exception.new(@response_body)
+      @inspector = described_class.new(@node_name, @exception, @config)
+      @inspector.add_explanation(@description)
+    end
+    
+    it "prints a nice message" do
+       @description.display(@outputter)
+    end
+  end
+      
 end
