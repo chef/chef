@@ -264,11 +264,41 @@ class Chef
         @scm_provider.run_action(:force_export)
       end
 
+      def binary_in_path?(cmd)
+        exe_path = ""
+        exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+        ENV['PATH'].split(::File::PATH_SEPARATOR).each do |path|
+          exts.each { |ext|
+            exe = "#{path}/#{cmd}#{ext}"
+            exe_path = exe if ::File.executable? exe
+          }
+        end
+        exe_path.empty? ? nil : exe_path
+      end
+
+      def scm_metadata_exclude_path
+        if @new_resource.scm_metadata_exclude.nil?
+          if @new_resource.scm_provider == Chef::Provider::Git
+            @new_resource.scm_metadata_exclude "'.git*'"
+          elsif @new_resource.scm_provider == Chef::Provider::Subversion
+            @new_resource.scm_metadata_exclude "'.svn*'"
+          end
+        end
+      end
+
+      def copy_command
+        if binary_in_path? "rsync"
+          "rsync -a --exclude #{scm_metadata_exclude_path}"
+        else
+          "cp -RPp"
+        end
+      end
+
       def copy_cached_repo
         target_dir_path = @new_resource.deploy_to + "/releases"
         converge_by("deploy from repo to #{@target_dir_path} ") do
           FileUtils.mkdir_p(target_dir_path)
-          run_command(:command => "cp -RPp #{::File.join(@new_resource.destination, ".")} #{release_path}")
+          run_command(:command => "#{copy_command} #{::File.join(@new_resource.destination, ".")} #{release_path}")
           Chef::Log.info "#{@new_resource} copied the cached checkout to #{release_path}"
           release_created(release_path)
         end
