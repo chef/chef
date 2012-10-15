@@ -1,4 +1,4 @@
-r#
+#
 # Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -16,7 +16,7 @@ r#
 # limitations under the License.
 #
 
-equire 'chef/chef_fs/file_system'
+require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/base_fs_object'
 
