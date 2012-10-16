@@ -107,8 +107,8 @@ describe Chef::Knife::Ssh do
       context "when there are some hosts found but they do not have an attribute to connect with" do
         before do
           @query.stub!(:search).and_return([[@node_foo, @node_bar]])
-          @node_foo[:fqdn] = nil
-          @node_bar[:fqdn] = nil
+          @node_foo.automatic_attrs[:fqdn] = nil
+          @node_bar.automatic_attrs[:fqdn] = nil
           Chef::Search::Query.stub!(:new).and_return(@query)
         end
 
