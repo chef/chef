@@ -188,12 +188,7 @@ needs to be updated for this change.
 Called from:
 W
       warning = caller(2)[0..3].inject(base_warning) {|msg, l| msg << l << "\n" }
-      if $0 =~ /spec/
-        raise warning
-      else
-        puts warning
-        Chef::Log.warn(warning)
-      end
+      Chef::Log.warn(warning)
     end
 
     public

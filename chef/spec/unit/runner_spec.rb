@@ -103,7 +103,7 @@ describe Chef::Runner do
   end
 
   it "should use the provider specified by the resource (if it has one)" do
-    provider = Chef::Provider::Easy.new(@run_context.resource_collection[0], @run_context)
+    provider = Chef::Provider::Easy.new(@run_context.resource_collection[0], @run_context, :nothing)
     # Expect provider to be called twice, because will fall back to old provider lookup
     @run_context.resource_collection[0].should_receive(:provider).twice.and_return(Chef::Provider::Easy)
     Chef::Provider::Easy.should_receive(:new).once.and_return(provider)
@@ -117,14 +117,14 @@ describe Chef::Runner do
 
   it "should run the action for each resource" do
     Chef::Platform.should_receive(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context, :sell)
     provider.should_receive(:action_sell).once.and_return(true)
     Chef::Provider::SnakeOil.should_receive(:new).once.and_return(provider)
     @runner.converge
   end
 
   it "should raise exceptions as thrown by a provider" do
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context, :nothing)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should raise_error(ArgumentError)
@@ -132,7 +132,7 @@ describe Chef::Runner do
 
   it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
     @run_context.resource_collection[0].stub!(:ignore_failure).and_return(true)
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context, :nothing)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should_not raise_error(ArgumentError)
@@ -140,7 +140,7 @@ describe Chef::Runner do
 
   it "should retry with the specified delay if retries are specified" do
     @first_resource.retries 3
-    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context)
+    provider = Chef::Provider::SnakeOil.new(@run_context.resource_collection[0], @run_context, :nothing)
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).and_raise(ArgumentError)
     @first_resource.should_receive(:sleep).with(2).exactly(3).times

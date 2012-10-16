@@ -31,7 +31,7 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @resource = Chef::Resource::File.new("#{@tmpdir}/madeup.txt")
     FileUtils.touch @resource.path
     @resource.owner "adam"
-    @provider = Chef::Provider::File.new(@resource, @run_context)
+    @provider = Chef::Provider::File.new(@resource, @run_context, :create)
     @provider.current_resource = @resource
   end
 
