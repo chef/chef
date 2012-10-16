@@ -318,7 +318,24 @@ class Chef
 
       def []=(key, value)
         # If we don't have one, then we'll pretend we're normal
-        @set_type ||= :normal
+        if @set_type.nil?
+          @set_type = :normal
+          warning=<<-W
+Setting attributes without specifying a precedence is deprecated and will be
+removed in Chef 11.0. To set attributes at normal precedence, change code like:
+`node["key"] = "value"` # Not this
+to:
+`node.set["key"] = "value"` # This
+
+Called from:
+W
+
+          warning_with_line_nrs = caller[0...3].inject(warning) do |msg, source_line|
+            msg << "  #{source_line}\n"
+          end
+
+          Chef::Log.warn(warning_with_line_nrs) if Chef::Config[:chef11_deprecation_warnings]
+        end
 
         if set_unless_value_present
           if get_value(set_type_hash, key) != nil

@@ -397,7 +397,7 @@ class Chef
 
     # Lazy initializer for tags attribute
     def tags
-      self[:tags] = [] unless attribute?(:tags)
+      self.set[:tags] = [] unless attribute?(:tags)
       self[:tags]
     end
 
