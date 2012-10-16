@@ -28,6 +28,24 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
     #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
   end
 
+  describe "when explaining a 403 error" do
+    before do
+
+      @response_body = %Q({"error": [{"message": "gtfo"}])
+      @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
+      @response.stub!(:body).and_return(@response_body)
+      @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
+
+      @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
+      @inspector.add_explanation(@description)
+    end
+
+    it "prints a nice message" do
+      lambda { @description.display(@outputter) }.should_not raise_error
+    end
+
+  end
+
   describe "when explaining a PreconditionFailed (412) error with current error message style" do
     # Chef currently returns error messages with some fields as JSON strings,
     # which must be re-parsed to get the actual data.

@@ -15,7 +15,7 @@
 # description: starts up chef-client in daemon mode.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/chef-client
+DAEMON=$(which chef-client)
 NAME=chef-client
 DESC=chef-client
 PIDFILE=/var/run/chef/client.pid

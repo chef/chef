@@ -586,8 +586,8 @@ F
           raise customize_exception(e)
         end
       ensure
-        events.resource_completed(self)
         @elapsed_time = Time.now - start_time
+        events.resource_completed(self)
       end
     end
 

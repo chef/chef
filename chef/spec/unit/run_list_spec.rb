@@ -77,6 +77,20 @@ describe Chef::RunList do
     end
   end
 
+  describe "add" do
+    # Testing only the basic functionality here
+    # since full behavior is tested above.
+    it "should add a recipe to the run_list" do
+      @run_list.add 'recipe[needy]'
+      @run_list.should include('recipe[needy]')
+    end
+
+    it "should add a role to the run_list" do
+      @run_list.add 'role[needy]'
+      @run_list.should include('role[needy]')
+    end
+  end
+
   describe "==" do
     it "should believe two RunLists are equal if they have the same members" do
       @run_list << "foo"

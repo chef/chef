@@ -31,8 +31,8 @@ class Chef
       include Chef::Mixin::Template
 
       def load_current_resource
+        @current_resource = Chef::Resource::Template.new(@new_resource.name)
         super
-        @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
       
       def define_resource_requirements
@@ -64,6 +64,14 @@ class Chef
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
               access_controls.set_all!
+              stat = ::File.stat(@new_resource.path)
+
+              # template depends on the checksum not changing, and updates it
+              # itself later in the code, so we cannot set it here, as we do with
+              # all other < File child provider classes
+              @new_resource.owner(stat.uid)
+              @new_resource.mode(stat.mode & 07777)
+              @new_resource.group(stat.gid)
             end
           end
         end  

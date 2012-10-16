@@ -29,7 +29,7 @@ class Chef
     include Enumerable
     include Chef::Mixin::ParamsValidate
 
-    # @run_list_items is an array of RunListItems that describe the items to 
+    # @run_list_items is an array of RunListItems that describe the items to
     # execute in order. RunListItems can load from and convert to the string
     # forms users set on roles and nodes.
     # For example:
@@ -67,6 +67,7 @@ class Chef
     end
 
     alias :push :<<
+    alias :add :<<
 
     def ==(other)
       if other.kind_of?(Chef::RunList)
@@ -162,4 +163,3 @@ class Chef
 
   end
 end
-

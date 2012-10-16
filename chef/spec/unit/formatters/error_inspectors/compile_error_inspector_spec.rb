@@ -85,6 +85,10 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       @inspector.add_explanation(@description)
     end
 
+    it "finds the line number of the error from the stacktrace" do
+      @inspector.culprit_line.should == 14
+    end
+
     it "prints a pretty message" do
       @description.display(@outputter)
     end
@@ -94,7 +98,7 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
     before do
       Chef::Config.stub!(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
       recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
-      IO.should_receive(:readlines).with("C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb").and_return(recipe_lines)
+      IO.should_receive(:readlines).at_least(1).times.with(/:\/opscode\/chef\/var\/cache\/cookbooks\/foo\/recipes\/default.rb/).and_return(recipe_lines)      
       @trace = [
         "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb:14 in `from_file'",
         "C:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:144:in `rescue in block in load_libraries'",
@@ -124,10 +128,75 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
       @inspector.add_explanation(@description)
     end
 
+
+    describe "and examining the stack trace for a recipe" do
+      it "find the culprit recipe name when the drive letter is upper case" do
+        @inspector.culprit_file.should == "C:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+      end
+
+      it "find the culprit recipe name when the drive letter is lower case" do
+        @trace.each { |line| line.gsub!(/^C:/, "c:") }
+        @exception.set_backtrace(@trace)
+        @inspector = described_class.new(@path, @exception)
+        @inspector.add_explanation(@description)
+        @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+      end
+    end 
+
+    it "finds the line number of the error from the stack trace" do
+      @inspector.culprit_line.should == 14
+    end
+
     it "prints a pretty message" do
       @description.display(@outputter)
     end
   end
 
+  describe "when explaining an error on windows, and the backtrace lowercases the drive letter" do
+    before do
+      Chef::Config.stub!(:cookbook_path).and_return([ "C:/opscode/chef/var/cache/cookbooks" ])
+      recipe_lines = BAD_RECIPE.split("\n").map {|l| l << "\n" }
+      IO.should_receive(:readlines).with("c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb").and_return(recipe_lines)
+      @trace = [
+        "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb:14 in `from_file'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:144:in `rescue in block in load_libraries'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:138:in `block in load_libraries'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:230:in `call'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:230:in `block (2 levels) in foreach_cookbook_load_segment'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:229:in `each'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:229:in `block in foreach_cookbook_load_segment'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:227:in `each'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:227:in `foreach_cookbook_load_segment'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:137:in `load_libraries'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/run_context.rb:62:in `load'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/client.rb:198:in `setup_run_context'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/client.rb:418:in `do_run'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/client.rb:176:in `run'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/application/client.rb:283:in `block in run_application'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/application/client.rb:270:in `loop'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/application/client.rb:270:in `run_application'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/lib/chef/application.rb:70:in `run'",
+        "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-10.14.0/bin/chef-client:26:in `<top (required)>'",
+        "c:/opscode/chef/bin/chef-client:19:in `load'",
+        "c:/opscode/chef/bin/chef-client:19:in `<main>'"
+      ]
+      @exception.set_backtrace(@trace)
+      @path = "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb"
+      @inspector = described_class.new(@path, @exception)
+      @inspector.add_explanation(@description)
+    end
+
+    it "finds the culprit recipe name from the stacktrace" do
+      @inspector.culprit_file.should == "c:/opscode/chef/var/cache/cookbooks/foo/recipes/default.rb"
+    end
+
+    it "finds the line number of the error from the stack trace" do
+      @inspector.culprit_line.should == 14
+    end
+
+    it "prints a pretty message" do
+      @description.display(@outputter)
+    end
+  end
 
 end

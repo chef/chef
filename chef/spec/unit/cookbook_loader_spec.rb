@@ -63,10 +63,11 @@ describe Chef::CookbookLoader do
         @cookbook_loader.each do |cookbook_name, cookbook|
           seen << cookbook_name
           end
-        seen[0].should == "apache2"
-        seen[1].should == "borken"
-        seen[2].should == "java"
-        seen[3].should == "openldap"
+        seen[0].should == "angrybash"
+        seen[1].should == "apache2"
+        seen[2].should == "borken"
+        seen[3].should == "java"
+        seen[4].should == "openldap"
       end
     end
   

@@ -106,6 +106,7 @@ EXPECTED
     it "installs the file from the cookbook cache" do
       @new_resource.path(@install_to)
       @provider.should_receive(:backup_new_resource)
+      @provider.stub!(:update_new_file_state)
       @provider.run_action(:create)
       actual = IO.read(@install_to)
       actual.should == @file_content
@@ -114,6 +115,7 @@ EXPECTED
     it "installs the file for create_if_missing --> from Provider::File" do
       @new_resource.path(@install_to)
       @provider.should_receive(:backup_new_resource)
+      @provider.stub!(:update_new_file_state)
       @provider.run_action(:create_if_missing)
       actual = IO.read(@install_to)
       actual.should == @file_content
@@ -123,6 +125,7 @@ EXPECTED
       @new_resource.path(@install_to)
       @provider.stub!(:backup_new_resource)
       @provider.stub!(:set_file_access_controls)
+      @provider.stub!(:update_new_file_state)
       @provider.run_action(:create)
       @new_resource.should be_updated
       @new_resource.should be_updated_by_last_action

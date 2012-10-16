@@ -155,6 +155,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         it "downloads the file" do
           @resource.checksum("this hash doesn't match")
           @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
+          @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
 
@@ -162,6 +163,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
           # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
           @resource.checksum("fd012fd")
           @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
+          @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
       end
@@ -235,10 +237,12 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
       it "should copy the raw file to the new resource" do
         FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)
+        @provider.stub!(:update_new_file_state)
         @provider.run_action(:create)
       end
 
       it "should set the new resource to updated" do
+        @provider.stub!(:update_new_file_state)
         @provider.run_action(:create)
         @resource.should be_updated
       end
@@ -290,16 +294,19 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "should backup the original file" do
+          @provider.stub!(:update_new_file_state)
           @provider.should_receive(:backup).with(@resource.path).and_return(true)
           @provider.run_action(:create)
         end
 
         it "should copy the raw file to the new resource" do
+          @provider.stub!(:update_new_file_state)
           FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)
           @provider.run_action(:create)
         end
 
         it "should set the new resource to updated" do
+          @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
           @resource.should be_updated
         end

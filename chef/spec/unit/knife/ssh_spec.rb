@@ -103,6 +103,21 @@ describe Chef::Knife::Ssh do
           @knife.should_receive(:exit).with(10)
           @knife.configure_session
       end
+
+      context "when there are some hosts found but they do not have an attribute to connect with" do
+        before do
+          @query.stub!(:search).and_return([[@node_foo, @node_bar]])
+          @node_foo[:fqdn] = nil
+          @node_bar[:fqdn] = nil
+          Chef::Search::Query.stub!(:new).and_return(@query)
+        end
+
+        it "should raise a specific error (CHEF-3402)" do
+          @knife.ui.should_receive(:fatal).with(/^2 nodes found/)
+          @knife.should_receive(:exit).with(10)
+          @knife.configure_session
+        end
+      end
     end
 
     context "manual is set to true" do

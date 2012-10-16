@@ -1,5 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -48,4 +49,13 @@ describe Chef::Resource::RubyBlock do
     @resource.action.should == [:create]
   end
 
+  describe "when it has been initialized with block code" do
+    before do 
+      @resource.block_name("puts 'harrrr'")
+    end
+
+    it "returns the block as its identity" do
+      @resource.identity.should == "puts 'harrrr'"
+    end
+  end
 end

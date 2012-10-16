@@ -24,11 +24,7 @@ describe Chef::Config do
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
   end
 
-  describe "config attribute writer: chef_server_url" do
-    before do
-      Chef::Config.chef_server_url = "https://junglist.gen.nz"
-    end
-
+  shared_examples_for "server URL" do
     it "should set the registration url" do
       Chef::Config.registration_url.should == "https://junglist.gen.nz"
     end
@@ -48,6 +44,22 @@ describe Chef::Config do
     it "should set the role url" do
       Chef::Config.role_url.should == "https://junglist.gen.nz"
     end
+  end
+
+  describe "config attribute writer: chef_server_url" do
+    before do
+      Chef::Config.chef_server_url = "https://junglist.gen.nz"
+    end
+    
+    it_behaves_like "server URL"
+  end
+
+  context "when the url has a leading space" do
+    before do
+      Chef::Config.chef_server_url = " https://junglist.gen.nz"
+    end
+    
+    it_behaves_like "server URL"
   end
 
   describe "class method: manage_secret_key" do

@@ -15,7 +15,7 @@
 # description: starts up chef-expander in daemon mode.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/chef-expander
+DAEMON=$(which chef-expander)
 NAME=chef-expander
 DESC=chef-expander
 PIDFILE=/var/run/chef/expander.pid

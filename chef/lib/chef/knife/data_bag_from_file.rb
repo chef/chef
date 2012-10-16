@@ -46,7 +46,7 @@ class Chef
       option :all,
       :short => "-a",
       :long  => "--all",
-      :description => "Upload all data bags"
+      :description => "Upload all data bags or all items for specified data bags"
 
       def read_secret
         if config[:secret]

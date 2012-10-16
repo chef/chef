@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -59,4 +60,23 @@ describe Chef::Resource::Directory do
     lambda { @resource.recursive "monkey" }.should raise_error(ArgumentError)
   end
 
+  describe "when it has group, mode, and owner" do
+    before do 
+      @resource.path("/tmp/foo/bar/")
+      @resource.group("wheel")
+      @resource.mode("0664")
+      @resource.owner("root")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      state[:group].should == "wheel"
+      state[:mode].should == "0664"
+      state[:owner].should == "root"
+    end
+
+    it "returns the directory path as its identity" do
+      @resource.identity.should == "/tmp/foo/bar/"
+    end
+  end
 end

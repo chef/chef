@@ -58,6 +58,7 @@ class Chef
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
         as_hash["delta"]  = "" if as_hash["delta"].nil?
+
         # TODO: rename as "action"
         as_hash["result"] = action.to_s
         if success?
@@ -84,12 +85,13 @@ class Chef
     attr_reader :exception
     attr_reader :run_id
     attr_reader :error_descriptions
+    attr_reader :summary_only
 
     def initialize(rest_client)
-      if Chef::Config[:disable_reporting]
-        @reporting_enabled = false
-      else
+      if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
         @reporting_enabled = true
+      else
+        @reporting_enabled = false
       end
       @updated_resources = []
       @total_res_count = 0
@@ -99,22 +101,31 @@ class Chef
       @run_id = nil
       @rest_client = rest_client
       @node = nil
-      @error_descriptions = nil
+      @error_descriptions = {}
+      @summary_only = true
     end
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
-
       if reporting_enabled?
         begin
-          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          resource_history_url = "reports/nodes/#{node.name}/runs"
           server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
           run_uri = URI.parse(server_response["uri"])
           @run_id = ::File.basename(run_uri.path)
           Chef::Log.info("Chef server generated run history id: #{@run_id}")
-        rescue Net::HTTPServerException => e
-          raise unless e.response.code.to_s == "404"
-          Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
+          @summary_only = server_response["summary_only"]
+        rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+          if !e.response || e.response.code.to_s != 404
+            if Chef::Config[:enable_reporting_url_fatals]
+              Chef::Log.error("Received exception attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
+              raise
+            else
+              Chef::Log.info("Received exception attempting to generate run history id (URL Path: #{resource_history_url}), disabling reporting for this run.")
+            end
+          else
+            Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
+          end
           @reporting_enabled = false
         end
       end
@@ -159,39 +170,66 @@ class Chef
     end
 
     def run_completed(node)
-      if reporting_enabled?
-        resource_history_url = "reports/nodes/#{@node.name}/runs/#{run_id}"
-        run_data = report(node)
-        run_data["action"] = "end"
-        Chef::Log.info("Sending resource update report (run-id: #{run_id})")
-        Chef::Log.debug run_data.inspect
-        @rest_client.post_rest(resource_history_url, run_data)
-      else
-        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
-      end
+      @status = "success"
+      post_reporting_data
     end
 
     def run_failed(exception)
       @exception = exception
       @status = "failure"
+      post_reporting_data
     end
 
-    def report(node)
+    def post_reporting_data
+      if reporting_enabled?
+        run_data = prepare_run_data
+        resource_history_url = "reports/nodes/#{@node.name}/runs/#{@run_id}"
+        Chef::Log.info("Sending resource update report (run-id: #{@run_id})")
+        Chef::Log.debug run_data.inspect
+        compressed_data = encode_gzip(run_data.to_json)
+        #if summary only is enabled send the uncompressed run_data excluding the run_data["resources"] and some additional metrics.
+        if @summary_only
+          run_data = report_summary(run_data, compressed_data)
+          Chef::Log.info("run_data_summary: #{run_data}")
+          @rest_client.post_rest(resource_history_url, run_data)
+        else
+          Chef::Log.debug("Sending Compressed Run Data...")
+          # Since we're posting compressed data we can not directly call
+          # post_rest which expects JSON
+          reporting_url = @rest_client.create_url(resource_history_url)
+          @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
+        end
+      else
+        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+      end
+    end
+    
+    def prepare_run_data
       run_data = {}
+      run_data["action"] = "end"
       run_data["resources"] = updated_resources.map do |resource_record|
         resource_record.for_json
       end
-      run_data["status"] = status
-      run_data["run_list"] = node.run_list.to_json
+      run_data["status"] = @status
+      run_data["run_list"] = @node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
+
       if exception
-        run_data["data"]["exception"] = {}
-        run_data["data"]["exception"]["class"] = exception.inspect
-        run_data["data"]["exception"]["message"] = exception.message
-        run_data["data"]["exception"]["backtrace"] = exception.backtrace
-        run_data["data"]["exception"]["description"] = @error_descriptions
+        exception_data = {}
+        exception_data["class"] = exception.inspect
+        exception_data["message"] = exception.message
+        exception_data["backtrace"] = exception.backtrace.to_json
+        exception_data["description"] =  @error_descriptions
+        run_data["data"]["exception"] = exception_data
       end
+      run_data
+    end
+
+    def report_summary(run_data, compressed_data)
+      run_data["updated_res_count"] = updated_resources.count.to_s
+      run_data["post_size"] = compressed_data.bytesize.to_s
+      run_data["resources"] = []
       run_data
     end
 
@@ -222,6 +260,12 @@ class Chef
     # output.
     def nested_resource?(new_resource)
       @pending_update && @pending_update.new_resource != new_resource
+    end
+
+    def encode_gzip(data)
+      "".tap do |out|
+        Zlib::GzipWriter.wrap(StringIO.new(out)){|gz| gz << data }
+      end
     end
 
   end

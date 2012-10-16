@@ -124,7 +124,8 @@ class Chef
                  q = Chef::Search::Query.new
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
-
+                   # we should skip the loop to next iteration if the item returned by the search is nil
+                   next if item.nil? 
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
@@ -134,11 +135,22 @@ class Chef
                    else
                      i = extract_nested_value(item, config[:attribute])
                    end
-                   r.push(i) unless i.nil?
+                   # next if we couldn't find the specified attribute in the returned node object
+                   next if i.nil?
+                   r.push(i)
                  end
                  r
                end
-        (ui.fatal("No nodes returned from search!"); exit 10) if list.length == 0
+        if list.length == 0
+          if @action_nodes.length == 0
+            ui.fatal("No nodes returned from search!")
+          else
+            ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes":"node"} found, " +
+                     "but do not have the required attribute to stablish the connection. " +
+                     "Try setting another attribute to open the connection using --attribute.")
+          end
+          exit 10
+        end
         session_from_list(list)
       end
 

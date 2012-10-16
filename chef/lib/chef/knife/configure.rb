@@ -42,6 +42,22 @@ class Chef
         :boolean => true,
         :description => "Create an initial API Client"
 
+      option :admin_client_name,
+        :long => "--admin-client-name NAME",
+        :description => "The existing admin clientname (usually chef-webui)"
+
+      option :admin_client_key,
+        :long => "--admin-client-key PATH",
+        :description => "The path to the admin client's private key (usually a file named webui.pem)"
+
+      option :validation_client_name,
+        :long => "--validation-client-name NAME",
+        :description => "The validation clientname (usually chef-validator)"
+
+      option :validation_key,
+        :long => "--validation-key PATH",
+        :description => "The location of the location of the validation key (usually a file named validation.pem)"
+
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified
         Chef::Config[:node_name] = 'woot'
@@ -120,14 +136,17 @@ EOH
           @new_client_name        = config[:node_name] || ask_question("Please enter a clientname for the new client: ", :default => Etc.getlogin)
           @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin clientname: ", :default => 'chef-webui')
           @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin client's private key: ", :default => '/etc/chef/webui.pem')
+          @admin_client_key       = File.expand_path(@admin_client_key)
         else
           @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", :default => Etc.getlogin)
         end
         @validation_client_name = config[:validation_client_name] || ask_question("Please enter the validation clientname: ", :default => 'chef-validator')
         @validation_key         = config[:validation_key] || ask_question("Please enter the location of the validation key: ", :default => '/etc/chef/validation.pem')
+        @validation_key         = File.expand_path(@validation_key)
         @chef_repo              = config[:repository] || ask_question("Please enter the path to a chef repository (or leave blank): ")
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")
+        @new_client_key = File.expand_path(@new_client_key)
       end
 
       def guess_servername

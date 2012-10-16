@@ -154,14 +154,26 @@ describe Chef::Platform do
     node.automatic_attrs[:platform_version] = "8.5"
     Chef::Platform.find_provider_for_node(node, kitty).should eql(Chef::Provider::Cat)
   end
-  
-  it "returns a provider object given a Chef::Resource object which has a valid run context" do
+ 
+  def setup_file_resource
     node = Chef::Node.new
     node.automatic_attrs[:platform] = "mac_os_x"
     node.automatic_attrs[:platform_version] = "9.2.2"
     run_context = Chef::RunContext.new(node, {}, @events)
-    file = Chef::Resource::File.new("whateva", run_context)
+    [ Chef::Resource::File.new("whateva", run_context), run_context ]
+  end
+
+  it "returns a provider object given a Chef::Resource object which has a valid run context and an action" do
+    file, run_context = setup_file_resource
     provider = Chef::Platform.provider_for_resource(file, :foo)
+    provider.should be_an_instance_of(Chef::Provider::File)
+    provider.new_resource.should equal(file)
+    provider.run_context.should equal(run_context)
+  end
+  
+  it "returns a provider object given a Chef::Resource object which has a valid run context without an action" do
+    file, run_context = setup_file_resource
+    provider = Chef::Platform.provider_for_resource(file)
     provider.should be_an_instance_of(Chef::Provider::File)
     provider.new_resource.should equal(file)
     provider.run_context.should equal(run_context)

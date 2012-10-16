@@ -27,8 +27,8 @@ class Chef
     class RemoteFile < Chef::Provider::File
 
       def load_current_resource
+        @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
         super
-        @current_resource.checksum(checksum(@current_resource.path)) if ::File.exist?(@current_resource.path)
       end
 
       def action_create
