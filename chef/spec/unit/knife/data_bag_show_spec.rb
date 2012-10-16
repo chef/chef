@@ -57,6 +57,7 @@ describe Chef::Knife::DataBagShow do
 
     @knife.run
     Chef::JSONCompat.from_json(@stdout.string).should == data_item.raw_data
+
   end
 
   describe "encrypted data bag items" do
@@ -70,6 +71,15 @@ describe Chef::Knife::DataBagShow do
       @enc_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@plain_data,
                                                                    @secret)
       @knife.instance_variable_set(:@name_args, ['bag_name', 'item_name'])
+
+      @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      @secret_file.puts(@secret)
+      @secret_file.flush
+    end
+
+    after do
+      @secret_file.close
+      @secret_file.unlink
     end
 
     it "prints the decrypted contents of an item when given --secret" do
@@ -82,10 +92,7 @@ describe Chef::Knife::DataBagShow do
     end
 
     it "prints the decrypted contents of an item when given --secret_file" do
-      secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
-      secret_file.puts(@secret)
-      secret_file.flush
-      @knife.stub!(:config).and_return({:secret_file => secret_file.path})
+      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
       Chef::EncryptedDataBagItem.should_receive(:load).
         with('bag_name', 'item_name', @secret).
         and_return(Chef::EncryptedDataBagItem.new(@enc_data, @secret))

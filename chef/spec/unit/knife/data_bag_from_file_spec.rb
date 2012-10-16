@@ -140,6 +140,14 @@ describe Chef::Knife::DataBagFromFile do
       @secret = "abc123SECRET"
       @enc_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@plain_data,
                                                                    @secret)
+      @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      @secret_file.puts(@secret)
+      @secret_file.flush
+    end
+
+    after do
+      @secret_file.close
+      @secret_file.unlink
     end
 
     it "encrypts values when given --secret" do
@@ -155,10 +163,7 @@ describe Chef::Knife::DataBagFromFile do
     end
 
     it "encrypts values when given --secret_file" do
-      secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
-      secret_file.puts(@secret)
-      secret_file.flush
-      @knife.stub!(:config).and_return({:secret_file => secret_file.path})
+      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
 
       @knife.loader.stub!(:load_from).with("data_bags", 'bag_name', @db_file.path).and_return(@plain_data)
       dbag = Chef::DataBagItem.new
@@ -175,7 +180,9 @@ describe Chef::Knife::DataBagFromFile do
     it "prints help if given no arguments" do
       @knife.instance_variable_set(:@name_args, [])
       lambda { @knife.run }.should raise_error(SystemExit)
-      @stdout.string.should match(/^knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] \(options\)/)
+      help_text = "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
+      help_text_regex = Regexp.new("^#{Regexp.escape(help_text)}")
+      @stdout.string.should match(help_text_regex)
     end
   end
 

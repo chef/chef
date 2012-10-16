@@ -27,11 +27,16 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     @node.name "make_believe"
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @resource = Chef::Resource::File.new("#{Dir.mktmpdir}/madeup.txt")
+    @tmpdir = Dir.mktmpdir
+    @resource = Chef::Resource::File.new("#{@tmpdir}/madeup.txt")
     FileUtils.touch @resource.path
     @resource.owner "adam"
     @provider = Chef::Provider::File.new(@resource, @run_context)
     @provider.current_resource = @resource
+  end
+
+  after(:each) do
+    FileUtils.rm_rf(@tmpdir)
   end
 
   it "should call set_all on the file access control object" do

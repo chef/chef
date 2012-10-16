@@ -77,6 +77,15 @@ describe Chef::Knife::DataBagCreate do
       data_bag_item.data_bag("sudoing_admins")
       @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
       @rest.should_receive(:post_rest).with("data/sudoing_admins", data_bag_item).ordered
+
+      @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      @secret_file.puts(@secret)
+      @secret_file.flush
+    end
+
+    after do
+      @secret_file.close
+      @secret_file.unlink
     end
 
     it "creates an encrypted data bag item via --secret" do

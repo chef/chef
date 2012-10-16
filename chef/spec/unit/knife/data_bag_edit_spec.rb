@@ -59,6 +59,15 @@ describe Chef::Knife::DataBagEdit do
       @enc_edited_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@edited_data,
                                                                           @secret)
       Chef::DataBagItem.stub!(:load).with('bag_name', 'item_name').and_return(@enc_data)
+
+      @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
+      @secret_file.puts(@secret)
+      @secret_file.flush
+    end
+
+    after do
+      @secret_file.close
+      @secret_file.unlink
     end
 
     it "decrypts and encrypts via --secret" do
@@ -70,10 +79,7 @@ describe Chef::Knife::DataBagEdit do
     end
 
     it "decrypts and encrypts via --secret_file" do
-      secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
-      secret_file.puts(@secret)
-      secret_file.flush
-      @knife.stub!(:config).and_return({:secret_file => secret_file.path})
+      @knife.stub!(:config).and_return({:secret_file => @secret_file.path})
       @knife.should_receive(:edit_data).with(@plain_data).and_return(@edited_data)
       @rest.should_receive(:put_rest).with("data/bag_name/item_name", @enc_edited_data).ordered
 
