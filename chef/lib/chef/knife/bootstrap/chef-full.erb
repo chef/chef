@@ -18,7 +18,7 @@ if ! exists /usr/bin/chef-client; then
     bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh} -O -) ${version_string}
   else
     if exists curl; then
-      bash <(curl -L <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh}) ${version_string}
+      bash <(curl -L <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> ${install_sh}) ${version_string}
     fi
   fi
 fi
