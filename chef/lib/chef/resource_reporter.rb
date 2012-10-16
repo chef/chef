@@ -116,7 +116,7 @@ class Chef
           Chef::Log.info("Chef server generated run history id: #{@run_id}")
           @summary_only = server_response["summary_only"]
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-          if !e.response || e.response.code.to_s != 404
+          if !e.response || e.response.code != 404
             if Chef::Config[:enable_reporting_url_fatals]
               Chef::Log.error("Received exception attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
               raise
