@@ -82,7 +82,9 @@ describe 'diff' do
     it 'Chef::ChefFS::CommandLine.diff(/)' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/'), a, b, nil, nil) do |diff|
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} -\d\d\d\d/, ' DATE')
+        # Removes the date stamp from the diff and replaces it with ' DATE'
+        # example match: "/dev/null\t2012-10-16 16:15:54.000000000 +0000"
+        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} [+-]\d\d\d\d/, ' DATE')
       end
       results.should =~ [
         'diff --knife a/both_dirs/sub_both_files_different b/both_dirs/sub_both_files_different
