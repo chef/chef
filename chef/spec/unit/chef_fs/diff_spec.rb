@@ -21,6 +21,10 @@ require 'support/shared/unit/file_system_support'
 require 'chef/chef_fs/file_pattern'
 require 'chef/chef_fs/command_line'
 
+# Removes the date stamp from the diff and replaces it with ' DATE'
+# example match: "/dev/null\t2012-10-16 16:15:54.000000000 +0000"
+DATE_REGEX = /\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} [+-]\d\d\d\d/
+
 describe 'diff' do
   include FileSystemSupport
 
@@ -82,9 +86,7 @@ describe 'diff' do
     it 'Chef::ChefFS::CommandLine.diff(/)' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/'), a, b, nil, nil) do |diff|
-        # Removes the date stamp from the diff and replaces it with ' DATE'
-        # example match: "/dev/null\t2012-10-16 16:15:54.000000000 +0000"
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} [+-]\d\d\d\d/, ' DATE')
+        results << diff.gsub(DATE_REGEX, ' DATE')
       end
       results.should =~ [
         'diff --knife a/both_dirs/sub_both_files_different b/both_dirs/sub_both_files_different
@@ -160,7 +162,7 @@ new file
     it 'Chef::ChefFS::CommandLine.diff(/both_dirs)' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/both_dirs'), a, b, nil, nil) do |diff|
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} -\d\d\d\d/, ' DATE')
+        results << diff.gsub(DATE_REGEX, ' DATE')
       end
       results.should =~ [
         'diff --knife a/both_dirs/sub_both_files_different b/both_dirs/sub_both_files_different
@@ -202,7 +204,7 @@ new file
     it 'Chef::ChefFS::CommandLine.diff(/) with depth 1' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/'), a, b, 1, nil) do |diff|
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} -\d\d\d\d/, ' DATE')
+        results << diff.gsub(DATE_REGEX, ' DATE')
       end
       results.should =~ [
 'Common subdirectories: /both_dirs
@@ -236,7 +238,7 @@ new file
     it 'Chef::ChefFS::CommandLine.diff(/*_*) with depth 0' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/*_*'), a, b, 0, nil) do |diff|
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} -\d\d\d\d/, ' DATE')
+        results << diff.gsub(DATE_REGEX, ' DATE')
       end
       results.should =~ [
 'Common subdirectories: /both_dirs
@@ -270,7 +272,7 @@ new file
     it 'Chef::ChefFS::CommandLine.diff(/) in name-only mode' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/'), a, b, nil, :name_only) do |diff|
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} -\d\d\d\d/, ' DATE')
+        results << diff.gsub(DATE_REGEX, ' DATE')
       end
       results.should =~ [
           "b/both_dirs/sub_both_files_different\n",
@@ -296,7 +298,7 @@ new file
     it 'Chef::ChefFS::CommandLine.diff(/) in name-status mode' do
       results = []
       Chef::ChefFS::CommandLine.diff(pattern('/'), a, b, nil, :name_status) do |diff|
-        results << diff.gsub(/\s+\d\d\d\d-\d\d-\d\d\s\d?\d:\d\d:\d\d\.\d{9} -\d\d\d\d/, ' DATE')
+        results << diff.gsub(DATE_REGEX, ' DATE')
       end
       results.should =~ [
           "M\tb/both_dirs/sub_both_files_different\n",
