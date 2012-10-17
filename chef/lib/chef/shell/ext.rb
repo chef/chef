@@ -561,7 +561,7 @@ E
       obj.instance_eval(&RESTApiExtensions)
       obj.extend(FileUtils)
       obj.extend(Chef::DSL::PlatformIntrospection)
-      obj.extend(Chef::Mixin::Language)
+      obj.extend(Chef::DSL::DataQuery)
     end
 
     def self.extend_context_node(node_obj)

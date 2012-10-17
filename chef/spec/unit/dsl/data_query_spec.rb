@@ -17,15 +17,15 @@
 #
 
 require 'spec_helper'
-require 'chef/mixin/language'
+require 'chef/dsl/data_query'
 
-class LanguageTester
-  include Chef::Mixin::Language
+class DataQueryDSLTester
+  include Chef::DSL::DataQuery
 end
 
-describe Chef::Mixin::Language do
+describe Chef::DSL::DataQuery do
   before(:each) do
-    @language = LanguageTester.new
+    @language = DataQueryDSLTester.new
     @node = Hash.new
     @language.stub!(:node).and_return(@node)
   end

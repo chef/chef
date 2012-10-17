@@ -17,10 +17,7 @@
 #
 
 require 'chef/dsl/platform_introspection'
-require 'chef/search/query'
-require 'chef/data_bag'
-require 'chef/data_bag_item'
-require 'chef/encrypted_data_bag_item'
+require 'chef/dsl/data_query'
 
 class Chef
   module Mixin
@@ -28,38 +25,9 @@ class Chef
 
       include Chef::DSL::PlatformIntrospection
 
-      def search(*args, &block)
-        # If you pass a block, or have at least the start argument, do raw result parsing
-        #
-        # Otherwise, do the iteration for the end user
-        if Kernel.block_given? || args.length >= 4
-          Chef::Search::Query.new.search(*args, &block)
-        else
-          results = Array.new
-          Chef::Search::Query.new.search(*args) do |o|
-            results << o
-          end
-          results
-        end
-      end
+      # TODO! uncomment
+      # include Chef::DSL::DataQuery
 
-      def data_bag(bag)
-        DataBag.validate_name!(bag.to_s)
-        rbag = DataBag.load(bag)
-        rbag.keys
-      rescue Exception
-        Log.error("Failed to list data bag items in data bag: #{bag.inspect}")
-        raise
-      end
-
-      def data_bag_item(bag, item)
-        DataBag.validate_name!(bag.to_s)
-        DataBagItem.validate_id!(item)
-        DataBagItem.load(bag, item)
-      rescue Exception
-        Log.error("Failed to load data bag item: #{bag.inspect} #{item.inspect}")
-        raise
-      end
 
     end
   end
