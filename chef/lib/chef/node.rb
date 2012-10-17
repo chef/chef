@@ -26,7 +26,7 @@ require 'chef/nil_argument'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/mixin/language_include_attribute'
+require 'chef/dsl/include_attribute'
 require 'chef/mixin/deep_merge'
 require 'chef/environment'
 require 'chef/couchdb'
@@ -56,7 +56,7 @@ class Chef
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::Mixin::LanguageIncludeAttribute
+    include Chef::DSL::IncludeAttribute
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
