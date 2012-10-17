@@ -21,6 +21,7 @@ require 'chef/resource_collection'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
+require 'chef/dsl/attribute'
 
 class Chef
   # == Chef::RunContext
@@ -36,6 +37,7 @@ class Chef
     attr_reader :events
 
     attr_reader :loaded_recipes
+    attr_reader :loaded_attributes
 
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
@@ -50,11 +52,9 @@ class Chef
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
       @loaded_recipes = {}
+      @loaded_attributes = {}
       @events = events
 
-      # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
-      # cookbook_collection attr_accessor
-      node.cookbook_collection = cookbook_collection
     end
 
     def load(run_list_expansion)
@@ -160,6 +160,18 @@ class Chef
       loaded_fully_qualified_recipe?(cookbook, recipe_name)
     end
 
+    def loaded_fully_qualified_attribute?(cookbook, attribute_file)
+      @loaded_attributes.has_key?("#{cookbook}::#{attribute_file}")
+    end
+
+    def loaded_attribute?
+
+    end
+
+    def loaded_attribute(cookbook, attribute_file)
+      @loaded_attributes["#{cookbook}::#{recipe}"] = true
+    end
+
     private
 
     def loaded_recipe(cookbook, recipe)
@@ -224,7 +236,9 @@ class Chef
       foreach_cookbook_load_segment(:attributes) do |cookbook_name, filename|
         begin
           Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-          @node.from_file(filename)
+          attr_file_basename = ::File.basename(filename, ".rb")
+          attribute_dsl = Chef::DSL::Attribute.new(node, self)
+          attribute_dsl.eval_attribute(cookbook_name, attr_file_basename)
         rescue Exception => e
           @events.attribute_file_load_failed(filename, e)
           raise

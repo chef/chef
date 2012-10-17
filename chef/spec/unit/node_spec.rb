@@ -119,18 +119,6 @@ describe Chef::Node do
   end
 
   describe "attributes" do
-    it "should be loaded from the node's cookbooks" do
-      @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-      cl = Chef::CookbookLoader.new(@cookbook_repo)
-      cl.load_cookbooks
-      @node.cookbook_collection = Chef::CookbookCollection.new(cl)
-      @node.load_attributes
-      @node.ldap_server.should eql("ops1prod")
-      @node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
-      @node.ldap_replication_password.should eql("forsure")
-      @node.smokey.should eql("robinson")
-    end
-
     it "should have attributes" do
       @node.attribute.should be_a_kind_of(Hash)
     end

@@ -21,12 +21,10 @@
 
 require 'forwardable'
 require 'chef/config'
-require 'chef/cookbook/cookbook_collection'
 require 'chef/nil_argument'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/dsl/include_attribute'
 require 'chef/mixin/deep_merge'
 require 'chef/environment'
 require 'chef/couchdb'
@@ -48,15 +46,9 @@ class Chef
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_reader :couchdb_id
 
-    # TODO: 5/18/2010 cw/timh. cookbook_collection should be removed
-    # from here and for any place it's needed, it should be accessed
-    # through a Chef::RunContext
-    attr_accessor :cookbook_collection
-
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::DSL::IncludeAttribute
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
@@ -169,9 +161,6 @@ class Chef
         :template_cache => Hash.new,
         :seen_attributes => Hash.new
       }
-      # TODO: 5/20/2010 need this here as long as other objects try to access
-      # the cookbook collection via Node, otherwise get NoMethodError on nil.
-      @cookbook_collection = CookbookCollection.new
     end
 
     def couchdb_id=(value)
@@ -661,21 +650,5 @@ class Chef
       end
     end
 
-    # Used by DSL.
-    # Loads the attribute file specified by the short name of the
-    # file, e.g., loads specified cookbook's
-    #   "attributes/mailservers.rb"
-    # if passed
-    #   "mailservers"
-    def load_attribute_by_short_filename(name, src_cookbook_name)
-      src_cookbook = cookbook_collection[src_cookbook_name]
-      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{src_cookbook_name} while loading attribute #{name}" unless src_cookbook
-
-      attribute_filename = src_cookbook.attribute_filenames_by_short_filename[name]
-      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{name} in cookbook #{src_cookbook_name}" unless attribute_filename
-
-      self.from_file(attribute_filename)
-      self
-    end
   end
 end

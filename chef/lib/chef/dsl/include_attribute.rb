@@ -27,31 +27,28 @@ class Chef
       #   "attributes/mailservers.rb"
       # if passed
       #   "mailservers"
-      def include_attribute(*fully_qualified_attribute_short_filenames)
-        if self.kind_of?(Chef::Node)
-          node = self
-        else
-          node = @node
-        end
-
-        fully_qualified_attribute_short_filenames.flatten.each do |fully_qualified_attribute_short_filename|
-          if node.run_state[:seen_attributes].has_key?(fully_qualified_attribute_short_filename)
-            Chef::Log.debug("I am not loading attribute file #{fully_qualified_attribute_short_filename}, because I have already seen it.")
-            next
-          end
-
-          Chef::Log.debug("Loading Attribute #{fully_qualified_attribute_short_filename}")
-          node.run_state[:seen_attributes][fully_qualified_attribute_short_filename] = true
-
-          if amatch = fully_qualified_attribute_short_filename.match(/(.+?)::(.+)/)
-            cookbook_name = amatch[1].to_sym
-            node.load_attribute_by_short_filename(amatch[2], cookbook_name)
+      def include_attribute(*attr_file_specs)
+        attr_file_specs.flatten.each do |attr_file_spec|
+          cookbook, attr_file = parse_attribute_file_spec(attr_file_spec)
+          if run_context.loaded_fully_qualified_attribute?(cookbook, attr_file)
+            Chef::Log.debug("I am not loading attribute file #{cookbook}::#{attr_file}, because I have already seen it.")
           else
-            cookbook_name = fully_qualified_attribute_short_filename.to_sym
-            node.load_attribute_by_short_filename("default", cookbook_name)
+            Chef::Log.debug("Loading Attribute #{cookbook}::#{attr_file}")
+            run_context.loaded_attribute(cookbook, attr_file)
+            Chef::DSL::Attribute.new(node, run_context)
           end
         end
         true
+      end
+
+      # Takes a attribute file specification, like "apache2" or "mysql::server"
+      # and converts it to a 2 element array of [cookbook_name, attribute_file_name]
+      def parse_attribute_file_spec(file_spec)
+        if match = file_spec.match(/(.+?)::(.+)/)
+          [match[1], match[2]]
+        else
+          [file_spec, "default"]
+        end
       end
 
     end

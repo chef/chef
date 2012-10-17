@@ -68,20 +68,6 @@ describe Chef::CookbookVersion do
     @cookbook.preferred_filename(@node, :files, 'a-filename', 'the-checksum').should be_nil
   end
 
-# TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
-#   it "should allow you to test for a recipe with recipe?" do
-#     @cookbook.recipe_filenames = [ "one", "two" ]
-#     @cookbook.recipe?("one").should eql(true)
-#     @cookbook.recipe?("shanghai").should eql(false)
-#   end
-
-# TODO: timh, cw: 5/20/2010: removed CookbookVersion.recipe? as it's not used; see cookbook.rb
-#  it "should allow you to test for a recipe? with a fq recipe name" do
-#    @cookbook.recipe_filenames = [ "one", "two" ]
-#    @cookbook.recipe?("openldap::one").should eql(true)
-#    @cookbook.recipe?("shanghai::city").should eql(false)
-#  end
-
   it "should allow you to include a fully-qualified recipe using the DSL" do
     # DSL method include_recipe allows multiple arguments, so extract the first
     recipe = @run_context.include_recipe("openldap::gigantor").first
@@ -93,11 +79,6 @@ describe Chef::CookbookVersion do
 
   it "should raise an ArgumentException if you try to load a bad recipe name" do
     lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
-  end
-
-  it "should allow you to load an attribute file by name via load_attribute" do
-    @node.include_attribute("openldap::smokey")
-    @node.smokey.should == "robinson"
   end
 
 end
