@@ -46,8 +46,9 @@ class Chef
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_reader :couchdb_id
 
-    include Chef::Mixin::CheckHelper
     include Chef::Mixin::FromFile
+
+    include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
 
@@ -172,24 +173,6 @@ class Chef
 
     def chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
-    end
-
-    # Find a recipe for this Chef::Node by fqdn.  Will search first for
-    # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
-    #
-    # Returns a new Chef::Node object.
-    #
-    # Raises an ArgumentError if it cannot find the node.
-    def find_file(fqdn)
-      host_parts = fqdn.split(".")
-      hostname = host_parts[0]
-
-      [fqdn, hostname, "default"].each { |fname|
-       node_file = File.join(Chef::Config[:node_path], "#{fname.to_s}.rb")
-       return self.from_file(node_file) if File.exists?(node_file)
-     }
-
-      raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!"
     end
 
     # Set the name of this Node, or return the current name.

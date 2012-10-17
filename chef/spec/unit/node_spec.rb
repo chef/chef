@@ -494,37 +494,6 @@ describe Chef::Node do
     end
   end
 
-  describe "find_file" do
-    it "should load a node from a file by fqdn" do
-      @node.find_file("test.example.com")
-      @node.name.should == "test.example.com"
-      @node.chef_environment.should == "dev"
-    end
-
-    it "should load a node from a file by hostname" do
-      File.stub!(:exists?).and_return(true)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-      @node.find_file("test.example.com")
-      @node.name.should == "test.example.com-short"
-    end
-
-    it "should load a node from the default file" do
-      File.stub!(:exists?).and_return(true)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
-      @node.find_file("test.example.com")
-      @node.name.should == "test.example.com-default"
-    end
-
-    it "should raise an ArgumentError if it cannot find any node file at all" do
-      File.stub!(:exists?).and_return(true)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "default.rb")).and_return(false)
-      lambda { @node.find_file("test.example.com") }.should raise_error(ArgumentError)
-    end
-  end
-
   describe "update_from!" do
     before(:each) do
       @node.name("orig")
@@ -587,7 +556,7 @@ describe Chef::Node do
 
   describe "json" do
     it "should serialize itself as json", :json => true do
-      @node.find_file("test.example.com")
+      @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(@node)
       json.should =~ /json_class/
       json.should =~ /name/
@@ -608,7 +577,7 @@ describe Chef::Node do
     end
 
     it "should deserialize itself from json", :json => true do
-      @node.find_file("test.example.com")
+      @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(@node)
       serialized_node = Chef::JSONCompat.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Node)
