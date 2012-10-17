@@ -16,7 +16,7 @@
 #
 
 name "chef-pedant"
-version "rc-0.0.2"
+version "master"
 
 dependencies ["ruby",
               "bundler",
