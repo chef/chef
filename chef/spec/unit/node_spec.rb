@@ -63,8 +63,9 @@ describe Chef::Node do
   end
 
   describe "run_state" do
-    it "should have a template_cache hash" do
-      @node.run_state[:template_cache].should be_a_kind_of(Hash)
+    it "is an empty hash" do
+      @node.run_state.should respond_to(:keys)
+      @node.run_state.should be_empty
     end
   end
 

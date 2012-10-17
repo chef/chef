@@ -157,9 +157,7 @@ class Chef
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
 
-      @run_state = {
-        :template_cache => Hash.new
-      }
+      @run_state = {}
     end
 
     def couchdb_id=(value)
