@@ -19,12 +19,12 @@
 
 require 'chef/mixin/from_file'
 require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/recipe_definition_dsl_core'
+require 'chef/dsl/recipe'
 require 'chef/mixin/enforce_ownership_and_permissions'
 require 'chef/mixin/why_run'
 class Chef
   class Provider
-    include Chef::Mixin::RecipeDefinitionDSLCore
+    include Chef::DSL::Recipe
     include Chef::Mixin::WhyRun
     include Chef::Mixin::EnforceOwnershipAndPermissions
 
@@ -192,7 +192,7 @@ class Chef
 
         new_provider_class = Class.new self do |cls|
 
-          include Chef::Mixin::RecipeDefinitionDSLCore
+          include Chef::DSL::Recipe
 
           def load_current_resource
             # silence Chef::Exceptions::Override exception

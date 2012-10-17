@@ -18,7 +18,7 @@
 #
 
 
-require 'chef/mixin/recipe_definition_dsl_core'
+require 'chef/dsl/recipe'
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
 require 'chef/mixin/language_include_recipe'
@@ -33,7 +33,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::Language
     include Chef::Mixin::LanguageIncludeRecipe
-    include Chef::Mixin::RecipeDefinitionDSLCore
+    include Chef::DSL::Recipe
     include Chef::Mixin::Deprecation
 
     attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
