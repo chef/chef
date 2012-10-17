@@ -21,7 +21,6 @@ require 'chef/resource_collection'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
-require 'chef/mixin/language_include_recipe'
 
 class Chef
   # == Chef::RunContext

@@ -21,8 +21,9 @@
 require 'chef/dsl/recipe'
 require 'chef/dsl/data_query'
 require 'chef/dsl/platform_introspection'
+require 'chef/dsl/include_recipe'
+
 require 'chef/mixin/from_file'
-require 'chef/mixin/language_include_recipe'
 
 require 'chef/mixin/deprecation'
 
@@ -31,11 +32,12 @@ class Chef
   # A Recipe object is the context in which Chef recipes are evaluated.
   class Recipe
 
-    include Chef::Mixin::FromFile
     include Chef::DSL::DataQuery
     include Chef::DSL::PlatformIntrospection
-    include Chef::Mixin::LanguageIncludeRecipe
+    include Chef::DSL::IncludeRecipe
     include Chef::DSL::Recipe
+
+    include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
 
     attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
