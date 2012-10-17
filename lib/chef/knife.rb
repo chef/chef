@@ -264,7 +264,7 @@ class Chef
       command_name_words = self.class.snake_case_name.split('_')
 
       configure_chef
-      configure_from_file_settings!
+      configure_from_file_settings! if allow_auto_knife_config?
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
       @name_args.delete(command_name_words.join('-'))
@@ -293,42 +293,53 @@ class Chef
       exit(1)
     end
 
+    def allow_auto_knife_config?
+      false
+    end
+
     def configure_from_file_settings!
-      if(Chef::Config[:knife])
+      unless(config[:config_file])
+        locate_config_file
+      end
+      if(config[:config_file])
         self.class.options.keys.each do |key|
           config[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
         end
       end
     end
 
+    def locate_config_file
+      candidate_configs = []
+
+      # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
+      if ENV['KNIFE_HOME']
+        candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
+      end
+      # Look for $PWD/knife.rb
+      if Dir.pwd
+        candidate_configs << File.join(Dir.pwd, 'knife.rb')
+      end
+      # Look for $UPWARD/.chef/knife.rb
+      if self.class.chef_config_dir
+        candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
+      end
+      # Look for $HOME/.chef/knife.rb
+      if ENV['HOME']
+        candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
+      end
+
+      candidate_configs.each do | candidate_config |
+        candidate_config = File.expand_path(candidate_config)
+        if File.exist?(candidate_config)
+          config[:config_file] = candidate_config
+          break
+        end
+      end
+    end
+
     def configure_chef
       unless config[:config_file]
-        candidate_configs = []
-
-        # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
-        if ENV['KNIFE_HOME']
-          candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
-        end
-        # Look for $PWD/knife.rb
-        if Dir.pwd
-          candidate_configs << File.join(Dir.pwd, 'knife.rb')
-        end
-        # Look for $UPWARD/.chef/knife.rb
-        if self.class.chef_config_dir
-          candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
-        end
-        # Look for $HOME/.chef/knife.rb
-        if ENV['HOME']
-          candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
-        end
-
-        candidate_configs.each do | candidate_config |
-          candidate_config = File.expand_path(candidate_config)
-          if File.exist?(candidate_config)
-            config[:config_file] = candidate_config
-            break
-          end
-        end
+        locate_config_file
       end
 
       # Don't try to load a knife.rb if it doesn't exist.
