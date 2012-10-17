@@ -158,8 +158,7 @@ class Chef
       @couchdb = couchdb || Chef::CouchDB.new
 
       @run_state = {
-        :template_cache => Hash.new,
-        :seen_attributes => Hash.new
+        :template_cache => Hash.new
       }
     end
 
@@ -637,17 +636,6 @@ class Chef
 
     def to_s
       "node[#{name}]"
-    end
-
-    # Load all attribute files for all cookbooks associated with this
-    # node.
-    def load_attributes
-      cookbook_collection.values.each do |cookbook|
-        cookbook.segment_filenames(:attributes).each do |segment_filename|
-          Chef::Log.debug("Node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
-          self.from_file(segment_filename)
-        end
-      end
     end
 
   end
