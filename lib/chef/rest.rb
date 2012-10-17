@@ -32,7 +32,7 @@ require 'chef/monkey_patches/net_http'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
-
+require 'chef/platform'
 
 class Chef
   # == Chef::REST
