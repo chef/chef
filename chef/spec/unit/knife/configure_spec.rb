@@ -112,12 +112,13 @@ describe Chef::Knife::Configure do
   end
 
   it "creates a new client when given the --initial option" do
-    File.stub!(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
     Chef::Config[:node_name]  = "webmonkey.example.com"
+    Etc.stub!(:getlogin).and_return("a-new-user")
+    
     client_command = Chef::Knife::ClientCreate.new
     client_command.should_receive(:run)
 
-    Etc.stub!(:getlogin).and_return("a-new-user")
+    File.stub!(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
 
     Chef::Knife::ClientCreate.stub!(:new).and_return(client_command)
     FileUtils.should_receive(:mkdir_p).with("/home/you/.chef")
