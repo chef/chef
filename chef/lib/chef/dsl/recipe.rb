@@ -25,10 +25,12 @@ require 'chef/mixin/language'
 class Chef
   module DSL
 
+    # == Chef::DSL::Recipe
+    # Provides the primary recipe DSL functionality for defining Chef resource
+    # objects via method calls.
     module Recipe
 
       include Chef::Mixin::ConvertToClassName
-      include Chef::Mixin::Language
 
       def method_missing(method_symbol, *args, &block)
         # If we have a definition that matches, we want to use that instead.  This should

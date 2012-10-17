@@ -18,6 +18,10 @@
 
 class Chef
   module DSL
+
+    # == Chef::DSL::PlatformIntrospection
+    # Provides the DSL for platform-dependent switch logic, such as
+    # #value_for_platform.
     module PlatformIntrospection
 
       # Implementation class for determining platform dependent values

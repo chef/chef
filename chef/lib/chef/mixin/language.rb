@@ -21,13 +21,15 @@ require 'chef/dsl/data_query'
 
 class Chef
   module Mixin
+
+    # == [DEPRECATED] Chef::Mixin::Language
+    # This module is deprecated and remains only for backwards compatibility.
+    #
+    # See Chef::DSL::PlatformIntrospection and Chef::DSL::DataQuery
     module Language
 
       include Chef::DSL::PlatformIntrospection
-
-      # TODO! uncomment
-      # include Chef::DSL::DataQuery
-
+      include Chef::DSL::DataQuery
 
     end
   end
