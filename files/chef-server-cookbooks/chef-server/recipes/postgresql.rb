@@ -19,6 +19,7 @@ postgresql_dir = node['chef_server']['postgresql']['dir']
 postgresql_data_dir = node['chef_server']['postgresql']['data_dir']
 postgresql_data_dir_symlink = File.join(postgresql_dir, "data")
 postgresql_log_dir = node['chef_server']['postgresql']['log_directory']
+chef_db_dir = Dir.glob("/opt/chef-server/embedded/service/erchef/lib/chef_db-*").first
 
 user node['chef_server']['postgresql']['username'] do
   system true
@@ -139,14 +140,14 @@ if node['chef_server']['bootstrap']['enable']
   end
 
   execute "migrate_database" do
-    command "/opt/chef-server/embedded/bin/psql opscode_chef < pgsql_schema.sql"
-    cwd "/opt/chef-server/embedded/service/chef_db/priv"
+    command "/opt/chef-server/embedded/bin/psql opscode_chef < priv/pgsql_schema.sql"
+    cwd chef_db_dir
     user node['chef_server']['postgresql']['username']
     action :nothing
   end
 
   execute "/opt/chef-server/embedded/bin/psql -d 'opscode_chef' -c \"CREATE USER #{node['chef_server']['postgresql']['sql_user']} WITH SUPERUSER ENCRYPTED PASSWORD '#{node['chef_server']['postgresql']['sql_password']}'\"" do
-    cwd "/opt/chef-server/embedded/service/chef_db/priv"
+    cwd chef_db_dir
     user node['chef_server']['postgresql']['username']
     notifies :run, "execute[grant opscode_chef privileges]", :immediately
     not_if user_exists
@@ -159,7 +160,7 @@ if node['chef_server']['bootstrap']['enable']
   end
 
   execute "/opt/chef-server/embedded/bin/psql -d 'opscode_chef' -c \"CREATE USER #{node['chef_server']['postgresql']['sql_ro_user']} WITH SUPERUSER ENCRYPTED PASSWORD '#{node['chef_server']['postgresql']['sql_ro_password']}'\"" do
-    cwd "/opt/chef-server/embedded/service/chef_db/priv"
+    cwd chef_db_dir
     user node['chef_server']['postgresql']['username']
     notifies :run, "execute[grant opscode_chef_ro privileges]", :immediately
     not_if ro_user_exists
