@@ -202,8 +202,8 @@ module Shef
       Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::RemoteFileVendor.new(manifest, Chef::REST.new(Chef::Config[:server_url])) }
       cookbook_hash = @client.sync_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
-      @run_context = Chef::RunContext.new(node, cookbook_collection, @events) 
-      @run_context.load(Chef::RunList::RunListExpansionFromAPI.new("_default", []))
+      @run_context = Chef::RunContext.new(node, cookbook_collection, @events)
+      @run_context.load(@node.run_list.expand(@node.chef_environment))
       @run_status.run_context = run_context
     end
 
