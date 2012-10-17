@@ -149,8 +149,6 @@ class Chef::Application::Solo < Chef::Application
 
   def initialize
     super
-    @chef_solo = nil
-    @chef_solo_json = nil
   end
 
   def reconfigure
@@ -182,7 +180,7 @@ class Chef::Application::Solo < Chef::Application
       end
 
       begin
-        @chef_solo_json = Chef::JSONCompat.from_json(json_io.read)
+        @chef_client_json = Chef::JSONCompat.from_json(json_io.read)
         json_io.close unless json_io.closed?
       rescue JSON::ParserError => error
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
@@ -223,12 +221,7 @@ class Chef::Application::Solo < Chef::Application
           sleep splay
         end
 
-        @chef_solo = Chef::Client.new(
-          @chef_solo_json, 
-          :override_runlist => config[:override_runlist]
-        )
-        @chef_solo.run
-        @chef_solo = nil
+        run_chef_client
         if Chef::Config[:interval]
           Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
           sleep Chef::Config[:interval]
@@ -251,4 +244,5 @@ class Chef::Application::Solo < Chef::Application
       end
     end
   end
+
 end
