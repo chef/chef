@@ -164,10 +164,6 @@ class Chef
       @loaded_attributes.has_key?("#{cookbook}::#{attribute_file}")
     end
 
-    def loaded_attribute?
-
-    end
-
     def loaded_attribute(cookbook, attribute_file)
       @loaded_attributes["#{cookbook}::#{recipe}"] = true
     end
