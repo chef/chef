@@ -354,7 +354,7 @@ class Chef
       Chef::Config[:color] = config[:color]
 
       case Chef::Config[:verbosity]
-      when 0
+      when 0, nil
         Chef::Config[:log_level] = :error
       when 1
         Chef::Config[:log_level] = :info
