@@ -72,7 +72,7 @@
            {db_pass, "<%= node['chef_server'][node['chef_server']['database_type']]['sql_password'] %>"},
            {db_name, "opscode_chef" },
 
-           {prepared_statements, {chef_sql, statements, [<%= node['chef_server']['database_type'] == "postgresql" ? "pgsql" : "mysql" %>]}},
+           {prepared_statements, {chef_sql, osc_statements, [<%= node['chef_server']['database_type'] == "postgresql" ? "pgsql" : "mysql" %>]}},
            {column_transforms,
            <%-if node['chef_server']['database_type'] == "mysql" %>
                               [{<<"frozen">>,
