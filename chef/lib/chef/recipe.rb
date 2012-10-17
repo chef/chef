@@ -19,6 +19,7 @@
 
 
 require 'chef/dsl/recipe'
+require 'chef/dsl/platform_introspection'
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
 require 'chef/mixin/language_include_recipe'
@@ -32,6 +33,7 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Language
+    include Chef::DSL::PlatformIntrospection
     include Chef::Mixin::LanguageIncludeRecipe
     include Chef::DSL::Recipe
     include Chef::Mixin::Deprecation
