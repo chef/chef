@@ -24,12 +24,12 @@ Chef::Log.level = :debug
 
 describe Chef::RunContext do
   before(:each) do
-    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks"))
     cl = Chef::CookbookLoader.new(@chef_repo_path)
     cl.load_cookbooks
     @cookbook_collection = Chef::CookbookCollection.new(cl)
     @node = Chef::Node.new
+    @node.run_list << "test" << "test::one" << "test::two"
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
   end
@@ -54,7 +54,7 @@ describe Chef::RunContext do
     end
 
     it "should load all the recipes specified for this node" do
-      @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
+      @run_context.resource_collection[0].to_s.should == "cat[einstein]"
       @run_context.resource_collection[1].to_s.should == "cat[loulou]"
       @run_context.resource_collection[2].to_s.should == "cat[birthday]"
       @run_context.resource_collection[3].to_s.should == "cat[peanut]"

@@ -21,7 +21,6 @@ require 'chef/resource_collection'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
-require 'chef/dsl/attribute'
 
 class Chef
   # == Chef::RunContext
@@ -55,6 +54,7 @@ class Chef
       @loaded_attributes = {}
       @events = events
 
+      @node.run_context = self
     end
 
     def load(run_list_expansion)
@@ -90,6 +90,16 @@ class Chef
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
       cookbook = cookbook_collection[cookbook_name]
       cookbook.recipe_filenames_by_name[recipe_short_name]
+    end
+
+    def resolve_attribute(cookbook_name, attr_file_name)
+      cookbook = cookbook_collection[cookbook_name]
+      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
+
+      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
+      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
+
+      attribute_filename
     end
 
     def notifies_immediately(notification)
@@ -165,7 +175,7 @@ class Chef
     end
 
     def loaded_attribute(cookbook, attribute_file)
-      @loaded_attributes["#{cookbook}::#{recipe}"] = true
+      @loaded_attributes["#{cookbook}::#{attribute_file}"] = true
     end
 
     private
@@ -233,8 +243,7 @@ class Chef
         begin
           Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
           attr_file_basename = ::File.basename(filename, ".rb")
-          attribute_dsl = Chef::DSL::Attribute.new(node, self)
-          attribute_dsl.eval_attribute(cookbook_name, attr_file_basename)
+          @node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
         rescue Exception => e
           @events.attribute_file_load_failed(filename, e)
           raise

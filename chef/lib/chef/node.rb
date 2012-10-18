@@ -26,6 +26,7 @@ require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/deep_merge'
+require 'chef/dsl/include_attribute'
 require 'chef/environment'
 require 'chef/couchdb'
 require 'chef/rest'
@@ -46,7 +47,10 @@ class Chef
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_reader :couchdb_id
 
+    attr_accessor :run_context
+
     include Chef::Mixin::FromFile
+    include Chef::DSL::IncludeAttribute
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate

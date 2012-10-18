@@ -21,7 +21,6 @@ require 'ostruct'
 
 describe Chef::Node do
   before(:each) do
-    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes")))
     @node = Chef::Node.new()
   end
 
@@ -425,28 +424,30 @@ describe Chef::Node do
     end
   end
 
-  # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb
-  # describe "recipes" do
-  #   it "should have a RunList of recipes that should be applied" do
-  #     @node.recipes.should be_a_kind_of(Chef::RunList)
-  #   end
-  #
-  #   it "should allow you to query whether or not it has a recipe applied with recipe?" do
-  #     @node.recipes << "sunrise"
-  #     @node.recipe?("sunrise").should eql(true)
-  #     @node.recipe?("not at home").should eql(false)
-  #   end
-  #
-  #   it "should return false if a recipe has not been seen" do
-  #     @node.recipe?("snakes").should eql(false)
-  #   end
-  #
-  #   it "should allow you to set recipes with arguments" do
-  #     @node.recipes "one", "two"
-  #     @node.recipe?("one").should eql(true)
-  #     @node.recipe?("two").should eql(true)
-  #   end
-  # end
+  describe "when evaluating attributes files" do
+    before do
+      @node = Chef::Node.new
+
+      @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+      @cookbook_loader = Chef::CookbookLoader.new(@cookbook_repo)
+      @cookbook_loader.load_cookbooks
+
+      @cookbook_collection = Chef::CookbookCollection.new(@cookbook_loader.cookbooks_by_name)
+
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+
+      @node.include_attribute("openldap::default")
+      @node.include_attribute("openldap::smokey")
+    end
+
+    it "sets attributes from the files" do
+      @node.ldap_server.should eql("ops1prod")
+      @node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
+      @node.ldap_replication_password.should eql("forsure")
+      @node.smokey.should eql("robinson")
+    end
+  end
 
   describe "roles" do
     it "should allow you to query whether or not it has a recipe applied with role?" do

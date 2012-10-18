@@ -29,13 +29,14 @@ class Chef
       #   "mailservers"
       def include_attribute(*attr_file_specs)
         attr_file_specs.flatten.each do |attr_file_spec|
-          cookbook, attr_file = parse_attribute_file_spec(attr_file_spec)
-          if run_context.loaded_fully_qualified_attribute?(cookbook, attr_file)
-            Chef::Log.debug("I am not loading attribute file #{cookbook}::#{attr_file}, because I have already seen it.")
+          cookbook_name, attr_file = parse_attribute_file_spec(attr_file_spec)
+          if run_context.loaded_fully_qualified_attribute?(cookbook_name, attr_file)
+            Chef::Log.debug("I am not loading attribute file #{cookbook_name}::#{attr_file}, because I have already seen it.")
           else
-            Chef::Log.debug("Loading Attribute #{cookbook}::#{attr_file}")
-            run_context.loaded_attribute(cookbook, attr_file)
-            Chef::DSL::Attribute.new(node, run_context)
+            Chef::Log.debug("Loading Attribute #{cookbook_name}::#{attr_file}")
+            run_context.loaded_attribute(cookbook_name, attr_file)
+            attr_file_path = run_context.resolve_attribute(cookbook_name, attr_file)
+            node.from_file(attr_file_path)
           end
         end
         true
