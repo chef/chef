@@ -27,7 +27,9 @@ class Chef
     #   http://trac.misuse.org/science/wiki/DeepMerge
     module DeepMerge
 
-      OLD_KNOCKOUT_PREFIXES = %w[!merge !merge:].freeze
+      class InvalidSubtractiveMerge < ArgumentError; end
+
+      OLD_KNOCKOUT_PREFIX = "!merge:".freeze
 
       extend self
 
@@ -67,16 +69,12 @@ class Chef
       # Options:
       #   Options are specified in the last parameter passed, which should be in hash format:
       #   hash.deep_merge!({:x => [1,2]}, {:knockout_prefix => '!merge'})
-      #   :preserve_unmergeables  DEFAULT: false
-      #      Set to true to skip any unmergeable elements from source
       #   :knockout_prefix        DEFAULT: nil
       #      Set to string value to signify prefix which deletes elements from existing element
       #      A colon is appended when indicating a specific value, eg:
       #      :knockout_prefix => "dontmerge", is referenced as "dontmerge:foobar" in an array
       #   :sort_merged_arrays     DEFAULT: false
       #      Set to true to sort all arrays that are merged together
-      #   :unpack_arrays          DEFAULT: nil
-      #      Set to string value to run "Array::join" then "String::split" against all arrays
       #   :merge_debug            DEFAULT: false
       #      Set to true to get console output of merge process for debugging
       #
@@ -109,8 +107,6 @@ class Chef
         merge_debug = options[:merge_debug] || false
         knockout_prefix = options[:knockout_prefix] || nil
         raise InvalidParameter, "knockout_prefix cannot be an empty string in deep_merge!" if knockout_prefix == ""
-        # if present: we will split and join arrays on this char before merging
-        array_split_char = options[:unpack_arrays] || false
         # request that we sort together any arrays when they are merged
         sort_merged_arrays = options[:sort_merged_arrays] || false
         di = options[:debug_indent] || ''
@@ -147,14 +143,6 @@ class Chef
           end
         elsif source.kind_of?(Array)
           puts "#{di}Arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
-          # if we are instructed, join/split any source arrays before processing
-          if array_split_char
-            puts "#{di} split/join on source: #{source.inspect}" if merge_debug
-            source = source.join(array_split_char).split(array_split_char)
-            if dest.kind_of?(Array)
-              dest = dest.join(array_split_char).split(array_split_char)
-            end
-          end
           # if there's a naked knockout_prefix in source, that means we are to truncate dest
           ko_variants = [ knockout_prefix, "#{knockout_prefix}:" ]
           ko_variants.each do |ko|
