@@ -25,7 +25,7 @@ class Chef
 
       include Chef::Mixin::Command
 
-      def initialize(new_resource, run_context)
+      def initialize(*args)
         super
         @enabled = nil
       end

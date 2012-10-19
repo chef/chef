@@ -26,7 +26,7 @@ describe Chef::Provider::Service do
     @new_resource = Chef::Resource::Service.new("chef")
     @current_resource = Chef::Resource::Service.new("chef")
 
-    @provider = Chef::Provider::Service.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service.new(@new_resource, @run_context, :start)
     @provider.current_resource = @current_resource
     @provider.stub!(:load_current_resource)
   end

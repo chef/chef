@@ -26,7 +26,7 @@ class Chef
     class User
       class Windows < Chef::Provider::User
 
-        def initialize(new_resource,run_context)
+        def initialize(*args)
           super
           @net_user = Chef::Util::Windows::NetUser.new(@new_resource.name)
         end

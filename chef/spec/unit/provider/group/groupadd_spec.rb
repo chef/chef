@@ -31,7 +31,7 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
     @current_resource.gid(50)
     @current_resource.members(["root", "aj"])
     @current_resource.system false
-    @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context, :create)
     @provider.current_resource = @current_resource
   end
 
@@ -78,7 +78,7 @@ describe Chef::Provider::Group::Groupadd, "create_group" do
   before do
     @node = Chef::Node.new
     @new_resource = Chef::Resource::Group.new("aj")
-    @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Groupadd.new(@node, @new_resource, :create)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:groupadd_options).and_return("")
@@ -102,7 +102,7 @@ describe Chef::Provider::Group::Groupadd do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Group.new("aj")
-    @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context, :create)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
   end

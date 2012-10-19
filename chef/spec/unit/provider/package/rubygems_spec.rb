@@ -325,7 +325,7 @@ describe Chef::Provider::Package::Rubygems do
 
     # We choose detect omnibus via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
     RbConfig::CONFIG.stub!(:[]).with('bindir').and_return("/usr/bin/ruby")
-    @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context, :install)
   end
 
   it "triggers a gem configuration load so a later one will not stomp its config values" do
@@ -339,7 +339,7 @@ describe Chef::Provider::Package::Rubygems do
 
   it "uses the AlternateGemEnvironment implementation when a gem_binary_path is provided" do
     @new_resource.gem_binary('/usr/weird/bin/gem')
-    provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+    provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context, :install)
     provider.gem_env.gem_binary_location.should == '/usr/weird/bin/gem'
   end
 
@@ -350,7 +350,7 @@ describe Chef::Provider::Package::Rubygems do
       File.stub!(:exists?).with('/usr/bin/gem').and_return(false)
       File.stub!(:exists?).with('/usr/sbin/gem').and_return(true)
       File.stub!(:exists?).with('/opt/chef/embedded/bin/gem').and_return(true) # should not get here
-      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context, :install)
       provider.gem_env.gem_binary_location.should == '/usr/sbin/gem'
     end
   end
@@ -364,7 +364,7 @@ describe Chef::Provider::Package::Rubygems do
       File.stub!(:exists?).with('C:\\Ruby186\\bin\\gem').and_return(true)
       File.stub!(:exists?).with('d:\\opscode\\chef\\bin\\gem').and_return(false) # should not get here
       File.stub!(:exists?).with('d:\\opscode\\chef\\embedded\\bin\\gem').and_return(false) # should not get here
-      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+      provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context, :install)
       provider.gem_env.gem_binary_location.should == 'C:\Ruby186\bin\gem'
     end
   end
@@ -459,7 +459,7 @@ describe Chef::Provider::Package::Rubygems do
 
       it "installs the gem from file via the gems api when the package is a path and the source is nil" do
         @new_resource = Chef::Resource::GemPackage.new(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
-        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context, :install)
         @provider.current_resource = @current_resource
         @new_resource.source.should == CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
         @provider.gem_env.should_receive(:install).with(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
@@ -542,7 +542,7 @@ describe Chef::Provider::Package::Rubygems do
 
       it "installs the gem from file by shelling out to gem install when the package is a path and the source is nil" do
         @new_resource = Chef::Resource::GemPackage.new(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
-        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Rubygems.new(@new_resource, @run_context, :install)
         @provider.current_resource = @current_resource
         @new_resource.gem_binary('/usr/weird/bin/gem')
         @new_resource.version('>= 0')

@@ -26,7 +26,7 @@ class Chef
       include Chef::Mixin::Command
       attr_accessor :key_exists
 
-      def initialize(new_resource, run_context)
+      def initialize(*args)
         super
         @key_exists = true
       end

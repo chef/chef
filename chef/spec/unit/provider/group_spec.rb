@@ -28,7 +28,7 @@ describe Chef::Provider::User do
     @new_resource.gid 500
     @new_resource.members "aj"
 
-    @provider = Chef::Provider::Group.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group.new(@new_resource, @run_context, :create)
 
     @current_resource = Chef::Resource::Group.new("aj", @run_context)
     @current_resource.gid 500

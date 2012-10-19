@@ -29,7 +29,7 @@ describe Chef::Provider::Package::Apt do
     @current_resource = Chef::Resource::Package.new("irssi", @run_context)
 
     @status = mock("Status", :exitstatus => 0)
-    @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context, :install)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @stdin = StringIO.new
     @stdout =<<-PKG_STATUS
@@ -183,7 +183,7 @@ SHOWPKG_STDOUT
 
     it "should run apt-cache policy with the default_release option, if there is one and provider is explicitly defined" do
       @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
-      @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context, :install)
 
       @new_resource.stub!(:default_release).and_return("lenny-backports")
       @new_resource.stub!(:provider).and_return("Chef::Provider::Package::Apt")

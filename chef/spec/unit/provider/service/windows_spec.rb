@@ -25,7 +25,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Service.new("chef")
-    @provider = Chef::Provider::Service::Windows.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Windows.new(@new_resource, @run_context, :start)
     Object.send(:remove_const, 'Win32') if defined?(Win32)
     Win32 = Module.new
     Win32::Service = Class.new

@@ -31,7 +31,7 @@ describe Chef::Provider::Service::Freebsd do
 
     @current_resource = Chef::Resource::Service.new("apache22")
 
-    @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context)
+    @provider = Chef::Provider::Service::Freebsd.new(@new_resource,@run_context, :start)
     @provider.action = :start
     @init_command = "/usr/local/etc/rc.d/apache22"
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)

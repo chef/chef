@@ -29,7 +29,7 @@ describe Chef::Provider::Package do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new('emacs')
     @current_resource = Chef::Resource::Package.new('emacs')
-    @provider = Chef::Provider::Package.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package.new(@new_resource, @run_context, :install)
     @provider.current_resource = @current_resource
 
     @provider.candidate_version = "1.0"

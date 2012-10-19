@@ -26,7 +26,7 @@ describe Chef::Provider::Package::Macports do
     @new_resource = Chef::Resource::Package.new("zsh")
     @current_resource = Chef::Resource::Package.new("zsh")
 
-    @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Macports.new(@new_resource, @run_context, :install)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)

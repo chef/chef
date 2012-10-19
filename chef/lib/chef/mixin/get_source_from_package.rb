@@ -27,7 +27,7 @@
 class Chef
   module Mixin
     module GetSourceFromPackage
-      def initialize(new_resource, run_context)
+      def initialize(new_resource, run_context, action)
         super
         # if we're passed something that looks like a filesystem path, with no source, use it
         #  - require at least one '/' in the path to avoid gem_package "foo" breaking if a file named 'foo' exists in the cwd

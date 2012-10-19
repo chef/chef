@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Rpm do
     @new_resource = Chef::Resource::Package.new("emacs")
     @new_resource.source "/tmp/emacs-21.4-20.el5.i386.rpm"
     
-    @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context, :install)
     
     @status = mock("Status", :exitstatus => 0)
     ::File.stub!(:exists?).and_return(true)
@@ -71,8 +71,8 @@ describe Chef::Provider::Package::Rpm do
   
     it "should raise an exception if the source is not set but we are installing" do
       new_resource = Chef::Resource::Package.new("emacs")
-      provider = Chef::Provider::Package::Rpm.new(new_resource, @run_context)
-      lambda { provider.run_action(:any) }.should raise_error(Chef::Exceptions::Package)
+      provider = Chef::Provider::Package::Rpm.new(new_resource, @run_context, :install)
+      lambda { provider.run_action }.should raise_error(Chef::Exceptions::Package)
     end
   
     it "should raise an exception if rpm fails to run" do
@@ -106,7 +106,7 @@ describe Chef::Provider::Package::Rpm do
 
       it "should install from a path when the package is a path and the source is nil" do
         @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
-        @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context, :install)
         @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
         @current_resource = Chef::Resource::Package.new("emacs")
         @provider.current_resource = @current_resource
@@ -118,7 +118,7 @@ describe Chef::Provider::Package::Rpm do
 
       it "should uprgrade from a path when the package is a path and the source is nil" do
         @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
-        @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Rpm.new(@new_resource, @run_context, :install)
         @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
         @current_resource = Chef::Resource::Package.new("emacs")
         @current_resource.version("21.4-19.el5")

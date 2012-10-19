@@ -36,7 +36,7 @@ describe Chef::Provider::Mount do
     @current_resource.mount_point "/tmp/foo"
     @current_resource.fstype      "ext3"
 
-    @provider = Chef::Provider::Mount.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Mount.new(@new_resource, @run_context, :mount)
     @provider.current_resource = @current_resource
   end
   

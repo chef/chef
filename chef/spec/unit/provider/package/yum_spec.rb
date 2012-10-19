@@ -37,7 +37,7 @@ describe Chef::Provider::Package::Yum do
       :package_repository => "base" 
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-    @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
     @stderr = StringIO.new
     @pid = mock("PID")
   end
@@ -93,14 +93,14 @@ describe Chef::Provider::Package::Yum do
         end
         @yum_cache.stub!(:package_available?).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing"
         @provider.new_resource.arch.should == "noarch"
         @provider.arch.should == "noarch"
 
         @new_resource = Chef::Resource::YumPackage.new('testing.more.noarch')
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.more"
         @provider.new_resource.arch.should == "noarch"
@@ -126,7 +126,7 @@ describe Chef::Provider::Package::Yum do
         end
         @yum_cache.stub!(:package_available?).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         # annoying side effect of the fun stub'ing above
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
@@ -134,7 +134,7 @@ describe Chef::Provider::Package::Yum do
         @provider.arch.should == nil
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil
@@ -156,14 +156,14 @@ describe Chef::Provider::Package::Yum do
         end
         @yum_cache.stub!(:package_available?).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3"
         @provider.new_resource.arch.should == nil
         @provider.arch.should == nil
 
         @new_resource = Chef::Resource::YumPackage.new('testing.beta3.more')
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.beta3.more"
         @provider.new_resource.arch.should == nil
@@ -190,7 +190,7 @@ describe Chef::Provider::Package::Yum do
         end.and_return("something")
         @yum_cache.stub!(:package_available?).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
         @provider.load_current_resource
         @provider.new_resource.package_name.should == "testing.i386"
         @provider.new_resource.arch.should == "x86_64"
@@ -222,7 +222,7 @@ describe Chef::Provider::Package::Yum do
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "1.2.4-11.18.el5", "x86_64", [])
       @yum_cache.should_receive(:packages_from_require).and_return([pkg])
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       @new_resource.package_name.should == "test-package"
     end
@@ -242,7 +242,7 @@ describe Chef::Provider::Package::Yum do
       pkg_y = Chef::Provider::Package::Yum::RPMPackage.new("test-package-y", "1.2.6-11.3.el5", "i386", [])
       @yum_cache.should_receive(:packages_from_require).and_return([pkg_x, pkg_y])
       Chef::Log.should_receive(:warn).exactly(1).times.with(%r{matched multiple Provides})
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       @new_resource.package_name.should == "test-package-x"
     end
@@ -260,7 +260,7 @@ describe Chef::Provider::Package::Yum do
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @yum_cache.should_receive(:packages_from_require).twice.and_return([])
       @yum_cache.should_receive(:reload_provides)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
     end
 
@@ -275,7 +275,7 @@ describe Chef::Provider::Package::Yum do
         :version_available? => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @yum_cache.should_receive(:packages_from_require).once.and_return([])
       @yum_cache.should_not_receive(:reload_provides)
       @new_resource.action(:remove)
@@ -299,7 +299,7 @@ describe Chef::Provider::Package::Yum do
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @yum_cache.should_receive(:packages_from_require).twice.and_return([])
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       @new_resource.package_name.should == "cups"
     end
@@ -326,7 +326,7 @@ describe Chef::Provider::Package::Yum do
     it "should run yum localinstall if given a path to an rpm as the package" do
       @new_resource = Chef::Resource::Package.new("/tmp/emacs-21.4-20.el5.i386.rpm")
       ::File.stub!(:exists?).and_return(true)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @new_resource.source.should == "/tmp/emacs-21.4-20.el5.i386.rpm"
       @provider.should_receive(:yum_command).with(
         "yum -d0 -e0 -y localinstall /tmp/emacs-21.4-20.el5.i386.rpm"
@@ -366,7 +366,7 @@ describe Chef::Provider::Package::Yum do
         :version_available? => nil
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       lambda { @provider.install_package("lolcats", "0.99") }.should raise_error(Chef::Exceptions::Package, %r{Version .* not found})
     end
 
@@ -383,7 +383,7 @@ describe Chef::Provider::Package::Yum do
         :allow_multi_install => [ "kernel" ]
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       lambda { @provider.install_package("cups", "1.2.4-11.15.el5") }.should raise_error(Chef::Exceptions::Package, %r{is newer than candidate package})
     end
@@ -401,7 +401,7 @@ describe Chef::Provider::Package::Yum do
         :package_repository => "base"
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       @provider.should_receive(:yum_command).with(
         "yum -d0 -e0 -y install cups-1.2.4-11.15.el5"
@@ -423,7 +423,7 @@ describe Chef::Provider::Package::Yum do
         :package_repository => "base"
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       @provider.should_receive(:yum_command).with(
         "yum -d0 -e0 -y downgrade cups-1.2.4-11.15.el5"
@@ -488,7 +488,7 @@ describe Chef::Provider::Package::Yum do
         :allow_multi_install => [ "kernel" ]
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       lambda { @provider.upgrade_package("cups", "1.2.4-11.15.el5") }.should raise_error(Chef::Exceptions::Package, %r{is newer than candidate package})
     end

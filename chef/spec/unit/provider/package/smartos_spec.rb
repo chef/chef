@@ -29,7 +29,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 		
 	
 	  @status = mock("Status", :exitstatus => 0)
-		@provider = Chef::Provider::Package::SmartOS.new(@new_resource, @run_context)
+		@provider = Chef::Provider::Package::SmartOS.new(@new_resource, @run_context, :install)
 		Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 		@stdin = StringIO.new
 		@stdout = "varnish-2.1.5nb2\n"

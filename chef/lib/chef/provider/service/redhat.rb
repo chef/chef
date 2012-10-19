@@ -29,7 +29,7 @@ class Chef
         CHKCONFIG_ON = /\d:on/
         CHKCONFIG_MISSING = /No such/
 
-        def initialize(new_resource, run_context)
+        def initialize(*args)
           super
            @init_command = "/sbin/service #{@new_resource.service_name}"
            @new_resource.supports[:status] = true

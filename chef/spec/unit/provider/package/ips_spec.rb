@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Ips do
     @new_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
     @current_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
-    @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context, :install)
 
     @stdin = StringIO.new
     @stderr = StringIO.new
@@ -164,7 +164,7 @@ PKG_STATUS
       before do
         @new_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
         @current_resource = Chef::Resource::IpsPackage.new("crypto/gnupg", @run_context)
-        @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context)
+        @provider = Chef::Provider::Package::Ips.new(@new_resource, @run_context, :install)
       end
 
       context "when accept_license is true" do

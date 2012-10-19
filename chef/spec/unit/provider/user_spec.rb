@@ -41,7 +41,7 @@ describe Chef::Provider::User do
     @current_resource.home "/home/adam"
     @current_resource.shell "/usr/bin/zsh"
 
-    @provider = Chef::Provider::User.new(@new_resource, @run_context)
+    @provider = Chef::Provider::User.new(@new_resource, @run_context, :create)
     @provider.current_resource = @current_resource
   end
 

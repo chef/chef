@@ -42,7 +42,7 @@ describe Chef::Provider::User::Pw do
     @current_resource.shell    "/usr/bin/zsh"
     @current_resource.password "abracadabra"
 
-    @provider = Chef::Provider::User::Pw.new(@new_resource, @run_context)
+    @provider = Chef::Provider::User::Pw.new(@new_resource, @run_context, :create)
     @provider.current_resource = @current_resource
   end
 

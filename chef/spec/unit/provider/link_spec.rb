@@ -30,7 +30,7 @@ describe Chef::Resource::Link do
     node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, @events)
-    Chef::Provider::Link.new(new_resource, run_context)
+    Chef::Provider::Link.new(new_resource, run_context, :create)
   end
   let(:new_resource) do
     result = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")

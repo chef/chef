@@ -30,8 +30,8 @@ class Chef
 
       CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
 
-      def initialize(new_resource, run_context)
-        super(new_resource, run_context)
+      def initialize(*args)
+        super
         @cron_exists = false
         @cron_empty = false
       end

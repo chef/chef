@@ -26,7 +26,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
     @new_resource = Chef::Resource::Group.new("wheel")
     @new_resource.members %w{lobster rage fist}
     @new_resource.append false
-    @provider = Chef::Provider::Group::Gpasswd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Group::Gpasswd.new(@new_resource, @run_context, :create)
     #@provider.stub!(:run_command).and_return(true)
   end
 

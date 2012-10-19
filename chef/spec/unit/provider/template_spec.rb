@@ -37,7 +37,7 @@ describe Chef::Provider::Template do
     @resource = Chef::Resource::Template.new(@rendered_file_location)
     @resource.cookbook_name = 'openldap'
 
-    @provider = Chef::Provider::Template.new(@resource, @run_context)
+    @provider = Chef::Provider::Template.new(@resource, @run_context, :sync)
     @current_resource = @resource.dup
     @provider.current_resource = @current_resource
     @access_controls = mock("access controls")

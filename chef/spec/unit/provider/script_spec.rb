@@ -27,7 +27,7 @@ describe Chef::Provider::Script, "action_run" do
     @new_resource.code "$| = 1; print 'i like beans'"
     @new_resource.interpreter 'perl'
 
-    @provider = Chef::Provider::Script.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Script.new(@new_resource, @run_context, :run)
 
     @script_file = StringIO.new
     @script_file.stub!(:path).and_return('/tmp/the_script_file')

@@ -26,7 +26,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
     @new_resource_without_category = Chef::Resource::Package.new("git")
     @current_resource = Chef::Resource::Package.new("dev-util/git")
 
-    @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context, :install)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
   end
 
@@ -64,34 +64,34 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
 
     it "should return a package name match from /var/db/pkg/* if a category isn't specified and a match is found" do
       ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-foobar-0.9", "/var/db/pkg/dev-util/git-1.0.0"])
-      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context, :install)
       @provider.load_current_resource
       @provider.current_resource.version.should == "1.0.0"
     end
 
     it "should return a current resource with a nil version if a category isn't specified and a name match from /var/db/pkg/* is not found" do
       ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/notgit-1.0.0"])
-      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context, :install)
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
 
     it "should throw an exception if a category isn't specified and multiple packages are found" do
       ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/funny-words/git-1.0.0"])
-      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context, :install)
       lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
     end
 
     it "should return a current resource with a nil version if a category is specified and multiple packages are found" do
       ::Dir.stub!(:[]).with("/var/db/pkg/dev-util/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/funny-words/git-1.0.0"])
-      @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context)
+      @provider = Chef::Provider::Package::Portage.new(@new_resource, @run_context, :install)
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
 
     it "should return a current resource with a nil version if a category is not specified and multiple packages from the same category are found" do
       ::Dir.stub!(:[]).with("/var/db/pkg/*/git-*").and_return(["/var/db/pkg/dev-util/git-1.0.0", "/var/db/pkg/dev-util/git-1.0.1"])
-      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+      @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context, :install)
       @provider.load_current_resource
       @provider.current_resource.version.should be_nil
     end
@@ -180,7 +180,7 @@ Searching...
 EOF
 
         @status = mock("Status", :exitstatus => 0)
-        @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+        @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context, :install)
         @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
         @provider.candidate_version.should == "1.6.0.6"
       end
@@ -225,7 +225,7 @@ Searching...
 EOF
 
         @status = mock("Status", :exitstatus => 0)
-        @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
+        @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context, :install)
         @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
         lambda { @provider.candidate_version }.should raise_error(Chef::Exceptions::Package)
       end

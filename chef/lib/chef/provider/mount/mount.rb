@@ -26,7 +26,7 @@ class Chef
       class Mount < Chef::Provider::Mount
         include Chef::Mixin::ShellOut
 
-        def initialize(new_resource, run_context)
+        def initialize(*args)
           super
           @real_device = nil
         end

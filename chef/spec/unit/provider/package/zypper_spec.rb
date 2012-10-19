@@ -29,7 +29,7 @@ describe Chef::Provider::Package::Zypper do
 
     @status = mock("Status", :exitstatus => 0)
 
-    @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::Zypper.new(@new_resource, @run_context, :install)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @stderr = StringIO.new

@@ -372,7 +372,7 @@ class Chef
       def provider_for_resource(resource, action=:nothing)
         node = resource.run_context && resource.run_context.node
         raise ArgumentError, "Cannot find the provider for a resource with no run context set" unless node
-        provider = find_provider_for_node(node, resource).new(resource, resource.run_context)
+        provider = find_provider_for_node(node, resource).new(resource, resource.run_context, action)
         provider.action = action
         provider
       end
@@ -384,7 +384,7 @@ class Chef
 
       def find_provider_for_node(node, resource_type)
         platform, version = find_platform_and_version(node)
-        provider = find_provider(platform, version, resource_type)
+        find_provider(platform, version, resource_type)
       end
 
       def set(args)
@@ -451,7 +451,6 @@ class Chef
       end
 
       def find_provider(platform, version, resource_type)
-        pmap = Chef::Platform.find(platform, version)
         provider_klass = explicit_provider(platform, version, resource_type) ||
                          platform_provider(platform, version, resource_type) ||
                          resource_matching_provider(platform, version, resource_type)

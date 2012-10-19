@@ -28,7 +28,7 @@ describe Chef::Provider::Service::Insserv do
     @new_resource = Chef::Resource::Service.new("initgrediant")
     @current_resource = Chef::Resource::Service.new("initgrediant")
 
-    @provider = Chef::Provider::Service::Insserv.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Insserv.new(@new_resource, @run_context, :start)
     @status = mock("Process::Status mock", :exitstatus => 0, :stdout => "")
     @provider.stub!(:shell_out!).and_return(@status)
   end

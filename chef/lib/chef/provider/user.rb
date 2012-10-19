@@ -29,7 +29,7 @@ class Chef
 
       attr_accessor :user_exists, :locked
 
-      def initialize(new_resource, run_context)
+      def initialize(*args)
         super
         @user_exists = true
         @locked = nil

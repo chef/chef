@@ -24,7 +24,7 @@ describe Chef::Provider::Service::Systemd do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Service.new('rsyslog.service')
-    @provider = Chef::Provider::Service::Systemd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Systemd.new(@new_resource, @run_context, :start)
   end
 
   describe "load_current_resource" do

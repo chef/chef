@@ -26,7 +26,7 @@ describe Chef::Provider::Env do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Env.new("FOO")
     @new_resource.value("bar")
-    @provider = Chef::Provider::Env.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Env.new(@new_resource, @run_context, :create)
   end
 
   it "assumes the key_name exists by default" do

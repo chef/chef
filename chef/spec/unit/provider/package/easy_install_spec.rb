@@ -29,7 +29,7 @@ describe Chef::Provider::Package::EasyInstall do
     @current_resource = Chef::Resource::EasyInstallPackage.new('boto')
     @current_resource.version('1.8d')
 
-    @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Package::EasyInstall.new(@new_resource, @run_context, :install)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @stdin = StringIO.new
@@ -41,10 +41,6 @@ describe Chef::Provider::Package::EasyInstall do
   end
 
   describe "easy_install_binary_path" do
-    it "should return a Chef::Provider::EasyInstall object" do
-      provider = Chef::Provider::Package::EasyInstall.new(@node, @new_resource)
-      provider.should be_a_kind_of(Chef::Provider::Package::EasyInstall)
-    end
 
     it "should set the current resources package name to the new resources package name" do
       $stdout.stub!(:write)

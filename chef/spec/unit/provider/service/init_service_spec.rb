@@ -29,7 +29,7 @@ describe Chef::Provider::Service::Init, "load_current_resource" do
 
     @current_resource = Chef::Resource::Service.new("chef")
 
-    @provider = Chef::Provider::Service::Init.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Service::Init.new(@new_resource, @run_context, :start)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @stdout = StringIO.new(<<-PS)

@@ -24,7 +24,7 @@ class Chef
     class Service
       class Solaris < Chef::Provider::Service
 
-        def initialize(new_resource, run_context=nil)
+        def initialize(*args)
           super
           @init_command = "/usr/sbin/svcadm"
           @status_command = "/bin/svcs -l"

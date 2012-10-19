@@ -331,7 +331,7 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
-        def initialize(new_resource, run_context=nil)
+        def initialize(new_resource, run_context, action)
           super
           @cleanup_gem_env = true
           if new_resource.gem_binary
