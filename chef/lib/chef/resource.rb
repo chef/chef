@@ -19,7 +19,7 @@
 
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
-require 'chef/mixin/language'
+require 'chef/dsl/platform_introspection'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
 require 'chef/resource_collection'
@@ -121,7 +121,7 @@ F
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
-    include Chef::Mixin::Language
+    include Chef::DSL::PlatformIntrospection
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
 

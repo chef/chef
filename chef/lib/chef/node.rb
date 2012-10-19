@@ -21,13 +21,12 @@
 
 require 'forwardable'
 require 'chef/config'
-require 'chef/cookbook/cookbook_collection'
 require 'chef/nil_argument'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/mixin/language_include_attribute'
 require 'chef/mixin/deep_merge'
+require 'chef/dsl/include_attribute'
 require 'chef/environment'
 require 'chef/couchdb'
 require 'chef/rest'
@@ -48,15 +47,13 @@ class Chef
     attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
     attr_reader :couchdb_id
 
-    # TODO: 5/18/2010 cw/timh. cookbook_collection should be removed
-    # from here and for any place it's needed, it should be accessed
-    # through a Chef::RunContext
-    attr_accessor :cookbook_collection
+    attr_accessor :run_context
+
+    include Chef::Mixin::FromFile
+    include Chef::DSL::IncludeAttribute
 
     include Chef::Mixin::CheckHelper
-    include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::Mixin::LanguageIncludeAttribute
     include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
@@ -165,14 +162,7 @@ class Chef
       @couchdb_id = nil
       @couchdb = couchdb || Chef::CouchDB.new
 
-      @run_state = {
-        :template_cache => Hash.new,
-        :seen_recipes => Hash.new,
-        :seen_attributes => Hash.new
-      }
-      # TODO: 5/20/2010 need this here as long as other objects try to access
-      # the cookbook collection via Node, otherwise get NoMethodError on nil.
-      @cookbook_collection = CookbookCollection.new
+      @run_state = {}
     end
 
     def couchdb_id=(value)
@@ -187,24 +177,6 @@ class Chef
 
     def chef_server_rest
       Chef::REST.new(Chef::Config[:chef_server_url])
-    end
-
-    # Find a recipe for this Chef::Node by fqdn.  Will search first for
-    # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
-    #
-    # Returns a new Chef::Node object.
-    #
-    # Raises an ArgumentError if it cannot find the node.
-    def find_file(fqdn)
-      host_parts = fqdn.split(".")
-      hostname = host_parts[0]
-
-      [fqdn, hostname, "default"].each { |fname|
-       node_file = File.join(Chef::Config[:node_path], "#{fname.to_s}.rb")
-       return self.from_file(node_file) if File.exists?(node_file)
-     }
-
-      raise ArgumentError, "Cannot find a node matching #{fqdn}, not even with default.rb!"
     end
 
     # Set the name of this Node, or return the current name.
@@ -351,12 +323,11 @@ class Chef
     #
     # First, the run list is consulted to see whether the recipe is
     # explicitly included. If it's not there, it looks in
-    # run_state[:seen_recipes], which is populated by include_recipe
-    # statements in the DSL (and thus would not be in the run list).
+    # `node[:recipes]`, which is populated when the run_list is expanded
     #
     # NOTE: It's used by cookbook authors
     def recipe?(recipe_name)
-      run_list.include?(recipe_name) || run_state[:seen_recipes].include?(recipe_name)
+      run_list.include?(recipe_name) || self[recipes].include?(recipe_name)
     end
 
     # Returns true if this Node expects a given role, false if not.
@@ -652,32 +623,5 @@ class Chef
       "node[#{name}]"
     end
 
-    # Load all attribute files for all cookbooks associated with this
-    # node.
-    def load_attributes
-      cookbook_collection.values.each do |cookbook|
-        cookbook.segment_filenames(:attributes).each do |segment_filename|
-          Chef::Log.debug("Node #{name} loading cookbook #{cookbook.name}'s attribute file #{segment_filename}")
-          self.from_file(segment_filename)
-        end
-      end
-    end
-
-    # Used by DSL.
-    # Loads the attribute file specified by the short name of the
-    # file, e.g., loads specified cookbook's
-    #   "attributes/mailservers.rb"
-    # if passed
-    #   "mailservers"
-    def load_attribute_by_short_filename(name, src_cookbook_name)
-      src_cookbook = cookbook_collection[src_cookbook_name]
-      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{src_cookbook_name} while loading attribute #{name}" unless src_cookbook
-
-      attribute_filename = src_cookbook.attribute_filenames_by_short_filename[name]
-      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{name} in cookbook #{src_cookbook_name}" unless attribute_filename
-
-      self.from_file(attribute_filename)
-      self
-    end
   end
 end

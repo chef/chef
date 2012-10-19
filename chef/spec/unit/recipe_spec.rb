@@ -206,9 +206,9 @@ describe Chef::Recipe do
       res.pretty_kitty.should eql(true)
     end
 
-    it "should store that it has seen a recipe in node.run_state[:seen_recipes]" do
+    it "should store that it has seen a recipe in the run_context" do
       @run_context.include_recipe "openldap"
-      @node.run_state[:seen_recipes].should have_key("openldap")
+      @run_context.loaded_recipe?("openldap").should be_true
     end
 
     it "should not include the same recipe twice" do

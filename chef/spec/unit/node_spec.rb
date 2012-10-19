@@ -21,7 +21,6 @@ require 'ostruct'
 
 describe Chef::Node do
   before(:each) do
-    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "nodes")))
     @node = Chef::Node.new()
   end
 
@@ -63,12 +62,9 @@ describe Chef::Node do
   end
 
   describe "run_state" do
-    it "should have a template_cache hash" do
-      @node.run_state[:template_cache].should be_a_kind_of(Hash)
-    end
-
-    it "should have a seen_recipes hash" do
-      @node.run_state[:seen_recipes].should be_a_kind_of(Hash)
+    it "is an empty hash" do
+      @node.run_state.should respond_to(:keys)
+      @node.run_state.should be_empty
     end
   end
 
@@ -123,18 +119,6 @@ describe Chef::Node do
   end
 
   describe "attributes" do
-    it "should be loaded from the node's cookbooks" do
-      @cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
-      cl = Chef::CookbookLoader.new(@cookbook_repo)
-      cl.load_cookbooks
-      @node.cookbook_collection = Chef::CookbookCollection.new(cl)
-      @node.load_attributes
-      @node.ldap_server.should eql("ops1prod")
-      @node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
-      @node.ldap_replication_password.should eql("forsure")
-      @node.smokey.should eql("robinson")
-    end
-
     it "should have attributes" do
       @node.attribute.should be_a_kind_of(Hash)
     end
@@ -440,33 +424,34 @@ describe Chef::Node do
     end
   end
 
-  # TODO: timh, cw: 2010-5-19: Node.recipe? deprecated. See node.rb
-  # describe "recipes" do
-  #   it "should have a RunList of recipes that should be applied" do
-  #     @node.recipes.should be_a_kind_of(Chef::RunList)
-  #   end
-  #
-  #   it "should allow you to query whether or not it has a recipe applied with recipe?" do
-  #     @node.recipes << "sunrise"
-  #     @node.recipe?("sunrise").should eql(true)
-  #     @node.recipe?("not at home").should eql(false)
-  #   end
-  #
-  #   it "should allow you to query whether or not a recipe has been applied, even if it was included" do
-  #     @node.run_state[:seen_recipes]["snakes"] = true
-  #     @node.recipe?("snakes").should eql(true)
-  #   end
-  #
-  #   it "should return false if a recipe has not been seen" do
-  #     @node.recipe?("snakes").should eql(false)
-  #   end
-  #
-  #   it "should allow you to set recipes with arguments" do
-  #     @node.recipes "one", "two"
-  #     @node.recipe?("one").should eql(true)
-  #     @node.recipe?("two").should eql(true)
-  #   end
-  # end
+  describe "when evaluating attributes files" do
+    before do
+      @node = Chef::Node.new
+
+      @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+      @cookbook_loader = Chef::CookbookLoader.new(@cookbook_repo)
+      @cookbook_loader.load_cookbooks
+
+      @cookbook_collection = Chef::CookbookCollection.new(@cookbook_loader.cookbooks_by_name)
+
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+
+      @node.include_attribute("openldap::default")
+      @node.include_attribute("openldap::smokey")
+    end
+
+    it "sets attributes from the files" do
+      @node.ldap_server.should eql("ops1prod")
+      @node.ldap_basedn.should eql("dc=hjksolutions,dc=com")
+      @node.ldap_replication_password.should eql("forsure")
+      @node.smokey.should eql("robinson")
+    end
+
+    it "gives a sensible error when attempting to load a missing attributes file" do
+      lambda { @node.include_attribute("nope-this::doesnt-exist") }.should raise_error(Chef::Exceptions::CookbookNotFound)
+    end
+  end
 
   describe "roles" do
     it "should allow you to query whether or not it has a recipe applied with role?" do
@@ -511,37 +496,6 @@ describe Chef::Node do
 
     it "should raise an exception if the file cannot be found or read" do
       lambda { @node.from_file("/tmp/monkeydiving") }.should raise_error(IOError)
-    end
-  end
-
-  describe "find_file" do
-    it "should load a node from a file by fqdn" do
-      @node.find_file("test.example.com")
-      @node.name.should == "test.example.com"
-      @node.chef_environment.should == "dev"
-    end
-
-    it "should load a node from a file by hostname" do
-      File.stub!(:exists?).and_return(true)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-      @node.find_file("test.example.com")
-      @node.name.should == "test.example.com-short"
-    end
-
-    it "should load a node from the default file" do
-      File.stub!(:exists?).and_return(true)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
-      @node.find_file("test.example.com")
-      @node.name.should == "test.example.com-default"
-    end
-
-    it "should raise an ArgumentError if it cannot find any node file at all" do
-      File.stub!(:exists?).and_return(true)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.example.com.rb")).and_return(false)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "test.rb")).and_return(false)
-      File.should_receive(:exists?).with(File.join(Chef::Config[:node_path], "default.rb")).and_return(false)
-      lambda { @node.find_file("test.example.com") }.should raise_error(ArgumentError)
     end
   end
 
@@ -607,7 +561,7 @@ describe Chef::Node do
 
   describe "json" do
     it "should serialize itself as json", :json => true do
-      @node.find_file("test.example.com")
+      @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(@node)
       json.should =~ /json_class/
       json.should =~ /name/
@@ -628,7 +582,7 @@ describe Chef::Node do
     end
 
     it "should deserialize itself from json", :json => true do
-      @node.find_file("test.example.com")
+      @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(@node)
       serialized_node = Chef::JSONCompat.from_json(json)
       serialized_node.should be_a_kind_of(Chef::Node)

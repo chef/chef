@@ -20,12 +20,13 @@ require "chef/mixin/command"
 require "chef/mixin/from_file"
 require "chef/provider/git"
 require "chef/provider/subversion"
+require 'chef/dsl/recipe'
 
 class Chef
   class Provider
     class Deploy < Chef::Provider
 
-      include Chef::Mixin::RecipeDefinitionDSLCore
+      include Chef::DSL::Recipe
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command
 

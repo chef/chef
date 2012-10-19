@@ -19,7 +19,7 @@
 require 'spec_helper'
 
 describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
-  include Chef::Mixin::RecipeDefinitionDSLCore
+  include Chef::DSL::Recipe
 
   def run_context
     node = Chef::Node.new

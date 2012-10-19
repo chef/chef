@@ -24,13 +24,12 @@ Chef::Log.level = :debug
 
 describe Chef::RunContext do
   before(:each) do
-    Chef::Config.node_path(File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "nodes")))
     @chef_repo_path = File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks"))
     cl = Chef::CookbookLoader.new(@chef_repo_path)
     cl.load_cookbooks
     @cookbook_collection = Chef::CookbookCollection.new(cl)
     @node = Chef::Node.new
-    @node.find_file("run_context")
+    @node.run_list << "test" << "test::one" << "test::two"
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
   end
@@ -55,11 +54,24 @@ describe Chef::RunContext do
     end
 
     it "should load all the recipes specified for this node" do
-      @run_context.resource_collection[0].to_s.should == "cat[einstein]"  
+      @run_context.resource_collection[0].to_s.should == "cat[einstein]"
       @run_context.resource_collection[1].to_s.should == "cat[loulou]"
       @run_context.resource_collection[2].to_s.should == "cat[birthday]"
       @run_context.resource_collection[3].to_s.should == "cat[peanut]"
       @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
+    end
+
+    it "loads all the attribute files in the cookbook collection" do
+      @run_context.loaded_fully_qualified_attribute?("test", "george").should be_true
+      @node[:george].should == "washington"
+    end
+
+    it "registers attributes files as loaded so they won't be reloaded" do
+      # This test unfortunately is pretty tightly intertwined with the
+      # implementation of how nodes load attribute files, but is the only
+      # convenient way to test this behavior.
+      @node.should_not_receive(:from_file)
+      @node.include_attribute("test::george")
     end
   end
 
