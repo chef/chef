@@ -60,6 +60,11 @@ describe Chef::RunContext do
       @run_context.resource_collection[3].to_s.should == "cat[peanut]"
       @run_context.resource_collection[4].to_s.should == "cat[fat peanut]"
     end
+
+    it "loads all the attribute files in the cookbook collection" do
+      @run_context.loaded_fully_qualified_attribute?("test", "george").should be_true
+      @node[:george].should == "washington"
+    end
   end
 
 end

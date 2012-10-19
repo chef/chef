@@ -447,6 +447,10 @@ describe Chef::Node do
       @node.ldap_replication_password.should eql("forsure")
       @node.smokey.should eql("robinson")
     end
+
+    it "gives a sensible error when attempting to load a missing attributes file" do
+      lambda { @node.include_attribute("nope-this::doesnt-exist") }.should raise_error(Chef::Exceptions::CookbookNotFound)
+    end
   end
 
   describe "roles" do
