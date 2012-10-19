@@ -17,13 +17,13 @@
 #
 
 require 'spec_helper'
-require 'chef/mixin/language'
+require 'chef/dsl/platform_introspection'
 
 class LanguageTester
-  include Chef::Mixin::Language
+  include Chef::DSL::PlatformIntrospection
 end
 
-describe Chef::Mixin::Language do
+describe Chef::DSL::PlatformIntrospection do
   before(:each) do
     @language = LanguageTester.new
     @node = Hash.new
@@ -35,13 +35,13 @@ describe Chef::Mixin::Language do
         "1.2.3" => "#{x}-1.2.3"
       }
     end
-    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"} 
+    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
     @platform_hash["default"] = "default"
 
-    @platform_family_hash = { 
-      "debian" => "debian value", 
-      [:rhel, :fedora] => "redhatty value", 
-      "suse" => "suse value", 
+    @platform_family_hash = {
+      "debian" => "debian value",
+      [:rhel, :fedora] => "redhatty value",
+      "suse" => "suse value",
       :default => "default value"
     }
   end
@@ -51,28 +51,28 @@ describe Chef::Mixin::Language do
     @language.value_for_platform(@platform_hash).should == "default"
   end
 
-  it "returns a default value when there is no known platform family" do 
-    @language.value_for_platform_family(@platform_family_hash).should == "default value" 
+  it "returns a default value when there is no known platform family" do
+    @language.value_for_platform_family(@platform_family_hash).should == "default value"
   end
-	  
+
   it "returns a default value when the current platform doesn't match" do
     @node[:platform] = "not-a-known-platform"
     @language.value_for_platform(@platform_hash).should == "default"
   end
 
-  it "returns a default value when current platform_family doesn't match" do 
+  it "returns a default value when current platform_family doesn't match" do
     @node[:platform_family] = "ultra-derived-linux"
-    @language.value_for_platform_family(@platform_family_hash).should == "default value" 
+    @language.value_for_platform_family(@platform_family_hash).should == "default value"
   end
-	  
+
   it "returns a value based on the current platform" do
     @node[:platform] = "openbsd"
     @language.value_for_platform(@platform_hash).should == "openbsd"
   end
 
-  it "returns a value based on the current platform family" do 
+  it "returns a value based on the current platform family" do
     @node[:platform_family] = "debian"
-    @language.value_for_platform_family(@platform_family_hash).should == "debian value" 
+    @language.value_for_platform_family(@platform_family_hash).should == "debian value"
   end
 
   it "returns a version-specific value based on the current platform" do
@@ -101,52 +101,52 @@ describe Chef::Mixin::Language do
     end
   end
 
-  describe "when checking platform?" do 
+  describe "when checking platform?" do
     before(:each) do
       @language = LanguageTester.new
       @node = Hash.new
       @language.stub!(:node).and_return(@node)
     end
-    
-    it "returns true if the node is a provided platform and platforms are provided as symbols" do 
+
+    it "returns true if the node is a provided platform and platforms are provided as symbols" do
       @node[:platform] = 'ubuntu'
       @language.platform?([:redhat, :ubuntu]).should == true
     end
- 
-    it "returns true if the node is a provided platform and platforms are provided as strings" do 
+
+    it "returns true if the node is a provided platform and platforms are provided as strings" do
       @node[:platform] = 'ubuntu'
       @language.platform?(["redhat", "ubuntu"]).should == true
     end
- 
-    it "returns false if the node is not of the provided platforms" do 
+
+    it "returns false if the node is not of the provided platforms" do
       @node[:platform] = 'ubuntu'
       @language.platform?(:splatlinux).should == false
     end
   end
-  
-  describe "when checking platform_family?" do 
+
+  describe "when checking platform_family?" do
     before(:each) do
       @language = LanguageTester.new
       @node = Hash.new
       @language.stub!(:node).and_return(@node)
     end
-    
-    it "returns true if the node is in a provided platform family and families are provided as symbols" do 
+
+    it "returns true if the node is in a provided platform family and families are provided as symbols" do
       @node[:platform_family] = 'debian'
       @language.platform_family?([:rhel, :debian]).should == true
     end
- 
-    it "returns true if the node is a provided platform and platforms are provided as strings" do 
+
+    it "returns true if the node is a provided platform and platforms are provided as strings" do
       @node[:platform_family] = 'rhel'
       @language.platform_family?(["rhel", "debian"]).should == true
     end
- 
-    it "returns false if the node is not of the provided platforms" do 
+
+    it "returns false if the node is not of the provided platforms" do
       @node[:platform_family] = 'suse'
       @language.platform_family?(:splatlinux).should == false
     end
-  
-    it "returns false if the node is not of the provided platforms and platform_family is not set" do 
+
+    it "returns false if the node is not of the provided platforms and platform_family is not set" do
       @language.platform_family?(:splatlinux).should == false
     end
 
@@ -173,44 +173,12 @@ describe Chef::Mixin::Language do
       @node[:platform] = "debian"
       @node[:platform_version] = '4.0'
       @language.value_for_platform(@platform_hash).should == [:restart, :reload]
-    end 
-  end
-
-  describe "when loading data bags and items" do
-    it "lists the items in a data bag" do
-      Chef::DataBag.should_receive(:load).with("bag_name").and_return("item_1" => "http://url_for/item_1", "item_2" => "http://url_for/item_2")
-      @language.data_bag("bag_name").sort.should == %w[item_1 item_2]
     end
-
-    it "validates the name of the data bag you're trying to load" do
-      lambda {@language.data_bag("!# %^&& ")}.should raise_error(Chef::Exceptions::InvalidDataBagName)
-    end
-
-    it "fetches a data bag item" do
-      @item = Chef::DataBagItem.new
-      @item.data_bag("bag_name")
-      @item.raw_data = {"id" => "item_name", "FUU" => "FUU"}
-      Chef::DataBagItem.should_receive(:load).with("bag_name", "item_name").and_return(@item)
-      @language.data_bag_item("bag_name", "item_name").should == @item
-    end
-
-    it "validates the name of the data bag you're trying to load an item from" do
-      lambda {@language.data_bag_item(" %%^& ", "item_name")}.should raise_error(Chef::Exceptions::InvalidDataBagName)
-    end
-
-    it "validates the id of the data bag item you're trying to load" do
-      lambda {@language.data_bag_item("bag_name", " 987 (*&()")}.should raise_error(Chef::Exceptions::InvalidDataBagItemID)
-    end
-
-    it "validates that the id of the data bag item is not nil" do
-      lambda {@language.data_bag_item("bag_name", nil)}.should raise_error(Chef::Exceptions::InvalidDataBagItemID)
-    end
-
   end
 
 end
 
-describe Chef::Mixin::Language::PlatformDependentValue do
+describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
   before do
     platform_hash = {
       :openbsd => {:default => 'free, functional, secure'},
@@ -218,7 +186,7 @@ describe Chef::Mixin::Language::PlatformDependentValue do
       :ubuntu => {'10.04' => 'using upstart more', :default => 'using init more'},
       :default => 'bork da bork'
     }
-    @platform_specific_value = Chef::Mixin::Language::PlatformDependentValue.new(platform_hash)
+    @platform_specific_value = Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(platform_hash)
   end
 
   it "returns the default value when the platform doesn't match" do
@@ -246,29 +214,29 @@ describe Chef::Mixin::Language::PlatformDependentValue do
   it "returns nil if there is no default and no platforms match" do
     # this matches the behavior in the original implementation.
     # whether or not it's correct is another matter.
-    platform_specific_value = Chef::Mixin::Language::PlatformDependentValue.new({})
+    platform_specific_value = Chef::DSL::PlatformIntrospection::PlatformDependentValue.new({})
     platform_specific_value.value_for_node(:platform => 'foo').should be_nil
   end
 
   it "raises an argument error if the platform hash is not correctly structured" do
     bad_hash = {:ubuntu => :foo} # should be :ubuntu => {:default => 'foo'}
-    lambda {Chef::Mixin::Language::PlatformDependentValue.new(bad_hash)}.should raise_error(ArgumentError)
+    lambda {Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(bad_hash)}.should raise_error(ArgumentError)
   end
 
 end
-describe Chef::Mixin::Language::PlatformFamilyDependentValue do
+describe Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue do
   before do
-    @array_values = [:stop, :start, :reload] 
+    @array_values = [:stop, :start, :reload]
 
-    @platform_family_hash = { 
-      "debian" => "debian value", 
-      [:rhel, "fedora"] => "redhatty value", 
-      "suse" => @array_values, 
+    @platform_family_hash = {
+      "debian" => "debian value",
+      [:rhel, "fedora"] => "redhatty value",
+      "suse" => @array_values,
       :gentoo => "gentoo value",
       :default => "default value"
     }
-      
-    @platform_family_value = Chef::Mixin::Language::PlatformFamilyDependentValue.new(@platform_family_hash)
+
+    @platform_family_value = Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue.new(@platform_family_hash)
   end
 
   it "returns the default value when the platform family doesn't match" do
@@ -277,28 +245,27 @@ describe Chef::Mixin::Language::PlatformFamilyDependentValue do
 
 
   it "returns a value for the platform family when it was set as a string but fetched as a symbol" do
-    @platform_family_value.value_for_node(:platform_family => :debian).should == "debian value" 
+    @platform_family_value.value_for_node(:platform_family => :debian).should == "debian value"
   end
-  
-  
+
   it "returns a value for the platform family when it was set as a symbol but fetched as a string" do
-    @platform_family_value.value_for_node(:platform_family => "gentoo").should == "gentoo value" 
+    @platform_family_value.value_for_node(:platform_family => "gentoo").should == "gentoo value"
   end
- 
-  it "returns an array value stored for a platform family" do 
+
+  it "returns an array value stored for a platform family" do
     @platform_family_value.value_for_node(:platform_family => "suse").should == @array_values
   end
 
   it "returns a value for the platform family when it was set within an array hash key as a symbol" do
-    @platform_family_value.value_for_node(:platform_family => :rhel).should == "redhatty value" 
+    @platform_family_value.value_for_node(:platform_family => :rhel).should == "redhatty value"
   end
-  
+
   it "returns a value for the platform family when it was set within an array hash key as a string" do
-    @platform_family_value.value_for_node(:platform_family => "fedora").should == "redhatty value" 
+    @platform_family_value.value_for_node(:platform_family => "fedora").should == "redhatty value"
   end
-  
+
   it "returns nil if there is no default and no platforms match" do
-    platform_specific_value = Chef::Mixin::Language::PlatformFamilyDependentValue.new({})
+    platform_specific_value = Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue.new({})
     platform_specific_value.value_for_node(:platform_family => 'foo').should be_nil
   end
 

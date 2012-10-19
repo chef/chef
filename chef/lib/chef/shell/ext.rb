@@ -19,6 +19,7 @@
 require 'tempfile'
 require 'chef/recipe'
 require 'fileutils'
+require 'chef/dsl/platform_introspection'
 require 'chef/version'
 require 'chef/shell/shell_session'
 require 'chef/shell/model_wrapper'
@@ -559,7 +560,8 @@ E
       obj.instance_eval(&MainContextExtensions)
       obj.instance_eval(&RESTApiExtensions)
       obj.extend(FileUtils)
-      obj.extend(Chef::Mixin::Language)
+      obj.extend(Chef::DSL::PlatformIntrospection)
+      obj.extend(Chef::DSL::DataQuery)
     end
 
     def self.extend_context_node(node_obj)

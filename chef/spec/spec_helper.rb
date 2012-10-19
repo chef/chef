@@ -38,6 +38,7 @@ require 'chef'
 require 'chef/knife'
 Chef::Knife.load_commands
 require 'chef/mixins'
+require 'chef/dsl'
 require 'chef/application'
 require 'chef/applications'
 

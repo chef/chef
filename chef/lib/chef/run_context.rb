@@ -21,15 +21,11 @@ require 'chef/resource_collection'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
-require 'chef/mixin/language_include_recipe'
 
 class Chef
   # == Chef::RunContext
   # Value object that loads and tracks the context of a Chef run
   class RunContext
-
-    # Used to load the node's recipes after expanding its run list
-    include Chef::Mixin::LanguageIncludeRecipe
 
     attr_reader :node, :cookbook_collection, :definitions
 
@@ -38,6 +34,9 @@ class Chef
     attr_accessor :resource_collection, :immediate_notification_collection, :delayed_notification_collection
 
     attr_reader :events
+
+    attr_reader :loaded_recipes
+    attr_reader :loaded_attributes
 
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
@@ -51,11 +50,11 @@ class Chef
       @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
       @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
       @definitions = Hash.new
+      @loaded_recipes = {}
+      @loaded_attributes = {}
       @events = events
 
-      # TODO: 5/18/2010 cw/timh - See note on Chef::Node's
-      # cookbook_collection attr_accessor
-      node.cookbook_collection = cookbook_collection
+      @node.run_context = self
     end
 
     def load(run_list_expansion)
@@ -74,8 +73,6 @@ class Chef
       @events.recipe_load_start(run_list_expansion.recipes.size)
       run_list_expansion.recipes.each do |recipe|
         begin
-          # TODO: timh/cw, 5-14-2010: It's distasteful to be including
-          # the DSL in a class outside the context of the DSL
           include_recipe(recipe)
         rescue Chef::Exceptions::RecipeNotFound => e
           @events.recipe_not_found(e)
@@ -93,6 +90,16 @@ class Chef
       cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
       cookbook = cookbook_collection[cookbook_name]
       cookbook.recipe_filenames_by_name[recipe_short_name]
+    end
+
+    def resolve_attribute(cookbook_name, attr_file_name)
+      cookbook = cookbook_collection[cookbook_name]
+      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
+
+      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
+      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
+
+      attribute_filename
     end
 
     def notifies_immediately(notification)
@@ -129,7 +136,53 @@ class Chef
       end
     end
 
+    def include_recipe(*recipe_names)
+      result_recipes = Array.new
+      recipe_names.flatten.each do |recipe_name|
+        if result = load_recipe(recipe_name)
+          result_recipes << result
+        end
+      end
+      result_recipes
+    end
+
+    def load_recipe(recipe_name)
+      Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
+
+      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+      if loaded_fully_qualified_recipe?(cookbook_name, recipe_short_name)
+        Chef::Log.debug("I am not loading #{recipe_name}, because I have already seen it.")
+        false
+      else
+        loaded_recipe(cookbook_name, recipe_short_name)
+
+        cookbook = cookbook_collection[cookbook_name]
+        cookbook.load_recipe(recipe_short_name, self)
+      end
+    end
+
+    def loaded_fully_qualified_recipe?(cookbook, recipe)
+      @loaded_recipes.has_key?("#{cookbook}::#{recipe}")
+    end
+
+    def loaded_recipe?(recipe)
+      cookbook, recipe_name = Chef::Recipe.parse_recipe_name(recipe)
+      loaded_fully_qualified_recipe?(cookbook, recipe_name)
+    end
+
+    def loaded_fully_qualified_attribute?(cookbook, attribute_file)
+      @loaded_attributes.has_key?("#{cookbook}::#{attribute_file}")
+    end
+
+    def loaded_attribute(cookbook, attribute_file)
+      @loaded_attributes["#{cookbook}::#{attribute_file}"] = true
+    end
+
     private
+
+    def loaded_recipe(cookbook, recipe)
+      @loaded_recipes["#{cookbook}::#{recipe}"] = true
+    end
 
     def load_libraries
       @events.library_load_start(count_files_by_segment(:libraries))
@@ -189,7 +242,8 @@ class Chef
       foreach_cookbook_load_segment(:attributes) do |cookbook_name, filename|
         begin
           Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-          @node.from_file(filename)
+          attr_file_basename = ::File.basename(filename, ".rb")
+          @node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
         rescue Exception => e
           @events.attribute_file_load_failed(filename, e)
           raise

@@ -24,7 +24,6 @@ require 'ostruct'
 describe Chef::Provider::Package::Ips do
   before(:each) do
     @node = Chef::Node.new
-    @node.cookbook_collection = {}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new("crypto/gnupg", @run_context)

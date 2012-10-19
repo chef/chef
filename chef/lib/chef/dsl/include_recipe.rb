@@ -16,11 +16,27 @@
 # limitations under the License.
 #
 
-require 'chef/dsl/include_recipe'
+require 'chef/log'
 
 class Chef
-  module Mixin
-    LanguageIncludeRecipe = Chef::DSL::IncludeRecipe
+  module DSL
+    module IncludeRecipe
+
+      def include_recipe(*recipe_names)
+        run_context.include_recipe(*recipe_names)
+      end
+
+      def load_recipe(recipe_name)
+        run_context.load_recipe(recipe_name)
+      end
+
+      def require_recipe(*args)
+        Chef::Log.warn("require_recipe is deprecated and will be removed in a future release, please use include_recipe")
+        include_recipe(*args)
+      end
+
+    end
   end
 end
+
 
