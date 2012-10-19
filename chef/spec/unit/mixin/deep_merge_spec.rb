@@ -287,9 +287,27 @@ describe Chef::Mixin::DeepMerge do
   end
 
   describe "role_merge" do
-    it "errors out if knockout merge use is detected" do
+    it "errors out if knockout merge use is detected in an array" do
       hash_dst = {"property" => ["2","4"]}
       hash_src = {"property" => ["1","!merge:4"]}
+      lambda {@dm.role_merge(hash_dst, hash_src)}.should raise_error(Chef::Mixin::DeepMerge::InvalidSubtractiveMerge)
+    end
+
+    it "errors out if knockout merge use is detected in an array (reversed merge order)" do
+      hash_dst = {"property" => ["1","!merge:4"]}
+      hash_src = {"property" => ["2","4"]}
+      lambda {@dm.role_merge(hash_dst, hash_src)}.should raise_error(Chef::Mixin::DeepMerge::InvalidSubtractiveMerge)
+    end
+
+    it "errors out if knockout merge use is detected in a string" do
+      hash_dst = {"property" => ["2","4"]}
+      hash_src = {"property" => "!merge"}
+      lambda {@dm.role_merge(hash_dst, hash_src)}.should raise_error(Chef::Mixin::DeepMerge::InvalidSubtractiveMerge)
+    end
+
+    it "errors out if knockout merge use is detected in a string (reversed merge order)" do
+      hash_dst = {"property" => "!merge"}
+      hash_src= {"property" => ["2","4"]}
       lambda {@dm.role_merge(hash_dst, hash_src)}.should raise_error(Chef::Mixin::DeepMerge::InvalidSubtractiveMerge)
     end
   end

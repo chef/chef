@@ -29,7 +29,13 @@ class Chef
 
       class InvalidSubtractiveMerge < ArgumentError; end
 
+
       OLD_KNOCKOUT_PREFIX = "!merge:".freeze
+
+      # Regex to match the "knockout prefix" that was used to indicate
+      # subtractive merging in Chef 10.x and previous. Subtractive merging is
+      # removed as of Chef 11, but we detect attempted use of it and raise an
+      # error (see: raise_if_knockout_used!)
       OLD_KNOCKOUT_MATCH = %r[!merge].freeze
 
       extend self
@@ -73,6 +79,7 @@ class Chef
         end
 
         raise_if_knockout_used!(source)
+        raise_if_knockout_used!(dest)
         case source
         when nil
           dest
@@ -103,12 +110,16 @@ class Chef
         dest
       end # deep_merge!
 
+      # Checks for attempted use of subtractive merge, which was removed for
+      # Chef 11.0. If subtractive merge use is detected, will raise an
+      # InvalidSubtractiveMerge exception.
       def raise_if_knockout_used!(obj)
         if uses_knockout?(obj)
           raise InvalidSubtractiveMerge, "subtractive merge with !merge is no longer supported"
         end
       end
 
+      # Checks for attempted use of subtractive merge in +obj+.
       def uses_knockout?(obj)
         case obj
         when String
