@@ -220,19 +220,24 @@ class Chef
       alias :each_attribute :each
 
       def method_missing(symbol, *args)
-        if args.empty?
-          if key?(symbol)
-            self[symbol]
-          else
-            raise NoMethodError, "Undefined method or attribute `#{symbol}' on `node'"
-          end
-        elsif symbol.to_s =~ /=$/
+        if symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
           self[key_to_set] = (args.length == 1 ? args[0] : args)
+        elsif args.empty? and key? symbol
+          self[symbol]
         else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'"
+          super
         end
       end
+
+      def respond_to?(symbol)
+        if key?(symbol)
+          true
+        else
+          super
+        end
+      end
+
 
       def inspect
         "#<#{self.class} " << (COMPONENTS + [:@merged_attributes, :@properties]).map{|iv|
