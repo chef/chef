@@ -118,13 +118,13 @@ class Chef
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           if !e.response || e.response.code.to_s != "404"
             if Chef::Config[:enable_reporting_url_fatals]
-              Chef::Log.error("Received exception attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
+              Chef::Log.error("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
               raise
             else
-              Chef::Log.info("Received exception attempting to generate run history id (URL Path: #{resource_history_url}), disabling reporting for this run.")
+              Chef::Log.info("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), disabling reporting for this run.")
             end
           else
-            Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported.")
+            Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported on server.")
           end
           @reporting_enabled = false
         end
