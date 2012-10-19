@@ -65,6 +65,14 @@ describe Chef::RunContext do
       @run_context.loaded_fully_qualified_attribute?("test", "george").should be_true
       @node[:george].should == "washington"
     end
+
+    it "registers attributes files as loaded so they won't be reloaded" do
+      # This test unfortunately is pretty tightly intertwined with the
+      # implementation of how nodes load attribute files, but is the only
+      # convenient way to test this behavior.
+      @node.should_not_receive(:from_file)
+      @node.include_attribute("test::george")
+    end
   end
 
 end
