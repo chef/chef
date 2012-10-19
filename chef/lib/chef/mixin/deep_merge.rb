@@ -26,6 +26,9 @@ class Chef
     #   deep_merge is available under the MIT license from
     #   http://trac.misuse.org/science/wiki/DeepMerge
     module DeepMerge
+
+      OLD_KNOCKOUT_PREFIXES = %w[!merge !merge:].freeze
+
       extend self
 
       def merge(first, second)
@@ -104,10 +107,8 @@ class Chef
       def deep_merge!(source, dest, options = {})
         # turn on this line for stdout debugging text
         merge_debug = options[:merge_debug] || false
-        overwrite_unmergeable = !options[:preserve_unmergeables]
         knockout_prefix = options[:knockout_prefix] || nil
         raise InvalidParameter, "knockout_prefix cannot be an empty string in deep_merge!" if knockout_prefix == ""
-        raise InvalidParameter, "overwrite_unmergeable must be true if knockout_prefix is specified in deep_merge!" if knockout_prefix && !overwrite_unmergeable
         # if present: we will split and join arrays on this char before merging
         array_split_char = options[:unpack_arrays] || false
         # request that we sort together any arrays when they are merged
@@ -116,7 +117,7 @@ class Chef
         # do nothing if source is nil
         return dest if source.nil?
         # if dest doesn't exist, then simply copy source to it
-        if dest.nil? && overwrite_unmergeable
+        if dest.nil?
           dest = source; return dest
         end
 
@@ -140,10 +141,8 @@ class Chef
                 dest[src_key] = deep_merge!(src_value, src_dup, options.merge(:debug_indent => di + '  '))
               end
             else # dest isn't a hash, so we overwrite it completely (if permitted)
-              if overwrite_unmergeable
-                puts "#{di}  overwriting dest: #{src_key.inspect} => #{src_value.inspect} -over->  #{dest.inspect}" if merge_debug
-                dest = overwrite_unmergeables(source, dest, options)
-              end
+              puts "#{di}  overwriting dest: #{src_key.inspect} => #{src_value.inspect} -over->  #{dest.inspect}" if merge_debug
+              dest = overwrite_unmergeables(source, dest, options)
             end
           end
         elsif source.kind_of?(Array)
@@ -183,7 +182,7 @@ class Chef
             puts "#{di} merging arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
             dest = dest | source
             dest.sort! if sort_merged_arrays
-          elsif overwrite_unmergeable
+          else
             puts "#{di} overwriting dest: #{source.inspect} -over-> #{dest.inspect}" if merge_debug
             dest = overwrite_unmergeables(source, dest, options)
           end
@@ -198,10 +197,9 @@ class Chef
       # allows deep_merge! to uniformly handle overwriting of unmergeable entities
       def overwrite_unmergeables(source, dest, options)
         merge_debug = options[:merge_debug] || false
-        overwrite_unmergeable = !options[:preserve_unmergeables]
         knockout_prefix = options[:knockout_prefix] || false
         di = options[:debug_indent] || ''
-        if knockout_prefix && overwrite_unmergeable
+        if knockout_prefix
           if source.kind_of?(String) # remove knockout string from source before overwriting dest
             if source == knockout_prefix
               src_tmp = ""
@@ -220,7 +218,7 @@ class Chef
             puts "#{di}\"\" -over-> #{dest.inspect}" if merge_debug
             dest = ""
           end
-        elsif overwrite_unmergeable
+        else
           dest = source
         end
         dest

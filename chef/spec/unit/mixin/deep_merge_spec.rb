@@ -103,13 +103,6 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2","1","4+"]}}
   end
 
-  it "tests hash holding hash holding array v string (string is NOT overwritten by array)" do
-    hash_src = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2","1","4+"]}}
-  end
-
   it "tests hash holding hash holding string v array (array is overwritten by string)" do
     hash_src = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["1", "4+"]}}
     hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
@@ -117,25 +110,11 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {"property" => {"bedroom_count" => "3", "bathroom_count" => ["2","1","4+"]}}
   end
 
-  it "tests hash holding hash holding string v array (array does NOT overwrite string)" do
-    hash_src = {"property" => {"bedroom_count" => "3", "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2","1","4+"]}}
-  end
-
   it "tests hash holding hash holding hash v array (array is overwritten by hash)" do
     hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["1", "4+"]}}
     hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
     @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["2","1","4+"]}}
-  end
-
-  it "tests hash holding hash holding hash v array (array is NOT overwritten by hash)" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => 3, "queen_bed" => 1}, "bathroom_count" => ["1", "4+"]}}
-    hash_dst = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["2","1","4+"]}}
   end
 
   it "tests 3 hash layers holding integers (integers are overwritten by source)" do
@@ -159,25 +138,11 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {"property" => "1"}
   end
 
-  it "tests 1 hash NOT overwriting 3 hash layers holding arrays of int" do
-    hash_src = {"property" => "1"}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-  end
-
   it "tests 3 hash layers holding arrays of int (arrays are merged) but second hash's array is overwritten" do
     hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
     hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
     @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => "1"}}
-  end
-
-  it "tests 3 hash layers holding arrays of int (arrays are merged) but second hash's array is NOT overwritten" do
-    hash_src = {"property" => {"bedroom_count" => {"king_bed" => [3], "queen_bed" => [1]}, "bathroom_count" => "1"}}
-    hash_dst = {"property" => {"bedroom_count" => {"king_bed" => [2], "queen_bed" => [4]}, "bathroom_count" => ["2"]}}
-    @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
-    hash_dst.should == {"property" => {"bedroom_count" => {"king_bed" => [2,3], "queen_bed" => [4,1]}, "bathroom_count" => ["2"]}}
   end
 
   it "tests 3 hash layers holding arrays of int, but one holds int. This one overwrites, but the rest merge" do
@@ -224,19 +189,7 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     }.should raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
 
     lambda {
-      @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true, :knockout_prefix => ""})
-    }.should raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
-
-    lambda {
-      @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true, :knockout_prefix => @field_ko_prefix})
-    }.should raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
-
-    lambda {
       @dm.deep_merge!(@dm.deep_merge!(hash_src, hash_dst))
-    }.should_not raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
-
-    lambda {
-      @dm.deep_merge!(hash_src, hash_dst, {:preserve_unmergeables => true})
     }.should_not raise_error(Chef::Mixin::DeepMerge::InvalidParameter)
   end
 
@@ -261,10 +214,10 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {'property' => {'bedroom_count' => ["1","2,3"]}}
   end
 
-  it "tests merging into a blank hash with overwrite_unmergeables turned on" do
+  it "tests merging into a blank hash" do
     hash_src = {"action"=>"browse", "controller"=>"results"}
     hash_dst = {}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == hash_src
   end
 
@@ -340,49 +293,49 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   it "unamed upstream - tbd" do
     hash_src = {"url_regions"=>[], "region"=>{"ids"=>["227,233"]}, "action"=>"browse", "task"=>"browse", "controller"=>"results"}
     hash_dst = {"region"=>{"ids"=>["227"]}}
-    @dm.deep_merge!(hash_src.dup, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src.dup, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"url_regions"=>[], "region"=>{"ids"=>["227","233"]}, "action"=>"browse", "task"=>"browse", "controller"=>"results"}
   end
 
   it "unamed upstream - tbd" do
     hash_src = {"region"=>{"ids"=>[@field_ko_prefix,"227"], "id"=>"230"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227"], "id"=>"230"}}
   end
 
   it "unamed upstream - tbd" do
     hash_src = {"region"=>{"ids"=>[@field_ko_prefix,"227", "232", "233"], "id"=>"232"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227", "232", "233"], "id"=>"232"}}
   end
 
   it "unamed upstream - tbd" do
     hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227,232,233"], "id"=>"232"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227", "232", "233"], "id"=>"232"}}
   end
 
   it "unamed upstream - tbd" do
     hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227,232","233"], "id"=>"232"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227", "232", "233"], "id"=>"232"}}
   end
 
   it "unamed upstream - tbd" do
     hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227"], "id"=>"230"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227"], "id"=>"230"}}
   end
 
   it "unamed upstream - tbd" do
     hash_src = {"region"=>{"ids"=>["#{@field_ko_prefix},227"], "id"=>"230"}}
     hash_dst = {"region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}, "action"=>"browse", "task"=>"browse", "controller"=>"results", "property_order_by"=>"property_type.descr"}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"region"=>{"ids"=>["227"], "id"=>"230"}, "action"=>"browse", "task"=>"browse",
       "controller"=>"results", "property_order_by"=>"property_type.descr"}
   end
@@ -390,7 +343,7 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   it "unamed upstream - tbd" do
     hash_src = {"query_uuid"=>"6386333d-389b-ab5c-8943-6f3a2aa914d7", "region"=>{"ids"=>["#{@field_ko_prefix},227"], "id"=>"230"}}
     hash_dst = {"query_uuid"=>"6386333d-389b-ab5c-8943-6f3a2aa914d7", "url_regions"=>[], "region"=>{"ids"=>["227", "233", "324", "230", "230"], "id"=>"230"}, "action"=>"browse", "task"=>"browse", "controller"=>"results", "property_order_by"=>"property_type.descr"}
-    @dm.deep_merge!(hash_src, hash_dst, {:overwrite_unmergeables => true, :knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
+    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix, :unpack_arrays => ","})
     hash_dst.should == {"query_uuid" => "6386333d-389b-ab5c-8943-6f3a2aa914d7", "url_regions"=>[],
       "region"=>{"ids"=>["227"], "id"=>"230"}, "action"=>"browse", "task"=>"browse",
       "controller"=>"results", "property_order_by"=>"property_type.descr"}
