@@ -73,8 +73,6 @@ class Chef
       #      Set to string value to signify prefix which deletes elements from existing element
       #      A colon is appended when indicating a specific value, eg:
       #      :knockout_prefix => "dontmerge", is referenced as "dontmerge:foobar" in an array
-      #   :sort_merged_arrays     DEFAULT: false
-      #      Set to true to sort all arrays that are merged together
       #   :merge_debug            DEFAULT: false
       #      Set to true to get console output of merge process for debugging
       #
@@ -108,7 +106,6 @@ class Chef
         knockout_prefix = options[:knockout_prefix] || nil
         raise InvalidParameter, "knockout_prefix cannot be an empty string in deep_merge!" if knockout_prefix == ""
         # request that we sort together any arrays when they are merged
-        sort_merged_arrays = options[:sort_merged_arrays] || false
         di = options[:debug_indent] || ''
         # do nothing if source is nil
         return dest if source.nil?
@@ -169,7 +166,6 @@ class Chef
             end
             puts "#{di} merging arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
             dest = dest | source
-            dest.sort! if sort_merged_arrays
           else
             puts "#{di} overwriting dest: #{source.inspect} -over-> #{dest.inspect}" if merge_debug
             dest = overwrite_unmergeables(source, dest, options)

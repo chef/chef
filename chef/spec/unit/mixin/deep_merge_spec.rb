@@ -82,13 +82,6 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     hash_dst.should == {"property" => ["2","4","1","3"]}
   end
 
-  it "tests hashes holding array (sorted)" do
-    hash_src = {"property" => ["1","3"]}
-    hash_dst = {"property" => ["2","4"]}
-    @dm.deep_merge!(hash_src, hash_dst, {:sort_merged_arrays => true})
-    hash_dst.should == {"property" => ["1","2","3","4"]}
-  end
-
   it "tests hashes holding hashes holding arrays (array with duplicate elements is merged with dest then src" do
     hash_src = {"property" => {"bedroom_count" => ["1", "2"], "bathroom_count" => ["1", "4+"]}}
     hash_dst = {"property" => {"bedroom_count" => ["3", "2"], "bathroom_count" => ["2"]}}
