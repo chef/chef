@@ -36,14 +36,14 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   it "tests merging an hash w/array into blank hash" do
     hash_src = {'id' => '2'}
     hash_dst = {}
-    @dm.deep_merge!(hash_src.dup, hash_dst, {:knockout_prefix => @field_ko_prefix})
+    @dm.deep_merge!(hash_src.dup, hash_dst)
     hash_dst.should == hash_src
   end
 
   it "tests merging an hash w/array into blank hash" do
     hash_src = {'region' => {'id' => ['227', '2']}}
     hash_dst = {}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
+    @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == hash_src
   end
 
@@ -183,21 +183,21 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
   it "tests merging of hash with blank hash, and make sure that source array split does not function when turned off" do
     hash_src = {'property' => {'bedroom_count' => ["1","2,3"]}}
     hash_dst = {}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
+    @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {'property' => {'bedroom_count' => ["1","2,3"]}}
   end
 
   it "tests merging into a blank hash" do
     hash_src = {"action"=>"browse", "controller"=>"results"}
     hash_dst = {}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
+    @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == hash_src
   end
 
   it "tests are unmerged hashes passed unmodified w/out :unpack_arrays?" do
     hash_src = {"amenity"=>{"id"=>["26,27"]}}
     hash_dst = {}
-    @dm.deep_merge!(hash_src, hash_dst, {:knockout_prefix => @field_ko_prefix})
+    @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {"amenity"=>{"id"=>["26,27"]}}
   end
 

@@ -66,7 +66,7 @@ class Chef
       #   Results: {:x => [1,2,3,4,5,'6'], :y => 2}
       # By default, "deep_merge!" will overwrite any unmergeables and merge everything else.
       # To avoid this, use "deep_merge" (no bang/exclamation mark)
-      def deep_merge!(source, dest, options=nil)
+      def deep_merge!(source, dest)
         # if dest doesn't exist, then simply copy source to it
         if dest.nil?
           dest = source; return dest
@@ -120,8 +120,8 @@ class Chef
         end
       end
 
-      def deep_merge(source, dest, options = {})
-        deep_merge!(source.dup, dest.dup, options)
+      def deep_merge(source, dest)
+        deep_merge!(source.dup, dest.dup)
       end
 
     end
