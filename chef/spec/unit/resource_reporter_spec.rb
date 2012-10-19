@@ -413,16 +413,22 @@ describe Chef::ResourceReporter do
         @rest_client.should_receive(:post_rest).
           with("reports/nodes/spitfire/runs", {:action => :begin}).
           and_raise(@error)
-        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       end
 
       it "assumes the feature is not enabled" do
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
         @resource_reporter.reporting_enabled?.should be_false
       end
 
       it "does not send a resource report to the server" do
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
         @rest_client.should_not_receive(:post_rest)
         @resource_reporter.run_completed(@node)
+      end
+
+      it "prints an error about the 404" do
+        Chef::Log.should_receive(:debug).with(/404/)
+        @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       end
 
     end
