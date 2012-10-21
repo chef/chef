@@ -46,12 +46,24 @@ class Chef
         @cookbook_path = cookbook_path
       end
 
+      def chefignore
+        @chefignore ||= Chefignore.new(Chef::Config.cookbook_path)
+      end
+
+      def remove_ignored_files(file_list)
+        return file_list unless chefignore.ignores.length > 0
+        file_list.reject do |full_path|
+          relative_path = full_path.gsub "#{@cookbook_path}/", ""
+          chefignore.ignored? relative_path
+        end
+      end
+
       def cache
         Chef::ChecksumCache.instance
       end
 
       def ruby_files
-        Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
       end
 
       def untested_ruby_files
@@ -66,7 +78,7 @@ class Chef
       end
 
       def template_files
-        Dir[File.join(cookbook_path, '**', '*.erb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.erb')]
       end
 
       def untested_template_files
