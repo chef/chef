@@ -189,6 +189,25 @@ describe Chef::Cookbook::SyntaxCheck do
 
       end
 
+      describe "and an ignored file has a syntax error" do
+        before do
+          @cookbook_path = File.join(CHEF_SPEC_DATA, 'cookbooks', 'ignorken')
+          Chef::Config[:cookbook_path] = File.dirname(@cookbook_path)
+          @syntax_check.cookbook_path.replace(@cookbook_path)
+          @ruby_files = [File.join(@cookbook_path, 'recipes/default.rb')]
+        end
+
+        it "shows that ignored ruby files do not require a syntax check" do
+          @syntax_check.untested_ruby_files.sort.should == @ruby_files.sort
+        end
+
+        it "does not indicate that a ruby file has a syntax error" do
+          @syntax_check.validate_ruby_files.should be_true
+          @syntax_check.untested_ruby_files.should be_empty
+        end
+
+      end
+
     end
 
     describe "and the files have been syntax checked previously" do

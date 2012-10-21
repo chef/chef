@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'pathname'
 require 'chef/checksum_cache'
 require 'chef/mixin/shell_out'
 
@@ -46,12 +47,26 @@ class Chef
         @cookbook_path = cookbook_path
       end
 
+      def chefignore
+        @chefignore ||= Chefignore.new(File.dirname(@cookbook_path))
+      end
+
+      def remove_ignored_files(file_list)
+        return file_list unless chefignore.ignores.length > 0
+        file_list.reject do |full_path|
+          cookbook_pn = Pathname.new @cookbook_path
+          full_pn = Pathname.new full_path
+          relative_pn = full_pn.relative_path_from cookbook_pn
+          chefignore.ignored? relative_pn.to_s
+        end
+      end
+
       def cache
         Chef::ChecksumCache.instance
       end
 
       def ruby_files
-        Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
       end
 
       def untested_ruby_files
@@ -66,7 +81,7 @@ class Chef
       end
 
       def template_files
-        Dir[File.join(cookbook_path, '**', '*.erb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.erb')]
       end
 
       def untested_template_files
