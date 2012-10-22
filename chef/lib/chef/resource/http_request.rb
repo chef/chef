@@ -43,7 +43,8 @@ class Chef
         )
       end
       
-      def message(args=nil)
+      def message(args=nil, &block)
+        args = block if block_given?
         set_or_return(
           :message,
           args,
