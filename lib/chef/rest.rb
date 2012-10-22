@@ -129,7 +129,7 @@ class Chef
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
-    def get_rest(path, raw=false, headers={})
+    def get(path, raw=false, headers={})
       if raw
         streaming_request(create_url(path), headers)
       else
@@ -137,20 +137,32 @@ class Chef
       end
     end
 
+    def head(path, headers={})
+      api_request(:HEAD, create_url(path), headers)
+    end
+
+    alias :get_rest :get
+
     # Send an HTTP DELETE request to the path
-    def delete_rest(path, headers={})
+    def delete(path, headers={})
       api_request(:DELETE, create_url(path), headers)
     end
 
+    alias :delete_rest :delete
+
     # Send an HTTP POST request to the path
-    def post_rest(path, json, headers={})
+    def post(path, json, headers={})
       api_request(:POST, create_url(path), headers, json)
     end
 
+    alias :post_rest :post
+
     # Send an HTTP PUT request to the path
-    def put_rest(path, json, headers={})
+    def put(path, json, headers={})
       api_request(:PUT, create_url(path), headers, json)
     end
+
+    alias :put_rest :put
 
     # Streams a download to a tempfile, then yields the tempfile to a block.
     # After the download, the tempfile will be closed and unlinked.
@@ -363,7 +375,7 @@ class Chef
       begin
         http_attempts += 1
 
-        res = yield rest_request
+        yield rest_request
 
       rescue SocketError, Errno::ETIMEDOUT => e
         e.message.replace "Error connecting to #{url} - #{e.message}"
@@ -455,7 +467,7 @@ class Chef
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
-      size, total = 0, response.header['Content-Length'].to_i
+      size = 0
 
       inflater = if gzip_disabled?
         NoopInflater.new
