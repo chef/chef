@@ -280,8 +280,10 @@ class Chef
               Chef::JSONCompat.from_json(response_body.chomp)
             else
               Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
-              response_body
+              response_body.to_s
             end
+          elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
+            false
           elsif redirect_location = redirected_to(response)
             follow_redirect {api_request(:GET, create_url(redirect_location))}
           else
@@ -306,7 +308,7 @@ class Chef
     end
 
     def decompress_body(response)
-      if gzip_disabled?
+      if gzip_disabled? || response.body.nil?
         response.body
       else
         case response[CONTENT_ENCODING]
