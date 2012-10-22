@@ -228,15 +228,9 @@ WARNING
           check_for_dependencies!(cb)
         end
         Chef::CookbookUploader.new(cookbooks, config[:cookbook_path], :force => config[:force]).upload_cookbooks
-      rescue Net::HTTPServerException => e
-        case e.response.code
-        when "409"
-          ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
-          Log.debug(e)
-          raise Exceptions::CookbookFrozen
-        else
-          raise
-        end
+      rescue Chef::Exceptions::CookbookFrozen => e
+        ui.error e
+        raise
       end
 
       def check_for_broken_links!(cookbook)
