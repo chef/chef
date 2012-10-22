@@ -230,7 +230,7 @@ class Chef
         end
       end
 
-      def respond_to?(symbol)
+      def respond_to?(symbol, include_private = false)
         if key?(symbol)
           true
         else
