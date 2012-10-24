@@ -142,6 +142,13 @@ class Chef
       end
 
       def load_current_resource_attrs
+        if Chef::Platform.windows?
+          # TODO: To work around CHEF-3554, add support for Windows
+          # equivalent, or implicit resource reporting won't work for
+          # Windows.
+          return
+        end
+
         if ::File.exist?(@new_resource.path)
           stat = ::File.stat(@new_resource.path)
           @current_resource.owner(stat.uid)
@@ -215,13 +222,21 @@ class Chef
       # override the default with the tempfile, since the 
       # file at @new_resource.path will not be updated on converge
       def update_new_file_state(path=@new_resource.path)
+        if !::File.directory?(path) 
+          @new_resource.checksum(checksum(path))
+        end
+
+        if Chef::Platform.windows?
+          # TODO: To work around CHEF-3554, add support for Windows
+          # equivalent, or implicit resource reporting won't work for
+          # Windows.
+          return
+        end
+
         stat = ::File.stat(path)
         @new_resource.owner(stat.uid)
         @new_resource.mode(stat.mode & 07777)
         @new_resource.group(stat.gid)
-        if !::File.directory?(path) 
-          @new_resource.checksum(checksum(path))
-        end
       end
 
       def action_create
