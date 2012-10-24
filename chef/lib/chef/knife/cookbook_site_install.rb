@@ -107,6 +107,7 @@ class Chef
           end
         end
 
+
         unless config[:no_deps]
           md = Chef::Cookbook::Metadata.new
           md.from_file(File.join(@install_path, @cookbook_name, "metadata.rb"))
@@ -143,12 +144,20 @@ class Chef
 
       def extract_cookbook(upstream_file, version)
         ui.info("Uncompressing #{@cookbook_name} version #{version}.")
-        shell_out!("tar zxvf #{Shellwords.escape upstream_file}", :cwd => @install_path)
+        shell_out!("tar zxvf #{convert_path upstream_file}", :cwd => @install_path)
       end
 
       def clear_existing_files(cookbook_path)
         ui.info("Removing pre-existing version.")
         FileUtils.rmtree(cookbook_path) if File.directory?(cookbook_path)
+      end
+      
+      def convert_path(upstream_file)
+      	if ENV['MSYSTEM'] == 'MINGW32'
+      	  return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
+      	else 
+      	  return Shellwords.escape upstream_file
+      	end
       end
     end
   end
