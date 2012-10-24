@@ -74,6 +74,8 @@ class Chef
         @cookbook_name = parse_name_args!
         # Check to ensure we have a valid source of cookbooks before continuing
         #
+
+        config[:cookbook_path] = Array(config[:cookbook_path])
         @install_path = File.expand_path(config[:cookbook_path].first)
         ui.info "Installing #@cookbook_name to #{@install_path}"
 
