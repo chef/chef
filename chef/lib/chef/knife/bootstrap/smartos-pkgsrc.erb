@@ -1,0 +1,111 @@
+# Chef Bootstrap for SmartOS (Global Zone) Using PKG-SRC and Ruby Gems
+bash -c '
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+## Install PKG-SRC if not present
+if [ ! -d /opt/local ]; then
+  cd /
+  curl -sk http://pkgsrc.joyent.com/sdc6/2012Q1/x86_64/bootstrap.tar.gz | gzcat | tar -xf -
+  /opt/local/sbin/pkg_admin rebuild
+  /opt/local/bin/pkgin -y up
+fi
+
+# Install Ruby & Gems
+/opt/local/bin/pkgin -y install gcc47 gcc47-runtime scmgit-base gmake ruby193-base ruby193-yajl-ruby ruby193-nokogiri ruby193-readline pkg-config
+/opt/local/bin/gem193 install --no-ri --no-rdoc ohai
+/opt/local/bin/gem193 install --no-ri --no-rdoc chef <%= bootstrap_version_string %>
+
+
+mkdir -p /var/chef /opt/custom/smf 2>/dev/null
+
+## Copy in the Validation Key
+(
+cat <<'EOP'
+<%= validation_key %>
+EOP
+) > /tmp/validation.pem
+/usr/xpg4/bin/awk NF /tmp/validation.pem > /var/chef/validation.pem
+rm /tmp/validation.pem
+
+
+## Copy in Data Bag Secret
+<% if @chef_config[:encrypted_data_bag_secret] -%>
+(
+cat <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+) > /tmp/encrypted_data_bag_secret
+/usr/xpg4/bin/awk NF /tmp/encrypted_data_bag_secret > /var/chef/encrypted_data_bag_secret
+rm /tmp/encrypted_data_bag_secret
+<% end -%>
+
+
+##  Copy in Client Configuration
+(
+cat <<'EOP'
+validation_key "/var/chef/validation.pem"
+client_key "/var/chef/client.pem"
+<%= config_content %>
+EOP
+) > /var/chef/client.rb
+
+
+## Copy in Initial Run List
+(
+cat <<'EOP'
+<%= { "run_list" => @run_list }.to_json %>
+EOP
+) > /var/chef/first-boot.json
+
+
+## Copy in the SMF XML
+(
+cat <<'EOX'
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<service_bundle type="manifest" name="export">
+  <service name="application/management/chef-client" type="service" version="0">
+
+    <create_default_instance enabled="true"/>
+    <single_instance/>
+
+    <dependency name="milestone" grouping="require_all" restart_on="none" type="service">
+      <service_fmri value="svc:/milestone/sysconfig"/>
+    </dependency>
+    <dependency name="fs-local" grouping="require_all" restart_on="none" type="service">
+      <service_fmri value="svc:/system/filesystem/local"/>
+    </dependency>
+    <dependency name="name-services" grouping="optional_all" restart_on="none" type="service">
+      <service_fmri value="svc:/milestone/name-services"/>
+    </dependency>
+    <dependency name="network" grouping="require_all" restart_on="restart" type="service">
+      <service_fmri value="svc:/milestone/network"/>
+    </dependency>
+    <dependency name="config-file" grouping="require_all" restart_on="refresh" type="path">
+      <service_fmri value="file://localhost/var/chef/client.rb"/>
+    </dependency>
+
+    <exec_method name="start" type="method" exec="/opt/local/bin/chef-client --daemonize --config /var/chef/client.rb --logfile /var/log/chef.log" timeout_seconds="60">
+      <method_context working_directory="/var/chef">
+        <method_credential user="root" group="root" />
+        <method_environment>
+          <envvar name="PATH" value="/usr/bin:/usr/sbin:/smartdc/bin:/opt/local/bin:/opt/local/sbin" />
+        </method_environment>
+      </method_context>
+    </exec_method>
+
+    <exec_method name="stop" type="method" exec=":kill" timeout_seconds="60"/>
+
+    <template>
+      <common_name>
+        <loctext xml:lang="C">Opscode Chef Client</loctext>
+      </common_name>
+    </template>
+  </service>
+</service_bundle>
+EOX
+) > /opt/custom/smf/chef-client-pkgsrc.xml
+
+## Process first run, if successful enable the chef-client in daemon mode.
+/opt/local/bin/chef-client --config /var/chef/client.rb -j /var/chef/first-boot.json && \
+/usr/sbin/svccfg import /opt/custom/smf/chef-client-pkgsrc.xml'
