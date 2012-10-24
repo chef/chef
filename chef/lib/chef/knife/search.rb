@@ -75,30 +75,16 @@ class Chef
         :description => "The search query; useful to protect queries starting with -"
 
       def run
-        if config[:query] && @name_args[1]
-          ui.error "please specify query as an argument or an option via -q, not both"
-          ui.msg opt_parser
-          exit 1
-        end
-        raw_query = config[:query] || @name_args[1]
-        if !raw_query || raw_query.empty?
-          ui.error "no query specified"
-          ui.msg opt_parser
-          exit 1
-        end
+        read_cli_args
+        fuzzify_query
 
-        if name_args[0].nil?
-          ui.error "you must specify an item type to search for"
-          exit 1
-        end
-
-        if name_args[0] == 'node'
+        if @type == 'node'
           ui.use_presenter Knife::Core::NodePresenter
         end
 
 
         q = Chef::Search::Query.new
-        query = URI.escape(raw_query,
+        escaped_query = URI.escape(@query,
                            Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 
         result_items = []
@@ -107,7 +93,7 @@ class Chef
         rows = config[:rows]
         start = config[:start]
         begin
-          q.search(@name_args[0], query, config[:sort], start, rows) do |item|
+          q.search(@type, escaped_query, config[:sort], start, rows) do |item|
             formatted_item = format_for_display(item)
             # if formatted_item.respond_to?(:has_key?) && !formatted_item.has_key?('id')
             #   formatted_item['id'] = item.has_key?('id') ? item['id'] : item.name
@@ -132,6 +118,38 @@ class Chef
           end
         end
       end
+
+      def read_cli_args
+        if config[:query]
+          if @name_args[1]
+            ui.error "please specify query as an argument or an option via -q, not both"
+            ui.msg opt_parser
+            exit 1
+          end
+          @type = name_args[0]
+          @query = config[:query]
+        else
+          case name_args.size
+          when 0
+            ui.error "no query specified"
+            ui.msg opt_parser
+            exit 1
+          when 1
+            @type = "node"
+            @query = name_args[0]
+          when 2
+            @type = name_args[0]
+            @query = name_args[1]
+          end
+        end
+      end
+
+      def fuzzify_query
+        if @query !~ /:/
+          @query = "tags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*"
+        end
+      end
+
     end
   end
 end
