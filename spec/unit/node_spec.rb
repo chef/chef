@@ -344,7 +344,14 @@ describe Chef::Node do
 
   describe "when expanding its run list and merging attributes" do
     before do
-      @expansion = Chef::RunList::RunListExpansion.new("_default", [])
+      @environment = Chef::Environment.new.tap do |e|
+        e.name('rspec_env')
+        e.default_attributes("env default key" => "env default value")
+        e.override_attributes("env override key" => "env override value")
+      end
+      Chef::Environment.should_receive(:load).with("rspec_env").and_return(@environment)
+      @expansion = Chef::RunList::RunListExpansion.new("rspec_env", [])
+      @node.chef_environment("rspec_env")
       @node.run_list.stub!(:expand).and_return(@expansion)
     end
 
@@ -360,6 +367,27 @@ describe Chef::Node do
       @node.automatic_attrs[:roles].sort.should == ['arf', 'countersnark']
     end
 
+    it "applies default attributes from the environment as environment defaults" do
+      @node.expand!
+      @node.attributes.env_default["env default key"].should == "env default value"
+    end
+
+    it "applies override attributes from the environment as env overrides" do
+      @node.expand!
+      @node.attributes.env_override["env override key"].should == "env override value"
+    end
+
+    it "applies default attributes from roles as role defaults" do
+      @expansion.default_attrs["role default key"] = "role default value"
+      @node.expand!
+      @node.attributes.role_default["role default key"].should == "role default value"
+    end
+
+    it "applies override attributes from roles as role overrides" do
+      @expansion.override_attrs["role override key"] = "role override value"
+      @node.expand!
+      @node.attributes.role_override["role override key"].should == "role override value"
+    end
   end
 
   describe "when clearing computed state at the beginning of a run" do

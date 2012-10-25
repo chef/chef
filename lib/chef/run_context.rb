@@ -64,12 +64,6 @@ class Chef
       load_attributes
       load_resource_definitions
 
-      # Precendence rules state that roles' attributes come after
-      # cookbooks. Now we've loaded attributes from cookbooks with
-      # load_attributes, apply the expansion attributes (loaded from
-      # roles) to the node.
-      @node.apply_expansion_attributes(run_list_expansion)
-
       @events.recipe_load_start(run_list_expansion.recipes.size)
       run_list_expansion.recipes.each do |recipe|
         begin

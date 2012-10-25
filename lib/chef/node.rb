@@ -308,19 +308,30 @@ class Chef
       automatic_attrs[:recipes] = expansion.recipes
       automatic_attrs[:roles] = expansion.roles
 
+      apply_expansion_attributes(expansion)
+
       expansion
     end
 
     # Apply the default and overrides attributes from the expansion
     # passed in, which came from roles.
     def apply_expansion_attributes(expansion)
-      load_chef_environment_object = (chef_environment == "_default" ? nil : Chef::Environment.load(chef_environment))
-      environment_default_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.default_attributes
-      default_before_roles = Chef::Mixin::DeepMerge.merge(default_attrs, environment_default_attrs)
-      self.default_attrs = Chef::Mixin::DeepMerge.merge(default_before_roles, expansion.default_attrs)
-      environment_override_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.override_attributes
-      overrides_before_environments = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-      self.override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_override_attrs)
+      loaded_environment = if chef_environment == "_default"
+                             # have to pass a truthy object to the constructor
+                             # of Environment so it doesn't create a couchdb
+                             # object (which breaks a bunch of tests).
+                             # This is pretty ugly but the couchdb stuff is
+                             # going away soon, so the expedient choice works for now.
+                             Chef::Environment.new(:nocouch).tap {|e| e.name("_default")}
+                           else
+                             Chef::Environment.load(chef_environment)
+                           end
+
+      attributes.env_default = loaded_environment.default_attributes
+      attributes.env_override = loaded_environment.override_attributes
+
+      attribute.role_default = expansion.default_attrs
+      attributes.role_override = expansion.override_attrs
     end
 
     # Transform the node to a Hash
