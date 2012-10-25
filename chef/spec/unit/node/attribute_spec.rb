@@ -272,6 +272,30 @@ describe Chef::Node::Attribute do
 
   end
 
+  describe "when reading combined default or override values" do
+    before do
+      @attributes.default["cd"] = "cookbook default"
+      @attributes.role_default["rd"] = "role default"
+      @attributes.env_default["ed"] = "env default"
+      @attributes.override["co"] = "cookbook override"
+      @attributes.role_override["ro"] = "role override"
+      @attributes.env_override["eo"] = "env override"
+    end
+
+    it "merges all types of overrides into a combined override" do
+      @attributes.combined_override["co"].should == "cookbook override"
+      @attributes.combined_override["ro"].should == "role override"
+      @attributes.combined_override["eo"].should == "env override"
+    end
+
+    it "merges all types of defaults into a combined default" do
+      @attributes.combined_default["cd"].should == "cookbook default"
+      @attributes.combined_default["rd"].should == "role default"
+      @attributes.combined_default["ed"].should == "env default"
+    end
+
+  end
+
   describe "[]" do
     it "should return override data if it exists" do
       @attributes["macaddress"].should == "00:00:00:00:00:00"

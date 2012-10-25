@@ -461,14 +461,18 @@ class Chef
       display["chef_environment"] = chef_environment
       display["automatic"]        = automatic_attrs
       display["normal"]           = normal_attrs
-      display["default"]          = default_attrs
-      display["override"]         = override_attrs
+      display["default"]          = attributes.combined_default
+      display["override"]         = attributes.combined_override
       display["run_list"]         = run_list.run_list
       display
     end
 
     # Serialize this object as a hash
     def to_json(*a)
+      for_json.to_json(*a)
+    end
+
+    def for_json
       result = {
         "name" => name,
         "chef_environment" => chef_environment,
@@ -476,13 +480,13 @@ class Chef
         "automatic" => attributes.automatic,
         "normal" => attributes.normal,
         "chef_type" => "node",
-        "default" => attributes.default,
-        "override" => attributes.override,
+        "default" => attributes.combined_default,
+        "override" => attributes.combined_override,
         #Render correctly for run_list items so malformed json does not result
         "run_list" => run_list.run_list.map { |item| item.to_s }
       }
       result["_rev"] = couchdb_rev if couchdb_rev
-      result.to_json(*a)
+      result
     end
 
     def update_from!(o)

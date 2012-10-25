@@ -49,6 +49,19 @@ class Chef
         :@automatic
       ].freeze
 
+      DEFAULT_COMPONENTS = [
+        :@default,
+        :@env_default,
+        :@role_default
+      ]
+
+
+      OVERRIDE_COMPONENTS = [
+        :@override,
+        :@role_override,
+        :@env_override
+      ]
+
       attr_reader :serial_number
 
       [:all?,
@@ -173,6 +186,8 @@ class Chef
          @automatic = VividMash.new(self, automatic)
 
          @merged_attributes = nil
+         @combined_override = nil
+         @combined_default = nil
        end
 
        # Enables or disables `||=`-like attribute setting. See, e.g., Node#set_unless
@@ -187,6 +202,8 @@ class Chef
        def reset_cache
          @serial_number += 1
          @merged_attributes = nil
+         @combined_default  = nil
+         @combined_override = nil
        end
 
        alias :reset :reset_cache
@@ -241,6 +258,26 @@ class Chef
        def merged_attributes
          @merged_attributes ||= begin
                                   resolved_attrs = COMPONENTS.inject(Mash.new) do |merged, component_ivar|
+                                    component_value = instance_variable_get(component_ivar)
+                                    Chef::Mixin::DeepMerge.merge(merged, component_value)
+                                  end
+                                  immutablize(self, resolved_attrs)
+                                end
+       end
+
+       def combined_override
+         @combined_override ||= begin
+                                  resolved_attrs = OVERRIDE_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
+                                    component_value = instance_variable_get(component_ivar)
+                                    Chef::Mixin::DeepMerge.merge(merged, component_value)
+                                  end
+                                  immutablize(self, resolved_attrs)
+                                end
+       end
+
+       def combined_default
+         @combined_default ||= begin
+                                  resolved_attrs = DEFAULT_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
                                     component_value = instance_variable_get(component_ivar)
                                     Chef::Mixin::DeepMerge.merge(merged, component_value)
                                   end
