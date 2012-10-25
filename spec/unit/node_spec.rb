@@ -587,7 +587,7 @@ describe Chef::Node do
     end
   end
 
-  describe "json" do
+  describe "converting to or from json" do
     it "should serialize itself as json", :json => true do
       @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(@node)
@@ -600,7 +600,7 @@ describe Chef::Node do
       json.should =~ /run_list/
     end
 
-    it 'should serialze valid json with a run list', :json => true do
+    it 'should serialize valid json with a run list', :json => true do
       #This test came about because activesupport mucks with Chef json serialization
       #Test should pass with and without Activesupport
       @node.run_list << {"type" => "role", "name" => 'Cthulu'}
@@ -608,6 +608,23 @@ describe Chef::Node do
       json = Chef::JSONCompat.to_json(@node)
       json.should =~ /\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/
     end
+
+    it "merges the override components into a combined override object" do
+      @node.attributes.role_override["role override"] = "role override"
+      @node.attributes.env_override["env override"] = "env override"
+      node_for_json = @node.for_json
+      node_for_json["override"]["role override"].should == "role override"
+      node_for_json["override"]["env override"].should == "env override"
+    end
+
+    it "merges the default components into a combined default object" do
+      @node.attributes.role_default["role default"] = "role default"
+      @node.attributes.env_default["env default"] = "env default"
+      node_for_json = @node.for_json
+      node_for_json["default"]["role default"].should == "role default"
+      node_for_json["default"]["env default"].should == "env default"
+    end
+
 
     it "should deserialize itself from json", :json => true do
       @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
