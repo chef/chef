@@ -234,6 +234,44 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when fetching values based on precedence" do
+    before do
+      @attributes.default["default"] = "cookbook default"
+      @attributes.override["override"] = "cookbook override"
+    end
+
+    it "prefers role_default over environment or cookbook default" do
+      @attributes.role_default["default"] = "role default"
+      @attributes.env_default["default"] = "environment default"
+      @attributes["default"].should == "role default"
+    end
+
+    it "prefers environment default over cookbook default" do
+      @attributes.env_default["default"] = "environment default"
+      @attributes["default"].should == "environment default"
+    end
+
+    it "returns the cookbook default when no other default values are present" do
+      @attributes["default"].should == "cookbook default"
+    end
+
+    it "prefers environment overrides over role or cookbook overrides" do
+      @attributes.env_override["override"] = "environment override"
+      @attributes.role_override["override"] = "role override"
+      @attributes["override"].should == "environment override"
+    end
+
+    it "prefers role overrides over cookbook overrides" do
+      @attributes.role_override["override"] = "role override"
+      @attributes["override"].should == "role override"
+    end
+
+    it "returns cookbook overrides when no other overrides are present" do
+      @attributes["override"].should == "cookbook override"
+    end
+
+  end
+
   describe "[]" do
     it "should return override data if it exists" do
       @attributes["macaddress"].should == "00:00:00:00:00:00"
