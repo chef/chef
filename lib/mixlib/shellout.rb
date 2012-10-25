@@ -213,7 +213,7 @@ module Mixlib
     # * Errno::ENOENT  when the command is not available on the system (or not
     #   in the current $PATH)
     # * CommandTimeout  when the command does not complete
-    #   within +timeout+ seconds (default: 60s)
+    #   within +timeout+ seconds (default: 600s)
     def run_command
       if logger
         log_message = (log_tag.nil? ? "" : "#@log_tag ") << "sh(#@command)"

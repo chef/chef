@@ -30,7 +30,7 @@ module Mixlib
       # * Errno::ENOENT  when the command is not available on the system (or not
       #   in the current $PATH)
       # * Chef::Exceptions::CommandTimeout  when the command does not complete
-      #   within +timeout+ seconds (default: 60s)
+      #   within +timeout+ seconds (default: 600s)
       def run_command
         @child_pid = fork_subprocess
 
