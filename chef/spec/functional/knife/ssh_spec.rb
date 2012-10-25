@@ -90,6 +90,19 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "port" do
+    context "when -p 31337 is provided" do
+      before do
+        setup_knife(['-p 31337', '*:*', 'uptime'])
+      end
+
+      it "uses the ssh_port" do
+        @knife.run
+        @knife.config[:ssh_port].should == "31337"
+      end
+    end
+  end
+
   describe "user" do
     context "when knife[:ssh_user] is set" do
       before do
