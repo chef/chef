@@ -20,7 +20,7 @@ class Chef
   class Resource
     class Log < Chef::Resource
     
-      identity_attr :name
+      identity_attr :message
 
       # Sends a string from a recipe to a log provider
       #
@@ -47,6 +47,15 @@ class Chef
         @resource_name = :log
         @level = :info
         @action = :write
+        @message = name
+      end
+
+      def message(arg=nil)
+        set_or_return(
+          :message,
+          arg,
+          :kind_of => String
+        )
       end
       
       # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
