@@ -34,7 +34,8 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
   before do
     @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
-    @outputter = Chef::Formatters::Outputter.new(StringIO.new, STDERR)
+    @stdout = StringIO.new
+    @outputter = Chef::Formatters::Outputter.new(@stdout, STDERR)
     #@outputter = Chef::Formatters::Outputter.new(STDOUT, STDERR)
 
     Chef::Config.stub!(:cookbook_path).and_return([ "/var/chef/cache" ])
@@ -75,6 +76,35 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
     it "prints a pretty message" do
       @description.display(@outputter)
+    end
+
+    describe "and the error is a template error" do
+      before do
+        @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
+        @template_class = Class.new { include Chef::Mixin::Template }
+        @template = @template_class.new
+        @context = {:chef => "cool"}
+
+        @resource = template("/tmp/foo.txt") do
+          mode "0644"
+        end
+
+        @error = begin
+                   @template.render_template("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno", @context) {|r| r}
+                 rescue  Chef::Mixin::Template::TemplateError => e
+                   e
+                 end
+
+        @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @error)
+        @inspector.add_explanation(@description)
+      end
+
+      it "includes contextual info from the template error in the output" do
+        @description.display(@outputter)
+        @stdout.string.should include(@error.source_listing)
+      end
+
+
     end
 
     describe "recipe_snippet" do

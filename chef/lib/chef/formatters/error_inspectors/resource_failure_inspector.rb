@@ -44,6 +44,12 @@ class Chef
           end
 
           error_description.section("Compiled Resource:", "#{resource.to_text}")
+
+          # Template errors get wrapped in an exception class that can show the relevant template code,
+          # so add them to the error output.
+          if exception.respond_to?(:source_listing)
+            error_description.section("Template Context:", "#{exception.source_location}\n#{exception.source_listing}")
+          end
         end
 
         def recipe_snippet
