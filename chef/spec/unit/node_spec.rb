@@ -344,7 +344,14 @@ describe Chef::Node do
 
   describe "when expanding its run list and merging attributes" do
     before do
-      @expansion = Chef::RunList::RunListExpansion.new("_default", [])
+      @environment = Chef::Environment.new.tap do |e|
+        e.name('rspec_env')
+        e.default_attributes("env default key" => "env default value")
+        e.override_attributes("env override key" => "env override value")
+      end
+      Chef::Environment.should_receive(:load).with("rspec_env").and_return(@environment)
+      @expansion = Chef::RunList::RunListExpansion.new("rspec_env", [])
+      @node.chef_environment("rspec_env")
       @node.run_list.stub!(:expand).and_return(@expansion)
     end
 
@@ -360,6 +367,27 @@ describe Chef::Node do
       @node.automatic_attrs[:roles].sort.should == ['arf', 'countersnark']
     end
 
+    it "applies default attributes from the environment as environment defaults" do
+      @node.expand!
+      @node.attributes.env_default["env default key"].should == "env default value"
+    end
+
+    it "applies override attributes from the environment as env overrides" do
+      @node.expand!
+      @node.attributes.env_override["env override key"].should == "env override value"
+    end
+
+    it "applies default attributes from roles as role defaults" do
+      @expansion.default_attrs["role default key"] = "role default value"
+      @node.expand!
+      @node.attributes.role_default["role default key"].should == "role default value"
+    end
+
+    it "applies override attributes from roles as role overrides" do
+      @expansion.override_attrs["role override key"] = "role override value"
+      @node.expand!
+      @node.attributes.role_override["role override key"].should == "role override value"
+    end
   end
 
   describe "when clearing computed state at the beginning of a run" do
@@ -559,7 +587,7 @@ describe Chef::Node do
     end
   end
 
-  describe "json" do
+  describe "converting to or from json" do
     it "should serialize itself as json", :json => true do
       @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(@node)
@@ -572,7 +600,7 @@ describe Chef::Node do
       json.should =~ /run_list/
     end
 
-    it 'should serialze valid json with a run list', :json => true do
+    it 'should serialize valid json with a run list', :json => true do
       #This test came about because activesupport mucks with Chef json serialization
       #Test should pass with and without Activesupport
       @node.run_list << {"type" => "role", "name" => 'Cthulu'}
@@ -580,6 +608,23 @@ describe Chef::Node do
       json = Chef::JSONCompat.to_json(@node)
       json.should =~ /\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/
     end
+
+    it "merges the override components into a combined override object" do
+      @node.attributes.role_override["role override"] = "role override"
+      @node.attributes.env_override["env override"] = "env override"
+      node_for_json = @node.for_json
+      node_for_json["override"]["role override"].should == "role override"
+      node_for_json["override"]["env override"].should == "env override"
+    end
+
+    it "merges the default components into a combined default object" do
+      @node.attributes.role_default["role default"] = "role default"
+      @node.attributes.env_default["env default"] = "env default"
+      node_for_json = @node.for_json
+      node_for_json["default"]["role default"].should == "role default"
+      node_for_json["default"]["env default"].should == "env default"
+    end
+
 
     it "should deserialize itself from json", :json => true do
       @node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))

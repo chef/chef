@@ -234,6 +234,68 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when fetching values based on precedence" do
+    before do
+      @attributes.default["default"] = "cookbook default"
+      @attributes.override["override"] = "cookbook override"
+    end
+
+    it "prefers role_default over environment or cookbook default" do
+      @attributes.role_default["default"] = "role default"
+      @attributes.env_default["default"] = "environment default"
+      @attributes["default"].should == "role default"
+    end
+
+    it "prefers environment default over cookbook default" do
+      @attributes.env_default["default"] = "environment default"
+      @attributes["default"].should == "environment default"
+    end
+
+    it "returns the cookbook default when no other default values are present" do
+      @attributes["default"].should == "cookbook default"
+    end
+
+    it "prefers environment overrides over role or cookbook overrides" do
+      @attributes.env_override["override"] = "environment override"
+      @attributes.role_override["override"] = "role override"
+      @attributes["override"].should == "environment override"
+    end
+
+    it "prefers role overrides over cookbook overrides" do
+      @attributes.role_override["override"] = "role override"
+      @attributes["override"].should == "role override"
+    end
+
+    it "returns cookbook overrides when no other overrides are present" do
+      @attributes["override"].should == "cookbook override"
+    end
+
+  end
+
+  describe "when reading combined default or override values" do
+    before do
+      @attributes.default["cd"] = "cookbook default"
+      @attributes.role_default["rd"] = "role default"
+      @attributes.env_default["ed"] = "env default"
+      @attributes.override["co"] = "cookbook override"
+      @attributes.role_override["ro"] = "role override"
+      @attributes.env_override["eo"] = "env override"
+    end
+
+    it "merges all types of overrides into a combined override" do
+      @attributes.combined_override["co"].should == "cookbook override"
+      @attributes.combined_override["ro"].should == "role override"
+      @attributes.combined_override["eo"].should == "env override"
+    end
+
+    it "merges all types of defaults into a combined default" do
+      @attributes.combined_default["cd"].should == "cookbook default"
+      @attributes.combined_default["rd"].should == "role default"
+      @attributes.combined_default["ed"].should == "env default"
+    end
+
+  end
+
   describe "[]" do
     it "should return override data if it exists" do
       @attributes["macaddress"].should == "00:00:00:00:00:00"
