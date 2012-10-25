@@ -132,7 +132,9 @@ class Chef
         @current_resource.path(@new_resource.path)
         if !::File.directory?(@new_resource.path)
           if ::File.exist?(@new_resource.path)
-            @current_resource.checksum(checksum(@new_resource.path))
+            if @action != :create_if_missing  
+              @current_resource.checksum(checksum(@new_resource.path))
+            end
           end
         end
         load_current_resource_attrs
