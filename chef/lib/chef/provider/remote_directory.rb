@@ -34,23 +34,27 @@ class Chef
 
       def action_create
         super
+        files_to_purge = Set.new(Dir.glob(::File.join(@new_resource.path, '**', '*'),
+                                          ::File::FNM_DOTMATCH).select do |name|
+                                   name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
+                                 end)
 
-        files_to_purge = Set.new(
-          Dir.glob(::File.join(@new_resource.path, '**', '*'), ::File::FNM_DOTMATCH).select do |name|
-            name !~ /(?:^|#{Regexp.escape(::File::SEPARATOR)})\.\.?$/
-          end
-        )
-        files_to_transfer.each do |cookbook_file_relative_path|
-          create_cookbook_file(cookbook_file_relative_path)
-          # the file is removed from the purge list
-          files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
-          # parent directories are also removed from the purge list
-          directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
-          for i in 0..directories.length-1
-            files_to_purge.delete(::File.join(directories[0..i]))
+        converge_by("Create managed files in directory") do
+          files_to_transfer.each do |cookbook_file_relative_path|
+            create_cookbook_file(cookbook_file_relative_path)
+            # the file is removed from the purge list
+            files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
+            # parent directories are also removed from the purge list
+            directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
+            for i in 0..directories.length-1
+              files_to_purge.delete(::File.join(directories[0..i]))
+            end
           end
         end
-        purge_unmanaged_files(files_to_purge)
+
+        converge_by("Purge unmanaged files from directory") do
+          purge_unmanaged_files(files_to_purge)
+        end
       end
 
       def action_create_if_missing
@@ -170,5 +174,10 @@ class Chef
       end
 
     end
+
+    def whyrun_supported?
+      true
+    end
+
   end
 end

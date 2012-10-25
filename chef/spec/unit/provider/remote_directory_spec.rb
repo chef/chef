@@ -98,6 +98,13 @@ describe Chef::Provider::RemoteDirectory do
 
     after {FileUtils.rm_rf(@destination_dir)}
 
+    # CHEF-3552
+    it "creates the toplevel directory without error " do
+      @resource.recursive(false)
+      @provider.run_action(:create)
+      ::File.exist?(@destination_dir).should be_true
+    end
+
     it "transfers the directory with all contents" do
       @provider.run_action(:create)
       ::File.exist?(@destination_dir + '/remote_dir_file1.txt').should be_true
