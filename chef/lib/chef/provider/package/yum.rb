@@ -664,11 +664,15 @@ class Chef
 
             @allow_multi_install = []
 
+            @extra_repo_control = nil 
+
             # these are for subsequent runs if we are on an interval
             Chef::Client.when_run_starts do
               YumCache.instance.reload
             end
           end
+
+          attr_reader :extra_repo_control
 
           # Cache management
           #
@@ -691,6 +695,10 @@ class Chef
               opts=" --options --all-provides"
             else
               raise ArgumentError, "Unexpected value in next_refresh: #{@next_refresh}"
+            end
+
+            if @extra_repo_control
+              opts << " #{@extra_repo_control}"
             end
 
             one_line = false
@@ -848,6 +856,22 @@ class Chef
             @allow_multi_install
           end
 
+          def enable_extra_repo_control(arg)
+            # Don't touch cache if it's the same repos as the last load
+            unless @extra_repo_control == arg
+              @extra_repo_control = arg
+              reload
+            end
+          end
+
+          def disable_extra_repo_control
+            # Only force reload when set
+            if @extra_repo_control
+              @extra_repo_control = nil
+              reload
+            end
+          end
+
           private
 
           def version(package_name, arch=nil, is_available=false, is_installed=false)
@@ -993,6 +1017,23 @@ class Chef
         def load_current_resource
           if flush_cache[:before]
             @yum.reload
+          end
+
+          if @new_resource.options
+            repo_control = []
+            @new_resource.options.split.each do |opt|
+              if opt =~ %r{--(enable|disable)repo=.+}
+                repo_control << opt
+              end
+            end
+
+            if repo_control.size > 0
+              @yum.enable_extra_repo_control(repo_control.join(" "))
+            else
+              @yum.disable_extra_repo_control
+            end
+          else
+            @yum.disable_extra_repo_control
           end
 
           # At this point package_name could be:
