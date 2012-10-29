@@ -23,7 +23,6 @@ require 'forwardable'
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/couchdb'
 require 'chef/data_bag'
 require 'chef/mash'
 require 'chef/json_compat'
@@ -38,31 +37,6 @@ class Chef
 
     VALID_ID = /^[\-[:alnum:]_]+$/
 
-    DESIGN_DOCUMENT = {
-      "version" => 1,
-      "language" => "javascript",
-      "views" => {
-        "all" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "data_bag_item") {
-              emit(doc.name, doc);
-            }
-          }
-          EOJS
-        },
-        "all_id" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "data_bag_item") {
-              emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        }
-      }
-    }
-
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
         raise Exceptions::InvalidDataBagItemID, "Data Bag items must have an id matching #{VALID_ID.inspect}, you gave: #{id_str.inspect}"
@@ -72,16 +46,12 @@ class Chef
     # Define all Hash's instance methods as delegating to @raw_data
     def_delegators(:@raw_data, *(Hash.instance_methods - Object.instance_methods))
 
-    attr_accessor :couchdb_rev, :couchdb_id, :couchdb
     attr_reader :raw_data
 
     # Create a new Chef::DataBagItem
-    def initialize(couchdb=nil)
-      @couchdb_rev = nil
-      @couchdb_id = nil
+    def initialize
       @data_bag = nil
       @raw_data = Mash.new
-      @couchdb = couchdb || Chef::CouchDB.new
     end
 
     def chef_server_rest
@@ -136,7 +106,6 @@ class Chef
       result = self.raw_data
       result["chef_type"] = "data_bag_item"
       result["data_bag"] = self.data_bag
-      result["_rev"] = @couchdb_rev if @couchdb_rev
       result
     end
 
@@ -149,7 +118,6 @@ class Chef
         "data_bag" => self.data_bag,
         "raw_data" => self.raw_data
       }
-      result["_rev"] = @couchdb_rev if @couchdb_rev
       result.to_json(*a)
     end
 
@@ -167,21 +135,9 @@ class Chef
       o.delete("chef_type")
       o.delete("json_class")
       o.delete("name")
-      if o.has_key?("_rev")
-        bag_item.couchdb_rev = o["_rev"]
-        o.delete("_rev")
-      end
-      if o.has_key?("_id")
-        bag_item.couchdb_id = o["_id"]
-        o.delete("_id")
-      end
+
       bag_item.raw_data = Mash.new(o["raw_data"])
       bag_item
-    end
-
-    # Load a Data Bag Item by name from CouchDB
-    def self.cdb_load(data_bag, name, couchdb=nil)
-      (couchdb || Chef::CouchDB.new).load("data_bag_item", object_name(data_bag, name))
     end
 
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
@@ -202,19 +158,8 @@ class Chef
       end
     end
 
-    # Remove this Data Bag Item from CouchDB
-    def cdb_destroy
-      Chef::Log.debug "Destroying data bag item: #{self.inspect}"
-      @couchdb.delete("data_bag_item", object_name, @couchdb_rev)
-    end
-
     def destroy(data_bag=data_bag, databag_item=name)
       chef_server_rest.delete_rest("data/#{data_bag}/#{databag_item}")
-    end
-
-    # Save this Data Bag Item to CouchDB
-    def cdb_save
-      @couchdb_rev = @couchdb.store("data_bag_item", object_name, self)["rev"]
     end
 
     # Save this Data Bag Item via RESTful API
@@ -237,11 +182,6 @@ class Chef
     def create
       chef_server_rest.post_rest("data/#{data_bag}", self)
       self
-    end
-
-    # Set up our CouchDB design document
-    def self.create_design_document(couchdb=nil)
-      (couchdb || Chef::CouchDB.new).create_design_document("data_bag_items", DESIGN_DOCUMENT)
     end
 
     def ==(other)

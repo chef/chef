@@ -41,7 +41,7 @@ shared_examples_for Chef::Client do
     ohai_data.stub!(:data).and_return(ohai_data)
     Ohai::System.stub!(:new).and_return(ohai_data)
 
-    @node = Chef::Node.new(@hostname)
+    @node = Chef::Node.new
     @node.name(@fqdn)
     @node.chef_environment("_default")
 
@@ -90,7 +90,7 @@ shared_examples_for Chef::Client do
       Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).exactly(1).and_return(mock_chef_rest_for_client)
       mock_chef_rest_for_client.should_receive(:register).with(@fqdn, Chef::Config[:client_key]).exactly(1).and_return(true)
       #   Client.register will then turn around create another
-      
+
       #   Chef::REST object, this time with the client key it got from the
       #   previous step.
       Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], @fqdn, Chef::Config[:client_key]).exactly(1).and_return(mock_chef_rest_for_node)
@@ -139,7 +139,6 @@ shared_examples_for Chef::Client do
             res.replace(string)
           end
           pipe_sim.should_receive(:gets).and_return(res)
-          Chef::CouchDB.should_receive(:new).and_return(nil)
           IO.should_receive(:pipe).and_return([pipe_sim, pipe_sim])
           IO.should_receive(:select).and_return(true)
         end
@@ -151,7 +150,7 @@ shared_examples_for Chef::Client do
           block.call
         end
       end
-      
+
       # This is what we're testing.
       @client.run
 
@@ -160,7 +159,7 @@ shared_examples_for Chef::Client do
         @node.automatic_attrs[:platform_version].should == "example-platform-1.0"
       end
     end
-    
+
     describe "when notifying other objects of the status of the chef run" do
       before do
         Chef::Client.clear_notifications
@@ -235,7 +234,7 @@ shared_examples_for Chef::Client do
 
   describe "when a run list override is provided" do
     before do
-      @node = Chef::Node.new(@hostname)
+      @node = Chef::Node.new
       @node.name(@fqdn)
       @node.chef_environment("_default")
       @node.automatic_attrs[:platform] = "example-platform"
@@ -265,7 +264,7 @@ shared_examples_for Chef::Client do
       @node.should_receive(:save).and_return(nil)
 
       @client.build_node
-      
+
       @node[:roles].should_not be_nil
       @node[:roles].should eql(['test_role'])
       @node[:recipes].should eql(['cookbook1'])

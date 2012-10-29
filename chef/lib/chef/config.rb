@@ -130,8 +130,6 @@ class Chef
     # Used when OpenID authentication is enabled in the Web UI
     authorized_openid_identifiers nil
     authorized_openid_providers nil
-    openid_cstore_couchdb false
-    openid_cstore_path "/var/chef/openid/cstore"
 
     # The number of times the client should retry when registering with the server
     client_registration_retries 5
@@ -149,11 +147,6 @@ class Chef
 
     # Where cookbook files are stored on the server (by content checksum)
     checksum_path "/var/chef/checksums"
-
-    # CouchDB database name to use
-    couchdb_database "chef"
-
-    couchdb_url "http://localhost:5984"
 
     # Where chef's cache files should be stored
     file_cache_path platform_specific_path("/var/chef/cache")
@@ -211,7 +204,7 @@ class Chef
     client_fork false
     enable_reporting true
     enable_reporting_url_fatals false
-    
+
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
     ssl_client_cert nil

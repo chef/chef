@@ -20,7 +20,6 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/couchdb'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -31,43 +30,12 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-
-    DESIGN_DOCUMENT = {
-      "version" => 1,
-      "language" => "javascript",
-      "views" => {
-        "all" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "client") {
-              emit(doc.name, doc);
-            }
-          }
-          EOJS
-        },
-        "all_id" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "client") {
-              emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        }
-      }
-    }
-
-    attr_accessor :couchdb_rev, :couchdb_id, :couchdb
-
     # Create a new Chef::ApiClient object.
-    def initialize(couchdb=nil)
+    def initialize
       @name = ''
       @public_key = nil
       @private_key = nil
-      @couchdb_rev = nil
-      @couchdb_id = nil
       @admin = false
-      @couchdb = (couchdb || Chef::CouchDB.new)
     end
 
     # Gets or sets the client name.
@@ -130,7 +98,6 @@ class Chef
         'json_class' => self.class.name,
         "chef_type" => "client"
       }
-      result["_rev"] = @couchdb_rev if @couchdb_rev
       result
     end
 
@@ -146,17 +113,7 @@ class Chef
       client.name(o["name"] || o["clientname"])
       client.public_key(o["public_key"])
       client.admin(o["admin"])
-      client.couchdb_rev = o["_rev"]
-      client.couchdb_id = o["_id"]
       client
-    end
-
-    # List all the Chef::ApiClient objects in the CouchDB.  If inflate is set
-    # to true, you will get the full list of all ApiClients, fully inflated.
-    def self.cdb_list(inflate=false, couchdb=nil)
-      rs = (couchdb || Chef::CouchDB.new).list("clients", inflate)
-      lookup = (inflate ? "value" : "key")
-      rs["rows"].collect { |r| r[lookup] }
     end
 
     def self.list(inflate=false)
@@ -172,14 +129,6 @@ class Chef
       end
     end
 
-    # Load a client by name from CouchDB
-    #
-    # @params [String] The name of the client to load
-    # @return [Chef::ApiClient] The resulting Chef::ApiClient object
-    def self.cdb_load(name, couchdb=nil)
-      (couchdb || Chef::CouchDB.new).load("client", name)
-    end
-
     # Load a client by name via the API
     def self.load(name)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{name}")
@@ -192,22 +141,9 @@ class Chef
       end
     end
 
-    # Remove this client from the CouchDB
-    #
-    # @params [String] The name of the client to delete
-    # @return [Chef::ApiClient] The last version of the object
-    def cdb_destroy
-      @couchdb.delete("client", @name, @couchdb_rev)
-    end
-
     # Remove this client via the REST API
     def destroy
       Chef::REST.new(Chef::Config[:chef_server_url]).delete_rest("clients/#{@name}")
-    end
-
-    # Save this client to the CouchDB
-    def cdb_save
-      @couchdb_rev = @couchdb.store("client", @name, self)["rev"]
     end
 
     # Save this client via the REST API, returns a hash including the private key
@@ -233,11 +169,6 @@ class Chef
     # Create the client via the REST API
     def create
       Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("clients", self)
-    end
-
-    # Set up our CouchDB design document
-    def self.create_design_document(couchdb=nil)
-      (couchdb ||= Chef::CouchDB.new).create_design_document("clients", DESIGN_DOCUMENT)
     end
 
     # As a string

@@ -248,13 +248,6 @@ describe Chef::RunList do
 
     end
 
-    describe "from couchdb" do
-      it "should load the role from couchdb" do
-        Chef::Role.should_receive(:cdb_load).and_return(@role)
-        @run_list.expand("_default", "couchdb")
-      end
-    end
-
     it "should return the list of expanded recipes" do
       expansion = @run_list.expand("_default")
       expansion.recipes[0].should == "one"

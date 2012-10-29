@@ -22,7 +22,6 @@ require 'chef/config'
 require 'chef/mash'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/couchdb'
 require 'chef/version_constraint'
 
 class Chef
@@ -35,47 +34,12 @@ class Chef
 
     COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
-    attr_accessor :couchdb, :couchdb_rev
-    attr_reader :couchdb_id
-
-    DESIGN_DOCUMENT = {
-      "version" => 1,
-      "language" => "javascript",
-      "views" => {
-        "all" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "environment") {
-              emit(doc.name, doc);
-            }
-          }
-          EOJS
-        },
-        "all_id" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "environment") {
-              emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        }
-      }
-    }
-
-    def initialize(couchdb=nil)
+    def initialize
       @name = ''
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @cookbook_versions = Hash.new
-      @couchdb_rev = nil
-      @couchdb_id = nil
-      @couchdb = couchdb || Chef::CouchDB.new
-    end
-
-    def couchdb_id=(value)
-      @couchdb_id = value
     end
 
     def chef_server_rest
@@ -160,7 +124,6 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes
       }
-      result["_rev"] = couchdb_rev if couchdb_rev
       result
     end
 
@@ -257,15 +220,7 @@ class Chef
       environment.cookbook_versions(o["cookbook_versions"])
       environment.default_attributes(o["default_attributes"])
       environment.override_attributes(o["override_attributes"])
-      environment.couchdb_rev = o["_rev"] if o.has_key?("_rev")
-      environment.couchdb_id = o["_id"] if o.has_key?("_id")
       environment
-    end
-
-    def self.cdb_list(inflate=false, couchdb=nil)
-      es = (couchdb || Chef::CouchDB.new).list("environments", inflate)
-      lookup = (inflate ? "value" : "key")
-      es["rows"].collect { |e| e[lookup] }
     end
 
     def self.list(inflate=false)
@@ -280,32 +235,12 @@ class Chef
       end
     end
 
-    def self.cdb_load(name, couchdb=nil)
-      (couchdb || Chef::CouchDB.new).load("environment", name)
-    end
-
     def self.load(name)
       chef_server_rest.get_rest("environments/#{name}")
     end
 
-    def self.exists?(name, couchdb)
-      begin
-        self.cdb_load(name, couchdb)
-      rescue Chef::Exceptions::CouchDBNotFound
-        nil
-      end
-    end
-
-    def cdb_destroy
-      couchdb.delete("environment", @name, couchdb_rev)
-    end
-
     def destroy
       chef_server_rest.delete_rest("environments/#{@name}")
-    end
-
-    def cdb_save
-      self.couchdb_rev = couchdb.store("environment", @name, self)["rev"]
     end
 
     def save
@@ -321,106 +256,6 @@ class Chef
     def create
       chef_server_rest.post_rest("environments", self)
       self
-    end
-
-    # Set up our CouchDB design document
-    def self.create_design_document(couchdb=nil)
-      (couchdb || Chef::CouchDB.new).create_design_document("environments", DESIGN_DOCUMENT)
-    end
-
-    # Loads the set of Chef::CookbookVersion objects available to a given environment
-    # === Returns
-    # Hash
-    # i.e.
-    # {
-    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
-    # }
-    #
-    # There will be a key for every cookbook.  If no CookbookVersions
-    # are available for the specified environment the value will be an
-    # empty list.
-    #
-    def self.cdb_load_filtered_cookbook_versions(name, couchdb=nil)
-      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
-
-      # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
-      cookbook_list = Chef::CookbookVersion.cdb_list(true, couchdb)
-
-      filtered_list = cookbook_list.inject({}) do |res, cookbook|
-        # FIXME: should cookbook.version return a Chef::Version?
-        version               = Chef::Version.new(cookbook.version)
-        requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
-        # we want a key for every cookbook, even if no versions are available
-        res[cookbook.name] ||= []
-        res[cookbook.name] << cookbook if requirement_satisfied
-        res
-      end
-
-      sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
-        res[cookbook_name] = versions.sort.reverse
-        res
-      end
-
-      sorted_list
-    end
-
-    # Like +cdb_load_filtered_cookbook_versions+, loads the set of
-    # cookbooks available in a given environment. The difference is that
-    # this method will load Chef::MinimalCookbookVersion objects that
-    # contain only the information necessary for solving a cookbook
-    # collection for a given run list. The user of this method must call
-    # Chef::MinimalCookbookVersion.load_full_versions_of() after solving
-    # the cookbook collection to get the full objects.
-    # === Returns
-    # Hash
-    # i.e.
-    # {
-    #   "cookbook_name" => [ Chef::CookbookVersion ... ] ## the array of CookbookVersions is sorted highest to lowest
-    # }
-    #
-    # There will be a key for every cookbook.  If no CookbookVersions
-    # are available for the specified environment the value will be an
-    # empty list.
-    def self.cdb_minimal_filtered_versions(name, couchdb=nil)
-      version_constraints = cdb_load(name, couchdb).cookbook_versions.inject({}) {|res, (k,v)| res[k] = Chef::VersionConstraint.new(v); res}
-
-      # inject all cookbooks into the hash while filtering out restricted versions, then sort the individual arrays
-      cookbook_list = Chef::MinimalCookbookVersion.load_all(couchdb)
-
-      filtered_list = cookbook_list.inject({}) do |res, cookbook|
-        # FIXME: should cookbook.version return a Chef::Version?
-        version               = Chef::Version.new(cookbook.version)
-        requirement_satisfied = version_constraints.has_key?(cookbook.name) ? version_constraints[cookbook.name].include?(version) : true
-        # we want a key for every cookbook, even if no versions are available
-        res[cookbook.name] ||= []
-        res[cookbook.name] << cookbook if requirement_satisfied
-        res
-      end
-
-      sorted_list = filtered_list.inject({}) do |res, (cookbook_name, versions)|
-        res[cookbook_name] = versions.sort.reverse
-        res
-      end
-
-      sorted_list
-    end
-
-    def self.cdb_load_filtered_recipe_list(name, couchdb=nil)
-      cdb_load_filtered_cookbook_versions(name, couchdb).map do |cb_name, cb|
-        if cb.empty?            # no available versions
-          []                    # empty list elided with flatten
-        else
-          latest_version = cb.first
-          latest_version.recipe_filenames_by_name.keys.map do |recipe|
-            case recipe
-            when DEFAULT
-              cb_name
-            else
-              "#{cb_name}::#{recipe}"
-            end
-          end
-        end
-      end.flatten
     end
 
     def self.load_filtered_recipe_list(environment)
@@ -448,16 +283,5 @@ class Chef
       end
     end
 
-    def self.create_default_environment(couchdb=nil)
-      couchdb = couchdb || Chef::CouchDB.new
-      begin
-        Chef::Environment.cdb_load('_default', couchdb)
-      rescue Chef::Exceptions::CouchDBNotFound
-        env = Chef::Environment.new(couchdb)
-        env.name '_default'
-        env.description 'The default Chef environment'
-        env.cdb_save
-      end
-    end
   end
 end

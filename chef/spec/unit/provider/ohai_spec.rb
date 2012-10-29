@@ -34,7 +34,7 @@ describe Chef::Provider::Ohai do
       :platform => @platform,
       :platform_version => @platform_version,
       :data => {
-        :origdata => "somevalue"      
+        :origdata => "somevalue"
       },
       :data2 => {
         :origdata => "somevalue",
@@ -49,7 +49,7 @@ describe Chef::Provider::Ohai do
     Chef::Platform.stub!(:find_platform_and_version).and_return({ "platform" => @platform,
                                                                   "platform_version" => @platform_version})
     # Fake node with a dummy save
-    @node = Chef::Node.new(@hostname)
+    @node = Chef::Node.new
     @node.name(@fqdn)
     @node.stub!(:save).and_return(@node)
     @events = Chef::EventDispatch::Dispatcher.new

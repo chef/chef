@@ -36,10 +36,10 @@ describe Chef::Knife::Ssh do
     @knife = Chef::Knife::Ssh.new
     @knife.config.clear
     @knife.config[:attribute] = "fqdn"
-    @node_foo = Chef::Node.new('foo')
+    @node_foo = Chef::Node.new
     @node_foo.automatic_attrs[:fqdn] = "foo.example.org"
     @node_foo.automatic_attrs[:ipaddress] = "10.0.0.1"
-    @node_bar = Chef::Node.new('bar')
+    @node_bar = Chef::Node.new
     @node_bar.automatic_attrs[:fqdn] = "bar.example.org"
     @node_bar.automatic_attrs[:ipaddress] = "10.0.0.2"
   end
@@ -64,7 +64,7 @@ describe Chef::Knife::Ssh do
           @knife.should_receive(:session_from_list).with(['10.0.0.1', '10.0.0.2'])
           @knife.configure_session
         end
-        
+
         it "returns an array of the attributes specified on the command line even when a config value is set" do
           @knife.config[:attribute] = "config_file" # this value will be the config file
           @knife.config[:override_attribute] = "ipaddress" # this is the value of the command line via #configure_attribute
