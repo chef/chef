@@ -27,7 +27,6 @@ require 'chef/resources'
 require 'chef/shell_out'
 
 require 'chef/daemon'
-require 'chef/webui_user'
 
 require 'chef/run_status'
 require 'chef/handler'
