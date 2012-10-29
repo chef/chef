@@ -129,7 +129,7 @@ class Chef
     # path:: The path to GET
     # raw:: Whether you want the raw body returned, or JSON inflated.  Defaults
     #   to JSON inflated.
-    def get_rest(path, raw=false, headers={})
+    def get(path, raw=false, headers={})
       if raw
         streaming_request(create_url(path), headers)
       else
@@ -137,20 +137,32 @@ class Chef
       end
     end
 
+    def head(path, headers={})
+      api_request(:HEAD, create_url(path), headers)
+    end
+
+    alias :get_rest :get
+
     # Send an HTTP DELETE request to the path
-    def delete_rest(path, headers={})
+    def delete(path, headers={})
       api_request(:DELETE, create_url(path), headers)
     end
 
+    alias :delete_rest :delete
+
     # Send an HTTP POST request to the path
-    def post_rest(path, json, headers={})
+    def post(path, json, headers={})
       api_request(:POST, create_url(path), headers, json)
     end
 
+    alias :post_rest :post
+
     # Send an HTTP PUT request to the path
-    def put_rest(path, json, headers={})
+    def put(path, json, headers={})
       api_request(:PUT, create_url(path), headers, json)
     end
+
+    alias :put_rest :put
 
     # Streams a download to a tempfile, then yields the tempfile to a block.
     # After the download, the tempfile will be closed and unlinked.
@@ -171,69 +183,6 @@ class Chef
 
     def sign_requests?
       auth_credentials.sign_requests? && @sign_request
-    end
-
-    # ==== DEPRECATED
-    # Use +api_request+ instead
-    #--
-    # Actually run an HTTP request.  First argument is the HTTP method,
-    # which should be one of :GET, :PUT, :POST or :DELETE.  Next is the
-    # URL, then an object to include in the body (which will be converted with
-    # .to_json). The limit argument is unused, it is present for backwards
-    # compatibility. Configure the redirect limit with #redirect_limit=
-    # instead.
-    #
-    # Typically, you won't use this method -- instead, you'll use one of
-    # the helper methods (get_rest, post_rest, etc.)
-    #
-    # Will return the body of the response on success.
-    def run_request(method, url, headers={}, data=false, limit=nil, raw=false)
-      json_body = data ? Chef::JSONCompat.to_json(data) : nil
-      # Force encoding to binary to fix SSL related EOFErrors
-      # cf. http://tickets.opscode.com/browse/CHEF-2363
-      # http://redmine.ruby-lang.org/issues/5233
-      json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
-      headers = build_headers(method, url, headers, json_body, raw)
-
-      tf, response_body = nil, nil
-
-      retriable_rest_request(method, url, json_body, headers) do |rest_request|
-
-        res = rest_request.call do |response|
-          if raw
-            tf = stream_to_tempfile(url, response)
-          else
-            response_body = decompress_body(response)
-          end
-        end
-
-        case res
-        when Net::HTTPSuccess
-          if res['content-type'] =~ /json/
-            Chef::JSONCompat.from_json(response_body)
-          else
-            if method == :HEAD
-              true
-            elsif raw
-              tf
-            else
-              response_body
-            end
-          end
-        when Net::HTTPNotModified # Must be tested before Net::HTTPRedirection because it's subclass.
-          false
-        when Net::HTTPRedirection
-          follow_redirect {run_request(method, create_url(res['location']), headers, false, nil, raw)}
-        else
-          if res['content-type'] =~ /json/
-            exception = Chef::JSONCompat.from_json(response_body)
-            msg = "HTTP Request Returned #{res.code} #{res.message}: "
-            msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-            Chef::Log.warn(msg)
-          end
-          res.error!
-        end
-      end
     end
 
     # Runs an HTTP request to a JSON API with JSON body. File Download not supported.
@@ -268,13 +217,15 @@ class Chef
               Chef::JSONCompat.from_json(response_body.chomp)
             else
               Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
-              response_body
+              response_body.to_s
             end
+          elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
+            false
           elsif redirect_location = redirected_to(response)
             follow_redirect {api_request(:GET, create_url(redirect_location))}
           else
             # have to decompress the body before making an exception for it. But the body could be nil.
-            response.body.replace(decompress_body(response)) if response.body.respond_to?(:replace)
+            response.body.replace(response_body) if response.body.respond_to?(:replace)
 
             if response['content-type'] =~ /json/
               exception = Chef::JSONCompat.from_json(response_body)
@@ -294,7 +245,7 @@ class Chef
     end
 
     def decompress_body(response)
-      if gzip_disabled?
+      if gzip_disabled? || response.body.nil?
         response.body
       else
         case response[CONTENT_ENCODING]
@@ -363,7 +314,7 @@ class Chef
       begin
         http_attempts += 1
 
-        res = yield rest_request
+        yield rest_request
 
       rescue SocketError, Errno::ETIMEDOUT => e
         e.message.replace "Error connecting to #{url} - #{e.message}"
@@ -455,7 +406,7 @@ class Chef
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
-      size, total = 0, response.header['Content-Length'].to_i
+      size = 0
 
       inflater = if gzip_disabled?
         NoopInflater.new
