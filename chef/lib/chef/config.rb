@@ -173,7 +173,6 @@ class Chef
     ## Daemonization Settings ##
     # What user should Chef run as?
     user nil
-    # What group should the chef-server, -solr, -solr-indexer run as
     group nil
     umask 0022
 
@@ -229,13 +228,6 @@ class Chef
 
     # Where should chef-solo download recipes from?
     recipe_url nil
-
-    solr_url "http://localhost:8983/solr"
-    solr_jetty_path "/var/chef/solr-jetty"
-    solr_data_path "/var/chef/solr/data"
-    solr_home_path "/var/chef/solr"
-    solr_heap_size "256M"
-    solr_java_opts nil
 
     # Parameters for connecting to RabbitMQ
     amqp_host '0.0.0.0'
