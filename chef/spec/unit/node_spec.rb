@@ -248,6 +248,20 @@ describe Chef::Node do
     end
   end
 
+  describe "respond_to?" do
+    it "should return true for existing attributes" do
+      @node.default["mastodon"] = "is okay"
+
+      @node.respond_to?(:mastodon) == true
+    end
+
+    it "should return false for unset attributes" do
+      @node.default["mastodon"] = "is okay"
+
+      @node.respond_to?(:mastodonalds) == false
+    end
+  end
+
   describe "consuming json" do
 
     before do

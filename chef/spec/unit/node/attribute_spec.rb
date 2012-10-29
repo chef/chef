@@ -394,6 +394,16 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "respond_to?" do
+    it "should return true for existing attributes" do
+      @attributes.respond_to?(:mastodon) == true
+    end
+
+    it "should return false for existing attributes" do
+      @attributes.respond_to?(:mastodonalds) == false
+    end
+  end
+
   describe "keys" do
     before(:each) do
       @attributes = Chef::Node::Attribute.new(

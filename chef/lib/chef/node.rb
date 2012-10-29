@@ -319,6 +319,14 @@ class Chef
       attributes.send(symbol, *args)
     end
 
+    def respond_to?(symbol, include_private = false)
+      if attributes.has_key? symbol
+        true
+      else
+        super
+      end
+    end
+
     # Returns true if this Node expects a given recipe, false if not.
     #
     # First, the run list is consulted to see whether the recipe is
