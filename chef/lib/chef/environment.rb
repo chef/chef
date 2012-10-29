@@ -23,7 +23,6 @@ require 'chef/mash'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
-require 'chef/index_queue'
 require 'chef/version_constraint'
 
 class Chef
@@ -33,7 +32,6 @@ class Chef
 
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
-    include Chef::IndexQueue::Indexable
 
     COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
 
@@ -78,7 +76,6 @@ class Chef
 
     def couchdb_id=(value)
       @couchdb_id = value
-      self.index_id = value
     end
 
     def chef_server_rest

@@ -113,7 +113,6 @@ class Chef
   # TODO: timh/cw: 5-24-2010: mutators for files (e.g., recipe_filenames=,
   # recipe_filenames.insert) should dirty the manifest so it gets regenerated.
   class CookbookVersion
-    include Chef::IndexQueue::Indexable
     include Comparable
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
@@ -779,7 +778,6 @@ class Chef
       end
       if o.has_key?("_id")
         cookbook_version.couchdb_id = o["_id"] if o.has_key?("_id")
-        cookbook_version.index_id = cookbook_version.couchdb_id
         o.delete("_id")
       end
       # We want the Chef::Cookbook::Metadata object to always be inflated
@@ -962,7 +960,6 @@ class Chef
 
     def couchdb_id=(value)
       @couchdb_id = value
-      @index_id = value
     end
 
     def <=>(o)

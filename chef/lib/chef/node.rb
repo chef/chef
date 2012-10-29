@@ -32,7 +32,6 @@ require 'chef/couchdb'
 require 'chef/rest'
 require 'chef/run_list'
 require 'chef/node/attribute'
-require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -54,7 +53,6 @@ class Chef
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
       "version" => 11,
@@ -167,7 +165,6 @@ class Chef
 
     def couchdb_id=(value)
       @couchdb_id = value
-      @index_id = value
     end
 
     # Used by DSL
@@ -504,7 +501,6 @@ class Chef
       end
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node.couchdb_id = o["_id"] if o.has_key?("_id")
-      node.index_id = node.couchdb_id
       node
     end
 

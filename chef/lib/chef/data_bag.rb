@@ -23,7 +23,6 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/data_bag_item'
-require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
 
@@ -32,7 +31,6 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
 
     VALID_NAME = /^[\-[:alnum:]_]+$/
 
@@ -123,7 +121,6 @@ class Chef
       bag.name(o["name"])
       bag.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       bag.couchdb_id = o["_id"] if o.has_key?("_id")
-      bag.index_id = bag.couchdb_id
       bag
     end
 

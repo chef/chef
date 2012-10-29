@@ -24,7 +24,6 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
-require 'chef/index_queue'
 require 'chef/data_bag'
 require 'chef/mash'
 require 'chef/json_compat'
@@ -36,7 +35,6 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
 
     VALID_ID = /^[\-[:alnum:]_]+$/
 
@@ -175,7 +173,6 @@ class Chef
       end
       if o.has_key?("_id")
         bag_item.couchdb_id = o["_id"]
-        bag_item.index_id = bag_item.couchdb_id
         o.delete("_id")
       end
       bag_item.raw_data = Mash.new(o["raw_data"])

@@ -22,7 +22,6 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/certificate'
-require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -32,7 +31,6 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
 
 
     DESIGN_DOCUMENT = {
@@ -59,12 +57,6 @@ class Chef
         }
       }
     }
-
-    INDEX_OBJECT_TYPE = 'client'.freeze
-
-    def self.index_object_type
-      INDEX_OBJECT_TYPE
-    end
 
     attr_accessor :couchdb_rev, :couchdb_id, :couchdb
 
@@ -168,7 +160,6 @@ class Chef
       client.admin(o["admin"])
       client.couchdb_rev = o["_rev"]
       client.couchdb_id = o["_id"]
-      client.index_id = client.couchdb_id
       client
     end
 

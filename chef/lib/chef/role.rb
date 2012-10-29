@@ -23,7 +23,6 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
 require 'chef/run_list'
-require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -33,7 +32,6 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
 
     DESIGN_DOCUMENT = {
       "version" => 6,
@@ -77,7 +75,6 @@ class Chef
 
     def couchdb_id=(value)
       @couchdb_id = value
-      self.index_id = value
     end
 
     def chef_server_rest
@@ -215,7 +212,6 @@ class Chef
       role.env_run_lists(env_run_list_hash)
 
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
-      role.index_id = role.couchdb_id
       role.couchdb_id = o["_id"] if o.has_key?("_id")
       role
     end

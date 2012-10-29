@@ -229,16 +229,6 @@ class Chef
     # Where should chef-solo download recipes from?
     recipe_url nil
 
-    # Parameters for connecting to RabbitMQ
-    amqp_host '0.0.0.0'
-    amqp_port '5672'
-    amqp_user 'chef'
-    amqp_pass 'testing'
-    amqp_vhost '/chef'
-    # Setting this to a UUID string also makes the queue durable
-    # (persist across rabbitmq restarts)
-    amqp_consumer_id "default"
-
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions
     # 1.0 and 1.1 are available; however, the chef-server must first be
