@@ -21,7 +21,6 @@ require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/couchdb'
-require 'chef/certificate'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -117,17 +116,6 @@ class Chef
         arg,
         :kind_of => String
       )
-    end
-
-    # Creates a new public/private key pair, and populates the public_key and
-    # private_key attributes.
-    #
-    # @return [True]
-    def create_keys
-      results = Chef::Certificate.gen_keypair(self.name)
-      self.public_key(results[0].to_s)
-      self.private_key(results[1].to_s)
-      true
     end
 
     # The hash representation of the object.  Includes the name and public_key,
