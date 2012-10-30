@@ -21,9 +21,7 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/couchdb'
 require 'chef/run_list'
-require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -33,51 +31,14 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
-
-    DESIGN_DOCUMENT = {
-      "version" => 6,
-      "language" => "javascript",
-      "views" => {
-        "all" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "role") {
-              emit(doc.name, doc);
-            }
-          }
-          EOJS
-        },
-        "all_id" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "role") {
-              emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        }
-      }
-    }
-
-    attr_accessor :couchdb_rev, :couchdb
-    attr_reader :couchdb_id
 
     # Create a new Chef::Role object.
-    def initialize(couchdb=nil)
+    def initialize
       @name = ''
       @description = ''
       @default_attributes = Mash.new
       @override_attributes = Mash.new
       @env_run_lists = {"_default" => Chef::RunList.new}
-      @couchdb_rev = nil
-      @couchdb_id = nil
-      @couchdb = couchdb || Chef::CouchDB.new
-    end
-
-    def couchdb_id=(value)
-      @couchdb_id = value
-      self.index_id = value
     end
 
     def chef_server_rest
@@ -177,7 +138,6 @@ class Chef
           accumulator
         end
       }
-      result["_rev"] = couchdb_rev if couchdb_rev
       result
     end
 
@@ -214,18 +174,7 @@ class Chef
       end
       role.env_run_lists(env_run_list_hash)
 
-      role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
-      role.index_id = role.couchdb_id
-      role.couchdb_id = o["_id"] if o.has_key?("_id")
       role
-    end
-
-    # List all the Chef::Role objects in the CouchDB.  If inflate is set to true, you will get
-    # the full list of all Roles, fully inflated.
-    def self.cdb_list(inflate=false, couchdb=nil)
-      rs = (couchdb || Chef::CouchDB.new).list("roles", inflate)
-      lookup = (inflate ? "value" : "key")
-      rs["rows"].collect { |r| r[lookup] }
     end
 
     # Get the list of all roles from the API.
@@ -241,22 +190,9 @@ class Chef
       end
     end
 
-    # Load a role by name from CouchDB
-    def self.cdb_load(name, couchdb=nil)
-      (couchdb || Chef::CouchDB.new).load("role", name)
-    end
-
     # Load a role by name from the API
     def self.load(name)
       chef_server_rest.get_rest("roles/#{name}")
-    end
-
-    def self.exists?(rolename, couchdb)
-      begin
-        self.cdb_load(rolename, couchdb)
-      rescue Chef::Exceptions::CouchDBNotFound
-        nil
-      end
     end
 
     def environment(env_name)
@@ -267,19 +203,9 @@ class Chef
       chef_server_rest.get_rest("roles/#{@name}/environments")
     end
 
-    # Remove this role from the CouchDB
-    def cdb_destroy
-      couchdb.delete("role", @name, couchdb_rev)
-    end
-
     # Remove this role via the REST API
     def destroy
       chef_server_rest.delete_rest("roles/#{@name}")
-    end
-
-    # Save this role to the CouchDB
-    def cdb_save
-      self.couchdb_rev = couchdb.store("role", @name, self)["rev"]
     end
 
     # Save this role via the REST API
@@ -297,11 +223,6 @@ class Chef
     def create
       chef_server_rest.post_rest("roles", self)
       self
-    end
-
-    # Set up our CouchDB design document
-    def self.create_design_document(couchdb=nil)
-      (couchdb || Chef::CouchDB.new).create_design_document("roles", DESIGN_DOCUMENT)
     end
 
     # As a string
@@ -325,23 +246,6 @@ class Chef
         role
       else
         raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
-      end
-    end
-
-    # Sync all the json roles with couchdb from disk
-    def self.sync_from_disk_to_couchdb
-      Dir[File.join(Chef::Config[:role_path], "*.json")].each do |role_file|
-        short_name = File.basename(role_file, ".json")
-        Chef::Log.warn("Loading #{short_name}")
-        r = Chef::Role.from_disk(short_name, "json")
-        begin
-          couch_role = Chef::Role.cdb_load(short_name)
-          r.couchdb_rev = couch_role.couchdb_rev
-          Chef::Log.debug("Replacing role #{short_name} with data from #{role_file}")
-        rescue Chef::Exceptions::CouchDBNotFound
-          Chef::Log.debug("Creating role #{short_name} with data from #{role_file}")
-        end
-        r.cdb_save
       end
     end
 

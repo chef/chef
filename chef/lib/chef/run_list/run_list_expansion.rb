@@ -21,7 +21,6 @@ require 'chef/mash'
 require 'chef/mixin/deep_merge'
 
 require 'chef/role'
-require 'chef/couchdb'
 require 'chef/rest'
 
 class Chef
@@ -188,19 +187,5 @@ class Chef
       end
     end
 
-    # Expand a run list from couchdb. Used in chef-server-api
-    class RunListExpansionFromCouchDB < RunListExpansion
-
-      def couchdb
-        source
-      end
-
-      def fetch_role(name, included_by)
-        Chef::Role.cdb_load(name, couchdb)
-      rescue Chef::Exceptions::CouchDBNotFound
-        role_not_found(name, included_by)
-      end
-
-    end
   end
 end

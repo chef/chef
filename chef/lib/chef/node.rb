@@ -28,11 +28,9 @@ require 'chef/mixin/from_file'
 require 'chef/mixin/deep_merge'
 require 'chef/dsl/include_attribute'
 require 'chef/environment'
-require 'chef/couchdb'
 require 'chef/rest'
 require 'chef/run_list'
 require 'chef/node/attribute'
-require 'chef/index_queue'
 require 'chef/mash'
 require 'chef/json_compat'
 require 'chef/search/query'
@@ -44,8 +42,7 @@ class Chef
 
     def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
-    attr_accessor :recipe_list, :couchdb, :couchdb_rev, :run_state, :run_list
-    attr_reader :couchdb_id
+    attr_accessor :recipe_list, :run_state, :run_list
 
     attr_accessor :run_context
 
@@ -54,103 +51,9 @@ class Chef
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
-    include Chef::IndexQueue::Indexable
-
-    DESIGN_DOCUMENT = {
-      "version" => 11,
-      "language" => "javascript",
-      "views" => {
-        "all" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "node") {
-              emit(doc.name, doc);
-            }
-          }
-          EOJS
-        },
-        "all_id" => {
-          "map" => <<-EOJS
-          function(doc) {
-            if (doc.chef_type == "node") {
-              emit(doc.name, doc.name);
-            }
-          }
-          EOJS
-        },
-        "status" => {
-          "map" => <<-EOJS
-            function(doc) {
-              if (doc.chef_type == "node") {
-                var to_emit = { "name": doc.name, "chef_environment": doc.chef_environment };
-                if (doc["attributes"]["fqdn"]) {
-                  to_emit["fqdn"] = doc["attributes"]["fqdn"];
-                } else {
-                  to_emit["fqdn"] = "Undefined";
-                }
-                if (doc["attributes"]["ipaddress"]) {
-                  to_emit["ipaddress"] = doc["attributes"]["ipaddress"];
-                } else {
-                  to_emit["ipaddress"] = "Undefined";
-                }
-                if (doc["attributes"]["ohai_time"]) {
-                  to_emit["ohai_time"] = doc["attributes"]["ohai_time"];
-                } else {
-                  to_emit["ohai_time"] = "Undefined";
-                }
-                if (doc["attributes"]["uptime"]) {
-                  to_emit["uptime"] = doc["attributes"]["uptime"];
-                } else {
-                  to_emit["uptime"] = "Undefined";
-                }
-                if (doc["attributes"]["platform"]) {
-                  to_emit["platform"] = doc["attributes"]["platform"];
-                } else {
-                  to_emit["platform"] = "Undefined";
-                }
-                if (doc["attributes"]["platform_version"]) {
-                  to_emit["platform_version"] = doc["attributes"]["platform_version"];
-                } else {
-                  to_emit["platform_version"] = "Undefined";
-                }
-                if (doc["run_list"]) {
-                  to_emit["run_list"] = doc["run_list"];
-                } else {
-                  to_emit["run_list"] = "Undefined";
-                }
-                emit(doc.name, to_emit);
-              }
-            }
-          EOJS
-        },
-        "by_run_list" => {
-          "map" => <<-EOJS
-            function(doc) {
-              if (doc.chef_type == "node") {
-                if (doc['run_list']) {
-                  for (var i=0; i < doc.run_list.length; i++) {
-                    emit(doc['run_list'][i], doc.name);
-                  }
-                }
-              }
-            }
-          EOJS
-        },
-        "by_environment" => {
-          "map" => <<-EOJS
-            function(doc) {
-              if (doc.chef_type == "node") {
-                var env = (doc['chef_environment'] == null ? "_default" : doc['chef_environment']);
-                emit(env, doc.name);
-              }
-            }
-          EOJS
-        }
-      },
-    }
 
     # Create a new Chef::Node object.
-    def initialize(couchdb=nil)
+    def initialize
       @name = nil
 
       @chef_environment = '_default'
@@ -158,16 +61,7 @@ class Chef
 
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
 
-      @couchdb_rev = nil
-      @couchdb_id = nil
-      @couchdb = couchdb || Chef::CouchDB.new
-
       @run_state = {}
-    end
-
-    def couchdb_id=(value)
-      @couchdb_id = value
-      @index_id = value
     end
 
     # Used by DSL
@@ -470,7 +364,6 @@ class Chef
         #Render correctly for run_list items so malformed json does not result
         "run_list" => run_list.run_list.map { |item| item.to_s }
       }
-      result["_rev"] = couchdb_rev if couchdb_rev
       result.to_json(*a)
     end
 
@@ -502,15 +395,7 @@ class Chef
       else
         o["recipes"].each { |r| node.recipes << r }
       end
-      node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
-      node.couchdb_id = o["_id"] if o.has_key?("_id")
-      node.index_id = node.couchdb_id
       node
-    end
-
-    def self.cdb_list_by_environment(environment, inflate=false, couchdb=nil)
-      rs = (couchdb || Chef::CouchDB.new).get_view("nodes", "by_environment", :include_docs => inflate, :startkey => environment, :endkey => environment)
-      inflate ? rs["rows"].collect {|r| r["doc"]} : rs["rows"].collect {|r| r["value"]}
     end
 
     def self.list_by_environment(environment, inflate=false)
@@ -523,14 +408,6 @@ class Chef
       end
     end
 
-    # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
-    # the full list of all Nodes, fully inflated.
-    def self.cdb_list(inflate=false, couchdb=nil)
-      rs =(couchdb || Chef::CouchDB.new).list("nodes", inflate)
-      lookup = (inflate ? "value" : "key")
-      rs["rows"].collect { |r| r[lookup] }
-    end
-
     def self.list(inflate=false)
       if inflate
         response = Hash.new
@@ -540,19 +417,6 @@ class Chef
         response
       else
         Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
-      end
-    end
-
-    # Load a node by name from CouchDB
-    def self.cdb_load(name, couchdb=nil)
-      (couchdb || Chef::CouchDB.new).load("node", name)
-    end
-
-    def self.exists?(nodename, couchdb)
-      begin
-        self.cdb_load(nodename, couchdb)
-      rescue Chef::Exceptions::CouchDBNotFound
-        nil
       end
     end
 
@@ -576,19 +440,9 @@ class Chef
       Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{name}")
     end
 
-    # Remove this node from the CouchDB
-    def cdb_destroy
-      couchdb.delete("node", name, couchdb_rev)
-    end
-
     # Remove this node via the REST API
     def destroy
       chef_server_rest.delete_rest("nodes/#{name}")
-    end
-
-    # Save this node to the CouchDB
-    def cdb_save
-      @couchdb_rev = couchdb.store("node", name, self)["rev"]
     end
 
     # Save this node via the REST API
@@ -612,11 +466,6 @@ class Chef
     def create
       chef_server_rest.post_rest("nodes", self)
       self
-    end
-
-    # Set up our CouchDB design document
-    def self.create_design_document(couchdb=nil)
-      (couchdb || Chef::CouchDB.new).create_design_document("nodes", DESIGN_DOCUMENT)
     end
 
     def to_s

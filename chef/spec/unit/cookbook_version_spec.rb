@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,56 +17,10 @@
 
 require 'spec_helper'
 
-describe Chef::MinimalCookbookVersion do
-  describe "when first created" do
-    before do
-      @params = { "id"=>"1a806f1c-b409-4d8e-abab-fa414ff5b96d",
-                  "key"=>"activemq",
-                  "value"=>{"version"=>"0.3.3", "deps"=>{"java"=>">= 0.0.0", "runit"=>">= 0.0.0"}}}
-      @minimal_cookbook_version = Chef::MinimalCookbookVersion.new(@params)
-    end
-
-    it "has a name" do
-      @minimal_cookbook_version.name.should == 'activemq'
-    end
-
-    it "has a version" do
-      @minimal_cookbook_version.version.should == '0.3.3'
-    end
-
-    it "has a list of dependencies" do
-      @minimal_cookbook_version.deps.should == {"java" => ">= 0.0.0", "runit" => ">= 0.0.0"}
-    end
-
-    it "has cookbook metadata" do
-      metadata = @minimal_cookbook_version.metadata
-
-      metadata.name.should == 'activemq'
-      metadata.dependencies['java'].should == '>= 0.0.0'
-      metadata.dependencies['runit'].should == '>= 0.0.0'
-    end
-  end
-
-  describe "when created from cookbooks with old style version contraints" do
-    before do
-      @params = { "id"=>"1a806f1c-b409-4d8e-abab-fa414ff5b96d",
-                  "key"=>"activemq",
-                  "value"=>{"version"=>"0.3.3", "deps"=>{"apt" => ">> 1.0.0"}}}
-      @minimal_cookbook_version = Chef::MinimalCookbookVersion.new(@params)
-    end
-
-    it "translates the version constraints" do
-      metadata = @minimal_cookbook_version.metadata
-      metadata.dependencies['apt'].should == '> 1.0.0'
-    end
-  end
-end
-
 describe Chef::CookbookVersion do
   describe "when first created" do
     before do
-      @couchdb_driver = Chef::CouchDB.new
-      @cookbook_version = Chef::CookbookVersion.new("tatft", @couchdb_driver)
+      @cookbook_version = Chef::CookbookVersion.new("tatft")
     end
 
     it "has a name" do
@@ -114,14 +68,6 @@ describe Chef::CookbookVersion do
       @cookbook_version.should be_frozen_version
     end
 
-    it "has no couchdb id" do
-      @cookbook_version.couchdb_id.should be_nil
-    end
-
-    it "has the couchdb driver it was given on create" do
-      @cookbook_version.couchdb.should equal(@couchdb_driver)
-    end
-
     it "is \"ready\"" do
       # WTF is this? what are the valid states? and why aren't they set with encapsulating methods?
       # [Dan 15-Jul-2010]
@@ -133,19 +79,19 @@ describe Chef::CookbookVersion do
     end
 
     it "creates a manifest hash of its contents" do
-      expected = {"recipes"=>[], 
-                  "definitions"=>[], 
-                  "libraries"=>[], 
-                  "attributes"=>[], 
-                  "files"=>[], 
-                  "templates"=>[], 
-                  "resources"=>[], 
-                  "providers"=>[], 
-                  "root_files"=>[], 
-                  "cookbook_name"=>"tatft", 
+      expected = {"recipes"=>[],
+                  "definitions"=>[],
+                  "libraries"=>[],
+                  "attributes"=>[],
+                  "files"=>[],
+                  "templates"=>[],
+                  "resources"=>[],
+                  "providers"=>[],
+                  "root_files"=>[],
+                  "cookbook_name"=>"tatft",
                   "metadata"=>Chef::Cookbook::Metadata.new,
-                  "version"=>"0.0.0", 
-                  "name"=>"tatft-0.0.0"} 
+                  "version"=>"0.0.0",
+                  "name"=>"tatft-0.0.0"}
       @cookbook_version.manifest.should == expected
     end
   end
@@ -280,7 +226,7 @@ describe Chef::CookbookVersion do
         useful_explanation = Regexp.new(Regexp.escape("Cookbook 'tatft' (0.0.0) does not contain"))
         @attempt_to_load_file.should raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
       end
-  
+
       it "lists suggested places to look" do
         useful_explanation = Regexp.new(Regexp.escape("files/default/no-such-thing.txt"))
         @attempt_to_load_file.should raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
@@ -325,7 +271,7 @@ describe Chef::CookbookVersion do
       b.version = "1.2.0"
       a.should == b
     end
-    
+
 
     it "should not allow you to sort cookbooks with different names" do
       apt = Chef::CookbookVersion.new "apt"
@@ -354,56 +300,6 @@ describe Chef::CookbookVersion do
       bad_versions.each do |v|
         lambda {@cbv.version = v}.should raise_error(the_error)
       end
-    end
-
-  end
-
-  describe "when deleting in the database" do
-    before do
-      @couchdb_driver = Chef::CouchDB.new
-      @cookbook_version = Chef::CookbookVersion.new("tatft", @couchdb_driver)
-      @cookbook_version.version = "1.2.3"
-      @couchdb_rev = "_123456789"
-      @cookbook_version.couchdb_rev = @couchdb_rev
-    end
-
-    it "deletes its document from couchdb" do
-      @couchdb_driver.should_receive(:delete).with("cookbook_version", "tatft-1.2.3", @couchdb_rev)
-      @cookbook_version.cdb_destroy
-    end
-
-    it "deletes associated checksum objects when purged" do
-      checksums = {"12345" => "/tmp/foo", "23456" => "/tmp/bar", "34567" => "/tmp/baz"}
-      @cookbook_version.stub!(:checksums).and_return(checksums)
-
-      chksum_docs = checksums.map do |md5, path|
-        cksum_doc = mock("Chef::Checksum for #{md5} at #{path}")
-        Chef::Checksum.should_receive(:cdb_load).with(md5, @couchdb_driver).and_return(cksum_doc)
-        cksum_doc.should_receive(:purge)
-        cksum_doc
-      end
-
-      @cookbook_version.should_receive(:cdb_destroy)
-      @cookbook_version.purge
-    end
-
-    it "successfully purges when associated checksum objects are missing" do
-      checksums = {"12345" => "/tmp/foo", "23456" => "/tmp/bar", "34567" => "/tmp/baz"}
-
-      chksum_docs = checksums.map do |md5, path|
-        cksum_doc = mock("Chef::Checksum for #{md5} at #{path}")
-        Chef::Checksum.should_receive(:cdb_load).with(md5, @couchdb_driver).and_return(cksum_doc)
-        cksum_doc.should_receive(:purge)
-        cksum_doc
-      end
-
-      missing_checksum = {"99999" => "/tmp/qux"}
-      Chef::Checksum.should_receive(:cdb_load).with("99999", @couchdb_driver).and_raise(Chef::Exceptions::CouchDBNotFound)
-
-      @cookbook_version.stub!(:checksums).and_return(checksums.merge(missing_checksum))
-
-      @cookbook_version.should_receive(:cdb_destroy)
-      lambda {@cookbook_version.purge}.should_not raise_error
     end
 
   end

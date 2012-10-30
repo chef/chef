@@ -330,10 +330,12 @@ describe Chef::Mixin::ParamsValidate do
 
   it "asserts that a value returns false from a predicate method" do
     lambda do
-      @vo.validate({:not_blank => "should pass"}, {:not_blank => {:cannot_be => :blank}})
+      @vo.validate({:not_blank => "should pass"},
+                   {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
     end.should_not raise_error
     lambda do
-      @vo.validate({:not_blank => ""}, {:not_blank => {:cannot_be => :blank}})
+      @vo.validate({:not_blank => ""},
+                   {:not_blank => {:cannot_be => :nil, :cannot_be => :empty}})
     end.should raise_error(Chef::Exceptions::ValidationFailed)
   end
 

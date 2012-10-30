@@ -130,8 +130,6 @@ class Chef
     # Used when OpenID authentication is enabled in the Web UI
     authorized_openid_identifiers nil
     authorized_openid_providers nil
-    openid_cstore_couchdb false
-    openid_cstore_path "/var/chef/openid/cstore"
 
     # The number of times the client should retry when registering with the server
     client_registration_retries 5
@@ -149,11 +147,6 @@ class Chef
 
     # Where cookbook files are stored on the server (by content checksum)
     checksum_path "/var/chef/checksums"
-
-    # CouchDB database name to use
-    couchdb_database "chef"
-
-    couchdb_url "http://localhost:5984"
 
     # Where chef's cache files should be stored
     file_cache_path platform_specific_path("/var/chef/cache")
@@ -173,7 +166,6 @@ class Chef
     ## Daemonization Settings ##
     # What user should Chef run as?
     user nil
-    # What group should the chef-server, -solr, -solr-indexer run as
     group nil
     umask 0022
 
@@ -212,7 +204,7 @@ class Chef
     client_fork false
     enable_reporting true
     enable_reporting_url_fatals false
-    
+
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
     ssl_client_cert nil
@@ -229,23 +221,6 @@ class Chef
 
     # Where should chef-solo download recipes from?
     recipe_url nil
-
-    solr_url "http://localhost:8983/solr"
-    solr_jetty_path "/var/chef/solr-jetty"
-    solr_data_path "/var/chef/solr/data"
-    solr_home_path "/var/chef/solr"
-    solr_heap_size "256M"
-    solr_java_opts nil
-
-    # Parameters for connecting to RabbitMQ
-    amqp_host '0.0.0.0'
-    amqp_port '5672'
-    amqp_user 'chef'
-    amqp_pass 'testing'
-    amqp_vhost '/chef'
-    # Setting this to a UUID string also makes the queue durable
-    # (persist across rabbitmq restarts)
-    amqp_consumer_id "default"
 
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions
