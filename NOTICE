@@ -16,12 +16,4 @@ Contributors and Copyright holders:
 
 Chef incorporates code modified from Open4 (http://www.codeforpeople.com/lib/ruby/open4/), which was written by Ara T. Howard.
 
-Chef incorporates code modified from Merb (http://www.merbivore.com), which is Copyright (c) 2008 Engine Yard.
-
 Chef incorporates code modified from deep_merge (http://trac.misuse.org/science/wiki/DeepMerge), which is Copyright (c) 2008 Steve Midgley
-
-Chef incorporates code modified from extlib
-(http://github.com/datamapper/extlib), which is Copyright 2009 Dan
-Kubb with some portions of mash.rb being verbatim copies of software
-licensed under the MIT license and Copyright 2005-2008 David
-Heinemeier Hansson
