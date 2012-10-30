@@ -2,43 +2,13 @@
 coverage
 doc
 .DS_Store
-packages/chef-server/db
-examples/search_index
-examples/store
-examples/openid-cstore
-examples/openid-db
-chef/pkg
-chef-server/pkg
-chef-server-webui/pkg
-chef-server-api/pkg
-chef-expander/pkg
-chef/log
-chef/rdoc
-chef-server/log
-log
-couchdb.stderr
-couchdb.stdout
-features/data/tmp/**
-*.swp
-*.swo
-features/data/cookbooks/**/metadata.json
-features/data/solr/**
-erl_crash.dump
-*.rake_tasks~
-.idea
-features/data/repo/checksums/
-*.rbc
-chef-expander/conf/chef-expander.rb
-chef-expander/spec/fixtures/expander.log
-features/data/cookbooks/transfer_remote_files/metadata.json
-features/data/cookbooks/synchronize_deps/metadata.json
-features/data/cookbooks_not_uploaded_at_feature_start/*/metadata.json
-
+pkg
 */tags
 *~
 
 # you should check in your Gemfile.lock in applications, and not in gems
 Gemfile.lock
+Gemfile.local
 
 # Do not check in the .bundle directory, or any of the files inside it. Those files are specific to each particular machine, and are used to persist installation options between runs of the bundle install command.
 .bundle

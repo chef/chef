@@ -1,8 +1,8 @@
-= Chef[http://www.opscode.com/chef]
+= Chef
 
-= DESCRIPTION:
+== DESCRIPTION:
 
-Chef is a system integration framework designed to bring the benefits of configuration management to your entire infrastructure.
+Chef is a configuration management tool designed to bring automation to your entire infrastructure.
 
 The Chef Wiki is the definitive source of user documentation.
 
@@ -12,114 +12,71 @@ This README focuses on developers who want to modify Chef source code. For users
 
 * http://wiki.opscode.com/display/chef/Installing+Chef+from+HEAD
 
-= DEVELOPMENT:
+== DEVELOPMENT:
 
 Before working on the code, if you plan to contribute your changes, you need to read the Opscode Contributing document.
 
-* http://wiki.opscode.com/display/chef/How+to+Contribute
+* http://wiki.opscode.com/display/opscode/Contributing
 
 You will also need to set up the repository with the appropriate branches. We document the process on the Chef Wiki.
 
 * http://wiki.opscode.com/display/opscode/Working+with+Git
 
-Once your repository is set up, you can start working on the code. We do use BDD/TDD with RSpec and Cucumber, so you'll need to get a development environment running.
+Once your repository is set up, you can start working on the code. We do use TDD with RSpec, so you'll need to get a development environment running.
 
-= ENVIRONMENT:
+== REQUIREMENTS:
 
-Chef has two kinds of code testing:
+Ruby 1.8.7+ [1]
 
-* Unit Tests (rspec)
-* Integration Tests (cucumber)
+[1] As of 2012-05-25 Ruby 1.8.6 should still work, except for CHEF-2329.
 
-We're going to set up the local environment in two phases, one for each of these.
+== ENVIRONMENT:
 
-== Unit Tests (rspec):
+In order to have a development environment where changes to the Chef code can be tested, we'll need to install a few things after setting up the Git repository.
 
-We use Rspec to test that the code does what it is supposed to (unit tests).
+=== Non-Gem Dependencies
 
-Non-Ruby software:
+Install these via your platform's preferred method; for example apt, yum, ports, emerge, etc.
 
-* Gecode (version 3.5.0)
+* Git[http://git-scm.com/]
+* GCC and C Standard Libraries, header files, etc. (i.e., build-essential on debian/ubuntu)
+* Ruby development package
 
-Gecode is available on Mac OS X from homebrew, for Ubuntu/Debian from apt.opscode.com, or can be compiled from source.
+=== Runtime Rubygem Dependencies
+==== Chef Client and Solo
+* ohai
+* erubis
+* highline
+* json (1.4.4 - 1.4.6)
+* mixlib-authentication
+* mixlib-cli
+* mixlib-config
+* mixlib-log
+* moneta
+* rest-client
+* uuidtools
+* merb-core
+* net-ssh
+* fog
 
-* http://www.gecode.org/
+=== Development Rubygem Dependencies
+* rake[http://rake.rubyforge.org/]
+* rspec[http://rspec.info/]
 
-Install the Chef Gems from source in this repository.
+Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
 
-  rake install
+== Spec testing:
 
-Install the following RubyGems:
-
-* rake
-* rspec (2.8.0)
-* dep_selector (requires Gecode to compile native extensions)
-
-Run rake or rake spec:
+We use RSpec for unit/spec tests. It is not necessary to start the development
+environment to run the specs--they are completely standalone.
 
   rake spec
-  ....
-  Finished in 17.42 seconds
-  3823 examples, 0 failures, 3 pending
 
-== Integration Tests (cucumber):
-
-The integration tests require some additional software on top of what was installed for the unit tests. Most of the integration tests are for testing the Chef Server API interactions, so a Chef Server environment needs to be installed.
-
-Non-Ruby software:
-
-* Java
-* CouchDB (0.10+)
-* RabbitMQ (1.7.2+)
-
-These are available in most common distribution packaging systems, including Debian 6.0+ and Ubuntu 10.04+. Java is installed on Mac OS X by default; CouchDB and RabbitMQ are available in homebrew.
-
-Make sure the RubyGems for the Chef Server are installed (should be from the +rake install+ earlier):
-
-* chef-expander (now in its own repository at https://github.com/opscode/chef-expander)
-* chef-server
-* chef-server-api
-* chef-server-webui (now in its own repository at https://github.com/opscode/chef-server-webui)
-* chef-solr (now in its own repository at https://github.com/opscode/chef-solr)
-
-=== Starting the Environment:
-
-Once everything is installed, run the dev:features rake task. Since the features do integration testing, root access may be required.
-
-  (sudo) rake dev:features
-
-This rake task will do the following:
-
-* Start CouchDB, running on port 5984
-* Start and configure RabbitMQ for Chef, running on port 5672
-* Install Chef SOLR data and start chef-solr, running on port 8983
-* Start chef-server-api on port 4000
-* Start chef-server-webui on port 4001
-* Start chef-expander, the clustered search index broker
-
-You'll want to leave this terminal running the dev environment.
-
-== Web Interface:
-
-With the dev environment running, you can now access the web interface via http://localhost:4000/. The default login is admin / p@ssw0rd1.
-
-== Integration testing:
-
-We test integration with Cucumber. Normally, you'll just run:
-
-  rake features
-
-In a second terminal, to run all the feature tests. Other feature tests are available as well, see:
-
-  rake -T | grep Cucumber
-
-There are over 60 different sets of features that can be tested.
-
-= LINKS:
+== LINKS:
 
 Source:
 
-* https://github.com/opscode/chef/
+* http://github.com/opscode/chef/tree/master
 
 Tickets/Issues:
 

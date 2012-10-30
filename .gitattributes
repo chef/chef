@@ -1,11 +1,6 @@
 # git config merge.ignore.name 'ignore changes merge driver'
 # git config merge.ignore.driver 'touch %A'
-chef/distro/common/html/* merge=ignore
-chef/distro/common/man/man1/* merge=ignore
-chef/distro/common/man/man8/* merge=ignore
-chef/lib/chef/version.rb merge=ignore
-chef-solr/lib/chef/solr/version.rb merge=ignore
-chef-server/lib/chef-server/version.rb merge=ignore
-chef-server-webui/lib/chef-server-webui/version.rb merge=ignore
-chef-server-api/lib/chef-server-api/version.rb merge=ignore
-chef-expander/lib/chef/expander/version.rb merge=ignore
+distro/common/html/* merge=ignore
+distro/common/man/man1/* merge=ignore
+distro/common/man/man8/* merge=ignore
+lib/chef/version.rb merge=ignore
