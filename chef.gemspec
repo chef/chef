@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.version = Chef::VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README.rdoc", "LICENSE" ]
+  s.extra_rdoc_files = ["README.md", "CONTRIBUTING.md", "LICENSE" ]
   s.summary = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
   s.description = s.summary
   s.author = "Adam Jacob"
@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.1.0"
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
   s.add_dependency "highline", ">= 1.6.9"
-  %w{erubis moneta uuidtools}.each { |gem| s.add_dependency gem }
+  %w{erubis moneta}.each { |gem| s.add_dependency gem }
 
   # development_dependency thin: eventmachine 0.12.10 doesn't support Ruby 1.9 on Windows
   %w(rdoc sdoc ronn rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
@@ -36,5 +36,5 @@ Gem::Specification.new do |s|
   s.bindir       = "bin"
   s.executables  = %w( chef-client chef-solo knife chef-shell shef )
   s.require_path = 'lib'
-  s.files = %w(Rakefile LICENSE README.rdoc) + Dir.glob("{distro,lib,tasks,spec}/**/*")
+  s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*")
 end
