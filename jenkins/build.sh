@@ -63,10 +63,10 @@ fi
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}" && sudo chown jenkins-node "/opt/${project_name}"
-  sudo rm -r /var/cache/omnibus/pkg/* || true
-  sudo rm -r /var/cache/omnibus/src/* || true
-  sudo rm /var/cache/omnibus/build/*/*.manifest || true
-  sudo rm pkg/* || true
+  sudo rm -rf /var/cache/omnibus/pkg/* || true
+  sudo rm -rf /var/cache/omnibus/src/* || true
+  sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
+  sudo rm -f pkg/* || true
 fi
 bundle install
 
