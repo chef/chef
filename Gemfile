@@ -7,11 +7,7 @@ gem "ronn"
 
 group(:development, :test) do
   gem 'rack'
-
-  # The 'ruby' platform is surprisingly just unix-y platforms
-  # thin requires eventmachine, which won't work under Ruby 1.9 on Windows
-  # http://gembundler.com/man/gemfile.5.html
-  gem 'thin', :platforms => :ruby
+  gem 'thin'
 
   # Eventmachine 1.0.0 is causing functional test failures on Solaris
   # 9 SPARC. Pinning em to 0.12.10 solves this issue until we can

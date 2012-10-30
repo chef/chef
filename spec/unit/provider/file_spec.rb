@@ -53,75 +53,81 @@ describe Chef::Provider::File do
     @provider.current_resource.content.should eql(nil)
   end
 
-  it "should collect the current state of the file on the filesystem and populate current_resource" do
-    # test setup
-    stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-    ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
-    
-    # test execution 
-    @provider.load_current_resource
-
-    # post-condition checks
-    @provider.current_resource.mode.should == 0600
-    @provider.current_resource.owner.should == 0
-    @provider.current_resource.group.should == 0
+  context "load_current_resource_attrs", :unix_only do
+    it "should collect the current state of the file on the filesystem and populate current_resource" do
+      # test setup
+      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
+      ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
+      
+      # test execution 
+      @provider.load_current_resource
+  
+      # post-condition checks
+      @provider.current_resource.mode.should == 0600
+      @provider.current_resource.owner.should == 0
+      @provider.current_resource.group.should == 0
+    end
+  
+    it "should NOT update the new_resource state with the current_resourse state if new_resource state is already specified" do
+      # test setup
+      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
+      ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
+  
+      @provider.new_resource.group(1)
+      @provider.new_resource.owner(1)
+      @provider.new_resource.mode(0644)
+  
+      # test execution 
+      @provider.load_current_resource
+  
+      # post-condition checks
+      @provider.new_resource.group.should == 1
+      @provider.new_resource.owner.should == 1
+      @provider.new_resource.mode.should == 0644
+    end
+  
+    it "should update the new_resource state with the current_resource state if the new_resource state is not specified." do
+      # test setup
+      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
+      ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
+  
+      @provider.new_resource.group(nil)
+      @provider.new_resource.owner(nil)
+      @provider.new_resource.mode(nil)
+  
+      # test execution 
+      @provider.load_current_resource
+  
+      # post-condition checks
+      @provider.new_resource.group.should eql(@provider.current_resource.group)
+      @provider.new_resource.owner.should eql(@provider.current_resource.owner)
+      @provider.new_resource.mode.should eql(@provider.current_resource.mode)
+    end
+  
+    it "should update the new_resource when attempting to set the new state" do
+      # test setup
+      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
+      # called once in update_new_file_state and once in checksum
+      ::File.should_receive(:stat).twice.with(@provider.new_resource.path).and_return(stat_struct)  
+      ::File.should_receive(:directory?).once.with(@provider.new_resource.path).and_return(false)
+  
+      @provider.new_resource.group(nil)
+      @provider.new_resource.owner(nil)
+      @provider.new_resource.mode(nil)
+      
+      # test exectution 
+      @provider.update_new_file_state
+  
+      # post-condition checks
+      @provider.new_resource.group.should == 0
+      @provider.new_resource.owner.should == 0
+      @provider.new_resource.mode.should == 0600
+    end
   end
 
-  it "should NOT update the new_resource state with the current_resourse state if new_resource state is already specified" do
-    # test setup
-    stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-    ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
-
-    @provider.new_resource.group(1)
-    @provider.new_resource.owner(1)
-    @provider.new_resource.mode(0644)
-
-    # test execution 
-    @provider.load_current_resource
-
-    # post-condition checks
-    @provider.new_resource.group.should == 1
-    @provider.new_resource.owner.should == 1
-    @provider.new_resource.mode.should == 0644
+  context "load_current_resource_attrs", :windows_only do
+    pending "CHEF-3557: Fix implicit resource change collection on Windows"
   end
-
-  it "should update the new_resource state with the current_resource state if the new_resource state is not specified." do
-    # test setup
-    stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-    ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
-
-    @provider.new_resource.group(nil)
-    @provider.new_resource.owner(nil)
-    @provider.new_resource.mode(nil)
-
-    # test execution 
-    @provider.load_current_resource
-
-    # post-condition checks
-    @provider.new_resource.group.should eql(@provider.current_resource.group)
-    @provider.new_resource.owner.should eql(@provider.current_resource.owner)
-    @provider.new_resource.mode.should eql(@provider.current_resource.mode)
-  end
-
-  it "should update the new_resource when attempting to set the new state" do
-    # test setup
-    stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-    # called once in update_new_file_state and once in checksum
-    ::File.should_receive(:stat).twice.with(@provider.new_resource.path).and_return(stat_struct)  
-    ::File.should_receive(:directory?).once.with(@provider.new_resource.path).and_return(false)
-
-    @provider.new_resource.group(nil)
-    @provider.new_resource.owner(nil)
-    @provider.new_resource.mode(nil)
-    
-    # test exectution 
-    @provider.update_new_file_state
-
-    # post-condition checks
-    @provider.new_resource.group.should == 0
-    @provider.new_resource.owner.should == 0
-    @provider.new_resource.mode.should == 0600
-end
 
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do
     resource = Chef::Resource::File.new("seattle")

@@ -84,6 +84,8 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
     end
 
     it "sets updated_by_last_action on the new resource" do
+      @provider.new_resource.owner(0) # CHEF-3557 hack - Set these because we don't for windows
+      @provider.new_resource.group(0) # CHEF-3557 hack - Set these because we don't for windows
       @provider.new_resource.should_receive(:updated_by_last_action)
       Chef::FileAccessControl.any_instance.stub(:set_all)
       @provider.run_action(:create)

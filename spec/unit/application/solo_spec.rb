@@ -71,7 +71,7 @@ describe Chef::Application::Solo do
 
         it "should perform a RESTful GET on the supplied URL" do
           @app.reconfigure
-          @app.chef_solo_json.should == {"a" => "b"}
+          @app.instance_variable_get(:@chef_client_json).should == {"a" => "b"}
         end
       end
 
@@ -84,7 +84,7 @@ describe Chef::Application::Solo do
 
         it "should parse the json out of the file" do
           @app.reconfigure
-          @app.chef_solo_json.should == {"a" => "b"}
+          @app.instance_variable_get(:@chef_client_json).should == {"a" => "b"}
         end
       end
 
