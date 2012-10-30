@@ -2,9 +2,9 @@
 
 == DESCRIPTION:
 
-Chef is a configuration management tool designed to bring automation to your entire infrastructure. 
+Chef is a configuration management tool designed to bring automation to your entire infrastructure.
 
-The Chef Wiki is the definitive source of user documentation. 
+The Chef Wiki is the definitive source of user documentation.
 
 * http://wiki.opscode.com/display/chef/Home
 
@@ -22,7 +22,7 @@ You will also need to set up the repository with the appropriate branches. We do
 
 * http://wiki.opscode.com/display/opscode/Working+with+Git
 
-Once your repository is set up, you can start working on the code. We do use BDD/TDD with RSpec and Cucumber, so you'll need to get a development environment running.
+Once your repository is set up, you can start working on the code. We do use TDD with RSpec, so you'll need to get a development environment running.
 
 == REQUIREMENTS:
 
@@ -39,16 +39,12 @@ In order to have a development environment where changes to the Chef code can be
 Install these via your platform's preferred method; for example apt, yum, ports, emerge, etc.
 
 * Git[http://git-scm.com/]
-* Erlang/OTP[http://www.erlang.org/]
-* CouchDB[http://couchdb.apache.org/]
-* RabbitMQ[http://www.rabbitmq.com/]
 * GCC and C Standard Libraries, header files, etc. (i.e., build-essential on debian/ubuntu)
 * Ruby development package
 
 === Runtime Rubygem Dependencies
 ==== Chef Client and Solo
 * ohai
-* bunny
 * erubis
 * highline
 * json (1.4.4 - 1.4.6)
@@ -63,60 +59,11 @@ Install these via your platform's preferred method; for example apt, yum, ports,
 * net-ssh
 * fog
 
-==== Chef Server, WebUI and Solr
-All of the above, plus the following:
-* coderay
-* haml
-* merb-assets
-* merb-core
-* merb-haml
-* merb-helpers
-* merb-param-protection
-* ruby-openid
-* thin
-
 === Development Rubygem Dependencies
 * rake[http://rake.rubyforge.org/]
 * rspec[http://rspec.info/]
-* cucumber[http://cukes.info/]
 
 Ohai is also by Opscode and available on GitHub, http://github.com/opscode/ohai/tree/master.
-
-== Starting the Environment:
-
-=== On Mac OS X:
-For ease of debugging, Chef includes a script to start each of the required
-daemons in a separate Terminal.app tab via applescript:
-
-  scripts/mac-dev-start features
-
-=== On Linux and BSD
-
-run the dev:features rake task. You may need to run it as root depending on how
-your system is configured.
-
-  rake dev:features
-
-=== Daemons
-After starting the environment, you should have the following processes running:
-* couchdb             listening on port 5984
-* rabbitmq            listening on port 5672
-* solr                listening on port 8983
-* chef-solr-indexer   connected as a client to rabbitmq
-* chef-server         listening on port 4000
-* chef-server-webui   listening on port 4040
-
-You'll know its running when you see:
-
-    merb : chef-server (api) : worker (port 4000) ~ Starting Thin at port 4000
-    merb : chef-server (api) : worker (port 4000) ~ Using Thin adapter on host 0.0.0.0 and port 4000.
-    merb : chef-server (api) : worker (port 4000) ~ Successfully bound to port 4000
-
-You'll want to leave this terminal running the dev environment.
-
-=== Web Interface:
-
-With the dev environment running, you can now access the web interface via http://localhost:4040/.
 
 == Spec testing:
 
@@ -124,23 +71,6 @@ We use RSpec for unit/spec tests. It is not necessary to start the development
 environment to run the specs--they are completely standalone.
 
   rake spec
-
-== Integration testing:
-
-We test integration with Cucumber. To run the full suite, run the rake task:
-
-  rake features
-
-Subsets of the integration tests can be run with the various tasks in the
-features namespace. To see the full list, run
-
-  rake -T
-
-To run individual feature tests, you can take advantage of cucumber's tagging
-support. Tag the feature you wish to run (tags are denoted with a leading `@'
-sign), then use the cucumber command:
-
-  cucumber -t @my_tag
 
 == LINKS:
 
