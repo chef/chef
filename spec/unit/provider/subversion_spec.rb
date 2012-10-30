@@ -63,7 +63,7 @@ describe Chef::Provider::Subversion do
                           "Last Changed Author: codeninja\n" +
                           "Last Changed Rev: 11410\n" + # Last Changed Rev is preferred to Revision
                           "Last Changed Date: 2009-03-25 06:09:56 -0600 (Wed, 25 Mar 2009)\n\n"
-      ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").and_return(true)
+      ::File.should_receive(:exist?).at_least(1).times.with("/my/deploy/dir/.svn").and_return(true)
       ::File.should_receive(:directory?).with("/my/deploy/dir").and_return(true)
       ::Dir.should_receive(:chdir).with("/my/deploy/dir").and_yield
       @stdout.stub!(:string).and_return(example_svn_info)
