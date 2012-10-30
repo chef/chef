@@ -67,10 +67,9 @@ if [ "$CLEAN" = "true" ]; then
   sudo rm -r /var/cache/omnibus/src/* || true
   sudo rm /var/cache/omnibus/build/*/*.manifest || true
   sudo rm pkg/* || true
-  bundle update
-else
-  bundle install
 fi
+bundle install
+
 
 # Omnibus build server prep tasks, including build ruby
 sudo -i env PATH=$PATH OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c $(pwd)/jenkins/solo.rb -j $(pwd)/jenkins/dna.json -l debug
@@ -80,11 +79,7 @@ cp omnibus.rb.example omnibus.rb
 
 # Aaand.. new ruby
 export PATH=/usr/local/bin:$PATH
-if [ "$CLEAN" = "true" ]; then
-  bundle update
-else
-  bundle install
-fi
+bundle install
 
 rake "projects:${project_name}"
 
