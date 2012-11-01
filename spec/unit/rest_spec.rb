@@ -387,7 +387,7 @@ describe Chef::REST do
           http_response.add_field("content-encoding", "deflate")
           unzipped_body = '{ "error":[ "Ears get sore!", "Not even four" ] }'
           gzipped_body = Zlib::Deflate.deflate(unzipped_body)
-          gzipped_body.force_encoding(Encoding::BINARY)
+          gzipped_body.force_encoding(Encoding::BINARY) if "strings".respond_to?(:force_encoding)
 
           http_response.stub!(:body).and_return gzipped_body
           http_response.stub!(:read_body)

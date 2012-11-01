@@ -38,7 +38,7 @@ class Chef
         # returns true from Chef::REST if returns 2XX (Net::HTTPSuccess)
         modified = @rest.head(
           "#{@new_resource.url}?message=#{message}",
-          @new_resource.headers,
+          @new_resource.headers
         )
         Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
         Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
