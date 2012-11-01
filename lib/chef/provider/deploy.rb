@@ -206,7 +206,7 @@ class Chef
 
           converge_by("execute migration command #{@new_resource.migration_command}") do
             Chef::Log.info "#{@new_resource} migrating #{@new_resource.user} with environment #{env_info}"
-            run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info))
+            run_command(run_options(:command => @new_resource.migration_command, :cwd=>release_path, :log_level => :info, :output_on_failure => true))
           end
         end
       end
