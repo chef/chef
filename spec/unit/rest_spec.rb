@@ -170,184 +170,59 @@ describe Chef::REST do
       @req_with_body_headers = @base_headers.merge("Content-Type" => "application/json", "Content-Length" => '13')
     end
 
-    describe "using the run_request API" do
-      it "should build a new HTTP GET request" do
-        request = Net::HTTP::Get.new(@url.path)
-        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers).and_return(request)
-        @rest.run_request(:GET, @url, {})
+    describe "streaming downloads to a tempfile" do
+      before do
+        @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
+        Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+        Tempfile.stub!(:open).and_return(@tempfile)
+
+        @request_mock = {}
+        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+
+        @http_response_mock = mock("Net::HTTP Response mock")
       end
 
-      it "should build a new HTTP POST request" do
-        request = Net::HTTP::Post.new(@url.path)
-
-        Net::HTTP::Post.should_receive(:new).with("/?foo=bar", @req_with_body_headers).and_return(request)
-        @rest.run_request(:POST, @url, {}, {:one=>:two})
-        request.body.should == '{"one":"two"}'
+      after do
+        @tempfile.rspec_reset
+        @tempfile.close!
       end
 
-      it "should build a new HTTP PUT request" do
-        request = Net::HTTP::Put.new(@url.path)
-        expected_headers = @base_headers.merge("Content-Length" => '13')
-        Net::HTTP::Put.should_receive(:new).with("/?foo=bar", @req_with_body_headers).and_return(request)
-        @rest.run_request(:PUT, @url, {}, {:one=>:two})
-        request.body.should == '{"one":"two"}'
+      it "should build a new HTTP GET request without the application/json accept header" do
+        expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
+        @rest.streaming_request(@url, {})
       end
 
-      it "should build a new HTTP DELETE request" do
-        request = Net::HTTP::Delete.new(@url.path)
-        Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", @base_headers).and_return(request)
-        @rest.run_request(:DELETE, @url)
+      it "should create a tempfile for the output of a raw request" do
+        @rest.streaming_request(@url, {}).should equal(@tempfile)
       end
 
-      it "should raise an error if the method is not GET/PUT/POST/DELETE" do
-        lambda { @rest.api_request(:MONKEY, @url) }.should raise_error(ArgumentError)
+      it "should read the body of the response in chunks on a raw request" do
+        @http_response.should_receive(:read_body).and_return(true)
+        @rest.streaming_request(@url, {})
       end
 
-      it "returns the response body when the response is successful but content-type is not JSON" do
-        @rest.run_request(:GET, @url).should == "ninja"
+      it "should populate the tempfile with the value of the raw request" do
+        @http_response_mock.stub!(:read_body).and_yield("ninja")
+        @tempfile.should_receive(:write).with("ninja").once.and_return(true)
+        @rest.streaming_request(@url, {})
       end
 
-      it "should call read_body without a block if the request is not raw" do
-        @http_response.should_receive(:body)
-        @rest.run_request(:GET, @url, {}, nil, false)
+      it "should close the tempfile if we're doing a raw request" do
+        @tempfile.should_receive(:close).once.and_return(true)
+        @rest.streaming_request(@url, {})
       end
 
-      it "should inflate the body as to an object if JSON is returned" do
-        @http_response.add_field("content-type", "application/json")
-        Chef::JSONCompat.should_receive(:from_json).with("ninja").and_return("ohai2u_success")
-        @rest.run_request(:GET, @url, {}).should == "ohai2u_success"
+      it "should not raise a divide by zero exception if the size is 0" do
+        @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
+        @http_response_mock.stub!(:read_body).and_yield('')
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
       end
 
-      it "should return false on a Not Modified response" do
-        http_response = Net::HTTPNotModified.new("1.1", "304", "It's old Bob")
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        http_response.stub!(:read_body)
-        @rest.run_request(:GET, @url).should be_false
-      end
-
-      %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
-        it "should call run_request again on a #{resp_name} response" do
-          resp_cls  = Net.const_get(resp_name)
-          resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
-          http_response = resp_cls.new("1.1", resp_code, "bob somewhere else")
-          http_response.add_field("location", @url.path)
-          http_response.stub!(:read_body)
-
-          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-          lambda { @rest.run_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
-        end
-      end
-
-      # CHEF-3140
-      context "when configured to disable compression" do
-        before do
-          @rest = Chef::REST.new(@base_url, nil, nil, :disable_gzip => true)
-        end
-
-        it "does not accept encoding gzip" do
-          @rest.send(:build_headers, :GET, @url, {}).should_not have_key("Accept-Encoding")
-        end
-
-        it "does not decompress a response encoded as gzip" do
-          @http_response.add_field("content-encoding", "gzip")
-          request = Net::HTTP::Get.new(@url.path)
-          Net::HTTP::Get.should_receive(:new).and_return(request)
-          # will raise a Zlib error if incorrect
-          @rest.api_request(:GET, @url, {}).should == "ninja"
-        end
-      end
-
-      it "should show the JSON error message on an unsuccessful request" do
-        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response.add_field("content-type", "application/json")
-        http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
-        http_response.stub!(:read_body)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        @rest.stub!(:sleep)
-        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
-      end
-
-      it "should raise an exception on an unsuccessful request" do
-        @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response.stub!(:read_body)
-        @rest.stub!(:sleep)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-      end
-
-      it "adds the rest_request object to any http exception raised" do
-        @http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response.stub!(:read_body)
-        @rest.stub!(:sleep)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        exception = begin
-          @rest.api_request(:GET, @url, {})
-        rescue => e
-          e
-        end
-
-        e.chef_rest_request.url.should == @url
-        e.chef_rest_request.method.should == :GET
-      end
-
-      describe "streaming downloads to a tempfile" do
-        before do
-          @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
-          Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
-          Tempfile.stub!(:open).and_return(@tempfile)
-
-          @request_mock = {}
-          Net::HTTP::Get.stub!(:new).and_return(@request_mock)
-
-          @http_response_mock = mock("Net::HTTP Response mock")
-        end
-
-        after do
-          @tempfile.rspec_reset
-          @tempfile.close!
-        end
-
-        it "should build a new HTTP GET request without the application/json accept header" do
-          expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
-          Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
-          @rest.run_request(:GET, @url, {}, false, nil, true)
-        end
-
-        it "should create a tempfile for the output of a raw request" do
-          @rest.run_request(:GET, @url, {}, false, nil, true).should equal(@tempfile)
-        end
-
-        it "should read the body of the response in chunks on a raw request" do
-          @http_response.should_receive(:read_body).and_return(true)
-          @rest.run_request(:GET, @url, {}, false, nil, true)
-        end
-
-        it "should populate the tempfile with the value of the raw request" do
-          @http_response_mock.stub!(:read_body).and_yield("ninja")
-          @tempfile.should_receive(:write).with("ninja").once.and_return(true)
-          @rest.run_request(:GET, @url, {}, false, nil, true)
-        end
-
-        it "should close the tempfile if we're doing a raw request" do
-          @tempfile.should_receive(:close).once.and_return(true)
-          @rest.run_request(:GET, @url, {}, false, nil, true)
-        end
-
-        it "should not raise a divide by zero exception if the size is 0" do
-          @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
-          @http_response_mock.stub!(:read_body).and_yield('')
-          lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
-        end
-
-        it "should not raise a divide by zero exception if the Content-Length is 0" do
-          @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
-          @http_response_mock.stub!(:read_body).and_yield("ninja")
-          lambda { @rest.run_request(:GET, @url, {}, false, nil, true) }.should_not raise_error(ZeroDivisionError)
-        end
-
+      it "should not raise a divide by zero exception if the Content-Length is 0" do
+        @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
+        @http_response_mock.stub!(:read_body).and_yield("ninja")
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
       end
 
     end
@@ -375,6 +250,24 @@ describe Chef::REST do
         @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
       end
 
+      # CHEF-3140
+      context "when configured to disable compression" do
+        before do
+          @rest = Chef::REST.new(@base_url, nil, nil, :disable_gzip => true)
+        end
+
+        it "does not accept encoding gzip" do
+          @rest.send(:build_headers, :GET, @url, {}).should_not have_key("Accept-Encoding")
+        end
+
+        it "does not decompress a response encoded as gzip" do
+          @http_response.add_field("content-encoding", "gzip")
+          request = Net::HTTP::Get.new(@url.path)
+          Net::HTTP::Get.should_receive(:new).and_return(request)
+          # will raise a Zlib error if incorrect
+          @rest.api_request(:GET, @url, {}).should == "ninja"
+        end
+      end
       context "when configured with custom http headers" do
         before(:each) do
           @custom_headers = {
@@ -457,41 +350,66 @@ describe Chef::REST do
         end
        end
 
-      it "should show the JSON error message on an unsuccessful request" do
-        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response.add_field("content-type", "application/json")
-        http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+      it "should return `false` when response is 304 NotModified" do
+        http_response = Net::HTTPNotModified.new("1.1", "304", "it's the same as when you asked 5 minutes ago")
         http_response.stub!(:read_body)
-        @rest.stub!(:sleep)
+
         @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
 
-        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        @rest.api_request(:GET, @url).should be_false
       end
 
-      it "decompresses the JSON error message on an unsuccessful request" do
-        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response.add_field("content-type", "application/json")
-        http_response.add_field("content-encoding", "deflate")
-        unzipped_body = '{ "error":[ "Ears get sore!", "Not even four" ] }'
-        gzipped_body = Zlib::Deflate.deflate(unzipped_body, 1)
-        http_response.stub!(:body).and_return gzipped_body
-        http_response.stub!(:read_body)
-        @rest.stub!(:sleep)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+      describe "when the request fails" do
+        before do
+          @original_log_level = Chef::Log.level
+          Chef::Log.level = :info
+        end
 
-        lambda {@rest.run_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-        @log_stringio.string.should match(Regexp.escape('WARN: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        after do
+          Chef::Log.level = @original_log_level
+        end
+
+        it "should show the JSON error message on an unsuccessful request" do
+          http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+          http_response.add_field("content-type", "application/json")
+          http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+          http_response.stub!(:read_body)
+          @rest.stub!(:sleep)
+          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+
+          lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+          @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        end
+
+        it "decompresses the JSON error message on an unsuccessful request" do
+          http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+          http_response.add_field("content-type", "application/json")
+          http_response.add_field("content-encoding", "deflate")
+          unzipped_body = '{ "error":[ "Ears get sore!", "Not even four" ] }'
+          gzipped_body = Zlib::Deflate.deflate(unzipped_body)
+          gzipped_body.force_encoding(Encoding::BINARY)
+
+          http_response.stub!(:body).and_return gzipped_body
+          http_response.stub!(:read_body)
+          @rest.stub!(:sleep)
+          @rest.stub!(:http_retry_count).and_return(0)
+          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+
+          lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+          @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
+        end
+
+        it "should raise an exception on an unsuccessful request" do
+          http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
+          http_response.stub!(:body)
+          http_response.stub!(:read_body)
+          @rest.stub!(:sleep)
+          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+        end
       end
 
-      it "should raise an exception on an unsuccessful request" do
-        http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-        http_response.stub!(:body)
-        http_response.stub!(:read_body)
-        @rest.stub!(:sleep)
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
-        lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
-      end
+
     end
 
     context "when streaming downloads to a tempfile" do
