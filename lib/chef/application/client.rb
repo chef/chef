@@ -81,11 +81,13 @@ class Chef::Application::Client < Chef::Application
     :description => "Group to set privilege to",
     :proc => nil
 
-  option :daemonize,
-    :short => "-d",
-    :long => "--daemonize",
-    :description => "Daemonize the process",
-    :proc => lambda { |p| true }
+  unless Chef::Platform.windows?
+    option :daemonize,
+      :short => "-d",
+      :long => "--daemonize",
+      :description => "Daemonize the process",
+      :proc => lambda { |p| true }
+  end
 
   option :pid_file,
     :short        => "-P PID_FILE",
