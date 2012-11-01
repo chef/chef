@@ -125,8 +125,10 @@ class Chef
           session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
         end
       rescue Net::SSH::AuthenticationFailed
-        gw_opts.merge!(:password => prompt_for_password)
-        session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+        user = gw_user || config[:ssh_user]
+        prompt = "Enter the password for #{user}@#{gw_host}: "
+        gw_opts.merge!(:password => prompt_for_password(prompt))
+        session.via(gw_host, user, gw_opts)
       end
 
       def configure_session
@@ -235,8 +237,8 @@ class Chef
         @password ||= prompt_for_password
       end
 
-      def prompt_for_password
-        ui.ask("Enter your password: ") { |q| q.echo = false }
+      def prompt_for_password(prompt = "Enter your password: ")
+        ui.ask(prompt) { |q| q.echo = false }
       end
 
       # Present the prompt and read a single line from the console. It also
