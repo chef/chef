@@ -54,11 +54,13 @@ describe Chef::Provider::Deploy do
     end
 
     it "creates deploy_to dir" do
+      ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
       @provider.stub(:update_cached_repo)
       @provider.deploy
     end
 
     it "creates deploy_to dir before calling update_cached_repo (CHEF-3435)" do
+      ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
       @provider.send(:converge_actions).should_receive(:empty?).and_return(false)
       @provider.should_receive(:update_cached_repo).ordered
       @provider.deploy
@@ -79,6 +81,7 @@ describe Chef::Provider::Deploy do
   end
 
   it "ensures the deploy_to dir ownership after the verfication that it exists" do
+    ::Dir.should_receive(:chdir).with(@expected_release_dir).exactly(4).times
     @provider.should_receive(:verify_directories_exist).ordered
     @provider.should_receive(:enforce_ownership).ordered
     @provider.stub(:copy_cached_repo)
