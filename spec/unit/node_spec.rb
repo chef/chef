@@ -22,10 +22,9 @@ require 'ostruct'
 describe Chef::Node do
 
   let(:node) { Chef::Node.new() }
+  let(:platform_introspector) { node }
 
-  before(:each) do
-    node = Chef::Node.new()
-  end
+  it_behaves_like "a platform introspector"
 
   it "creates a node and assigns it a name" do
     node = Chef::Node.build('solo-node')
