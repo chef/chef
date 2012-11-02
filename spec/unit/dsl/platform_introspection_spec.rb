@@ -20,161 +20,19 @@ require 'spec_helper'
 require 'chef/dsl/platform_introspection'
 
 class LanguageTester
+  attr_reader :node
+  def initialize(node)
+    @node = node
+  end
   include Chef::DSL::PlatformIntrospection
 end
 
-describe Chef::DSL::PlatformIntrospection do
-  before(:each) do
-    @language = LanguageTester.new
-    @node = Hash.new
-    @language.stub!(:node).and_return(@node)
-    @platform_hash = {}
-    %w{openbsd freebsd}.each do |x|
-      @platform_hash[x] = {
-        "default" => x,
-        "1.2.3" => "#{x}-1.2.3"
-      }
-    end
-    @platform_hash["debian"] = {["5", "6"] => "debian-5/6", "default" => "debian"}
-    @platform_hash["default"] = "default"
+describe "PlatformIntrospection implementors" do
 
-    @platform_family_hash = {
-      "debian" => "debian value",
-      [:rhel, :fedora] => "redhatty value",
-      "suse" => "suse value",
-      :default => "default value"
-    }
-  end
+  let(:node) { Chef::Node.new }
+  let(:platform_introspector) { LanguageTester.new(node) }
 
-  it "returns a default value when there is no known platform" do
-    @node = Hash.new
-    @language.value_for_platform(@platform_hash).should == "default"
-  end
-
-  it "returns a default value when there is no known platform family" do
-    @language.value_for_platform_family(@platform_family_hash).should == "default value"
-  end
-
-  it "returns a default value when the current platform doesn't match" do
-    @node[:platform] = "not-a-known-platform"
-    @language.value_for_platform(@platform_hash).should == "default"
-  end
-
-  it "returns a default value when current platform_family doesn't match" do
-    @node[:platform_family] = "ultra-derived-linux"
-    @language.value_for_platform_family(@platform_family_hash).should == "default value"
-  end
-
-  it "returns a value based on the current platform" do
-    @node[:platform] = "openbsd"
-    @language.value_for_platform(@platform_hash).should == "openbsd"
-  end
-
-  it "returns a value based on the current platform family" do
-    @node[:platform_family] = "debian"
-    @language.value_for_platform_family(@platform_family_hash).should == "debian value"
-  end
-
-  it "returns a version-specific value based on the current platform" do
-    @node[:platform] = "openbsd"
-    @node[:platform_version] = "1.2.3"
-    @language.value_for_platform(@platform_hash).should == "openbsd-1.2.3"
-  end
-
-  it "returns a value based on the current platform if version not found" do
-    @node[:platform] = "openbsd"
-    @node[:platform_version] = "0.0.0"
-    @language.value_for_platform(@platform_hash).should == "openbsd"
-  end
-
-  describe "when platform versions is an array" do
-    it "returns a version-specific value based on the current platform" do
-      @node[:platform] = "debian"
-      @node[:platform_version] = "6"
-      @language.value_for_platform(@platform_hash).should == "debian-5/6"
-    end
-
-    it "returns a value based on the current platform if version not found" do
-      @node[:platform] = "debian"
-      @node[:platform_version] = "0.0.0"
-      @language.value_for_platform(@platform_hash).should == "debian"
-    end
-  end
-
-  describe "when checking platform?" do
-    before(:each) do
-      @language = LanguageTester.new
-      @node = Hash.new
-      @language.stub!(:node).and_return(@node)
-    end
-
-    it "returns true if the node is a provided platform and platforms are provided as symbols" do
-      @node[:platform] = 'ubuntu'
-      @language.platform?([:redhat, :ubuntu]).should == true
-    end
-
-    it "returns true if the node is a provided platform and platforms are provided as strings" do
-      @node[:platform] = 'ubuntu'
-      @language.platform?(["redhat", "ubuntu"]).should == true
-    end
-
-    it "returns false if the node is not of the provided platforms" do
-      @node[:platform] = 'ubuntu'
-      @language.platform?(:splatlinux).should == false
-    end
-  end
-
-  describe "when checking platform_family?" do
-    before(:each) do
-      @language = LanguageTester.new
-      @node = Hash.new
-      @language.stub!(:node).and_return(@node)
-    end
-
-    it "returns true if the node is in a provided platform family and families are provided as symbols" do
-      @node[:platform_family] = 'debian'
-      @language.platform_family?([:rhel, :debian]).should == true
-    end
-
-    it "returns true if the node is a provided platform and platforms are provided as strings" do
-      @node[:platform_family] = 'rhel'
-      @language.platform_family?(["rhel", "debian"]).should == true
-    end
-
-    it "returns false if the node is not of the provided platforms" do
-      @node[:platform_family] = 'suse'
-      @language.platform_family?(:splatlinux).should == false
-    end
-
-    it "returns false if the node is not of the provided platforms and platform_family is not set" do
-      @language.platform_family?(:splatlinux).should == false
-    end
-
-  end
-  # NOTE: this is a regression test for bug CHEF-1514
-  describe "when the value is an array" do
-    before do
-      @platform_hash = {
-        "debian" => { "4.0" => [ :restart, :reload ], "default" => [ :restart, :reload, :status ] },
-        "ubuntu" => { "default" => [ :restart, :reload, :status ] },
-        "centos" => { "default" => [ :restart, :reload, :status ] },
-        "redhat" => { "default" => [ :restart, :reload, :status ] },
-        "fedora" => { "default" => [ :restart, :reload, :status ] },
-        "default" => { "default" => [:restart, :reload ] }}
-    end
-
-    it "returns the correct default for a given platform" do
-      @node[:platform] = "debian"
-      @node[:platform_version] = '9000'
-      @language.value_for_platform(@platform_hash).should == [ :restart, :reload, :status ]
-    end
-
-    it "returns the correct platform+version specific value " do
-      @node[:platform] = "debian"
-      @node[:platform_version] = '4.0'
-      @language.value_for_platform(@platform_hash).should == [:restart, :reload]
-    end
-  end
+  it_behaves_like "a platform introspector"
 
 end
 
