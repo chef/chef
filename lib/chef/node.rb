@@ -317,12 +317,7 @@ class Chef
     # passed in, which came from roles.
     def apply_expansion_attributes(expansion)
       loaded_environment = if chef_environment == "_default"
-                             # have to pass a truthy object to the constructor
-                             # of Environment so it doesn't create a couchdb
-                             # object (which breaks a bunch of tests).
-                             # This is pretty ugly but the couchdb stuff is
-                             # going away soon, so the expedient choice works for now.
-                             Chef::Environment.new(:nocouch).tap {|e| e.name("_default")}
+                             Chef::Environment.new.tap {|e| e.name("_default")}
                            else
                              Chef::Environment.load(chef_environment)
                            end
