@@ -44,7 +44,7 @@ describe Chef::Knife::CookbookDelete do
     @server.stop
   end
 
-  context "when the the cookbook doesn't exist" do
+  context "when the cookbook doesn't exist" do
     before do
       @log_output = StringIO.new
 
