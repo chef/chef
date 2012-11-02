@@ -169,6 +169,11 @@ describe Chef::Resource::DeployRevision do
       the_app_is_deployed_at_revision(:latest_rev)
 
       it "restarts the application after rolling back" do
+        # This occurs because restart.txt is not linked into a shared area, so
+        # the "real path" to the file is inside the active release where it was
+        # created. When the implicit rollback is triggered, the original copy
+        # of the release ("latest_rev") in this case is restored. Then our
+        # "restart command" appends to restart.txt.
         actual_restart_counter.should == "1\n3"
       end
 
