@@ -203,11 +203,9 @@ class Chef
       # true:: if the current node platform family is in the list.
       # false:: if the current node platform family is not in the list.
       def platform_family?(*args)
-        has_pf = false
-        args.flatten.each do |platform_family|
-          has_pf = true if platform_family.to_s == node[:platform_family]
+        args.flatten.any? do |platform_family|
+          platform_family.to_s == node[:platform_family]
         end
-        has_pf
       end
 
     end

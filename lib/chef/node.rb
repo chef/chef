@@ -27,6 +27,7 @@ require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/deep_merge'
 require 'chef/dsl/include_attribute'
+require 'chef/dsl/platform_introspection'
 require 'chef/environment'
 require 'chef/rest'
 require 'chef/run_list'
@@ -48,6 +49,7 @@ class Chef
 
     include Chef::Mixin::FromFile
     include Chef::DSL::IncludeAttribute
+    include Chef::DSL::PlatformIntrospection
 
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
