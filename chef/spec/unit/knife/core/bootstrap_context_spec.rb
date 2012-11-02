@@ -56,6 +56,13 @@ describe Chef::Knife::Core::BootstrapContext do
     @context.validation_key.should == IO.read(File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'))
   end
 
+  it "reads the validation key when it contains a ~" do
+    IO.should_receive(:read).with("#{ENV['HOME']}/my.key")
+    @chef_config = {:validation_key => '~/my.key'}
+    @context = Chef::Knife::Core::BootstrapContext.new(@config, @run_list, @chef_config)
+    @context.validation_key
+  end
+
   it "generates the config file data" do
     expected=<<-EXPECTED
 log_level        :info
