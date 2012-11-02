@@ -30,19 +30,61 @@ class Chef
 
       banner "knife role from file FILE [FILE..] (options)"
 
+      option :all,
+      :short => "-a [DIRECTORY]",
+      :long  => "--all [DIRECTORY]",
+      :description => "Upload all roles, optionally from DIRECTORY"
+
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Role, ui)
       end
 
+      def load_all_roles(dir)
+        roles = loader.find_all_objects(dir)
+        
+        if roles.empty?
+          ui.fatal("Unable to find any role files in '#{dir}'")
+          exit(1)
+        end
+        roles.each do |role|
+          load_role(role)
+        end
+      end
+
+      def load_role(role)
+        updated = loader.load_from("roles", role)
+  
+        updated.save
+  
+        output(format_for_display(updated)) if config[:print_after]
+  
+        ui.info("Updated Role #{updated.name}!")
+      end
+
       def run
-        @name_args.each do |arg|
-          updated = loader.load_from("roles", arg)
-
-          updated.save
-
-          output(format_for_display(updated)) if config[:print_after]
-
-          ui.info("Updated Role #{updated.name}!")
+        if config[:all] == true
+          if @name_args.length == 0
+            # load from roles directory
+            load_all_roles("./roles")
+          else
+            @name_args.each do |arg|
+              if ::File.directory?(arg)
+                load_all_roles(arg)
+              else
+                load_role(arg)
+              end
+            end
+          end
+        else
+          @name_args.each do |arg|
+            # loading a file
+            if ::File.directory?(arg)
+              ui.error("Directory '#{arg}' given without --all, skipping")
+              next
+            else
+              load_role(arg)
+            end
+          end
         end
       end
 

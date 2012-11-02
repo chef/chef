@@ -48,6 +48,48 @@ describe Chef::Knife::RoleFromFile do
       @knife.run
     end
 
+    context "when loading multiple roles" do
+      before(:each) do
+        @env_apple = @role.dup
+        @env_apple.name("apple")
+        @knife.loader.stub!(:load_from).with("apple.rb").and_return @env_apple
+      end
+
+      it "loads multiple roles if given" do
+        @knife.name_args = [ "spec.rb", "apple.rb" ]
+        @role.should_receive(:save).twice
+        @knife.run
+      end
+
+      it "loads all roles with -a" do
+        File.stub!(:expand_path).with("./roles/*.{json,rb}").and_return("/tmp/roles")
+        Dir.stub!(:glob).with("/tmp/roles").and_return(["spec.rb", "apple.rb"])
+        @knife.name_args = []
+        @knife.stub!(:config).and_return({:all => true})
+        @role.should_receive(:save).twice
+        @knife.run
+      end
+
+      it "loads both files and directories with -a and an argument" do
+        File.stub!(:expand_path).with("dir_town/*.{json,rb}").and_return("/tmp/roles")
+        Dir.stub!(:glob).with("/tmp/roles").and_return(["spec.rb", "apple.rb"])
+        File.stub!(:directory?).with("foo.rb").and_return(false)
+        File.stub!(:directory?).with("dir_town").and_return(true)
+        @knife.name_args = [ "foo.rb", "dir_town" ]
+        @knife.stub!(:config).and_return({:all => true})
+        @role.should_receive(:save).exactly(3).times # foo.rb, dir_town/spec.rb, dir_town/apple.rb
+        @knife.run
+      end
+
+      it "prints an error if passed a directory without --all" do
+        @knife.name_args = [ "foo.rb", "dir_town" ]
+        File.stub!(:directory?).with("foo.rb").and_return(false)
+        File.stub!(:directory?).with("dir_town").and_return(true)
+        @knife.ui.should_receive(:error)
+        @knife.run
+      end
+    end
+
     describe "with -p or --print-after" do
       it "should print the role" do
         @knife.config[:print_after] = true
