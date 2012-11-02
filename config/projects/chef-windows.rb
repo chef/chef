@@ -21,4 +21,4 @@ install_path    "C:\\opscode\\chef"
 build_version   Omnibus::BuildVersion.full
 build_iteration 4
 
-dependencies ["preparation"]
+dependencies ["ruby-windows"]
