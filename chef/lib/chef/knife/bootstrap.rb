@@ -51,7 +51,6 @@ class Chef
         :short => "-p PORT",
         :long => "--ssh-port PORT",
         :description => "The ssh port",
-        :default => "22",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
 
       option :ssh_gateway,
