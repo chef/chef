@@ -30,6 +30,7 @@ describe Chef::Resource::DeployRevision do
   end
 
   after do
+    Chef::Config[:file_cache_path] = @old_file_cache_path
     FileUtils.remove_entry_secure deploy_directory if File.exist?(deploy_directory)
     FileUtils.remove_entry_secure file_cache_path
   end
