@@ -178,5 +178,22 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "#session_from_list" do
+    before :each do
+      @knife.instance_variable_set(:@longest, 0)
+      ssh_config = {:timeout => 50, :user => "locutus", :port => 23 }
+      Net::SSH.stub!(:configuration_for).with('the.b.org').and_return(ssh_config)
+    end
+
+    it "uses the port from an ssh config file" do
+      @knife.session_from_list(['the.b.org'])
+      @knife.session.servers[0].port.should == 23
+    end
+
+    it "uses the user from an ssh config file" do
+      @knife.session_from_list(['the.b.org'])
+      @knife.session.servers[0].user.should == "locutus"
+    end
+  end
 end
 
