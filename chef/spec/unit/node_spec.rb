@@ -268,13 +268,13 @@ describe Chef::Node do
     it "should return true for existing attributes" do
       @node.default["mastodon"] = "is okay"
 
-      @node.respond_to?(:mastodon) == true
+      @node.respond_to?(:mastodon).should == true
     end
 
     it "should return false for unset attributes" do
       @node.default["mastodon"] = "is okay"
 
-      @node.respond_to?(:mastodonalds) == false
+      @node.respond_to?(:mastodonalds).should == false
     end
   end
 

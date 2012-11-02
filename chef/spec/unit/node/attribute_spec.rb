@@ -396,11 +396,11 @@ describe Chef::Node::Attribute do
 
   describe "respond_to?" do
     it "should return true for existing attributes" do
-      @attributes.respond_to?(:mastodon) == true
+      @attributes.respond_to?(:domain).should == true
     end
 
     it "should return false for existing attributes" do
-      @attributes.respond_to?(:mastodonalds) == false
+      @attributes.respond_to?(:notanattribute).should == false
     end
   end
 
