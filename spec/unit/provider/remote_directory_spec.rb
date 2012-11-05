@@ -52,6 +52,21 @@ describe Chef::Provider::RemoteDirectory do
     @provider.current_resource = @resource.clone
   end
 
+  describe "when the contents of the directory changed on the first run and not on the second run" do
+    before do
+      @resource_second_run = @resource.clone
+      @provider_second_run = Chef::Provider::RemoteDirectory.new(@resource_second_run, @run_context)
+      @provider.run_action(:create)
+      @provider_second_run.run_action(:create)
+    end
+    it "identifies that the state has changed the after first run" do
+      @provider_second_run.new_resource.updated_by_last_action? == true 
+    end
+    it "identifies that the state has not changed after the second run" do
+      @provider_second_run.new_resource.updated_by_last_action? == false 
+    end
+  end
+
   describe "when access control is configured on the resource" do
     before do
       @resource.mode  "0750"
