@@ -39,7 +39,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     FileUtils.remove_entry_secure deploy_directory if File.exist?(deploy_directory)
     FileUtils.remove_entry_secure file_cache_path
     observe_order_file.close
-    FileUtils.remove_entry_secure observe_order_file
+    FileUtils.remove_entry_secure observe_order_file.path
   end
 
   before(:all) do
