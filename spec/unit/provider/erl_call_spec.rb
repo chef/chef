@@ -60,7 +60,6 @@ describe Chef::Provider::ErlCall do
       Process.should_receive(:wait).with(@pid)
 
       @provider.action_run
-      @provider.converge
 
       @stdin.string.should == "#{@new_resource.code}\n"
     end
@@ -78,7 +77,6 @@ describe Chef::Provider::ErlCall do
       Process.should_receive(:wait).with(@pid)
 
       @provider.action_run
-      @provider.converge
 
       @stdin.string.should == "#{@new_resource.code}\n"
     end

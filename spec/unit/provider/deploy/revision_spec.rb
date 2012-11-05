@@ -55,11 +55,9 @@ describe Chef::Provider::Deploy::Revision do
     FileUtils.stub!(:mkdir_p)
     @provider.stub!(:run_command).and_return(true)
     @provider.copy_cached_repo
-    @provider.converge
     @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
     @provider.load_current_resource
     @provider.copy_cached_repo
-    @provider.converge
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
 
     @provider.all_releases.should == [@expected_release_dir,second_release]
@@ -69,20 +67,16 @@ describe Chef::Provider::Deploy::Revision do
     FileUtils.stub!(:mkdir_p)
     @provider.stub!(:run_command).and_return(true)
     @provider.copy_cached_repo
-    @provider.converge
     @provider.stub!(:release_slug).and_return("73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2")
     @provider.load_current_resource
     @provider.copy_cached_repo
-    @provider.converge
     second_release = "/my/deploy/dir/releases/73219b87e977d9c7ba1aa57e9ad1d88fa91a0ec2"
     @provider.all_releases.should == [@expected_release_dir,second_release]
     @provider.copy_cached_repo
-    @provider.converge
 
     @provider.stub!(:release_slug).and_return("8a3195bf3efa246f743c5dfa83683201880f935c")
     @provider.load_current_resource
     @provider.copy_cached_repo
-    @provider.converge
     @provider.all_releases.should == [second_release, @expected_release_dir]
   end
 

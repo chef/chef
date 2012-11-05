@@ -122,7 +122,7 @@ class Chef
       else
         send("action_#{@action}")
       end
-      converge
+      set_updated_status
 
       cleanup_after_converge
     end
@@ -132,8 +132,7 @@ class Chef
       requirements.run(@action)
     end
 
-    def converge
-      converge_actions.converge!
+    def set_updated_status
       if converge_actions.empty? && !@new_resource.updated_by_last_action?
         events.resource_up_to_date(@new_resource, @action)
       else
