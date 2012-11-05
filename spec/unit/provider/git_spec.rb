@@ -224,6 +224,9 @@ SHAS
   end
 
   it "runs a sync command with default options" do
+    conf_tracking_branches =  "git config remote.origin.url git://github.com/opscode/chef.git && " +
+      "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
+    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd=> "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
@@ -232,10 +235,25 @@ SHAS
   it "runs a sync command with the user and group specified in the resource" do
     @resource.user("whois")
     @resource.group("thisis")
+    conf_tracking_branches =  "git config remote.origin.url git://github.com/opscode/chef.git && " +
+      "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
+    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir",
+                                               :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]", :log_level => :debug)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
                                                 :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
+  end
+
+  it "configures remote tracking branches when remote is ``origin''" do
+    @resource.remote "origin"
+    conf_tracking_branches =  "git config remote.origin.url git://github.com/opscode/chef.git && " +
+      "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
+    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
+    fetch_command = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
+    @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
+    @provider.fetch_updates
+    @provider.converge
   end
 
   it "configures remote tracking branches when remote is not ``origin''" do
