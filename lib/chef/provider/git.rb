@@ -177,7 +177,7 @@ class Chef
       end
 
       def fetch_updates
-        setup_remote_tracking_branches if @new_resource.remote != 'origin'
+        setup_remote_tracking_branches
         converge_by("fetch updates for #{@new_resource.remote}") do
           # since we're in a local branch already, just reset to specified revision rather than merge
           fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
