@@ -176,7 +176,6 @@ describe Chef::Provider::File do
     @provider.should_receive(:backup)
     File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
     @provider.set_content
-    lambda { @provider.send(:converge_actions).converge! }.should_not raise_error
     io.string.should == "foobar"
   end
 
