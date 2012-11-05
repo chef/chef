@@ -17,8 +17,8 @@
 
 name "chef-windows"
 
-install_path    "C:\\opscode\\chef"
+install_path    "c:\\opscode\\chef"
 build_version   Omnibus::BuildVersion.full
 build_iteration 4
 
-dependencies ["ruby-windows"]
+dependencies ["ruby-windows", "msi"]

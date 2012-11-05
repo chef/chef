@@ -25,5 +25,7 @@ source :url => "http://rubyforge.org/frs/download.php/76528/ruby-#{version}-i386
        :md5 => "8ba0d2203590dbf8e9d59d9d731c05d0"
 
 build do
-  command "robocopy . #{install_dir}\\embedded\\ /MIR"
+  # Robocopy's return code is 1 if it succesfully copies over the
+  # files and 0 if the files are already existing at the destination
+  command "robocopy . #{install_dir}\\embedded\\ /MIR", :returns => [0, 1]
 end
