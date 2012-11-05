@@ -2,7 +2,7 @@ source :rubygems
 
 gemspec
 
-gem "dep_selector", :group => :development, :platform => "ruby"
+gem "dep_selector", :git => 'git@github.com:opscode/dep-selector.git', :branch => 'rc-0.1.0', :group => :development, :platform => "ruby"
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
 platforms :mswin, :mingw do

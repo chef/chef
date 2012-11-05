@@ -192,6 +192,8 @@ class Environments < Application
       raise PreconditionFailed, e.to_json
     rescue Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem => e
       raise PreconditionFailed, e.to_json
+    rescue Chef::Exceptions::CookbookVersionSelection::TimeBoundExceeded => e
+      raise PreconditionFailed, e.to_json
     end
 
     # Convert from
