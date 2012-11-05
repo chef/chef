@@ -356,7 +356,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
           current_release_path = release_path
           ruby_block "ensure before symlink" do
             block do
-              if File.exist?(File.join(current_release_path, "/tmp"))
+              if ::File.exist?(::File.join(current_release_path, "/tmp"))
                 raise "Ordering issue with provider, expected symlinks to not have been created"
               end
             end
@@ -372,7 +372,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
           current_release_path = release_path
           ruby_block "ensure after symlink" do
             block do
-              unless File.exist?(File.join(current_release_path, "/tmp"))
+              unless ::File.exist?(::File.join(current_release_path, "/tmp"))
                 raise "Ordering issue with provider, expected symlinks to have been created"
               end
             end
