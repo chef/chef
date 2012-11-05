@@ -90,6 +90,19 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "port" do
+    context "when -p 31337 is provided" do
+      before do
+        setup_knife(['-p 31337', '*:*', 'uptime'])
+      end
+
+      it "uses the ssh_port" do
+        @knife.run
+        @knife.config[:ssh_port].should == "31337"
+      end
+    end
+  end
+
   describe "user" do
     context "when knife[:ssh_user] is set" do
       before do
@@ -189,6 +202,49 @@ describe Chef::Knife::Ssh do
         setup_knife(['-a ec2.public_hostname', '*:*', 'uptime'])
         @knife.run
         @knife.config[:attribute].should == "ec2.public_hostname"
+      end
+    end
+  end
+
+  describe "gateway" do
+    context "when knife[:ssh_gateway] is set" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_gateway] = "user@ec2.public_hostname"
+      end
+
+      it "uses the ssh_gateway" do
+        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {})
+        @knife.run
+        @knife.config[:ssh_gateway].should == "user@ec2.public_hostname"
+      end
+    end
+
+    context "when -G user@ec2.public_hostname is provided" do
+      before do
+        setup_knife(['-G user@ec2.public_hostname', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_gateway] = nil
+      end
+
+      it "uses the ssh_gateway" do
+        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {})
+        @knife.run
+        @knife.config[:ssh_gateway].should == "user@ec2.public_hostname"
+      end
+    end
+
+    context "when the gateway requires a password" do
+      before do
+        setup_knife(['-G user@ec2.public_hostname', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_gateway] = nil
+        @knife.session.stub(:via) do |host, user, options|
+          raise Net::SSH::AuthenticationFailed unless options[:password]
+        end
+      end
+
+      it "should prompt the user for a password" do
+        @knife.ui.should_receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
+        @knife.run
       end
     end
   end
