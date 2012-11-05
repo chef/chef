@@ -42,14 +42,16 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     FileUtils.remove_entry_secure observe_order_file
   end
 
-  ohai = Ohai::System.new
-  ohai.require_plugin("os")
+  before(:all) do
+    @ohai = Ohai::System.new
+    @ohai.require_plugin("os")
+  end
 
   let(:node) do
 
     Chef::Node.new.tap do |n|
       n.name "rspec-test"
-      n.consume_external_attrs(ohai.data, {})
+      n.consume_external_attrs(@ohai.data, {})
     end
   end
 
