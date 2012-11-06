@@ -18,6 +18,11 @@
 
 shared_examples_for "a directory resource" do
   context "when the target directory does not exist" do
+    before do
+      # assert pre-condition
+      File.should_not exist(path)
+    end
+
     describe "when running action :create" do
       context "and the recursive option is not set" do
         before do
@@ -35,6 +40,8 @@ shared_examples_for "a directory resource" do
 
       context "and the recursive option is set" do
         before do
+          File.should_not exist(path)
+
           resource.recursive(true)
           @recursive_path = File.join(path, 'red-headed-stepchild')
           resource.path(@recursive_path)

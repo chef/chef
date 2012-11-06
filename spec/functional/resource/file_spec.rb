@@ -69,16 +69,15 @@ describe Chef::Resource::File do
 
         @expected_checksum = sha256_checksum(path)
 
+        now = Time.now.to_i
+        File.utime(now - 9000, now - 9000, path)
         @expected_mtime = File.stat(path).mtime
-        @expected_atime = File.stat(path).atime
-        sleep 1
 
         resource.run_action(:touch)
       end
 
-      it "updates the mtime/atime of the file" do
+      it "updates the mtime of the file" do
         File.stat(path).mtime.should > @expected_mtime
-        File.stat(path).atime.should > @expected_atime
       end
 
       it "does not change the content" do

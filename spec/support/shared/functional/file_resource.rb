@@ -17,11 +17,18 @@
 #
 
 shared_examples_for "a file with the wrong content" do
+  before do
+    # Assert starting state is as expected
+    File.should exist(path)
+    # Kinda weird, in this case @expected_checksum is the cksum of the file
+    # with incorrect content.
+    sha256_checksum(path).should == @expected_checksum
+  end
+
   context "when running action :create" do
     context "with backups enabled" do
       before do
         Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-        sleep 1
         resource.run_action(:create)
       end
 
@@ -54,7 +61,6 @@ shared_examples_for "a file with the wrong content" do
 
   describe "when running action :create_if_missing" do
     before do
-      sleep 1
       resource.run_action(:create_if_missing)
     end
 
@@ -84,18 +90,22 @@ shared_examples_for "a file with the wrong content" do
 end
 
 shared_examples_for "a file with the correct content" do
+  before do
+    # Assert starting state is as expected
+    File.should exist(path)
+    sha256_checksum(path).should == @expected_checksum
+  end
+
   describe "when running action :create" do
     before do
-      sleep 1
       resource.run_action(:create)
     end
     it "does not overwrite the original when the :create action is run" do
       sha256_checksum(path).should == @expected_checksum
     end
 
-    it "does not update the mtime/atime of the file when the :create action is run" do
+    it "does not update the mtime of the file when the :create action is run" do
       File.stat(path).mtime.should == @expected_mtime
-      File.stat(path).atime.should be_within(2).of(@expected_atime)
     end
 
     it "is not marked as updated by last action" do
@@ -137,6 +147,11 @@ shared_examples_for "a file resource" do
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
   context "when the target file does not exist" do
+    before do
+      # Assert starting state is expected
+      File.should_not exist(path)
+    end
+
     describe "when running action :create" do
       before do
         resource.run_action(:create)
@@ -197,6 +212,9 @@ shared_examples_for "a file resource" do
   context "when the target file has the wrong content" do
     before(:each) do
       File.open(path, "w") { |f| f.print "This is so wrong!!!" }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
       @expected_mtime = File.stat(path).mtime
       @expected_checksum = sha256_checksum(path)
     end
@@ -221,8 +239,10 @@ shared_examples_for "a file resource" do
   context "when the target file has the correct content" do
     before(:each) do
       File.open(path, "w") { |f| f.print expected_content }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
       @expected_mtime = File.stat(path).mtime
-      @expected_atime = File.stat(path).atime
       @expected_checksum = sha256_checksum(path)
     end
 

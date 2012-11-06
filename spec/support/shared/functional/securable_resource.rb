@@ -74,12 +74,14 @@ shared_examples_for "a securable resource" do
     it "should set an owner", :requires_root do
       resource.owner expected_user_name
       resource.run_action(:create)
+      resource.should be_updated_by_last_action
       File.lstat(path).uid.should == expected_uid
     end
 
     it "should set a group", :requires_root do
       resource.group desired_gid
       resource.run_action(:create)
+      resource.should be_updated_by_last_action
       File.lstat(path).gid.should == expected_gid
     end
 
@@ -87,6 +89,7 @@ shared_examples_for "a securable resource" do
       mode_string = '776'
       resource.mode mode_string
       resource.run_action(:create)
+      resource.should be_updated_by_last_action
       pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
         (File.lstat(path).mode & 007777).should == (mode_string.oct & 007777)
       end
@@ -96,6 +99,7 @@ shared_examples_for "a securable resource" do
       mode_integer = 0776
       resource.mode mode_integer
       resource.run_action(:create)
+      resource.should be_updated_by_last_action
       pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
         (File.lstat(path).mode & 007777).should == (mode_integer & 007777)
       end
