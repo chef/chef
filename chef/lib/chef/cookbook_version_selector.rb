@@ -105,7 +105,7 @@ class Chef
       # unsatisfiability and try to hint at what might be wrong.
       soln =
         begin
-          DepSelector::Selector.new(dep_graph).find_solution(cookbook_constraints, all_packages)
+          DepSelector::Selector.new(dep_graph, Chef::Config[:dep_selector_timeout]).find_solution(cookbook_constraints, all_packages)
         rescue DepSelector::Exceptions::InvalidSolutionConstraints => e
           non_existent_cookbooks = e.non_existent_packages.map {|constraint| constraint.package.name}
           cookbooks_with_no_matching_versions = e.constrained_to_no_versions.map {|constraint| constraint.package.name}
@@ -132,6 +132,8 @@ class Chef
           raise Chef::Exceptions::CookbookVersionSelection::InvalidRunListItems.new(message, non_existent_cookbooks, cookbooks_with_no_matching_versions)
         rescue DepSelector::Exceptions::NoSolutionExists => e
           raise Chef::Exceptions::CookbookVersionSelection::UnsatisfiableRunListItem.new(filter_dep_selector_message(e.message), e.unsatisfiable_solution_constraint, e.disabled_non_existent_packages, e.disabled_most_constrained_packages)
+        rescue DepSelector::Exceptions::TimeBoundExceeded, DepSelector::Exceptions::TimeBoundExceededNoSolution
+          raise Chef::Exceptions::CookbookVersionSelection::TimeBoundExceeded.new("Version constraints could not be solved in the time allowed")
         end
 
 
