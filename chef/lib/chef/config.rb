@@ -168,6 +168,9 @@ class Chef
     solo  false
     splay nil
 
+    # Dep solver timeout; if finding a solution takes longer than this, we fail
+    dep_selector_timeout 5
+
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
     ssl_client_cert nil

@@ -148,6 +148,20 @@ class Chef
           result.to_json(*a)
         end
       end
+
+      # the solver took too long to find a solution
+      class TimeBoundExceeded <  StandardError
+        def initialize(message)
+          super(message)
+        end
+
+        def to_json(*a)
+          result = {
+            "message" => message,
+          }
+          result.to_json(*a)
+        end
+      end
     end
   end
 end
