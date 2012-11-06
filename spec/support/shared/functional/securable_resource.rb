@@ -71,37 +71,70 @@ shared_examples_for "a securable resource" do
     pending "should set an owner (Rerun specs under root)", :requires_unprivileged_user => true
     pending "should set a group (Rerun specs under root)",  :requires_unprivileged_user => true
 
-    it "should set an owner", :requires_root do
-      resource.owner expected_user_name
-      resource.run_action(:create)
-      resource.should be_updated_by_last_action
-      File.lstat(path).uid.should == expected_uid
-    end
+    describe "when setting the owner", :requires_root do
+      before do
+        resource.owner expected_user_name
+        resource.run_action(:create)
+      end
 
-    it "should set a group", :requires_root do
-      resource.group desired_gid
-      resource.run_action(:create)
-      resource.should be_updated_by_last_action
-      File.lstat(path).gid.should == expected_gid
-    end
+      it "should set an owner" do
+        File.lstat(path).uid.should == expected_uid
+      end
 
-    it "should set permissions in string form as an octal number" do
-      mode_string = '776'
-      resource.mode mode_string
-      resource.run_action(:create)
-      resource.should be_updated_by_last_action
-      pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
-        (File.lstat(path).mode & 007777).should == (mode_string.oct & 007777)
+      it "is marked as updated" do
+        resource.should be_updated_by_last_action
       end
     end
 
-    it "should set permissions in numeric form as a ruby-interpreted octal" do
-      mode_integer = 0776
-      resource.mode mode_integer
-      resource.run_action(:create)
-      resource.should be_updated_by_last_action
-      pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
-        (File.lstat(path).mode & 007777).should == (mode_integer & 007777)
+    describe "when setting the group", :requires_root do
+      before do
+        resource.group desired_gid
+        resource.run_action(:create)
+      end
+
+      it "should set a group" do
+        File.lstat(path).gid.should == expected_gid
+      end
+
+      it "is marked as updated" do
+        resource.should be_updated_by_last_action
+      end
+
+    end
+
+    describe "when setting the permissions from octal given as a String" do
+      before do
+        @mode_string = '776'
+        resource.mode @mode_string
+        resource.run_action(:create)
+      end
+
+      it "should set permissions as specified" do
+        pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
+          (File.lstat(path).mode & 007777).should == (@mode_string.oct & 007777)
+        end
+      end
+
+      it "marks the resource as updated" do
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    describe "when setting permissions from a literal octal Integer" do
+      before do
+        @mode_integer = 0776
+        resource.mode @mode_integer
+        resource.run_action(:create)
+      end
+
+      it "should set permissions in numeric form as a ruby-interpreted octal" do
+        pending('Linux does not support lchmod', :if => resource.instance_of?(Chef::Resource::Link) && !os_x? && !freebsd?) do
+          (File.lstat(path).mode & 007777).should == (@mode_integer & 007777)
+        end
+      end
+
+      it "is marked as updated" do
+        resource.should be_updated_by_last_action
       end
     end
   end
