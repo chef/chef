@@ -250,7 +250,7 @@ describe Chef::Provider::User do
       @provider.user_exists = false
       @provider.should_receive(:create_user).and_return(true)
       @provider.action_create
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
 
@@ -259,7 +259,6 @@ describe Chef::Provider::User do
       @provider.stub!(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_create
-      @provider.converge
     end
 
     it "should set the the new_resources updated flag when it creates the user if we call manage_user" do
@@ -267,7 +266,7 @@ describe Chef::Provider::User do
       @provider.stub!(:compare_user).and_return(true)
       @provider.stub!(:manage_user).and_return(true)
       @provider.action_create
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
   end
@@ -281,21 +280,19 @@ describe Chef::Provider::User do
       @provider.user_exists = false
       @provider.should_not_receive(:remove_user) 
       @provider.action_remove
-      @provider.converge
     end
 
     it "should call remove_user if the user exists" do
       @provider.user_exists = true
       @provider.should_receive(:remove_user)
       @provider.action_remove
-      @provider.converge
     end
 
     it "should set the new_resources updated flag to true if the user is removed" do
       @provider.user_exists = true
       @provider.should_receive(:remove_user)
       @provider.action_remove
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
   end
@@ -320,14 +317,13 @@ describe Chef::Provider::User do
       @provider.should_receive(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_manage
-      @provider.converge
     end
 
     it "should set the new resources updated flag to true if manage_user is called" do
       @provider.stub!(:compare_user).and_return(true)
       @provider.stub!(:manage_user).and_return(true)
       @provider.action_manage
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
 
@@ -335,14 +331,12 @@ describe Chef::Provider::User do
       @provider.user_exists = false
       @provider.should_not_receive(:manage_user)
       @provider.action_manage
-      @provider.converge
     end
 
     it "should not run manage_user if the user exists but has no differing attributes" do
       @provider.should_receive(:compare_user).and_return(false)
       @provider.should_not_receive(:manage_user)
       @provider.action_manage
-      @provider.converge
     end
   end
 
@@ -366,14 +360,13 @@ describe Chef::Provider::User do
       @provider.should_receive(:compare_user).and_return(true)
       @provider.should_receive(:manage_user).and_return(true)
       @provider.action_modify
-      @provider.converge
     end
 
     it "should set the new resources updated flag to true if manage_user is called" do
       @provider.stub!(:compare_user).and_return(true)
       @provider.stub!(:manage_user).and_return(true)
       @provider.action_modify
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
 
@@ -381,7 +374,6 @@ describe Chef::Provider::User do
       @provider.should_receive(:compare_user).and_return(false)
       @provider.should_not_receive(:manage_user)
       @provider.action_modify
-      @provider.converge
     end
 
     it "should raise a Chef::Exceptions::User if the user doesn't exist" do
@@ -399,14 +391,13 @@ describe Chef::Provider::User do
       @provider.stub!(:check_lock).and_return(false)
       @provider.should_receive(:lock_user).and_return(true)
       @provider.action_lock
-      @provider.converge
     end
 
     it "should set the new resources updated flag to true if lock_user is called" do
       @provider.stub!(:check_lock).and_return(false)
       @provider.should_receive(:lock_user)
       @provider.action_lock
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
 
@@ -439,7 +430,7 @@ describe Chef::Provider::User do
       @provider.stub!(:check_lock).and_return(true)
       @provider.should_receive(:unlock_user).and_return(true)
       @provider.action_unlock
-      @provider.converge
+      @provider.set_updated_status
       @new_resource.should be_updated
     end
 

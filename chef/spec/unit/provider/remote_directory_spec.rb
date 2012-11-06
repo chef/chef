@@ -42,12 +42,26 @@ describe Chef::Provider::RemoteDirectory do
 
     @node = Chef::Node.new
     @cookbook_collection = Chef::CookbookCollection.new(Chef::CookbookLoader.new(@cookbook_repo))
-
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
 
     @provider = Chef::Provider::RemoteDirectory.new(@resource, @run_context)
     @provider.current_resource = @resource.clone
+  end
+
+  describe "when the contents of the directory changed on the first run and not on the second run" do
+    before do
+      @resource_second_run = @resource.clone
+      @provider_second_run = Chef::Provider::RemoteDirectory.new(@resource_second_run, @run_context)
+      @provider.run_action(:create)
+      @provider_second_run.run_action(:create)
+    end
+    it "identifies that the state has changed the after first run" do
+      @provider_second_run.new_resource.updated_by_last_action? == true 
+    end
+    it "identifies that the state has not changed after the second run" do
+      @provider_second_run.new_resource.updated_by_last_action? == false 
+    end
   end
 
   describe "when access control is configured on the resource" do
@@ -91,7 +105,6 @@ describe Chef::Provider::RemoteDirectory do
     before do
       @node[:platform] = :just_testing
       @node[:platform_version] = :just_testing
-
       @destination_dir = Dir.mktmpdir << "/remote_directory_test"
       @resource.path(@destination_dir)
     end

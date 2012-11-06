@@ -82,7 +82,6 @@ describe Chef::Provider do
     temporary_collection = nil
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
-    @provider.converge
     temporary_collection.should be_an_instance_of(Chef::ResourceCollection)
     @provider.run_context.instance_variable_get(:@resource_collection).should == "doesn't matter what this is"
   end
@@ -93,7 +92,6 @@ describe Chef::Provider do
     Chef::RunContext.stub!(:new).and_raise("not supposed to happen")
     snitch = Proc.new {temporary_collection = @run_context.resource_collection}
     @provider.send(:recipe_eval, &snitch)
-    @provider.converge
   end
 
   context "when no converge actions are queued" do
@@ -103,7 +101,6 @@ describe Chef::Provider do
     end
 
     it "does not mark the new resource as updated" do
-      @provider.converge
       @resource.should_not be_updated
       @resource.should_not be_updated_by_last_action
     end

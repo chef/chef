@@ -48,22 +48,15 @@ class Chef
         # block/proc that implements the action.
         def add_action(descriptions, &block)
           @actions << [descriptions, block]
+          if !Chef::Config[:why_run]
+            block.call
+          end
+          events.resource_update_applied(@resource, @action, descriptions)
         end
 
         # True if there are no actions to execute.
         def empty?
           @actions.empty?
-        end
-
-        # Iterate over the actions, and either print the action's message, or
-        # run its code block, depending on whether why_run mode is active.
-        def converge!
-          @actions.each do |descriptions, block|
-            if !Chef::Config[:why_run]
-              block.call
-            end
-            events.resource_update_applied(@resource, @action, descriptions)
-          end
         end
       end
 
