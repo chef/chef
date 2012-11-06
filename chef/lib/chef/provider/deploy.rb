@@ -149,12 +149,6 @@ class Chef
 
       def deploy
         verify_directories_exist
-        # CHEF-3435: We need to create the directories if they don't exist before calling the
-        # scm_provider because it expects them to be there in its own assertations
-        unless self.converge_actions.empty?
-          Chef::Log.info "#{@new_resource} running collected converge_actions before calling scm_provider"
-          self.converge_actions.converge!
-        end
         update_cached_repo # no converge-by - scm provider will dothis
         enforce_ownership
         copy_cached_repo

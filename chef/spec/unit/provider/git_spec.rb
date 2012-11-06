@@ -163,7 +163,6 @@ SHAS
                                                 :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
 
     @provider.clone
-    @provider.converge
   end
 
   it "runs a clone command with escaped destination" do
@@ -174,7 +173,6 @@ SHAS
     @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
                                                 :environment =>{"GIT_SSH"=>"do_it_this_way.sh"}, :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.clone
-    @provider.converge
   end
 
   it "compiles a clone command using --depth for shallow cloning" do
@@ -182,7 +180,6 @@ SHAS
     expected_cmd = 'git clone --depth 5 git://github.com/opscode/chef.git /my/deploy/dir'
     @provider.should_receive(:shell_out!).with(expected_cmd, {:log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
-    @provider.converge
   end
 
   it "compiles a clone command with a remote other than ``origin''" do
@@ -190,14 +187,12 @@ SHAS
     expected_cmd = 'git clone -o opscode git://github.com/opscode/chef.git /my/deploy/dir'
     @provider.should_receive(:shell_out!).with(expected_cmd, {:log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT})
     @provider.clone
-    @provider.converge
   end
 
   it "runs a checkout command with default options" do
     expected_cmd = 'git checkout -b deploy d35af14d41ae22b19da05d7d03a0bafc321b244c'
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.checkout
-    @provider.converge
   end
 
   it "runs an enable_submodule command" do
@@ -205,20 +200,17 @@ SHAS
     expected_cmd = "git submodule update --init --recursive"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir", :log_level => :info, :log_tag => "git[web2.0 app]", :live_stream => STDOUT)
     @provider.enable_submodules
-    @provider.converge
   end
 
   it "does nothing for enable_submodules if resource.enable_submodules #=> false" do
     @provider.should_not_receive(:shell_out!)
     @provider.enable_submodules
-    @provider.converge
   end
 
   it "runs a sync command with default options" do
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd=> "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
-    @provider.converge
   end
 
   it "runs a sync command with the user and group specified in the resource" do
@@ -228,7 +220,6 @@ SHAS
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
                                                 :user => "whois", :group => "thisis", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
-    @provider.converge
   end
 
   it "configures remote tracking branches when remote is not ``origin''" do
@@ -239,7 +230,6 @@ SHAS
     fetch_command = "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
-    @provider.converge
   end
 
   it "raises an error if the git clone command would fail because the enclosing directory doesn't exist" do

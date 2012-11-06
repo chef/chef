@@ -439,7 +439,6 @@ describe Chef::Provider::Package::Rubygems do
       it "installs the gem via the gems api when no explicit options are used" do
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem via the gems api when a remote source is provided" do
@@ -447,14 +446,12 @@ describe Chef::Provider::Package::Rubygems do
         sources = ['http://gems.example.org']
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => sources)
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem from file via the gems api when no explicit options are used" do
         @new_resource.source(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
         @provider.gem_env.should_receive(:install).with(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem from file via the gems api when the package is a path and the source is nil" do
@@ -464,7 +461,6 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.source.should == CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
         @provider.gem_env.should_receive(:install).with(CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem')
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       # this catches 'gem_package "foo"' when "./foo" is a file in the cwd, and instead of installing './foo' it fetches the remote gem
@@ -473,7 +469,6 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.package_name('rspec-core')
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem by shelling out when options are provided as a String" do
@@ -481,14 +476,12 @@ describe Chef::Provider::Package::Rubygems do
         expected ="gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\" -i /alt/install/location"
         @provider.should_receive(:shell_out!).with(expected, :env => nil)
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem via the gems api when options are given as a Hash" do
         @new_resource.options(:install_dir => '/alt/install/location')
         @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil, :install_dir => '/alt/install/location')
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       describe "at a specific version" do
@@ -499,7 +492,6 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem via the gems api" do
           @provider.gem_env.should_receive(:install).with(@gem_dep, :sources => nil)
           @provider.action_install.should be_true
-          @provider.converge
         end
       end
       describe "at version specified with comparison operator" do
@@ -509,7 +501,6 @@ describe Chef::Provider::Package::Rubygems do
 
           @provider.gem_env.should_not_receive(:install)
           @provider.action_install
-          @provider.converge
         end
 
         it "allows user to specify gem version with fuzzy operator" do
@@ -518,7 +509,6 @@ describe Chef::Provider::Package::Rubygems do
 
           @provider.gem_env.should_not_receive(:install)
           @provider.action_install
-          @provider.converge
         end
       end
     end
@@ -528,7 +518,6 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.gem_binary('/usr/weird/bin/gem')
         @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install rspec-core -q --no-rdoc --no-ri -v \"#{@spec_version}\"", :env=>nil)
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem from file by shelling out to gem install" do
@@ -537,7 +526,6 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.version('>= 0')
         @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
         @provider.action_install.should be_true
-        @provider.converge
       end
 
       it "installs the gem from file by shelling out to gem install when the package is a path and the source is nil" do
@@ -549,7 +537,6 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.source.should == CHEF_SPEC_DATA + '/gems/chef-integration-test-0.1.0.gem'
         @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem install #{CHEF_SPEC_DATA}/gems/chef-integration-test-0.1.0.gem -q --no-rdoc --no-ri -v \">= 0\"", :env=>nil)
         @provider.action_install.should be_true
-        @provider.converge
       end
     end
 
@@ -572,7 +559,6 @@ describe Chef::Provider::Package::Rubygems do
         # the behavior we're testing:
         @provider.gem_env.should_receive(:uninstall).with('rspec', nil)
         @provider.action_remove
-        @provider.converge
       end
 
       it "uninstalls via the api when options are given as a Hash" do
@@ -583,21 +569,18 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.options(:install_dir => '/alt/install/location')
         @provider.gem_env.should_receive(:uninstall).with('rspec', nil, :install_dir => '/alt/install/location')
         @provider.action_remove
-        @provider.converge
       end
 
       it "uninstalls via the gem command when options are given as a String" do
         @new_resource.options('-i /alt/install/location')
         @provider.should_receive(:shell_out!).with("gem uninstall rspec -q -x -I -a -i /alt/install/location", :env=>nil)
         @provider.action_remove
-        @provider.converge
       end
 
       it "uninstalls a specific version of a gem when a version is provided" do
         @new_resource.version('1.2.3')
         @provider.gem_env.should_receive(:uninstall).with('rspec', '1.2.3')
         @provider.action_remove
-        @provider.converge
       end
     end
 
@@ -606,7 +589,6 @@ describe Chef::Provider::Package::Rubygems do
         @new_resource.gem_binary('/usr/weird/bin/gem')
         @provider.should_receive(:shell_out!).with("/usr/weird/bin/gem uninstall rspec -q -x -I -a", :env=>nil)
         @provider.action_remove
-        @provider.converge
       end
     end
   end
