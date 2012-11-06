@@ -1188,6 +1188,7 @@ class Chef
 
           unless packages.empty?
             new_package_name = packages.first.name
+            new_package_version = packages.first.version.to_s
             Chef::Log.debug("#{@new_resource} no package found for #{@new_resource.package_name} " +
                             "but matched Provides for #{new_package_name}")
 
@@ -1204,7 +1205,15 @@ class Chef
                              "specific version.")
             end
 
+            # Replace the originally requested package name and possibly version with the match from
+            # Provides data
+
             @new_resource.package_name(new_package_name)
+
+            # Don't bother if a version wasn't originally requested
+            unless yum_require.version.to_s.nil?
+              @new_resource.version(new_package_version)
+            end
           end
         end
 
