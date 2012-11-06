@@ -36,7 +36,7 @@ describe Chef::Provider::Service do
       @current_resource.enabled(false)
       @provider.should_receive(:enable_service).and_return(true)
       @provider.action_enable
-      @provider.converge
+      @provider.set_updated_status
       @provider.new_resource.should be_updated
     end
 
@@ -44,7 +44,7 @@ describe Chef::Provider::Service do
       @current_resource.enabled(true)
       @provider.should_not_receive(:enable_service)
       @provider.action_enable
-      @provider.converge
+      @provider.set_updated_status
       @provider.new_resource.should_not be_updated
     end
   end
