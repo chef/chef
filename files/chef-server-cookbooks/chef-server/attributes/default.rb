@@ -162,6 +162,11 @@ default['chef_server']['chef-server-webui']['web_ui_client_name'] = "chef-webui"
 default['chef_server']['chef-server-webui']['web_ui_admin_user_name'] = "admin"
 default['chef_server']['chef-server-webui']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
+####
+# Chef Pedant
+####
+default['chef_server']['chef-pedant']['dir'] = "/var/opt/chef-server/chef-pedant"
+
 ###
 # Load Balancer
 ###

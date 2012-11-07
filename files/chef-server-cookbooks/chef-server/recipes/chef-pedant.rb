@@ -15,7 +15,22 @@
 # limitations under the License.
 #
 
-template "/etc/chef-server/pedant_config.rb" do
+pedant_dir = node['chef_server']['chef-pedant']['dir']
+pedant_etc_dir = File.join(pedant_dir, "etc")
+[
+  pedant_dir,
+  pedant_etc_dir
+].each do |dir_name|
+  directory dir_name do
+    owner node['chef_server']['user']['username']
+    mode '0700'
+    recursive true
+  end
+end
+
+pedant_config = File.join(pedant_etc_dir, "pedant_config.rb")
+
+template pedant_config do
   owner "root"
   group "root"
   mode  "0755"
