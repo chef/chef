@@ -17,60 +17,128 @@
 #
 
 shared_examples_for "a file with the wrong content" do
-  it "overwrites the file with the updated content when the :create action is run" do
-    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-    sleep 1
-    resource.run_action(:create)
-    File.stat(path).mtime.should > @expected_mtime
-    sha256_checksum(path).should_not == @expected_checksum
-  end
-
-  it "doesn't overwrite the file when the :create_if_missing action is run" do
-    sleep 1
-    resource.run_action(:create_if_missing)
-    File.stat(path).mtime.should == @expected_mtime
+  before do
+    # Assert starting state is as expected
+    File.should exist(path)
+    # Kinda weird, in this case @expected_checksum is the cksum of the file
+    # with incorrect content.
     sha256_checksum(path).should == @expected_checksum
   end
 
-  it "should backup the existing file" do
-    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-    resource.run_action(:create)
-    Dir.glob(backup_glob).size.should equal(1)
+  context "when running action :create" do
+    context "with backups enabled" do
+      before do
+        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
+        resource.run_action(:create)
+      end
+
+      it "overwrites the file with the updated content when the :create action is run" do
+        File.stat(path).mtime.should > @expected_mtime
+        sha256_checksum(path).should_not == @expected_checksum
+      end
+
+      it "backs up the existing file" do
+        Dir.glob(backup_glob).size.should equal(1)
+      end
+
+      it "is marked as updated by last action" do
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    context "with backups disabled" do
+      before do
+        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
+        resource.backup(0)
+        resource.run_action(:create)
+      end
+
+      it "should not attempt to backup the existing file if :backup == 0" do
+        Dir.glob(backup_glob).size.should equal(0)
+      end
+    end
   end
 
-  it "should not attempt to backup the existing file if :backup == 0" do
-    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-    resource.backup(0)
-    resource.run_action(:create)
-    Dir.glob(backup_glob).size.should equal(0)
+  describe "when running action :create_if_missing" do
+    before do
+      resource.run_action(:create_if_missing)
+    end
+
+    it "doesn't overwrite the file when the :create_if_missing action is run" do
+      File.stat(path).mtime.should == @expected_mtime
+      sha256_checksum(path).should == @expected_checksum
+    end
+
+    it "is not marked as updated" do
+      resource.should_not be_updated_by_last_action
+    end
   end
 
-  it "deletes the file when the :delete action is run" do
-    resource.run_action(:delete)
-    File.should_not exist(path)
+  describe "when running action :delete" do
+    before do
+      resource.run_action(:delete)
+    end
+
+    it "deletes the file" do
+      File.should_not exist(path)
+    end
+
+    it "is marked as updated by last action" do
+      resource.should be_updated_by_last_action
+    end
   end
 end
 
 shared_examples_for "a file with the correct content" do
-  it "does not overwrite the original when the :create action is run" do
-    resource.run_action(:create)
+  before do
+    # Assert starting state is as expected
+    File.should exist(path)
     sha256_checksum(path).should == @expected_checksum
   end
 
-  it "does not update the mtime/atime of the file when the :create action is run" do
-    sleep 1
-    File.stat(path).mtime.should == @expected_mtime
-    File.stat(path).atime.should be_within(2).of(@expected_atime)
+  describe "when running action :create" do
+    before do
+      resource.run_action(:create)
+    end
+    it "does not overwrite the original when the :create action is run" do
+      sha256_checksum(path).should == @expected_checksum
+    end
+
+    it "does not update the mtime of the file when the :create action is run" do
+      File.stat(path).mtime.should == @expected_mtime
+    end
+
+    it "is not marked as updated by last action" do
+      resource.should_not be_updated_by_last_action
+    end
   end
 
-  it "doesn't overwrite the file when the :create_if_missing action is run" do
-    resource.run_action(:create_if_missing)
-    sha256_checksum(path).should == @expected_checksum
+  describe "when running action :create_if_missing" do
+    before do
+      resource.run_action(:create_if_missing)
+    end
+
+    it "doesn't overwrite the file when the :create_if_missing action is run" do
+      sha256_checksum(path).should == @expected_checksum
+    end
+
+    it "is not marked as updated by last action" do
+      resource.should_not be_updated_by_last_action
+    end
   end
 
-  it "deletes the file when the :delete action is run" do
-    resource.run_action(:delete)
-    File.should_not exist(path)
+  describe "when running action :delete" do
+    before do
+      resource.run_action(:delete)
+    end
+
+    it "deletes the file when the :delete action is run" do
+      File.should_not exist(path)
+    end
+
+    it "is marked as updated by last action" do
+      resource.should be_updated_by_last_action
+    end
   end
 end
 
@@ -79,24 +147,55 @@ shared_examples_for "a file resource" do
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
   context "when the target file does not exist" do
-    it "creates the file when the :create action is run" do
-      resource.run_action(:create)
-      File.should exist(path)
-    end
-
-    it "creates the file with the correct content when the :create action is run" do
-      resource.run_action(:create)
-      IO.read(path).should == expected_content
-    end
-
-    it "creates the file with the correct content when the :create_if_missing action is run" do
-      resource.run_action(:create_if_missing)
-      IO.read(path).should == expected_content
-    end
-
-    it "deletes the file when the :delete action is run" do
-      resource.run_action(:delete)
+    before do
+      # Assert starting state is expected
       File.should_not exist(path)
+    end
+
+    describe "when running action :create" do
+      before do
+        resource.run_action(:create)
+      end
+
+      it "creates the file when the :create action is run" do
+        File.should exist(path)
+      end
+
+      it "creates the file with the correct content when the :create action is run" do
+        IO.read(path).should == expected_content
+      end
+
+      it "is marked as updated by last action" do
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    describe "when running action :create_if_missing" do
+      before do
+        resource.run_action(:create_if_missing)
+      end
+
+      it "creates the file with the correct content" do
+        IO.read(path).should == expected_content
+      end
+
+      it "is marked as updated by last action" do
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    describe "when running action :delete" do
+      before do
+        resource.run_action(:delete)
+      end
+
+      it "deletes the file when the :delete action is run" do
+        File.should_not exist(path)
+      end
+
+      it "is not marked updated by last action" do
+        resource.should_not be_updated_by_last_action
+      end
     end
   end
 
@@ -113,6 +212,9 @@ shared_examples_for "a file resource" do
   context "when the target file has the wrong content" do
     before(:each) do
       File.open(path, "w") { |f| f.print "This is so wrong!!!" }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
       @expected_mtime = File.stat(path).mtime
       @expected_checksum = sha256_checksum(path)
     end
@@ -137,8 +239,10 @@ shared_examples_for "a file resource" do
   context "when the target file has the correct content" do
     before(:each) do
       File.open(path, "w") { |f| f.print expected_content }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
       @expected_mtime = File.stat(path).mtime
-      @expected_atime = File.stat(path).atime
       @expected_checksum = sha256_checksum(path)
     end
 

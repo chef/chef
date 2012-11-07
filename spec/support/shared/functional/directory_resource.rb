@@ -18,41 +18,100 @@
 
 shared_examples_for "a directory resource" do
   context "when the target directory does not exist" do
-    it "creates the directory when the :create action is run" do
-      resource.run_action(:create)
-      File.should exist(path)
+    before do
+      # assert pre-condition
+      File.should_not exist(path)
     end
 
-    it "recursively creates required directories if requested" do
-      resource.recursive(true)
-      recursive_path = File.join(path, 'red-headed-stepchild')
-      resource.path(recursive_path)
-      resource.run_action(:create)
-      File.should exist(path)
-      File.should exist(recursive_path)
+    describe "when running action :create" do
+      context "and the recursive option is not set" do
+        before do
+          resource.run_action(:create)
+        end
+
+        it "creates the directory when the :create action is run" do
+          File.should exist(path)
+        end
+
+        it "is marked updated by last action" do
+          resource.should be_updated_by_last_action
+        end
+      end
+
+      context "and the recursive option is set" do
+        before do
+          File.should_not exist(path)
+
+          resource.recursive(true)
+          @recursive_path = File.join(path, 'red-headed-stepchild')
+          resource.path(@recursive_path)
+          resource.run_action(:create)
+        end
+
+        it "recursively creates required directories" do
+          File.should exist(path)
+          File.should exist(@recursive_path)
+        end
+
+        it "is marked updated by last action" do
+          resource.should be_updated_by_last_action
+        end
+      end
     end
   end
 
   context "when the target directory exists" do
     before(:each) do
-      FileUtils.mkdir(path)
-    end
-
-    it "does not re-create the directory" do
-      resource.run_action(:create)
+      # For resources such as remote_directory, simply creating the base
+      # directory isn't enough to test that the system is in the desired state,
+      # so we run the resource twice--otherwise the updated_by_last_action test
+      # will fail.
+      resource.dup.run_action(:create)
       File.should exist(path)
+
+      resource.run_action(:create)
     end
 
-    it "deletes the directory when the :delete action is run" do
-      resource.run_action(:delete)
-      File.should_not exist(path)
+    describe "when running action :create" do
+      before do
+        resource.run_action(:create)
+      end
+
+      it "does not re-create the directory" do
+        File.should exist(path)
+      end
+
+      it "is not marked updated by last action" do
+        resource.should_not be_updated_by_last_action
+      end
     end
 
-    it "recursively deletes directories if requested" do
-      FileUtils.mkdir(File.join(path, 'red-headed-stepchild'))
-      resource.recursive(true)
-      resource.run_action(:delete)
-      File.should_not exist(path)
+    describe "when running action :delete" do
+      context "without the recursive option" do
+        before do
+          resource.run_action(:delete)
+        end
+
+        it "deletes the directory" do
+          File.should_not exist(path)
+        end
+
+        it "is marked as updated by last action" do
+          resource.should be_updated_by_last_action
+        end
+      end
+
+      context "with the recursive option" do
+        before do
+          FileUtils.mkdir(File.join(path, 'red-headed-stepchild'))
+          resource.recursive(true)
+          resource.run_action(:delete)
+        end
+
+        it "recursively deletes directories" do
+          File.should_not exist(path)
+        end
+      end
     end
   end
 

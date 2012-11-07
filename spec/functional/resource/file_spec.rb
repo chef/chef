@@ -29,41 +29,65 @@ describe Chef::Resource::File do
     node = Chef::Node.new
     run_context = Chef::RunContext.new(node, {}, events)
     resource = Chef::Resource::File.new(path, run_context)
-    resource.content(expected_content)
     resource
   end
 
   let!(:resource) do
+    r = create_resource
+    r.content(expected_content)
+    r
+  end
+
+  let(:resource_without_content) do
     create_resource
+  end
+
+  let(:unmanaged_content) do
+    "This is file content that is not managed by chef"
   end
 
   it_behaves_like "a file resource"
 
-  context "when the target file does not exist" do
-    it "it creates the file when the :touch action is run" do
-      resource.run_action(:touch)
-      File.should exist(path)
+  describe "when running action :touch" do
+    context "and the target file does not exist" do
+      before do
+        resource.run_action(:touch)
+      end
+
+      it "it creates the file" do
+        File.should exist(path)
+      end
+
+      it "is marked updated by last action" do
+        resource.should be_updated_by_last_action
+      end
+    end
+
+    context "and the target file exists and has the correct content" do
+      before(:each) do
+        File.open(path, "w") { |f| f.print expected_content }
+
+        @expected_checksum = sha256_checksum(path)
+
+        now = Time.now.to_i
+        File.utime(now - 9000, now - 9000, path)
+        @expected_mtime = File.stat(path).mtime
+
+        resource.run_action(:touch)
+      end
+
+      it "updates the mtime of the file" do
+        File.stat(path).mtime.should > @expected_mtime
+      end
+
+      it "does not change the content" do
+        sha256_checksum(path).should == @expected_checksum
+      end
+
+      it "is marked as updated by last action" do
+        resource.should be_updated_by_last_action
+      end
     end
   end
 
-  context "when the target file has the correct content" do
-    before(:each) do
-      File.open(path, "w") { |f| f.print expected_content }
-    end
-
-    it "updates the mtime/atime of the file when the :touch action is run" do
-      expected_mtime = File.stat(path).mtime
-      expected_atime = File.stat(path).atime
-      sleep 1
-      resource.run_action(:touch)
-      File.stat(path).mtime.should > expected_mtime
-      File.stat(path).atime.should > expected_atime
-    end
-
-    it "does not change the content when :touch action is run" do
-      expected_checksum = sha256_checksum(path)
-      resource.run_action(:touch)
-      sha256_checksum(path).should == expected_checksum
-    end
-  end
 end
