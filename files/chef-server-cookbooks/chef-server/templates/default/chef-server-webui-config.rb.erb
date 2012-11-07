@@ -1,16 +1,3 @@
-require 'chef'
-
-Chef::Config[:chef_server_url] = "<%= node['chef_server']['erchef']['url'] %>"
-Chef::Config[:web_ui_client_name] = "chef-webui"
-Chef::Config[:web_ui_key] = "/etc/chef-server/webui_priv.pem"
-Chef::Config[:web_ui_admin_user_name] =  "<%= @web_ui_admin_user_name %>"
-Chef::Config[:web_ui_admin_default_password] = "<%= @web_ui_admin_default_password %>"
-# FIXME
-Chef::Config[:openid_cstore_path] = "/tmp"
-Chef::Config[:openid_cstore_couchdb] = false
-Chef::Config[:authorized_openid_identifiers] = nil
-Chef::Config[:authorized_openid_providers] = nil
-
 ChefServerWebui::Application.configure do
 
   config.logger = Logger.new(STDOUT)
@@ -46,5 +33,14 @@ ChefServerWebui::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
+
+  # Environment specific application configuration.
+  # These values override the ones set in 'RAILS_ROOT/config/application.rb'
+  config.chef_server_url = "<%= node['chef_server']['erchef']['url'] %>"
+  config.rest_client_name = "chef-webui"
+  config.rest_client_key = "/etc/chef-server/webui_priv.pem"
+  config.admin_user_name =  "<%= @web_ui_admin_user_name %>"
+  config.admin_default_password = "<%= @web_ui_admin_default_password %>"
+  config.rest_client_custom_http_headers = {}
 
 end
