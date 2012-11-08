@@ -240,6 +240,13 @@ describe Chef::Node::Attribute do
       @attributes.override["override"] = "cookbook override"
     end
 
+    it "prefers 'forced default' over any other default" do
+      @attributes.default!["default"] = "force default"
+      @attributes.role_default["default"] = "role default"
+      @attributes.env_default["default"] = "environment default"
+      @attributes["default"].should == "force default"
+    end
+
     it "prefers role_default over environment or cookbook default" do
       @attributes.role_default["default"] = "role default"
       @attributes.env_default["default"] = "environment default"
@@ -253,6 +260,13 @@ describe Chef::Node::Attribute do
 
     it "returns the cookbook default when no other default values are present" do
       @attributes["default"].should == "cookbook default"
+    end
+
+    it "prefers 'forced overrides' over role or cookbook overrides" do
+      @attributes.override!["override"] = "force override"
+      @attributes.env_override["override"] = "environment override"
+      @attributes.role_override["override"] = "role override"
+      @attributes["override"].should == "force override"
     end
 
     it "prefers environment overrides over role or cookbook overrides" do
@@ -277,21 +291,25 @@ describe Chef::Node::Attribute do
       @attributes.default["cd"] = "cookbook default"
       @attributes.role_default["rd"] = "role default"
       @attributes.env_default["ed"] = "env default"
+      @attributes.default!["fd"] = "force default"
       @attributes.override["co"] = "cookbook override"
       @attributes.role_override["ro"] = "role override"
       @attributes.env_override["eo"] = "env override"
+      @attributes.override!["fo"] = "force override"
     end
 
     it "merges all types of overrides into a combined override" do
       @attributes.combined_override["co"].should == "cookbook override"
       @attributes.combined_override["ro"].should == "role override"
       @attributes.combined_override["eo"].should == "env override"
+      @attributes.combined_override["fo"].should == "force override"
     end
 
     it "merges all types of defaults into a combined default" do
       @attributes.combined_default["cd"].should == "cookbook default"
       @attributes.combined_default["rd"].should == "role default"
       @attributes.combined_default["ed"].should == "env default"
+      @attributes.combined_default["fd"].should == "force default"
     end
 
   end
