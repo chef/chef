@@ -73,9 +73,10 @@ requestors({
              },
             :users => {
                :admin => {
-                 :name => "pedant_admin_user",
-                 :create_me => true,
-                 :create_knife => true,
+                 :name => "webui-admin",
+                 :key_file => "/etc/chef-server/webui-admin.pem",
+                 :create_me => false,
+                 :create_knife => false,
                  :admin => true
                 },
                :non_admin => {
@@ -93,3 +94,8 @@ requestors({
                }
              }
            })
+<%- if node['chef_server']['chef-pedant']['log_http_requests'] %>
+
+# Log HTTP Requests
+log_file "<%= File.join(node['chef_server']['chef-pedant']['log_directory'], "http-traffic.log") %>"
+<%- end %>

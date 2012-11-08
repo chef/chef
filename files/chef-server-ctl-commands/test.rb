@@ -23,7 +23,7 @@ add_command "test", "Run the API test suite against localhost.", 2 do
   pedant_args = ARGV[3..-1]
   pedant_args = ["--smoke"] unless pedant_args.any?
   Dir.chdir(File.join(base_path, "embedded", "service", "chef-pedant"))
-  pedant_config = File.join(etc_path, "pedant_config.rb")
+  pedant_config = File.join(data_path, "chef-pedant", "etc", "pedant_config.rb")
   bundle = File.join(base_path, "embedded", "bin", "bundle")
   exec("#{bundle} exec ./chef-pedant -c #{pedant_config} #{pedant_args.join(' ')}")
 end
