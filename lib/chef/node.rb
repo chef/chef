@@ -138,6 +138,12 @@ class Chef
       attributes.default
     end
 
+    # Set a force default attribute. Intermediate mashes will be created by
+    # auto-vivify if necessary.
+    def default!
+      attributes.default!
+    end
+
     # Set a default attribute of this node, auto-vivifying any mashes that are
     # missing, but if the final value already exists, don't set it
     def default_unless
@@ -149,6 +155,12 @@ class Chef
     # might be missing
     def override
       attributes.override
+    end
+
+    # Set a force override attribute. Intermediate mashes will be created by
+    # auto-vivify if needed.
+    def override!
+      attributes.override!
     end
 
     # Set an override attribute of this node, auto-vivifying any mashes that
