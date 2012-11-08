@@ -17,9 +17,11 @@
 
 pedant_dir = node['chef_server']['chef-pedant']['dir']
 pedant_etc_dir = File.join(pedant_dir, "etc")
+pedant_log_dir = node['chef_server']['chef-pedant']['log_directory']
 [
   pedant_dir,
-  pedant_etc_dir
+  pedant_etc_dir,
+  pedant_log_dir
 ].each do |dir_name|
   directory dir_name do
     owner node['chef_server']['user']['username']

@@ -166,6 +166,8 @@ default['chef_server']['chef-server-webui']['web_ui_admin_default_password'] = "
 # Chef Pedant
 ####
 default['chef_server']['chef-pedant']['dir'] = "/var/opt/chef-server/chef-pedant"
+default['chef_server']['chef-pedant']['log_directory'] = "/var/log/chef-server/chef-pedant"
+default['chef_server']['chef-pedant']['log_http_requests'] = true
 
 ###
 # Load Balancer
