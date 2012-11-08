@@ -42,24 +42,28 @@ class Chef
         :@default,
         :@env_default,
         :@role_default,
+        :@force_default,
         :@normal,
         :@override,
         :@role_override,
         :@env_override,
+        :@force_override,
         :@automatic
       ].freeze
 
       DEFAULT_COMPONENTS = [
         :@default,
         :@env_default,
-        :@role_default
+        :@role_default,
+        :@force_default
       ]
 
 
       OVERRIDE_COMPONENTS = [
         :@override,
         :@role_override,
-        :@env_override
+        :@env_override,
+        :@force_override
       ]
 
       attr_reader :serial_number
@@ -154,6 +158,14 @@ class Chef
        # return the environment level default attribute component
        attr_reader :env_default
 
+       # return the force_default level attribute component
+       attr_reader :force_default
+
+       # default! is the "advertised" method for force_default, but is
+       # implemented as an alias because instance variables can't (easily) have
+       # +!+ characters.
+       alias :default! :force_default
+
        # return the "normal" level attribute component
        attr_reader :normal
 
@@ -166,6 +178,14 @@ class Chef
        # return the enviroment level override attribute component
        attr_reader :env_override
 
+       # return the force override level attribute component
+       attr_reader :force_override
+
+       # +override!+ is the "advertised" method for +force_override+ but is
+       # implemented as an alias because instance variables can't easily have
+       # +!+ characters.
+       alias :override! :force_override
+
        # return the automatic level attribute component
        attr_reader :automatic
 
@@ -176,12 +196,14 @@ class Chef
          @default = VividMash.new(self, default)
          @env_default = VividMash.new(self, {})
          @role_default = VividMash.new(self, {})
+         @force_default = VividMash.new(self, {})
 
          @normal = VividMash.new(self, normal)
 
          @override = VividMash.new(self, override)
          @role_override = VividMash.new(self, {})
          @env_override = VividMash.new(self, {})
+         @force_override = VividMash.new(self, {})
 
          @automatic = VividMash.new(self, automatic)
 
@@ -226,6 +248,12 @@ class Chef
          @env_default = VividMash.new(self, new_data)
        end
 
+       # Set the force_default (+default!+) level attributes to +new_data+
+       def force_default=(new_data)
+         reset
+         @force_default = VividMash.new(self, new_data)
+       end
+
        # Set the normal level attribute component to +new_data+
        def normal=(new_data)
          reset
@@ -248,6 +276,11 @@ class Chef
        def env_override=(new_data)
          reset
          @env_override = VividMash.new(self, new_data)
+       end
+
+       def force_override=(new_data)
+         reset
+         @force_override = VividMash.new(self, new_data)
        end
 
        def automatic=(new_data)
