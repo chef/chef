@@ -181,10 +181,7 @@ class Chef
 
     def load_attributes_in_run_list_order(run_list_expansion)
       @events.attribute_load_start(count_files_by_segment(:attributes))
-      cookbook_order = run_list_expansion.recipes.map do |recipe|
-        Chef::Recipe.parse_recipe_name(recipe).first
-      end.uniq
-      cookbook_order.each do |cookbook|
+      each_cookbook_in_run_list_order(run_list_expansion) do |cookbook|
         load_attributes_from_cookbook(cookbook)
       end
       @events.attribute_load_complete
@@ -194,8 +191,7 @@ class Chef
       # avoid loading a cookbook again if it's been loaded.
       return false if @loaded_cookbooks_by_segment[:attributes].key?(cookbook_name)
       @loaded_cookbooks_by_segment[:attributes][cookbook_name] = true
-      cookbook = cookbook_collection[cookbook_name]
-      cookbook.metadata.dependencies.keys.sort.each do |cookbook_dep|
+      each_cookbook_dep(cookbook_name) do |cookbook_dep|
         load_attributes_from_cookbook(cookbook_dep)
       end
       list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
@@ -210,6 +206,18 @@ class Chef
     end
 
     private
+
+    def each_cookbook_dep(cookbook_name, &block)
+      cookbook = cookbook_collection[cookbook_name]
+      cookbook.metadata.dependencies.keys.sort.each(&block)
+    end
+
+    def each_cookbook_in_run_list_order(run_list_expansion, &block)
+      cookbook_order = run_list_expansion.recipes.map do |recipe|
+        Chef::Recipe.parse_recipe_name(recipe).first
+      end
+      cookbook_order.uniq.each(&block)
+    end
 
     def loaded_recipe(cookbook, recipe)
       @loaded_recipes["#{cookbook}::#{recipe}"] = true
