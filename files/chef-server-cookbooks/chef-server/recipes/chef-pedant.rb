@@ -32,10 +32,15 @@ end
 
 pedant_config = File.join(pedant_etc_dir, "pedant_config.rb")
 
+superuser_name = node['chef_server']['chef-server-webui']['web_ui_admin_user_name']
+superuser_key = "/etc/chef-server/#{node['chef_server']['chef-server-webui']['web_ui_admin_user_name']}.pem"
+
 template pedant_config do
   owner "root"
   group "root"
   mode  "0755"
   variables :api_url  => node['chef_server']['nginx']['url'],
-            :solr_url => node['chef_server']['chef-solr']['url']
+            :solr_url => node['chef_server']['chef-solr']['url'],
+            :superuser_name => superuser_name,
+            :superuser_key => superuser_key
 end

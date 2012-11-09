@@ -157,7 +157,7 @@ default['chef_server']['chef-server-webui']['session_key'] = "_sandbox_session"
 default['chef_server']['chef-server-webui']['cookie_domain'] = "all"
 default['chef_server']['chef-server-webui']['cookie_secret'] = "47b3b8d95dea455baf32155e95d1e64e"
 default['chef_server']['chef-server-webui']['web_ui_client_name'] = "chef-webui"
-default['chef_server']['chef-server-webui']['web_ui_admin_user_name'] = "webui-admin"
+default['chef_server']['chef-server-webui']['web_ui_admin_user_name'] = "admin"
 default['chef_server']['chef-server-webui']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
 ####
