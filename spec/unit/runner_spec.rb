@@ -266,7 +266,7 @@ E
     @first_resource.should be_updated
   end
 
-  it "does not duplicate delayed notifications" do
+  it "should not duplicate delayed notifications" do
     SnitchyProvider.clear_action_record
 
     Chef::Platform.set(
@@ -298,7 +298,7 @@ E
     SnitchyProvider.all_actions_called.should == [:first, :first, :second, :third]
   end
 
-  it "does not duplicate depends notifications" do
+  it "should not duplicate depends notifications" do
     SnitchyProvider.clear_action_record
 
     Chef::Platform.set(
@@ -330,7 +330,7 @@ E
     SnitchyProvider.all_actions_called.should == [:first, :second]
   end
 
-  it "executes delayed notifications in the order they were declared" do
+  it "should execute delayed notifications in the order they were declared" do
     SnitchyProvider.clear_action_record
 
     Chef::Platform.set(
@@ -358,8 +358,8 @@ E
     SnitchyProvider.all_actions_called.should == [:first, :first, :second, :third]
   end
 
-  shared_examples "a before notification" do |before_timing|
-    it "executes :#{before_timing} when only_if and not_if conditions are met" do
+  shared_examples "having before notifications:" do |before_timing|
+    it "should execute :#{before_timing} when only_if and not_if conditions are met" do
       SnitchyProvider.clear_action_record
   
       Chef::Platform.set(
@@ -382,7 +382,7 @@ E
       SnitchyProvider.all_actions_called.should == [:first, :second]
     end
   
-    it "executes :#{before_timing} and :immediate notifications in the correct order" do
+    it "should execute :#{before_timing} and :immediate notifications in the correct order" do
       SnitchyProvider.clear_action_record
   
       Chef::Platform.set(
@@ -408,7 +408,7 @@ E
       SnitchyProvider.all_actions_called.should == [:first, :second, :second, :third]
     end
   
-    it "does not execute :#{before_timing.to_s} when only_if is not met" do
+    it "should not execute :#{before_timing.to_s} when only_if is not met" do
       SnitchyProvider.clear_action_record
   
       Chef::Platform.set(
@@ -428,7 +428,7 @@ E
       SnitchyProvider.all_actions_called.should == []
     end
   
-    it "does not execute :#{before_timing.to_s} when not_if is met" do
+    it "should not execute :#{before_timing.to_s} when not_if is met" do
       SnitchyProvider.clear_action_record
   
       Chef::Platform.set(
@@ -461,17 +461,17 @@ E
   
       @first_resource.should be_updated
     end
-  end # shared_examples "a before notification"
+  end # shared_examples "having before notifications:"
 
-  describe ':before notification' do
-    it_should_behave_like "a before notification", :before
+  describe 'when there are :before notifications' do
+    it_should_behave_like "having before notifications:", :before
   end
 
-  describe ':depends notification' do
-    it_should_behave_like "a before notification", :depends
+  describe 'when there are :depends notifications' do
+    it_should_behave_like "having before notifications:", :depends
   end
 
-  it "does not fire notifications if the resource was not updated by the last action executed" do
+  it "should not fire notifications if the resource was not updated by the last action executed" do
     # REGRESSION TEST FOR CHEF-1452
     SnitchyProvider.clear_action_record
 
