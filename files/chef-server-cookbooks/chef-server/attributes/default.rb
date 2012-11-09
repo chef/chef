@@ -150,7 +150,6 @@ default['chef_server']['chef-server-webui']['port'] = 9462
 default['chef_server']['chef-server-webui']['backlog'] = 1024
 default['chef_server']['chef-server-webui']['tcp_nodelay'] = true
 default['chef_server']['chef-server-webui']['worker_timeout'] = 3600
-default['chef_server']['chef-server-webui']['validation_client_name'] = "chef"
 default['chef_server']['chef-server-webui']['umask'] = "0022"
 default['chef_server']['chef-server-webui']['worker_processes'] = 2
 default['chef_server']['chef-server-webui']['session_key'] = "_sandbox_session"
