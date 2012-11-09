@@ -48,9 +48,9 @@ include_internal false
 # which should be the fully-qualified path /on the machine Pedant is
 # running on/ to a private key for that user.
 
-superuser_name 'admin'
-superuser_key  '/etc/chef-server/admin.pem'
-webui_key '/etc/chef-server/webui_priv.pem'
+superuser_name '<%= @superuser_name %>'
+superuser_key  '<%= @superuser_key %>'
+webui_key '/etc/chef-server/chef-webui.pem'
 
 requestors({
              :clients => {
@@ -73,8 +73,8 @@ requestors({
              },
             :users => {
                :admin => {
-                 :name => "webui-admin",
-                 :key_file => "/etc/chef-server/webui-admin.pem",
+                 :name => "<%= @superuser_name %>",
+                 :key_file => "<%= @superuser_key %>",
                  :create_me => false,
                  :create_knife => false,
                  :admin => true
@@ -94,8 +94,8 @@ requestors({
                }
              }
            })
-<%- if node['chef_server']['chef-pedant']['log_http_requests'] %>
+<%- if @log_http_requests %>
 
 # Log HTTP Requests
-log_file "<%= File.join(node['chef_server']['chef-pedant']['log_directory'], "http-traffic.log") %>"
+log_file "<%= File.join(@log_directory, "http-traffic.log") %>"
 <%- end %>

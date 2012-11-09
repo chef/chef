@@ -150,14 +150,13 @@ default['chef_server']['chef-server-webui']['port'] = 9462
 default['chef_server']['chef-server-webui']['backlog'] = 1024
 default['chef_server']['chef-server-webui']['tcp_nodelay'] = true
 default['chef_server']['chef-server-webui']['worker_timeout'] = 3600
-default['chef_server']['chef-server-webui']['validation_client_name'] = "chef"
 default['chef_server']['chef-server-webui']['umask'] = "0022"
 default['chef_server']['chef-server-webui']['worker_processes'] = 2
 default['chef_server']['chef-server-webui']['session_key'] = "_sandbox_session"
 default['chef_server']['chef-server-webui']['cookie_domain'] = "all"
 default['chef_server']['chef-server-webui']['cookie_secret'] = "47b3b8d95dea455baf32155e95d1e64e"
 default['chef_server']['chef-server-webui']['web_ui_client_name'] = "chef-webui"
-default['chef_server']['chef-server-webui']['web_ui_admin_user_name'] = "webui-admin"
+default['chef_server']['chef-server-webui']['web_ui_admin_user_name'] = "admin"
 default['chef_server']['chef-server-webui']['web_ui_admin_default_password'] = "p@ssw0rd1"
 
 ####

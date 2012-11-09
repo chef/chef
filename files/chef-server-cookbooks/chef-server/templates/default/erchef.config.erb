@@ -31,7 +31,7 @@
               {superusers, [<<"chef-webui">>]}
              ]},
   {chef_authn, [
-                {keyring, [{default, "/etc/chef-server/webui_pub.pem"}]}
+                {keyring, [{default, "/etc/chef-server/chef-webui.pem"}]}
                ]},
   {chef_db, [
              {bulk_fetch_batch_size, <%= @bulk_fetch_batch_size %>},

@@ -28,7 +28,7 @@ define :runit_service, :directory => nil, :only_if => false, :finish_script => f
   sv_dir_name = "#{params[:directory]}/#{params[:name]}"
   service_dir_name = "#{params[:active_directory]}/#{params[:name]}"
   params[:options].merge!(:env_dir => "#{sv_dir_name}/env") unless params[:env].empty?
-  
+
   case params[:action]
   when :enable
 
@@ -171,7 +171,7 @@ define :runit_service, :directory => nil, :only_if => false, :finish_script => f
       if params[:owner]
         control_cmd = "#{node[:runit][:chpst_bin]} -u #{params[:owner]} #{control_cmd}"
       end
-      provider Chef::Provider::Service::Init
+      provider Chef::Provider::Service::Simple
       supports :restart => true, :status => true
       start_command "#{control_cmd} #{params[:start_command]} #{service_dir_name}"
       stop_command "#{control_cmd} #{params[:stop_command]} #{service_dir_name}"
