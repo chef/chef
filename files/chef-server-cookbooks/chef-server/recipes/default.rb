@@ -43,50 +43,6 @@ end
 # Create the Chef User
 include_recipe "chef-server::users"
 
-webui_key = OpenSSL::PKey::RSA.generate(2048) unless File.exists?('/etc/chef-server/webui_pub.pem')
-
-file "/etc/chef-server/webui_pub.pem" do
-  owner "root"
-  group "root"
-  mode "0644"
-  content webui_key.public_key.to_s unless File.exists?('/etc/chef-server/webui_pub.pem')
-end
-
-file "/etc/chef-server/webui_priv.pem" do
-  owner node['chef_server']['user']['username']
-  group "root"
-  mode "0600"
-  content webui_key.to_pem.to_s unless File.exists?('/etc/chef-server/webui_pub.pem')
-end
-
-validator_key = OpenSSL::PKey::RSA.generate(2048) unless File.exists?('/etc/chef-server/chef-validator.pem')
-
-file "/etc/chef-server/chef-validator.pem" do
-  owner node['chef_server']['user']['username']
-  group "root"
-  mode "0600"
-  content validator_key.to_pem.to_s unless File.exists?('/etc/chef-server/chef-validator.pem')
-end
-
-unless File.exists?('/etc/chef-server/admin.pem')
-  cert, key = OmnibusHelper.gen_certificate
-end
-
-# TODO - find out where this is used
-file "/etc/chef-server/admin.cert" do
-  owner "root"
-  group "root"
-  mode "0644"
-  content cert.to_s unless File.exists?('/etc/chef-server/admin.pem')
-end
-
-file "/etc/chef-server/admin.pem" do
-  owner node['chef_server']['user']['username']
-  group "root"
-  mode "0600"
-  content key.to_pem.to_s unless File.exists?('/etc/chef-server/admin.pem')
-end
-
 directory "/etc/chef" do
   owner "root"
   group node['chef_server']['user']['username']
