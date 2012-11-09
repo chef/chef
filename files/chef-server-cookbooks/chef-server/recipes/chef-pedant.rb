@@ -39,8 +39,10 @@ template pedant_config do
   owner "root"
   group "root"
   mode  "0755"
-  variables :api_url  => node['chef_server']['nginx']['url'],
-            :solr_url => node['chef_server']['chef-solr']['url'],
-            :superuser_name => superuser_name,
-            :superuser_key => superuser_key
+  variables({
+    :api_url  => node['chef_server']['nginx']['url'],
+    :solr_url => node['chef_server']['chef-solr']['url'],
+    :superuser_name => superuser_name,
+    :superuser_key => superuser_key
+  }.merge(node['chef_server']['chef-pedant'].to_hash))
 end

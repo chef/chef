@@ -94,8 +94,8 @@ requestors({
                }
              }
            })
-<%- if node['chef_server']['chef-pedant']['log_http_requests'] %>
+<%- if @log_http_requests %>
 
 # Log HTTP Requests
-log_file "<%= File.join(node['chef_server']['chef-pedant']['log_directory'], "http-traffic.log") %>"
+log_file "<%= File.join(@log_directory, "http-traffic.log") %>"
 <%- end %>
