@@ -18,6 +18,7 @@
 # limitations under the License.
 
 require 'chef/resource_collection'
+require 'chef/cookbook_version'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
@@ -54,6 +55,11 @@ class Chef
       @loaded_attributes = {}
       @events = events
 
+      @loaded_cookbooks_by_segment = {}
+      CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
+        @loaded_cookbooks_by_segment[segment] = {}
+      end
+
       @node.run_context = self
     end
 
@@ -61,7 +67,8 @@ class Chef
       load_libraries
 
       load_lwrps
-      load_attributes
+      load_attributes_in_run_list_order(run_list_expansion)
+
       load_resource_definitions
 
       @events.recipe_load_start(run_list_expansion.recipes.size)
@@ -172,7 +179,45 @@ class Chef
       @loaded_attributes["#{cookbook}::#{attribute_file}"] = true
     end
 
+    def load_attributes_in_run_list_order(run_list_expansion)
+      @events.attribute_load_start(count_files_by_segment(:attributes))
+      each_cookbook_in_run_list_order(run_list_expansion) do |cookbook|
+        load_attributes_from_cookbook(cookbook)
+      end
+      @events.attribute_load_complete
+    end
+
+    def load_attributes_from_cookbook(cookbook_name)
+      # avoid loading a cookbook again if it's been loaded.
+      return false if @loaded_cookbooks_by_segment[:attributes].key?(cookbook_name)
+      @loaded_cookbooks_by_segment[:attributes][cookbook_name] = true
+      each_cookbook_dep(cookbook_name) do |cookbook_dep|
+        load_attributes_from_cookbook(cookbook_dep)
+      end
+      list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
+      if default_file = list_of_attr_files.find {|path| File.basename(path) == "default.rb" }
+        list_of_attr_files.delete(default_file)
+        load_attribute_file(cookbook_name.to_s, default_file)
+      end
+
+      list_of_attr_files.sort.each do |filename|
+        load_attribute_file(cookbook_name.to_s, filename)
+      end
+    end
+
     private
+
+    def each_cookbook_dep(cookbook_name, &block)
+      cookbook = cookbook_collection[cookbook_name]
+      cookbook.metadata.dependencies.keys.sort.each(&block)
+    end
+
+    def each_cookbook_in_run_list_order(run_list_expansion, &block)
+      cookbook_order = run_list_expansion.recipes.map do |recipe|
+        Chef::Recipe.parse_recipe_name(recipe).first
+      end
+      cookbook_order.uniq.each(&block)
+    end
 
     def loaded_recipe(cookbook, recipe)
       @loaded_recipes["#{cookbook}::#{recipe}"] = true
@@ -231,19 +276,13 @@ class Chef
       end
     end
 
-    def load_attributes
-      @events.attribute_load_start(count_files_by_segment(:attributes))
-      foreach_cookbook_load_segment(:attributes) do |cookbook_name, filename|
-        begin
-          Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-          attr_file_basename = ::File.basename(filename, ".rb")
-          @node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
-        rescue Exception => e
-          @events.attribute_file_load_failed(filename, e)
-          raise
-        end
-      end
-      @events.attribute_load_complete
+    def load_attribute_file(cookbook_name, filename)
+      Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
+      attr_file_basename = ::File.basename(filename, ".rb")
+      @node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
+    rescue Exception => e
+      @events.attribute_file_load_failed(filename, e)
+      raise
     end
 
     def load_resource_definitions
@@ -269,6 +308,10 @@ class Chef
       cookbook_collection.inject(0) do |count, ( cookbook_name, cookbook )|
         count + cookbook.segment_filenames(segment).size
       end
+    end
+
+    def files_in_cookbook_by_segment(cookbook, segment)
+      cookbook_collection[cookbook].segment_filenames(segment)
     end
 
     def foreach_cookbook_load_segment(segment, &block)
