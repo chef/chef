@@ -46,7 +46,7 @@ then
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
 
-mkdir -p chef-solo/cache
+mkdir -p jenkins/chef-solo/cache
 
 export PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
 if ! exists chef-solo;
