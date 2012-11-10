@@ -30,7 +30,7 @@ execute "boostrap-chef-server" do
   not_if { File.exists?(bootstrap_status_file) }
   environment({ 'CHEF_ADMIN_USER' => node['chef_server']['chef-server-webui']['web_ui_admin_user_name'],
                  'CHEF_ADMIN_PASS' => node['chef_server']['chef-server-webui']['web_ui_admin_default_password'] })
-  notifies :restart, 'service[erchef]' if OmnibusHelper.should_notify?("erchef")
+  notifies :restart, 'service[erchef]'
 end
 
 file bootstrap_status_file do
