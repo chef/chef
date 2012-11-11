@@ -109,7 +109,7 @@ describe Chef::Provider::Git do
     it "raises an invalid remote reference error if you try to deploy from ``origin'' and assertions are run" do
       @resource.revision "origin/"
       @provider.action = :checkout
-      @provider.define_resource_requirements 
+      @provider.define_resource_requirements
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
       lambda {@provider.process_resource_requirements}.should raise_error(Chef::Exceptions::InvalidRemoteGitReference)
     end
@@ -118,7 +118,7 @@ describe Chef::Provider::Git do
       @resource.revision "FAIL, that's the revision I want"
       @provider.action = :checkout
       @provider.should_receive(:shell_out!).and_return(mock("ShellOut result", :stdout => "\n"))
-      @provider.define_resource_requirements 
+      @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::UnresolvableGitReference)
     end
 
@@ -128,13 +128,13 @@ describe Chef::Provider::Git do
       @provider.target_revision.should == nil
     end
 
-    it "does not raise an error when the revision is valid and assertions are run." do 
+    it "does not raise an error when the revision is valid and assertions are run." do
       @resource.revision "0.8-alpha"
       @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
       @provider.should_receive(:shell_out!).with(@git_ls_remote + "0.8-alpha*", {:log_tag=>"git[web2.0 app]"}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.action = :checkout
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
-      @provider.define_resource_requirements 
+      @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should_not raise_error(RuntimeError)
     end
 
@@ -224,9 +224,7 @@ SHAS
   end
 
   it "runs a sync command with default options" do
-    conf_tracking_branches =  "git config remote.origin.url git://github.com/opscode/chef.git && " +
-      "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
-    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
+    @provider.should_receive(:setup_remote_tracking_branches)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd=> "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
@@ -235,10 +233,7 @@ SHAS
   it "runs a sync command with the user and group specified in the resource" do
     @resource.user("whois")
     @resource.group("thisis")
-    conf_tracking_branches =  "git config remote.origin.url git://github.com/opscode/chef.git && " +
-      "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
-    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir",
-                                               :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]", :log_level => :debug)
+    @provider.should_receive(:setup_remote_tracking_branches)
     expected_cmd = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(expected_cmd, :cwd => "/my/deploy/dir",
                                                 :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]")
@@ -247,9 +242,7 @@ SHAS
 
   it "configures remote tracking branches when remote is ``origin''" do
     @resource.remote "origin"
-    conf_tracking_branches =  "git config remote.origin.url git://github.com/opscode/chef.git && " +
-      "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
-    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
+    @provider.should_receive(:setup_remote_tracking_branches)
     fetch_command = "git fetch origin && git fetch origin --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_level => :debug, :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
@@ -258,12 +251,32 @@ SHAS
 
   it "configures remote tracking branches when remote is not ``origin''" do
     @resource.remote "opscode"
-    conf_tracking_branches =  "git config remote.opscode.url git://github.com/opscode/chef.git && " +
-                              "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/*"
-    @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
+    @provider.should_receive(:setup_remote_tracking_branches)
     fetch_command = "git fetch opscode && git fetch opscode --tags && git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     @provider.should_receive(:shell_out!).with(fetch_command, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]")
     @provider.fetch_updates
+  end
+
+  context "configuring remote tracking branches" do
+    it "overwrites sets the remote url and fetch config variables" do
+      @resource.remote "opscode"
+      conf_tracking_branches = "git config remote.opscode.url git://github.com/opscode/chef.git && " +
+        "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/*"
+      @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
+      @provider.setup_remote_tracking_branches
+      @provider.converge
+    end
+
+    it "runs the config  with the user and group specified in the resource" do
+      @resource.user("whois")
+      @resource.group("thisis")
+      conf_tracking_branches = "git config remote.origin.url git://github.com/opscode/chef.git && " +
+        "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
+      @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir",
+                                                 :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]", :log_level => :debug)
+      @provider.setup_remote_tracking_branches
+      @provider.converge
+    end
   end
 
   it "raises an error if the git clone command would fail because the enclosing directory doesn't exist" do
@@ -272,7 +285,7 @@ SHAS
   end
 
   it "does a checkout by cloning the repo and then enabling submodules" do
-    # will be invoked in load_current_resource 
+    # will be invoked in load_current_resource
     ::File.stub!(:exist?).with("/my/deploy/dir/.git").and_return(false)
 
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
@@ -302,7 +315,7 @@ SHAS
   end
 
   it "should not checkout if the destination exists or is a non empty directory" do
-    # will be invoked in load_current_resource 
+    # will be invoked in load_current_resource
     ::File.stub!(:exist?).with("/my/deploy/dir/.git").and_return(false)
 
     ::File.stub!(:exist?).with("/my/deploy/dir").and_return(true)
