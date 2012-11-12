@@ -374,6 +374,39 @@ SHAS
       @provider.setup_remote_tracking_branches
       @provider.converge
     end
+
+    it "accepts remote name and url as optional parameters" do
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 1 }
+      remote_name = "new_remote_name"
+      remote_url = "new_remote_url"
+      check_remote_command = "git config --get remote.#{remote_name}.url"
+      @provider.should_receive(:shell_out!).with(check_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :returns => [0,1,2]).and_return(command_response)
+      expected_command = "git remote add #{remote_name} #{remote_url}"
+      @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug)
+      @provider.setup_remote_tracking_branches(remote_name, remote_url)
+      @provider.converge
+    end
+
+    it "doesn't do anything when only remote_name is passed" do
+      @provider.should_not_receive(:shell_out!)
+      @provider.setup_remote_tracking_branches("some_remote")
+      @provider.converge
+    end
+
+    it "doesn't do anything when only remote_name is passed" do
+      @provider.should_not_receive(:shell_out!)
+      @provider.setup_remote_tracking_branches(nil, "remote_url")
+      @provider.converge
+    end
+
   end
 
   it "raises an error if the git clone command would fail because the enclosing directory doesn't exist" do
@@ -496,51 +529,10 @@ SHAS
       command_response = double('shell_out')
       command_response.stub(:exitstatus) { 0 }
       @resource.additional_remotes.each_pair do |remote_name, remote_url|
-        @provider.should_receive(:shell_out).with("git remote add #{remote_name} #{remote_url}",
-                                                   :cwd => "/my/deploy/dir",
-                                                   :log_level => :info,
-                                                   :log_tag => "git[web2.0 app]").and_return(command_response)
+        @provider.should_receive(:setup_remote_tracking_branches).with(remote_name, remote_url)
       end
       @provider.add_remotes
       @provider.converge
     end
-
-    # I'm pretty sure the two following tests are checking implementaton that is wrong
-    # (updated by last revision should be set to true only if adding a branch succeedes)
-    # but for now we are just documenting the current state of the code
-
-    it "sets updated by last action to true if adding a remote fails" do
-      @resource.additional_remotes({:opscode => "opscode_repo_url"})
-      STDOUT.stub(:tty?).and_return(false)
-      command_response = double('shell_out')
-      command_response.stub(:exitstatus) { 128 }
-      @resource.additional_remotes.each_pair do |remote_name, remote_url|
-        @provider.should_receive(:shell_out).with("git remote add #{remote_name} #{remote_url}",
-                                                  :cwd => "/my/deploy/dir",
-                                                  :log_level => :info,
-                                                  :log_tag => "git[web2.0 app]").and_return(command_response)
-      end
-      # one call comes from converge
-      @resource.should_receive(:updated_by_last_action).exactly(2).with(true)
-      @provider.add_remotes
-      @provider.converge
-    end
-
-    it "doesn't change updated by last action if adding a remote succeedes" do
-      @resource.additional_remotes({:opscode => "opscode_repo_url"})
-      STDOUT.stub(:tty?).and_return(false)
-      command_response = double('shell_out')
-      command_response.stub(:exitstatus) { 0 }
-      @resource.additional_remotes.each_pair do |remote_name, remote_url|
-        @provider.should_receive(:shell_out).with("git remote add #{remote_name} #{remote_url}",
-                                                  :cwd => "/my/deploy/dir",
-                                                  :log_level => :info,
-                                                  :log_tag => "git[web2.0 app]").and_return(command_response)
-      end
-      @resource.should_receive(:updated_by_last_action).exactly(1).with(true)
-      @provider.add_remotes
-      @provider.converge
-    end
-
   end
 end

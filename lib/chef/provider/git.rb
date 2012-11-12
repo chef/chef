@@ -128,10 +128,7 @@ class Chef
           @new_resource.additional_remotes.each_pair do |remote_name, remote_url|
             converge_by("add remote #{remote_name} from #{remote_url}") do
               Chef::Log.info "#{@new_resource} adding git remote #{remote_name} = #{remote_url}"
-              command = "git remote add #{remote_name} #{remote_url}"
-              if shell_out(command, run_options(:cwd => @new_resource.destination, :log_level => :info)).exitstatus != 0
-                @new_resource.updated_by_last_action(true)
-              end
+              setup_remote_tracking_branches(remote_name, remote_url)
             end
           end
         end
@@ -186,26 +183,30 @@ class Chef
         end
       end
 
-      def setup_remote_tracking_branches
-        converge_by("set up remote tracking branches for #{@new_resource.repository} at #{@new_resource.remote}") do
-          Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{@new_resource.repository} "+
-                          "at remote #{@new_resource.remote}"
-          check_remote_command = "git config --get remote.#{@new_resource.remote}.url"
+      def setup_remote_tracking_branches(remote_name=nil, remote_url=nil)
+        # We want to make sure that if only one argument is supplied we won't get the other filed out from the resource
+        return if !!remote_name ^ !!remote_url
+        remote_name ||= @new_resource.remote
+        remote_url ||= @new_resource.repository
+        converge_by("set up remote tracking branches for #{remote_url} at #{remote_name}") do
+          Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{remote_url} "+
+            "at remote #{remote_name}"
+          check_remote_command = "git config --get remote.#{remote_name}.url"
           remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
           case remote_status.exitstatus
           when 0
-            unless remote_status.stdout.strip.eql?(@new_resource.repository)
-              update_remote_url_command = "git remote set-url #{@new_resource.remote} #{@new_resource.repository}"
+            unless remote_status.stdout.strip.eql?(remote_url)
+              update_remote_url_command = "git remote set-url #{remote_name} #{remote_url}"
               shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
             end
           when 1
-            add_remote_command = "git remote add #{@new_resource.remote} #{@new_resource.repository}"
+            add_remote_command = "git remote add #{remote_name} #{remote_url}"
             shell_out!(add_remote_command, run_options(:cwd => @new_resource.destination))
           when 2
             # In theory this should not happen unless somebody messed with
             # the checkout manually, but we want to cover all the angles
             # and fix it
-            fix_remote_command = "git config --replace-all remote.#{@new_resource.remote}.url #{@new_resource.repository}"
+            fix_remote_command = "git config --replace-all remote.#{remote_name}.url #{remote_url}"
             shell_out!(fix_remote_command, run_options(:cwd => @new_resource.destination))
           end
         end
