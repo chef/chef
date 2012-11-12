@@ -277,7 +277,7 @@ SHAS
       @provider.converge
     end
 
-    it "runs the config  with the user and group specified in the resource" do
+    it "runs the config with the user and group specified in the resource" do
       @resource.user("whois")
       @resource.group("thisis")
       command_response = double('shell_out')
@@ -319,9 +319,10 @@ SHAS
       @provider.converge
     end
 
-    it "updates remote url when one with the same name exists" do
+    it "updates remote url when one with the same name exists and the url is different" do
       command_response = double('shell_out')
       command_response.stub(:exitstatus) { 0 }
+      command_response.stub(:stdout) { "some_other_url" }
       check_remote_command = "git config --get remote.#{@resource.remote}.url"
       @provider.should_receive(:shell_out!).with(check_remote_command,
                                                  :cwd => "/my/deploy/dir",
@@ -330,6 +331,25 @@ SHAS
                                                  :returns => [0,1,2]).and_return(command_response)
       expected_command = "git remote set-url #{@resource.remote} #{@resource.repository}"
       @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug)
+      @provider.setup_remote_tracking_branches
+      @provider.converge
+    end
+
+    it "doesn't update remote url when one with the same name exists and the url is the same" do
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 0 }
+      command_response.stub(:stdout) { @resource.repository }
+      check_remote_command = "git config --get remote.#{@resource.remote}.url"
+      @provider.should_receive(:shell_out!).with(check_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :returns => [0,1,2]).and_return(command_response)
+      unexpected_command = "git remote set-url #{@resource.remote} #{@resource.repository}"
+      @provider.should_not_receive(:shell_out!).with(unexpected_command,
                                                  :cwd => "/my/deploy/dir",
                                                  :log_tag => "git[web2.0 app]",
                                                  :log_level => :debug)
