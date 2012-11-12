@@ -407,6 +407,7 @@ SHAS
     @provider.should_receive(:clone)
     @provider.should_receive(:checkout)
     @provider.should_receive(:enable_submodules)
+    @provider.should_receive(:add_remotes)
     @provider.run_action(:checkout)
    # @resource.should be_updated
   end
@@ -421,6 +422,7 @@ SHAS
     @provider.should_not_receive(:clone)
     @provider.should_not_receive(:checkout)
     @provider.should_not_receive(:enable_submodules)
+    @provider.should_not_receive(:add_remotes)
     @provider.run_action(:checkout)
     @resource.should_not be_updated
   end
@@ -430,6 +432,7 @@ SHAS
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     @provider.should_receive(:find_current_revision).exactly(2).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_not_receive(:fetch_updates)
+    @provider.should_receive(:add_remotes)
     @provider.run_action(:sync)
     @resource.should_not be_updated
   end
@@ -442,6 +445,7 @@ SHAS
     @provider.stub!(:target_revision).and_return('28af684d8460ba4793eda3e7ac238c864a5d029a')
     @provider.should_receive(:fetch_updates)
     @provider.should_receive(:enable_submodules)
+    @provider.should_receive(:add_remotes)
     @provider.run_action(:sync)
    # @resource.should be_updated
   end
@@ -452,6 +456,7 @@ SHAS
     @provider.stub!(:find_current_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.stub!(:target_revision).and_return('d35af14d41ae22b19da05d7d03a0bafc321b244c')
     @provider.should_not_receive(:fetch_updates)
+    @provider.should_receive(:add_remotes)
     @provider.run_action(:sync)
     @resource.should_not be_updated
   end
@@ -483,4 +488,59 @@ SHAS
     @resource.should be_updated
   end
 
+  describe "calling add_remotes" do
+    it "adds a new remote for each entry in additional remotes hash" do
+      @resource.additional_remotes({:opscode => "opscode_repo_url",
+        :another_repo => "some_other_repo_url"})
+      STDOUT.stub(:tty?).and_return(false)
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 0 }
+      @resource.additional_remotes.each_pair do |remote_name, remote_url|
+        @provider.should_receive(:shell_out).with("git remote add #{remote_name} #{remote_url}",
+                                                   :cwd => "/my/deploy/dir",
+                                                   :log_level => :info,
+                                                   :log_tag => "git[web2.0 app]").and_return(command_response)
+      end
+      @provider.add_remotes
+      @provider.converge
+    end
+
+    # I'm pretty sure the two following tests are checking implementaton that is wrong
+    # (updated by last revision should be set to true only if adding a branch succeedes)
+    # but for now we are just documenting the current state of the code
+
+    it "sets updated by last action to true if adding a remote fails" do
+      @resource.additional_remotes({:opscode => "opscode_repo_url"})
+      STDOUT.stub(:tty?).and_return(false)
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 128 }
+      @resource.additional_remotes.each_pair do |remote_name, remote_url|
+        @provider.should_receive(:shell_out).with("git remote add #{remote_name} #{remote_url}",
+                                                  :cwd => "/my/deploy/dir",
+                                                  :log_level => :info,
+                                                  :log_tag => "git[web2.0 app]").and_return(command_response)
+      end
+      # one call comes from converge
+      @resource.should_receive(:updated_by_last_action).exactly(2).with(true)
+      @provider.add_remotes
+      @provider.converge
+    end
+
+    it "doesn't change updated by last action if adding a remote succeedes" do
+      @resource.additional_remotes({:opscode => "opscode_repo_url"})
+      STDOUT.stub(:tty?).and_return(false)
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 0 }
+      @resource.additional_remotes.each_pair do |remote_name, remote_url|
+        @provider.should_receive(:shell_out).with("git remote add #{remote_name} #{remote_url}",
+                                                  :cwd => "/my/deploy/dir",
+                                                  :log_level => :info,
+                                                  :log_tag => "git[web2.0 app]").and_return(command_response)
+      end
+      @resource.should_receive(:updated_by_last_action).exactly(1).with(true)
+      @provider.add_remotes
+      @provider.converge
+    end
+
+  end
 end
