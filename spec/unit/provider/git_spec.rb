@@ -258,11 +258,21 @@ SHAS
   end
 
   context "configuring remote tracking branches" do
-    it "overwrites sets the remote url and fetch config variables" do
-      @resource.remote "opscode"
-      conf_tracking_branches = "git config remote.opscode.url git://github.com/opscode/chef.git && " +
-        "git config remote.opscode.fetch +refs/heads/*:refs/remotes/opscode/*"
-      @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir", :log_tag => "git[web2.0 app]", :log_level => :debug)
+
+    it "checks if a remote with this name already exists" do
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 1 }
+      expected_command = "git config --get remote.#{@resource.remote}.url"
+      @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :returns => [0,1,2]).and_return(command_response)
+      add_remote_command = "git remote add #{@resource.remote} #{@resource.repository}"
+      @provider.should_receive(:shell_out!).with(add_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug)
       @provider.setup_remote_tracking_branches
       @provider.converge
     end
@@ -270,10 +280,77 @@ SHAS
     it "runs the config  with the user and group specified in the resource" do
       @resource.user("whois")
       @resource.group("thisis")
-      conf_tracking_branches = "git config remote.origin.url git://github.com/opscode/chef.git && " +
-        "git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*"
-      @provider.should_receive(:shell_out!).with(conf_tracking_branches, :cwd => "/my/deploy/dir",
-                                                 :user => "whois", :group => "thisis", :log_tag => "git[web2.0 app]", :log_level => :debug)
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 1 }
+      expected_command = "git config --get remote.#{@resource.remote}.url"
+      @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :user => "whois",
+                                                 :group => "thisis",
+                                                 :returns => [0,1,2]).and_return(command_response)
+      add_remote_command = "git remote add #{@resource.remote} #{@resource.repository}"
+      @provider.should_receive(:shell_out!).with(add_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :user => "whois",
+                                                 :group => "thisis")
+      @provider.setup_remote_tracking_branches
+      @provider.converge
+    end
+
+    it "adds a new remote when one with this name hasn't been configured yet" do
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 1 }
+      check_remote_command = "git config --get remote.#{@resource.remote}.url"
+      @provider.should_receive(:shell_out!).with(check_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :returns => [0,1,2]).and_return(command_response)
+      expected_command = "git remote add #{@resource.remote} #{@resource.repository}"
+      @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug)
+      @provider.setup_remote_tracking_branches
+      @provider.converge
+    end
+
+    it "updates remote url when one with the same name exists" do
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 0 }
+      check_remote_command = "git config --get remote.#{@resource.remote}.url"
+      @provider.should_receive(:shell_out!).with(check_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :returns => [0,1,2]).and_return(command_response)
+      expected_command = "git remote set-url #{@resource.remote} #{@resource.repository}"
+      @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug)
+      @provider.setup_remote_tracking_branches
+      @provider.converge
+    end
+
+    it "resets remote url when it has multiple values" do
+      command_response = double('shell_out')
+      command_response.stub(:exitstatus) { 2 }
+      check_remote_command = "git config --get remote.#{@resource.remote}.url"
+      @provider.should_receive(:shell_out!).with(check_remote_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug,
+                                                 :returns => [0,1,2]).and_return(command_response)
+      expected_command = "git config --replace-all remote.#{@resource.remote}.url #{@resource.repository}"
+      @provider.should_receive(:shell_out!).with(expected_command,
+                                                 :cwd => "/my/deploy/dir",
+                                                 :log_tag => "git[web2.0 app]",
+                                                 :log_level => :debug)
       @provider.setup_remote_tracking_branches
       @provider.converge
     end
