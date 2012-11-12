@@ -194,8 +194,10 @@ class Chef
           remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
           case remote_status.exitstatus
           when 0
-            update_remote_url_command = "git remote set-url #{@new_resource.remote} #{@new_resource.repository}"
-            shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
+            unless remote_status.stdout.strip.eql?(@new_resource.repository)
+              update_remote_url_command = "git remote set-url #{@new_resource.remote} #{@new_resource.repository}"
+              shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
+            end
           when 1
             add_remote_command = "git remote add #{@new_resource.remote} #{@new_resource.repository}"
             shell_out!(add_remote_command, run_options(:cwd => @new_resource.destination))
