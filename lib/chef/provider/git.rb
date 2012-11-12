@@ -186,20 +186,26 @@ class Chef
         end
       end
 
-      # Use git-config to setup a remote tracking branches. Could use
-      # git-remote but it complains when a remote of the same name already
-      # exists, git-config will just silenty overwrite the setting every
-      # time. This could cause wierd-ness in the remote cache if the url
-      # changes between calls, but as long as the repositories are all
-      # based from each other it should still work fine.
       def setup_remote_tracking_branches
-        command = []
         converge_by("set up remote tracking branches for #{@new_resource.repository} at #{@new_resource.remote}") do
           Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{@new_resource.repository} "+
                           "at remote #{@new_resource.remote}"
-          command << "git config remote.#{@new_resource.remote}.url #{@new_resource.repository}"
-          command << "git config remote.#{@new_resource.remote}.fetch +refs/heads/*:refs/remotes/#{@new_resource.remote}/*"
-          shell_out!(command.join(" && "), run_options(:cwd => @new_resource.destination))
+          check_remote_command = "git config --get remote.#{@new_resource.remote}.url"
+          remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
+          case remote_status.exitstatus
+          when 0
+            update_remote_url_command = "git remote set-url #{@new_resource.remote} #{@new_resource.repository}"
+            shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
+          when 1
+            add_remote_command = "git remote add #{@new_resource.remote} #{@new_resource.repository}"
+            shell_out!(add_remote_command, run_options(:cwd => @new_resource.destination))
+          when 2
+            # In theory this should not happen unless somebody messed with
+            # the checkout manually, but we want to cover all the angles
+            # and fix it
+            fix_remote_command = "git config --replace-all remote.#{@new_resource.remote}.url #{@new_resource.repository}"
+            shell_out!(fix_remote_command, run_options(:cwd => @new_resource.destination))
+          end
         end
       end
 
