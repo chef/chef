@@ -73,6 +73,111 @@ shared_examples_for Chef::Client do
     end
   end
 
+  describe "configuring output formatters" do
+    before do
+      @original_config = Chef::Config.configuration
+    end
+
+    after do
+      Chef::Config.configuration.replace(@original_config)
+    end
+    context "when no formatter has been configured" do
+      before do
+        Chef::Config.formatters.clear
+        @client = Chef::Client.new
+      end
+
+      context "and STDOUT is a TTY" do
+        before do
+          Chef::Config[:force_formatter] = false
+          Chef::Config[:force_logger] = false
+          STDOUT.stub!(:tty?).and_return(true)
+        end
+
+        it "configures the :doc formatter" do
+          @client.formatters_for_run.should == [[:doc]]
+        end
+
+        context "and force_logger is set" do
+          before do
+            Chef::Config[:force_logger] = true
+          end
+
+          it "configures the :null formatter" do
+            Chef::Config[:force_logger].should be_true
+            @client.formatters_for_run.should == [[:null]]
+          end
+
+        end
+
+      end
+
+      context "and STDOUT is not a TTY" do
+        before do
+          Chef::Config[:force_formatter] = false
+          STDOUT.stub!(:tty?).and_return(false)
+        end
+
+        it "configures the :null formatter" do
+          @client.formatters_for_run.should == [[:null]]
+        end
+
+        context "and force_formatter is set" do
+          before do
+            Chef::Config[:force_formatter] = true
+          end
+          it "it configures the :doc formatter" do
+            @client.formatters_for_run.should == [[:doc]]
+          end
+        end
+      end
+
+    end
+
+    context "when a formatter is configured" do
+      context "with no output path" do
+        before do
+          Chef::Config.formatters.clear
+          @client = Chef::Client.new
+          Chef::Config.add_formatter(:min)
+        end
+
+        it "does not configure a default formatter" do
+          @client.formatters_for_run.should == [[:min, nil]]
+        end
+
+        it "configures the formatter for STDOUT/STDERR" do
+          configured_formatters = @client.configure_formatters
+          min_formatter = configured_formatters[0]
+          min_formatter.output.out.should == STDOUT
+          min_formatter.output.err.should == STDERR
+        end
+      end
+
+      context "with an output path" do
+        before do
+          Chef::Config.formatters.clear
+          @client = Chef::Client.new
+          @tmpout = Tempfile.open("rspec-for-client-formatter-selection-#{Process.pid}")
+          Chef::Config.add_formatter(:min, @tmpout.path)
+        end
+
+        after do
+          @tmpout.close unless @tmpout.closed?
+          @tmpout.unlink
+        end
+
+        it "configures the formatter for the file path" do
+          configured_formatters = @client.configure_formatters
+          min_formatter = configured_formatters[0]
+          min_formatter.output.out.path.should == @tmpout.path
+          min_formatter.output.err.path.should == @tmpout.path
+        end
+      end
+
+    end
+  end
+
   describe "run" do
 
     it "should identify the node and run ohai, then register the client" do
@@ -283,8 +388,15 @@ describe Chef::Client do
 end
 
 describe "Chef::Client Forked" do
-  it_behaves_like Chef::Client
   before do
+    @original_config = Chef::Config.configuration
     Chef::Config[:client_fork] = true
   end
+
+  after do
+    Chef::Config.configuration.replace(@original_config)
+  end
+
+  it_behaves_like Chef::Client
+
 end

@@ -37,13 +37,14 @@ class Chef::Application::Solo < Chef::Application
   option :formatter,
     :short        => "-F FORMATTER",
     :long         => "--format FORMATTER",
-    :description  => "output format to use"
+    :description  => "output format to use",
+    :proc         => lambda { |format| Chef::Config.add_formatter(format) }
 
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => false,
-    :description  => "Use colored output, defaults to disabled"
+    :default      => true,
+    :description  => "Use colored output, defaults to enabled"
 
   option :log_level,
     :short        => "-l LEVEL",

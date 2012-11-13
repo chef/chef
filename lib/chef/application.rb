@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'pp'
 require 'socket'
 require 'chef/config'
 require 'chef/exceptions'
@@ -99,24 +100,57 @@ class Chef::Application
 
   end
 
-  # Initialize and configure the logger. If the configured log location is not
-  # STDOUT, but stdout is a TTY and we're not daemonizing, we set up a secondary
-  # logger with output to stdout. This way, we magically do the right thing when
-  # the user has configured logging to a file but they're running chef in the
-  # shell to debug something.
+  # Initialize and configure the logger.
   #
-  # If the user has configured a formatter, then we skip the magical logger to
-  # keep the output pretty.
+  # When `log_level` is set to `:auto`, the log level will be `:warn` when
+  # the primary output mode is an output formatter (see
+  # +using_output_formatter?+) and `:info` otherwise.
+  #
+  # When `force_logger` is configured, a second logger with output on STDOUT is
+  # added when running in a console (STDOUT is a tty).
   def configure_logging
-    require 'pp'
     Chef::Log.init(Chef::Config[:log_location])
-    if ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config.formatter == "null")
-      stdout_logger = Logger.new(STDOUT)
-      STDOUT.sync = true
-      stdout_logger.formatter = Chef::Log.logger.formatter
-      Chef::Log.loggers <<  stdout_logger
+    if want_additional_logger?
+      configure_additional_logger
     end
-    Chef::Log.level = Chef::Config[:log_level]
+    Chef::Log.level = resolve_log_level
+  end
+
+  def configure_additional_logger
+    stdout_logger = Logger.new(STDOUT)
+    STDOUT.sync = true
+    stdout_logger.formatter = Chef::Log.logger.formatter
+    Chef::Log.loggers <<  stdout_logger
+  end
+
+  # Based on config and whether or not STDOUT is a tty, should we setup a
+  # secondary logger for stdout?
+  def want_additional_logger?
+    ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config[:force_logger])
+  end
+
+  # Use of output formatters is assumed if `force_formatter` is set or if
+  # `force_logger` is not set and STDOUT is to a console (tty)
+  def using_output_formatter?
+    Chef::Config[:force_formatter] || (!Chef::Config[:force_logger] && STDOUT.tty?)
+  end
+
+  def auto_log_level?
+    Chef::Config[:log_level] == :auto
+  end
+
+  # if log_level is `:auto`, convert it to :warn (when using output formatter)
+  # or :info (no output formatter). See also +using_output_formatter?+
+  def resolve_log_level
+    if auto_log_level?
+      if using_output_formatter?
+        :warn
+      else
+        :info
+      end
+    else
+      Chef::Config[:log_level]
+    end
   end
 
   # Called prior to starting the application, by the run method
