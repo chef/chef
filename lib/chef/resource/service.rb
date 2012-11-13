@@ -40,6 +40,7 @@ class Chef
         @status_command = nil
         @restart_command = nil
         @reload_command = nil
+        @init_command = nil
         @priority = nil
         @action = "nothing"
         @startup_type = :automatic
@@ -103,6 +104,14 @@ class Chef
       def reload_command(arg=nil)
         set_or_return(
           :reload_command,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      def init_command(arg=nil)
+        set_or_return(
+          :init_command,
           arg,
           :kind_of => [ String ]
         )

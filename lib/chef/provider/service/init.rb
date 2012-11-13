@@ -37,9 +37,9 @@ class Chef
           # do not call super here, inherit only shared_requirements
           shared_resource_requirements
           requirements.assert(:start, :stop, :restart, :reload) do |a|
-            a.assertion { ::File.exist?(@init_command) }
-            a.failure_message(Chef::Exceptions::Service, "#{@init_command} does not exist!")
-            a.whyrun("Init script '#{@init_command}' doesn't exist, assuming a prior action would have created it.") do
+            a.assertion { ::File.exist?(default_init_command) }
+            a.failure_message(Chef::Exceptions::Service, "#{default_init_command} does not exist!")
+            a.whyrun("Init script '#{default_init_command}' doesn't exist, assuming a prior action would have created it.") do
               # blindly assume that the service exists but is stopped in why run mode:
               @status_load_success = false
             end
@@ -50,7 +50,7 @@ class Chef
           if @new_resource.start_command
             super
           else
-            shell_out!("#{@init_command} start")
+            shell_out!("#{default_init_command} start")
           end
         end
 
@@ -58,7 +58,7 @@ class Chef
           if @new_resource.stop_command
             super
           else
-            shell_out!("#{@init_command} stop")
+            shell_out!("#{default_init_command} stop")
           end
         end
 
@@ -66,7 +66,7 @@ class Chef
           if @new_resource.restart_command
             super
           elsif @new_resource.supports[:restart]
-            shell_out!("#{@init_command} restart")
+            shell_out!("#{default_init_command} restart")
           else
             stop_service
             sleep 1
@@ -78,7 +78,7 @@ class Chef
           if @new_resource.reload_command
             super
           elsif @new_resource.supports[:reload]
-            shell_out!("#{@init_command} reload")
+            shell_out!("#{default_init_command} reload")
           end
         end
       end
