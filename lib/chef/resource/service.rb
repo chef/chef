@@ -40,6 +40,7 @@ class Chef
         @status_command = nil
         @restart_command = nil
         @reload_command = nil
+        @init_command = nil
         @priority = nil
         @action = "nothing"
         @startup_type = :automatic
@@ -103,6 +104,21 @@ class Chef
       def reload_command(arg=nil)
         set_or_return(
           :reload_command,
+          arg,
+          :kind_of => [ String ]
+        )
+      end
+
+      # The path to the init script associated with the service. On many
+      # distributions this is '/etc/init.d/SERVICE_NAME' by default. In
+      # non-standard configurations setting this value will save having to
+      # specify overrides for the start_command, stop_command and
+      # restart_command attributes.
+      It may be desirable to change
+      # this path and still leverage the other default
+      def init_command(arg=nil)
+        set_or_return(
+          :init_command,
           arg,
           :kind_of => [ String ]
         )

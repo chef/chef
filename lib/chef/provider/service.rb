@@ -153,6 +153,21 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :restart"
       end
 
+      protected
+
+      def default_init_command
+        if @new_resource.init_command
+          @new_resource.init_command
+        elsif self.instance_variable_defined?(:@init_command)
+          @init_command
+        end
+      end
+
+      def custom_command_for_action?(action)
+        method_name = "#{action}_command".to_sym
+        @new_resource.respond_to?(method_name) &&
+          !!@new_resource.send(method_name)
+      end
     end
   end
 end
