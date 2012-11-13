@@ -37,7 +37,9 @@ class Chef
           # do not call super here, inherit only shared_requirements
           shared_resource_requirements
           requirements.assert(:start, :stop, :restart, :reload) do |a|
-            a.assertion { ::File.exist?(default_init_command) }
+            a.assertion do
+              custom_command_for_action?(action) || ::File.exist?(default_init_command)
+            end
             a.failure_message(Chef::Exceptions::Service, "#{default_init_command} does not exist!")
             a.whyrun("Init script '#{default_init_command}' doesn't exist, assuming a prior action would have created it.") do
               # blindly assume that the service exists but is stopped in why run mode:
