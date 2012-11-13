@@ -109,6 +109,17 @@ describe Chef::Resource::Service do
     }.should raise_error(ArgumentError)
   end
   
+  it "should accept a string for the service init command" do
+    @resource.init_command "/etc/init.d/chef"
+    @resource.init_command.should eql("/etc/init.d/chef")
+  end
+
+  it "should not accept a regexp for the service init command" do
+    lambda {
+      @resource.init_command /.*/
+    }.should raise_error(ArgumentError)
+  end
+
   %w{enabled running}.each do |attrib|
     it "should accept true for #{attrib}" do
       @resource.send(attrib, true) 

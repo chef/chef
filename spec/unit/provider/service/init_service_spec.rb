@@ -93,6 +93,19 @@ PS
     
   end
   
+  describe "when an init command has been specified" do
+    before do
+      @new_resource.stub!(:init_command).and_return("/opt/chef-server/service/erchef")
+      @provider = Chef::Provider::Service::Init.new(@new_resource, @run_context)
+    end
+
+    it "should use the init_command if one has been specified" do
+      @provider.should_receive(:shell_out!).with("/opt/chef-server/service/erchef start")
+      @provider.start_service
+    end
+
+  end
+
   describe "when the node has not specified a ps command" do
     
     it "should raise an error if the node has a nil ps attribute" do
