@@ -222,4 +222,14 @@ RUNNING_PS
       @provider.reload_service()
     end
   end
+
+  describe "when a custom command has been specified" do
+    before do
+      @new_resource.start_command("/etc/init.d/chef startyousillysally")
+    end
+
+    it "should still pass all why run assertions" do
+      lambda { @provider.run_action(:start) }.should_not raise_error(Chef::Exceptions::Service)
+    end
+  end
 end

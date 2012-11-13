@@ -163,6 +163,10 @@ class Chef
         end
       end
 
+      def custom_command_for_action?(action)
+        !!@new_resource.send("#{action}_command".to_sym) rescue false
+      end
+
     end
   end
 end
