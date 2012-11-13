@@ -42,7 +42,7 @@ build do
       @major_version = versions[0]
       @minor_version = versions[1]
       @micro_version = versions[2]
-      @build_version = build_version.split("-")[1]
+      @build_version = build_version.split("-")[1] || build_iteration
       
       @guid = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
       
