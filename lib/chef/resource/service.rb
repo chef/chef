@@ -114,8 +114,6 @@ class Chef
       # non-standard configurations setting this value will save having to
       # specify overrides for the start_command, stop_command and
       # restart_command attributes.
-      It may be desirable to change
-      # this path and still leverage the other default
       def init_command(arg=nil)
         set_or_return(
           :init_command,
