@@ -15,13 +15,17 @@
 # limitations under the License.
 #
 
-name "chef-windows"
+name "ruby-windows-devkit"
 
-install_path    "c:\\opscode\\chef"
-build_version   Omnibus::BuildVersion.full
-build_iteration 4
+version "4.5.2-20111229-1559"
 
-dependencies ["ruby-windows",
-              "ruby-windows-devkit",
-              "chef-windows",
-              "chef-client-msi"]
+source :url => "http://cloud.github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-#{version}-sfx.exe",
+       :md5 => "4bf8f2dd1d582c8733a67027583e19a6"
+
+dependencies ["ruby-windows"]
+
+build do
+  command "DevKit-tdm-32-#{version}-sfx.exe -y -oC:\\opscode\\chef\\embedded"
+  command "echo - C:/opscode/chef/embedded > config.yml", :cwd => "C:\\opscode\\chef\\embedded"
+  command "bin\\ruby.exe dk.rb install", :cwd => "C:\\opscode\\chef\\embedded"
+end
