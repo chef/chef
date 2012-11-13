@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 58e1cb8abd127dcbe2eee2f702f47886e722a235
-  branch: master
+  revision: 726e7db50c498018dd16348e428b9898866fa698
+  branch: omnibus-windows
   specs:
     omnibus (0.1)
       fpm (= 0.3.11)
@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 33e5ee618013325d06181fcd4397ed6190348e60
-  branch: master
+  revision: 9701553a7f00cfff8c0f5da6eef95a30829046a1
+  branch: omnibus-windows
   specs:
     omnibus-software (0.0.1)
 
@@ -36,6 +36,8 @@ GEM
     mixlib-config (1.1.2)
     mixlib-log (1.4.1)
     mixlib-shellout (1.1.0)
+    mixlib-shellout (1.1.0-x86-mingw32)
+      win32-process (~> 0.6.5)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-ssh (2.2.2)
@@ -46,7 +48,7 @@ GEM
       mixlib-log
       systemu
       yajl-ruby
-    rake (10.0.2)
+    rake (10.0.0)
     systemu (2.5.2)
     uber-s3 (0.2.4)
       mime-types (~> 1.17)
@@ -59,10 +61,20 @@ GEM
       log4r (~> 1.1.9)
       net-scp (~> 1.0.4)
       net-ssh (~> 2.2.2)
+    win32-api (1.4.8-x86-mingw32)
+    win32-process (0.6.6)
+      windows-pr (>= 1.2.2)
+    windows-api (0.4.2)
+      win32-api (>= 1.4.5)
+    windows-pr (1.2.2)
+      win32-api (>= 1.4.5)
+      windows-api (>= 0.3.0)
     yajl-ruby (1.1.0)
+    yajl-ruby (1.1.0-x86-mingw32)
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   omnibus!
