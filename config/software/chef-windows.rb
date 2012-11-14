@@ -20,7 +20,9 @@ name "chef-windows"
 dependencies ["ruby-windows", #includes rubygems
               "ruby-windows-devkit"]
 
-version "10-stable"
+version begin
+          ENV['CHEF_GIT_REV'] || "10-stable"
+        end
 
 source :git => "git://github.com/opscode/chef"
 
