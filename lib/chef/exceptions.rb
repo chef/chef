@@ -132,7 +132,9 @@ class Chef
     class Win32RegArchitectureIncorrect < RuntimeError; end
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
+    class Win32RegValueMissing < RuntimeError; end
     class Win32RegValueExists < RuntimeError; end
+    class Win32RegTypesMismatch < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
