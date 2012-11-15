@@ -81,7 +81,7 @@ class Chef::EncryptedDataBagItem
     end
 
     def self.format_version_of(encrypted_value)
-      if encrypted_value.respond_to?(:key)
+      if encrypted_value.respond_to?(:key?)
         encrypted_value["version"]
       else
         0
