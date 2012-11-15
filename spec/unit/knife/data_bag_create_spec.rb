@@ -75,6 +75,11 @@ describe Chef::Knife::DataBagCreate do
       @knife.should_receive(:create_object).and_yield(@plain_data)
       data_bag_item = Chef::DataBagItem.from_hash(@enc_data)
       data_bag_item.data_bag("sudoing_admins")
+
+      # Random IV is used each time the data bag item is encrypted, so values
+      # will not be equal if we re-encrypt.
+      Chef::EncryptedDataBagItem.should_receive(:encrypt_data_bag_item).and_return(@enc_data)
+
       @rest.should_receive(:post_rest).with("data", {'name' => 'sudoing_admins'}).ordered
       @rest.should_receive(:post_rest).with("data/sudoing_admins", data_bag_item).ordered
 

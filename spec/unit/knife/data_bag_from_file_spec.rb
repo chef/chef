@@ -142,6 +142,11 @@ describe Chef::Knife::DataBagFromFile do
       @secret = "abc123SECRET"
       @enc_data = Chef::EncryptedDataBagItem.encrypt_data_bag_item(@plain_data,
                                                                    @secret)
+
+      # Random IV is used each time the data bag item is encrypted, so values
+      # will not be equal if we re-encrypt.
+      Chef::EncryptedDataBagItem.should_receive(:encrypt_data_bag_item).and_return(@enc_data)
+
       @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
       @secret_file.puts(@secret)
       @secret_file.flush
