@@ -20,6 +20,7 @@ require 'base64'
 require 'openssl'
 require 'chef/data_bag_item'
 require 'yaml'
+require 'yajl'
 require 'open-uri'
 
 # An EncryptedDataBagItem represents a read-only data bag item where
@@ -123,7 +124,7 @@ class Chef::EncryptedDataBagItem
     # Strings) that do not produce valid JSON when serialized without the
     # wrapper.
     def serialized_data
-      Chef::JSONCompat.to_json(:json_wrapper => plaintext_data)
+      Yajl::Encoder.encode(:json_wrapper => plaintext_data)
     end
   end
 
@@ -170,7 +171,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def for_decrypted_item
-        Chef::JSONCompat.from_json(decrypted_data)["json_wrapper"]
+        Yajl::Parser.parse(decrypted_data)["json_wrapper"]
       end
 
 
