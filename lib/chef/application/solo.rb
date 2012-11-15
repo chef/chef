@@ -207,11 +207,16 @@ class Chef::Application::Solo < Chef::Application
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
       target_file = File.join(recipes_path, 'recipes.tgz')
 
+      verify_mode = OpenSSL::SSL::VERIFY_NONE
+      if Chef::Config[:ssl_verify_mode] == :verify_peer
+        verify_mode = OpenSSL::SSL::VERIFY_PEER
+      end
+
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
-        open(Chef::Config[:recipe_url]) do |r|
+        open(Chef::Config[:recipe_url], :ssl_verify_mode => verify_mode) do |r|
           f.write(r.read)
         end
       end
