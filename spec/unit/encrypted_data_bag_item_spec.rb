@@ -156,10 +156,6 @@ describe Chef::EncryptedDataBagItem do
       @enc_data["nested"]["encrypted_data"].should == encryptor.for_encrypted_item["encrypted_data"]
     end
 
-    it "from_plain_hash" do
-      eh1 = Chef::EncryptedDataBagItem.from_plain_hash(@plain_data, @secret)
-      eh1.class.should == Chef::EncryptedDataBagItem
-    end
   end
 
   describe "decrypting" do

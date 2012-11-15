@@ -264,10 +264,6 @@ class Chef::EncryptedDataBagItem
     @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
   end
 
-  def self.from_plain_hash(plain_hash, secret)
-    self.new(self.encrypt_data_bag_item(plain_hash, secret), secret)
-  end
-
   def self.encrypt_data_bag_item(plain_hash, secret)
     plain_hash.inject({}) do |h, (key, val)|
       h[key] = if key != "id"
