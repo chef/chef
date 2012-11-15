@@ -128,6 +128,12 @@ class Chef
     # of merged attributes will trigger this error.
     class StaleAttributeRead < StandardError; end
 
+    #Registry Helper throws the following errors
+    class Win32RegArchitectureIncorrect < RuntimeError; end
+    class Win32RegHiveMissing < ArgumentError; end
+    class Win32RegKeyMissing < RuntimeError; end
+    class Win32RegValueExists < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 
