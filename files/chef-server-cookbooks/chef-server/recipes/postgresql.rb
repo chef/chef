@@ -54,8 +54,8 @@ if File.directory?("/etc/sysctl.d") && File.exists?("/etc/init.d/procps")
     action :nothing
   end
 
-  template "/etc/sysctl.d/90-postgres.conf" do
-    source "90-postgres.conf.sysctl.erb"
+  template "/etc/sysctl.d/90-postgresql.conf" do
+    source "90-postgresql.conf.sysctl.erb"
     owner "root"
     mode  "0644"
     variables(node['chef_server']['postgresql'].to_hash)
@@ -93,7 +93,7 @@ if node['chef_server']['bootstrap']['enable']
     owner node['chef_server']['postgresql']['username']
     mode "0644"
     variables(node['chef_server']['postgresql'].to_hash)
-    notifies :restart, 'service[postgres]' if OmnibusHelper.should_notify?("postgres")
+    notifies :restart, 'service[postgresql]' if OmnibusHelper.should_notify?("postgresql")
   end
 
   pg_hba_config = File.join(postgresql_data_dir, "pg_hba.conf")
@@ -103,13 +103,13 @@ if node['chef_server']['bootstrap']['enable']
     owner node['chef_server']['postgresql']['username']
     mode "0644"
     variables(node['chef_server']['postgresql'].to_hash)
-    notifies :restart, 'service[postgres]' if OmnibusHelper.should_notify?("postgres")
+    notifies :restart, 'service[postgresql]' if OmnibusHelper.should_notify?("postgresql")
   end
 end
 
-should_notify = OmnibusHelper.should_notify?("postgres")
+should_notify = OmnibusHelper.should_notify?("postgresql")
 
-runit_service "postgres" do
+runit_service "postgresql" do
   down node['chef_server']['postgresql']['ha']
   control(['t'])
   options({
@@ -120,7 +120,7 @@ runit_service "postgres" do
 end
 
 if node['chef_server']['bootstrap']['enable']
-  execute "/opt/chef-server/bin/chef-server-ctl start postgres" do
+  execute "/opt/chef-server/bin/chef-server-ctl start postgresql" do
     retries 20
   end
 
