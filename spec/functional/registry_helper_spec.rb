@@ -73,12 +73,10 @@ describe 'Chef::Win32::Registry', :windows_only do
     hive.should == true
   end
   it "returns false if the hive does not exist" do
-    lambda {@registry.hive_exists?("LYRU\\Software\\Root")}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+    hive = @registry.hive_exists?("LYRU\\Software\\Root")
+    hive.should == false
   end
-  #it "returns false if the system architecture says 32bit but system is 64bit" do
-  #pending
-  #end
-
+  
   #  key_exists
   it "returns true if the key path exists" do
     exists = @registry.key_exists?("HKCU\\Software\\Root\\Branch\\Flower", "i386")
@@ -321,41 +319,44 @@ describe 'Chef::Win32::Registry', :windows_only do
       reg_subkeys.should == subkeys
     end
 
-    #  describe "If the architecture is correct" do
-    #    before(:all) do
-    #      #how to preserve the original ohai and reapply later ?
-    #      ohai_data = {:kernel => {:machine => "i386"}}
-    #      ohai_data.stub!(:all_plugins).and_return(true)
-    #      ohai_data.stub!(:data).and_return(ohai_data)
-    #      Ohai::System.stub!(:new).and_return(ohai_data)
-    #      node = Chef::Node.new
-    #      node.consume_external_attrs(ohai_data, {})
-    #      events = Chef::EventDispatch::Dispatcher.new
-    #      run_context = Chef::RunContext.new(node, {}, events)
-    #      @reg = Chef::Win32::Registry.new(run_context)
-    #    end
-    #    it "returns false if architecture is specified as 64bit but CCR on 32bit" do
-    #      arch = @registry.architecture_correct("x86_64")
-    #      arch.should == false
-    #    end
-    #    it "returns true if architecture specified and architecture of the CCR box matches" do
-    #    end
-    #    it "returns true is architecture is specified as 32bit but CCR on 64 bit" do
-    #    end
-    #    #key_exists
-    #    #it "returns an error if the architecture is wrong" do
-    #  #    lambda {@registry.key_exists?("HKCU\\Software\\Branch\\Flower", "i386")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
-    #     #end
-    #    #
-    #    #create_key
-    #    #create_value
-    #    #update_value
-    #    #get_value
-    #    #delete_Value
-    #    #delete_key
-    #    #has_subkey
-    #    #get_subkey
-    #    #hive_exists
-    #  end
+ #   context "If the architecture is correct" do
+ #     before(:all) do
+ #       #how to preserve the original ohai and reapply later ?
+ #       ohai_data = {:kernel => {:machine => "i386"}}
+ #       ohai_data.stub!(:all_plugins).and_return(true)
+ #       ohai_data.stub!(:data).and_return(ohai_data)
+ #       Ohai::System.stub!(:new).and_return(ohai_data)
+ #       node = Chef::Node.new
+ #       node.consume_external_attrs(ohai_data, {})
+ #       events = Chef::EventDispatch::Dispatcher.new
+ #       run_context = Chef::RunContext.new(node, {}, events)
+ #       @reg = Chef::Win32::Registry.new(run_context)
+ #     end
+ #     it "returns false if architecture is specified as 64bit but CCR on 32bit" do
+ #       arch = @registry.architecture_correct("x86_64")
+ #       arch.should == false
+ #     end
+ #     it "returns true if architecture specified and architecture of the CCR box matches" do
+ #     end
+ #     it "returns true is architecture is specified as 32bit but CCR on 64 bit" do
+ #     end
+ #     #key_exists
+ #     #it "returns an error if the architecture is wrong" do
+ #     #    lambda {@registry.key_exists?("HKCU\\Software\\Branch\\Flower", "i386")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+ #     #end
+ #     #
+ #     #create_key
+ #     #create_value
+ #     #update_value
+ #     #get_value
+ #     #delete_Value
+ #     #delete_key
+ #     #has_subkey
+ #     #get_subkey
+ #     #it "returns false if the system architecture says 32bit but system is 64bit" do
+ #      #pending
+ #     #end
+
+ #   end
 
   end
