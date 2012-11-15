@@ -60,6 +60,10 @@ describe Chef::Knife::DataBagEdit do
                                                                           @secret)
       Chef::DataBagItem.stub!(:load).with('bag_name', 'item_name').and_return(@enc_data)
 
+      # Random IV is used each time the data bag item is encrypted, so values
+      # will not be equal if we encrypt same value twice.
+      Chef::EncryptedDataBagItem.should_receive(:encrypt_data_bag_item).and_return(@enc_edited_data)
+
       @secret_file = Tempfile.new("encrypted_data_bag_secret_file_test")
       @secret_file.puts(@secret)
       @secret_file.flush
