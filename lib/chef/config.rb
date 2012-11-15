@@ -249,6 +249,10 @@ class Chef
     # Where should chef-solo download recipes from?
     recipe_url nil
 
+    # Support AWS credentials for private S3 storage for recipes
+    aws_access_key_id nil
+    aws_secret_access_key nil
+
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions
     # 1.0 and 1.1 are available; however, the chef-server must first be

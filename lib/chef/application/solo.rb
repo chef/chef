@@ -25,6 +25,8 @@ require 'chef/log'
 require 'chef/rest'
 require 'open-uri'
 require 'fileutils'
+require 'cgi'
+require 'base64'
 
 class Chef::Application::Solo < Chef::Application
 
@@ -206,6 +208,28 @@ class Chef::Application::Solo < Chef::Application
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
       target_file = File.join(recipes_path, 'recipes.tgz')
+
+      # Alter recipe_url for dowload from S3
+      if Chef::Config[:recipe_url] =~ %r{^s3[^:/]*://}
+        begin
+          if Chef::Config[:aws_access_key_id].nil? or Chef::Config[:aws_secret_access_key].nil?
+            Chef::Application.fatal!("Please set credentials for S3 download", 1)
+          end
+          region, bucket, key = URI.split(Chef::Config[:recipe_url]).compact
+          recipe_url = "https://#{region}.amazonaws.com/#{bucket}#{key}"
+          expires = Time.now().to_i + 60
+          h = OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new,
+                                   Chef::Config[:aws_secret_access_key],
+                                   "GET\n\n\n#{expires}\n/#{bucket}#{key}")
+          sign = CGI::escape(Base64.encode64(h).strip)
+          Chef::Config[:recipe_url] = recipe_url + 
+                                      "?AWSAccessKeyId=#{Chef::Config[:aws_access_key_id]}" +
+                                      "&Expires=#{expires}" + 
+                                      "&Signature=#{sign}"
+        rescue URI::InvalidURIError
+          Chef::Application.fatal!("Cannot parse S3 URL: #{Chef::Config[:recipe_url]}", 1)
+        end
+      end
 
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p recipes_path
