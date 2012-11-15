@@ -42,9 +42,7 @@ class Chef
 
       def get_values(key_path, architecture)
         hive, key = get_hive_and_key(key_path)
-        unless key_exists?(key_path, architecture)
-          raise Chef::Exceptions::Win32RegKeyMissing, "message"
-        end
+        key_exists!(key_path, architecture)
         values = []
         hive.open(key) do |reg|
           reg.each do |name, type, data|
@@ -56,9 +54,7 @@ class Chef
       end
 
       def update_value(key_path, value, architecture)
-        unless value_exists?(key_path, value, architecture)
-          raise Chef::Exceptions::Win32RegValueMissing, "message"
-        end
+       value_exists!(key_path, value, architecture)
         unless type_matches?(key_path, value, architecture)
           raise Chef::Exceptions::Win32RegTypesMismatch, "message"
         end
@@ -142,24 +138,17 @@ class Chef
 
       def has_subkeys?(key_path, architecture)
         subkeys = nil
-        #    unless key_exists?(key_path, architecture)
-        #      raise Chef::Exceptions::Win32RegKeyMissing, "message"
-        #    end
-        if key_exists?(key_path, architecture)
+        key_exists!(key_path, architecture)
           hive, key = get_hive_and_key(key_path)
           hive.open(key) do |reg|
             reg.each_key{ |key| return true }
           end
           return false
-        end
-        return "Key does not exist"
       end
 
       def get_subkeys(key_path, architecture)
         subkeys = []
-        unless key_exists?(key_path, architecture)
-          raise Chef::Exceptions::Win32RegKeyMissing, "message"
-        end
+        key_exists!(key_path, architecture)
         hive, key = get_hive_and_key(key_path)
         hive.open(key) do |reg|
           reg.each_key{ |current_key| subkeys << current_key }
@@ -182,23 +171,16 @@ class Chef
       end
 
       def key_exists!(key_path, architecture)
-        unless architecture_correct?(architecture)
-          raise Chef::Exceptions::Win32RegArchitectureIncorrect, "message"
-        end
-        hive, key = get_hive_and_key(key_path)
-        begin
-          hive.open(key, ::Win32::Registry::Constants::KEY_READ) do |current_key|
-            return true
-          end
-        rescue Win32::Registry::Error => e
+        unless key_exists?(key_path, architecture)
           raise Chef::Exceptions::Win32RegKeyMissing, "message"
         end
       end
 
       def hive_exists?(key_path)
+        begin
         hive, key = get_hive_and_key(key_path)
         Chef::Log.debug("Registry hive resolved to #{hive}")
-        unless hive
+        rescue Chef::Exceptions::Win32RegHiveMissing => e
           return false
         end
         return true
@@ -224,9 +206,6 @@ class Chef
         unless hive
           raise Chef::Exceptions::Win32RegHiveMissing, "message"
         end
-        #unless hive
-        #  Chef::Application.fatal!("Unsupported registry hive '#{hive_name}'")
-        #end
         return hive, key
       end
 
@@ -238,49 +217,34 @@ class Chef
       end
 
       def value_exists?(key_path, value, architecture)
-        unless key_exists?(key_path, architecture)
-          raise Chef::Exceptions::Win32RegKeyMissing, "message"
+        key_exists!(key_path, architecture)
+        hive, key = get_hive_and_key(key_path)
+        hive.open(key) do |reg|
+          return true if reg.any? {|val| val == value[:name] }
         end
-          hive, key = get_hive_and_key(key_path)
-          hive.open(key) do |reg|
-            reg.each do |val_name|
-              if val_name == value[:name]
-                return true
-              end
-            end
-          end
         return false
       end
 
       def value_exists!(key_path, value, architecture)
-        if key_exists?(key_path, architecture)
-          hive, key = get_hive_and_key(key_path)
-          hive.open(key) do |reg|
-            reg.each do |val_name|
-              if val_name == value[:name]
-                raise Win32RegValueExists, "message"
+        unless value_exists?(key_path, value, architecture)
+          raise Chef::Exceptions::Win32RegValueMissing, "message"
+        end
+      end
+
+      def type_matches?(key_path, value, architecture)
+        value_exists!(key_path, value, architecture)
+        hive, key = get_hive_and_key(key_path)
+        hive.open(key) do |reg|
+          reg.each do |val_name, val_type|
+            if val_name == value[:name]
+              type_new = get_type_from_name(value[:type])
+              if val_type == type_new
+                return true
               end
             end
           end
         end
         return false
-      end
-
-      def type_matches?(key_path, value, architecture)
-        if value_exists?(key_path, value, architecture)
-          hive, key = get_hive_and_key(key_path)
-          hive.open(key) do |reg|
-            reg.each do |val_name, val_type|
-              if val_name == value[:name]
-                type_new = get_type_from_name(value[:type])
-                if val_type == type_new
-                  return true
-                end
-              end
-            end
-          end
-          return false
-        end
       end
 
       def get_type_from_name(val_type)
