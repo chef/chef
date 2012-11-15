@@ -18,6 +18,7 @@
 ###
 # High level options
 ###
+default['chef_server']['version'] = "11.0.0"
 default['chef_server']['notification_email'] = "info@example.com"
 default['chef_server']['database_type'] = "postgresql"
 default['chef_server']['bootstrap']['enable'] = true
