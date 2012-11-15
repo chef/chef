@@ -50,6 +50,126 @@ class Chef::EncryptedDataBagItem
   DEFAULT_SECRET_FILE = "/etc/chef/encrypted_data_bag_secret"
   ALGORITHM = 'aes-256-cbc'
 
+  class UnsupportedEncryptedDataBagItemFormat < StandardError
+  end
+
+  class DecryptionFailure < StandardError
+  end
+
+  #=== Decryptor
+  # For backwards compatibility, Chef implements decryption/deserialization for
+  # older encrypted data bag item formats in addition to the current version.
+  # Each decryption/deserialization strategy is implemented as a class in this
+  # namespace. For convenience the factory method +Decryptor.for()+ can be used
+  # to create an instance of the appropriate strategy for the given encrypted
+  # data bag value.
+  module Decryptor
+
+    # Detects the encrypted data bag item format version and instantiates a
+    # decryptor object for that version. Call #for_decrypted_item on the
+    # resulting object to decrypt and deserialize it.
+    def self.for(encrypted_value, key)
+      case format_version_of(encrypted_value)
+      when 1
+        Version1Decryptor.new(encrypted_value, key)
+      when 0
+        Version0Decryptor.new(encrypted_value, key)
+      else
+        raise UnsupportedEncryptedDataBagItemFormat,
+          "This version of chef does not support encrypted data bag item format version '#{format_version}'"
+      end
+    end
+
+    def self.format_version_of(encrypted_value)
+      if encrypted_value.respond_to?(:key)
+        encrypted_value["version"]
+      else
+        0
+      end
+    end
+
+    class Version1Decryptor
+
+      attr_reader :encrypted_data
+      attr_reader :key
+
+      def initialize(encrypted_data, key)
+        @encrypted_data = encrypted_data
+        @key = key
+      end
+
+      def for_decrypted_item
+        Yajl::Parser.parse(decrypted_data)["json_wrapper"]
+      end
+
+
+      def encrypted_bytes
+        Base64.decode64(@encrypted_data["encrypted_data"])
+      end
+
+      def iv
+        Base64.decode64(@encrypted_data["iv"])
+      end
+
+      def decrypted_data
+        @decrypted_data ||= begin
+          plaintext = openssl_decryptor.update(encrypted_bytes)
+          plaintext << openssl_decryptor.final
+        rescue OpenSSL::Cipher::CipherError => e
+          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect"
+        end
+      end
+
+      def openssl_decryptor
+        @openssl_decryptor ||= begin
+          d = OpenSSL::Cipher::Cipher.new(ALGORITHM)
+          d.decrypt
+          d.key = Digest::SHA256.digest(key)
+          d.iv = iv
+          d
+        end
+      end
+
+    end
+
+    class Version0Decryptor
+
+      attr_reader :encrypted_data
+      attr_reader :key
+
+      def initialize(encrypted_data, key)
+        @encrypted_data = encrypted_data
+        @key = key
+      end
+
+      def for_decrypted_item
+        YAML.load(decrypted_data)
+      end
+
+      def decrypted_data
+        @decrypted_data ||= begin
+          plaintext = openssl_decryptor.update(encrypted_bytes)
+          plaintext << openssl_decryptor.final
+        rescue OpenSSL::Cipher::CipherError => e
+          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect"
+        end
+      end
+
+      def encrypted_bytes
+        Base64.decode64(@encrypted_data)
+      end
+
+      def openssl_decryptor
+        @openssl_decryptor ||= begin
+          d = OpenSSL::Cipher::Cipher.new(ALGORITHM)
+          d.decrypt
+          d.pkcs5_keyivgen(key)
+          d
+        end
+      end
+    end
+  end
+
   def initialize(enc_hash, secret)
     @enc_hash = enc_hash
     @secret = secret
@@ -60,7 +180,7 @@ class Chef::EncryptedDataBagItem
     if key == "id" || value.nil?
       value
     else
-      self.class.decrypt_value(value, @secret)
+      Decryptor.for(value, @secret).for_decrypted_item
     end
   end
 
@@ -88,7 +208,6 @@ class Chef::EncryptedDataBagItem
   end
 
   def self.load(data_bag, name, secret = nil)
-    path = "data/#{data_bag}/#{name}"
     raw_hash = Chef::DataBagItem.load(data_bag, name)
     secret = secret || self.load_secret
     self.new(raw_hash, secret)
@@ -96,10 +215,6 @@ class Chef::EncryptedDataBagItem
 
   def self.encrypt_value(value, key)
     Base64.encode64(self.cipher(:encrypt, value.to_yaml, key))
-  end
-
-  def self.decrypt_value(value, key)
-    YAML.load(self.cipher(:decrypt, Base64.decode64(value), key))
   end
 
   def self.load_secret(path=nil)
