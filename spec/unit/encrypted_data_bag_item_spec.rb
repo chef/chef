@@ -61,6 +61,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       final_data["encrypted_data"].should == encryptor.encrypted_data
       final_data["iv"].should == Base64.encode64(encryptor.iv)
       final_data["version"].should == 1
+      final_data["cipher"].should == "aes-256-cbc"
     end
 
   end
@@ -95,6 +96,16 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
       it "raises a sensible error" do
         lambda { @decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
+    end
+
+    context "and the cipher is not supported" do
+      before do
+        @encrypted_value["cipher"] = "aes-256-foo"
+      end
+
+      it "raises a sensible error" do
+        lambda { @decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::UnsupportedCipher)
       end
     end
 
