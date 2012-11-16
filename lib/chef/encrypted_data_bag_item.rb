@@ -57,6 +57,9 @@ class Chef::EncryptedDataBagItem
   class DecryptionFailure < StandardError
   end
 
+  class UnsupportedCipher < StandardError
+  end
+
   # Implementation class for converting plaintext data bag item values to an
   # encrypted value, including any necessary wrappers and metadata.
   class Encryptor
@@ -85,7 +88,8 @@ class Chef::EncryptedDataBagItem
       {
         "encrypted_data" => encrypted_data,
         "iv" => Base64.encode64(iv),
-        "version" => 1
+        "version" => 1,
+        "cipher" => ALGORITHM
       }
     end
 
@@ -194,11 +198,22 @@ class Chef::EncryptedDataBagItem
 
       def openssl_decryptor
         @openssl_decryptor ||= begin
+          assert_valid_cipher!
           d = OpenSSL::Cipher::Cipher.new(ALGORITHM)
           d.decrypt
           d.key = Digest::SHA256.digest(key)
           d.iv = iv
           d
+        end
+      end
+
+      def assert_valid_cipher!
+        # In the future, chef may support configurable ciphers. For now, only
+        # aes-256-cbc is supported.
+        requested_cipher = @encrypted_data["cipher"]
+        unless requested_cipher == ALGORITHM
+          raise UnsupportedCipher,
+            "Cipher '#{requested_cipher}' is not supported by this version of Chef. Available ciphers: ['#{ALGORITHM}']"
         end
       end
 
