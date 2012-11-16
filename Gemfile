@@ -7,12 +7,6 @@ gem "ronn"
 
 group(:development, :test) do
   gem 'rack'
-  gem 'thin'
-
-  # Eventmachine 1.0.0 is causing functional test failures on Solaris
-  # 9 SPARC. Pinning em to 0.12.10 solves this issue until we can
-  # replace thin with webrat or some other alternative.
-  gem 'eventmachine', '0.12.10', :platforms => :ruby
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd)/)
 #  gem 'awesome_print'

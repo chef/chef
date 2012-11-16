@@ -23,8 +23,6 @@ describe Chef::Knife::CookbookDelete do
   before(:all) do
     @original_config = Chef::Config.hash_dup
 
-    Thin::Logging.silent = true
-
     @server = TinyServer::Manager.new
     @server.start
   end

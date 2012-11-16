@@ -40,7 +40,6 @@ describe Chef::Resource::RemoteFile do
   end
 
   before(:all) do
-    Thin::Logging.silent = false
     @server = TinyServer::Manager.new
     @server.start
     @api = TinyServer::API.instance

@@ -23,8 +23,6 @@ describe Chef::Knife::Exec do
   before(:all) do
     @original_config = Chef::Config.hash_dup
 
-    Thin::Logging.silent = false
-
     @server = TinyServer::Manager.new#(:debug => true)
     @server.start
   end
