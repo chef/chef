@@ -24,7 +24,6 @@ describe Chef::Knife::Ssh do
   before(:all) do
     @original_config = Chef::Config.hash_dup
     Chef::Knife::Ssh.load_deps
-    Thin::Logging.silent = true
     @server = TinyServer::Manager.new
     @server.start
   end
