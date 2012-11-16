@@ -315,6 +315,27 @@ describe Chef::Provider::User::Useradd do
         lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
       end
     end
+
+    context "when in why run mode" do
+      before do
+        @stdout.stub!(:gets).and_return(nil)
+        @stderr.stub!(:gets).and_return("passwd: user 'chef-test' does not exist")
+        @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        Chef::Config[:why_run] = true
+      end
+  
+      after do
+        Chef::Config[:why_run] = false
+      end
+
+      it "should return false if the user does not exist" do
+        @provider.check_lock.should eql(false)
+      end
+
+      it "should not raise an error if the user does not exist" do
+        lambda { @provider.check_lock }.should_not raise_error
+      end
+    end
   end
 
   describe "when locking the user" do
