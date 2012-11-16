@@ -37,15 +37,16 @@ describe TinyServer::API do
 
   it "creates a route for a GET request" do
     @api.get('/foo/bar', 200, 'hello foobar')
-    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => '/foo/bar')
-    response.should == [200, {'Content-Type' => 'application/json'}, 'hello foobar']
+    # WEBrick gives you the full URI with host, Thin only gave the part after scheme+host+port
+    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => 'http://localhost:1974/foo/bar')
+    response.should == [200, {'Content-Type' => 'application/json'}, [ 'hello foobar' ]]
   end
 
   it "creates a route for a request with a block" do
     block_called = false
     @api.get('/bar/baz', 200) { block_called = true; 'hello barbaz' }
-    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => '/bar/baz')
-    response.should == [200, {'Content-Type' => 'application/json'}, 'hello barbaz']
+    response = @api.call("REQUEST_METHOD" => "GET", "REQUEST_URI" => 'http://localhost:1974/bar/baz')
+    response.should == [200, {'Content-Type' => 'application/json'}, [ 'hello barbaz' ]]
     block_called.should be_true
   end
 
