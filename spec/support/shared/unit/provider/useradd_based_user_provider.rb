@@ -335,6 +335,24 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         lambda { provider.check_lock }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
     end
+
+    context "when in why run mode" do
+      before do
+        passwd_status = mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "", :stderr => "passwd: user 'chef-test' does not exist\n")
+        provider.should_receive(:shell_out!).
+          with("passwd", "-S", @new_resource.username, {:returns=>[0, 1]}).
+          and_return(passwd_status)
+        Chef::Config[:why_run] = true
+      end
+  
+      it "should return false if the user does not exist" do
+        provider.check_lock.should eql(false)
+      end
+
+      it "should not raise an error if the user does not exist" do
+        lambda { provider.check_lock }.should_not raise_error
+      end
+    end
   end
 
   describe "when locking the user" do
