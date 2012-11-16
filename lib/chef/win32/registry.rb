@@ -32,40 +32,48 @@ class Chef
     class Registry
 
       attr_accessor :run_context
-      attr_accessor :architecture
+      attr_accessor :architecture, :machine
 
       #@@native_architecture = ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64' ? 0x0100 : 0x0200
 
-      def initialize(run_context=nil, requested_architecture='default')
+      def initialize(run_context=nil, requested_architecture=:machine)
         @run_context = run_context
-        if requested_architecture == 'default'
-          requested_architecture = node[:kernel][:machine]
-          @architecture = requested_architecture
-        else
-          architecture(requested_architecture)
-        end
+        assert_architecture!(requested_architecture)
+        @architecture = architecture_for_request(requested_architecture)
       end
 
       def node
         run_context && run_context.node
       end
 
-      def architecture(requested_architecture)
-        # Returns false if requesting for a 64-bit architecture on a 32-bit system
-        native_architecture = node[:kernel][:machine]
-        #return true if system_architecture == "x86_64"
-        #return (user_architecture == "i386")
-        if native_architecture == "x86_64"
-          @architecture = requested_architecture
-        elsif requested_architecture == "i386"
-          @architecture = requested_architecture
-        else
+      def assert_architecture!(requested_architecture)
+        if native_architecture_32bit? && requested_architecture_64bit?(requested_architecture)
           raise Chef::Exceptions::Win32RegArchitectureIncorrect, "message"
         end
       end
 
+      def native_architecture_32bit?
+        native_architecture == "i386"
+      end
+
+      def requested_architecture_64bit?(requested_architecture)
+        requested_architecture == "x86_64"
+      end
+
+      def native_architecture
+        node[:kernel][:machine]
+      end
+
+      def architecture_for_request(requested_architecture)
+        if requested_architecture == :machine
+          native_architecture
+        else
+          requested_architecture
+        end
+      end
+
       def registry_constant
-        return @architecture == 'x86_64' ? 0x0100 : 0x0200
+        @architecture == 'x86_64' ? 0x0100 : 0x0200
       end
 
       def get_values(key_path)
@@ -92,10 +100,9 @@ class Chef
             if value[:name] == name
               if data != value[:data]
                 reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
-                return true
+                Chef::Log.debug("Value is updated")
               else
-                puts "Data is the same not updated"
-                return "no_action"
+                Chef::Log.debug("Data is the same, value not updated")
               end
             end
           end
@@ -109,6 +116,7 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_ALL_ACCESS | registry_constant) do |reg|
           reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
+          Chef::Log.debug("Created value")
         end
       end
 
@@ -118,19 +126,17 @@ class Chef
               create_missing(key_path)
               hive, key = get_hive_and_key(key_path)
               hive.create key
+              Chef::Log.debug("Key #{key_path} created")
               create_value(key_path, value)
-              return true
             end
           else
             unless key_exists?(key_path)
               hive.create key_path
+              Chef::Log.debug("Key #{key_path} created")
               create_value(key_path, value)
-              return true
             end
-             return true
           end
-        #Chef.log.debug("Key #{key_path} not created")
-        return false
+        Chef::Log.debug("Key #{key_path} not created")
       end
 
       def delete_value(key_path, value)
@@ -139,6 +145,7 @@ class Chef
             hive, key = get_hive_and_key(key_path)
             hive.open(key, ::Win32::Registry::KEY_ALL_ACCESS | registry_constant) do |reg|
               reg.delete_value(value[:name])
+              Chef::Log.debug("Deletes value #{value[:name]}")
             end
           end
         rescue Chef::Exceptions::Win32RegKeyMissing => e
@@ -305,7 +312,6 @@ class Chef
         reg_path = path.split("\\")
         hive_name = reg_path.shift
         key = reg_path.join("\\")
-        return key
       end
 
     end
