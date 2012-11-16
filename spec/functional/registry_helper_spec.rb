@@ -44,10 +44,10 @@ describe 'Chef::Win32::Registry', :windows_only do
     ohai = Ohai::System.new
     ohai.all_plugins
     @node.consume_external_attrs(ohai.data,{})
-    run_context = Chef::RunContext.new(@node, {}, events)
+    @run_context = Chef::RunContext.new(@node, {}, events)
 
     #Create a registry object that has access ot the node previously created
-    @registry = Chef::Win32::Registry.new(run_context, 'x86_64')
+    @registry = Chef::Win32::Registry.new(@run_context, 'x86_64')
   end
 
   #Delete what is left of the registry key-values previously created
@@ -103,7 +103,7 @@ describe 'Chef::Win32::Registry', :windows_only do
 
   #  update_value
   it "updates a value if the key, value exist and type matches and value different" do
-    updated = @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
+    @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
     ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch\\Flower", Win32::Registry::KEY_ALL_ACCESS) do |reg|
       reg.each do |name, type, data|
         if name == 'Petals'
@@ -115,7 +115,8 @@ describe 'Chef::Win32::Registry', :windows_only do
         end
       end
     end
-    updated.should == true && @exists.should == true
+    @exists.should == true
+    #Chef::Log.should_receive(:debug).with("Value is updated")
     end
     it "gives an error if key and value exists and type does not match" do
       lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Yellow"})}.should raise_error(Chef::Exceptions::Win32RegTypesMismatch)
@@ -123,9 +124,20 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "gives an error if key exists and value does not" do
       lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegValueMissing)
     end
-    it "does nothing if all parameters are same" do
-      updated = @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
-      updated.should == "no_action"
+    it "does nothing if data,type and name parameters for  the value are same" do
+      @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch\\Flower", Win32::Registry::KEY_ALL_ACCESS) do |reg|
+        reg.each do |name, type, data|
+          if name == 'Petals'
+            if data == ["Yellow", "Changed Color"]
+              @exists=true
+            else
+              @exists=false
+            end
+          end
+        end
+        #Chef::Log.should_receive("Data is the same, value not updated")
+      end
     end
     it "gives an error if the key does not exist" do
       lambda {@registry.update_value("HKCU\\Software\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
@@ -172,7 +184,7 @@ describe 'Chef::Win32::Registry', :windows_only do
           end
         end
       end
-      created.should == false && @exists.should == false
+      @exists.should == false
     end
     it "creates the key_path if the keys were missing but recursive was set to true" do
       @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, true)
@@ -338,32 +350,35 @@ describe 'Chef::Win32::Registry', :windows_only do
       reg_subkeys.should == subkeys
     end
 
- #   context "If the architecture is correct" do
- #     before(:all) do
- #       #how to preserve the original ohai and reapply later ?
- #       ohai_data = {:kernel => {:machine => "i386"}}
- #       ohai_data.stub!(:all_plugins).and_return(true)
- #       ohai_data.stub!(:data).and_return(ohai_data)
- #       Ohai::System.stub!(:new).and_return(ohai_data)
- #       node = Chef::Node.new
- #       node.consume_external_attrs(ohai_data, {})
- #       events = Chef::EventDispatch::Dispatcher.new
- #       run_context = Chef::RunContext.new(node, {}, events)
- #       @reg = Chef::Win32::Registry.new(run_context)
- #     end
- #     it "returns false if architecture is specified as 64bit but CCR on 32bit" do
- #       arch = @registry.architecture_correct("x86_64")
- #       arch.should == false
- #     end
- #     it "returns true if architecture specified and architecture of the CCR box matches" do
- #     end
- #     it "returns true is architecture is specified as 32bit but CCR on 64 bit" do
- #     end
+    it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
+      @registry.registry_constant == 0x0100
+    end
+
+   # it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
+   #   reg = Chef::Win32::Registry.new(@run_context, "i386")
+   #   reg.registry_constant = 0x0100
+   # end
+
+    context "If the architecture is correct" do
+      before(:all) do
+        #       #how to preserve the original ohai and reapply later ?
+        node = Chef::Node.new
+        node.automatic_attrs[:kernel][:machine] = "i386"
+        events = Chef::EventDispatch::Dispatcher.new
+        @rc = Chef::RunContext.new(node, {}, events)
+      end
+      it "returns false if architecture is specified as 64bit but CCR on 32bit" do
+        lambda {Chef::Win32::Registry.new(@rc, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+      end
+      it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
+        reg = Chef::Win32::Registry.new(@rc, "i386")
+        reg.registry_constant == 0x0200
+      end
+ #     
  #     #key_exists
  #     #it "returns an error if the architecture is wrong" do
  #     #    lambda {@registry.key_exists?("HKCU\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
  #     #end
- #     #
  #     #create_key
  #     #create_value
  #     #update_value
@@ -376,6 +391,6 @@ describe 'Chef::Win32::Registry', :windows_only do
  #      #pending
  #     #end
 
- #   end
+    end
 
   end
