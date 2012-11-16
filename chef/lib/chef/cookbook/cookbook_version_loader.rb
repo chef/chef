@@ -104,7 +104,7 @@ class Chef
       end
 
       def empty?
-        @cookbook_settings.values.all? do |files_hash| files_hash.empty? end
+        @cookbook_settings.values.all? { |files_hash| files_hash.empty? }
       end
 
       def merge!(other_cookbook_loader)
