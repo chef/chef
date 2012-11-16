@@ -81,7 +81,7 @@ cp omnibus.rb.example omnibus.rb
 export PATH=/usr/local/bin:$PATH
 bundle install
 
-rake "projects:${project_name}"
+bundle exec rake "projects:${project_name}"
 
 # Sign the package on some platforms:
 if exists rpm;
