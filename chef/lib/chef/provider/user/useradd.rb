@@ -49,7 +49,15 @@ class Chef
         
         def check_lock
           status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
-            status_line = stdout.gets.split(' ')
+            output = stdout.gets
+            if whyrun_mode? && output.nil? && stderr.gets.match(/does not exist/)
+              # if we're in whyrun mode and the user is not yet created we assume it would be
+              return false
+            end
+
+            raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if output.nil?
+
+            status_line = output.split(' ')
             case status_line[1]
             when /^P/
               @locked = false
