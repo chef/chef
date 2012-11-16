@@ -60,7 +60,8 @@ class Version1Encryptor
     {
       "encrypted_data" => encrypted_data,
       "iv" => Base64.encode64(iv),
-      "version" => 1
+      "version" => 1,
+      "cipher" => ALGORITHM
     }
   end
 
@@ -132,6 +133,16 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
       it "raises a sensible error" do
         lambda { @decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
+    end
+
+    context "and the cipher is not supported" do
+      before do
+        @encrypted_value["cipher"] = "aes-256-foo"
+      end
+
+      it "raises a sensible error" do
+        lambda { @decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::UnsupportedCipher)
       end
     end
 
