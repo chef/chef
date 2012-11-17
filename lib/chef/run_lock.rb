@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef/mixin/create_path'
+
 class Chef
 
   # == Chef::RunLock
@@ -24,6 +26,8 @@ class Chef
   # Used by Chef::Client to ensure only one instance of chef-client (or solo)
   # is modifying the system at a time.
   class RunLock
+    include Chef::Mixin::CreatePath
+
     attr_reader :runlock
     attr_reader :runlock_file
 
@@ -48,6 +52,8 @@ class Chef
     #
     # The implementation is based on File#flock (see also: flock(2)).
     def acquire
+      # ensure the runlock_file path exists
+      create_path(File.dirname(runlock_file))
       @runlock = File.open(runlock_file,'w+')
       unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
         # Another chef client running...

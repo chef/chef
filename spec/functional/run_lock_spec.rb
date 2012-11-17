@@ -22,9 +22,22 @@ describe Chef::RunLock do
 
   # This behavior is believed to work on windows, but the tests use UNIX APIs.
   describe "when locking the chef-client run", :unix_only => true do
+    let(:random_temp_root){ "/tmp/#{Random.rand(Time.now.to_i + Process.pid)}" }
+
+    let(:file_cache_path){ "/var/chef/cache" }
+    let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
+
+    after(:each){ FileUtils.rm_r(random_temp_root) }
+
+    it "creates the full path to the lockfile" do
+      run_lock = Chef::RunLock.new(:file_cache_path => file_cache_path, :lockfile => lockfile)
+      lambda { run_lock.acquire }.should_not raise_error(Errno::ENOENT)
+      File.should exist(lockfile)
+    end
+
     it "allows only one chef client run per lockfile" do
       read, write = IO.pipe
-      run_lock = Chef::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
+      run_lock = Chef::RunLock.new(:file_cache_path => file_cache_path, :lockfile => lockfile)
       p1 = fork do
         run_lock.acquire
         write.puts 1
@@ -56,7 +69,7 @@ describe Chef::RunLock do
 
     it "clears the lock if the process dies unexpectedly" do
       read, write = IO.pipe
-      run_lock = Chef::RunLock.new(:file_cache_path => "/var/chef/cache", :lockfile => "/tmp/chef-client-running.pid")
+      run_lock = Chef::RunLock.new(:file_cache_path => file_cache_path, :lockfile => lockfile)
       p1 = fork do
         run_lock.acquire
         write.puts 1
