@@ -29,12 +29,16 @@ shared_context "setup correct permissions" do
       before :each do
         File.chown(Etc.getpwnam('nobody').uid, 1337, path)
         File.chmod(0776, path)
+        now = Time.now.to_i
+        File.utime(now - 9000, now - 9000, path)
       end
     end
 
     context "without root", :requires_unprivileged_user do
       before :each do
         File.chmod(0776, path)
+        now = Time.now.to_i
+        File.utime(now - 9000, now - 9000, path)
       end
     end
   end
