@@ -24,7 +24,13 @@ describe Chef::Resource::RemoteFile do
 
   let(:file_base) { "remote_file_spec" }
   let(:source) { 'http://localhost:9000/nyan_cat.png' }
-  let(:expected_content) { IO.read(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png')) }
+  let(:expected_content) do
+    content = File.open(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png'), "rb") do |f|
+      f.read
+    end
+    content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
+    content
+  end
 
   def create_resource
     node = Chef::Node.new
@@ -45,7 +51,9 @@ describe Chef::Resource::RemoteFile do
     @api = TinyServer::API.instance
     @api.clear
     @api.get("/nyan_cat.png", 200) {
-      IO.read(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png'))
+      File.open(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png'), "rb") do |f|
+        f.read
+      end
     }
   end
 

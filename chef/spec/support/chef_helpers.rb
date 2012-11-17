@@ -50,3 +50,16 @@ def make_tmpname(prefix_suffix, n)
   path << "-#{n}" if n
   path << suffix
 end
+
+# NOTE:
+# This is a temporary fix to get tests passing on systems that have no `diff`
+# until we can replace shelling out to `diff` with ruby diff-lcs
+def has_diff?
+  begin
+    diff_cmd = Mixlib::ShellOut.new("diff -v")
+    diff_cmd.run_command
+    true
+  rescue Errno::ENOENT
+    false
+  end
+end
