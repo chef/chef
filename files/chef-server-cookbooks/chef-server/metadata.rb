@@ -9,3 +9,5 @@ recipe            "chef-server", "Configures the Chef Server from Omnibus"
 %w{ ubuntu debian redhat centos }.each do |os|
   supports os
 end
+
+depends "runit"

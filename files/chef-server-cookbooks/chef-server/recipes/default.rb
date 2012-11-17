@@ -37,7 +37,7 @@ else
 end
 
 if File.exists?("/var/opt/chef-server/bootstrapped")
-	node['chef_server']['bootstrap']['enable'] = false
+	node.set['chef_server']['bootstrap']['enable'] = false
 end
 
 # Create the Chef User
