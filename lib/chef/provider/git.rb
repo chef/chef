@@ -27,7 +27,7 @@ class Chef
     class Git < Chef::Provider
 
       include Chef::Mixin::ShellOut
-      
+
       def whyrun_supported?
         true
       end
@@ -41,7 +41,7 @@ class Chef
       end
 
       def define_resource_requirements
-        # Parent directory of the target must exist. 
+        # Parent directory of the target must exist.
         requirements.assert(:checkout, :sync) do |a|
           dirname = ::File.dirname(@new_resource.destination)
           a.assertion { ::File.directory?(dirname) }
@@ -61,16 +61,16 @@ class Chef
         end
 
         requirements.assert(:all_actions) do |a|
-          # this can't be recovered from in why-run mode, because nothing that 
-          # we do in the course of a run is likely to create a valid target_revision 
+          # this can't be recovered from in why-run mode, because nothing that
+          # we do in the course of a run is likely to create a valid target_revision
           # if we can't resolve it up front.
           a.assertion { target_revision != nil }
-          a.failure_message Chef::Exceptions::UnresolvableGitReference, 
+          a.failure_message Chef::Exceptions::UnresolvableGitReference,
             "Unable to parse SHA reference for '#{@new_resource.revision}' in repository '#{@new_resource.repository}'. " +
-            "Verify your (case-sensitive) repository URL and revision.\n" + 
+            "Verify your (case-sensitive) repository URL and revision.\n" +
             "`git ls-remote` output: #{@resolved_reference}"
         end
-      end 
+      end
 
       def action_checkout
         if target_dir_non_existent_or_empty?
@@ -85,7 +85,7 @@ class Chef
 
       def action_export
         action_checkout
-        converge_by("complete the export by removing #{@new_resource.destination}.git after checkout") do 
+        converge_by("complete the export by removing #{@new_resource.destination}.git after checkout") do
           FileUtils.rm_rf(::File.join(@new_resource.destination,".git"))
         end
       end
@@ -134,7 +134,7 @@ class Chef
         end
       end
 
-      def clone 
+      def clone
         converge_by("clone from #{@new_resource.repository} into #{@new_resource.destination}") do
           remote = @new_resource.remote
 
@@ -164,7 +164,6 @@ class Chef
             Chef::Log.info "#{@new_resource} synchronizing git submodules"
             command = "git submodule sync"
             shell_out!(command, run_options(:cwd => @new_resource.destination))
-
             Chef::Log.info "#{@new_resource} enabling git submodules"
             # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
             command = "git submodule update --init --recursive"
