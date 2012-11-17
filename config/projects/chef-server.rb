@@ -25,14 +25,14 @@ build_iteration "1"
 deps = []
 
 # global
-deps << "chef"
-deps << "preparation"
-deps << "chef-server-cookbooks"
-deps << "chef-server-scripts"
-deps << "chef-server-ctl"
-deps << "nginx"
+deps << "chef" # for embedded chef-solo
+deps << "preparation" # creates required build directories
+deps << "chef-server-cookbooks" # used by chef-server-ctl reconfigure
+deps << "chef-server-scripts" # assorted scripts used by installed instance
+deps << "chef-server-ctl" # additional project-specific chef-server-ctl subcommands
+deps << "nginx" # load balacning
 deps << "runit"
-deps << "unicorn"
+deps << "unicorn" # serves up Rack apps (chef-server-webui)
 
 # the backend
 deps << "postgresql"
@@ -40,12 +40,14 @@ deps << "mysql2"
 deps << "rabbitmq"
 deps << "chef-solr"
 deps << "chef-expander"
-deps << "bookshelf"
+deps << "bookshelf" # S3 API compatible object store
 
 # the front-end services
-deps << "erchef"
-deps << "chef-pedant"
+deps << "erchef" # the actual Chef Server REST API
 deps << "chef-server-webui"
+
+# integration testing
+deps << "chef-pedant" # test ALL THE THINGS!
 
 # version manifest file
 deps << "version-manifest"
