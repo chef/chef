@@ -78,6 +78,13 @@ shared_examples_for "a file resource" do
    # note the stripping of the drive letter from the tmpdir on windows
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
+  def binread(file)
+    content = File.open(file, "rb") do |f|
+      f.read
+    end
+    content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
+  end
+
   context "when the target file does not exist" do
     it "creates the file when the :create action is run" do
       resource.run_action(:create)
@@ -86,12 +93,12 @@ shared_examples_for "a file resource" do
 
     it "creates the file with the correct content when the :create action is run" do
       resource.run_action(:create)
-      IO.read(path).should == expected_content
+      binread(path).should == expected_content
     end
 
     it "creates the file with the correct content when the :create_if_missing action is run" do
       resource.run_action(:create_if_missing)
-      IO.read(path).should == expected_content
+      binread(path).should == expected_content
     end
 
     it "deletes the file when the :delete action is run" do
@@ -112,7 +119,7 @@ shared_examples_for "a file resource" do
 
   context "when the target file has the wrong content" do
     before(:each) do
-      File.open(path, "w") { |f| f.print "This is so wrong!!!" }
+      File.open(path, "wb") { |f| f.print "This is so wrong!!!" }
       @expected_mtime = File.stat(path).mtime
       @expected_checksum = sha256_checksum(path)
     end
@@ -136,7 +143,7 @@ shared_examples_for "a file resource" do
 
   context "when the target file has the correct content" do
     before(:each) do
-      File.open(path, "w") { |f| f.print expected_content }
+      File.open(path, "wb") { |f| f.print expected_content }
       @expected_mtime = File.stat(path).mtime
       @expected_atime = File.stat(path).atime
       @expected_checksum = sha256_checksum(path)

@@ -342,10 +342,12 @@ describe Chef::Provider::File do
     end
 
     it "should call action create if the does not file exist" do
-      @resource.path("/tmp/non_existant_file")
+      @resource.path("/tmp/example-dir/non_existant_file")
       @provider = Chef::Provider::File.new(@resource, @run_context)
       @provider.should_receive(:diff_current_from_content).and_return("")
       ::File.stub!(:exists?).with(@resource.path).and_return(false)
+      ::File.stub!(:directory?).with("/tmp/example-dir/non_existant_file").and_return(false)
+      ::File.stub!(:directory?).with("/tmp/example-dir").and_return(true)
       @provider.stub!(:update_new_file_state)
       io = StringIO.new
       File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
@@ -355,7 +357,7 @@ describe Chef::Provider::File do
     end
   end
 
-  describe "when a diff is requested" do
+  describe "when a diff is requested", :uses_diff => true do
 
     before(:each) do
       @original_config = Chef::Config.hash_dup
