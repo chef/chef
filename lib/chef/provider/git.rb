@@ -194,20 +194,17 @@ class Chef
           check_remote_command = "git config --get remote.#{remote_name}.url"
           remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
           case remote_status.exitstatus
-          when 0
-            unless remote_status.stdout.strip.eql?(remote_url)
-              update_remote_url_command = "git remote set-url #{remote_name} #{remote_url}"
+          when 0, 2
+            # In theory 2 should not happen unless somebody messed with
+            # the checkout manually, but using --replace-all option will fix it
+
+            unless remote_status.exitstatus != 2 && remote_status.stdout.strip.eql?(remote_url)
+              update_remote_url_command = "git config --replace-all remote.#{remote_name}.url #{remote_url}"
               shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
             end
           when 1
             add_remote_command = "git remote add #{remote_name} #{remote_url}"
             shell_out!(add_remote_command, run_options(:cwd => @new_resource.destination))
-          when 2
-            # In theory this should not happen unless somebody messed with
-            # the checkout manually, but we want to cover all the angles
-            # and fix it
-            fix_remote_command = "git config --replace-all remote.#{remote_name}.url #{remote_url}"
-            shell_out!(fix_remote_command, run_options(:cwd => @new_resource.destination))
           end
         end
       end
