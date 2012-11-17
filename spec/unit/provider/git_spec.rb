@@ -329,7 +329,7 @@ SHAS
                                                  :log_tag => "git[web2.0 app]",
                                                  :log_level => :debug,
                                                  :returns => [0,1,2]).and_return(command_response)
-      expected_command = "git remote set-url #{@resource.remote} #{@resource.repository}"
+      expected_command = "git config --replace-all remote.#{@resource.remote}.url #{@resource.repository}"
       @provider.should_receive(:shell_out!).with(expected_command,
                                                  :cwd => "/my/deploy/dir",
                                                  :log_tag => "git[web2.0 app]",
@@ -348,7 +348,7 @@ SHAS
                                                  :log_tag => "git[web2.0 app]",
                                                  :log_level => :debug,
                                                  :returns => [0,1,2]).and_return(command_response)
-      unexpected_command = "git remote set-url #{@resource.remote} #{@resource.repository}"
+      unexpected_command = "git config --replace-all remote.#{@resource.remote}.url #{@resource.repository}"
       @provider.should_not_receive(:shell_out!).with(unexpected_command,
                                                  :cwd => "/my/deploy/dir",
                                                  :log_tag => "git[web2.0 app]",
