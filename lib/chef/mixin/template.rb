@@ -29,6 +29,22 @@ class Chef
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
                 "include a node variable if you plan to use it."
         end
+
+        def render(partial_name, variables = nil)
+          raise "You cannot render partials in this context" unless @partial_resolver
+
+          if variables
+            context = {}
+            context.merge!(variables)
+            context[:node] = node
+          else
+            context = self.dup
+          end
+
+          template_location = @partial_resolver.call(partial_name)
+          eruby = Erubis::Eruby.new(IO.read(template_location))
+          output = eruby.evaluate(context)
+        end
       end
       
       ::Erubis::Context.send(:include, ChefContext)
