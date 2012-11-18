@@ -30,10 +30,10 @@ class Chef
                 "include a node variable if you plan to use it."
         end
 
-        def render(partial_name, variables = nil)
-          raise "You cannot render partials in this context" unless @partial_resolver
+        def render(partial_name, options = {})
+          raise "You cannot render partials in this context" unless @template_finder
 
-          if variables
+          if variables = options.delete(:variables)
             context = {}
             context.merge!(variables)
             context[:node] = node
@@ -41,7 +41,7 @@ class Chef
             context = self.dup
           end
 
-          template_location = @partial_resolver.call(partial_name)
+          template_location = @template_finder.find(partial_name, options)
           eruby = Erubis::Eruby.new(IO.read(template_location))
           output = eruby.evaluate(context)
         end

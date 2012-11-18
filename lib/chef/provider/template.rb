@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'chef/provider/template_finder'
 require 'chef/provider/file'
 require 'chef/mixin/template'
 require 'chef/mixin/checksum'
@@ -77,15 +78,15 @@ class Chef
         end  
       end
 
+      def template_finder
+        @template_finder ||= begin
+          TemplateFinder.new(run_context, cookbook_name, node)
+        end
+      end
 
       def template_location
         @template_file_cache_location ||= begin
-          if @new_resource.local
-            @new_resource.source
-          else
-            cookbook = run_context.cookbook_collection[resource_cookbook]
-            cookbook.preferred_filename_on_disk_location(node, :templates, @new_resource.source)
-          end
+          template_finder.find(@new_resource.source, :local => @new_resource.local, :cookbook => @new_resource.cookbook)
         end
       end
 
@@ -109,10 +110,7 @@ class Chef
         context = {}
         context.merge!(@new_resource.variables)
         context[:node] = node
-        context[:partial_resolver] = lambda do
-          cookbook = _run_context.cookbook_collection[resource_cookbook]
-          partial_location = cookbook.preferred_filename_on_disk_location(node, :templates, partial_name)
-        end
+        context[:template_finder] = template_finder
         render_template(IO.read(template_location), context, &block)
       end
 
