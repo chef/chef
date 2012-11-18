@@ -16,7 +16,7 @@
 #
 
 name "chef-expander"
-version ENV["CHEF_GIT_REV"] || "master"
+version "master"
 
 dependencies ["ruby", "bundler", "rsync"]
 
