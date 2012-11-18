@@ -66,21 +66,61 @@ describe Chef::Mixin::Template, "render_template" do
       @provider.current_resource = @current_resource
       @access_controls = mock("access controls")
       @provider.stub!(:access_controls).and_return(@access_controls)
+
+      @template_context = {}
+      @template_context[:node] = @node
+      @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, @resource.cookbook_name, @node)
     end
 
     it "should provide a render method" do
-      _run_context = @run_context
-      context = {}
-      context[:node] = @node
-      context[:partial_resolver] = lambda do |partial_name|
-        @provider.instance_eval do
-          cookbook = run_context.cookbook_collection[resource_cookbook]
-          partial_location = cookbook.preferred_filename_on_disk_location(node, :templates, partial_name)
+      @provider.render_template("before {<%= render 'test.erb' %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {We could be diving for pearls!\n} after"
+      end
+    end
+
+    it "should render local files" do
+      begin
+        tf = Tempfile.new("partial")
+        tf.puts "test"
+        tf.rewind
+
+        @provider.render_template("before {<%= render '#{tf.path}', :local => true %>} after", @template_context) do |tmp|
+          tmp.open.read.should == "before {test\n} after"
         end
+      ensure
+        tf.close
+      end
+    end
+
+    it "should render partials from a different cookbook" do
+      @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
+
+      @provider.render_template("before {<%= render 'test.erb', :cookbook => 'openldap' %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {We could be diving for pearls!\n} after"
+      end
+    end
+
+    it "should pass the node to partials" do
+      @node.normal[:slappiness] = "happiness"
+
+      @provider.render_template("before {<%= render 'openldap_stuff.conf.erb' %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {slappiness is happiness} after"
+      end
+    end
+
+    it "should pass variables to partials" do
+      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {super secret is whatever} after"
+      end
+    end
+
+    it "should pass nil for missing variables in partials" do
+      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {} %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {super secret is } after"
       end
 
-      @provider.render_template("before {<%= render 'test.erb' %>} after", context) do |tmp|
-        tmp.open.read.should == "before {We could be diving for pearls!\n} after"
+      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {super secret is } after"
       end
     end
   end
