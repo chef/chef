@@ -108,9 +108,25 @@ describe Chef::Mixin::Template, "render_template" do
       end
     end
 
+    it "should pass the original variables to partials" do
+      @template_context[:secret] = 'candy'
+
+      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb' %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {super secret is candy} after"
+      end
+    end
+
     it "should pass variables to partials" do
       @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'whatever' } %>} after", @template_context) do |tmp|
         tmp.open.read.should == "before {super secret is whatever} after"
+      end
+    end
+
+    it "should pass variables to partials even if they are named the same" do
+      @template_context[:secret] = 'one'
+
+      @provider.render_template("before {<%= render 'openldap_variable_stuff.conf.erb', :variables => {:secret => 'two' } %>} after <%= @secret %>", @template_context) do |tmp|
+        tmp.open.read.should == "before {super secret is two} after one"
       end
     end
 
