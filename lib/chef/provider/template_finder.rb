@@ -28,7 +28,9 @@ class Chef
       end
 
       def find(template_name, options = {})
-        return template_name if options[:local]
+        if options[:local]
+          return options[:source] ? options[:source] : template_name
+        end
 
         cookbook_name = options[:cookbook] ? options[:cookbook] : @cookbook_name
 
