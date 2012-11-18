@@ -36,7 +36,8 @@ class Chef
           if variables = options.delete(:variables)
             context = {}
             context.merge!(variables)
-            context[:node] = node
+            context[:node] = @node
+            context[:template_finder] = @template_finder
           else
             context = self.dup
           end
