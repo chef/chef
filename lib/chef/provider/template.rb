@@ -109,6 +109,10 @@ class Chef
         context = {}
         context.merge!(@new_resource.variables)
         context[:node] = node
+        context[:partial_resolver] = lambda do
+          cookbook = _run_context.cookbook_collection[resource_cookbook]
+          partial_location = cookbook.preferred_filename_on_disk_location(node, :templates, partial_name)
+        end
         render_template(IO.read(template_location), context, &block)
       end
 
