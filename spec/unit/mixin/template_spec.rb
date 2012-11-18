@@ -153,6 +153,14 @@ describe Chef::Mixin::Template, "render_template" do
         tmp.open.read.should == "before {super secret is } after"
       end
     end
+
+    it "should render nested partials" do
+      path = File.expand_path(File.join(CHEF_SPEC_DATA, "partial_one.erb"))
+
+      @provider.render_template("before {<%= render '#{path}', :local => true %>} after", @template_context) do |tmp|
+        tmp.open.read.should == "before {partial one We could be diving for pearls!\n calling home\n} after"
+      end
+    end
   end
 
   describe "when an exception is raised in the template" do
