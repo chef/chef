@@ -100,6 +100,20 @@ describe Chef::Mixin::Template, "render_template" do
       end
     end
 
+    it "should render using the source argument if provided" do
+      begin
+        tf = Tempfile.new("partial")
+        tf.puts "test"
+        tf.rewind
+
+        @provider.render_template("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after", @template_context) do |tmp|
+          tmp.open.read.should == "before {test\n} after"
+        end
+      ensure
+        tf.close
+      end
+    end
+
     it "should pass the node to partials" do
       @node.normal[:slappiness] = "happiness"
 
