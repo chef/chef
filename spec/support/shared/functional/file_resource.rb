@@ -151,6 +151,7 @@ shared_examples_for "a file resource" do
       f.read
     end
     content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
+    content
   end
 
   context "when the target file does not exist" do
