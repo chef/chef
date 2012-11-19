@@ -199,6 +199,19 @@ describe 'Chef::Win32::Registry', :windows_only do
       end
       @exists.should == true
     end
+    it "does nothing if the key already exists" do
+      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, false)
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
+        reg.each do|name, type, data|
+          if name == "Peter" && type == 1 && data == "Little"
+            @exists=true
+          else
+            @exists=false
+          end
+        end
+      end
+      @exists.should == true
+    end
 
     #  create_if_missing
     it "does not update a key if it exists" do
@@ -351,7 +364,7 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
 
     it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
-      @registry.registry_constant == 0x0100
+      @registry.registry_system_architecture == 0x0100
     end
 
    # it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
@@ -372,7 +385,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       end
       it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
         reg = Chef::Win32::Registry.new(@rc, "i386")
-        reg.registry_constant == 0x0200
+        reg.registry_system_architecture == 0x0200
       end
  #     
  #     #key_exists
