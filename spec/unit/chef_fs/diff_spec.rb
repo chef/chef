@@ -28,7 +28,7 @@ def remove_date(diff)
   diff.gsub(/([+-]{3}.*)\t.*/, '\1 DATE')
 end
 
-describe 'diff' do
+describe 'diff', :uses_diff => true do
   include FileSystemSupport
 
   context 'with two filesystems with all types of difference' do

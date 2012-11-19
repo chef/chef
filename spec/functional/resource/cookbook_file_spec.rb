@@ -24,7 +24,13 @@ describe Chef::Resource::CookbookFile do
   let(:file_base) { 'cookbook_file_spec' }
   let(:source) { 'java.response' }
   let(:cookbook_name) { 'java' }
-  let(:expected_content) { IO.read(File.join(CHEF_SPEC_DATA, 'cookbooks', 'java', 'files', 'default', 'java.response')) }
+  let(:expected_content) do
+    content = File.open(File.join(CHEF_SPEC_DATA, 'cookbooks', 'java', 'files', 'default', 'java.response'), "rb") do |f|
+      f.read
+    end
+    content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
+    content
+  end
 
   def create_resource
     # set up cookbook collection for this run to use, based on our

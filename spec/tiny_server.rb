@@ -17,11 +17,13 @@
 #
 
 require 'rubygems'
+require 'webrick'
 require 'rack'
-require 'thin'
+#require 'thin'
 require 'singleton'
 require 'chef/json_compat'
 require 'open-uri'
+require 'chef/config'
 
 module TinyServer
 
@@ -29,30 +31,42 @@ module TinyServer
 
     attr_writer :app
 
-    def self.run(options=nil, &block)
+    def self.setup(options=nil, &block)
       tiny_app = new(options)
       app_code = Rack::Builder.new(&block).to_app
       tiny_app.app = app_code
-      tiny_app.start
+      tiny_app
+    end
+
+    def shutdown
+      server.shutdown
     end
   end
 
   class Manager
 
-    DEFAULT_OPTIONS = {:server => 'thin', :Port => 9000, :Host => 'localhost', :environment => :none}
+    # 5 == debug, 3 == warning
+    LOGGER = WEBrick::Log.new(STDOUT, 3)
+    DEFAULT_OPTIONS = {
+      :server => 'webrick',
+      :Port => 9000,
+      :Host => 'localhost',
+      :environment => :none,
+      :Logger => LOGGER,
+      :AccessLog => [] # Remove this option to enable the access log when debugging.
+    }
 
     def initialize(options=nil)
       @options = options ? DEFAULT_OPTIONS.merge(options) : DEFAULT_OPTIONS
       @creator = caller.first
-
-      Thin::Logging.silent = !@options[:debug]
     end
 
     def start
       @server_thread = Thread.new do
-        @server = Server.run(@options) do
+        @server = Server.setup(@options) do
           run API.instance
         end
+        @server.start
       end
       block_until_started
     end
@@ -63,7 +77,10 @@ module TinyServer
 
     def block_until_started
       200.times do
-        return true if started?
+        if started?
+          raise "ivar weirdness" if @server.nil?
+          return true
+        end
       end
       raise "TinyServer failed to boot :/"
     end
@@ -84,6 +101,7 @@ module TinyServer
 
     def stop
       # yes, this is terrible.
+      @server.shutdown
       @server_thread.kill
       @server_thread.join
       @server_thread = nil
@@ -132,7 +150,7 @@ module TinyServer
         debug_info = {:message => "no data matches the request for #{env['REQUEST_URI']}",
                       :available_routes => @routes, :request => env}
         # Uncomment me for glorious debugging
-        #pp :not_found => debug_info
+        # pp :not_found => debug_info
         [404, {'Content-Type' => 'application/json'}, debug_info.to_json]
       end
     end
@@ -152,6 +170,7 @@ module TinyServer
     end
 
     def matches_request?(uri)
+      uri = URI.parse(uri).request_uri
       @path_spec === uri
     end
 
@@ -171,7 +190,7 @@ module TinyServer
 
     def call
       data = @data || @block.call
-      [@response_code, HEADERS, data]
+      [@response_code, HEADERS, Array(data)]
     end
 
     def to_s
