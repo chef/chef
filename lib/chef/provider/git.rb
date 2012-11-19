@@ -173,7 +173,7 @@ class Chef
       end
 
       def fetch_updates
-        setup_remote_tracking_branches
+        setup_remote_tracking_branches(@new_resource.remote, @new_resource.repository)
         converge_by("fetch updates for #{@new_resource.remote}") do
           # since we're in a local branch already, just reset to specified revision rather than merge
           fetch_command = "git fetch #{@new_resource.remote} && git fetch #{@new_resource.remote} --tags && git reset --hard #{target_revision}"
@@ -182,11 +182,7 @@ class Chef
         end
       end
 
-      def setup_remote_tracking_branches(remote_name=nil, remote_url=nil)
-        # We want to make sure that if only one argument is supplied we won't get the other filed out from the resource
-        return if !!remote_name ^ !!remote_url
-        remote_name ||= @new_resource.remote
-        remote_url ||= @new_resource.repository
+      def setup_remote_tracking_branches(remote_name, remote_url)
         converge_by("set up remote tracking branches for #{remote_url} at #{remote_name}") do
           Chef::Log.debug "#{@new_resource} configuring remote tracking branches for repository #{remote_url} "+
             "at remote #{remote_name}"
