@@ -34,46 +34,29 @@ class Chef
       attr_accessor :run_context
       attr_accessor :architecture, :machine
 
-      #@@native_architecture = ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64' ? 0x0100 : 0x0200
-
-      def initialize(run_context=nil, requested_architecture=:machine)
+      def initialize(run_context=nil, user_architecture=:machine)
         @run_context = run_context
-        assert_architecture!(requested_architecture)
-        @architecture = architecture_for_request(requested_architecture)
+        self.architecture = user_architecture
       end
 
       def node
         run_context && run_context.node
       end
 
-      def assert_architecture!(requested_architecture)
-        if native_architecture_32bit? && requested_architecture_64bit?(requested_architecture)
-          raise Chef::Exceptions::Win32RegArchitectureIncorrect, "message"
+      def assert_architecture!
+        if node[:kernel][:machine] == "i386" && architecture == "x86_64"
+          raise Chef::Exceptions::Win32RegArchitectureIncorrect, "cannot access 64-bit registry on a 32-bit windows instance"
         end
       end
 
-      def native_architecture_32bit?
-        native_architecture == "i386"
-      end
-
-      def requested_architecture_64bit?(requested_architecture)
-        requested_architecture == "x86_64"
-      end
-
-      def native_architecture
-        node[:kernel][:machine]
-      end
-
-      def architecture_for_request(requested_architecture)
-        if requested_architecture == :machine
-          native_architecture
-        else
-          requested_architecture
-        end
+      def architecture=(user_architecture)
+        @architecture = user_architecture
+        assert_architecture!
       end
 
       def registry_system_architecture
-        @architecture == 'x86_64' ? 0x0100 : 0x0200
+        applied_arch = ( architecture == :machine ) ? node[:kernel][:machine] : architecture
+        ( applied_arch == 'x86_64' ) ? 0x0100 : 0x0200
       end
 
       def get_values(key_path)
