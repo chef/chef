@@ -22,7 +22,10 @@ describe Chef::RunLock do
 
   # This behavior is believed to work on windows, but the tests use UNIX APIs.
   describe "when locking the chef-client run", :unix_only => true do
-    let(:random_temp_root){ "/tmp/#{Random.rand(Time.now.to_i + Process.pid)}" }
+    let(:random_temp_root) do
+      Kernel.srand(Time.now.to_i + Process.pid)
+      "/tmp/#{Kernel.rand(Time.now.to_i + Process.pid)}"
+    end
 
     let(:file_cache_path){ "/var/chef/cache" }
     let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
