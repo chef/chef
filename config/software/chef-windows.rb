@@ -18,7 +18,8 @@
 name "chef-windows"
 
 dependencies ["ruby-windows", #includes rubygems
-              "ruby-windows-devkit"]
+              "ruby-windows-devkit",
+              "bundler"]
 
 version begin
           ENV['CHEF_GIT_REV'] || "10-stable"
