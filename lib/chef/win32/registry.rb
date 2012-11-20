@@ -191,6 +191,19 @@ class Chef
         ( applied_arch == 'x86_64' ) ? 0x0100 : 0x0200
       end
 
+      def get_type_from_num(val_type)
+        value = {
+          3 => ::Win32::Registry::REG_BINARY,
+          1 => ::Win32::Registry::REG_SZ,
+          7 => ::Win32::Registry::REG_MULTI_SZ,
+          2 => ::Win32::Registry::REG_EXPAND_SZ,
+          4 => ::Win32::Registry::REG_DWORD,
+          5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
+          11 => ::Win32::Registry::REG_QWORD
+        }[val_type]
+        return value
+      end
+
       private
 
       def node
@@ -278,19 +291,6 @@ class Chef
         unless type_matches?(key_path, value)
           raise Chef::Exceptions::Win32RegTypesMismatch, "Registry key #{key_path} has a value #{value[:name]} with a type that is not #{value[:type]}"
         end
-      end
-
-      def get_type_from_num(val_type)
-        value = {
-          3 => ::Win32::Registry::REG_BINARY,
-          1 => ::Win32::Registry::REG_SZ,
-          7 => ::Win32::Registry::REG_MULTI_SZ,
-          2 => ::Win32::Registry::REG_EXPAND_SZ,
-          4 => ::Win32::Registry::REG_DWORD,
-          5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          11 => ::Win32::Registry::REG_QWORD
-        }[val_type]
-        return value
       end
 
       def get_type_from_name(val_type)
