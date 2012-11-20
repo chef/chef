@@ -107,9 +107,7 @@ class Chef
             Chef::Log.debug("Registry key #{key_path} has missing subkeys, and recursive specified, creating them....")
             create_missing(key_path)
           else
-            Chef::Log.debug("Registry key #{key_path} has missing subkeys, and recursive not specified, doing nothing")
-            #XXX: RAISE ERROR?
-            return
+            raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has missing subkeys, and recursive not specified"
           end
         end
         if key_exists?(key_path)
@@ -138,8 +136,7 @@ class Chef
               reg.delete_key(key_to_delete,recursive)
             end
           else
-            Chef::Log.debug("Registry key #{key_path} has subkeys and recursive not specified, doing nothing")
-            # XXX: RAISE ERROR?
+            raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has subkeys, and recursive not specified"
           end
         else
           hive.open(key_parent, ::Win32::Registry::KEY_WRITE | registry_system_architecture) do |reg|
