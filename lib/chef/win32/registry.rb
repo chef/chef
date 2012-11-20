@@ -95,8 +95,8 @@ class Chef
         end
       end
 
-      def create_key(key_path, value, recursive)
-        Chef::Log.debug("Creating registry key #{key_path} with value #{value[:name]} having type #{value[:type]} and data #{value[:data]}")
+      def create_key(key_path, recursive)
+        Chef::Log.debug("Creating registry key #{key_path}")
         if keys_missing?(key_path)
           if recursive == true
             Chef::Log.debug("Registry key #{key_path} has missing subkeys, and recursive specified, creating them....")
@@ -204,6 +204,24 @@ class Chef
         return value
       end
 
+      def data_exists?(key_path, value)
+        value_exists!(key_path, value)
+        hive, key = get_hive_and_key(key_path)
+        hive.open(key) do |reg|
+          reg.each do |val_name, val_type, val_data|
+            if val_name == value[:name]
+              type_new = get_type_from_name(value[:type])
+              if val_type == type_new
+                if val_data = value[:data]
+                  return true
+                end
+              end
+            end
+          end
+        end
+        return false
+      end
+
       private
 
       def node
@@ -251,24 +269,6 @@ class Chef
         unless value_exists?(key_path, value)
           raise Chef::Exceptions::Win32RegValueMissing, "Registry key #{key_path} has no value named #{value[:name]}"
         end
-      end
-
-      def data_exists?(key_path, value)
-        value_exists!(key_path, value)
-        hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
-          reg.each do |val_name, val_type, val_data|
-            if val_name == value[:name]
-              type_new = get_type_from_name(value[:type])
-              if val_type == type_new
-                if val_data = value[:data]
-                  return true
-                end
-              end
-            end
-          end
-        end
-        return false
       end
 
       def type_matches?(key_path, value)
