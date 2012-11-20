@@ -121,7 +121,7 @@ class Chef
 
       def action_reload
         if @current_resource.running
-          converge_by("disable service #{@new_resource}") do
+          converge_by("reload service #{@new_resource}") do
             reload_service
             Chef::Log.info("#{@new_resource} reloaded")
           end

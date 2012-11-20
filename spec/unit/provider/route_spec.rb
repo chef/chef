@@ -204,7 +204,6 @@ describe Chef::Provider::Route do
         File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
         #Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
-
         @provider.generate_config
       end
     end

@@ -72,7 +72,6 @@ class Chef
         :short => "-p PORT",
         :long => "--ssh-port PORT",
         :description => "The ssh port",
-        :default => "22",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
 
       option :ssh_gateway,
@@ -166,13 +165,17 @@ class Chef
 
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
-
-          hostspec = config[:ssh_user] ? "#{config[:ssh_user]}@#{item}" : item
           session_opts = {}
+
+          ssh_config = Net::SSH.configuration_for(item)
+
+          # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
+          user = config[:ssh_user] || ssh_config[:user]
+          hostspec = user ? "#{user}@#{item}" : item
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:keys_only] = true if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
-          session_opts[:port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
+          session_opts[:port] = config[:ssh_port] || Chef::Config[:knife][:ssh_port] || ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
           if !config[:host_key_verify]

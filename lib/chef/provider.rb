@@ -122,6 +122,7 @@ class Chef
       else
         send("action_#{@action}")
       end
+
       set_updated_status
 
       cleanup_after_converge
