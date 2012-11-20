@@ -119,11 +119,6 @@ class Chef
           hive.create key
           Chef::Log.debug("Registry key #{key_path} created")
         end
-        if value_exists?(key_path, value)
-          Chef::Log.debug("Value #{value[:name]} for Registry key #{key_path} already exists, doing nothing")
-        else
-          create_value(key_path, value)
-        end
       end
 
       def delete_key(key_path, recursive)
