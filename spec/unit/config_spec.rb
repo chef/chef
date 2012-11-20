@@ -62,6 +62,14 @@ describe Chef::Config do
     it_behaves_like "server URL"
   end
 
+  context "when the url is a frozen string" do
+    before do
+      Chef::Config.chef_server_url = " https://junglist.gen.nz".freeze
+    end
+
+    it_behaves_like "server URL"
+  end
+
   describe "class method: manage_secret_key" do
     before do
       Chef::FileCache.stub!(:load).and_return(true)
