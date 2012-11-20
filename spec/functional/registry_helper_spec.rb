@@ -67,38 +67,41 @@ describe 'Chef::Win32::Registry', :windows_only do
   # it "falis if the server versions are anything else" do
   # end
 
-  # If hive_exists
-  it "returns true if the hive exists" do
-    hive = @registry.hive_exists?("HKCU\\Software\\Root")
-    hive.should == true
-  end
-  it "returns false if the hive does not exist" do
-    hive = @registry.hive_exists?("LYRU\\Software\\Root")
-    hive.should == false
+  describe "hive_exists?" do
+    it "returns true if the hive exists" do
+      @registry.hive_exists?("HKCU\\Software\\Root").should == true
+    end
+
+    it "returns false if the hive does not exist" do
+      hive = @registry.hive_exists?("LYRU\\Software\\Root").should == false
+    end
   end
 
-  #  key_exists
-  it "returns true if the key path exists" do
-    exists = @registry.key_exists?("HKCU\\Software\\Root\\Branch\\Flower")
-    exists.should == true
-  end
-  it "returns false if the key path does not exist" do
-    exists = @registry.key_exists?("HKCU\\Software\\Branch\\Flower")
-    exists.should == false
-  end
-  it "returns an error if the hive does not exist" do
-    lambda {@registry.key_exists?("JKLM\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+  describe "key_exists?" do
+    it "returns true if the key path exists" do
+      @registry.key_exists?("HKCU\\Software\\Root\\Branch\\Flower").should == true
+    end
+
+    it "returns false if the key path does not exist" do
+      @registry.key_exists?("HKCU\\Software\\Branch\\Flower").should == false
+    end
+
+    it "returns an error if the hive does not exist" do
+      lambda {@registry.key_exists?("JKLM\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+    end
   end
 
-  # get_values
-  it "returns all values for a key if it exists" do
-    values = @registry.get_values("HKCU\\Software\\Root")
-    values.should be_an_instance_of Array
-    values.should == [{:name=>"RootType1", :type=>1, :data=>"fibrous"},
-                      {:name=>"Roots", :type=>7, :data=>["strong roots", "healthy tree"]}]
-  end
-  it "returns an error if the key does not exist" do
-    lambda {@registry.get_values("HKCU\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+  describe "get_values" do
+    it "returns all values for a key if it exists" do
+      values = @registry.get_values("HKCU\\Software\\Root")
+      values.should be_an_instance_of Array
+      values.should == [{:name=>"RootType1", :type=>1, :data=>"fibrous"},
+                        {:name=>"Roots", :type=>7, :data=>["strong roots", "healthy tree"]}]
+    end
+
+    it "returns an error if the key does not exist" do
+      lambda {@registry.get_values("HKCU\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+    end
   end
 
   #  update_value
@@ -171,98 +174,59 @@ describe 'Chef::Win32::Registry', :windows_only do
       #test with timestamp?
     end
 
-    #  create_key
-    it "throws an exception if the path has missing keys but recursive set to false" do
-      lambda {@registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, false)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each_key do |key_name|
-          if key_name == "Trunk"
-            @exists=true
-            break
-          else
-            @exists=false
+    describe "create_key" do
+      before(:all) do
+        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root") do |reg|
+          begin
+            reg.delete_key("Trunk", true)
+          rescue
           end
         end
       end
-      @exists.should == false
-    end
-    it "creates the key_path if the keys were missing but recursive was set to true" do
-      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, true)
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each do|name, type, data|
-          if name == "Peter" && type == 1 && data == "Little"
-            @exists=true
-          else
-            @exists=false
-          end
-        end
+
+      it "throws an exception if the path has missing keys but recursive set to false" do
+        lambda {@registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == false
       end
-      @exists.should == true
-    end
-    it "does nothing if the key already exists" do
-      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, false)
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each do|name, type, data|
-          if name == "Peter" && type == 1 && data == "Little"
-            @exists=true
-          else
-            @exists=false
-          end
-        end
+
+      it "creates the key_path if the keys were missing but recursive was set to true" do
+        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", true)
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
       end
-      @exists.should == true
+
+      it "does nothing if the key already exists" do
+        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
+      end
     end
 
-    #  create_if_missing
-    it "does not update a key if it exists" do
-      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}, true)
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each do |name, type, data|
-          if name == "Peter" && type == 1 && data == "Little"
-            @exists=true
-          elsif name == "Peter" && type == 1 && data == "Tiny"
-            @exists=false
-          end
+    describe "delete_value" do
+      before(:all) do
+        ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Trunk\\Peck\\Woodpecker', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+          reg['Peter', Win32::Registry::REG_SZ] = 'Tiny'
         end
       end
-      @exists.should == true
-    end
 
-    it "makes no changes to value even if it exists and type matches" do
-      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little will remain unchanged"}, true)
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each do |name, type, data|
-          if name == "Peter" && type == 1 && data == "Little"
-            @exists=true
-          elsif name == "Peter" && type == 1 && data == "Little will remain unchanged"
-            @exists=false
+      it "deletes values if the value exists" do
+        @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+        exists = false
+        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
+          reg.each do |name, type, data|
+            if name == "Peter" && type == 1 && data == "Little"
+              exists=true
+              break
+            else
+              exists=false
+            end
           end
         end
+        exists.should == false
       end
-      @exists.should == true
-    end
-
-    #  delete_values
-    it "deletes values if the value exists" do
-      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
-      exists = false
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each do |name, type, data|
-          if name == "Peter" && type == 1 && data == "Little"
-            exists=true
-            break
-          else
-            exists=false
-          end
-        end
+      it "does nothing if value does not exist" do
+         @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+         #what to test for fall through ?
       end
-      exists.should == false
     end
-    it "does nothing if value does not exist" do
-       @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
-       #what to test for fall through ?
-    end
-
     #  delete_key
     it "gives an error if the hive does not exist" do
      lambda {@registry.delete_key("JKLM\\Software\\Root\\Branch\\Flower", false)}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
