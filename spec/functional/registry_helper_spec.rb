@@ -265,7 +265,7 @@ describe 'Chef::Win32::Registry', :windows_only do
 
     #  delete_key
     it "gives an error if the hive does not exist" do
-     lambda {@registry.delete_key("JKLM\\Software\\Root\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"}, false)}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+     lambda {@registry.delete_key("JKLM\\Software\\Root\\Branch\\Flower", false)}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     context "If the action is to delete" do
       before (:all) do
@@ -276,7 +276,7 @@ describe 'Chef::Win32::Registry', :windows_only do
         end
       end
     it "deletes a key if it has no subkeys" do
-      @registry.delete_key("HKCU\\Software\\Root\\Branch\\Fruit", {:name=>"Apple", :type=>:multi_string, :data=>["Red", "Juicy"]}, false)
+      @registry.delete_key("HKCU\\Software\\Root\\Branch\\Fruit", false)
       exists = false
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg.each_key do |name|
@@ -291,7 +291,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       exists.should == false
     end
     it "gives an error if key to delete has subkeys and recursive is false" do
-      @registry.delete_key("HKCU\\Software\\Root\\Trunk", {:name=>"Strong", :type=>:string, :data=>"bird nest"}, false)
+      @registry.delete_key("HKCU\\Software\\Root\\Trunk", false)
       exists = true
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg.each_key do |name|
@@ -306,7 +306,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       exists.should == true
     end
     it "deletes a key if it has subkeys and recursive true" do
-      @registry.delete_key("HKCU\\Software\\Root\\Trunk", {:name=>"Strong", :type=>:string, :data=>"bird nest"}, true)
+      @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
       exists = true
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg.each_key do |name|
@@ -321,7 +321,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       exists.should == false
     end
       it "does nothing if the key does not exist" do
-        @registry.delete_key("HKCU\\Software\\Root\\Trunk", {:name=>"Strong", :type=>:string, :data=>"bird nest"}, true)
+        @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
         exists = true
         ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
           reg.each_key do |name|
