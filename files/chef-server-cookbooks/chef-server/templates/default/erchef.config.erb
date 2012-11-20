@@ -17,7 +17,8 @@
                          {file_size, 50}]]}
             ]},
  {chef_wm, [
-              {server_version, "<%= node['chef_server']['version'] %>"},
+              {api_version, "<%= node['chef_server']['api_version'] %>"},
+              {server_flavor, "<%= node['chef_server']['flavor'] %>"},
               {health_ping_modules, [chef_sql, chef_solr]},
               {health_ping_timeout, 400},
               {local_key_gen, {true, 2048}},
