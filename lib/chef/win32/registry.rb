@@ -253,6 +253,24 @@ class Chef
         end
       end
 
+      def data_exists?(key_path, value)
+        value_exists!(key_path, value)
+        hive, key = get_hive_and_key(key_path)
+        hive.open(key) do |reg|
+          reg.each do |val_name, val_type, val_data|
+            if val_name == value[:name]
+              type_new = get_type_from_name(value[:type])
+              if val_type == type_new
+                if val_data = value[:data]
+                  return true
+                end
+              end
+            end
+          end
+        end
+        return false
+      end
+
       def type_matches?(key_path, value)
         value_exists!(key_path, value)
         hive, key = get_hive_and_key(key_path)
@@ -275,9 +293,22 @@ class Chef
         end
       end
 
+      def get_type_from_num(val_type)
+        value = {
+          3 => ::Win32::Registry::REG_BINARY,
+          1 => ::Win32::Registry::REG_SZ,
+          7 => ::Win32::Registry::REG_MULTI_SZ,
+          2 => ::Win32::Registry::REG_EXPAND_SZ,
+          4 => ::Win32::Registry::REG_DWORD,
+          5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
+          11 => ::Win32::Registry::REG_QWORD
+        }[val_type]
+        return value
+      end
+
       def get_type_from_name(val_type)
         value = {
-          :binary => ::Win32::Registry::REG_BINARY,
+          :binary || 1 => ::Win32::Registry::REG_BINARY,
           :string => ::Win32::Registry::REG_SZ,
           :multi_string => ::Win32::Registry::REG_MULTI_SZ,
           :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
