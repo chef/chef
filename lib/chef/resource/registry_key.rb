@@ -36,7 +36,7 @@ class Chef
         @recursive = true
         @key_name = name
         @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
-        #@provider = Chef::Provider::RegistryKey
+        @provider = Chef::Provider::RegistryKey
       end
 
       def key(arg=nil)
@@ -58,7 +58,7 @@ class Chef
         set_or_return(
           :recursive,
           arg,
-          :kind_of => Boolean,
+          :kind_of => [TrueClass, FalseClass]
         )
       end
       def architecture(arg=nil)

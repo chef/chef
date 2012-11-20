@@ -40,11 +40,11 @@ class Chef
 
       def load_current_resource
         @current_resource ||= Chef::Resource::RegistryKey.new(@new_resource.key, run_context)
-        @current_resource.key = @new_resource.key
-        @current_resource.architecture = @new_resource.architecture
-          @current_resource.recursive = @new_resource.recursive
+        @current_resource.key(@new_resource.key)
+        @current_resource.architecture(@new_resource.architecture)
+        @current_resource.recursive(@new_resource.recursive)
         if registry.key_exists?(@new_resource.key)
-          @current_resource.values = registry.get_values(@new_resource.key)
+          @current_resource.values(registry.get_values(@new_resource.key))
           values_to_hash(@current_resource.values)
         end
         @current_resource
@@ -60,7 +60,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
-          a.hive_exists!(@new_resource.key)
+    #      a.hive_exists!(@new_resource.key)
         end
         requirements.assert(:create) do |a|
           #If key exists and value exists but type different fail
@@ -84,13 +84,13 @@ class Chef
           if @name_hash.has_key?(value[:name])
             if @name_hash[value[:name]][:type] == registry.get_type_from_num(value[:type])
               if @name_hash[value[:name]][:data] != value[:data]
-                registry.update_value(@new_resource.key, @new_resource.values)
+                registry.update_value(@new_resource.key, value)
               end
             else
               # Raise exception that types are different
             end
           else
-            @current_resource.create_value(@new_resource.key, @new_resource.values)
+            registry.create_value(@new_resource.key, value)
           end
         end
       end
