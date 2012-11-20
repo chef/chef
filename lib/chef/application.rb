@@ -101,22 +101,38 @@ class Chef::Application
   end
 
   # Initialize and configure the logger.
+  # === Loggers and Formatters
+  # In Chef 10.x and previous, the Logger was the primary/only way that Chef
+  # communicated information to the user. In Chef 10.14, a new system, "output
+  # formatters" was added, and in Chef 11.0+ it is the default when running
+  # chef in a console (detected by `STDOUT.tty?`). Because output formatters
+  # are more complex than the logger system and users have less experience with
+  # them, the config option `force_logger` is provided to restore the Chef 10.x
+  # behavior.
   #
-  # When `log_level` is set to `:auto`, the log level will be `:warn` when
-  # the primary output mode is an output formatter (see
+  # Conversely, for users who want formatter output even when chef is running
+  # unattended, the `force_formatter` option is provided.
+  #
+  # === Auto Log Level
+  # When `log_level` is set to `:auto` (default), the log level will be `:warn`
+  # when the primary output mode is an output formatter (see
   # +using_output_formatter?+) and `:info` otherwise.
   #
-  # When `force_logger` is configured, a second logger with output on STDOUT is
-  # added when running in a console (STDOUT is a tty).
+  # === Automatic STDOUT Logging
+  # When `force_logger` is configured (e.g., Chef 10 mode), a second logger
+  # with output on STDOUT is added when running in a console (STDOUT is a tty)
+  # and the configured log_location isn't STDOUT. This accounts for the case
+  # that a user has configured a log_location in client.rb, but is running
+  # chef-client by hand to troubleshoot a problem.
   def configure_logging
     Chef::Log.init(Chef::Config[:log_location])
     if want_additional_logger?
-      configure_additional_logger
+      configure_stdout_logger
     end
     Chef::Log.level = resolve_log_level
   end
 
-  def configure_additional_logger
+  def configure_stdout_logger
     stdout_logger = Logger.new(STDOUT)
     STDOUT.sync = true
     stdout_logger.formatter = Chef::Log.logger.formatter
