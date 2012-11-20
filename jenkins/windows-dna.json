@@ -1,0 +1,15 @@
+{
+  "omnibus": {
+    "build-user": "administrator",
+    "build-path": "",
+    "install-dirs": [
+      "c:\\opscode\\chef"
+    ],
+    "cache-dirs": [
+      "c:\\omnibus-cache"
+    ]
+  },
+  "run_list": [
+    "recipe[omnibus]"
+  ]
+}
