@@ -40,6 +40,18 @@ class Chef::Application::Solo < Chef::Application
     :description  => "output format to use",
     :proc         => lambda { |format| Chef::Config.add_formatter(format) }
 
+  option :force_logger,
+    :long         => "--force-logger",
+    :description  => "Use logger output instead of formatter output",
+    :boolean      => true,
+    :default      => false
+
+  option :force_formatter,
+    :long         => "--force-formatter",
+    :description  => "Use formatter output instead of logger output",
+    :boolean      => true,
+    :default      => false
+
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
