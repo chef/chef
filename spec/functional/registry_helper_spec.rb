@@ -172,8 +172,8 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
 
     #  create_key
-    it "gives an error if the path has missing keys but recursive set to false" do
-      created = @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, false)
+    it "throws an exception if the path has missing keys but recursive set to false" do
+      lambda {@registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Little"}, false)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg.each_key do |key_name|
           if key_name == "Trunk"
@@ -290,8 +290,8 @@ describe 'Chef::Win32::Registry', :windows_only do
       end
       exists.should == false
     end
-    it "gives an error if key to delete has subkeys and recursive is false" do
-      @registry.delete_key("HKCU\\Software\\Root\\Trunk", false)
+    it "throws an exception if key to delete has subkeys and recursive is false" do
+      lambda { @registry.delete_key("HKCU\\Software\\Root\\Trunk", false) }.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
       exists = true
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg.each_key do |name|
