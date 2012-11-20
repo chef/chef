@@ -12,4 +12,3 @@ gem "omnibus-software", :git => "git://github.com/opscode/omnibus-software.git",
 group :development do
   gem "vagrant", "~> 1.0"
 end
-
