@@ -31,12 +31,12 @@ describe Chef::Shell do
       buffer = ""
       until buffer.include?(expected_value)
         begin
-          buffer << io.read_nonblock(10)
-        rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO
+          buffer << io.read_nonblock(1)
+        rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO, EOFError
         end
-        if Time.new - start > 30
-          STDERR.puts "did not read expected value `#{expected_value}' within 30s"
-          STDERR.puts "Buffer so far: #{buffer}"
+        if Time.new - start > 15
+          STDERR.puts "did not read expected value `#{expected_value}' within 15s"
+          STDERR.puts "Buffer so far: `#{buffer}'"
           break
         end
       end
@@ -70,6 +70,7 @@ describe Chef::Shell do
       writer.print("exit\n")
       read_until(reader, "exit")
       read_until(reader, "exit")
+      read_until(reader, "\n")
       writer.close
 
       exitstatus = wait_or_die(pid)
