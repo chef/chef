@@ -139,18 +139,40 @@ class Chef
       @runner = nil
       @ohai = Ohai::System.new
 
-      # If we want why-run output and user hasn't explicitly specified a format
-      # we need to use a formatter that will render whyrun output. 
-      if Chef::Config.why_run
-        if Chef::Config.formatter == "null"
-          Chef::Log.warn("Forcing formatter of 'doc' to capture whyrun output.")
-          Chef::Config[:formatter] = 'doc'
-        end
-      end
-      formatter = Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)
-      @events = EventDispatch::Dispatcher.new(formatter)
+      event_handlers = configure_formatters
+      event_handlers += Array(Chef::Config[:event_handlers])
+
+      @events = EventDispatch::Dispatcher.new(*event_handlers)
       @override_runlist = args.delete(:override_runlist)
       runlist_override_sanity_check!
+    end
+
+    def configure_formatters
+      formatters_for_run.map do |formatter_name, output_path|
+        if output_path.nil?
+          Chef::Formatters.new(formatter_name, STDOUT, STDERR)
+        else
+          io = File.open(output_path, "a+")
+          io.sync = true
+          Chef::Formatters.new(formatter_name, io, io)
+        end
+      end
+    end
+
+    def formatters_for_run
+      if Chef::Config.formatters.empty?
+        [default_formatter]
+      else
+        Chef::Config.formatters
+      end
+    end
+
+    def default_formatter
+      if (STDOUT.tty? && !Chef::Config[:force_logger]) || Chef::Config[:force_formatter]
+        [:doc]
+      else
+        [:null]
+      end
     end
 
     # Do a full run for this Chef::Client.  Calls:

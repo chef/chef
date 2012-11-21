@@ -61,6 +61,14 @@ class Chef
       path
     end
 
+    def self.add_formatter(name, file_path=nil)
+      formatters << [name, file_path]
+    end
+
+    def self.formatters
+      @formatters ||= []
+    end
+
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
     # === Parameters
@@ -104,7 +112,7 @@ class Chef
         begin
           f = File.new(location.to_str, "a")
           f.sync = true
-        rescue Errno::ENOENT => error
+        rescue Errno::ENOENT
           raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
         end
           f
@@ -169,11 +177,30 @@ class Chef
     group nil
     umask 0022
 
+
+    # Valid log_levels are:
+    # * :debug
+    # * :info
+    # * :warn
+    # * :fatal
+    # These work as you'd expect. There is also a special `:auto` setting.
+    # When set to :auto, Chef will auto adjust the log verbosity based on
+    # context. When a tty is available (usually becase the user is running chef
+    # in a console), the log level is set to :warn, and output formatters are
+    # used as the primary mode of output. When a tty is not available, the
+    # logger is the primary mode of output, and the log level is set to :info
+    log_level :auto
+
+    # Using `force_formatter` causes chef to default to formatter output when STDOUT is not a tty
+    force_formatter false
+
+    # Using `force_logger` causes chef to default to logger output when STDOUT is a tty
+    force_logger false
+
     http_retry_count 5
     http_retry_delay 5
     interval nil
     json_attribs nil
-    log_level :info
     log_location STDOUT
     # toggle info level log items that can create a lot of output
     verbose_logging true
@@ -308,6 +335,6 @@ class Chef
 
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
-    user_home (ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+    user_home(ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
   end
 end

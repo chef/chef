@@ -62,6 +62,51 @@ describe Chef::Config do
     it_behaves_like "server URL"
   end
 
+  describe "when configuring formatters" do
+      # if TTY and not(force-logger)
+      #   formatter = configured formatter or default formatter
+      #   formatter goes to STDOUT/ERR
+      #   if log file is writeable
+      #     log level is configured level or info
+      #     log location is file
+      #   else
+      #     log level is warn
+      #     log location is STDERR
+      #    end
+      # elsif not(TTY) and force formatter
+      #   formatter = configured formatter or default formatter
+      #   if log_location specified
+      #     formatter goes to log_location
+      #   else
+      #     formatter goes to STDOUT/ERR
+      #   end
+      # else
+      #   formatter = "null"
+      #   log_location = configured-value or defualt
+      #   log_level = info or defualt
+      # end
+      #
+    before do
+      @config_class = Class.new(Chef::Config)
+    end
+
+    it "has an empty list of formatters by default" do
+      @config_class.formatters.should == []
+    end
+
+    it "configures a formatter with a short name" do
+      @config_class.add_formatter(:doc)
+      @config_class.formatters.should == [[:doc, nil]]
+    end
+
+    it "configures a formatter with a file output" do
+      @config_class.add_formatter(:doc, "/var/log/formatter.log")
+      @config_class.formatters.should == [[:doc, "/var/log/formatter.log"]]
+    end
+
+
+  end
+
   describe "class method: manage_secret_key" do
     before do
       Chef::FileCache.stub!(:load).and_return(true)
