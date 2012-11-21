@@ -61,9 +61,22 @@ class Chef
             description << diff_current(rendered_template.path)
             converge_by(description) do
               backup
+
+              # Windows permissions aren't as simple as setting user/group/mode, so we need to preserve them
+              prior_security_descriptor = access_controls.securable_object.security_descriptor if Chef::Platform.windows? && update
+
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
+
+              # Set the file permissions to their former values if updating a file on Windows
+              if Chef::Platform.windows? && update
+                access_controls.securable_object.owner = prior_security_descriptor.owner
+                access_controls.securable_object.group = prior_security_descriptor.group
+                access_controls.securable_object.set_dacl(prior_security_descriptor.dacl, prior_security_descriptor.dacl_inherits?)
+              end
+
               access_controls.set_all!
+
               stat = ::File.stat(@new_resource.path)
 
               # template depends on the checksum not changing, and updates it

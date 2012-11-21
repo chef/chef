@@ -38,7 +38,32 @@ describe Chef::Provider::Template do
     @provider = Chef::Provider::Template.new(@resource, @run_context)
     @current_resource = @resource.dup
     @provider.current_resource = @current_resource
-    @access_controls = mock("access controls")
+
+    if windows?
+      @security_descriptor = mock(
+        "Chef::ReservedNames::Win32::Security::SecurityDescriptor",
+        :dacl => [ 'NT AUTHORITY\SYSTEM/flags:10/mask:1f01ff', 'BUILTIN\Administrators/flags:10/mask:1f01ff'],
+        :owner => "S-1-0-0",
+        :group => "S-1-1-0",
+        :owner= => true,
+        :group= => true,
+        :dacl_inherits? => true
+      )
+      @securable_object = mock(
+        "Chef::ReservedNames::Win32::Security::SecurableObject",
+        :security_descriptor => @security_descriptor,
+        :owner= => true,
+        :group= => true,
+        :set_dacl => true
+      )
+      @access_controls = mock(
+        "access controls",
+        :securable_object => @securable_object
+      )
+    else
+      @access_controls = mock("access controls")
+    end
+    @access_controls.stub!(:securable_object).and_return(@securable_object)
     @provider.stub!(:access_controls).and_return(@access_controls)
     passwd_struct = if windows?
                       Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
@@ -158,6 +183,7 @@ describe Chef::Provider::Template do
         File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
         @access_controls = mock("access controls")
+        @access_controls.stub!(:securable_object).and_return(@securable_object)
         @provider.stub!(:access_controls).and_return(@access_controls)
       end
 
