@@ -30,6 +30,8 @@ FOR /F %%i in ('call bundle show omnibus') DO SET OMNIBUS_GEM_PATH=%%i
 
 call chef-solo -c .\jenkins\solo.rb -j .\jenkins\windows-dna.json -l debug || GOTO :error
 
+call copy /Y omnibus.rb.example.windows omnibus.rb || GOTO :error
+
 call bundle exec rake projects:%omnibus_project%-windows || GOTO :error
      
 GOTO :EOF

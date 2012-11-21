@@ -1,0 +1,14 @@
+
+Omnibus.configure do |o|
+  # o.s3_access_key    = "something"
+  # o.s3_secret_key    = "something"
+  o.s3_bucket        = "opscode-omnibus-cache"
+  # o.use_s3_caching   = true
+  o.solaris_compiler = "gcc"
+
+  # windows config
+  o.cache_dir   = "C:\\omnibus-ruby\\cache"
+  o.source_dir  = "C:\\omnibus-ruby\\src"
+  o.build_dir   = "C:\\omnibus-ruby\\build"
+  o.package_dir = "C:\\omnibus-ruby\\pkg"
+end
