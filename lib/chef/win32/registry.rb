@@ -109,7 +109,7 @@ class Chef
           Chef::Log.debug("Registry key #{key_path} already exists, doing nothing")
         else
           hive, key = get_hive_and_key(key_path)
-          hive.create key
+          hive.create(key, ::Win32::Registry::KEY_WRITE | registry_system_architecture)
           Chef::Log.debug("Registry key #{key_path} created")
         end
       end
@@ -186,6 +186,7 @@ class Chef
         return subkeys
       end
 
+      # NB: 32-bit chef clients running on 64-bit machines will default to reading the 64-bit registry
       def registry_system_architecture
         applied_arch = ( architecture == :machine ) ? machine_architecture : architecture
         ( applied_arch == 'x86_64' ) ? 0x0100 : 0x0200
@@ -323,7 +324,7 @@ class Chef
           existing_key_path = existing_key_path << "\\" << intermediate_key
           if !key_exists?(existing_key_path)
             Chef::Log.debug("Recursively creating registry key #{existing_key_path}")
-            hive.create get_key(existing_key_path)
+            hive.create(get_key(existing_key_path), ::Win32::Registry::KEY_ALL_ACCESS | registry_system_architecture)
           end
         end
       end
