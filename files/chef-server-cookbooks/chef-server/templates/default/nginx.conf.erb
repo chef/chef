@@ -123,6 +123,10 @@ http {
       proxy_cache_valid 404 1m;
     }
 
+   location ~ "^/status/{0,1}$" {
+      proxy_pass http://erchef/_status;
+    }
+
     location / {
     <%= select_upstream("erchef", "chef_server_webui") %>
     }
