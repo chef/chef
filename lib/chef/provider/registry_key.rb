@@ -85,7 +85,7 @@ class Chef
 
       def action_create
         if !@current_resource.key
-          registry.create_key(@new_resource.key, @new_resource.values, @new_resource.recursive)
+          registry.create_key(@new_resource.key, @new_resource.recursive)
         end
         @new_resource.values.each do |value|
           if @name_hash.has_key?(value[:name])
