@@ -174,150 +174,122 @@ describe 'Chef::Win32::Registry', :windows_only do
       #test with timestamp?
     end
 
-    describe "create_key" do
-      before(:all) do
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root") do |reg|
-          begin
-            reg.delete_key("Trunk", true)
-          rescue
-          end
+  describe "create_key" do
+    before(:all) do
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root") do |reg|
+        begin
+          reg.delete_key("Trunk", true)
+        rescue
         end
-      end
-
-      it "throws an exception if the path has missing keys but recursive set to false" do
-        lambda {@registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == false
-      end
-
-      it "creates the key_path if the keys were missing but recursive was set to true" do
-        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", true)
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
-      end
-
-      it "does nothing if the key already exists" do
-        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
       end
     end
 
-    describe "delete_value" do
-      before(:all) do
+    it "throws an exception if the path has missing keys but recursive set to false" do
+      lambda {@registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
+      @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == false
+    end
+
+    it "creates the key_path if the keys were missing but recursive was set to true" do
+      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", true)
+      @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
+    end
+
+    it "does nothing if the key already exists" do
+      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)
+      @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
+    end
+  end
+
+  describe "delete_value" do
+    before(:all) do
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk\\Peck\\Woodpecker"
+      ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Trunk\\Peck\\Woodpecker', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+        reg['Peter', Win32::Registry::REG_SZ] = 'Tiny'
+      end
+    end
+
+    it "deletes values if the value exists" do
+      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+      @registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == false
+    end
+
+    it "does nothing if value does not exist" do
+      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+      @registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == false
+    end
+  end
+
+  describe "delete_key" do
+    it "gives an error if the hive does not exist" do
+      lambda {@registry.delete_key("JKLM\\Software\\Root\\Branch\\Flower", false)}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+    end
+
+    context "If the action is to delete" do
+
+      before (:all) do
+        ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Fruit"
+        ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Fruit', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+          reg['Apple', Win32::Registry::REG_MULTI_SZ] = ["Red", "Juicy"]
+        end
+        ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk\\Peck\\Woodpecker"
         ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Trunk\\Peck\\Woodpecker', Win32::Registry::KEY_ALL_ACCESS) do |reg|
           reg['Peter', Win32::Registry::REG_SZ] = 'Tiny'
         end
       end
 
-      it "deletes values if the value exists" do
-        @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
-        exists = false
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-          reg.each do |name, type, data|
-            if name == "Peter" && type == 1 && data == "Little"
-              exists=true
-              break
-            else
-              exists=false
-            end
-          end
-        end
-        exists.should == false
+      it "deletes a key if it has no subkeys" do
+        @registry.delete_key("HKCU\\Software\\Root\\Branch\\Fruit", false)
+        @registry.key_exists?("HKCU\\Software\\Root\\Branch\\Fruit").should == false
       end
-      it "does nothing if value does not exist" do
-         @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
-         #what to test for fall through ?
+
+      it "throws an exception if key to delete has subkeys and recursive is false" do
+        lambda { @registry.delete_key("HKCU\\Software\\Root\\Trunk", false) }.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
       end
-    end
-    #  delete_key
-    it "gives an error if the hive does not exist" do
-     lambda {@registry.delete_key("JKLM\\Software\\Root\\Branch\\Flower", false)}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
-    end
-    context "If the action is to delete" do
-      before (:all) do
-        #40 - 23757182 ajit dada
-        ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Fruit"
-        ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Fruit', Win32::Registry::KEY_ALL_ACCESS) do |reg|
-          reg['Apple', Win32::Registry::REG_MULTI_SZ] = ["Red", "Juicy"]
-        end
+
+      it "deletes a key if it has subkeys and recursive true" do
+        @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk").should == false
       end
-    it "deletes a key if it has no subkeys" do
-      @registry.delete_key("HKCU\\Software\\Root\\Branch\\Fruit", false)
-      exists = false
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each_key do |name|
-          if name == "Fruit"
-            exists=true
-            break
-          else
-            exists=false
-          end
-        end
-      end
-      exists.should == false
-    end
-    it "throws an exception if key to delete has subkeys and recursive is false" do
-      lambda { @registry.delete_key("HKCU\\Software\\Root\\Trunk", false) }.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
-      exists = true
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each_key do |name|
-          if name == "Trunk"
-            exists=true
-            break
-          else
-            exists=false
-          end
-        end
-      end
-      exists.should == true
-    end
-    it "deletes a key if it has subkeys and recursive true" do
-      @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
-      exists = true
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each_key do |name|
-          if name == "Trunk"
-            exists=true
-            break
-          else
-            exists=false
-          end
-        end
-      end
-      exists.should == false
-    end
+
       it "does nothing if the key does not exist" do
         @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
-        exists = true
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-          reg.each_key do |name|
-            if name == "Trunk"
-              exists=true
-              break
-            else
-              exists=false
-            end
-          end
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk").should == false
+      end
+
+    end
+  end
+
+  describe "has_subkeys" do
+    before(:all) do
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk"
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk") do |reg|
+        begin
+          reg.delete_key("Red", true)
+        rescue
         end
-        exists.should == false
       end
     end
 
-    # has_subkeys
-     it "would give an exception if the hive was missing" do
-        lambda {@registry.has_subkeys?("LMNO\\Software\\Root")}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
-     end
-    # it "would give and exception if the key was missing" do
-    # end
+    it "throws an exception if the hive was missing" do
+      lambda {@registry.has_subkeys?("LMNO\\Software\\Root")}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+    end
+
+    it "throws an exception if the key is missing" do
+      lambda {@registry.has_subkeys?("HKCU\\Software\\Root\\Trunk\\Red")}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+    end
+
     it "returns true if the key has subkeys" do
-      subkeys = @registry.has_subkeys?("HKCU\\Software\\Root")
-      exists = false
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each_key{|name| exists=true}
-      end
-      subkeys.should == true
+      @registry.has_subkeys?("HKCU\\Software\\Root").should == true
     end
 
-    #  get_subkeys
-    #  tests for keys or hive missing
+    it "returns false if the key has no subkeys" do
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk\\Red"
+      @registry.has_subkeys?("HKCU\\Software\\Root\\Trunk\\Red").should == false
+    end
+  end
+
+  describe "get_subkeys" do
     it "returns the array of subkeys for a given key" do
       subkeys = @registry.get_subkeys("HKCU\\Software\\Root")
       reg_subkeys = []
@@ -330,27 +302,28 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
       @registry.registry_system_architecture == 0x0100
     end
+  end
 
-   # it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
-   #   reg = Chef::Win32::Registry.new(@run_context, "i386")
-   #   reg.registry_constant = 0x0100
-   # end
+ # it "returns the requested_architecture if architecture specified is 32bit but CCR on 64 bit" do
+ #   reg = Chef::Win32::Registry.new(@run_context, "i386")
+ #   reg.registry_constant = 0x0100
+ # end
 
-    context "If the architecture is correct" do
-      before(:all) do
-        #       #how to preserve the original ohai and reapply later ?
-        node = Chef::Node.new
-        node.automatic_attrs[:kernel][:machine] = "i386"
-        events = Chef::EventDispatch::Dispatcher.new
-        @rc = Chef::RunContext.new(node, {}, events)
-      end
-      it "returns false if architecture is specified as 64bit but CCR on 32bit" do
-        lambda {Chef::Win32::Registry.new(@rc, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
-      end
-      it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
-        reg = Chef::Win32::Registry.new(@rc, "i386")
-        reg.registry_system_architecture == 0x0200
-      end
+  context "If the architecture is correct" do
+    before(:all) do
+      #       #how to preserve the original ohai and reapply later ?
+      node = Chef::Node.new
+      node.automatic_attrs[:kernel][:machine] = "i386"
+      events = Chef::EventDispatch::Dispatcher.new
+      @rc = Chef::RunContext.new(node, {}, events)
+    end
+    it "returns false if architecture is specified as 64bit but CCR on 32bit" do
+      lambda {Chef::Win32::Registry.new(@rc, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+    end
+    it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
+      reg = Chef::Win32::Registry.new(@rc, "i386")
+      reg.registry_system_architecture == 0x0200
+    end
  #     
  #     #key_exists
  #     #it "returns an error if the architecture is wrong" do
@@ -368,6 +341,5 @@ describe 'Chef::Win32::Registry', :windows_only do
  #      #pending
  #     #end
 
-    end
-
   end
+end
