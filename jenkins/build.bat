@@ -32,6 +32,11 @@ call chef-solo -c .\jenkins\solo.rb -j .\jenkins\windows-dna.json -l debug || GO
 
 call copy /Y omnibus.rb.example.windows omnibus.rb || GOTO :error
 
+rem # we're guaranteed to have the correct ruby installed into C:\Ruby193 from chef-solo cookbooks
+rem # bundle install from here now too
+set PATH=C:\Ruby193\bin;%PATH%
+call bundle install || GOTO :error
+
 call bundle exec rake projects:%omnibus_project%-windows || GOTO :error
      
 GOTO :EOF
