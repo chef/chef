@@ -113,14 +113,11 @@ EOBATCH
       gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
     end
 
-    puts '*' * 50
     gem_executables.flatten.each do |bin|
-      puts "templating #{bin}"
       @bin = bin
       File.open("C:\\opscode\\chef\\bin\\#{@bin}.bat", "w") do |f|
         f.puts batch_template.result(binding)
       end
     end
-    puts '*' * 50
   end
 end
