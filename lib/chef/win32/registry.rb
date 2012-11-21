@@ -204,6 +204,15 @@ class Chef
         return value
       end
 
+      def value_exists?(key_path, value)
+        key_exists!(key_path)
+        hive, key = get_hive_and_key(key_path)
+        hive.open(key) do |reg|
+          return true if reg.any? {|val| val == value[:name] }
+        end
+        return false
+      end
+
       def data_exists?(key_path, value)
         value_exists!(key_path, value)
         hive, key = get_hive_and_key(key_path)
@@ -254,15 +263,6 @@ class Chef
         raise Chef::Exceptions::Win32RegHiveMissing, "Registry Hive #{hive_name} does not exist" unless hive
 
         return hive, key
-      end
-
-      def value_exists?(key_path, value)
-        key_exists!(key_path)
-        hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
-          return true if reg.any? {|val| val == value[:name] }
-        end
-        return false
       end
 
       def value_exists!(key_path, value)
