@@ -396,7 +396,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       end
     end
 
-    describe "when running on an actual 64-bit server" do
+    describe "when running on an actual 64-bit server", :windows64_only do
       before(:all) do
         begin
           ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
