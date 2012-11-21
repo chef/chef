@@ -31,7 +31,7 @@ describe Chef::Shell do
       buffer = ""
       until buffer.include?(expected_value)
         begin
-          buffer << io.read_nonblock(1024)
+          buffer << io.read_nonblock(10)
         rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO
         end
         if Time.new - start > 15
@@ -85,8 +85,9 @@ describe Chef::Shell do
 
     it "sets the log_level from the command line" do
       output, exitstatus = run_chef_shell_with("-lfatal") do |out, keyboard|
-        keyboard.puts(%Q[puts "===\#\{Chef::Log.level}==="])
-        read_until(out, "===")
+        show_log_level_code = %q[puts "===#{Chef::Log.level}==="]
+        keyboard.puts(show_log_level_code)
+        read_until(out, show_log_level_code)
       end
       output.should include("===fatal===")
       exitstatus.should be_success
