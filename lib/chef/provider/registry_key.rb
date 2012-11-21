@@ -45,8 +45,10 @@ class Chef
         @current_resource.recursive(@new_resource.recursive)
         if registry.key_exists?(@new_resource.key)
           @current_resource.values(registry.get_values(@new_resource.key))
-          values_to_hash(@current_resource.values)
+        else
+          @current_resource.values(@new_resource.values)
         end
+        values_to_hash(@current_resource.values)
         @current_resource
       end
 
@@ -55,7 +57,12 @@ class Chef
       end
 
       def values_to_hash(values)
-        @name_hash = Hash[values.map { |val| [val.delete(:name), val] }]
+        if values
+         @name_hash = Hash[values.map { |val| [val.delete(:name), val] }]
+        else
+          @name_hash = {}
+        end
+        puts @name_hash
       end
 
       def define_resource_requirements
