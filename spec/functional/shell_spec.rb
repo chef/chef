@@ -26,17 +26,57 @@ describe Chef::Shell do
   # chef/client.rb
   describe "smoke tests", :unix_only => true do
 
+    def read_until(io, expected_value)
+      start = Time.new
+      buffer = ""
+      until buffer.include?(expected_value)
+        begin
+          buffer << io.read_nonblock(1024)
+        rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO
+        end
+        if Time.new - start > 15
+          STDERR.puts "did not read expected value `#{expected_value}' within 15s"
+          STDERR.puts "Buffer so far: #{buffer}"
+        end
+      end
+      pp :buffer_read => buffer
+      buffer
+    end
+
+    def wait_or_die(pid)
+      start = Time.new
+
+      until exitstatus = Process.waitpid2(pid, Process::WNOHANG)
+        if Time.new - start > 5
+          STDERR.puts("chef-shell tty did not exit cleanly, killing it")
+          Process.kill(:KILL, pid)
+        end
+        sleep 0.1
+      end
+      exitstatus[1]
+    end
+
     def run_chef_shell_with(options)
       # Windows ruby installs don't (always?) have PTY,
       # so hide the require here
       require 'pty'
       path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
       reader, writer, pid = PTY.spawn("#{path_to_chef_shell} #{options}")
-      yield writer if block_given?
-      writer.puts("exit")
-      output = reader.read
-      exitstatus = Process.waitpid2(pid)[1]
+      read_until(reader, "chef >")
+      yield reader, writer if block_given?
+      writer.puts('"done"')
+      output = read_until(reader, '=> "done"')
+      writer.print("exit\n")
+      read_until(reader, "exit")
+      read_until(reader, "exit")
+      writer.close
+
+      exitstatus = wait_or_die(pid)
+
+      pp :exit => exitstatus, :exited => exitstatus.exited? , :pid => pid
       [output, exitstatus]
+    rescue PTY::ChildExited => e
+      [output, e.status]
     end
 
     it "boots correctly with -lauto" do
@@ -45,8 +85,9 @@ describe Chef::Shell do
     end
 
     it "sets the log_level from the command line" do
-      output, exitstatus = run_chef_shell_with("-lfatal") do |shell|
-        shell.puts(%Q[puts "===\#\{Chef::Log.level}==="])
+      output, exitstatus = run_chef_shell_with("-lfatal") do |out, keyboard|
+        keyboard.puts(%Q[puts "===\#\{Chef::Log.level}==="])
+        read_until(out, "===")
       end
       output.should include("===fatal===")
       exitstatus.should be_success
