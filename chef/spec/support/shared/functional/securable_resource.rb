@@ -43,7 +43,14 @@ shared_context "setup correct permissions" do
     end
   end
 
-  # FIXME: windows
+  context "on windows", :windows_only do
+    require 'chef/win32/security/securable_object'
+    before :each do
+      so = Chef::ReservedNames::Win32::Security::SecurableObject.new(path.dup)
+      so.owner = SID.Guest
+      so.group = SID.Everyone
+    end
+  end
 end
 
 shared_context "setup broken permissions" do
@@ -62,7 +69,14 @@ shared_context "setup broken permissions" do
     end
   end
 
-  # FIXME: windows
+  context "on windows", :windows_only do
+    require 'chef/win32/security/securable_object'
+    before :each do
+      so = Chef::ReservedNames::Win32::Security::SecurableObject.new(path.dup)
+      so.owner = SID.Guest
+      so.group = SID.Everyone
+    end
+  end
 end
 
 shared_examples_for "a securable resource" do
