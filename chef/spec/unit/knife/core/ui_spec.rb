@@ -40,7 +40,22 @@ describe Chef::Knife::UI do
     end
   end
 
+  shared_examples "an output mehthod handling IO exceptions" do |method|
+    it "should throw Errno::EIO exceptions" do
+      @out.stub(:puts).and_raise(Errno::EIO)
+      @err.stub(:puts).and_raise(Errno::EIO)
+      lambda {@ui.send(method, "hi")}.should raise_error(Errno::EIO)
+    end
+    it "should ignore Errno::EPIPE exceptions (CHEF-3516)" do
+      @out.stub(:puts).and_raise(Errno::EPIPE)
+      @err.stub(:puts).and_raise(Errno::EPIPE)
+      lambda {@ui.send(method, "hi")}.should_not raise_error(Errno::EPIPE)
+    end
+  end
+
   describe "output" do
+    it_behaves_like "an output mehthod handling IO exceptions", :output
+
     it "formats strings appropriately" do
       @ui.output("hi")
       @out.string.should == "hi\n"
@@ -185,6 +200,18 @@ a:
 b: c
 EOM
     end
+  end
+
+  describe "warn" do
+    it_behaves_like "an output mehthod handling IO exceptions", :warn
+  end
+
+  describe "error" do
+    it_behaves_like "an output mehthod handling IO exceptions", :warn
+  end
+
+  describe "fatal" do
+    it_behaves_like "an output mehthod handling IO exceptions", :warn
   end
 
   describe "format_for_display" do
