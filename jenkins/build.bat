@@ -17,7 +17,7 @@ if "%omnibus_project%"=="" (
 
 rem # IF NOT EXIST jenkins\chef-solo\cache mkdir jenkins\chef-solo\cache
 
-IF "%clean%"=="true" (
+IF "%CLEAN%"=="true" (
   rmdir /Q /S c:\opscode 
   rmdir /Q /S c:\omnibus-ruby
   rmdir /Q /S .\pkg

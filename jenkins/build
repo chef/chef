@@ -62,7 +62,8 @@ fi
 
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
-  sudo mkdir -p "/opt/${project_name}" && sudo chown jenkins-node "/opt/${project_name}"
+  sudo mkdir -p "/opt/${project_name}"
+  sudo chown jenkins-node "/opt/${project_name}" || sudo chown jenkins "/opt/${project_name}"
   sudo rm -rf /var/cache/omnibus/pkg/* || true
   sudo rm -rf /var/cache/omnibus/src/* || true
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
