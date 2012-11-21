@@ -43,7 +43,7 @@ class Chef
       def get_values(key_path)
         hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
-        values = hive.open(key) do |reg|
+        values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.map { |name, type, data| {:name=>name, :type=>type, :data=>data} }
         end
       end
@@ -170,7 +170,7 @@ class Chef
       def has_subkeys?(key_path)
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
+        hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each_key{ |key| return true }
         end
         return false
@@ -180,7 +180,7 @@ class Chef
         subkeys = []
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
+        hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each_key{ |current_key| subkeys << current_key }
         end
         return subkeys
@@ -208,7 +208,7 @@ class Chef
       def value_exists?(key_path, value)
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
+        hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           return true if reg.any? {|val| val == value[:name] }
         end
         return false
@@ -217,7 +217,7 @@ class Chef
       def data_exists?(key_path, value)
         value_exists!(key_path, value)
         hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
+        hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
             if val_name == value[:name]
               type_new = get_type_from_name(value[:type])
@@ -275,7 +275,7 @@ class Chef
       def type_matches?(key_path, value)
         value_exists!(key_path, value)
         hive, key = get_hive_and_key(key_path)
-        hive.open(key) do |reg|
+        hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type|
             if val_name == value[:name]
               type_new = get_type_from_name(value[:type])

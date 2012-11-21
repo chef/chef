@@ -398,35 +398,44 @@ describe 'Chef::Win32::Registry', :windows_only do
 
     describe "when running on an actual 64-bit server" do
       before(:all) do
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
-          begin
+        begin
+          ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
             reg.delete_key("Trunk", true)
-          rescue
           end
+        rescue
         end
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
-          begin
+        begin
+          ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
             reg.delete_key("Trunk", true)
-          rescue
           end
+        rescue
+        end
+      end
+
+      after(:all) do
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
+          reg.delete_key("Trunk", true)
+        end
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
+          reg.delete_key("Trunk", true)
         end
       end
 
       it "can set different values in 32-bit and 64-bit registry keys" do
         @registry.architecture = "i386"
-        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Red", true)
-        @registry.create_value("HKCU\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
+        @registry.create_key("HKLM\\Software\\Root\\Trunk\\Red", true)
+        @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
         @registry.architecture = "x86_64"
-        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Blue", true)
-        @registry.create_value("HKCU\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+        @registry.create_key("HKLM\\Software\\Root\\Trunk\\Blue", true)
+        @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
         @registry.architecture = "x86_64"
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Red").should == true
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Blue").should == false
-        @registry.data_exists?("HKCU\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == false
+        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == false
+        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == true
+        @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
         @registry.architecture = "i386"
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Red").should == true
-        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Blue").should == false
-        @registry.data_exists?("HKCU\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == false
+        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == true
+        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == false
+        @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
       end
     end
   end
