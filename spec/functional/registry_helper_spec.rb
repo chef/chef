@@ -1,6 +1,6 @@
 #
 # Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
+# Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,53 +99,40 @@ describe 'Chef::Win32::Registry', :windows_only do
                         {:name=>"Roots", :type=>7, :data=>["strong roots", "healthy tree"]}]
     end
 
-    it "returns an error if the key does not exist" do
+    it "throws an exception if the key does not exist" do
       lambda {@registry.get_values("HKCU\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+    end
+
+    it "throws an exception if the hive does not exist" do
+      lambda {@registry.get_values("JKLM\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
   end
 
-  #  update_value
-  it "updates a value if the key, value exist and type matches and value different" do
-    @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
-    ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch\\Flower", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-      reg.each do |name, type, data|
-        if name == 'Petals'
-          if data == ["Yellow", "Changed Color"]
-            @exists=true
-          else
-            @exists=false
-          end
-        end
-      end
-    end
-    @exists.should == true
-    #Chef::Log.should_receive(:debug).with("Value is updated")
-    end
-    it "gives an error if key and value exists and type does not match" do
-      lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Yellow"})}.should raise_error(Chef::Exceptions::Win32RegTypesMismatch)
-    end
-    it "gives an error if key exists and value does not" do
-      lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegValueMissing)
-    end
-    it "does nothing if data,type and name parameters for  the value are same" do
+  describe "update_value" do
+    it "updates a value if the key, value exist and type matches and value different" do
       @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch\\Flower", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg.each do |name, type, data|
-          if name == 'Petals'
-            if data == ["Yellow", "Changed Color"]
-              @exists=true
-            else
-              @exists=false
-            end
-          end
-        end
-        #Chef::Log.should_receive("Data is the same, value not updated")
-      end
-    end
-    it "gives an error if the key does not exist" do
-      lambda {@registry.update_value("HKCU\\Software\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
     end
 
+    it "throws an exception if key and value exists and type does not match" do
+      lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Yellow"})}.should raise_error(Chef::Exceptions::Win32RegTypesMismatch)
+    end
+
+    it "throws an exception if key exists and value does not" do
+      lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegValueMissing)
+    end
+
+    it "does nothing if data,type and name parameters for the value are same" do
+      @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
+    end
+
+    it "throws an exception if the key does not exist" do
+      lambda {@registry.update_value("HKCU\\Software\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+    end
+  end
+
+  describe "create_value" do
     #  create_value
     it "creates a value if it does not exist" do
       creates = @registry.create_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"})
@@ -173,6 +160,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       @exists.should == true
       #test with timestamp?
     end
+  end
 
   describe "create_key" do
     before(:all) do
@@ -320,7 +308,7 @@ describe 'Chef::Win32::Registry', :windows_only do
         @node.automatic_attrs[:kernel][:machine] = @saved_kernel_machine
       end
 
-      context "reggistry constructor" do
+      context "registry constructor" do
         it "throws an exception if requested architecture is 64bit but running on 32bit" do
           lambda {Chef::Win32::Registry.new(@run_context, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
         end
@@ -328,11 +316,13 @@ describe 'Chef::Win32::Registry', :windows_only do
         it "can correctly set the requested architecture to 32-bit" do
           @r = Chef::Win32::Registry.new(@run_context, "i386")
           @r.architecture.should == "i386"
+          @r.registry_system_architecture.should == 0x0200
         end
 
         it "can correctly set the requested architecture to :machine" do
           @r = Chef::Win32::Registry.new(@run_context, :machine)
           @r.architecture.should == :machine
+          @r.registry_system_architecture.should == 0x0200
         end
       end
 
@@ -341,26 +331,102 @@ describe 'Chef::Win32::Registry', :windows_only do
           lambda {@registry.architecture = "x86_64"}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
         end
 
-        it "sets the reqeusted architecture to :machine if passed :machine" do
+        it "sets the requested architecture to :machine if passed :machine" do
           @registry.architecture = :machine
           @registry.architecture.should == :machine
+          @registry.registry_system_architecture.should == 0x0200
         end
 
         it "sets the requested architecture to 32-bit if passed i386 as a string" do
           @registry.architecture = "i386"
           @registry.architecture.should == "i386"
+          @registry.registry_system_architecture.should == 0x0200
         end
-      end
-
-      it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
-        reg = Chef::Win32::Registry.new(@run_context, "i386")
-        reg.registry_system_architecture == 0x0200
       end
     end
 
     describe "on 64-bit" do
       before(:all) do
+        @saved_kernel_machine = @node.automatic_attrs[:kernel][:machine]
         @node.automatic_attrs[:kernel][:machine] = "x86_64"
+      end
+
+      after(:all) do
+        @node.automatic_attrs[:kernel][:machine] = @saved_kernel_machine
+      end
+
+      context "registry constructor" do
+        it "can correctly set the requested architecture to 32-bit" do
+          @r = Chef::Win32::Registry.new(@run_context, "i386")
+          @r.architecture.should == "i386"
+          @r.registry_system_architecture.should == 0x0200
+        end
+
+        it "can correctly set the requested architecture to 64-bit" do
+          @r = Chef::Win32::Registry.new(@run_context, "x86_64")
+          @r.architecture.should == "x86_64"
+          @r.registry_system_architecture.should == 0x0100
+        end
+
+        it "can correctly set the requested architecture to :machine" do
+          @r = Chef::Win32::Registry.new(@run_context, :machine)
+          @r.architecture.should == :machine
+          @r.registry_system_architecture.should == 0x0100
+        end
+      end
+
+      context "architecture setter" do
+        it "sets the requested architecture to 64-bit if passed 64-bit" do
+          @registry.architecture = "x86_64"
+          @registry.architecture.should == "x86_64"
+          @registry.registry_system_architecture.should == 0x0100
+        end
+
+        it "sets the requested architecture to :machine if passed :machine" do
+          @registry.architecture = :machine
+          @registry.architecture.should == :machine
+          @registry.registry_system_architecture.should == 0x0100
+        end
+
+        it "sets the requested architecture to 32-bit if passed 32-bit" do
+          @registry.architecture = "i386"
+          @registry.architecture.should == "i386"
+          @registry.registry_system_architecture.should == 0x0200
+        end
+      end
+    end
+
+    describe "when running on an actual 64-bit server" do
+      before(:all) do
+        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
+          begin
+            reg.delete_key("Trunk", true)
+          rescue
+          end
+        end
+        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
+          begin
+            reg.delete_key("Trunk", true)
+          rescue
+          end
+        end
+      end
+
+      it "can set different values in 32-bit and 64-bit registry keys" do
+        @registry.architecture = "i386"
+        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Red", true)
+        @registry.create_value("HKCU\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
+        @registry.architecture = "x86_64"
+        @registry.create_key("HKCU\\Software\\Root\\Trunk\\Blue", true)
+        @registry.create_value("HKCU\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+        @registry.architecture = "x86_64"
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Red").should == true
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Blue").should == false
+        @registry.data_exists?("HKCU\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == false
+        @registry.architecture = "i386"
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Red").should == true
+        @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Blue").should == false
+        @registry.data_exists?("HKCU\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == false
       end
     end
   end
