@@ -16,7 +16,7 @@
 #
 
 name "erchef"
-version "a23758f2bd694c8859eb3ac3cb2a1c0f346f70de"
+version "f8646285109c831e238634c0240f90cbdf165595"
 
 dependencies ["erlang", "rsync", "curl"]
 
