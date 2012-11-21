@@ -39,7 +39,6 @@ describe Chef::Shell do
           STDERR.puts "Buffer so far: #{buffer}"
         end
       end
-      pp :buffer_read => buffer
       buffer
     end
 
@@ -74,7 +73,6 @@ describe Chef::Shell do
 
       exitstatus = wait_or_die(pid)
 
-      pp :exit => exitstatus, :exited => exitstatus.exited? , :pid => pid
       [output, exitstatus]
     rescue PTY::ChildExited => e
       [output, e.status]
