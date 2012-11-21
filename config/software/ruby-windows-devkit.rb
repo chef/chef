@@ -27,5 +27,5 @@ dependencies ["ruby-windows"]
 build do
   command "DevKit-tdm-32-#{version}-sfx.exe -y -oC:\\opscode\\chef\\embedded"
   command "echo - C:/opscode/chef/embedded > config.yml", :cwd => "C:\\opscode\\chef\\embedded"
-  command "bin\\ruby.exe dk.rb install", :cwd => "C:\\opscode\\chef\\embedded"
+  ruby "dk.rb install", :cwd => "C:\\opscode\\chef\\embedded"
 end
