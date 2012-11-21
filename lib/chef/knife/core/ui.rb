@@ -64,14 +64,20 @@ class Chef
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       def msg(message)
-        stdout.puts message
+        begin
+          stdout.puts message
+        rescue Errno::EPIPE
+        end
       end
 
       alias :info :msg
 
       # Prints a msg to stderr. Used for warn, error, and fatal.
       def err(message)
-        stderr.puts message
+        begin
+          stderr.puts message
+        rescue Errno::EPIPE
+        end
       end
 
       # Print a warning message
@@ -143,7 +149,10 @@ class Chef
       end
 
       def pretty_print(data)
-        stdout.puts data
+        begin
+          stdout.puts data
+        rescue Errno::EPIPE
+        end
       end
 
       def edit_data(data, parse_output=true)
