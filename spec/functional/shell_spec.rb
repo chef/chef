@@ -18,7 +18,6 @@
 
 require 'spec_helper'
 require 'chef/version'
-require 'pty'
 
 describe Chef::Shell do
 
@@ -28,6 +27,9 @@ describe Chef::Shell do
   describe "smoke tests", :unix_only => true do
 
     def run_chef_shell_with(options)
+      # Windows ruby installs don't (always?) have PTY,
+      # so hide the require here
+      require 'pty'
       path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
       reader, writer, pid = PTY.spawn("#{path_to_chef_shell} #{options}")
       yield writer if block_given?
