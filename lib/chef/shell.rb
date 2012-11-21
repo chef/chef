@@ -76,6 +76,8 @@ module Shell
 
   def self.setup_logger
     Chef::Config[:log_level] ||= :warn
+    # If log_level is auto, change it to warn
+    Chef::Config[:log_level] = :warn if Chef::Config[:log_level] == :auto
     Chef::Log.init(STDERR)
     Mixlib::Authentication::Log.logger = Ohai::Log.logger = Chef::Log.logger
     Chef::Log.level = Chef::Config[:log_level] || :warn
@@ -229,7 +231,7 @@ FOOTER
       :short  => "-l LOG_LEVEL",
       :long   => '--log-level LOG_LEVEL',
       :description => "Set the logging level",
-      :proc         => proc { |level| Chef::Log.level = level.to_sym }
+      :proc         => proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
 
     option :standalone,
       :short        => "-a",

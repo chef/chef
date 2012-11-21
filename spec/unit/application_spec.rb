@@ -20,10 +20,15 @@ require 'spec_helper'
 
 describe Chef::Application do
   before do
+    @original_conf = Chef::Config.configuration
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
     Dir.stub!(:chdir).and_return(0)
     @app.stub!(:reconfigure)
+  end
+
+  after do
+    Chef::Config.configuration.replace(@original_conf)
   end
 
   describe "reconfigure" do
@@ -170,14 +175,14 @@ describe Chef::Application do
     end
   end
 
-  describe "configure_logging" do
+  describe "when configuring the logger" do
     before do
       @app = Chef::Application.new
       Chef::Log.stub!(:init)
-      Chef::Log.stub!(:level=)
     end
 
     it "should initialise the chef logger" do
+      Chef::Log.stub!(:level=)
       Chef::Log.should_receive(:init).with(Chef::Config[:log_location]).and_return(true)
       @app.configure_logging
     end
@@ -187,6 +192,56 @@ describe Chef::Application do
       @app.configure_logging
     end
 
+    context "and log_level is :auto" do
+      before do
+        Chef::Config[:log_level] = :auto
+      end
+
+      context "and STDOUT is to a tty" do
+        before do
+          STDOUT.stub!(:tty?).and_return(true)
+        end
+
+        it "configures the log level to :warn" do
+          @app.configure_logging
+          Chef::Log.level.should == :warn
+        end
+
+        context "and force_logger is configured" do
+          before do
+            Chef::Config[:force_logger] = true
+          end
+
+          it "configures the log level to info" do
+            @app.configure_logging
+            Chef::Log.level.should == :info
+          end
+        end
+      end
+
+      context "and STDOUT is not to a tty" do
+        before do
+          STDOUT.stub!(:tty?).and_return(false)
+        end
+
+        it "configures the log level to :info" do
+          @app.configure_logging
+          Chef::Log.level.should == :info
+        end
+
+        context "and force_formatter is configured" do
+          before do
+            Chef::Config[:force_formatter] = true
+          end
+          it "sets the log level to :warn" do
+            @app.configure_logging
+            Chef::Log.level.should == :warn
+          end
+        end
+      end
+
+
+    end
   end
 
   describe "class method: fatal!" do
