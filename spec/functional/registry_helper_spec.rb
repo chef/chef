@@ -309,37 +309,59 @@ describe 'Chef::Win32::Registry', :windows_only do
  #   reg.registry_constant = 0x0100
  # end
 
-  context "If the architecture is correct" do
-    before(:all) do
-      #       #how to preserve the original ohai and reapply later ?
-      node = Chef::Node.new
-      node.automatic_attrs[:kernel][:machine] = "i386"
-      events = Chef::EventDispatch::Dispatcher.new
-      @rc = Chef::RunContext.new(node, {}, events)
-    end
-    it "returns false if architecture is specified as 64bit but CCR on 32bit" do
-      lambda {Chef::Win32::Registry.new(@rc, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
-    end
-    it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
-      reg = Chef::Win32::Registry.new(@rc, "i386")
-      reg.registry_system_architecture == 0x0200
-    end
- #     
- #     #key_exists
- #     #it "returns an error if the architecture is wrong" do
- #     #    lambda {@registry.key_exists?("HKCU\\Software\\Branch\\Flower")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
- #     #end
- #     #create_key
- #     #create_value
- #     #update_value
- #     #get_value
- #     #delete_Value
- #     #delete_key
- #     #has_subkey
- #     #get_subkey
- #     #it "returns false if the system architecture says 32bit but system is 64bit" do
- #      #pending
- #     #end
+  describe "architecture" do
+    describe "on 32-bit" do
+      before(:all) do
+        @saved_kernel_machine = @node.automatic_attrs[:kernel][:machine]
+        @node.automatic_attrs[:kernel][:machine] = "i386"
+      end
 
+      after(:all) do
+        @node.automatic_attrs[:kernel][:machine] = @saved_kernel_machine
+      end
+
+      context "reggistry constructor" do
+        it "throws an exception if requested architecture is 64bit but running on 32bit" do
+          lambda {Chef::Win32::Registry.new(@run_context, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+        end
+
+        it "can correctly set the requested architecture to 32-bit" do
+          @r = Chef::Win32::Registry.new(@run_context, "i386")
+          @r.architecture.should == "i386"
+        end
+
+        it "can correctly set the requested architecture to :machine" do
+          @r = Chef::Win32::Registry.new(@run_context, :machine)
+          @r.architecture.should == :machine
+        end
+      end
+
+      context "architecture setter" do
+        it "throws an exception if requested architecture is 64bit but running on 32bit" do
+          lambda {@registry.architecture = "x86_64"}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+        end
+
+        it "sets the reqeusted architecture to :machine if passed :machine" do
+          @registry.architecture = :machine
+          @registry.architecture.should == :machine
+        end
+
+        it "sets the requested architecture to 32-bit if passed i386 as a string" do
+          @registry.architecture = "i386"
+          @registry.architecture.should == "i386"
+        end
+      end
+
+      it "returns the architecture_requested if architecture specified and architecture of the CCR box matches" do
+        reg = Chef::Win32::Registry.new(@run_context, "i386")
+        reg.registry_system_architecture == 0x0200
+      end
+    end
+
+    describe "on 64-bit" do
+      before(:all) do
+        @node.automatic_attrs[:kernel][:machine] = "x86_64"
+      end
+    end
   end
 end
