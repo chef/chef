@@ -34,9 +34,10 @@ describe Chef::Shell do
           buffer << io.read_nonblock(10)
         rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO
         end
-        if Time.new - start > 15
-          STDERR.puts "did not read expected value `#{expected_value}' within 15s"
+        if Time.new - start > 30
+          STDERR.puts "did not read expected value `#{expected_value}' within 30s"
           STDERR.puts "Buffer so far: #{buffer}"
+          break
         end
       end
       buffer
