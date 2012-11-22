@@ -40,16 +40,17 @@ class Chef
           # If we are a cookbook or a cookbook subdirectory, empty directories
           # underneath us are ignored (since they cannot be uploaded)
           elsif parent && parent.name === "cookbooks" && parent.path == "/cookbooks"
-            @ignore_empty_directories = true
-          elsif parent && parent.ignore_empty_directories?
-            @ignore_empty_directories = true
+            @cookbook_top = self
+          elsif parent && parent.cookbook_top
+            @cookbook_top = parent.cookbook_top
           end
         end
 
         attr_reader :chefignore
+        attr_reader :cookbook_top
 
-        def ignore_empty_directories?
-          @ignore_empty_directories
+        def is_cookbook_entry?
+          !cookbook_top.nil?
         end
 
         def chef_object
@@ -73,34 +74,26 @@ class Chef
                                                map { |entry| ChefRepositoryFileSystemEntry.new(entry, self) }
         end
 
-        attr_reader :chefignore
-
         private
 
         def ignored?(child_name)
           # empty directories inside a cookbook are ignored
-          if ignore_empty_directories?
+          if is_cookbook_entry?
             child_path = PathUtils.join(file_path, child_name)
             if File.directory?(child_path) && Dir.entries(child_path) == [ '.', '..' ]
               return true
             end
-          end
 
-          ignorer = self
-          begin
-            if ignorer.chefignore
-              # Grab the path from entry to child
-              path_to_child = child_name
-              child = self
-              while child != ignorer
-                path_to_child = PathUtils.join(child.name, path_to_child)
-                child = child.parent
-              end
-              # Check whether that relative path is ignored
-              return ignorer.chefignore.ignored?(path_to_child)
+            # Grab the path from the cookbook top to the child
+            # (e.g. cookbooks/apache2/a/b/c -> a/b/c)
+            cookbook_child_path = child_name
+            cookbook_entry = self
+            while cookbook_entry != cookbook_top
+              cookbook_child_path = PathUtils.join(cookbook_entry.name, cookbook_child_path)
+              cookbook_entry = cookbook_entry.parent
             end
-            ignorer = ignorer.parent
-          end while ignorer
+            return cookbook_top.parent.chefignore.ignored?(cookbook_child_path)
+          end
         end
 
       end
