@@ -128,9 +128,9 @@ class Chef
     #--
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
-
     attr_reader :run_status
-
+    attr_reader :events
+    
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs
