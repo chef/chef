@@ -45,8 +45,6 @@ class Chef
         @current_resource.recursive(@new_resource.recursive)
         if registry.key_exists?(@new_resource.key)
           @current_resource.values(registry.get_values(@new_resource.key))
-        else
-          @current_resource.values(@new_resource.values)
         end
         values_to_hash(@current_resource.values)
         @current_resource
@@ -58,11 +56,10 @@ class Chef
 
       def values_to_hash(values)
         if values
-         @name_hash = Hash[values.map { |val| [val.delete(:name), val] }]
+         @name_hash = Hash[values.map { |val| [val[:name], val] }]
         else
           @name_hash = {}
         end
-        puts @name_hash
       end
 
       def define_resource_requirements
@@ -84,17 +81,16 @@ class Chef
       end
 
       def action_create
-        if !@current_resource.key
+        if !registry.key_exists?(@current_resource.key)
           registry.create_key(@new_resource.key, @new_resource.recursive)
         end
         @new_resource.values.each do |value|
           if @name_hash.has_key?(value[:name])
-            if @name_hash[value[:name]][:type] == registry.get_type_from_num(value[:type])
+            if registry.type_matches!(@new_resource.key, value)
+           # if @name_hash[value[:name]][:type] == registry.get_type_from_num(value[:type])
               if @name_hash[value[:name]][:data] != value[:data]
                 registry.update_value(@new_resource.key, value)
               end
-            else
-              # Raise exception that types are different
             end
           else
             registry.create_value(@new_resource.key, value)
@@ -117,7 +113,7 @@ class Chef
 #          create_all_keys(@new_resource.key, @new_resource.value, architecture, create_intermediate=false)
 #        end
 #      end
-#
+
 #      def action_delete
 #        if key_exists?(@new_resource.key, @new_resource.value, architecture)
 #          registry_delete(@new_resource.key, @new_resource.value, architecture)
