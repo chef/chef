@@ -232,6 +232,34 @@ class Chef
         return false
       end
 
+      def value_exists!(key_path, value)
+        unless value_exists?(key_path, value)
+          raise Chef::Exceptions::Win32RegValueMissing, "Registry key #{key_path} has no value named #{value[:name]}"
+        end
+      end
+
+      def type_matches?(key_path, value)
+        value_exists!(key_path, value)
+        hive, key = get_hive_and_key(key_path)
+        hive.open(key) do |reg|
+          reg.each do |val_name, val_type|
+            if val_name == value[:name]
+              type_new = get_type_from_name(value[:type])
+              if val_type == type_new
+                return true
+              end
+            end
+          end
+        end
+        return false
+      end
+
+      def type_matches!(key_path, value)
+        unless type_matches?(key_path, value)
+          raise Chef::Exceptions::Win32RegTypesMismatch, "Registry key #{key_path} has a value #{value[:name]} with a type that is not #{value[:type]}"
+        end
+      end
+
       private
 
       def node
@@ -266,37 +294,9 @@ class Chef
         return hive, key
       end
 
-      def value_exists!(key_path, value)
-        unless value_exists?(key_path, value)
-          raise Chef::Exceptions::Win32RegValueMissing, "Registry key #{key_path} has no value named #{value[:name]}"
-        end
-      end
-
-      def type_matches?(key_path, value)
-        value_exists!(key_path, value)
-        hive, key = get_hive_and_key(key_path)
-        hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.each do |val_name, val_type|
-            if val_name == value[:name]
-              type_new = get_type_from_name(value[:type])
-              if val_type == type_new
-                return true
-              end
-            end
-          end
-        end
-        return false
-      end
-
-      def type_matches!(key_path, value)
-        unless type_matches?(key_path, value)
-          raise Chef::Exceptions::Win32RegTypesMismatch, "Registry key #{key_path} has a value #{value[:name]} with a type that is not #{value[:type]}"
-        end
-      end
-
       def get_type_from_name(val_type)
         value = {
-          :binary || 1 => ::Win32::Registry::REG_BINARY,
+          :binary => ::Win32::Registry::REG_BINARY,
           :string => ::Win32::Registry::REG_SZ,
           :multi_string => ::Win32::Registry::REG_MULTI_SZ,
           :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
