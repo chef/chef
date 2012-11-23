@@ -1,0 +1,3 @@
+cookbook 'rvm',
+:git => 'https://github.com/fnichol/chef-rvm.git',
+:ref => 'd6cdb2ab93c421ca6234cbaf5548c914eba4084f'

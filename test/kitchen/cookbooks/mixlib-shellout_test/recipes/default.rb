@@ -1,8 +1,8 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2012, Opscode, Inc. (<legal@opscode.com>)
+# Cookbook Name:: mixlib-shellout_test
+# Recipe:: default
 #
-# License:: Apache License, Version 2.0
+# Copyright 2012, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,16 @@
 # limitations under the License.
 #
 
-integration_test "mixlib-shellout" do
-  language 'ruby'
-  runtimes ['1.9.3']
-  install 'bundle install --without kitchen'
-  script 'bundle exec rspec spec'
-  run_list_extras ['mixlib-shellout_test::default']
-end
+node.set['rvm']['user_installs'] = [
+  { 'user'          => 'vagrant',
+    'default_ruby'  => 'ruby-1.9.3-p327',
+    'rubies'        => ['1.9.3']
+  }
+]
+
+node.set['rvm']['gems'] = {
+  "ruby-1.9.3-p327" => [
+    { 'name' => 'bundler' }
+  ]
+}
+include_recipe "rvm::user"
