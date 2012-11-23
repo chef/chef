@@ -68,6 +68,7 @@ class Chef
           stdout.puts message
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
+          exit 0
         end
       end
 
@@ -79,6 +80,7 @@ class Chef
           stderr.puts message
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
+          exit 0
         end
       end
 
@@ -155,6 +157,7 @@ class Chef
           stdout.puts data
         rescue Errno::EPIPE => e
           raise e if @config[:verbosity] >= 2
+          exit 0
         end
       end
 
