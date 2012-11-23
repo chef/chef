@@ -66,7 +66,8 @@ class Chef
       def msg(message)
         begin
           stdout.puts message
-        rescue Errno::EPIPE
+        rescue Errno::EPIPE => e
+          raise e if @config[:verbosity] >= 2
         end
       end
 
@@ -76,7 +77,8 @@ class Chef
       def err(message)
         begin
           stderr.puts message
-        rescue Errno::EPIPE
+        rescue Errno::EPIPE => e
+          raise e if @config[:verbosity] >= 2
         end
       end
 
@@ -151,7 +153,8 @@ class Chef
       def pretty_print(data)
         begin
           stdout.puts data
-        rescue Errno::EPIPE
+        rescue Errno::EPIPE => e
+          raise e if @config[:verbosity] >= 2
         end
       end
 

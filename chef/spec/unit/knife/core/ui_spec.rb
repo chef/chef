@@ -46,10 +46,18 @@ describe Chef::Knife::UI do
       @err.stub(:puts).and_raise(Errno::EIO)
       lambda {@ui.send(method, "hi")}.should raise_error(Errno::EIO)
     end
+
     it "should ignore Errno::EPIPE exceptions (CHEF-3516)" do
       @out.stub(:puts).and_raise(Errno::EPIPE)
       @err.stub(:puts).and_raise(Errno::EPIPE)
       lambda {@ui.send(method, "hi")}.should_not raise_error(Errno::EPIPE)
+    end
+
+    it "should throw Errno::EPIPE exceptions with -VV (CHEF-3516)" do
+      @config[:verbosity] = 2
+      @out.stub(:puts).and_raise(Errno::EPIPE)
+      @err.stub(:puts).and_raise(Errno::EPIPE)
+      lambda {@ui.send(method, "hi")}.should raise_error(Errno::EPIPE)
     end
   end
 
