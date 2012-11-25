@@ -39,10 +39,6 @@ class Chef
     # break, e.g., Chef 11.
     attr_accessor :action
 
-    def whyrun_supported?
-      false
-    end
-
     def initialize(new_resource, run_context)
       @new_resource = new_resource
       @action = action
