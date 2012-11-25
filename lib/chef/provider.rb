@@ -104,7 +104,19 @@ class Chef
       end
 
       define_resource_requirements
-      process_resource_requirements
+      # sometimes, before notifications can avoid requirements exceptions,
+      # so we need to catch them here, before this kind of notifications are run
+      begin
+        process_resource_requirements
+      rescue StandardError => e
+        if whyrun_supported? && @new_resource.has_before_notifications?
+          # now check if the exception occurs again after running before notifications
+          @new_resource.run_before_notifications
+          process_resource_requirements
+        else
+          raise e
+        end
+      end
 
       # user-defined providers including LWRPs may
       # not include whyrun support - if they don't support it
@@ -118,15 +130,15 @@ class Chef
       elsif whyrun_supported? && !requirements.action_blocked?(@action)
         send("action_#{@action}")
       else
-        events.resource_bypassed(@new_resource, @action, self)
+        events.resource_bypassed(@new_resource, @action, self) unless whyrun_supported?
       end
 
       set_updated_status
-
       cleanup_after_converge
     end
 
     def process_resource_requirements
+      requirements.clean_blocked_actions
       requirements.run(:all_actions) unless @action == :nothing
       requirements.run(@action)
     end

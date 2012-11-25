@@ -266,6 +266,10 @@ class Chef
           @blocked_actions.include?(action)
         end
 
+        def clean_blocked_actions
+          @blocked_actions = []
+        end
+
         # Define a new Assertion.
         #
         # Takes a list of action names for which the assertion should be made.
