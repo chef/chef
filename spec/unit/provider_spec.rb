@@ -131,6 +131,28 @@ describe Chef::Provider do
         @resource.should be_updated
         @resource.should be_updated_by_last_action
       end
+
+      describe "and has some requirements" do
+        before do
+          Chef::Config[:why_run] = true
+          @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context)
+          @provider.stub!(:requirements).and_return(@provider_requirements)
+        end
+
+        after do
+          @provider.run_action(:foo)
+        end
+
+        it "should run the action when has the action blocked" do
+          @provider_requirements.stub!(:action_blocked?).and_return(false)
+          @provider.should_receive(:send).with('action_foo')
+        end
+
+        it "should not run the action when has the action blocked" do
+          @provider_requirements.stub!(:action_blocked?).and_return(true)
+          @provider.should_not_receive(:send).with('action_foo')
+        end
+      end
     end
 
     describe "and provider does not support whyrun mode" do
