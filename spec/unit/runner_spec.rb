@@ -52,6 +52,68 @@ class SnitchyProvider < Chef::Provider
 
 end
 
+class SnitchyWhyRunProvider < SnitchyProvider
+  def whyrun_supported?
+    true
+  end
+
+  def action_first_action
+    converge_by("running a state changing first action") do
+      @new_resource.updated_by_last_action(true)
+      self.class.action_called(:first)
+    end
+  end
+
+  def action_second_action
+    converge_by("running a state changing second action") do
+      @new_resource.updated_by_last_action(true)
+      self.class.action_called(:second)
+    end
+  end
+
+  def action_third_action
+    converge_by("running a state changing third action") do
+      @new_resource.updated_by_last_action(true)
+      self.class.action_called(:third)
+    end
+  end
+
+end
+
+class NoConvergeByProvider < SnitchyProvider
+  def whyrun_supported?
+    true
+  end
+
+  def action_first_action
+    if false # never
+      converge_by("running a state changing first action") do
+        @new_resource.updated_by_last_action(true)
+        self.class.action_called(:first)
+      end
+    end
+  end
+
+  def action_second_action
+    if false # never
+      converge_by("running a state changing second action") do
+        @new_resource.updated_by_last_action(true)
+        self.class.action_called(:first)
+      end
+    end
+  end
+
+  def action_third_action
+    if false # never
+      converge_by("running a state changing third action") do
+        @new_resource.updated_by_last_action(true)
+        self.class.action_called(:third)
+      end
+    end
+  end
+
+end
+
 class FailureResource < Chef::Resource
 
   attr_accessor :action
@@ -358,13 +420,13 @@ E
     SnitchyProvider.all_actions_called.should == [:first, :first, :second, :third]
   end
 
-  shared_examples "having before notifications:" do |before_timing|
+  shared_examples "having before notifications:" do |before_timing, provider|
     it "should execute :#{before_timing} when only_if and not_if conditions are met" do
-      SnitchyProvider.clear_action_record
+      provider.clear_action_record
   
       Chef::Platform.set(
         :resource => :cat,
-        :provider => SnitchyProvider
+        :provider => provider
       )
   
       @first_resource.action = :second_action
@@ -379,15 +441,15 @@ E
       @first_resource.notifies(:first_action, before_resource, before_timing)
   
       @runner.converge
-      SnitchyProvider.all_actions_called.should == [:first, :second]
+      provider.all_actions_called.should == [:first, :second]
     end
   
     it "should execute :#{before_timing} and :immediate notifications in the correct order" do
-      SnitchyProvider.clear_action_record
+      provider.clear_action_record
   
       Chef::Platform.set(
         :resource => :cat,
-        :provider => SnitchyProvider
+        :provider => provider
       )
   
       @first_resource.action = :nothing
@@ -405,15 +467,15 @@ E
       before_resource.notifies(:first_action, @first_resource, before_timing)
   
       @runner.converge
-      SnitchyProvider.all_actions_called.should == [:first, :second, :second, :third]
+      provider.all_actions_called.should == [:first, :second, :second, :third]
     end
   
     it "should not execute :#{before_timing.to_s} when only_if is not met" do
-      SnitchyProvider.clear_action_record
+      provider.clear_action_record
   
       Chef::Platform.set(
         :resource => :cat,
-        :provider => SnitchyProvider
+        :provider => provider
       )
   
       @first_resource.action = :second_action
@@ -425,15 +487,15 @@ E
       @first_resource.notifies(:first_action, before_resource, before_timing)
   
       @runner.converge
-      SnitchyProvider.all_actions_called.should == []
+      provider.all_actions_called.should == []
     end
   
     it "should not execute :#{before_timing.to_s} when not_if is met" do
-      SnitchyProvider.clear_action_record
+      provider.clear_action_record
   
       Chef::Platform.set(
         :resource => :cat,
-        :provider => SnitchyProvider
+        :provider => provider
       )
   
       @first_resource.action = :second_action
@@ -445,7 +507,7 @@ E
       @first_resource.notifies(:first_action, before_resource, before_timing)
   
       @runner.converge
-      SnitchyProvider.all_actions_called.should == []
+      provider.all_actions_called.should == []
     end
   
     it "should execute :#{before_timing.to_s} actions on changed resources" do
@@ -463,12 +525,42 @@ E
     end
   end # shared_examples "having before notifications:"
 
-  describe 'when there are :before notifications' do
-    it_should_behave_like "having before notifications:", :before
+  describe 'when there are :before notifications without whynrun' do
+    it_should_behave_like "having before notifications:", :before, SnitchyProvider
   end
 
-  describe 'when there are :depends notifications' do
-    it_should_behave_like "having before notifications:", :depends
+  describe 'when there are :before notifications with whyrun' do
+    it_should_behave_like "having before notifications:", :before, SnitchyWhyRunProvider
+  end
+
+  describe 'when there are :depends notifications without whyrun' do
+    it_should_behave_like "having before notifications:", :depends, SnitchyProvider
+  end
+
+  describe 'when there are :depends notifications with whyrun' do
+    it_should_behave_like "having before notifications:", :depends, SnitchyWhyRunProvider
+  end
+
+  it "should not execute any :before or :depends when there is no action queued (no converged_by)" do
+    NoConvergeByProvider.clear_action_record
+
+    Chef::Platform.set(
+      :resource => :cat,
+      :provider => NoConvergeByProvider
+    )
+
+    @first_resource.action = :third_action
+
+    depends_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    depends_resource.action = :first_action
+    before_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    before_resource.action = :second_action
+
+    @first_resource.notifies(:first_action, depends_resource, :depends)
+    @first_resource.notifies(:second_action, before_resource, :before)
+
+    @runner.converge
+    NoConvergeByProvider.all_actions_called.should == []
   end
 
   it "should not fire notifications if the resource was not updated by the last action executed" do

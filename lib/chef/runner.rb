@@ -56,16 +56,19 @@ class Chef
       # Execute any depends and before notifications if the conditions are met
       if not resource.should_skip?(action)
 
-        # notifies :depends
-        run_context.depends_notifications(resource).each do |notification|
-          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (depends)")
-          run_action(notification.resource, notification.action, :depends, resource)
-        end
+        resource.run_before do
 
-        # notifies :before
-        run_context.before_notifications(resource).each do |notification|
-          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
-          run_action(notification.resource, notification.action, :before, resource)
+          # notifies :depends
+          run_context.depends_notifications(resource).each do |notification|
+            Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (depends)")
+            run_action(notification.resource, notification.action, :depends, resource)
+          end
+
+          # notifies :before
+          run_context.before_notifications(resource).each do |notification|
+            Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
+            run_action(notification.resource, notification.action, :before, resource)
+          end
         end
       end
 
