@@ -169,11 +169,10 @@ class Chef
         dir
       end
 
-    end
+      def whyrun_supported?
+        true
+      end
 
-    def whyrun_supported?
-      true
     end
-
   end
 end
