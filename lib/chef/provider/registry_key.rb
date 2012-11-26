@@ -98,85 +98,34 @@ class Chef
         end
       end
 
-#      def action_create_if_missing
-#        if key_exists?(@new_resource.key)
-#          for each_value_in_@new_resource.value do
-#            if !value_exists(@new_resource.key, @new_resource.value, architecture)
-#              registry_create_value(@new_resource.key)
-#            end
-#          end
-#        elsif intermediate_keys_missing?(@new_resource.key)
-#          if @new_resource.recurssive == true
-#            create_all_keys(@new_resource.key, @new_resource.value, architecture, create_intermediate=true)
-#          end
-#        else
-#          create_all_keys(@new_resource.key, @new_resource.value, architecture, create_intermediate=false)
-#        end
-#      end
+      def action_create_if_missing
+        if !registry.key_exists?(@new_resource.key)
+          registry.create_key(@new_resource.key, @new_resource.recursive)
+        end
+        @new_resource.values.each do |value|
+          if !@name_hash.has_key?(value[:name])
+            registry.create_value(@new_resource.key, value)
+          end
+        end
+      end
 
-#      def action_delete
-#        if key_exists?(@new_resource.key, @new_resource.value, architecture)
-#          registry_delete(@new_resource.key, @new_resource.value, architecture)
-#        end
-#      end
-#
-#      def action_key_delete
-#        if key_exists?(@new_resource.key, @new_resource.value, architecture)
-#          if has_subkeys?
-#            if @new_resource.recurssive == true
-#              registry_delete(@new_resource.key, @new_resource.value, architecture)
-#            end
-#          end
-#        end
-#      end
+      #TODO: Do we want to include a flag to delete all values?
+      def action_delete
+        if registry.key_exists?(@new_resource.key)
+          @new_resource.values.each do |value|
+            if @name_hash.has_key?(value[:name])
+              registry.delete_value(@new_resource.key, value)
+            end
+          end
+        end
+      end
 
+      def action_delete_key
+        if registry.key_exists?(@new_resource.key)
+          registry.delete_key(@new_resource.key, @new_resource.recursive)
+        end
+      end
 
-
-#      def load_current_resource
-#        @current_resource ||= Chef::Resource::Registry.new(@new_resource.key_name)
-#        @current_resource.values(@new_resource.values)
-#        path = @new_resource.key_name.split("\\")
-#        path.shift
-#        key = path.join("\\")
-#        if Chef::Win32::Registry.key_exists?(@new_resource.key_name, true)
-#          if Chef::Win32::Registry.value_exists?(@new_resource.key_name, @new_resource.values)
-#            hive = Chef::Win32::Registry.get_hive(@new_resource.get_hive)
-#            hive.open(key, ::Win32::Registry::KEY_ALL_ACCESS) do |reg|
-#              @new_resource.values.each do |k, val|
-#                @current_resource.type, @current_resource.values = reg.read(k)
-#              end
-#            end
-#          end
-#        end
-#        @current_resource
-#      end
-#
-#      def compare_content(current_resource, new_resource)
-#        current_resource == new_resource
-#      end
-#
-#      def action_create
-#        if Chef::Win32::Registry.key_exists?(@new_resource.key_name, true)
-#          if Chef::Win32::Registry.value_exists?(@new_resource.key_name, @new_resource.values)
-#            if compare_content(@current_resource.values @new_resource.values)
-#              registry_update(:modify)
-#            end
-#          end
-#        end
-#        registry_update(:create)
-#      end
-#
-#      def action_remove
-#        Chef::Win32::Registry::delete_value(@new_resource.key_name,@new_resource.values)
-#      end
-#
-#      private
-#      def registry_update(mode)
-#
-#        Chef::Log.debug("Registry Mode (#{mode})")
-#        updated = Chef::Win32::Registry::set_value(mode,@new_resource.key_name,@new_resource.values,@new_resource.type)
-#        @new_resource.updated_by_last_action(updated)
-#      end
     end
   end
 end
