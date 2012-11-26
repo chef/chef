@@ -1,5 +1,11 @@
 SETLOCAL
 
+rem # copy off the timestamp for fingerprinting before we blow it away later
+move %BUILD_NUMBER%\build_timestamp %WORKSPACE%\
+
+rem # run the tests
+cd %BUILD_NUMBER%
+
 rem # remove the chef package / clobber the files
 rem # then install the new package
 rmdir /S /Q C:\opscode
@@ -27,6 +33,10 @@ call bundle install --without server --path bundle || GOTO :error
 
 rem # run the tests
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec || GOTO :error
+
+# clean up the workspace to save disk space
+cd %WORKSPACE%
+rmdir /S /Q %BUILD_NUMBER%
 
 GOTO :EOF
 
