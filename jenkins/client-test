@@ -18,6 +18,7 @@ exists()
 
 # copy off the timestamp for fingerprinting before we blow it away later
 mv $BUILD_NUMBER/build_timestamp $WORKSPACE/
+cd $BUILD_NUMBER
 
 # remove the chef package / clobber the files
 # then install the new package
