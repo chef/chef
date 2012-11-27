@@ -19,7 +19,7 @@
 require "chef/win32/registry"
 require "spec_helper"
 
-describe Chef::Resource::RegistryKey do
+describe Chef::Resource::RegistryKey, :windows_only do
 
   before(:all) do
     events = Chef::EventDispatch::Dispatcher.new
