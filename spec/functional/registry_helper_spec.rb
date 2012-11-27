@@ -492,6 +492,16 @@ describe 'Chef::Win32::Registry', :windows_only do
           end
         rescue
         end
+        # 64-bit
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.create("Software\\Root\\Mauve", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100)
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open('Software\\Root\\Mauve', Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
+          reg['Alert', Win32::Registry::REG_SZ] = 'Universal'
+        end
+        # 32-bit
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.create("Software\\Root\\Poosh", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200)
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open('Software\\Root\\Poosh', Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
+          reg['Status', Win32::Registry::REG_SZ] = 'Lost'
+        end
       end
 
       after(:all) do
@@ -503,21 +513,96 @@ describe 'Chef::Win32::Registry', :windows_only do
         end
       end
 
-      it "can set different values in 32-bit and 64-bit registry keys" do
-        @registry.architecture = "i386"
-        @registry.create_key("HKLM\\Software\\Root\\Trunk\\Red", true)
-        @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
-        @registry.architecture = "x86_64"
-        @registry.create_key("HKLM\\Software\\Root\\Trunk\\Blue", true)
-        @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
-        @registry.architecture = "x86_64"
-        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == false
-        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == true
-        @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
-        @registry.architecture = "i386"
-        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == true
-        @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == false
-        @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
+      describe "key_exists?" do
+        it "does not find 64-bit keys in the 32-bit registry" do
+          @registry.architecture="i386"
+          @registry.key_exists?("HKLM\\Software\\Root\\Mauve").should == false
+        end
+        it "finds 32-bit keys in the 32-bit registry" do
+          @registry.architecture="i386"
+          @registry.key_exists?("HKLM\\Software\\Root\\Poosh").should == true
+        end
+        it "does not find 32-bit keys in the 64-bit registry" do
+          @registry.architecture="x86_64"
+          @registry.key_exists?("HKLM\\Software\\Root\\Mauve").should == true
+        end
+        it "finds 64-bit keys in the 64-bit registry" do
+          @registry.architecture="x86_64"
+          @registry.key_exists?("HKLM\\Software\\Root\\Poosh").should == false
+        end
+      end
+
+      describe "value_exists?" do
+        it "does not find 64-bit values in the 32-bit registry" do
+          @registry.architecture="i386"
+          lambda{@registry.value_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+        end
+        it "finds 32-bit values in the 32-bit registry" do
+          @registry.architecture="i386"
+          @registry.value_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status"}).should == true
+        end
+        it "does not find 32-bit values in the 64-bit registry" do
+          @registry.architecture="x86_64"
+          @registry.value_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert"}).should == true
+        end
+        it "finds 64-bit values in the 64-bit registry" do
+          @registry.architecture="x86_64"
+          lambda{@registry.value_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+        end
+      end
+
+      describe "data_exists?" do
+        it "does not find 64-bit keys in the 32-bit registry" do
+          @registry.architecture="i386"
+          lambda{@registry.data_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert", :type=>:string, :data=>"Universal"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+        end
+        it "finds 32-bit keys in the 32-bit registry" do
+          @registry.architecture="i386"
+          @registry.data_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status", :type=>:string, :data=>"Lost"}).should == true
+        end
+        it "does not find 32-bit keys in the 64-bit registry" do
+          @registry.architecture="x86_64"
+          @registry.data_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert", :type=>:string, :data=>"Universal"}).should == true
+        end
+        it "finds 64-bit keys in the 64-bit registry" do
+          @registry.architecture="x86_64"
+          lambda{@registry.data_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status", :type=>:string, :data=>"Lost"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+        end
+      end
+
+      describe "create_key" do
+        it "can create a 32-bit only registry key" do
+          @registry.architecture = "i386"
+          @registry.create_key("HKLM\\Software\\Root\\Trunk\\Red", true)
+          @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == true
+          @registry.architecture = "x86_64"
+          @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == false
+        end
+
+        it "can create a 64-bit only registry key" do
+          @registry.architecture = "x86_64"
+          @registry.create_key("HKLM\\Software\\Root\\Trunk\\Blue", true)
+          @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == true
+          @registry.architecture = "i386"
+          @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == false
+        end
+      end
+
+      describe "create_value" do
+        it "can create a 32-bit only registry value" do
+          @registry.architecture = "i386"
+          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
+          @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
+          @registry.architecture = "x86_64"
+          lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+        end
+        it "can create a 64-bit only registry value" do
+          @registry.architecture = "x86_64"
+          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+          @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
+          @registry.architecture = "i386"
+          lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+        end
       end
     end
   end
