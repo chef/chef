@@ -29,6 +29,11 @@ optparse = OptionParser.new do |opts|
   opts.on("-b", "--bucket S3_BUCKET_NAME", "the name of the s3 bucket to release to") do |bucket|
     options[:bucket] = bucket
   end
+
+  opts.on("--ignore-missing-packages",
+          "indicates the release should continue if any build packages are missing") do |missing|
+    options[:ignore_missing_packages] = missing
+  end
 end
 
 begin
@@ -81,7 +86,16 @@ jenkins_build_support.each do |(build, supported_platforms)|
 
   # find the build in the local packages
   build_package = local_packages.find {|b| b.include?(build)}
-  raise unless build_package
+
+  unless build_package
+    error_msg = "Could not locate build package for [#{build_platform.join("-")}]."
+    if options[:ignore_missing_packages]
+      puts "WARN: #{error_msg}"
+      next
+    else
+      raise error_msg
+    end
+  end
 
   # upload build to build platform directory
   build_location = "/#{build_platform.join('/')}/#{build_package.split('/').last}"
