@@ -185,6 +185,50 @@ EOF
         @provider.candidate_version.should == "1.6.0.6"
       end
 
+      it "should find the candidate_version if a category is specifed and there are duplicates" do
+        output = <<EOF
+Searching...
+[ Results for search key : git ]
+[ Applications found : 14 ]
+
+*  app-misc/digitemp [ Masked ]
+      Latest version available: 3.5.0
+      Latest version installed: [ Not Installed ]
+      Size of files: 261 kB
+      Homepage:      http://www.digitemp.com/ http://www.ibutton.com/
+      Description:   Temperature logging and reporting using Dallas Semiconductor's iButtons and 1-Wire protocol
+      License:       GPL-2
+
+*  app-misc/git
+      Latest version available: 4.3.20
+      Latest version installed: [ Not Installed ]
+      Size of files: 416 kB
+      Homepage:      http://www.gnu.org/software/git/
+      Description:   GNU Interactive Tools - increase speed and efficiency of most daily task
+      License:       GPL-2
+
+*  dev-util/git
+      Latest version available: 1.6.0.6
+      Latest version installed: ignore
+      Size of files: 2,725 kB
+      Homepage:      http://git.or.cz/
+      Description:   GIT - the stupid content tracker, the revision control system heavily used by the Linux kernel team
+      License:       GPL-2
+
+*  dev-util/gitosis [ Masked ]
+      Latest version available: 0.2_p20080825
+      Latest version installed: [ Not Installed ]
+      Size of files: 31 kB
+      Homepage:      http://eagain.net/gitweb/?p=gitosis.git;a=summary
+      Description:   gitosis -- software for hosting git repositories
+      License:       GPL-2
+EOF
+
+        @status = mock("Status", :exitstatus => 0)
+        @provider.should_receive(:popen4).and_yield(nil, nil, StringIO.new(output), nil).and_return(@status)
+        @provider.candidate_version.should == "1.6.0.6"
+      end
+
       it "should throw an exception if a category is not specified and there are duplicates" do
         output = <<EOF
 Searching...
