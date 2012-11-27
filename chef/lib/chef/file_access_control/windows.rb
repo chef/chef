@@ -54,6 +54,16 @@ class Chef
         changes
       end
 
+      def securable_object
+        @securable_object ||= begin
+          if file.kind_of?(String)
+            so = Chef::ReservedNames::Win32::Security::SecurableObject.new(file.dup)
+          end
+          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.kind_of? Chef::ReservedNames::Win32::Security::SecurableObject
+          so
+        end
+      end
+
       private
 
       # Compare the actual ACL on a resource with the ACL we want.  This
@@ -96,16 +106,6 @@ class Chef
           value
         else
           raise "Must specify username, group or SID: #{value}"
-        end
-      end
-
-      def securable_object
-        @securable_object ||= begin
-          if file.kind_of?(String)
-            so = Chef::ReservedNames::Win32::Security::SecurableObject.new(file.dup)
-          end
-          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.kind_of? Chef::ReservedNames::Win32::Security::SecurableObject
-          so
         end
       end
 
