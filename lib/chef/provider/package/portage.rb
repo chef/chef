@@ -58,14 +58,16 @@ class Chef
 
         def parse_emerge(package, txt)
           availables = {}
-          package_without_category = package.split("/").last
+          category, package_without_category = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1,2]
           found_package_name = nil
 
           txt.each_line do |line|
-            if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
-              found_package_name = $&.strip
-              if found_package_name == package || found_package_name.split("/").last == package_without_category
-                availables[found_package_name] = nil
+            if line =~ /\*\s+(#{PACKAGE_NAME_PATTERN})/
+              found_package_name = $1.strip
+              if category
+                availables[found_package_name] = nil if found_package_name == package
+              else
+                availables[found_package_name] = nil if found_package_name.split("/").last == package_without_category
               end
             end
 
@@ -95,7 +97,6 @@ class Chef
           end
 
           @candidate_version
-
         end
 
 
