@@ -133,6 +133,7 @@ class Chef
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
     class Win32RegValueMissing < RuntimeError; end
+    class Win32RegDataMissing < RuntimeError; end
     class Win32RegValueExists < RuntimeError; end
     class Win32RegTypesMismatch < RuntimeError; end
     class Win32RegNoRecursive < ArgumentError; end

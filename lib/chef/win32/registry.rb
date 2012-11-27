@@ -156,6 +156,7 @@ class Chef
         unless key_exists?(key_path)
           raise Chef::Exceptions::Win32RegKeyMissing, "Registry key #{key_path} does not exist"
         end
+        true
       end
 
       def hive_exists?(key_path)
@@ -222,7 +223,7 @@ class Chef
             if val_name == value[:name]
               type_new = get_type_from_name(value[:type])
               if val_type == type_new
-                if val_data = value[:data]
+                if val_data == value[:data]
                   return true
                 end
               end
@@ -236,6 +237,14 @@ class Chef
         unless value_exists?(key_path, value)
           raise Chef::Exceptions::Win32RegValueMissing, "Registry key #{key_path} has no value named #{value[:name]}"
         end
+        true
+      end
+
+      def data_exists!(key_path, value)
+        unless data_exists?(key_path, value)
+          raise Chef::Exceptions::Win32RegDataMissing, "Registry key #{key_path} has no value named #{value[:name]}, containing type #{value[:type]} and data #{value[:data]}"
+        end
+        true
       end
 
       def type_matches?(key_path, value)
