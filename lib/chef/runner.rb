@@ -47,17 +47,48 @@ class Chef
     # Determine the appropriate provider for the given resource, then
     # execute it.
     def run_action(resource, action, notification_type=nil, notifying_resource=nil)
+
+      # do not run if executed before in a depends notification
+      if run_context.depends_executed(resource, action) == true
+        Chef::Log.info("#{resource} action #{action} has been run before, it will not be executed again")
+        return
+      end
+
+      # Execute any depends and before notifications if the conditions are met
+      if not resource.should_skip?(action)
+
+        # notifies :depends
+        run_context.depends_notifications(resource).each do |notification|
+          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (depends)")
+          run_action(notification.resource, notification.action, :depends, resource)
+        end
+
+        # notifies :before
+        run_context.before_notifications(resource).each do |notification|
+          Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (before)")
+          run_action(notification.resource, notification.action, :before, resource)
+        end
+      end
+
       resource.run_action(action, notification_type, notifying_resource)
+
+      # sets execution as true if it is a depends notification
+      if @run_context.is_depends_resource(resource, action)
+        run_context.depends_executed(resource, action, true)
+      end
 
       # Execute any immediate and queue up any delayed notifications
       # associated with the resource, but only if it was updated *this time*
       # we ran an action on it.
       if resource.updated_by_last_action?
+
+        # notifies :immediate
         run_context.immediate_notifications(resource).each do |notification|
           Chef::Log.info("#{resource} sending #{notification.action} action to #{notification.resource} (immediate)")
           run_action(notification.resource, notification.action, :immediate, resource)
         end
 
+        # notifies :delayed
         run_context.delayed_notifications(resource).each do |notification|
           if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
             Chef::Log.info( "#{resource} not queuing delayed action #{notification.action} on #{notification.resource}"\

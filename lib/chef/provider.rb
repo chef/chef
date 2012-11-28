@@ -101,7 +101,7 @@ class Chef
       if !whyrun_mode? || whyrun_supported?
         load_current_resource
         events.resource_current_state_loaded(@new_resource, @action, @current_resource)
-      elsif whyrun_mode? && !whyrun_supported?
+      else
         events.resource_current_state_load_bypassed(@new_resource, @action, @current_resource)
       end
 
