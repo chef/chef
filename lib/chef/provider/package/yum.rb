@@ -1169,8 +1169,16 @@ class Chef
         #
         # There is currently no support for filename matching.
         def parse_dependency
-          # Transform the package_name into a requirement
-          yum_require = RPMRequire.parse(@new_resource.package_name)
+          # If we are passed a version we have to assume it's a requirement first. If it can't be
+          # parsed only yum_require.name will be set and @new_resource.version will be left intact
+          if @new_resource.version
+            require_string = "#{@new_resource.package_name} #{@new_resource.version}"
+          else
+            # Transform the package_name into a requirement, might contain a version, could just be
+            # a match for virtual provides
+            require_string = @new_resource.package_name
+          end
+          yum_require = RPMRequire.parse(require_string)
           # and gather all the packages that have a Provides feature satisfying the requirement.
           # It could be multiple be we can only manage one
           packages = @yum.packages_from_require(yum_require)
