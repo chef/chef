@@ -115,12 +115,12 @@ class Chef
       # we can't execute the action.
       # in non-whyrun mode, this will still cause the action to be
       # executed normally.
-      if !whyrun_mode?
+      if whyrun_supported? && !requirements.action_blocked?(@action)
         send("action_#{@action}")
-      elsif whyrun_supported? && !requirements.action_blocked?(@action)
-        send("action_#{@action}")
+      elsif whyrun_mode?
+        events.resource_bypassed(@new_resource, @action, self)
       else
-        events.resource_bypassed(@new_resource, @action, self) unless whyrun_supported?
+        send("action_#{@action}")
       end
 
       set_updated_status
