@@ -31,7 +31,7 @@ class Chef
         super
         @resource_name = :route
         @target = name
-        @action = :add
+        @action = [:add]
         @allowed_actions.push(:add, :delete)
         @netmask = nil
         @gateway = nil

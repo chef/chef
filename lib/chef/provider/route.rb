@@ -152,6 +152,9 @@ class Chef::Provider::Route < Chef::Provider
       else
         Chef::Log.debug("#{@new_resource} route does not exist - nothing to do")
       end
+
+      #for now we always write the file (ugly but its what it is)
+      generate_config
     end
 
     def generate_config
@@ -169,9 +172,10 @@ class Chef::Provider::Route < Chef::Provider
             end
 
             conf[dev] = String.new if conf[dev].nil?
-            if resource.action == :add
+            case resource.action.last
+            when :add
               conf[dev] << config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
-            else
+            when :delete
               # need to do this for the case when the last route on an int
               # is removed
               conf[dev] << config_file_contents(:delete)

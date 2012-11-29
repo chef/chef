@@ -35,7 +35,7 @@ describe Chef::Resource::Route do
   end
   
   it "should have a default action of 'add'" do
-    @resource.action.should eql(:add)
+    @resource.action.should eql([:add])
   end
   
   it "should accept add or delete for action" do

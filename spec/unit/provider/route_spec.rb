@@ -108,6 +108,21 @@ describe Chef::Provider::Route do
       @provider.run_action(:add)
       @new_resource.should_not be_updated
     end
+
+    it "should not delete config file for :add action (CHEF-3332)" do
+      @node.automatic_attrs[:platform] = 'centos'
+  
+      route_file = StringIO.new
+      File.should_receive(:new).and_return(route_file)
+      @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
+      @run_context.resource_collection << @resource_add
+      @provider.stub!(:run_command).and_return(true)
+  
+      @resource_add.action(:add)
+      @provider.run_action(:add)
+      route_file.string.split("\n").should have(1).items
+      route_file.string.should match(/^192.168.1.0\/24 via 192.168.0.1$/)
+    end
   end
 
   describe Chef::Provider::Route, "action_delete" do
