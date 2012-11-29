@@ -16,4 +16,4 @@ RSPEC_RETURNCODE=$?
 mv test.xml ..
 
 # exit with the result of running rspec
-return $RSPEC_RETURNCODE
+exit $RSPEC_RETURNCODE
