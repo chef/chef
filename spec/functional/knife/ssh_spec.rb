@@ -194,7 +194,7 @@ describe Chef::Knife::Ssh do
 
   def setup_knife(params=[])
     @knife = Chef::Knife::Ssh.new(params)
-    @knife.stub!(:ssh_command).and_return { [] }
+    @knife.stub!(:ssh_command).and_return { 0 }
     @api = TinyServer::API.instance
     @api.clear
 
