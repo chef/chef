@@ -60,7 +60,7 @@ module Matchers
     def profiler
       @profiler ||= begin
         if Chef::Platform.windows?
-          require File.join(File.dirname(__FILE__), '..', 'prof', 'win32')
+          require File.join(File.dirname(__FILE__), '..', 'platforms', 'prof', 'win32')
           RSpec::Prof::Win32::Profiler.new
         else
           require File.join(File.dirname(__FILE__), '..', 'prof', 'gc')
