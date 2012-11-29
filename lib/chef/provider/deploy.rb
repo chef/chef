@@ -136,7 +136,7 @@ class Chef
         @release_path = target_release_path
 
         rp_index = all_releases.index(release_path)
-        releases_to_nuke = (rp_index)?all_releases[(rp_index + 1)..-1]:[]
+        releases_to_nuke = all_releases[(rp_index + 1)..-1]
 
         rollback
 
