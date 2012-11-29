@@ -44,27 +44,31 @@ class Chef
         hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
         values = hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.map { |name, type, data| {:name=>name, :type=>type, :data=>data} }
+          reg.map { |name, type, data| {:name=>name, :type=>get_name_from_type(type), :data=>data} }
         end
       end
 
-      def update_value(key_path, value)
+      def set_value(key_path, value)
         Chef::Log.debug("Updating value #{value[:name]} in registry key #{key_path} with type #{value[:type]} and data #{value[:data]}")
-        value_exists!(key_path, value)
-        type_matches!(key_path, value)
+        key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
-        hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
-          reg.each do |name, type, data|
-            if value[:name] == name
-              if data != value[:data]
-                reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
-                Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} updated")
-              else
-                Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} already had those values, not updated")
-              end
+        if value_exists?(key_path, value)
+          if data_exists?(key_path, value)
+            Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} already had those values, not updated")
+            return false
+          else
+            hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
+              reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
             end
+            Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} updated")
           end
+        else
+          hive.open(key, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | registry_system_architecture) do |reg|
+            reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
+          end
+          Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} created")
         end
+        true
       end
 
       def create_value(key_path, value)
@@ -193,19 +197,6 @@ class Chef
         ( applied_arch == 'x86_64' ) ? 0x0100 : 0x0200
       end
 
-      def get_type_from_num(val_type)
-        value = {
-          3 => ::Win32::Registry::REG_BINARY,
-          1 => ::Win32::Registry::REG_SZ,
-          7 => ::Win32::Registry::REG_MULTI_SZ,
-          2 => ::Win32::Registry::REG_EXPAND_SZ,
-          4 => ::Win32::Registry::REG_DWORD,
-          5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
-          11 => ::Win32::Registry::REG_QWORD
-        }[val_type]
-        return value
-      end
-
       def value_exists?(key_path, value)
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
@@ -216,17 +207,14 @@ class Chef
       end
 
       def data_exists?(key_path, value)
-        value_exists!(key_path, value)
         hive, key = get_hive_and_key(key_path)
+        key_exists!(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
-            if val_name == value[:name]
-              type_new = get_type_from_name(value[:type])
-              if val_type == type_new
-                if val_data == value[:data]
-                  return true
-                end
-              end
+            if val_name == value[:name] &&
+               val_type == get_type_from_name(value[:type]) &&
+               val_data == value[:data]
+              return true
             end
           end
         end
@@ -303,8 +291,8 @@ class Chef
         return hive, key
       end
 
-      def get_type_from_name(val_type)
-        value = {
+      def _type_name_map
+        {
           :binary => ::Win32::Registry::REG_BINARY,
           :string => ::Win32::Registry::REG_SZ,
           :multi_string => ::Win32::Registry::REG_MULTI_SZ,
@@ -312,6 +300,30 @@ class Chef
           :dword => ::Win32::Registry::REG_DWORD,
           :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
           :qword => ::Win32::Registry::REG_QWORD
+        }
+      end
+
+      def _name_type_map
+        @_name_type_map ||= _type_name_map.invert
+      end
+
+      def get_type_from_name(val_type)
+        _type_name_map[val_type]
+      end
+
+      def get_name_from_type(val_class)
+        _name_type_map[val_class]
+      end
+
+      def get_type_from_num(val_type)
+        value = {
+          3 => ::Win32::Registry::REG_BINARY,
+          1 => ::Win32::Registry::REG_SZ,
+          7 => ::Win32::Registry::REG_MULTI_SZ,
+          2 => ::Win32::Registry::REG_EXPAND_SZ,
+          4 => ::Win32::Registry::REG_DWORD,
+          5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
+          11 => ::Win32::Registry::REG_QWORD
         }[val_type]
         return value
       end
