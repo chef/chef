@@ -145,8 +145,8 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "returns true if all the data matches" do
       @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Pink", "Delicate"]}).should == true
     end
-    it "throws an exception if the name does not exist" do
-      lambda {@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"slateP", :type=>:multi_string, :data=>["Pink", "Delicate"]})}.should raise_error(Chef::Exceptions::Win32RegValueMissing)
+    it "returns false if the name does not exist" do
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"slateP", :type=>:multi_string, :data=>["Pink", "Delicate"]}).should == false
     end
     it "returns false if the types do not match" do
       @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Pink"}).should == false
@@ -167,7 +167,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Pink", "Delicate"]}).should == true
     end
     it "throws an exception if the name does not exist" do
-      lambda {@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"slateP", :type=>:multi_string, :data=>["Pink", "Delicate"]})}.should raise_error(Chef::Exceptions::Win32RegValueMissing)
+      lambda {@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"slateP", :type=>:multi_string, :data=>["Pink", "Delicate"]})}.should raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
     it "throws an exception if the types do not match" do
       lambda {@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Pink"})}.should raise_error(Chef::Exceptions::Win32RegDataMissing)
@@ -181,8 +181,8 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "returns all values for a key if it exists" do
       values = @registry.get_values("HKCU\\Software\\Root")
       values.should be_an_instance_of Array
-      values.should == [{:name=>"RootType1", :type=>1, :data=>"fibrous"},
-                        {:name=>"Roots", :type=>7, :data=>["strong roots", "healthy tree"]}]
+      values.should == [{:name=>"RootType1", :type=>:string, :data=>"fibrous"},
+                        {:name=>"Roots", :type=>:multi_string, :data=>["strong roots", "healthy tree"]}]
     end
 
     it "throws an exception if the key does not exist" do
@@ -194,48 +194,34 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
   end
 
-  describe "update_value" do
+  describe "set_value" do
     it "updates a value if the key, value exist and type matches and value different" do
-      @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
       @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
     end
 
-    it "throws an exception if key and value exists and type does not match" do
-      lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Yellow"})}.should raise_error(Chef::Exceptions::Win32RegTypesMismatch)
+    it "updates a value if the type does match and the values are different" do
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Yellow"}).should == true
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:string, :data=>"Yellow"}).should == true
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == false
     end
 
-    it "throws an exception if key exists and value does not" do
-      lambda {@registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegValueMissing)
+    it "creates a value if key exists and value does not" do
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
     end
 
     it "does nothing if data,type and name parameters for the value are same" do
-      @registry.update_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})
-      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == false
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Stamen", :type=>:multi_string, :data=>["Yellow", "Changed Color"]}).should == true
     end
 
     it "throws an exception if the key does not exist" do
-      lambda {@registry.update_value("HKCU\\Software\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      lambda {@registry.set_value("HKCU\\Software\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
 
     it "throws an exception if the hive does not exist" do
-      lambda {@registry.update_value("JKLM\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
-    end
-  end
-
-  describe "create_value" do
-    #  create_value
-    it "creates a value if it does not exist" do
-      @registry.create_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"})
-      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
-    end
-    it "throws an exception if the value exists" do
-      lambda {@registry.create_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegValueExists)
-    end
-    it "throws an exception if the key does not exist" do
-      lambda {@registry.create_value("HKCU\\Software\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
-    end
-    it "throws an exception if the hive does not exist" do
-      lambda {@registry.create_value("JKLM\\Software\\Root\\Branch\\Flower", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      lambda {@registry.set_value("JKLM\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
   end
 
