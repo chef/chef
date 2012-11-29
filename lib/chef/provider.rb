@@ -92,8 +92,7 @@ class Chef
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
 
-      # run before notifications when whyrun is not supported
-      @new_resource.run_before_notifications unless whyrun_supported? == true
+      run_before_notifications
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
       if !whyrun_mode? || whyrun_supported?
@@ -136,6 +135,35 @@ class Chef
       set_updated_status
 
       cleanup_after_converge
+    end
+
+    def has_before_notifications?
+        !run_context.before_notifications(@new_resource).empty?
+    end
+
+    def has_depends_notifications?
+        !run_context.depends_notifications(@new_resource).empty?
+    end
+
+    def run_before_notifications
+      # if whyrun is not supported run the before notifications here,
+      # otherside they will be run inside Chef::Mixin::WhyRun::ConvergeActions
+
+      if !whyrun_supported? 
+
+        # :depends notifications seems not affected by this problem,
+        # but :before notifications cannot run when there is no whyrun support and no conditions defined.
+        if has_before_notifications?
+          if @new_resource.only_if.empty? and @new_resource.not_if.empty?
+            msg = "The #{@new_resource} has :before notifications without whyrun support or only_if/not_if conditions defined."\
+                  "The purpose of the :before notifications is not to run always."
+            raise Chef::Exceptions::BeforeNotificationsWithoutWhyrunOrConditions, msg
+          else
+            Chef::Log.warn("The #{@new_resource} resource has :before notifications and no whyrun support.")
+          end
+        end
+        @new_resource.run_before_notifications
+      end
     end
 
     def process_resource_requirements

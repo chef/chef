@@ -431,7 +431,6 @@ E
   
       @first_resource.action = :second_action
   
-      # unnecessary, they are just to clarify
       @first_resource.only_if { true }
       @first_resource.not_if { false }
   
@@ -456,6 +455,7 @@ E
   
       before_resource = Chef::Resource::Cat.new("peanut", @run_context)
       before_resource.action = :second_action
+      before_resource.only_if { true }
       @run_context.resource_collection << before_resource
   
       second_resource = Chef::Resource::Cat.new("snickers", @run_context)
@@ -513,6 +513,7 @@ E
     it "should execute :#{before_timing.to_s} actions on changed resources" do
       notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
       notifying_resource.action = :purr # only action that will set updated on the resource
+      notifying_resource.only_if { true }
   
       @run_context.resource_collection << notifying_resource
       @first_resource.action = :nothing # won't be updated unless notified by other resource
@@ -527,6 +528,18 @@ E
 
   describe 'when there are :before notifications without whynrun' do
     it_should_behave_like "having before notifications:", :before, SnitchyProvider
+
+    it "should raise an exception when there are no only_if/not_if conditions" do
+      notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+      notifying_resource.action = :purr # only action that will set updated on the resource
+
+      @run_context.resource_collection << notifying_resource
+      @first_resource.action = :nothing # won't be updated unless notified by other resource
+
+      notifying_resource.notifies(:purr, @first_resource, :before)
+
+      lambda { @runner.converge }.should raise_error(Chef::Exceptions::BeforeNotificationsWithoutWhyrunOrConditions)
+    end
   end
 
   describe 'when there are :before notifications with whyrun' do
@@ -535,6 +548,18 @@ E
 
   describe 'when there are :depends notifications without whyrun' do
     it_should_behave_like "having before notifications:", :depends, SnitchyProvider
+
+    it "should raise no exception when there are no only_if/not_if conditions" do
+      notifying_resource = Chef::Resource::Cat.new("peanut", @run_context)
+      notifying_resource.action = :purr # only action that will set updated on the resource
+
+      @run_context.resource_collection << notifying_resource
+      @first_resource.action = :nothing # won't be updated unless notified by other resource
+
+      notifying_resource.notifies(:purr, @first_resource, :depends)
+
+      lambda { @runner.converge }.should_not raise_error(Chef::Exceptions::BeforeNotificationsWithoutWhyrunOrConditions)
+    end
   end
 
   describe 'when there are :depends notifications with whyrun' do

@@ -80,6 +80,7 @@ class Chef
     class InvalidResourceReference < RuntimeError; end
     class ResourceNotFound < RuntimeError; end
     class InvalidResourceSpecification < ArgumentError; end
+    class BeforeNotificationsWithoutWhyrunOrConditions < RuntimeError; end
     class SolrConnectionError < RuntimeError; end
     class IllegalChecksumRevert < RuntimeError; end
     class CookbookVersionNameMismatch < ArgumentError; end
