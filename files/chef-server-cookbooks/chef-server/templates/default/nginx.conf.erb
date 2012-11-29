@@ -123,11 +123,11 @@ http {
       proxy_cache_valid 404 1m;
     }
 
-   location = /status {
+   location = /_status {
       proxy_pass http://erchef/_status;
     }
 
-   location = /status/ {
+   location = /_status/ {
       proxy_pass http://erchef/_status;
     }
 
