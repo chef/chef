@@ -1,0 +1,2 @@
+LibraryLoadOrder.record("dependency2")
+
