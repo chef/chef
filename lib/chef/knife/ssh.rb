@@ -221,7 +221,7 @@ class Chef
               end
             end
             ch.on_request "exit-status" do |ichannel, data|
-              exit_status = data.read_long
+              exit_status = [exit_status, data.read_long].max
             end
           end
         end
