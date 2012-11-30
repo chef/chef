@@ -31,7 +31,7 @@ require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
 require 'chef/exceptions'
-
+require 'chef/platform'
 
 
 class Chef
