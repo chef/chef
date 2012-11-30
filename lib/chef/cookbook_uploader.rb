@@ -7,6 +7,7 @@ require 'chef/checksum_cache'
 require 'chef/cookbook_version'
 require 'chef/cookbook/syntax_check'
 require 'chef/cookbook/file_system_file_vendor'
+require 'chef/sandbox'
 
 class Chef
   class CookbookUploader
