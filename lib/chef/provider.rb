@@ -92,6 +92,7 @@ class Chef
       # TODO: it would be preferable to get the action to be executed in the
       # constructor...
 
+      # run before notifications when whyrun is not supported
       run_before_notifications
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
