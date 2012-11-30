@@ -86,6 +86,7 @@ class Chef
             cookbook = Chef::Recipe.parse_recipe_name(recipe).first
             add_cookbook_with_deps(ordered_cookbooks, seen_cookbooks, cookbook)
           end
+          Chef::Log.debug("Cookbooks to compile: #{ordered_cookbooks.inspect}")
           ordered_cookbooks
         end
       end
