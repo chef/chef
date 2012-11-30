@@ -176,7 +176,9 @@ class Chef
       def cookbook_repo
         @cookbook_loader ||= begin
           Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, config[:cookbook_path]) }
-          Chef::CookbookLoader.new(config[:cookbook_path])
+          cl = Chef::CookbookLoader.new(config[:cookbook_path])
+          cl.load_cookbooks
+          cl
         end
       end
 
