@@ -33,6 +33,15 @@ describe Chef::Resource::RegistryKey, :windows_only do
   end
 
   context "when action is create" do
+    before (:all) do
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+        begin
+          reg.delete_key("Opscode", true)
+          reg.delete_key("MissingKey1", true)
+        rescue
+        end
+      end
+    end
     after (:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
         begin
@@ -43,12 +52,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
     end
     it "creates registry key, value if the key is missing" do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-        rescue
-        end
-      end
       @resource.key("HKCU\\Software\\Opscode")
       @resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
       @resource.run_action(:create)
@@ -128,6 +131,15 @@ describe Chef::Resource::RegistryKey, :windows_only do
   end
 
   context "when action is create_if_missing" do
+    before (:all) do
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+        begin
+          reg.delete_key("Opscode", true)
+          reg.delete_key("MissingKey1", true)
+        rescue
+        end
+      end
+    end
     after (:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
         begin
@@ -138,12 +150,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
     end
     it "creates registry key, value if the key is missing" do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-        rescue
-        end
-      end
       @resource.key("HKCU\\Software\\Opscode")
       @resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
       @resource.run_action(:create_if_missing)
@@ -216,13 +222,13 @@ describe Chef::Resource::RegistryKey, :windows_only do
         rescue
         end
       end
-        ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Opscode"
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Opscode", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-          reg["Color", Win32::Registry::REG_SZ] = "Orange"
-          reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, ["Seattle", "Washington"])
-          reg["AKA", Win32::Registry::REG_SZ] = "OC"
-        end
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Opscode"
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Opscode", Win32::Registry::KEY_ALL_ACCESS) do |reg|
+        reg["Color", Win32::Registry::REG_SZ] = "Orange"
+        reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, ["Seattle", "Washington"])
+        reg["AKA", Win32::Registry::REG_SZ] = "OC"
       end
+    end
 
     after(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
