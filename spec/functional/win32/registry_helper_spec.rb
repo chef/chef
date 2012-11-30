@@ -47,7 +47,7 @@ describe 'Chef::Win32::Registry', :windows_only do
     @run_context = Chef::RunContext.new(@node, {}, events)
 
     #Create a registry object that has access ot the node previously created
-    @registry = Chef::Win32::Registry.new(@run_context, 'x86_64')
+    @registry = Chef::Win32::Registry.new(@run_context)
   end
 
   #Delete what is left of the registry key-values previously created
