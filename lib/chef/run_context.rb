@@ -31,15 +31,43 @@ class Chef
   # Value object that loads and tracks the context of a Chef run
   class RunContext
 
-    attr_reader :node, :cookbook_collection, :definitions
+    # Chef::Node object for this run
+    attr_reader :node
 
-    # Needs to be settable so deploy can run a resource_collection independent
-    # of any cookbooks.
-    attr_accessor :resource_collection, :immediate_notification_collection, :delayed_notification_collection
+    # Chef::CookbookCollection for this run
+    attr_reader :cookbook_collection
 
+    # Resource Definitions for this run. Populated when the files in
+    # +definitions/+ are evaluated (this is triggered by #load).
+    attr_reader :definitions
+
+    ###
+    # These need to be settable so deploy can run a resource_collection
+    # independent of any cookbooks via +recipe_eval+
+
+    # The Chef::ResourceCollection for this run. Populated by evaluating
+    # recipes, which is triggered by #load. (See also: CookbookCompiler)
+    attr_accessor :resource_collection
+
+    # A Hash containing the immediate notifications triggered by resources
+    # during the converge phase of the chef run.
+    attr_accessor :immediate_notification_collection
+
+    # A Hash containing the delayed (end of run) notifications triggered by
+    # resources during the converge phase of the chef run.
+    attr_accessor :delayed_notification_collection
+
+    # Event dispatcher for this run.
     attr_reader :events
 
+    # A Hash used as a set containing the names of the recipes that have
+    # already been evaluated. Instead of accessing this directly, you should
+    # use #loaded_recipe? to determine if a recipe has been loaded.
     attr_reader :loaded_recipes
+
+    # A Hash used as a set containing the names of the attributes files that
+    # have been evaluated. Instead of accessing this directly, you should use
+    # #loaded_attribute? to determine if an attribute file has been loaded.
     attr_reader :loaded_attributes
 
     # Creates a new Chef::RunContext object and populates its fields. This object gets
@@ -61,11 +89,16 @@ class Chef
       @node.run_context = self
     end
 
+    # Triggers the compile phase of the chef run. Implemented by
+    # Chef::RunContext::CookbookCompiler
     def load(run_list_expansion)
       compiler = CookbookCompiler.new(self, run_list_expansion, events)
       compiler.compile
     end
 
+    # Adds an immediate notification to the
+    # +immediate_notification_collection+. The notification should be a
+    # Chef::Resource::Notification or duck type.
     def notifies_immediately(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
@@ -75,6 +108,8 @@ class Chef
       end
     end
 
+    # Adds a delayed notification to the +delayed_notification_collection+. The
+    # notification should be a Chef::Resource::Notification or duck type.
     def notifies_delayed(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
