@@ -174,4 +174,8 @@ describe Chef::RunContext::CookbookCompiler do
 
   end
 
+  describe "loading recipes" do
+    # Tests for this behavior are in RunContext's tests
+  end
+
 end

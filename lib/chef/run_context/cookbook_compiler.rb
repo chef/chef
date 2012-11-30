@@ -71,7 +71,7 @@ class Chef
         compile_attributes
         compile_lwrps
         compile_resource_definitions
-        #compile_recipes
+        compile_recipes
       end
 
       # Extracts the cookbook names from the expanded run list, then iterates
@@ -128,6 +128,23 @@ class Chef
           load_resource_definitions_from_cookbook(cookbook)
         end
         @events.definition_load_complete
+      end
+
+      def compile_recipes
+        @events.recipe_load_start(run_list_expansion.recipes.size)
+        run_list_expansion.recipes.each do |recipe|
+          begin
+            @run_context.load_recipe(recipe)
+          rescue Chef::Exceptions::RecipeNotFound => e
+            @events.recipe_not_found(e)
+            raise
+          rescue Exception => e
+            path = resolve_recipe(recipe)
+            @events.recipe_file_load_failed(path, e)
+            raise
+          end
+        end
+        @events.recipe_load_complete
       end
 
       private
@@ -246,6 +263,14 @@ class Chef
         cookbook = cookbook_collection[cookbook_name]
         cookbook.metadata.dependencies.keys.sort.each(&block)
       end
+
+      # Given a +recipe_name+, finds the file associated with the recipe.
+      def resolve_recipe(recipe_name)
+        cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
+        cookbook = cookbook_collection[cookbook_name]
+        cookbook.recipe_filenames_by_name[recipe_short_name]
+      end
+
 
     end
 
