@@ -95,7 +95,7 @@ class Chef
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
         justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
         if config[:all]
-
+          cookbook_repo.load_cookbooks
           cbs = []
           cookbook_repo.each do |cookbook_name, cookbook|
             cbs << cookbook
