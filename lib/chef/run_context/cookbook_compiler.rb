@@ -77,7 +77,7 @@ class Chef
       # Extracts the cookbook names from the expanded run list, then iterates
       # over the list, recursing through dependencies to give a run_list
       # ordered array of cookbook names with no duplicates. Dependencies appear
-      # before the cookbook they depend on.
+      # before the cookbook(s) that depend on them.
       def cookbook_order
         @cookbook_order ||= begin
           ordered_cookbooks = []
