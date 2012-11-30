@@ -66,18 +66,6 @@ class Chef
       compiler.compile
     end
 
-    # Looks up an attribute file given the +cookbook_name+ and
-    # +attr_file_name+. Used by DSL::IncludeAttribute
-    def resolve_attribute(cookbook_name, attr_file_name)
-      cookbook = cookbook_collection[cookbook_name]
-      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
-
-      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
-      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
-
-      attribute_filename
-    end
-
     def notifies_immediately(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
@@ -112,6 +100,7 @@ class Chef
       end
     end
 
+    # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
     def include_recipe(*recipe_names)
       result_recipes = Array.new
       recipe_names.flatten.each do |recipe_name|
@@ -122,6 +111,7 @@ class Chef
       result_recipes
     end
 
+    # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
     def load_recipe(recipe_name)
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
@@ -135,6 +125,18 @@ class Chef
         cookbook = cookbook_collection[cookbook_name]
         cookbook.load_recipe(recipe_short_name, self)
       end
+    end
+
+    # Looks up an attribute file given the +cookbook_name+ and
+    # +attr_file_name+. Used by DSL::IncludeAttribute
+    def resolve_attribute(cookbook_name, attr_file_name)
+      cookbook = cookbook_collection[cookbook_name]
+      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
+
+      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
+      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
+
+      attribute_filename
     end
 
     def loaded_fully_qualified_recipe?(cookbook, recipe)

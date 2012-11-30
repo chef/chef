@@ -130,6 +130,7 @@ class Chef
         @events.definition_load_complete
       end
 
+      # Iterates over the expanded run_list, loading each recipe in turn.
       def compile_recipes
         @events.recipe_load_start(run_list_expansion.recipes.size)
         run_list_expansion.recipes.each do |recipe|
