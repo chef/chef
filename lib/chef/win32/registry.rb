@@ -191,7 +191,7 @@ class Chef
         return subkeys
       end
 
-      # NB: 32-bit chef clients running on 64-bit machines will default to reading the 64-bit registry
+      # 32-bit chef clients running on 64-bit machines will default to reading the 64-bit registry
       def registry_system_architecture
         applied_arch = ( architecture == :machine ) ? machine_architecture : architecture
         ( applied_arch == 'x86_64' ) ? 0x0100 : 0x0200
@@ -257,6 +257,34 @@ class Chef
         end
       end
 
+      def get_type_from_name(val_type)
+        value = {
+          :binary => ::Win32::Registry::REG_BINARY,
+          :string => ::Win32::Registry::REG_SZ,
+          :multi_string => ::Win32::Registry::REG_MULTI_SZ,
+          :expand_string => ::Win32::Registry::REG_EXPAND_SZ,
+          :dword => ::Win32::Registry::REG_DWORD,
+          :dword_big_endian => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
+          :qword => ::Win32::Registry::REG_QWORD
+        }[val_type]
+        return value
+      end
+
+      def keys_missing?(key_path)
+        missing_key_arr = key_path.split("\\")
+        missing_key_arr.pop
+        key = missing_key_arr.join("\\")
+        !key_exists?(key)
+      end
+
+      def get_type_from_name(val_type)
+        _type_name_map[val_type]
+      end
+
+      def get_name_from_type(val_class)
+        _name_type_map[val_class]
+      end
+
       private
 
       def node
@@ -307,14 +335,6 @@ class Chef
         @_name_type_map ||= _type_name_map.invert
       end
 
-      def get_type_from_name(val_type)
-        _type_name_map[val_type]
-      end
-
-      def get_name_from_type(val_class)
-        _name_type_map[val_class]
-      end
-
       def get_type_from_num(val_type)
         value = {
           3 => ::Win32::Registry::REG_BINARY,
@@ -326,13 +346,6 @@ class Chef
           11 => ::Win32::Registry::REG_QWORD
         }[val_type]
         return value
-      end
-
-      def keys_missing?(key_path)
-        missing_key_arr = key_path.split("\\")
-        missing_key_arr.pop
-        key = missing_key_arr.join("\\")
-        !key_exists?(key)
       end
 
       def create_missing(key_path)
