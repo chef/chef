@@ -57,7 +57,7 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   it "reads the validation key when it contains a ~" do
-    IO.should_receive(:read).with("#{ENV['HOME']}/my.key")
+    IO.should_receive(:read).with(File.expand_path("my.key", ENV['HOME']))
     @chef_config = {:validation_key => '~/my.key'}
     @context = Chef::Knife::Core::BootstrapContext.new(@config, @run_list, @chef_config)
     @context.validation_key
