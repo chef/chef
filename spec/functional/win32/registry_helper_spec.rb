@@ -223,6 +223,46 @@ describe 'Chef::Win32::Registry', :windows_only do
     it "throws an exception if the hive does not exist" do
       lambda {@registry.set_value("JKLM\\Software\\Root\\Branch\\Flower", {:name=>"Petals", :type=>:multi_string, :data=>["Yellow", "Changed Color"]})}.should raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
+
+    # we are validating that the data gets .to_i called on it when type is a :dword
+
+    it "casts an integer string given as a dword into an integer" do
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBe32767", :type=>:dword, :data=>"32767"}).should == true
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBe32767", :type=>:dword, :data=>32767}).should == true
+    end
+
+    it "casts a nonsense string given as a dword into zero" do
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBeZero", :type=>:dword, :data=>"whatdoesthisdo"}).should == true
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBeZero", :type=>:dword, :data=>0}).should == true
+    end
+
+    it "throws an exception when trying to cast an array to an into for a dword" do
+      lambda {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldThrow", :type=>:dword, :data=>["one","two"]})}.should raise_error
+    end
+
+    # we are validating that the data gets .to_s called on it when type is a :string
+
+    it "stores the string representation of an array into a string if you pass it an array" do
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBePainful", :type=>:string, :data=>["one","two"]}).should == true
+      require 'pp'
+      pp @registry.get_values("HKCU\\Software\\Root\\Branch\\Flower")
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBePainful", :type=>:string, :data=>'["one", "two"]'}).should == true
+    end
+
+    it "stores the string representation of a number into a string if you pass it an number" do
+      @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBe65535", :type=>:string, :data=>65535}).should == true
+      @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBe65535", :type=>:string, :data=>"65535"}).should == true
+    end
+
+    # we are validating that the data gets .to_a called on it when type is a :multi_string
+
+    it "throws an exception when a multi-string is passed a number" do
+      lambda {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldThrow", :type=>:multi_string, :data=>65535})}.should raise_error
+    end
+
+    it "throws an exception when a multi-string is passed a string" do
+      lambda {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBeWat", :type=>:multi_string, :data=>"foo"})}.should raise_error
+    end
   end
 
   describe "create_key" do
