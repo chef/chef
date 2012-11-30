@@ -85,10 +85,12 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Not just Orange - OpscodeOrange!"}).should == true
     end
 
-    it "gives an error if the key and value exist and the type does not match" do
+    it "modifys the type if the key and value exist and the type does not match" do
       @resource.key("HKCU\\Software\\Opscode")
       @resource.values([{:name=>"Color", :type=>:multi_string, :data=>["Not just Orange - OpscodeOrange!"]}])
-      lambda{@resource.run_action(:create)}.should raise_error(Chef::Exceptions::Win32RegTypesMismatch)
+      @resource.run_action(:create)
+
+      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:multi_string, :data=>["Not just Orange - OpscodeOrange!"]}).should == true
     end
 
     it "creates subkey if parent exists" do

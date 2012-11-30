@@ -135,9 +135,13 @@ class Chef
     class Win32RegValueMissing < RuntimeError; end
     class Win32RegDataMissing < RuntimeError; end
     class Win32RegValueExists < RuntimeError; end
-    class Win32RegTypesMismatch < RuntimeError; end
     class Win32RegNoRecursive < ArgumentError; end
     class Win32RegTypeDoesNotExist < ArgumentError; end
+    class Win32RegBadType < ArgumentError; end
+    class Win32RegNameMissing < ArgumentError; end
+    class Win32RegTypeMissing < ArgumentError; end
+    class Win32RegBadValueSize < ArgumentError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

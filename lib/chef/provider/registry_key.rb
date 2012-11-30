@@ -38,6 +38,10 @@ class Chef
       include Chef::Mixin::Checksum
       include Chef::Mixin::ShellOut
 
+      def whyrun_supported?
+        true
+      end
+
       def load_current_resource
         @current_resource ||= Chef::Resource::RegistryKey.new(@new_resource.key, run_context)
         @current_resource.key(@new_resource.key)
@@ -47,6 +51,24 @@ class Chef
           @current_resource.values(registry.get_values(@new_resource.key))
         end
         values_to_hash(@current_resource.values)
+
+        @bad_type = []
+        @new_resource.values.map {|val| @bad_type.push(val) if !registry.get_type_from_name(val[:type]) }.compact!
+
+        @new_resource.values.each do |value|
+          unless value.has_key?(:name)
+            raise Chef::Exceptions::Win32RegNameMissing, "key :name does not exist in #{value}"
+          end
+          unless value.has_key?(:type)
+            raise Chef::Exceptions::Win32RegTypeMissing, "key :type does not exist in #{value}"
+          end
+          unless value.has_key?(:data)
+            raise Chef::Exceptions::Win32RegDataMissing, "key :data does not exist in #{value}"
+          end
+          unless value.length == 3
+            raise Chef::Exceptions::Win32RegBadValueSize, "#{value.length} should be 3 and should contain keys :name, :type and :data"
+          end
+        end
         @current_resource
       end
 
@@ -54,7 +76,7 @@ class Chef
         @registry ||= Chef::Win32::Registry.new(@run_context, @new_resource.architecture)
       end
 
-      def values_to_hash(values)
+     def values_to_hash(values)
         if values
          @name_hash = Hash[values.map { |val| [val[:name], val] }]
         else
@@ -64,47 +86,56 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
-    #      a.hive_exists!(@new_resource.key)
+          a.assertion{ registry.hive_exists?(@new_resource.key) }
+          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{@new_resource.key.split("\\").shift} does not exist")
         end
         requirements.assert(:create) do |a|
-          #If key exists and value exists but type different fail
+          a.assertion{ registry.key_exists?(@new_resource.key) }
+      #    a.failure_message(Chef::Exceptions::Win32RegKeyMissing, "Key #{@new_resource.key} does not exist")
+          a.whyrun("Key #{@new_resource.key} does not exist. Unless it would have been created before, attempt to modify its values would fail.")
         end
-      #  requirements.assert(:create, :create_if_missing) do |a|
+        requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
           #If the type is anything different from the list of types specified fail
-      #  end
+          a.assertion{ @bad_type.empty? }
+          a.failure_message(Chef::Exceptions::Win32RegBadType, "Types mismatch for the following values #{@bad_vals}")
+        end
         requirements.assert(:create, :create_if_missing) do |a|
           #If keys missing in the path and recursive == false
+          a.assertion{ !registry.keys_missing?(@current_resource.key) || @new_resource.recursive }
+          a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "Intermediate keys missing but recursive is set to false")
+          a.whyrun("Intermediate keys in #{@new_resource.key} go not exist. Unless they would have been created earlier, attempt to modify them would fail.")
         end
         requirements.assert(:delete) do |a|
           #If key to be deleted has subkeys but recurssive == false
+          a.assertion{ !registry.key_exists?(@new_resource.key) || !registry.has_subkeys?(@new_resource.key) || @new_resource.recursive }
+          a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "#{@new_resource.key} has subkeys but recursive is set to false.")
+          a.whyrun("#{@current_resource.key} has subkeys, but recursive is set to false. attempt to delete would fails unless subkeys were deleted prior to this action.")
         end
+
       end
 
       def action_create
-        if !registry.key_exists?(@current_resource.key)
-          registry.create_key(@new_resource.key, @new_resource.recursive)
+        unless registry.key_exists?(@current_resource.key)
+          converge_by("create key @new_resource.key") do
+            registry.create_key(@new_resource.key, @new_resource.recursive)
+          end
         end
         @new_resource.values.each do |value|
-          if @name_hash.has_key?(value[:name])
-            if registry.type_matches!(@new_resource.key, value)
-           # if @name_hash[value[:name]][:type] == registry.get_type_from_num(value[:type])
-              if @name_hash[value[:name]][:data] != value[:data]
-                registry.update_value(@new_resource.key, value)
-              end
-            end
-          else
-            registry.create_value(@new_resource.key, value)
+          converge_by("set value #{value}") do
+            registry.set_value(@new_resource.key, value)
           end
         end
       end
 
       def action_create_if_missing
-        if !registry.key_exists?(@new_resource.key)
+        unless registry.key_exists?(@new_resource.key)
           registry.create_key(@new_resource.key, @new_resource.recursive)
         end
         @new_resource.values.each do |value|
-          if !@name_hash.has_key?(value[:name])
-            registry.create_value(@new_resource.key, value)
+          unless @name_hash.has_key?(value[:name])
+            converge_by("create value #{value}") do
+              registry.set_value(@new_resource.key, value)
+            end
           end
         end
       end
@@ -114,7 +145,9 @@ class Chef
         if registry.key_exists?(@new_resource.key)
           @new_resource.values.each do |value|
             if @name_hash.has_key?(value[:name])
-              registry.delete_value(@new_resource.key, value)
+              converge_by("delete value #{value}") do
+                registry.delete_value(@new_resource.key, value)
+              end
             end
           end
         end
@@ -122,7 +155,9 @@ class Chef
 
       def action_delete_key
         if registry.key_exists?(@new_resource.key)
-          registry.delete_key(@new_resource.key, @new_resource.recursive)
+          converge_by("delete key #{@new_resource.key}") do
+            registry.delete_key(@new_resource.key, @new_resource.recursive)
+          end
         end
       end
 
