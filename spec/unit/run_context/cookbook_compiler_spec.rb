@@ -54,10 +54,7 @@ describe Chef::RunContext::CookbookCompiler do
     cl
   end
 
-  # This run_context is not accessed directly in the test, but it is used by
-  # Chef::Node to store state (which attributes files have been read).
-  # Therefore, it's eagerly created here.
-  let!(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
+  let(:run_context) { Chef::RunContext.new(node, cookbook_collection, events) }
 
   let(:chef_repo_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "run_context", "cookbooks")) }
 
@@ -67,7 +64,7 @@ describe Chef::RunContext::CookbookCompiler do
   let(:run_list_expansion) { node.run_list.expand('_default') }
 
   let(:compiler) do
-    Chef::RunContext::CookbookCompiler.new(node, cookbook_collection, run_list_expansion, events)
+    Chef::RunContext::CookbookCompiler.new(run_context, run_list_expansion, events)
   end
 
 
