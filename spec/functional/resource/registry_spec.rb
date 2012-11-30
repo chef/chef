@@ -29,7 +29,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @node.consume_external_attrs(ohai.data,{})
     @run_context = Chef::RunContext.new(@node, {}, events)
     @resource = Chef::Resource::RegistryKey.new("HKCU\\Software", @run_context)
-    @registry = Chef::Win32::Registry.new(@run_context, 'x86_64')
+    @registry = Chef::Win32::Registry.new(@run_context)
   end
 
   context "when action is create" do
