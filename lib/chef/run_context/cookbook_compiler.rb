@@ -28,30 +28,30 @@ class Chef
     # Implements the compile phase of the chef run by loading/eval-ing files
     # from cookbooks in the correct order and in the correct context.
     class CookbookCompiler
-      attr_reader :node
       attr_reader :events
       attr_reader :run_list_expansion
-      attr_reader :cookbook_collection
 
       # Resource Definitions from the compiled cookbooks. This is populated by
       # calling #compile_resource_definitions (which is called by #compile)
       attr_reader :definitions
 
-      def initialize(node, cookbook_collection, run_list_expansion, events)
-        @node = node
+      def initialize(run_context, run_list_expansion, events)
+        @run_context = run_context
         @events = events
         @run_list_expansion = run_list_expansion
-        @cookbook_collection = cookbook_collection
-
-        # @resource_collection = Chef::ResourceCollection.new
-        # @immediate_notification_collection = Hash.new {|h,k| h[k] = []}
-        # @delayed_notification_collection = Hash.new {|h,k| h[k] = []}
-        # @loaded_recipes = {}
-        # @loaded_attributes = {}
-        #
-
-        @definitions = Hash.new
         @cookbook_order = nil
+      end
+
+      def node
+        @run_context.node
+      end
+
+      def cookbook_collection
+        @run_context.cookbook_collection
+      end
+
+      def definitions
+        @run_context.definitions
       end
 
       # Run the compile phase of the chef run. Loads files in the following order:
@@ -121,6 +121,7 @@ class Chef
         @events.lwrp_load_complete
       end
 
+      # Loads resource definitions according to #cookbook_order
       def compile_resource_definitions
         @events.definition_load_start(count_files_by_segment(:definitions))
         cookbook_order.each do |cookbook|
@@ -128,7 +129,6 @@ class Chef
         end
         @events.definition_load_complete
       end
-
 
       private
 
@@ -145,9 +145,9 @@ class Chef
       end
 
       def load_attribute_file(cookbook_name, filename)
-        Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
+        Chef::Log.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
         attr_file_basename = ::File.basename(filename, ".rb")
-        @node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
+        node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
       rescue Exception => e
         @events.attribute_file_load_failed(filename, e)
         raise

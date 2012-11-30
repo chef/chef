@@ -62,12 +62,8 @@ class Chef
     end
 
     def load(run_list_expansion)
-      load_libraries_in_run_list_order(run_list_expansion)
-
-      load_lwrps_in_run_list_order(run_list_expansion)
-      load_attributes_in_run_list_order(run_list_expansion)
-
-      load_resource_definitions_in_run_list_order(run_list_expansion)
+      compiler = CookbookCompiler.new(self, run_list_expansion, events)
+      compiler.compile
 
       @events.recipe_load_start(run_list_expansion.recipes.size)
       run_list_expansion.recipes.each do |recipe|
@@ -177,27 +173,6 @@ class Chef
 
     def loaded_attribute(cookbook, attribute_file)
       @loaded_attributes["#{cookbook}::#{attribute_file}"] = true
-    end
-
-    def load_libraries_in_run_list_order(run_list_expansion)
-      @compiler = CookbookCompiler.new(node, cookbook_collection, run_list_expansion, events)
-      @compiler.compile_libraries
-    end
-
-    def load_attributes_in_run_list_order(run_list_expansion)
-      @compiler = CookbookCompiler.new(node, cookbook_collection, run_list_expansion, events)
-      @compiler.compile_attributes
-    end
-
-    def load_lwrps_in_run_list_order(run_list_expansion)
-      @compiler = CookbookCompiler.new(node, cookbook_collection, run_list_expansion, events)
-      @compiler.compile_lwrps
-    end
-
-    def load_resource_definitions_in_run_list_order(run_list_expansion)
-      @compiler = CookbookCompiler.new(node, cookbook_collection, run_list_expansion, events)
-      @compiler.compile_resource_definitions
-      @definitions = @compiler.definitions
     end
 
     private
