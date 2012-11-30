@@ -64,27 +64,6 @@ class Chef
     def load(run_list_expansion)
       compiler = CookbookCompiler.new(self, run_list_expansion, events)
       compiler.compile
-
-      @events.recipe_load_start(run_list_expansion.recipes.size)
-      run_list_expansion.recipes.each do |recipe|
-        begin
-          include_recipe(recipe)
-        rescue Chef::Exceptions::RecipeNotFound => e
-          @events.recipe_not_found(e)
-          raise
-        rescue Exception => e
-          path = resolve_recipe(recipe)
-          @events.recipe_file_load_failed(path, e)
-          raise
-        end
-      end
-      @events.recipe_load_complete
-    end
-
-    def resolve_recipe(recipe_name)
-      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
-      cookbook = cookbook_collection[cookbook_name]
-      cookbook.recipe_filenames_by_name[recipe_short_name]
     end
 
     # Looks up an attribute file given the +cookbook_name+ and
