@@ -60,16 +60,6 @@ class Chef
     # Event dispatcher for this run.
     attr_reader :events
 
-    # A Hash used as a set containing the names of the recipes that have
-    # already been evaluated. Instead of accessing this directly, you should
-    # use #loaded_recipe? to determine if a recipe has been loaded.
-    attr_reader :loaded_recipes
-
-    # A Hash used as a set containing the names of the attributes files that
-    # have been evaluated. Instead of accessing this directly, you should use
-    # #loaded_attribute? to determine if an attribute file has been loaded.
-    attr_reader :loaded_attributes
-
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
     #
@@ -174,10 +164,33 @@ class Chef
       attribute_filename
     end
 
+    # An Array of all recipes that have been loaded. This is stored internally
+    # as a Hash, so ordering is not preserved when using ruby 1.8.
+    #
+    # Recipe names are given in fully qualified form, e.g., the recipe "nginx"
+    # will be given as "nginx::default"
+    #
+    # To determine if a particular recipe has been loaded, use #loaded_recipe?
+    def loaded_recipes
+      @loaded_recipes.keys
+    end
+
+    # An Array of all attributes files that have been loaded. Stored internally
+    # using a Hash, so order is not preserved on ruby 1.8.
+    #
+    # Attribute file names are given in fully qualified form, e.g.,
+    # "nginx::default" instead of "nginx".
+    def loaded_attributes
+      @loaded_attributes.keys
+    end
+
     def loaded_fully_qualified_recipe?(cookbook, recipe)
       @loaded_recipes.has_key?("#{cookbook}::#{recipe}")
     end
 
+    # Returns true if +recipe+ has been loaded, false otherwise. Default recipe
+    # names are expanded, so `loaded_recipe?("nginx")` and
+    # `loaded_recipe?("nginx::default")` are valid and give identical results.
     def loaded_recipe?(recipe)
       cookbook, recipe_name = Chef::Recipe.parse_recipe_name(recipe)
       loaded_fully_qualified_recipe?(cookbook, recipe_name)
