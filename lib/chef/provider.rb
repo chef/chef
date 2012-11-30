@@ -167,7 +167,6 @@ class Chef
     end
 
     def process_resource_requirements
-      requirements.clean_blocked_actions
       requirements.run(:all_actions) unless @action == :nothing
       requirements.run(@action)
     end
