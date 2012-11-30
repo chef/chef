@@ -31,10 +31,6 @@ class Chef
       attr_reader :events
       attr_reader :run_list_expansion
 
-      # Resource Definitions from the compiled cookbooks. This is populated by
-      # calling #compile_resource_definitions (which is called by #compile)
-      attr_reader :definitions
-
       def initialize(run_context, run_list_expansion, events)
         @run_context = run_context
         @events = events
@@ -42,14 +38,18 @@ class Chef
         @cookbook_order = nil
       end
 
+      # Chef::Node object for the current run.
       def node
         @run_context.node
       end
 
+      # Chef::CookbookCollection object for the current run
       def cookbook_collection
         @run_context.cookbook_collection
       end
 
+      # Resource Definitions from the compiled cookbooks. This is populated by
+      # calling #compile_resource_definitions (which is called by #compile)
       def definitions
         @run_context.definitions
       end
