@@ -35,7 +35,7 @@ module LibraryLoadOrder
   end
 end
 
-# These tests relies on fixture data in spec/data/run_context/cookbooks.
+# These tests rely on fixture data in spec/data/run_context/cookbooks.
 #
 # Dependencies (circular or not) are specified by `depends` directives in the
 # metadata of these cookbooks.
