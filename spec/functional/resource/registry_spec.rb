@@ -130,6 +130,35 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @registry.value_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode", value).should == true
       end
     end
+    context "when running on 64-bit server", :windows64_only do
+      before(:all) do
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+          begin
+            reg.delete_key("Opscode", true)
+          rescue
+          end
+        end
+      end
+      after(:all) do
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+          begin
+            reg.delete_key("Opscode", true)
+          rescue
+          end
+        end
+      end
+      it "creates a key in a 32-bit registry that is not viewable in 64-bit" do
+        @resource.key("HKLM\\Software\\Opscode\\Whatever")
+        @resource.values([{:name=>"OC", :type=>:string, :data=>"Data"}])
+        @resource.recursive(true)
+        @resource.architecture(:i386)
+        @resource.run_action(:create)
+        @registry.architecture = "i386"
+        @registry.data_exists?("HKLM\\Software\\Opscode\\Whatever", {:name=>"OC", :type=>:string, :data=>"Data"}).should == true
+        @registry.architecture = "x86_64"
+        @registry.key_exists?("HKLM\\Software\\Opscode\\Whatever").should == false
+      end
+    end
   end
 
   context "when action is create_if_missing" do
