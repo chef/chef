@@ -42,7 +42,14 @@ class Chef
         true
       end
 
+      def running_on_windows!
+        unless RUBY_PLATFORM =~ /mswin|mingw|windows/
+          raise Chef::Exceptions::Win32NotWindows, "Attempt to manipulate the windows registry on a non-windows node"
+        end
+      end
+
       def load_current_resource
+        running_on_windows!
         @current_resource ||= Chef::Resource::RegistryKey.new(@new_resource.key, run_context)
         @current_resource.key(@new_resource.key)
         @current_resource.architecture(@new_resource.architecture)
