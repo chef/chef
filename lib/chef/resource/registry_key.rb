@@ -31,7 +31,7 @@ class Chef
       def initialize(name, run_context=nil)
         super
         @resource_name = :registry_key
-        #@action = :modify
+        @action = :create
         @architecture = :machine
         @recursive = true
         @key_name = name
