@@ -19,6 +19,25 @@
 require "chef/win32/registry"
 require "spec_helper"
 
+describe Chef::Resource::RegistryKey, :unix_only do
+  before(:all) do
+    events = Chef::EventDispatch::Dispatcher.new
+    node = Chef::Node.new
+    ohai = Ohai::System.new
+    ohai.all_plugins
+    node.consume_external_attrs(ohai.data,{})
+    run_context = Chef::RunContext.new(node, {}, events)
+    @resource = Chef::Resource::RegistryKey.new("HKCU\\Software", run_context)
+  end
+  context "when load_current_resource is run on a non-windows node" do
+    it "throws an exception because you don't have a windows registry (derp)" do
+      @resource.key("HKCU\\Software\\Opscode")
+      @resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
+      lambda{@resource.run_action(:create)}.should raise_error(Chef::Exceptions::Win32NotWindows)
+    end
+  end
+end
+
 describe Chef::Resource::RegistryKey, :windows_only do
 
   before(:all) do
