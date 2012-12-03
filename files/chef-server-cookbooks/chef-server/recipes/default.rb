@@ -86,6 +86,6 @@ include_recipe "chef-server::chef-pedant"
 file "/etc/chef-server/chef-server-running.json" do
   owner node['chef_server']['user']['username']
   group "root"
-  mode "0644"
+  mode "0600"
   content Chef::JSONCompat.to_json_pretty({ "chef_server" => node['chef_server'].to_hash, "run_list" => node.run_list })
 end
