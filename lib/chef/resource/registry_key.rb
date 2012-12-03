@@ -46,11 +46,25 @@ class Chef
         )
       end
       def values(arg=nil)
-        set_or_return(
-          :values,
-          arg,
-          :kind_of => Array
-        )
+        if not arg.nil?
+          if arg.is_a?(Hash)
+            @values = [ arg ]
+          elsif arg.is_a?(Array)
+            @values = arg
+          else
+            raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
+          end
+          @values.each do |v|
+            raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.has_key?(:name)
+            raise ArgumentError, "Missing type key in RegistryKey values hash" unless v.has_key?(:type)
+            raise ArgumentError, "Missing data key in RegistryKey values hash" unless v.has_key?(:data)
+            v.each_key do |key|
+              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless [:name,:type,:data].include?(key)
+            end
+          end
+        elsif self.instance_variable_defined?(:@values) == true
+          @values
+        end
       end
       def recursive(arg=nil)
         set_or_return(
