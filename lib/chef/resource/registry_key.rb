@@ -25,18 +25,17 @@ class Chef
   class Resource
     class RegistryKey < Chef::Resource
 
-      identity_attr :key_name
-      state_attrs :values, :type
+      identity_attr :key
+      state_attrs :values
 
       def initialize(name, run_context=nil)
         super
         @resource_name = :registry_key
         @action = :create
         @architecture = :machine
-        @recursive = true
-        @key_name = name
+        @recursive = false
+        @key = name
         @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
-        @provider = Chef::Provider::RegistryKey
       end
 
       def key(arg=nil)
@@ -44,7 +43,6 @@ class Chef
           :key,
           arg,
           :kind_of => String,
-          :name_attribute => true
         )
       end
       def values(arg=nil)
