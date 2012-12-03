@@ -94,7 +94,8 @@ class Chef
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
     class Win32APIFunctionNotImplemented < NotImplementedError; end
-
+    # Attempting to run windows code on a not-windows node
+    class Win32NotWindows < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
