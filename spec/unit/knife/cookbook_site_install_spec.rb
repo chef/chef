@@ -60,7 +60,6 @@ describe Chef::Knife::CookbookSiteInstall do
 
 
   describe "run" do
-
     it "should return an error if a cookbook name is not provided" do
       @knife.name_args = []
       @knife.ui.should_receive(:error).with("Please specify a cookbook to download and install.")
@@ -90,7 +89,6 @@ describe Chef::Knife::CookbookSiteInstall do
       @knife.ui.should_receive(:error).with("Installing multiple cookbooks at once is not supported.")
       lambda { @knife.run }.should raise_error(SystemExit)
     end
-
 
     it "should install the specified version if second argument is a three-digit version" do
       @knife.name_args = ["getting-started", "0.1.0"]
@@ -133,6 +131,18 @@ describe Chef::Knife::CookbookSiteInstall do
       @repo.should_not_receive(:prepare_to_import)
       @repo.should_not_receive(:reset_to_default_state)
       @knife.run
+    end
+
+    it "should not raise an error if cookbook_path is a string" do
+      @knife.config[:cookbook_path] = '/var/tmp/chef'
+      @knife.config[:no_deps] = true
+      @knife.name_args = ["getting-started"]
+      upstream_file = File.join(@install_path, "getting-started.tar.gz")
+      @knife.should_receive(:download_cookbook_to).with(upstream_file)
+      @knife.should_receive(:extract_cookbook).with(upstream_file, "0.3.0")
+      @knife.should_receive(:clear_existing_files).with(File.join(@install_path, "getting-started"))
+      @repo.should_receive(:merge_updates_from).with("getting-started", "0.3.0")
+      lambda { @knife.run }.should_not raise_error
     end
   end
 end
