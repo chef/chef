@@ -33,6 +33,15 @@ execute "boostrap-chef-server" do
   notifies :restart, 'service[erchef]'
 end
 
+# servers need access to this key.
+chef_user = node['chef_server']['user']['username']
+file "/etc/chef-server/chef-webui.pem" do
+  owner "root"
+  group chef_user
+  mode "0640"
+  not_if { File.exists?(bootstrap_status_file) }
+end
+
 file bootstrap_status_file do
   owner "root"
   group "root"
