@@ -1,7 +1,6 @@
 #
-# Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>);
-# Copyright:: Copyright (c) 2008 OpsCode, Inc.
+# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Copyright:: Copyright (c) 2012 OpsCode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
