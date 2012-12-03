@@ -236,7 +236,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBeZero", :type=>:dword, :data=>0}).should == true
     end
 
-    it "throws an exception when trying to cast an array to an into for a dword" do
+    it "throws an exception when trying to cast an array to an int for a dword" do
       lambda {@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldThrow", :type=>:dword, :data=>["one","two"]})}.should raise_error
     end
 
