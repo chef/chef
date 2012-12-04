@@ -18,6 +18,7 @@
 
 require "chef/mixin/command"
 require "chef/mixin/from_file"
+require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
 
