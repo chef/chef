@@ -46,6 +46,10 @@ class Chef
         @startup_type = :automatic
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
+
+        if(run_context && run_context.node[:init_package] == "systemd")
+          @provider = Chef::Provider::Service::Systemd
+        end
       end
       
       def service_name(arg=nil)
