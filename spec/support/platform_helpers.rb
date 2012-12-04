@@ -10,6 +10,14 @@ def windows?
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
+def windows_win2k3?
+  return false unless windows?
+  require 'ruby-wmi'
+
+  host = WMI::Win32_OperatingSystem.find(:first)
+  (host.version && host.version.start_with?("5.2"))
+end
+
 # def jruby?
 
 def unix?
