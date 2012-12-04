@@ -64,13 +64,12 @@ class Chef
       end
 
       def unsupported_server_message(api_info)
-        puts "Sorry, but rebuilding the index is not available via knife for #{server_type(api_info)}s version 11.0.0 and above."
-        puts "Instead, run the '#{ctl_command(api_info)} reindex' command on the server itself."
+        ui.error("Rebuilding the index is not available via knife for #{server_type(api_info)}s version 11.0.0 and above.")
+        ui.info("Instead, run the '#{ctl_command(api_info)} reindex' command on the server itself.")
       end
 
       def deprecated_server_message
-        puts "NOTICE: 'knife index rebuild' has been removed for Chef 11+ servers.  It will continue to work for prior versions, however."
-        puts
+        ui.warn("'knife index rebuild' has been removed for Chef 11+ servers.  It will continue to work for prior versions, however.")
       end
 
       def nag
