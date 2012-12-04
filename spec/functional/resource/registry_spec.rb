@@ -188,11 +188,11 @@ describe Chef::Resource::RegistryKey, :windows_only do
         end
       end
       it "creates a key in a 32-bit registry that is not viewable in 64-bit" do
-        @resource.key("HKLM\\Software\\Opscode\\Whatever")
-        @resource.values([{:name=>"OC", :type=>:string, :data=>"Data"}])
-        @resource.recursive(true)
-        @resource.architecture(:i386)
-        @resource.run_action(:create)
+        @new_resource.key("HKLM\\Software\\Opscode\\Whatever")
+        @new_resource.values([{:name=>"OC", :type=>:string, :data=>"Data"}])
+        @new_resource.recursive(true)
+        @new_resource.architecture(:i386)
+        @new_resource.run_action(:create)
         @registry.architecture = "i386"
         @registry.data_exists?("HKLM\\Software\\Opscode\\Whatever", {:name=>"OC", :type=>:string, :data=>"Data"}).should == true
         @registry.architecture = "x86_64"
@@ -216,43 +216,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
     end
-
-    # context "for an unsuccessful run" do
-
-    #   before do
-    #     @backtrace = ["# ./lib/chef/mixin/why_run.rb:241:in `run'",
-    #                   "# ./lib/chef/mixin/why_run.rb:322:in `block in run'",
-    #                   "# ./lib/chef/mixin/why_run.rb:321:in `each'",
-    #                   "# ./lib/chef/mixin/why_run.rb:321:in `run'",
-    #                   "# ./lib/chef/provider.rb:132:in `process_resource_requirements'",
-    #                   "# ./lib/chef/provider.rb:109:in `run_action'",
-    #                   "# ./lib/chef/resource.rb:573:in `run_action'",
-    #                   "# ./spec/functional/resource/registry_spec.rb:216:in `block (4 levels) in <top (required)>'"]
-    #     @node = Chef::Node.new
-    #     @node.name("windowsbox")
-    #     @exception = mock("ArgumentError")
-    #     @exception.stub!(:inspect).and_return("Chef::Exceptions::Win32RegNoRecursive")
-    #     @exception.stub!(:message).and_return("Object not found")
-    #     @exception.stub!(:backtrace).and_return(@backtrace)
-    #     @resource_reporter.run_list_expand_failed(@node, @exception)
-    #     @resource_reporter.run_failed(@exception)
-    #     @report = @resource_reporter.prepare_run_data
-    #     ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-    #       begin
-    #         reg.delete_key("MissingKey1", true)
-    #       rescue
-    #       end
-    #     end
-    #   end
-
-    #   it "gives error if action create and parent does not exist and recursive is set to false" do
-    #     @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
-    #     @new_resource.values([{:name=>"OC", :type=>:string, :data=>"MissingData"}])
-    #     @new_resource.recursive(false)
-    #     puts @report
-    #     #@new_resource.run_action(:create)
-    #   end
-    # end
   end
 
   context "when action is create_if_missing" do
