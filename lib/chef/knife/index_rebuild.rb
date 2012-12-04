@@ -73,7 +73,8 @@ class Chef
       end
 
       def nag
-        ui.confirm("This operation is destructive. Rebuilding the index may take some time. You sure? (yes/no): ")
+        ui.info("This operation is destructive.  Rebuilding the index may take some time.")
+        ui.confirm("Continue")
       end
 
       # Chef 11 (and above) servers return various pieces of
