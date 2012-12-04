@@ -134,7 +134,7 @@ describe Chef::Knife::CookbookSiteInstall do
     end
 
     it "should not raise an error if cookbook_path is a string" do
-      @knife.config[:cookbook_path] = '/var/tmp/chef'
+      @knife.config[:cookbook_path] = @install_path
       @knife.config[:no_deps] = true
       @knife.name_args = ["getting-started"]
       upstream_file = File.join(@install_path, "getting-started.tar.gz")
