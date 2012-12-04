@@ -98,7 +98,6 @@ class Chef
         end
         requirements.assert(:create) do |a|
           a.assertion{ registry.key_exists?(@new_resource.key) }
-      #    a.failure_message(Chef::Exceptions::Win32RegKeyMissing, "Key #{@new_resource.key} does not exist")
           a.whyrun("Key #{@new_resource.key} does not exist. Unless it would have been created before, attempt to modify its values would fail.")
         end
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
