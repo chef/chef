@@ -73,13 +73,7 @@ class Chef
       end
 
       def nag
-        unless config[:yes]
-          yea_or_nay = ask_question("This operation is destructive. Rebuilding the index may take some time. You sure? (yes/no): ")
-          unless yea_or_nay =~ /^y/i
-            puts "aborting"
-            exit 7
-          end
-        end
+        ui.confirm("This operation is destructive. Rebuilding the index may take some time. You sure? (yes/no): ")
       end
 
       # Chef 11 (and above) servers return various pieces of

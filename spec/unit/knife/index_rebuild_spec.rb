@@ -82,33 +82,6 @@ describe Chef::Knife::IndexRebuild do
     end
   end # unsupported_version?
 
-  context "#nag" do
- 
-    before :each do
-      # Simulate user input at the command line
-      knife.ui.stub!(:stdin).and_return(user_input)
-    end
-
-    context "with a NO response" do
-      let(:user_input){StringIO.new("NO\n")}
-      it "exits" do
-        knife.should_receive(:exit).with(7)
-        knife.should_receive(:puts).with("aborting")
-        knife.nag
-      end
-    end
-    
-    context "with a YES response" do
-      let(:user_input){StringIO.new("YES\n")}
-      it "does not exit" do
-        knife.should_not_receive(:exit)
-        knife.nag
-      end
-    end
-
-  end # nag
-
-
   context "Simulating a 'knife index rebuild' run" do
 
     before :each do
