@@ -51,6 +51,12 @@ class Chef
         @provider = Chef::Provider::RemoteDirectory
       end
 
+      if Chef::Platform.windows?
+        # create a second instance of the 'rights' attribute
+        rights_attribute(:files_rights)
+      end
+
+
       def source(args=nil)
         set_or_return(
           :source,
@@ -81,11 +87,6 @@ class Chef
           arg,
           :regex => Chef::Config[:group_valid_regex]
         )
-      end
-
-      if Chef::Platform.windows?
-        # create a second instance of the 'rights' attribute
-        Chef::Mixin::Securable.rights_attribute(:files_rights)
       end
 
       def files_mode(arg=nil)
