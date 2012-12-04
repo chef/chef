@@ -181,7 +181,7 @@ describe Chef::Provider::RemoteDirectory do
         ::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt').should be_false
       end
 
-      it "removes directory symlinks properly" do
+      it "removes directory symlinks properly", :not_supported_on_win2k3 do
         symlinked_dir_path = @destination_dir + '/symlinked_dir'
         @provider.action = :create
         @provider.run_action
