@@ -38,6 +38,7 @@ describe Chef::Resource::RegistryKey, :unix_only do
     end
   end
 end
+
 describe Chef::Resource::RegistryKey, :windows_only do
 
   before(:all) do
@@ -49,11 +50,19 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::RegistryKey.new("HKCU\\Software", @run_context)
-
     @registry = Chef::Win32::Registry.new(@run_context)
+
     @current_whyrun = Chef::Config[:why_run]
+
+    ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+      begin
+        reg.delete_key("OpscodeWhyRun", true)
+      rescue
+      end
+    end
   end
 
+  #Reporting setup
   before do
     @node.name("windowsbox")
     @rest_client = mock("Chef::REST (mock)")
@@ -70,15 +79,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
   end
 
-  before (:all) do
-    events = Chef::EventDispatch::Dispatcher.new
-    @node = Chef::Node.new
-    ohai = Ohai::System.new
-    ohai.all_plugins
-    @node.consume_external_attrs(ohai.data,{})
-    @run_context = Chef::RunContext.new(@node, {}, events)
-    @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
-
+  after (:all) do
     ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
       begin
         reg.delete_key("OpscodeWhyRun", true)
@@ -87,15 +88,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
   end
 
-    after (:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("OpscodeWhyRun", true)
-        rescue
-        end
-      end
-    end
-
   context "when action is create" do
     before (:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
@@ -103,6 +95,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
           reg.delete_key("Opscode", true)
           reg.delete_key("MissingKey1", true)
           reg.delete_key("ReportKey", true)
+          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
