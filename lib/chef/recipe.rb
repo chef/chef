@@ -22,11 +22,11 @@ require 'chef/dsl/recipe'
 require 'chef/dsl/data_query'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/include_recipe'
+require 'chef/dsl/registry_helper'
 
 require 'chef/mixin/from_file'
 
 require 'chef/mixin/deprecation'
-require 'chef/mixin/registry_helper'
 
 class Chef
   # == Chef::Recipe
@@ -37,10 +37,10 @@ class Chef
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::IncludeRecipe
     include Chef::DSL::Recipe
+    include Chef::DSL::RegistryHelper
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::Deprecation
-    include Chef::Mixin::RegistryHelper
 
     attr_accessor :cookbook_name, :recipe_name, :recipe, :params, :run_context
 
