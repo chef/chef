@@ -61,21 +61,6 @@ class Chef
 
         @bad_type = []
         @new_resource.values.map {|val| @bad_type.push(val) if !registry.get_type_from_name(val[:type]) }.compact!
-
-        @new_resource.values.each do |value|
-          unless value.has_key?(:name)
-            raise Chef::Exceptions::Win32RegNameMissing, "key :name does not exist in #{value}"
-          end
-          unless value.has_key?(:type)
-            raise Chef::Exceptions::Win32RegTypeMissing, "key :type does not exist in #{value}"
-          end
-          unless value.has_key?(:data)
-            raise Chef::Exceptions::Win32RegDataMissing, "key :data does not exist in #{value}"
-          end
-          unless value.length == 3
-            raise Chef::Exceptions::Win32RegBadValueSize, "#{value.length} should be 3 and should contain keys :name, :type and :data"
-          end
-        end
         @current_resource
       end
 
@@ -103,7 +88,7 @@ class Chef
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
           #If the type is anything different from the list of types specified fail
           a.assertion{ @bad_type.empty? }
-          a.failure_message(Chef::Exceptions::Win32RegBadType, "Types mismatch for the following values #{@bad_vals}")
+          a.failure_message(Chef::Exceptions::Win32RegBadType, "Bad types for the following values #{@bad_vals}")
         end
         requirements.assert(:create, :create_if_missing) do |a|
           #If keys missing in the path and recursive == false
@@ -147,7 +132,6 @@ class Chef
         end
       end
 
-      #TODO: Do we want to include a flag to delete all values?
       def action_delete
         if registry.key_exists?(@new_resource.key)
           @new_resource.values.each do |value|
