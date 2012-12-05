@@ -30,17 +30,20 @@ class Chef
         :description  => "don't bother to ask if I'm sure"
 
       def run
-        api_version_check
-        nag
-        output rest.post_rest("/search/reindex", {})
+        api_info = grab_api_info
+
+        if unsupported_version?(api_info)
+          unsupported_server_message(api_info)
+          exit 1
+        else
+          deprecated_server_message
+          nag
+          output rest.post_rest("/search/reindex", {})
+        end
+        
       end
 
-      # Attempting to run 'knife index rebuild' on a Chef 11 (or
-      # above) server is an error, as that functionality now exists as
-      # a server-side utility.  If such a request is made, we print
-      # out a helpful message to the user with further instructions,
-      # based on the server they are interacting with.
-      def api_version_check
+      def grab_api_info
         # Since we don't yet have any endpoints that implement an
         # OPTIONS handler, we need to get our version header
         # information in a more roundabout way.  We'll try to query
@@ -50,44 +53,28 @@ class Chef
         rest.get_rest("/nodes/#{dummy_node}")
       rescue Net::HTTPServerException => exception
         r = exception.response
-        
-        case r
-        when Net::HTTPNotFound
-          
-          api_info = parse_api_info(r)
-          version = api_info["version"]
-          
-          # version should always be present if we're on Chef 11+.  If
-          # it's nil, we're on an earlier version which will still have
-          # a functional index rebuilding API endpoint, so we'll just
-          # exit.
-          if version
-            if parse_major(version) >= 11
-              puts
-              puts "Sorry, but rebuilding the index is not available via knife for #{server_type(api_info)}s version 11.0.0 and above."
-              puts "Instead, run the '#{ctl_command(api_info)} reindex' command on the server itself."
-              exit 1
-            end
-            # This should never execute, though, since no prior servers have API info headers
-            raise "Unexpected x-ops-api-info header information: version #{version} is < 11.0.0"
-          end        
-        else
-          puts "Unexpected exception when checking server API version"
-          raise exception
-        end
+        parse_api_info(r)
+      end
+      
+      # Only Chef 11+ servers will have version information in their
+      # headers, and only those servers will lack an API endpoint for
+      # index rebuilding.
+      def unsupported_version?(api_info)
+        !!api_info["version"]
+      end
+
+      def unsupported_server_message(api_info)
+        ui.error("Rebuilding the index is not available via knife for #{server_type(api_info)}s version 11.0.0 and above.")
+        ui.info("Instead, run the '#{ctl_command(api_info)} reindex' command on the server itself.")
+      end
+
+      def deprecated_server_message
+        ui.warn("'knife index rebuild' has been removed for Chef 11+ servers.  It will continue to work for prior versions, however.")
       end
 
       def nag
-        unless config[:yes]
-          puts
-          puts "NOTICE: 'knife index rebuild' has been removed for Chef 11+ servers.  It will continue to work for prior versions, however."
-          puts
-          yea_or_nay = ask_question("This operation is destructive. Rebuilding the index may take some time. You sure? (yes/no): ")
-          unless yea_or_nay =~ /^y/i
-            puts "aborting"
-            exit 7
-          end
-        end
+        ui.info("This operation is destructive.  Rebuilding the index may take some time.")
+        ui.confirm("Continue")
       end
 
       # Chef 11 (and above) servers return various pieces of
@@ -140,12 +127,6 @@ class Chef
           # Generic fallback
           "chef-server-ctl"
         end
-      end
-
-      # Given a semantic version string (e.g., +"1.0.0"+), return the
-      # major version number as an integer.
-      def parse_major(semver)
-        semver.split(".").first.to_i
       end
 
     end
