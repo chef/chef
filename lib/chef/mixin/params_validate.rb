@@ -78,9 +78,6 @@ class Chef
           
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        map = {
-          symbol => validation
-        }
 
         if arg == nil && self.instance_variable_defined?(iv_symbol) == true
           self.instance_variable_get(iv_symbol)
