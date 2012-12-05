@@ -114,7 +114,6 @@ default['chef_server']['bookshelf']['secret_access_key'] = "generated-by-default
 # Erlang Chef Server API
 ####
 default['chef_server']['erchef']['enable'] = true
-default['chef_server']['erchef']['enable'] = true
 default['chef_server']['erchef']['ha'] = false
 default['chef_server']['erchef']['dir'] = "/var/opt/chef-server/erchef"
 default['chef_server']['erchef']['log_directory'] = "/var/log/chef-server/erchef"

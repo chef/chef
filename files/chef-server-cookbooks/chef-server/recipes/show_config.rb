@@ -22,5 +22,4 @@ end
 config = ChefServer.generate_config(node['fqdn'])
 
 puts Chef::JSONCompat.to_json_pretty(config)
-exit 0
-
+return
