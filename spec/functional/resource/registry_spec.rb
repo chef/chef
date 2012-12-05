@@ -78,7 +78,23 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @node.consume_external_attrs(ohai.data,{})
     @run_context = Chef::RunContext.new(@node, {}, events)
     @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
+
+    ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+      begin
+        reg.delete_key("OpscodeWhyRun", true)
+      rescue
+      end
+    end
   end
+
+    after (:all) do
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+        begin
+          reg.delete_key("OpscodeWhyRun", true)
+        rescue
+        end
+      end
+    end
 
   context "when action is create" do
     before (:all) do
@@ -87,7 +103,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
           reg.delete_key("Opscode", true)
           reg.delete_key("MissingKey1", true)
           reg.delete_key("ReportKey", true)
-          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -98,7 +113,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
           reg.delete_key("Opscode", true)
           reg.delete_key("MissingKey1", true)
           reg.delete_key("ReportKey", true)
-          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -418,7 +432,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
         begin
           reg.delete_key("Opscode", true)
           reg.delete_key("ReportKey", true)
-          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -479,7 +492,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["id"].should == "HKCU\\Software\\ReportKey"
       @report["resources"][0]["before"][:values].should == [{:name=>"ReportVal4", :type=>:string, :data=>"report4"},
                                                             {:name=>"ReportVal5", :type=>:string, :data=>"report5"}]
-      #@report["resources"][0]["after"][:values].should == nil
+      #Not testing for after values to match since after -> new_resource values.
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
     end
@@ -490,12 +503,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
       after (:all) do
         Chef::Config[:why_run] = @current_whyrun
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-          begin
-            reg.delete_key("OpscodeWhyRun", true)
-          rescue
-          end
-        end
       end
       it "does nothing if the action is delete" do
         @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
@@ -534,7 +541,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
         begin
           reg.delete_key("Opscode", true)
           reg.delete_key("ReportKey", true)
-          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -564,6 +570,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       lambda{@new_resource.run_action(:delete_key)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
+    #TODO: Fix code to handle case when values specified for delete_key.
     it "ignores the values under a key" do
       @new_resource.key("HKCU\\Software\\Opscode\\OpscodeIgnoredValues")
       #@new_resource.values([{:name=>"DontExist", :type=>:string, :data=>"These will be ignored anyways"}])
@@ -590,7 +597,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["type"].should == "registry_key"
       @report["resources"][0]["name"].should == "HKCU\\Software"
       @report["resources"][0]["id"].should == "HKCU\\Software\\ReportKey"
-      #@report["resources"][0]["after"][:values].should == nil
+      #Not testing for after values to match since after -> new_resource values.
       @report["resources"][0]["before"][:values].should == []
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
@@ -601,12 +608,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
       after (:all) do
         Chef::Config[:why_run] = @current_whyrun
-        ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-          begin
-            reg.delete_key("OpscodeWhyRun", true)
-          rescue
-          end
-        end
       end
 
       it "does not throw an exception if the key has subkeys but recursive is set to false" do
