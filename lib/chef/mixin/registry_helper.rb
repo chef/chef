@@ -27,6 +27,8 @@
 class Chef
   module Mixin
     module RegistryHelper
+      # the registry instance is cheap to build and throwing it away ensures we
+      # don't carry any state (e.g. magic 32-bit/64-bit settings) between calls
       def registry_key_exists?(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
         registry.key_exists?(key_path)
