@@ -1,4 +1,0 @@
-#!/bin/sh
-exec 2>&1
-ulimit -n 65535
-exec chpst -P -u <%= node["chef_server"]["user"]["username"] %> -U <%= node["chef_server"]["user"]["username"] %> -o 100000 /usr/bin/env HOME="/tmp" ERL_MAX_PORTS=100000 ERL_MAX_ETS_TABLES=10000 /opt/chef-server/embedded/bin/couchdb -a <%= node["chef_server"]["couchdb"]["dir"] %>/etc/local.ini

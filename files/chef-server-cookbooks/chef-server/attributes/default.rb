@@ -127,7 +127,6 @@ default['chef_server']['erchef']['bulk_fetch_batch_size'] = '5'
 default['chef_server']['erchef']['max_cache_size'] = '10000'
 default['chef_server']['erchef']['cache_ttl'] = '3600'
 default['chef_server']['erchef']['db_pool_size'] = '20'
-default['chef_server']['erchef']['couchdb_max_conn'] = '100'
 default['chef_server']['erchef']['ibrowse_max_sessions'] = 256
 default['chef_server']['erchef']['ibrowse_max_pipeline_size'] = 1
 default['chef_server']['erchef']['s3_bucket'] = 'bookshelf'
