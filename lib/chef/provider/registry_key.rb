@@ -111,18 +111,17 @@ class Chef
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "Intermediate keys missing but recursive is set to false")
           a.whyrun("Intermediate keys in #{@new_resource.key} go not exist. Unless they would have been created earlier, attempt to modify them would fail.")
         end
-        requirements.assert(:delete) do |a|
+        requirements.assert(:delete_key) do |a|
           #If key to be deleted has subkeys but recurssive == false
           a.assertion{ !registry.key_exists?(@new_resource.key) || !registry.has_subkeys?(@new_resource.key) || @new_resource.recursive }
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "#{@new_resource.key} has subkeys but recursive is set to false.")
           a.whyrun("#{@current_resource.key} has subkeys, but recursive is set to false. attempt to delete would fails unless subkeys were deleted prior to this action.")
         end
-
       end
 
       def action_create
         unless registry.key_exists?(@current_resource.key)
-          converge_by("create key @new_resource.key") do
+          converge_by("create key #{@new_resource.key}") do
             registry.create_key(@new_resource.key, @new_resource.recursive)
           end
         end
@@ -135,7 +134,9 @@ class Chef
 
       def action_create_if_missing
         unless registry.key_exists?(@new_resource.key)
-          registry.create_key(@new_resource.key, @new_resource.recursive)
+          converge_by("create key #{@new_resource.key}") do
+            registry.create_key(@new_resource.key, @new_resource.recursive)
+          end
         end
         @new_resource.values.each do |value|
           unless @name_hash.has_key?(value[:name])
