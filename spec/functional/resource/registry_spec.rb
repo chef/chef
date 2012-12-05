@@ -38,7 +38,6 @@ describe Chef::Resource::RegistryKey, :unix_only do
     end
   end
 end
-
 describe Chef::Resource::RegistryKey, :windows_only do
 
   before(:all) do
@@ -52,6 +51,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @new_resource = Chef::Resource::RegistryKey.new("HKCU\\Software", @run_context)
 
     @registry = Chef::Win32::Registry.new(@run_context)
+    @current_whyrun = Chef::Config[:why_run]
   end
 
   before do
@@ -70,6 +70,16 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @new_resource.stub!(:cookbook_version).and_return(@cookbook_version)
   end
 
+  before (:all) do
+    events = Chef::EventDispatch::Dispatcher.new
+    @node = Chef::Node.new
+    ohai = Ohai::System.new
+    ohai.all_plugins
+    @node.consume_external_attrs(ohai.data,{})
+    @run_context = Chef::RunContext.new(@node, {}, events)
+    @provider = Chef::Provider::RegistryKey.new(@new_resource, @run_context)
+  end
+
   context "when action is create" do
     before (:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
@@ -77,6 +87,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
           reg.delete_key("Opscode", true)
           reg.delete_key("MissingKey1", true)
           reg.delete_key("ReportKey", true)
+          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -87,6 +98,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
           reg.delete_key("Opscode", true)
           reg.delete_key("MissingKey1", true)
           reg.delete_key("ReportKey", true)
+          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -170,6 +182,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @registry.value_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode", value).should == true
       end
     end
+
     context "when running on 64-bit server", :windows64_only do
       before(:all) do
         ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", Win32::Registry::KEY_WRITE) do |reg|
@@ -199,6 +212,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         @registry.key_exists?("HKLM\\Software\\Opscode\\Whatever").should == false
       end
     end
+
     it "prepares the reporting data for action :create" do
       @new_resource.key("HKCU\\Software\\ReportKey")
       @new_resource.values([{:name=>"ReportingVal1", :type=>:string, :data=>"report1"},{:name=>"ReportingVal2", :type=>:string, :data=>"report2"}])
@@ -215,6 +229,31 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["before"][:values].should == nil
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
+    end
+
+    context "while running in whyrun mode" do
+      before (:all) do
+        Chef::Config[:why_run] = true
+      end
+      after (:all) do
+        Chef::Config[:why_run] = @current_whyrun
+      end
+
+      it "does not throw an exception if the keys do not exist but recursive is set to false" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:create)
+        @new_resource.should_not raise_error(ArgumentError)
+      end
+      it "does not create key if the action is create" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:create)
+
+        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == false
+      end
     end
   end
 
@@ -239,6 +278,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         end
       end
     end
+
     it "creates registry key, value if the key is missing" do
       @new_resource.key("HKCU\\Software\\Opscode")
       @new_resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
@@ -319,6 +359,31 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
     end
+
+    context "while running in whyrun mode" do
+      before (:all) do
+        Chef::Config[:why_run] = true
+      end
+      after (:all) do
+        Chef::Config[:why_run] = @current_whyrun
+      end
+
+      it "does not throw an exception if the keys do not exist but recursive is set to false" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:create_if_missing)
+        @new_resource.should_not raise_error(ArgumentError)
+      end
+      it "does nothing if the action is create_if_missing" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:create_if_missing)
+
+        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == false
+      end
+    end
   end
 
   context "when the action is delete" do
@@ -327,6 +392,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
         begin
           reg.delete_key("MissingKey1", true)
           reg.delete_key("ReportKey", true)
+          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
@@ -341,6 +407,10 @@ describe Chef::Resource::RegistryKey, :windows_only do
         reg["ReportVal4", Win32::Registry::REG_SZ] = "report4"
         reg["ReportVal5", Win32::Registry::REG_SZ] = "report5"
       end
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\OpscodeWhyRun"
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\OpscodeWhyRun", Win32::Registry::KEY_ALL_ACCESS) do |reg|
+        reg["BriskWalk", Win32::Registry::REG_SZ] = "is good for health"
+      end
     end
 
     after(:all) do
@@ -348,10 +418,12 @@ describe Chef::Resource::RegistryKey, :windows_only do
         begin
           reg.delete_key("Opscode", true)
           reg.delete_key("ReportKey", true)
+          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
     end
+
     it "takes no action if the specified key path does not exist in the system" do
       @registry.key_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode").should == false
 
@@ -411,6 +483,29 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
     end
+
+    context "while running in whyrun mode" do
+      before (:all) do
+        Chef::Config[:why_run] = true
+      end
+      after (:all) do
+        Chef::Config[:why_run] = @current_whyrun
+        ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+          begin
+            reg.delete_key("OpscodeWhyRun", true)
+          rescue
+          end
+        end
+      end
+      it "does nothing if the action is delete" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:delete)
+
+        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == true
+      end
+    end
   end
 
   context "when the action is delete_key" do
@@ -430,16 +525,21 @@ describe Chef::Resource::RegistryKey, :windows_only do
         reg["ColorIgnored", Win32::Registry::REG_SZ] = "OrangeIgnored"
       end
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\ReportKey"
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\OpscodeWhyRun"
+      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\OpscodeWhyRun\\OpscodeWhyRunSubKey"
     end
+
     after(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
         begin
           reg.delete_key("Opscode", true)
-          reg.delte_key("ReportKey", true)
+          reg.delete_key("ReportKey", true)
+          reg.delete_key("OpscodeWhyRun", true)
         rescue
         end
       end
     end
+
     it "takes no action if the specified key path does not exist in the system" do
       @registry.key_exists?("HKCU\\Software\\Missing1\\Missing2\\Opscode").should == false
 
@@ -494,6 +594,36 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["before"][:values].should == []
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
+    end
+    context "while running in whyrun mode" do
+      before (:all) do
+        Chef::Config[:why_run] = true
+      end
+      after (:all) do
+        Chef::Config[:why_run] = @current_whyrun
+        ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
+          begin
+            reg.delete_key("OpscodeWhyRun", true)
+          rescue
+          end
+        end
+      end
+
+      it "does not throw an exception if the key has subkeys but recursive is set to false" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:delete_key)
+        @new_resource.should_not raise_error(ArgumentError)
+      end
+      it "does nothing if the action is delete_key" do
+        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
+        @new_resource.recursive(false)
+        @new_resource.run_action(:delete_key)
+
+        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == true
+      end
     end
   end
 end
