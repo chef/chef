@@ -36,7 +36,7 @@ class Chef
       end
 
       def architecture=(user_architecture)
-        @architecture = user_architecture
+        @architecture = user_architecture.to_sym
         assert_architecture!
       end
 
@@ -194,7 +194,7 @@ class Chef
       # 32-bit chef clients running on 64-bit machines will default to reading the 64-bit registry
       def registry_system_architecture
         applied_arch = ( architecture == :machine ) ? machine_architecture : architecture
-        ( applied_arch == 'x86_64' ) ? 0x0100 : 0x0200
+        ( applied_arch == :x86_64 ) ? 0x0100 : 0x0200
       end
 
       def value_exists?(key_path, value)
@@ -292,11 +292,11 @@ class Chef
       end
 
       def machine_architecture
-        node[:kernel][:machine]
+        node[:kernel][:machine].to_sym
       end
 
       def assert_architecture!
-        if machine_architecture == "i386" && architecture == "x86_64"
+        if machine_architecture == :i386 && architecture == :x86_64
           raise Chef::Exceptions::Win32RegArchitectureIncorrect, "cannot access 64-bit registry on a 32-bit windows instance"
         end
       end
