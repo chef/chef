@@ -25,7 +25,7 @@
 #
 #
 class Chef
-  module Mixin
+  module DSL
     module RegistryHelper
       # the registry instance is cheap to build and throwing it away ensures we
       # don't carry any state (e.g. magic 32-bit/64-bit settings) between calls
