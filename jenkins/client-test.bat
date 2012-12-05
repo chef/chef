@@ -34,7 +34,7 @@ call bundle install --without server --path bundle || GOTO :error
 rem # run the tests
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec || GOTO :error
 
-# clean up the workspace to save disk space
+rem # clean up the workspace to save disk space
 cd %WORKSPACE%
 rmdir /S /Q %BUILD_NUMBER%
 
