@@ -260,7 +260,7 @@ WARNING
         # the version is in the cookbooks being uploaded. If not, exit and warn the user.
         cookbook.metadata.dependencies.each do |cookbook_name, version|
           unless check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
-            ui.error "Cookbook #{cookbook.name} depends on cookbook #{cookbook_name} version #{version},"
+            ui.error "Cookbook #{cookbook.name} depends on cookbook '#{cookbook_name}' version '#{version}',"
             ui.error "which is not currently being uploaded and cannot be found on the server."
             exit 1
           end
