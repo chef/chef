@@ -27,6 +27,7 @@ require 'chef/resource_platform_map'
 require 'chef/node'
 
 require 'chef/mixin/deprecation'
+require 'chef/mixin/registry_helper'
 
 class Chef
   class Resource
@@ -124,6 +125,7 @@ F
     include Chef::DSL::PlatformIntrospection
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
+    include Chef::Mixin::RegistryHelper
 
 
     # Set or return the list of "state attributes" implemented by the Resource
