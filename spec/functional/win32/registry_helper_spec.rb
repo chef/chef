@@ -409,7 +409,7 @@ describe 'Chef::Win32::Registry', :windows_only do
     describe "on 32-bit" do
       before(:all) do
         @saved_kernel_machine = @node.automatic_attrs[:kernel][:machine]
-        @node.automatic_attrs[:kernel][:machine] = "i386"
+        @node.automatic_attrs[:kernel][:machine] = :i386
       end
 
       after(:all) do
@@ -418,12 +418,12 @@ describe 'Chef::Win32::Registry', :windows_only do
 
       context "registry constructor" do
         it "throws an exception if requested architecture is 64bit but running on 32bit" do
-          lambda {Chef::Win32::Registry.new(@run_context, "x86_64")}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+          lambda {Chef::Win32::Registry.new(@run_context, :x86_64)}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
         end
 
         it "can correctly set the requested architecture to 32-bit" do
-          @r = Chef::Win32::Registry.new(@run_context, "i386")
-          @r.architecture.should == "i386"
+          @r = Chef::Win32::Registry.new(@run_context, :i386)
+          @r.architecture.should == :i386
           @r.registry_system_architecture.should == 0x0200
         end
 
@@ -436,7 +436,7 @@ describe 'Chef::Win32::Registry', :windows_only do
 
       context "architecture setter" do
         it "throws an exception if requested architecture is 64bit but running on 32bit" do
-          lambda {@registry.architecture = "x86_64"}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
+          lambda {@registry.architecture = :x86_64}.should raise_error(Chef::Exceptions::Win32RegArchitectureIncorrect)
         end
 
         it "sets the requested architecture to :machine if passed :machine" do
@@ -446,8 +446,8 @@ describe 'Chef::Win32::Registry', :windows_only do
         end
 
         it "sets the requested architecture to 32-bit if passed i386 as a string" do
-          @registry.architecture = "i386"
-          @registry.architecture.should == "i386"
+          @registry.architecture = :i386
+          @registry.architecture.should == :i386
           @registry.registry_system_architecture.should == 0x0200
         end
       end
@@ -456,7 +456,7 @@ describe 'Chef::Win32::Registry', :windows_only do
     describe "on 64-bit" do
       before(:all) do
         @saved_kernel_machine = @node.automatic_attrs[:kernel][:machine]
-        @node.automatic_attrs[:kernel][:machine] = "x86_64"
+        @node.automatic_attrs[:kernel][:machine] = :x86_64
       end
 
       after(:all) do
@@ -465,14 +465,14 @@ describe 'Chef::Win32::Registry', :windows_only do
 
       context "registry constructor" do
         it "can correctly set the requested architecture to 32-bit" do
-          @r = Chef::Win32::Registry.new(@run_context, "i386")
-          @r.architecture.should == "i386"
+          @r = Chef::Win32::Registry.new(@run_context, :i386)
+          @r.architecture.should == :i386
           @r.registry_system_architecture.should == 0x0200
         end
 
         it "can correctly set the requested architecture to 64-bit" do
-          @r = Chef::Win32::Registry.new(@run_context, "x86_64")
-          @r.architecture.should == "x86_64"
+          @r = Chef::Win32::Registry.new(@run_context, :x86_64)
+          @r.architecture.should == :x86_64
           @r.registry_system_architecture.should == 0x0100
         end
 
@@ -485,8 +485,8 @@ describe 'Chef::Win32::Registry', :windows_only do
 
       context "architecture setter" do
         it "sets the requested architecture to 64-bit if passed 64-bit" do
-          @registry.architecture = "x86_64"
-          @registry.architecture.should == "x86_64"
+          @registry.architecture = :x86_64
+          @registry.architecture.should == :x86_64
           @registry.registry_system_architecture.should == 0x0100
         end
 
@@ -497,8 +497,8 @@ describe 'Chef::Win32::Registry', :windows_only do
         end
 
         it "sets the requested architecture to 32-bit if passed 32-bit" do
-          @registry.architecture = "i386"
-          @registry.architecture.should == "i386"
+          @registry.architecture = :i386
+          @registry.architecture.should == :i386
           @registry.registry_system_architecture.should == 0x0200
         end
       end
@@ -541,92 +541,92 @@ describe 'Chef::Win32::Registry', :windows_only do
 
       describe "key_exists?" do
         it "does not find 64-bit keys in the 32-bit registry" do
-          @registry.architecture="i386"
+          @registry.architecture=:i386
           @registry.key_exists?("HKLM\\Software\\Root\\Mauve").should == false
         end
         it "finds 32-bit keys in the 32-bit registry" do
-          @registry.architecture="i386"
+          @registry.architecture=:i386
           @registry.key_exists?("HKLM\\Software\\Root\\Poosh").should == true
         end
         it "does not find 32-bit keys in the 64-bit registry" do
-          @registry.architecture="x86_64"
+          @registry.architecture=:x86_64
           @registry.key_exists?("HKLM\\Software\\Root\\Mauve").should == true
         end
         it "finds 64-bit keys in the 64-bit registry" do
-          @registry.architecture="x86_64"
+          @registry.architecture=:x86_64
           @registry.key_exists?("HKLM\\Software\\Root\\Poosh").should == false
         end
       end
 
       describe "value_exists?" do
         it "does not find 64-bit values in the 32-bit registry" do
-          @registry.architecture="i386"
+          @registry.architecture=:i386
           lambda{@registry.value_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
         it "finds 32-bit values in the 32-bit registry" do
-          @registry.architecture="i386"
+          @registry.architecture=:i386
           @registry.value_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status"}).should == true
         end
         it "does not find 32-bit values in the 64-bit registry" do
-          @registry.architecture="x86_64"
+          @registry.architecture=:x86_64
           @registry.value_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert"}).should == true
         end
         it "finds 64-bit values in the 64-bit registry" do
-          @registry.architecture="x86_64"
+          @registry.architecture=:x86_64
           lambda{@registry.value_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
       end
 
       describe "data_exists?" do
         it "does not find 64-bit keys in the 32-bit registry" do
-          @registry.architecture="i386"
+          @registry.architecture=:i386
           lambda{@registry.data_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert", :type=>:string, :data=>"Universal"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
         it "finds 32-bit keys in the 32-bit registry" do
-          @registry.architecture="i386"
+          @registry.architecture=:i386
           @registry.data_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status", :type=>:string, :data=>"Lost"}).should == true
         end
         it "does not find 32-bit keys in the 64-bit registry" do
-          @registry.architecture="x86_64"
+          @registry.architecture=:x86_64
           @registry.data_exists?("HKLM\\Software\\Root\\Mauve", {:name=>"Alert", :type=>:string, :data=>"Universal"}).should == true
         end
         it "finds 64-bit keys in the 64-bit registry" do
-          @registry.architecture="x86_64"
+          @registry.architecture=:x86_64
           lambda{@registry.data_exists?("HKLM\\Software\\Root\\Poosh", {:name=>"Status", :type=>:string, :data=>"Lost"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
       end
 
       describe "create_key" do
         it "can create a 32-bit only registry key" do
-          @registry.architecture = "i386"
+          @registry.architecture = :i386
           @registry.create_key("HKLM\\Software\\Root\\Trunk\\Red", true)
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == true
-          @registry.architecture = "x86_64"
+          @registry.architecture = :x86_64
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == false
         end
 
         it "can create a 64-bit only registry key" do
-          @registry.architecture = "x86_64"
+          @registry.architecture = :x86_64
           @registry.create_key("HKLM\\Software\\Root\\Trunk\\Blue", true)
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == true
-          @registry.architecture = "i386"
+          @registry.architecture = :i386
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == false
         end
       end
 
       describe "create_value" do
         it "can create a 32-bit only registry value" do
-          @registry.architecture = "i386"
+          @registry.architecture = :i386
           @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
           @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
-          @registry.architecture = "x86_64"
+          @registry.architecture = :x86_64
           lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
         it "can create a 64-bit only registry value" do
-          @registry.architecture = "x86_64"
+          @registry.architecture = :x86_64
           @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
           @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
-          @registry.architecture = "i386"
+          @registry.architecture = :i386
           lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
       end
