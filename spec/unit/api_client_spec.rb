@@ -158,6 +158,74 @@ describe Chef::ApiClient do
     end
 
   end
+
+  describe "when requesting a new key" do
+    before do
+      @http_client = mock("Chef::REST mock")
+      Chef::REST.stub!(:new).and_return(@http_client)
+    end
+
+    context "and the client does not exist on the server" do
+      before do
+        @a_404_response = Net::HTTPNotFound.new("404 not found and such", nil, nil)
+        @a_404_exception = Net::HTTPServerException.new("404 not found exception", @a_404_response)
+
+        @http_client.should_receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
+      end
+
+      it "raises a 404 error" do
+        lambda { Chef::ApiClient.reregister("lost-my-key") }.should raise_error(Net::HTTPServerException)
+      end
+    end
+
+    context "and the client exists" do
+      before do
+        @api_client_without_key = Chef::ApiClient.new
+        @api_client_without_key.name("lost-my-key")
+        @http_client.should_receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
+      end
+
+
+      context "and the client exists on a Chef 11-like server" do
+        before do
+          @api_client_with_key = Chef::ApiClient.new
+          @api_client_with_key.name("lost-my-key")
+          @api_client_with_key.private_key("the new private key")
+          @http_client.should_receive(:put).
+            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :private_key => true).
+            and_return(@api_client_with_key)
+        end
+
+        it "returns an ApiClient with a private key" do
+          response = Chef::ApiClient.reregister("lost-my-key")
+          # no sane == method for ApiClient :'(
+          response.should == @api_client_without_key
+          response.private_key.should == "the new private key"
+          response.name.should == "lost-my-key"
+          response.admin.should be_false
+        end
+      end
+
+      context "and the client exists on a Chef 10-like server" do
+        before do
+          @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
+          @http_client.should_receive(:put).
+            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :private_key => true).
+            and_return(@api_client_with_key)
+        end
+
+        it "returns an ApiClient with a private key" do
+          response = Chef::ApiClient.reregister("lost-my-key")
+          # no sane == method for ApiClient :'(
+          response.should == @api_client_without_key
+          response.private_key.should == "the new private key"
+          response.name.should == "lost-my-key"
+          response.admin.should be_false
+        end
+      end
+
+    end
+  end
 end
 
 
