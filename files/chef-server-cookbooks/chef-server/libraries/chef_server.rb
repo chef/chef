@@ -41,29 +41,6 @@ module ChefServer
 
   class << self
 
-    def server(name=nil, opts={})
-      if name
-        ChefServer["servers"] ||= Mash.new
-        ChefServer["servers"][name] = Mash.new(opts)
-      end
-      ChefServer["servers"]
-    end
-
-    def servers
-      ChefServer["servers"]
-    end
-
-    def backend_vip(name=nil, opts={})
-      if name
-        ChefServer['backend_vips'] ||= Mash.new
-        ChefServer['backend_vips']["fqdn"] = name
-        opts.each do |k,v|
-          ChefServer['backend_vips'][k] = v
-        end
-      end
-      ChefServer['backend_vips']
-    end
-
     # guards against creating secrets on non-bootstrap node
     def generate_hex(chars)
       SecureRandom.hex(chars)
