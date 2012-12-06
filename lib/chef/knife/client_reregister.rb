@@ -43,14 +43,23 @@ class Chef
           exit 1
         end
 
+        create_new_key=true
         client = Chef::ApiClient.load(@client_name)
-        key = client.save(new_key=true)
+        response = client.save(create_new_key)
+        priv_key = if response.is_a? Hash
+                     response['private_key']
+                   elsif response.is_a? Chef::ApiClient
+                     response.to_hash['private_key']
+                   else
+                     ui.fatal("Received an unknown response of class '#{response.class}' from server")
+                     exit 1
+                   end
         if config[:file]
           File.open(config[:file], "w") do |f|
-            f.print(key['private_key'])
+            f.print(priv_key)
           end
         else
-          ui.msg key['private_key']
+          ui.msg priv_key
         end
       end
     end
