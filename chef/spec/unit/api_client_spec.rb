@@ -193,8 +193,9 @@ describe Chef::ApiClient do
 
         @http_client.should_receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
       end
+
       it "raises a 404 error" do
-        lambda { Chef::ApiClient.reregister("lost-my-key") }.should raise_error(@a_404_exception)
+        lambda { Chef::ApiClient.reregister("lost-my-key") }.should raise_error(Net::HTTPServerException)
       end
     end
 
