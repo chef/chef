@@ -35,7 +35,7 @@ class Chef
       end
       def registry_get_values(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
-        registry.get_values?(key_path)
+        registry.get_values(key_path)
       end
       def registry_has_subkeys?(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
@@ -43,7 +43,7 @@ class Chef
       end
       def registry_get_subkeys(key_path, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
-        registry.get_subkeys?(key_path)
+        registry.get_subkeys(key_path)
       end
       def registry_value_exists?(key_path, value, architecture = :machine)
         registry = Chef::Win32::Registry.new(run_context, architecture)
