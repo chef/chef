@@ -161,5 +161,37 @@
             "12.04",
             "i686"
         ]
+    ],
+    "build_os=windows-2008r2,machine_architecture=x64,role=oss-builder": [
+	[
+	    "windows",
+	    "2008r2",
+	    "x86_64"
+	],
+	[
+	    "windows",
+	    "2003r2",
+	    "i686"
+	],
+	[
+	    "windows",
+	    "2003r2",
+	    "x86_64"
+	],
+	[
+	    "windows",
+	    "2008",
+	    "x86_64"
+	],
+	[
+	    "windows",
+	    "2008",
+	    "i686"
+	],
+	[
+	    "windows",
+	    "2012",
+	    "x86_64"
+	]
     ]
 }
