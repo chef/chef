@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e
+set -x
+
+env
+
+# sleep unti omnitruck has updated itself
+sleep $SLEEP_TIME
+
+# Check whether a command exists - returns 0 if it does, 1 if it does not
+exists()
+{
+  if command -v $1 &>/dev/null
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# remove the chef package / clobber the files
+if exists dpkg;
+then
+    sudo dpkg -P chef || true
+    sudo rm -rf /opt/chef/*
+elif exists rpm;
+then
+    sudo rpm -ev chef || true
+    sudo rm -rf /opt/chef/*
+elif exists pkgadd;
+then
+    cat <<EOF > /tmp/nocheck
+conflict=nocheck
+action=nocheck
+EOF
+    sudo pkgrm -a /tmp/nocheck -n chef || true
+    # BUGBUG: we have to do this twice because the postrm fails the first time
+    sudo pkgrm -a /tmp/nocheck -n chef || true
+    sudo rm -rf /opt/chef/*
+else # makeself installer
+    sudo rm  -rf /opt/chef/*
+fi
+
+if exists curl;
+then
+   curl -L "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
+else
+   wget -qO- "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
+fi
+
+chef-client --version
