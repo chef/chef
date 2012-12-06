@@ -57,10 +57,6 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
   end
 
-  # Operating system
-  # it "succeeds if the operating system is windows" do
-  # end
-
   # Server Versions
   # it "succeeds if server versiion is 2003R2, 2008, 2008R2, 2012" do
   # end
