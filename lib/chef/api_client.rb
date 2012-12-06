@@ -116,6 +116,11 @@ class Chef
       client
     end
 
+    def self.reregister(name)
+      api_client = load(name)
+      api_client.reregister
+    end
+
     def self.list(inflate=false)
       if inflate
         response = Hash.new
@@ -131,7 +136,7 @@ class Chef
 
     # Load a client by name via the API
     def self.load(name)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{name}")
+      response = Chef::REST.new(Chef::Config[:chef_server_url]).get("clients/#{name}")
       if response.kind_of?(Chef::ApiClient)
         response
       else
@@ -164,6 +169,17 @@ class Chef
           raise e
         end
       end
+    end
+
+    def reregister
+      r = Chef::REST.new(Chef::Config[:chef_server_url])
+      reregistered_self = r.put("clients/#{name}", { :name => name, :admin => admin, :private_key => true })
+      if reregistered_self.respond_to?(:[])
+        private_key(reregistered_self["private_key"])
+      else
+        private_key(reregistered_self.private_key)
+      end
+      self
     end
 
     # Create the client via the REST API
