@@ -41,6 +41,61 @@ end
 
 describe Chef::Resource::RegistryKey, :windows_only do
 
+  # parent and key must be single keys, not paths
+  let(:parent) { 'Opscode' }
+  let(:child) { 'Whatever' }
+  let(:key_parent) { "SOFTWARE\\" + parent }
+  let(:key_child) { "SOFTWARE\\" + parent + "\\" + child }
+  # must be under HKLM\SOFTWARE for WOW64 redirection to work
+  let(:reg_parent) { "HKLM\\" + key_parent }
+  let(:reg_child) { "HKLM\\" + key_child }
+  let(:hive_class) { ::Win32::Registry::HKEY_LOCAL_MACHINE }
+  let(:resource_name) { "This is the name of my Resource" }
+
+  def clean_registry
+    # clean 64-bit space on WOW64
+    begin
+      hive_class.open(key_parent, Win32::Registry::KEY_WRITE | 0x0100) do |reg|
+        reg.delete_key(child, true)
+      end
+    rescue
+    end
+    # clean 32-bit space on WOW64
+    begin
+      hive_class.open(key_parent, Win32::Registry::KEY_WRITE | 0x0200) do |reg|
+        reg.delete_key(child, true)
+      end
+    rescue
+    end
+  end
+
+  def reset_registry
+    clean_registry
+    hive_class.create(key_parent, Win32::Registry::KEY_WRITE | 0x0100)
+    hive_class.create(key_parent, Win32::Registry::KEY_WRITE | 0x0200)
+  end
+
+  def create_deletable_keys
+    # create them both 32-bit and 64-bit
+    [ 0x0100, 0x0200 ].each do |flag|
+      hive_class.create(key_parent + '\Opscode', Win32::Registry::KEY_WRITE | flag)
+      hive_class.open(key_parent + '\Opscode', Win32::Registry::KEY_ALL_ACCESS | flag) do |reg|
+        reg["Color", Win32::Registry::REG_SZ] = "Orange"
+        reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, ["Seattle", "Washington"])
+        reg["AKA", Win32::Registry::REG_SZ] = "OC"
+      end
+      hive_class.create(key_parent + '\ReportKey', Win32::Registry::KEY_WRITE | flag)
+      hive_class.open(key_parent + '\ReportKey', Win32::Registry::KEY_ALL_ACCESS | flag) do |reg|
+        reg["ReportVal4", Win32::Registry::REG_SZ] = "report4"
+        reg["ReportVal5", Win32::Registry::REG_SZ] = "report5"
+      end
+      hive_class.create(key_parent + '\OpscodeWhyRun', Win32::Registry::KEY_WRITE | flag)
+      hive_class.open(key_parent + '\OpscodeWhyRun', Win32::Registry::KEY_ALL_ACCESS | flag) do |reg|
+        reg["BriskWalk", Win32::Registry::REG_SZ] = "is good for health"
+      end
+    end
+  end
+
   before(:all) do
     @events = Chef::EventDispatch::Dispatcher.new
     @node = Chef::Node.new
@@ -49,17 +104,12 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @node.consume_external_attrs(ohai.data,{})
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @new_resource = Chef::Resource::RegistryKey.new("HKCU\\Software", @run_context)
+    @new_resource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
     @registry = Chef::Win32::Registry.new(@run_context)
 
     @current_whyrun = Chef::Config[:why_run]
 
-    ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-      begin
-        reg.delete_key("OpscodeWhyRun", true)
-      rescue
-      end
-    end
+    reset_registry
   end
 
   #Reporting setup
@@ -80,148 +130,116 @@ describe Chef::Resource::RegistryKey, :windows_only do
   end
 
   after (:all) do
-    ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-      begin
-        reg.delete_key("OpscodeWhyRun", true)
-      rescue
-      end
-    end
+    clean_registry
   end
 
   context "when action is create" do
     before (:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-          reg.delete_key("MissingKey1", true)
-          reg.delete_key("ReportKey", true)
-          reg.delete_key("OpscodeWhyRun", true)
-        rescue
-        end
-      end
-    end
-    after (:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-          reg.delete_key("MissingKey1", true)
-          reg.delete_key("ReportKey", true)
-        rescue
-        end
-      end
+      reset_registry
     end
     it "creates registry key, value if the key is missing" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
       @new_resource.run_action(:create)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode").should == true
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+      @registry.key_exists?(reg_child).should == true
+      @registry.data_exists?(reg_child, {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
     end
 
     it "does not create the key if it already exists with same value, type and data" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
       @new_resource.run_action(:create)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode").should == true
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+      @registry.key_exists?(reg_child).should == true
+      @registry.data_exists?(reg_child, {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
     end
 
     it "creates a value if it does not exist" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Mango", :type=>:string, :data=>"Yellow"}])
       @new_resource.run_action(:create)
 
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Mango", :type=>:string, :data=>"Yellow"}).should == true
+      @registry.data_exists?(reg_child, {:name=>"Mango", :type=>:string, :data=>"Yellow"}).should == true
     end
 
-    it "modifys the data if the key and value exist and type matches" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+    it "modifies the data if the key and value exist and type matches" do
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Color", :type=>:string, :data=>"Not just Orange - OpscodeOrange!"}])
       @new_resource.run_action(:create)
 
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Not just Orange - OpscodeOrange!"}).should == true
+      @registry.data_exists?(reg_child, {:name=>"Color", :type=>:string, :data=>"Not just Orange - OpscodeOrange!"}).should == true
     end
 
     it "modifys the type if the key and value exist and the type does not match" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Color", :type=>:multi_string, :data=>["Not just Orange - OpscodeOrange!"]}])
       @new_resource.run_action(:create)
 
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:multi_string, :data=>["Not just Orange - OpscodeOrange!"]}).should == true
+      @registry.data_exists?(reg_child, {:name=>"Color", :type=>:multi_string, :data=>["Not just Orange - OpscodeOrange!"]}).should == true
     end
 
     it "creates subkey if parent exists" do
-      @new_resource.key("HKCU\\Software\\Opscode\\OpscodeTest")
+      @new_resource.key(reg_child + '\OpscodeTest')
       @new_resource.values([{:name=>"Chef", :type=>:multi_string, :data=>["OpscodeOrange", "Rules"]}])
       @new_resource.recursive(false)
       @new_resource.run_action(:create)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode\\OpscodeTest").should == true
-      @registry.value_exists?("HKCU\\Software\\Opscode\\OpscodeTest", {:name=>"Chef", :type=>:multi_string, :data=>["OpscodeOrange", "Rules"]}).should == true
+      @registry.key_exists?(reg_child + '\OpscodeTest').should == true
+      @registry.value_exists?(reg_child + '\OpscodeTest', {:name=>"Chef", :type=>:multi_string, :data=>["OpscodeOrange", "Rules"]}).should == true
     end
 
     it "gives error if action create and parent does not exist and recursive is set to false" do
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_child + '\Missing1\Missing2')
       @new_resource.values([{:name=>"OC", :type=>:string, :data=>"MissingData"}])
       @new_resource.recursive(false)
       lambda{@new_resource.run_action(:create)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
     it "creates missing keys if action create and parent does not exist and recursive is set to true" do
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_child + '\Missing1\Missing2')
       @new_resource.values([{:name=>"OC", :type=>:string, :data=>"MissingData"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:create)
 
-      @registry.key_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode").should == true
-      @registry.value_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode", {:name=>"OC", :type=>:string, :data=>"MissingData"}).should == true
+      @registry.key_exists?(reg_child + '\Missing1\Missing2').should == true
+      @registry.value_exists?(reg_child + '\Missing1\Missing2', {:name=>"OC", :type=>:string, :data=>"MissingData"}).should == true
     end
 
     it "creates key with multiple value as specified" do
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"one", :type=>:string, :data=>"1"},{:name=>"two", :type=>:string, :data=>"2"},{:name=>"three", :type=>:string, :data=>"3"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:create)
 
       @new_resource.values.each do |value|
-        @registry.value_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode", value).should == true
+        @registry.value_exists?(reg_child, value).should == true
       end
     end
 
     context "when running on 64-bit server", :windows64_only do
       before(:all) do
-        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-          begin
-            reg.delete_key("Opscode", true)
-          rescue
-          end
-        end
+        reset_registry
       end
       after(:all) do
-        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-          begin
-            reg.delete_key("Opscode", true)
-          rescue
-          end
-        end
+        @new_resource.architecture(:machine)
+        @registry.architecture = :machine
       end
       it "creates a key in a 32-bit registry that is not viewable in 64-bit" do
-        @new_resource.key("HKLM\\Software\\Opscode\\Whatever")
+        @new_resource.key(reg_child + '\Atraxi' )
         @new_resource.values([{:name=>"OC", :type=>:string, :data=>"Data"}])
         @new_resource.recursive(true)
         @new_resource.architecture(:i386)
         @new_resource.run_action(:create)
-        @registry.architecture = "i386"
-        @registry.data_exists?("HKLM\\Software\\Opscode\\Whatever", {:name=>"OC", :type=>:string, :data=>"Data"}).should == true
-        @registry.architecture = "x86_64"
-        @registry.key_exists?("HKLM\\Software\\Opscode\\Whatever").should == false
+        @registry.architecture = :i386
+        @registry.data_exists?(reg_child + '\Atraxi', {:name=>"OC", :type=>:string, :data=>"Data"}).should == true
+        @registry.architecture = :x86_64
+        @registry.key_exists?(reg_child + '\Atraxi').should == false
       end
     end
 
     it "prepares the reporting data for action :create" do
-      @new_resource.key("HKCU\\Software\\ReportKey")
+      @new_resource.key(reg_child + '\Ood')
       @new_resource.values([{:name=>"ReportingVal1", :type=>:string, :data=>"report1"},{:name=>"ReportingVal2", :type=>:string, :data=>"report2"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:create)
@@ -229,8 +247,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
       @report["action"].should == "end"
       @report["resources"][0]["type"].should == "registry_key"
-      @report["resources"][0]["name"].should == "HKCU\\Software"
-      @report["resources"][0]["id"].should == "HKCU\\Software\\ReportKey"
+      @report["resources"][0]["name"].should == resource_name
+      @report["resources"][0]["id"].should == reg_child + '\Ood'
       @report["resources"][0]["after"][:values].should == [{:name=>"ReportingVal1", :type=>:string, :data=>"report1"},
                                                            {:name=>"ReportingVal2", :type=>:string, :data=>"report2"}]
       @report["resources"][0]["before"][:values].should == nil
@@ -247,111 +265,95 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_child + '\Slitheen\Raxicoricofallapatorius')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
-        @new_resource.run_action(:create)
-        @new_resource.should_not raise_error(ArgumentError)
+        lambda{@new_resource.run_action(:create)}.should_not raise_error
+        @registry.key_exists?(reg_child + '\Slitheen').should == false
+        @registry.key_exists?(reg_child + '\Slitheen\Raxicoricofallapatorius').should == false
       end
       it "does not create key if the action is create" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_child + '\Slitheen')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:create)
-
-        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == false
+        @registry.key_exists?(reg_child + '\Slitheen').should == false
       end
     end
   end
 
   context "when action is create_if_missing" do
     before (:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-          reg.delete_key("MissingKey1", true)
-          reg.delete_key("ReportKey", true)
-        rescue
-        end
-      end
-    end
-    after (:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-          reg.delete_key("MissingKey1", true)
-          reg.delete_key("ReportKey", true)
-        rescue
-        end
-      end
+      reset_registry
     end
 
     it "creates registry key, value if the key is missing" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
       @new_resource.run_action(:create_if_missing)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode").should == true
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+      @registry.key_exists?(reg_parent).should == true
+      @registry.key_exists?(reg_child).should == true
+      @registry.data_exists?(reg_child, {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
     end
 
     it "does not create the key if it already exists with same value, type and data" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
       @new_resource.run_action(:create_if_missing)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode").should == true
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+      @registry.key_exists?(reg_child).should == true
+      @registry.data_exists?(reg_child, {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
     end
 
     it "creates a value if it does not exist" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_child)
       @new_resource.values([{:name=>"Mango", :type=>:string, :data=>"Yellow"}])
       @new_resource.run_action(:create_if_missing)
 
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Mango", :type=>:string, :data=>"Yellow"}).should == true
+      @registry.data_exists?(reg_child, {:name=>"Mango", :type=>:string, :data=>"Yellow"}).should == true
     end
 
     it "creates subkey if parent exists" do
-      @new_resource.key("HKCU\\Software\\Opscode\\OpscodeTest")
+      @new_resource.key(reg_child + '\Pyrovile')
       @new_resource.values([{:name=>"Chef", :type=>:multi_string, :data=>["OpscodeOrange", "Rules"]}])
       @new_resource.recursive(false)
       @new_resource.run_action(:create_if_missing)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode\\OpscodeTest").should == true
-      @registry.value_exists?("HKCU\\Software\\Opscode\\OpscodeTest", {:name=>"Chef", :type=>:multi_string, :data=>["OpscodeOrange", "Rules"]}).should == true
+      @registry.key_exists?(reg_child + '\Pyrovile').should == true
+      @registry.value_exists?(reg_child + '\Pyrovile', {:name=>"Chef", :type=>:multi_string, :data=>["OpscodeOrange", "Rules"]}).should == true
     end
 
     it "gives error if action create and parent does not exist and recursive is set to false" do
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_child + '\Sontaran\Sontar')
       @new_resource.values([{:name=>"OC", :type=>:string, :data=>"MissingData"}])
       @new_resource.recursive(false)
       lambda{@new_resource.run_action(:create_if_missing)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
     it "creates missing keys if action create and parent does not exist and recursive is set to true" do
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_child + '\Sontaran\Sontar')
       @new_resource.values([{:name=>"OC", :type=>:string, :data=>"MissingData"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:create_if_missing)
 
-      @registry.key_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode").should == true
-      @registry.value_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode", {:name=>"OC", :type=>:string, :data=>"MissingData"}).should == true
+      @registry.key_exists?(reg_child + '\Sontaran\Sontar').should == true
+      @registry.value_exists?(reg_child + '\Sontaran\Sontar', {:name=>"OC", :type=>:string, :data=>"MissingData"}).should == true
     end
 
     it "creates key with multiple value as specified" do
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_child + '\Adipose')
       @new_resource.values([{:name=>"one", :type=>:string, :data=>"1"},{:name=>"two", :type=>:string, :data=>"2"},{:name=>"three", :type=>:string, :data=>"3"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:create_if_missing)
 
       @new_resource.values.each do |value|
-        @registry.value_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode", value).should == true
+        @registry.value_exists?(reg_child + '\Adipose', value).should == true
       end
     end
 
     it "prepares the reporting data for :create_if_missing" do
-      @new_resource.key("HKCU\\Software\\ReportKey")
+      @new_resource.key(reg_child + '\Judoon')
       @new_resource.values([{:name=>"ReportingVal3", :type=>:string, :data=>"report3"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:create_if_missing)
@@ -359,8 +361,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
       @report["action"].should == "end"
       @report["resources"][0]["type"].should == "registry_key"
-      @report["resources"][0]["name"].should == "HKCU\\Software"
-      @report["resources"][0]["id"].should == "HKCU\\Software\\ReportKey"
+      @report["resources"][0]["name"].should == resource_name
+      @report["resources"][0]["id"].should == reg_child + '\Judoon'
       @report["resources"][0]["after"][:values].should == [{:name=>"ReportingVal3", :type=>:string, :data=>"report3"}]
       @report["resources"][0]["before"][:values].should == nil
       @report["status"].should == "success"
@@ -376,113 +378,85 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_child + '\Zygons\Zygor')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
-        @new_resource.run_action(:create_if_missing)
-        @new_resource.should_not raise_error(ArgumentError)
+        lambda{@new_resource.run_action(:create_if_missing)}.should_not raise_error
+        @registry.key_exists?(reg_child + '\Zygons').should == false
+        @registry.key_exists?(reg_child + '\Zygons\Zygor').should == false
       end
       it "does nothing if the action is create_if_missing" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_child + '\Zygons')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:create_if_missing)
-
-        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == false
+        @registry.key_exists?(reg_child + '\Zygons').should == false
       end
     end
   end
 
   context "when the action is delete" do
     before(:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("MissingKey1", true)
-          reg.delete_key("ReportKey", true)
-          reg.delete_key("OpscodeWhyRun", true)
-        rescue
-        end
-      end
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Opscode"
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Opscode", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["Color", Win32::Registry::REG_SZ] = "Orange"
-        reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, ["Seattle", "Washington"])
-        reg["AKA", Win32::Registry::REG_SZ] = "OC"
-      end
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\ReportKey"
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\ReportKey", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["ReportVal4", Win32::Registry::REG_SZ] = "report4"
-        reg["ReportVal5", Win32::Registry::REG_SZ] = "report5"
-      end
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\OpscodeWhyRun"
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\OpscodeWhyRun", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["BriskWalk", Win32::Registry::REG_SZ] = "is good for health"
-      end
-    end
-
-    after(:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-          reg.delete_key("ReportKey", true)
-        rescue
-        end
-      end
+      reset_registry
+      create_deletable_keys
     end
 
     it "takes no action if the specified key path does not exist in the system" do
-      @registry.key_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode").should == false
+      @registry.key_exists?(reg_parent + '\Osirian').should == false
 
-      @new_resource.key("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode")
+      @new_resource.key(reg_parent+ '\Osirian')
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 
-      @registry.key_exists?("HKCU\\Software\\MissingKey1\\MissingKey2\\Opscode").should == false
+      @registry.key_exists?(reg_parent + '\Osirian').should == false
     end
 
     it "takes no action if the key exists but the value does not" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @registry.data_exists?(reg_parent + '\Opscode', {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+
+      @new_resource.key(reg_parent + '\Opscode')
       @new_resource.values([{:name=>"LooksLike", :type=>:multi_string, :data=>["SeattleGrey", "OCOrange"]}])
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+      @registry.data_exists?(reg_parent + '\Opscode', {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
     end
 
     it "deletes only specified values under a key path" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_parent + '\Opscode')
       @new_resource.values([{:name=>"Opscode", :type=>:multi_string, :data=>["Seattle", "Washington"]}, {:name=>"AKA", :type=>:string, :data=>"OC"}])
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 
-      @registry.data_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
-      @registry.value_exists?("HKCU\\Software\\Opscode", {:name=>"AKA", :type=>:string, :data=>"OC"}).should == false
-      @registry.value_exists?("HKCU\\Software\\Opscode", {:name=>"Opscode", :type=>:multi_string, :data=>["Seattle", "Washington"]}).should == false
+      @registry.data_exists?(reg_parent + '\Opscode', {:name=>"Color", :type=>:string, :data=>"Orange"}).should == true
+      @registry.value_exists?(reg_parent + '\Opscode', {:name=>"AKA", :type=>:string, :data=>"OC"}).should == false
+      @registry.value_exists?(reg_parent + '\Opscode', {:name=>"Opscode", :type=>:multi_string, :data=>["Seattle", "Washington"]}).should == false
     end
 
     it "it deletes the values with the same name irrespective of it type and data" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_parent + '\Opscode')
       @new_resource.values([{:name=>"Color", :type=>:multi_string, :data=>["Black", "Orange"]}])
       @new_resource.recursive(false)
       @new_resource.run_action(:delete)
 
-      @registry.value_exists?("HKCU\\Software\\Opscode", {:name=>"Color", :type=>:string, :data=>"Orange"}).should == false
+      @registry.value_exists?(reg_parent + '\Opscode', {:name=>"Color", :type=>:string, :data=>"Orange"}).should == false
     end
 
     it "prepares the reporting data for action :delete" do
-      @new_resource.key("HKCU\\Software\\ReportKey")
+      @new_resource.key(reg_parent + '\ReportKey')
       @new_resource.values([{:name=>"ReportVal4", :type=>:string, :data=>"report4"},{:name=>"ReportVal5", :type=>:string, :data=>"report5"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:delete)
 
       @report = @resource_reporter.prepare_run_data
 
-      @registry.value_exists?("HKCU\\Software\\ReportKey", [{:name=>"ReportVal4", :type=>:string, :data=>"report4"},{:name=>"ReportVal5", :type=>:string, :data=>"report5"}]).should == false
+      @registry.value_exists?(reg_parent + '\ReportKey', [{:name=>"ReportVal4", :type=>:string, :data=>"report4"},{:name=>"ReportVal5", :type=>:string, :data=>"report5"}]).should == false
 
       @report["action"].should == "end"
+      @report["resources"].count.should == 1
       @report["resources"][0]["type"].should == "registry_key"
-      @report["resources"][0]["name"].should == "HKCU\\Software"
-      @report["resources"][0]["id"].should == "HKCU\\Software\\ReportKey"
+      @report["resources"][0]["name"].should == resource_name
+      @report["resources"][0]["id"].should == reg_parent + '\ReportKey'
       @report["resources"][0]["before"][:values].should == [{:name=>"ReportVal4", :type=>:string, :data=>"report4"},
                                                             {:name=>"ReportVal5", :type=>:string, :data=>"report5"}]
       #Not testing for after values to match since after -> new_resource values.
@@ -498,89 +472,64 @@ describe Chef::Resource::RegistryKey, :windows_only do
         Chef::Config[:why_run] = @current_whyrun
       end
       it "does nothing if the action is delete" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_parent + '\OpscodeWhyRun')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete)
 
-        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == true
+        @registry.key_exists?(reg_parent + '\OpscodeWhyRun').should == true
       end
     end
   end
 
   context "when the action is delete_key" do
     before (:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Opscode"
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Opscode", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["Color", Win32::Registry::REG_SZ] = "Orange"
-        reg.write("Opscode", Win32::Registry::REG_MULTI_SZ, ["Seattle", "Washington"])
-        reg["AKA", Win32::Registry::REG_SZ] = "OC"
-      end
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Opscode\\OpscodeTest"
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Opscode\\OpscodeTest", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["ColorTest", Win32::Registry::REG_SZ] = "OrangeTest"
-      end
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Opscode\\OpscodeIgnoredValues"
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Opscode\\OpscodeIgnoredValues", Win32::Registry::KEY_ALL_ACCESS) do |reg|
-        reg["ColorIgnored", Win32::Registry::REG_SZ] = "OrangeIgnored"
-      end
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\ReportKey"
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\OpscodeWhyRun"
-      ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\OpscodeWhyRun\\OpscodeWhyRunSubKey"
-    end
-
-    after(:all) do
-      ::Win32::Registry::HKEY_CURRENT_USER.open("Software", Win32::Registry::KEY_WRITE) do |reg|
-        begin
-          reg.delete_key("Opscode", true)
-          reg.delete_key("ReportKey", true)
-        rescue
-        end
-      end
+      reset_registry
+      create_deletable_keys
     end
 
     it "takes no action if the specified key path does not exist in the system" do
-      @registry.key_exists?("HKCU\\Software\\Missing1\\Missing2\\Opscode").should == false
+      @registry.key_exists?(reg_parent + '\Osirian').should == false
 
-      @new_resource.key("HKCU\\Software\\Missing1\\Missing2\\Opscode")
+      @new_resource.key(reg_parent + '\Osirian')
       @new_resource.recursive(false)
       @new_resource.run_action(:delete_key)
 
-      @registry.key_exists?("HKCU\\Software\\Missing1\\Missing2\\Opscode").should == false
+      @registry.key_exists?(reg_parent + '\Osirian').should == false
     end
 
     it "deletes key if it has no subkeys and recursive == false" do
-      @new_resource.key("HKCU\\Software\\Opscode\\OpscodeTest")
+      @new_resource.key(reg_parent + '\OpscodeTest')
       @new_resource.recursive(false)
       @new_resource.run_action(:delete_key)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode\\OpscodeTest").should == false
+      @registry.key_exists?(reg_parent + '\OpscodeTest').should == false
     end
 
     it "raises an exception if the the key has subkeys and recursive == false" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_parent)
       @new_resource.recursive(false)
       lambda{@new_resource.run_action(:delete_key)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
     #TODO: Fix code to handle case when values specified for delete_key.
     it "ignores the values under a key" do
-      @new_resource.key("HKCU\\Software\\Opscode\\OpscodeIgnoredValues")
+      @new_resource.key(reg_parent + '\OpscodeIgnoredValues')
       #@new_resource.values([{:name=>"DontExist", :type=>:string, :data=>"These will be ignored anyways"}])
       @new_resource.recursive(true)
       @new_resource.run_action(:delete_key)
     end
 
     it "deletes the key if it has subkeys and recursive == true" do
-      @new_resource.key("HKCU\\Software\\Opscode")
+      @new_resource.key(reg_parent + '\Opscode')
       @new_resource.recursive(true)
       @new_resource.run_action(:delete_key)
 
-      @registry.key_exists?("HKCU\\Software\\Opscode").should == false
+      @registry.key_exists?(reg_parent + '\Opscode').should == false
     end
 
     it "prepares the reporting data for action :delete_key" do
-      @new_resource.key("HKCU\\Software\\ReportKey")
+      @new_resource.key(reg_parent + '\ReportKey')
       @new_resource.recursive(true)
       @new_resource.run_action(:delete_key)
 
@@ -588,8 +537,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
       @report["action"].should == "end"
       @report["resources"][0]["type"].should == "registry_key"
-      @report["resources"][0]["name"].should == "HKCU\\Software"
-      @report["resources"][0]["id"].should == "HKCU\\Software\\ReportKey"
+      @report["resources"][0]["name"].should == resource_name
+      @report["resources"][0]["id"].should == reg_parent + '\ReportKey'
       #Not testing for after values to match since after -> new_resource values.
       @report["resources"][0]["before"][:values].should == []
       @report["status"].should == "success"
@@ -604,19 +553,19 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
 
       it "does not throw an exception if the key has subkeys but recursive is set to false" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_parent + '\OpscodeWhyRun')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete_key)
         @new_resource.should_not raise_error(ArgumentError)
       end
       it "does nothing if the action is delete_key" do
-        @new_resource.key("HKCU\\Software\\OpscodeWhyRun")
+        @new_resource.key(reg_parent + '\OpscodeWhyRun')
         @new_resource.values([{:name=>"BriskWalk",:type=>:string,:data=>"is good for health"}])
         @new_resource.recursive(false)
         @new_resource.run_action(:delete_key)
 
-        @registry.key_exists?("HKCU\\Software\\OpscodeWhyRun").should == true
+        @registry.key_exists?(reg_parent + '\OpscodeWhyRun').should == true
       end
     end
   end
