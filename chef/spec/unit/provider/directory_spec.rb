@@ -19,13 +19,16 @@
 require 'ostruct'
 
 require 'spec_helper'
+require 'tmpdir'
 
 describe Chef::Provider::Directory do
   before(:each) do
-    @new_resource = Chef::Resource::Directory.new('/tmp')
-    @new_resource.owner(500)
-    @new_resource.group(500)
-    @new_resource.mode(0644)
+    @new_resource = Chef::Resource::Directory.new(Dir.tmpdir)
+    if !windows?
+      @new_resource.owner(500)
+      @new_resource.group(500)
+      @new_resource.mode(0644)
+    end
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
