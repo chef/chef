@@ -32,7 +32,7 @@ describe Chef::Provider::RemoteDirectory do
     #to not have this line. Only affects updating state fields.
     Chef::Provider::CookbookFile.any_instance.stub(:update_new_file_state)
 
-    @resource = Chef::Resource::RemoteDirectory.new("/tmp/tafty")
+    @resource = Chef::Resource::RemoteDirectory.new(File.join("tafty", Dir.tmpdir))
     # in CHEF_SPEC_DATA/cookbooks/openldap/files/default/remotedir
     @resource.source "remotedir"
     @resource.cookbook('openldap')
@@ -79,8 +79,8 @@ describe Chef::Provider::RemoteDirectory do
     end
 
     it "configures access control on intermediate directorys" do
-      directory_resource = @provider.send(:resource_for_directory, "/tmp/intermediate_dir")
-      directory_resource.path.should  == "/tmp/intermediate_dir"
+      directory_resource = @provider.send(:resource_for_directory, File.join("intermediate_dir", Dir.tmpdir))
+      directory_resource.path.should  == File.join("intermediate_dir", Dir.tmpdir)
       directory_resource.mode.should  == "0750"
       directory_resource.group.should == "wheel"
       directory_resource.owner.should == "root"
