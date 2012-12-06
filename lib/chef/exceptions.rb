@@ -139,8 +139,6 @@ class Chef
     class Win32RegNoRecursive < ArgumentError; end
     class Win32RegTypeDoesNotExist < ArgumentError; end
     class Win32RegBadType < ArgumentError; end
-    class Win32RegNameMissing < ArgumentError; end
-    class Win32RegTypeMissing < ArgumentError; end
     class Win32RegBadValueSize < ArgumentError; end
 
     class MissingRole < RuntimeError
