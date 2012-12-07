@@ -81,6 +81,7 @@ class Chef
           reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
           Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} updated")
         end
+        true
       end
 
       def delete_value(key_path, value)
@@ -97,6 +98,7 @@ class Chef
         else
           Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} does not exist, not updated")
         end
+        true
       end
 
       def create_key(key_path, recursive)
@@ -116,13 +118,14 @@ class Chef
           hive.create(key, ::Win32::Registry::KEY_WRITE | registry_system_architecture)
           Chef::Log.debug("Registry key #{key_path} created")
         end
+        true
       end
 
       def delete_key(key_path, recursive)
         Chef::Log.debug("Deleting registry key #{key_path}")
         unless key_exists?(key_path)
           Chef::Log.debug("Registry key #{key_path}, does not exist, not deleting")
-          return
+          return true
         end
         hive, key = get_hive_and_key(key_path)
         key_parent = key.split("\\")
@@ -143,6 +146,7 @@ class Chef
             reg.delete_key(key_to_delete)
           end
         end
+        true
       end
 
       def key_exists?(key_path)
