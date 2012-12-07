@@ -294,12 +294,12 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
 
     it "creates the key_path if the keys were missing but recursive was set to true" do
-      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", true)
+      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", true).should == true
       @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
     end
 
     it "does nothing if the key already exists" do
-      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false)
+      @registry.create_key("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", false).should == true
       @registry.key_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker").should == true
     end
 
@@ -317,12 +317,12 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
 
     it "deletes values if the value exists" do
-      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
       @registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == false
     end
 
     it "does nothing if value does not exist" do
-      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+      @registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
       @registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == false
     end
 
@@ -348,7 +348,7 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
 
     it "deletes a key if it has no subkeys" do
-      @registry.delete_key("HKCU\\Software\\Root\\Branch\\Fruit", false)
+      @registry.delete_key("HKCU\\Software\\Root\\Branch\\Fruit", false).should == true
       @registry.key_exists?("HKCU\\Software\\Root\\Branch\\Fruit").should == false
     end
 
@@ -358,12 +358,12 @@ describe 'Chef::Win32::Registry', :windows_only do
     end
 
     it "deletes a key if it has subkeys and recursive true" do
-      @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
+      @registry.delete_key("HKCU\\Software\\Root\\Trunk", true).should == true
       @registry.key_exists?("HKCU\\Software\\Root\\Trunk").should == false
     end
 
     it "does nothing if the key does not exist" do
-      @registry.delete_key("HKCU\\Software\\Root\\Trunk", true)
+      @registry.delete_key("HKCU\\Software\\Root\\Trunk", true).should == true
       @registry.key_exists?("HKCU\\Software\\Root\\Trunk").should == false
     end
 
@@ -612,7 +612,7 @@ describe 'Chef::Win32::Registry', :windows_only do
       describe "create_key" do
         it "can create a 32-bit only registry key" do
           @registry.architecture = :i386
-          @registry.create_key("HKLM\\Software\\Root\\Trunk\\Red", true)
+          @registry.create_key("HKLM\\Software\\Root\\Trunk\\Red", true).should == true
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == true
           @registry.architecture = :x86_64
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Red").should == false
@@ -620,7 +620,7 @@ describe 'Chef::Win32::Registry', :windows_only do
 
         it "can create a 64-bit only registry key" do
           @registry.architecture = :x86_64
-          @registry.create_key("HKLM\\Software\\Root\\Trunk\\Blue", true)
+          @registry.create_key("HKLM\\Software\\Root\\Trunk\\Blue", true).should == true
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == true
           @registry.architecture = :i386
           @registry.key_exists?("HKLM\\Software\\Root\\Trunk\\Blue").should == false
@@ -630,14 +630,14 @@ describe 'Chef::Win32::Registry', :windows_only do
       describe "create_value" do
         it "can create a 32-bit only registry value" do
           @registry.architecture = :i386
-          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})
+          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
           @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
           @registry.architecture = :x86_64
           lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
         it "can create a 64-bit only registry value" do
           @registry.architecture = :x86_64
-          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})
+          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
           @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
           @registry.architecture = :i386
           lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
