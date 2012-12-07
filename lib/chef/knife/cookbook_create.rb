@@ -271,6 +271,7 @@ EOH
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH
+name             "#{cookbook_name}"
 maintainer       "#{copyright}"
 maintainer_email "#{email}"
 license          "#{license_name}"
