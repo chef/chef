@@ -241,8 +241,6 @@ describe 'Chef::Win32::Registry', :windows_only do
 
     it "stores the string representation of an array into a string if you pass it an array" do
       @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBePainful", :type=>:string, :data=>["one","two"]}).should == true
-      require 'pp'
-      pp @registry.get_values("HKCU\\Software\\Root\\Branch\\Flower")
       @registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", {:name=>"ShouldBePainful", :type=>:string, :data=>'["one", "two"]'}).should == true
     end
 

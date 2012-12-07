@@ -39,7 +39,7 @@ class Chef
         set_or_return(
           :key,
           arg,
-          :kind_of => String,
+          :kind_of => String
         )
       end
       def values(arg=nil)
