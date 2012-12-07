@@ -40,7 +40,7 @@ class Chef
       end
 
       def running_on_windows!
-        unless RUBY_PLATFORM =~ /mswin|mingw|windows/
+        unless Chef::Platform.windows?
           raise Chef::Exceptions::Win32NotWindows, "Attempt to manipulate the windows registry on a non-windows node"
         end
       end
