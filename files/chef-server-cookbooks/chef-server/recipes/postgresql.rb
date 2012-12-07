@@ -24,7 +24,7 @@ chef_db_dir = Dir.glob("/opt/chef-server/embedded/service/erchef/lib/chef_db-*")
 user node['chef_server']['postgresql']['username'] do
   system true
   shell node['chef_server']['postgresql']['shell']
-  home node['chef_server']['postgresql']['dir']
+  home node['chef_server']['postgresql']['home']
 end
 
 directory postgresql_log_dir do
@@ -46,6 +46,14 @@ end
 link postgresql_data_dir_symlink do
   to postgresql_data_dir
   not_if { postgresql_data_dir == postgresql_data_dir_symlink }
+end
+
+file File.join(node['chef_server']['postgresql']['home'], ".profile") do
+  owner node['chef_server']['postgresql']['username']
+  mode "0644"
+  content <<-EOH
+PATH=#{node['chef_server']['postgresql']['user_path']}
+EOH
 end
 
 if File.directory?("/etc/sysctl.d") && File.exists?("/etc/init.d/procps")
