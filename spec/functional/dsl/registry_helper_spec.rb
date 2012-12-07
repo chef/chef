@@ -39,6 +39,7 @@ describe Chef::Resource::RegistryKey, :unix_only do
 end
 
 describe Chef::Resource::RegistryKey, :windows_only do
+  include_context Chef::Resource::File
 
   let(:file_base) { "file_spec" }
   let(:expected_content) { "Don't fear the ruby." }
