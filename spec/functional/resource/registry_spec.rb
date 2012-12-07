@@ -516,7 +516,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
       lambda{@new_resource.run_action(:delete_key)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)
     end
 
-    #TODO: Fix code to handle case when values specified for delete_key.
     it "ignores the values under a key" do
       @new_resource.key(reg_parent + '\OpscodeIgnoredValues')
       #@new_resource.values([{:name=>"DontExist", :type=>:string, :data=>"These will be ignored anyways"}])
@@ -543,7 +542,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["name"].should == resource_name
       @report["resources"][0]["id"].should == reg_parent + '\ReportKey'
       #Not testing for before or after values to match since 
-      #after -> new_resource values and
+      #after -> new_resource.values and
       #before -> current_resource.values
       @report["resources"][0]["result"].should == "delete_key"
       @report["status"].should == "success"
