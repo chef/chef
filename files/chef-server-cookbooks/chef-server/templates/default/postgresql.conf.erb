@@ -106,7 +106,7 @@ max_connections = <%= node['chef_server']['postgresql']['max_connections'] %>   
 
 # - Memory -
 
-shared_buffers = 32MB     # min 128kB
+shared_buffers = <%= node['chef_server']['postgresql']['shared_buffers'] %> # min 128kB
           # (change requires restart)
 #temp_buffers = 8MB     # min 800kB
 #max_prepared_transactions = 0    # zero disables the feature
@@ -115,7 +115,7 @@ shared_buffers = 32MB     # min 128kB
 # per transaction slot, plus lock space (see max_locks_per_transaction).
 # It is not advisable to set max_prepared_transactions nonzero unless you
 # actively intend to use prepared transactions.
-#work_mem = 1MB       # min 64kB
+work_mem = <%= node['chef_server']['postgresql']['work_mem'] %>				# min 64kB
 #maintenance_work_mem = 16MB    # min 1MB
 #max_stack_depth = 2MB      # min 100kB
 
@@ -171,10 +171,10 @@ shared_buffers = 32MB     # min 128kB
 
 # - Checkpoints -
 
-#checkpoint_segments = 3    # in logfile segments, min 1, 16MB each
-#checkpoint_timeout = 5min    # range 30s-1h
-#checkpoint_completion_target = 0.5 # checkpoint target duration, 0.0 - 1.0
-#checkpoint_warning = 30s   # 0 disables
+checkpoint_segments =  <%= node['chef_server']['postgresql']['checkpoint_segments'] %>		# in logfile segments, min 1, 16MB each, default 3
+checkpoint_timeout = <%= node['chef_server']['postgresql']['checkpoint_timeout'] %>		# range 30s-1h, default 5min
+checkpoint_completion_target = <%= node['chef_server']['postgresql']['checkpoint_completion_target'] %>	# checkpoint target duration, 0.0 - 1.0, default 0.5
+checkpoint_warning = <%= node['chef_server']['postgresql']['checkpoint_warning'] %>		# 0 disables, default 30s
 
 # - Archiving -
 
@@ -245,7 +245,7 @@ shared_buffers = 32MB     # min 128kB
 #cpu_tuple_cost = 0.01      # same scale as above
 #cpu_index_tuple_cost = 0.005   # same scale as above
 #cpu_operator_cost = 0.0025   # same scale as above
-#effective_cache_size = 128MB
+effective_cache_size = <%= node['chef_server']['postgresql']['effective_cache_size'] %> # Default 128MB
 
 # - Genetic Query Optimizer -
 

@@ -259,3 +259,10 @@ default['chef_server']['postgresql']['md5_auth_cidr_addresses'] = [ ]
 default['chef_server']['postgresql']['trust_auth_cidr_addresses'] = [ '127.0.0.1/32', '::1/128' ]
 default['chef_server']['postgresql']['shmmax'] = kernel['machine'] =~ /x86_64/ ? 17179869184 : 4294967295
 default['chef_server']['postgresql']['shmall'] = kernel['machine'] =~ /x86_64/ ? 4194304 : 1048575
+default['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+default['chef_server']['postgresql']['work_mem'] = "8MB"
+default['chef_server']['postgresql']['effective_cache_size'] = "#{(node['memory']['total'].to_i / 2) / (1024)}MB"
+default['chef_server']['postgresql']['checkpoint_segments'] = 10
+default['chef_server']['postgresql']['checkpoint_timeout'] = "5min"
+default['chef_server']['postgresql']['checkpoint_completion_target'] = 0.9
+default['chef_server']['postgresql']['checkpoint_warning'] = "30s"
