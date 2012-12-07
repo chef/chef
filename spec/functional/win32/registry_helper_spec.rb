@@ -1,5 +1,6 @@
 #
 # Author:: Prajakta Purohit (<prajakta@opscode.com>)
+# Author:: Lamont Granquist (<lamont@opscode.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #

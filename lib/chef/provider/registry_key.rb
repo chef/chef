@@ -1,11 +1,8 @@
 #
 # Author:: Prajakta Purohit (<prajakta@opscode.com>)
-# Cookbook Name:: windows
-# Provider:: registry
+# Author:: Lamont Granquist (<lamont@opscode.com>)
 #
-# Copyright:: 2010, VMware, Inc.
 # Copyright:: 2011, Opscode, Inc.
-# Copyright:: 2011, Business Intelligence Associates, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

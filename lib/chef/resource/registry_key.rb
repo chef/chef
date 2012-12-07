@@ -1,9 +1,6 @@
-# Author:: Doug MacEachern (<dougm@vmware.com>)
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Cookbook Name:: windows
-# Resource:: registry
+# Author:: Prajakta Purohit (<prajakta@opscode.com>)
+# Author:: Lamont Granquist (<lamont@opscode.com>)
 #
-# Copyright:: 2010, VMware, Inc.
 # Copyright:: 2011, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
