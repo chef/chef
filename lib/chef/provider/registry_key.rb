@@ -55,9 +55,6 @@ class Chef
           @current_resource.values(registry.get_values(@new_resource.key))
         end
         values_to_hash(@current_resource.values)
-
-        @bad_type = []
-        @new_resource.values.map {|val| @bad_type.push(val) if !registry.get_type_from_name(val[:type]) }.compact!
         @current_resource
       end
 
@@ -81,11 +78,6 @@ class Chef
         requirements.assert(:create) do |a|
           a.assertion{ registry.key_exists?(@new_resource.key) }
           a.whyrun("Key #{@new_resource.key} does not exist. Unless it would have been created before, attempt to modify its values would fail.")
-        end
-        requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
-          #If the type is anything different from the list of types specified fail
-          a.assertion{ @bad_type.empty? }
-          a.failure_message(Chef::Exceptions::Win32RegBadType, "Bad types for the following values #{@bad_vals}")
         end
         requirements.assert(:create, :create_if_missing) do |a|
           #If keys missing in the path and recursive == false
