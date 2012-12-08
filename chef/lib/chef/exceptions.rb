@@ -75,6 +75,7 @@ class Chef
     class InvalidDataBagItemID < ArgumentError; end
     class InvalidDataBagName < ArgumentError; end
     class EnclosingDirectoryDoesNotExist < ArgumentError; end
+    class MetadataNotFound < RuntimeError; end
     # Errors originating from calls to the Win32 API
     class Win32APIError < RuntimeError; end
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
