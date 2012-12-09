@@ -45,7 +45,7 @@ class Chef
         @path = name
         @backup = 5
         @action = "create"
-        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
+        @allowed_actions.push(:create, :delete, :touch, :create_if_missing, :move)
         @provider = Chef::Provider::File
         @diff = nil
         @local = false

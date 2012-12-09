@@ -264,12 +264,14 @@ class Chef
       def action_move
         if ::File.exists?(@new_resource.source)
           #move only makes sense for local files
-          @new_resource.local = true
+          @new_resource.local true
+          @move = true
           unless compare_content
             copy
+          else
+            Chef::Log.info("#{@new_resource} removing source #{@new_resource.source}")
+            FileUtils.rm(@new_resource.source)
           end
-          Chef::Log.info("#{@new_resource} removing source #{@new_resource.source}")
-          FileUtils.rm(@new_resource.source)
         end
         set_all_access_controls
       end
@@ -285,7 +287,8 @@ class Chef
           deploy_tempfile do |tempfile|
             Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
             tempfile.close
-            FileUtils.cp(file_cache_location, tempfile.path)
+            FileUtils.cp(file_cache_location, tempfile.path) unless @move
+            FileUtils.mv(file_cache_location, tempfile.path) if @move
           end
           Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
         end
