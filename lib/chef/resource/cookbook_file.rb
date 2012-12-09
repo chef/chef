@@ -2,6 +2,7 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
 # Author:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,32 +20,17 @@
 #
 
 require 'chef/resource/file'
-require 'chef/provider/cookbook_file'
-require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class CookbookFile < Chef::Resource::File
-      include Chef::Mixin::Securable
 
       provides :cookbook_file, :on_platforms => :all
 
       def initialize(name, run_context=nil)
         super
-        @provider = Chef::Provider::CookbookFile
         @resource_name = :cookbook_file
-        @action = "create"
         @source = ::File.basename(name)
-        @cookbook = nil
-        @provider = Chef::Provider::CookbookFile
-      end
-
-      def source(source_filename=nil)
-        set_or_return(:source, source_filename, :kind_of => String)
-      end
-
-      def cookbook(cookbook_name=nil)
-        set_or_return(:cookbook, cookbook_name, :kind_of => String)
       end
 
     end
