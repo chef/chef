@@ -72,29 +72,24 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
   context "tests registry dsl" do
     it "creates file file if registry_key_exists" do
-      @resource.run_action(:create) if @resource.registry_key_exists?("HKCU\\Software\\Root")
-      File.should exist(path)
+      @resource.registry_key_exists?("HKCU\\Software\\Root").should == true
     end
     it "deletes file if registry has specified value" do
       values = @resource.registry_get_values("HKCU\\Software\\Root")
-      @resource.run_action(:delete) if values.include?({:name=>"RootType1",:type=>:string,:data=>"fibrous"})
-      File.should_not exist(path)
+      values.include?({:name=>"RootType1",:type=>:string,:data=>"fibrous"}).should == true
     end
     it "creates file if specified registry_has_subkey" do
-      @resource.run_action(:create) if @resource.registry_has_subkeys?("HKCU\\Software\\Root")
-      File.should exist(path)
+      @resource.registry_has_subkeys?("HKCU\\Software\\Root").should == true
     end
     it "deletes file if specified key has specified subkey" do
       subkeys = @resource.registry_get_subkeys("HKCU\\Software\\Root")
-      @resource.run_action(:delete) if subkeys.include?("Branch")
-      File.should_not exist(path)
+      subkeys.include?("Branch").should == true
     end
     it "creates file if registry_value_exists" do
-      @resource.run_action(:create) if @resource.registry_value_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"})
-      File.should exist(path)
+      @resource.registry_value_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"}).should == true
     end
     it "deletes file if data_value_exists" do
-      @resource.run_action(:delete) if @resource.registry_data_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"})
+      @resource.registry_data_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"}).should == true
     end
   end
 end
