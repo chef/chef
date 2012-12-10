@@ -71,19 +71,6 @@ class Chef
         true
       end
 
-      def create_value(key_path, value)
-        Chef::Log.debug("Creating value #{value[:name]} in registry key #{key_path} with type #{value[:type]} and data #{value[:data]}")
-        if value_exists?(key_path, value)
-          raise Chef::Exceptions::Win32RegValueExists, "Value #{value[:name]} in registry key #{key_path} already exists"
-        end
-        hive, key = get_hive_and_key(key_path)
-        hive.open(key, ::Win32::Registry::KEY_SET_VALUE | registry_system_architecture) do |reg|
-          reg.write(value[:name], get_type_from_name(value[:type]), value[:data])
-          Chef::Log.debug("Value #{value[:name]} in registry key #{key_path} updated")
-        end
-        true
-      end
-
       def delete_value(key_path, value)
         Chef::Log.debug("Deleting value #{value[:name]} from registry key #{key_path}")
         if value_exists?(key_path, value)
