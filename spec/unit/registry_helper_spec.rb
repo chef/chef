@@ -37,7 +37,7 @@ describe Chef::Provider::RegistryKey do
     @registry = Chef::Win32::Registry.new()
   end
 
-  describe "when first created" do
+  describe "set_value" do
     it "does nothing if key and hive and value exist" do
       @registry.should_receive(:key_exists!).with(key_path).and_return(true)
       @hive_mock = mock("::Win32::Registry::HKEY_CURRENT_USER")
@@ -59,5 +59,23 @@ describe Chef::Provider::RegistryKey do
       @reg_mock.should_receive(:write).with("one", 1, "1")
       @registry.set_value(key_path, value1)
     end
+
+    it "creates value if the key exists and the value does not exist" do
+      @registry.should_receive(:key_exists!).with(key_path).and_return(true)
+      @hive_mock = mock("::Win32::Registry::HKEY_CURRENT_USER")
+      @registry.should_receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key1])
+      @registry.should_receive(:value_exists?).with(key_path, value1).and_return(false)
+      @reg_mock = mock("reg")
+      @hive_mock.should_receive(:open).with(key1, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | @registry.registry_system_architecture).and_yield(@reg_mock)
+      @registry.should_receive(:get_type_from_name).with(:string).and_return(1)
+      @reg_mock.should_receive(:write).with("one", 1, "1")
+      @registry.set_value(key_path, value1)
+    end
+
+    it "should raise an exception if the key does not exist" do
+      @registry.should_receive(:key_exists!).with(key_path).and_raise(Chef::Exceptions::Win32RegKeyMissing)
+      lambda {@registry.set_value(key_path, value1)}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
+    end
   end
+
 end
