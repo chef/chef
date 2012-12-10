@@ -18,14 +18,17 @@
 
 require 'spec_helper'
 
+class Win32::Registry
+  KEY_SET_VALUE = 0x0002
+  KEY_QUERY_VALUE = 0x0001
+end
+
 describe Chef::Provider::RegistryKey do
 
   let(:value1) { { :name => "one", :type => :string, :data => "1" } }
   #let(:value2) { { :name => "two", :type => :string, :data => "2" } }
   let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
-  let(:key) { 'Software\OpscodeNumbers' }
-  let(:key_set_value) { 0x0002 }
-  let(:key_query_value) { 0x0001 }
+  let(:key1) { 'Software\OpscodeNumbers' }
 
   before(:each) do
     Chef::Win32::Registry.any_instance.stub(:machine_architecture).and_return(:x86_64)
@@ -43,12 +46,13 @@ describe Chef::Provider::RegistryKey do
     it "updates value if key and hive and value exist, but data is different" do
       @registry.should_receive(:key_exists!).with(key_path).and_return(true)
       @hive_mock = mock("::Win32::Registry::HKEY_CURRENT_USER")
-#      @registry.should_receive(:get_hive_and_key).with(key_path).and_return(@hive_mock, key)
+      @registry.should_receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key1])
       @registry.should_receive(:value_exists?).with(key_path, value1).and_return(true)
       @registry.should_receive(:data_exists?).with(key_path, value1).and_return(false)
       @reg_mock = mock("reg")
-      @hive_mock.should_receive(:open).with(key, key_set_value | key_query_value | @registry.registry_system_architecture).and_yield(@reg_mock)
-      #@reg_mock.should_receive(:write).with("one", 
+      @hive_mock.should_receive(:open).with(key1, ::Win32::Registry::KEY_SET_VALUE | ::Win32::Registry::KEY_QUERY_VALUE | @registry.registry_system_architecture).and_yield(@reg_mock)
+      @registry.should_receive(:get_type_from_name).with(:string).and_return(1)
+      @reg_mock.should_receive(:write).with("one", 1, "1")
       @registry.set_value(key_path, value1)
     end
   end
