@@ -64,7 +64,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.start_command
         super
       else
-        run_command_with_systems_locale(:command => "/bin/systemctl start #{@new_resource.service_name}")
+        run_command_with_systems_locale(:command => "/usr/bin/systemctl start #{@new_resource.service_name}")
       end
     end
   end
@@ -76,7 +76,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       if @new_resource.stop_command
         super
       else
-        run_command_with_systems_locale(:command => "/bin/systemctl stop #{@new_resource.service_name}")
+        run_command_with_systems_locale(:command => "/usr/bin/systemctl stop #{@new_resource.service_name}")
       end
     end
   end
@@ -85,7 +85,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.restart_command
       super
     else
-      run_command_with_systems_locale(:command => "/bin/systemctl restart #{@new_resource.service_name}")
+      run_command_with_systems_locale(:command => "/usr/bin/systemctl restart #{@new_resource.service_name}")
     end
   end
 
@@ -93,23 +93,23 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if @new_resource.reload_command
       super
     else
-      run_command_with_systems_locale(:command => "/bin/systemctl reload #{@new_resource.service_name}")
+      run_command_with_systems_locale(:command => "/usr/bin/systemctl reload #{@new_resource.service_name}")
     end
   end
 
   def enable_service
-    run_command_with_systems_locale(:command => "/bin/systemctl enable #{@new_resource.service_name}")
+    run_command_with_systems_locale(:command => "/usr/bin/systemctl enable #{@new_resource.service_name}")
   end 
 
   def disable_service
-    run_command_with_systems_locale(:command => "/bin/systemctl disable #{@new_resource.service_name}")
+    run_command_with_systems_locale(:command => "/usr/bin/systemctl disable #{@new_resource.service_name}")
   end 
 
   def is_active?
-    run_command_with_systems_locale({:command => "/bin/systemctl is-active #{@new_resource.service_name}", :ignore_failure => true}) == 0
+    run_command_with_systems_locale({:command => "/usr/bin/systemctl is-active #{@new_resource.service_name}", :ignore_failure => true}) == 0
   end
 
   def is_enabled?
-    run_command_with_systems_locale({:command => "/bin/systemctl is-enabled #{@new_resource.service_name}", :ignore_failure => true}) == 0
+    run_command_with_systems_locale({:command => "/usr/bin/systemctl is-enabled #{@new_resource.service_name}", :ignore_failure => true}) == 0
   end
 end
