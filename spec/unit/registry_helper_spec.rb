@@ -18,9 +18,11 @@
 
 require 'spec_helper'
 
-class Win32::Registry
-  KEY_SET_VALUE = 0x0002
-  KEY_QUERY_VALUE = 0x0001
+module Win32
+  class Registry
+    KEY_SET_VALUE = 0x0002
+    KEY_QUERY_VALUE = 0x0001
+  end
 end
 
 describe Chef::Provider::RegistryKey do
@@ -38,6 +40,8 @@ describe Chef::Provider::RegistryKey do
   describe "when first created" do
     it "does nothing if key and hive and value exist" do
       @registry.should_receive(:key_exists!).with(key_path).and_return(true)
+      @hive_mock = mock("::Win32::Registry::HKEY_CURRENT_USER")
+      @registry.should_receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key1])
       @registry.should_receive(:value_exists?).with(key_path, value1).and_return(true)
       @registry.should_receive(:data_exists?).with(key_path, value1).and_return(true)
       @registry.set_value(key_path, value1)
