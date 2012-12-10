@@ -21,7 +21,10 @@ require 'spec_helper'
 describe Chef::Provider::RegistryKey do
 
   let(:testval1) { { :name => "one", :type => :string, :data => "1" } }
+  let(:testval1_wrong_type) { { :name => "one", :type => :multi_string, :data => "1" } }
+  let(:testval1_wrong_data) { { :name => "one", :type => :string, :data => "2" } }
   let(:testval2) { { :name => "two", :type => :string, :data => "2" } }
+  let(:testkey1) { 'HKLM\Software\Opscode\Testing' }
 
   before(:each) do
     @node = Chef::Node.new
@@ -29,7 +32,7 @@ describe Chef::Provider::RegistryKey do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::RegistryKey.new("windows is fun", @run_context)
-    @new_resource.key 'HKLM\Software\Opscode\Testing'
+    @new_resource.key testkey1
     @new_resource.values( testval1 )
     @new_resource.recursive false
 
@@ -81,6 +84,46 @@ describe Chef::Provider::RegistryKey do
   end
 
   describe "action_create" do
+    context "when the key exists" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with("HKLM\\Software\\Opscode\\Testing").and_return(true)
+      end
+      it "should do nothing if the key and the value both exist" do
+        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval1 )
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+      it "should create the value if the key exists but the value does not" do
+        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval2 )
+        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+      it "should set the value if the key exists but the data does not match" do
+        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval1_wrong_data )
+        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+      it "should set the value if the key exists but the type does not match" do
+        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval1_wrong_type )
+        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
+    context "when the key does not exist" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with("HKLM\\Software\\Opscode\\Testing").and_return(false)
+      end
+      it "should create they key and the value" do
+        @double_registry.should_receive(:create_key).with("HKLM\\Software\\Opscode\\Testing", false)
+        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
   end
 
   describe "action_create_if_missing" do
