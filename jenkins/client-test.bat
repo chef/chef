@@ -47,6 +47,6 @@ GOTO :EOF
 ECHO Failed with error level %errorlevel%
 
 rem # uninstall chef
-call msiexec /qb /x %omnibus_package% || GOTO :error
+call msiexec /qb /x %omnibus_package%
 
 ENDLOCAL
