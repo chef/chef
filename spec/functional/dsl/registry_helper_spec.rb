@@ -19,44 +19,14 @@
 require "chef/dsl/registry_helper"
 require "spec_helper"
 
-describe Chef::Resource::RegistryKey, :unix_only do
-  before(:all) do
-    events = Chef::EventDispatch::Dispatcher.new
-    node = Chef::Node.new
-    ohai = Ohai::System.new
-    ohai.all_plugins
-    node.consume_external_attrs(ohai.data,{})
-    run_context = Chef::RunContext.new(node, {}, events)
-    @resource = Chef::Resource::RegistryKey.new("HKCU\\Software", run_context)
-  end
-  context "when load_current_resource is run on a non-windows node" do
-    it "throws an exception because you don't have a windows registry (derp)" do
-      @resource.key("HKCU\\Software\\Opscode")
-      @resource.values([{:name=>"Color", :type=>:string, :data=>"Orange"}])
-      lambda{@resource.run_action(:create)}.should raise_error(Chef::Exceptions::Win32NotWindows)
-    end
-  end
-end
-
 describe Chef::Resource::RegistryKey, :windows_only do
-  include_context Chef::Resource::File
-
-  let(:file_base) { "file_spec" }
-  let(:expected_content) { "Don't fear the ruby." }
 
   before (:all) do
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
-    ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Flower"
     ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root', Win32::Registry::KEY_ALL_ACCESS) do |reg|
       reg['RootType1', Win32::Registry::REG_SZ] = 'fibrous'
       reg.write('Roots', Win32::Registry::REG_MULTI_SZ, ["strong roots", "healthy tree"])
-    end
-    ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch', Win32::Registry::KEY_ALL_ACCESS) do |reg|
-      reg['Strong', Win32::Registry::REG_SZ] = 'bird nest'
-    end
-    ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Flower', Win32::Registry::KEY_ALL_ACCESS) do |reg|
-      reg['Petals', Win32::Registry::REG_MULTI_SZ] = ["Pink", "Delicate"]
     end
 
     events = Chef::EventDispatch::Dispatcher.new
@@ -65,30 +35,28 @@ describe Chef::Resource::RegistryKey, :windows_only do
     ohai.all_plugins
     node.consume_external_attrs(ohai.data,{})
     run_context = Chef::RunContext.new(node, {}, events)
-    @resource = Chef::Resource::File.new(path, run_context)
-    @resource.content(expected_content)
-
+    @resource = Chef::Resource.new("foo", run_context)
   end
 
   context "tests registry dsl" do
-    it "creates file file if registry_key_exists" do
+    it "returns true if registry_key_exists" do
       @resource.registry_key_exists?("HKCU\\Software\\Root").should == true
     end
-    it "deletes file if registry has specified value" do
+    it "returns true if registry has specified value" do
       values = @resource.registry_get_values("HKCU\\Software\\Root")
       values.include?({:name=>"RootType1",:type=>:string,:data=>"fibrous"}).should == true
     end
-    it "creates file if specified registry_has_subkey" do
+    it "returns true if specified registry_has_subkey" do
       @resource.registry_has_subkeys?("HKCU\\Software\\Root").should == true
     end
-    it "deletes file if specified key has specified subkey" do
+    it "returns true if specified key has specified subkey" do
       subkeys = @resource.registry_get_subkeys("HKCU\\Software\\Root")
       subkeys.include?("Branch").should == true
     end
-    it "creates file if registry_value_exists" do
+    it "returns true if registry_value_exists" do
       @resource.registry_value_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"}).should == true
     end
-    it "deletes file if data_value_exists" do
+    it "returns true if data_value_exists" do
       @resource.registry_data_exists?("HKCU\\Software\\Root", {:name=>"RootType1", :type=>:string, :data=>"fibrous"}).should == true
     end
   end
