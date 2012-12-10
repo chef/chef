@@ -100,8 +100,17 @@ class Chef
           end
         end
         @new_resource.values.each do |value|
-          converge_by("set value #{value}") do
-            registry.set_value(@new_resource.key, value)
+          if @name_hash.has_key?(value[:name])
+            current_value = @name_hash[value[:name]]
+            unless current_value[:type] == value[:type] && current_value[:data] == value[:data]
+              converge_by("set value #{value}") do
+                registry.set_value(@new_resource.key, value)
+              end
+            end
+          else
+            converge_by("set value #{value}") do
+              registry.set_value(@new_resource.key, value)
+            end
           end
         end
       end
