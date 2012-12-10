@@ -53,7 +53,7 @@ rem # download the new chef installer
 rem # right now we have one build, fake the platform resulution crap
 cscript /nologo wget.vbs /url:"http://%OMNITRUCK_BASE_URL%/chef/download?p=windows&pv=2008r2&m=x86_64&v=%INSTALL_CHEF_VERSION%" /path:%TMP%\install.msi
 
-call msiexec INTSALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
+call msiexec INSTALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
 
 call C:\opscode\chef\bin\chef-client --version || GOTO :error
 
