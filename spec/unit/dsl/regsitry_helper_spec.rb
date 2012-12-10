@@ -20,10 +20,6 @@ require "chef/dsl/registry_helper"
 require "spec_helper"
 
 describe Chef::Resource::RegistryKey do
-  include_context Chef::Resource::File
-
-  let(:file_base) { "file_spec" }
-  let(:expected_content) { "Don't fear the ruby." }
 
   before (:all) do
     events = Chef::EventDispatch::Dispatcher.new
@@ -32,27 +28,26 @@ describe Chef::Resource::RegistryKey do
     ohai.all_plugins
     node.consume_external_attrs(ohai.data,{})
     run_context = Chef::RunContext.new(node, {}, events)
-    @resource = Chef::Resource::File.new(path, run_context)
-    @resource.content(expected_content)
+    @resource = Chef::Resource::new("foo", run_context)
   end
 
   context "tests registry dsl" do
-    it "creates file file if registry_key_exists" do
+    it "resource can access registry_helper method registry_key_exists" do
       @resource.respond_to?('registry_key_exists?').should == true
     end
-    it "deletes file if registry has specified value" do
+    it "resource can access registry_helper method registry_get_values" do
       @resource.respond_to?('registry_get_values').should == true
     end
-    it "creates file if specified registry_has_subkey" do
+    it "resource can access registry_helper method registry_has_subkey" do
       @resource.respond_to?('registry_has_subkeys?').should == true
     end
-    it "deletes file if specified key has specified subkey" do
+    it "resource can access registry_helper method registry_get_subkeys" do
       @resource.respond_to?('registry_get_subkeys').should == true
     end
-    it "creates file if registry_value_exists" do
+    it "resource can access registry_helper method registry_value_exists" do
       @resource.respond_to?('registry_value_exists?').should == true
     end
-    it "deletes file if data_value_exists" do
+    it "resource can access registry_helper method data_value_exists" do
       @resource.respond_to?('registry_data_exists?').should == true
     end
   end
