@@ -19,7 +19,7 @@
 $: << File.dirname(__FILE__)
 require 'lib/chef/expander/version'
 require 'rake/gempackagetask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 require '../chef/tasks/rspec.rb'
 
 spec = eval(File.read("chef-expander.gemspec"))

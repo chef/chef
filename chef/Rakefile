@@ -21,7 +21,7 @@ require File.dirname(__FILE__) + '/lib/chef/version'
 
 require 'rubygems'
 require 'rubygems/package_task'
-require 'rake/rdoctask'
+require 'rdoc/task'
 require './tasks/rspec.rb'
 
 GEM_NAME = "chef"
