@@ -1038,6 +1038,17 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when not mutated" do
+
+    it "does not reset the cache when dup'd [CHEF-3680]" do
+      @attributes.default[:foo][:bar] = "set on original"
+      subtree = @attributes[:foo]
+      @attributes.default[:foo].dup[:bar] = "set on dup"
+      subtree[:bar].should == "set on original"
+    end
+
+  end
+
   describe "when setting a component attribute to a new value" do
     it "converts the input in to a VividMash tree (default)" do
       @attributes.default = {}

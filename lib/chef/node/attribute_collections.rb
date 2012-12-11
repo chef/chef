@@ -76,6 +76,10 @@ class Chef
         super(data)
       end
 
+      def dup
+        Array.new(map {|e| e.dup})
+      end
+
     end
 
     # == VividMash
@@ -183,6 +187,10 @@ class Chef
         else
           value
         end
+      end
+
+      def dup
+        Mash.new(self)
       end
 
     end

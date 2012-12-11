@@ -195,8 +195,9 @@ class Chef
       end
 
       def dup
-        Array.new(self)
+        Array.new(map {|e| e.dup })
       end
+
     end
 
     # == ImmutableMash
@@ -381,6 +382,7 @@ class Chef
       def dup
         Mash.new(self)
       end
+
     end
 
   end
