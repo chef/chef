@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 5d990b1d71e9d747640ec6c35ae37d955de2c108
+  revision: 58e1cb8abd127dcbe2eee2f702f47886e722a235
   branch: master
   specs:
     omnibus (0.1)
@@ -46,7 +46,7 @@ GEM
       mixlib-log
       systemu
       yajl-ruby
-    rake (10.0.1)
+    rake (10.0.2)
     systemu (2.5.2)
     uber-s3 (0.2.4)
       mime-types (~> 1.17)
