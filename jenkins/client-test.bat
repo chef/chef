@@ -10,6 +10,8 @@ rem # remove the chef package / clobber the files
 rem # then install the new package
 rmdir /S /Q C:\opscode
 FOR %%i IN (pkg\chef*.msi) DO SET omnibus_package=%%i
+SET omnibus_package=%WORKSPACE%\%BUILD_NUMBER%\%omnibus_package%
+
 call msiexec INSTALLLOCATION=C:\opscode /qb /i %omnibus_package% || GOTO :error
 
 rem # extract the chef source code
