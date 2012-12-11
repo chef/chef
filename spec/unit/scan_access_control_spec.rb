@@ -101,8 +101,8 @@ describe Chef::ScanAccessControl do
         @scanner.set_all!
       end
 
-      it "sets the mode of the current resource to the current mode as an integer" do
-        @current_resource.mode.should == 00644
+      it "sets the mode of the current resource to the current mode as a String" do
+        @current_resource.mode.should == "644"
       end
 
     end
