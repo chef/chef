@@ -239,15 +239,15 @@ class Chef
       end
 
       def action_create
-        unless ::File.exists?(@new_resource.path) && compare_content
+        unless ::File.exists?(@new_resource.path) && compare_content && !@move
 					description = []
-					desc = "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)}" if ::File.exists?(@new_resource.path)
+					desc = "update content in file #{@new_resource.path} from checksum #{short_cksum(@current_resource.checksum)}" if ::File.exists?(@new_resource.path)
 					desc = "create file #{@new_resource.path}" unless ::File.exists?(@new_resource.path)
 
           unless @new_resource.source.nil?
 						@source_is_file = true
-						desc << " from cookbook file #{@new_resource.source}" unless @new_resource.local
-						desc << " from #{@new_resource.source}" if @new_resource.local
+						desc << " with cookbook file #{@new_resource.source}" unless @new_resource.local
+						desc << " with file #{@new_resource.source}" if @new_resource.local
 						description << desc
 						description << diff_current(file_cache_location)
           else
@@ -279,12 +279,7 @@ class Chef
           #move only makes sense for local files
           @new_resource.local true
           @move = true
-					unless compare_content
-						action_create
-					else
-            Chef::Log.info("#{@new_resource} contents were identical. Not triggering actions and removing #{@new_resource.source}")
-            FileUtils.rm(@new_resource.source)
-          end
+					action_create
         end
       end
 
