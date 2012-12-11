@@ -173,7 +173,7 @@ class Chef
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator_method_name}(*args, &block)
             msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
             %Q(To set an attribute use code like `node.default["key"] = "value"')
@@ -183,7 +183,7 @@ class Chef
       end
 
       READER_METHODS.each do |reader|
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{reader}(*args, &block)
             if root.stale_subtree?(@serial_number)
               raise Exceptions::StaleAttributeRead,
@@ -330,7 +330,7 @@ class Chef
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
         def #{mutator_method_name}(*args, &block)
           msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
           %Q(To set an attribute use code like `node.default["key"] = "value"')
@@ -340,7 +340,7 @@ class Chef
       end
 
       READER_METHODS.each do |reader_method|
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{reader_method}(*args, &block)
             if root.stale_subtree?(@serial_number)
               raise Exceptions::StaleAttributeRead,
