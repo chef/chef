@@ -57,9 +57,18 @@ call msiexec INSTALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
 
 call C:\opscode\chef\bin\chef-client --version || GOTO :error
 
+call call msiexec /qb /x %TMP%\install.msi || GOTO :error
+
 GOTO :EOF
 
 :error
-ECHO Failed with error level %errorlevel%
+
+SET ERR_LEV=%errorlevel%
+
+ECHO Failed with error level %ERR_LEV%
+
+call call msiexec /qb /x %TMP%\install.msi
+
+EXIT /B %ERR_LEV%
 
 ENDLOCAL

@@ -46,9 +46,14 @@ rmdir /S /Q %BUILD_NUMBER%
 GOTO :EOF
 
 :error
-ECHO Failed with error level %errorlevel%
+
+SET ERR_LEV=%errorlevel%
+
+ECHO Failed with error level %ERR_LEV%
 
 rem # uninstall chef
 call msiexec /qb /x %omnibus_package%
+
+EXIT /B %ERR_LEV%
 
 ENDLOCAL
