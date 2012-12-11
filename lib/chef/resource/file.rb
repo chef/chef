@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
+# Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Copyright:: Copyright (c) 2008, 2011 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -44,15 +45,18 @@ class Chef
         @path = name
         @backup = 5
         @action = "create"
-        @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
+        @allowed_actions.push(:create, :delete, :touch, :create_if_missing, :move)
         @provider = Chef::Provider::File
         @diff = nil
+        @local = false
+        @source = nil
+        @cookbook = nil
+        @variables = Hash.new
       end
-
 
       def content(arg=nil)
         set_or_return(
-                      :content,
+          :content,
           arg,
           :kind_of => String
         )
@@ -81,7 +85,31 @@ class Chef
           :kind_of => String
         )
       end
-      
+
+      def source(arg=nil)
+        set_or_return(
+          :source,
+          arg, 
+          :kind_of => String
+        )
+      end
+
+      def cookbook(arg=nil)
+        set_or_return(
+          :cookbook, 
+          arg, 
+          :kind_of => String
+        )
+      end
+
+      def local(args=nil)
+        set_or_return(
+          :local,
+          args,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
       def diff(arg=nil)
         set_or_return(
           :diff,
@@ -89,8 +117,6 @@ class Chef
           :kind_of => String
         )
       end
-
-
     end
   end
 end

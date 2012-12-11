@@ -20,12 +20,10 @@
 
 require 'chef/resource/file'
 require 'chef/provider/template'
-require 'chef/mixin/securable'
 
 class Chef
   class Resource
     class Template < Chef::Resource::File
-      include Chef::Mixin::Securable
 
       provides :template, :on_platforms => :all
 
@@ -34,18 +32,8 @@ class Chef
         @resource_name = :template
         @action = "create"
         @source = "#{::File.basename(name)}.erb"
-        @cookbook = nil
-        @local = false
         @variables = Hash.new
         @provider = Chef::Provider::Template
-      end
-
-      def source(file=nil)
-        set_or_return(
-          :source,
-          file,
-          :kind_of => [ String ]
-        )
       end
 
       def variables(args=nil)
@@ -53,22 +41,6 @@ class Chef
           :variables,
           args,
           :kind_of => [ Hash ]
-        )
-      end
-
-      def cookbook(args=nil)
-        set_or_return(
-          :cookbook,
-          args,
-          :kind_of => [ String ]
-        )
-      end
-
-      def local(args=nil)
-        set_or_return(
-          :local,
-          args,
-          :kind_of => [ TrueClass, FalseClass ]
         )
       end
     end

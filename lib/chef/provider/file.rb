@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -25,6 +26,8 @@ require 'etc'
 require 'fileutils'
 require 'chef/scan_access_control'
 require 'chef/mixin/shell_out'
+require 'chef/file_access_control'
+require 'tempfile'
 
 class Chef
 
@@ -64,7 +67,6 @@ class Chef
           return buff !~ /^[\r[:print:]]*$/
         end
       end
-
 
       def diff_current(temp_path)
         suppress_resource_reporting = false
@@ -139,7 +141,7 @@ class Chef
         end
         load_current_resource_attrs
         setup_acl
-        
+
         @current_resource
       end
 
@@ -168,7 +170,7 @@ class Chef
           end
         end
       end
-      
+
       def setup_acl
         @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         @acl_scanner.set_all!
@@ -203,20 +205,15 @@ class Chef
 
       # Compare the content of a file.  Returns true if they are the same, false if they are not.
       def compare_content
-        checksum(@current_resource.path) == new_resource_content_checksum
-      end
-
-      # Set the content of the file, assuming it is not set correctly already.
-      def set_content
-        unless compare_content
-          description = []
-          description << "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(new_resource_content_checksum)}"
-          description << diff_current_from_content(@new_resource.content) 
-          converge_by(description) do
-            backup @new_resource.path if ::File.exists?(@new_resource.path)
-            ::File.open(@new_resource.path, "w") {|f| f.write @new_resource.content }
-            Chef::Log.info("#{@new_resource} contents updated")
-          end
+        if @new_resource.source.nil?
+          #compare against a checksum of the content attribute
+          @current_resource.checksum == new_resource_content_checksum
+        elsif @new_resource.local
+          #compare against a checksum of the source
+          @current_resource.checksum == checksum(@new_resource.source)
+        else
+          #use the cookbook builtin checksum (returns nil if cookbook stored checksum matches file on disk)
+          file_cache_location.nil?
         end
       end
 
@@ -242,23 +239,47 @@ class Chef
       end
 
       def action_create
-        if !::File.exists?(@new_resource.path)
-          description = []
-          desc = "create new file #{@new_resource.path}"
-          desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
-          description << desc
-          description << diff_current_from_content(@new_resource.content) 
-          
-          converge_by(description) do
-            Chef::Log.info("entered create")
-            ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
-            access_controls.set_all
-            Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
-            update_new_file_state
+        unless ::File.exists?(@new_resource.path) && compare_content && !@move
+					description = []
+					desc = "update content in file #{@new_resource.path} from checksum #{short_cksum(@current_resource.checksum)}" if ::File.exists?(@new_resource.path)
+					desc = "create file #{@new_resource.path}" unless ::File.exists?(@new_resource.path)
+
+          unless @new_resource.source.nil?
+						@source_is_file = true
+						desc << " with cookbook file #{@new_resource.source}" unless @new_resource.local
+						desc << " with file #{@new_resource.source}" if @new_resource.local
+						description << desc
+						description << diff_current(file_cache_location)
+          else
+            desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
+						description << desc
+						description << diff_current_from_content(@new_resource.content) 
+					end
+
+					converge_by(description) do
+						Chef::Log.debug("#{@new_resource} has new contents")
+						backup
+						deploy_tempfile do |tempfile|
+							Chef::Log.debug("#{@new_resource} staging to #{tempfile.path}")
+							tempfile.write @new_resource.content unless @source_is_file
+							tempfile.close
+							if @source_is_file
+								FileUtils.cp(file_cache_location, tempfile.path) unless @move
+								FileUtils.mv(file_cache_location, tempfile.path) if @move
+							end
+						end
+						Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
-        else
-          set_content unless @new_resource.content.nil?
-          set_all_access_controls
+        end
+        set_all_access_controls
+      end
+
+      def action_move
+        if ::File.exists?(@new_resource.source)
+          #move only makes sense for local files
+          @new_resource.local true
+          @move = true
+					action_create
         end
       end
 
@@ -332,12 +353,30 @@ class Chef
         Tempfile.open(::File.basename(@new_resource.name)) do |tempfile|
           yield tempfile
 
-          temp_res = Chef::Resource::CookbookFile.new(@new_resource.name)
+          temp_res = Chef::Resource::File.new(@new_resource.name)
           temp_res.path(tempfile.path)
           ac = Chef::FileAccessControl.new(temp_res, @new_resource, self)
           ac.set_all!
           FileUtils.mv(tempfile.path, @new_resource.path)
         end
+      end
+
+      def file_cache_location
+        @file_cache_location ||= begin
+          if @new_resource.local
+            @new_resource.source
+          else
+            cookbook = run_context.cookbook_collection[resource_cookbook]
+            cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
+          end
+        end
+      end
+
+      # Determine the cookbook to get the file from. If new resource sets an
+      # explicit cookbook, use it, otherwise fall back to the implicit cookbook
+      # i.e., the cookbook the resource was declared in.
+      def resource_cookbook
+        @new_resource.cookbook || @new_resource.cookbook_name
       end
 
       private
