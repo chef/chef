@@ -299,10 +299,15 @@ class Chef
 
         hive = {
           "HKLM" => ::Win32::Registry::HKEY_LOCAL_MACHINE,
+          "HKEY_LOCAL_MACHINE" => ::Win32::Registry::HKEY_LOCAL_MACHINE,
           "HKU" => ::Win32::Registry::HKEY_USERS,
+          "HKEY_USERS" => ::Win32::Registry::HKEY_USERS,
           "HKCU" => ::Win32::Registry::HKEY_CURRENT_USER,
+          "HKEY_CURRENT_USER" => ::Win32::Registry::HKEY_CURRENT_USER,
           "HKCR" => ::Win32::Registry::HKEY_CLASSES_ROOT,
-          "HKCC" => ::Win32::Registry::HKEY_CURRENT_CONFIG
+          "HKEY_CLASSES_ROOT" => ::Win32::Registry::HKEY_CLASSES_ROOT,
+          "HKCC" => ::Win32::Registry::HKEY_CURRENT_CONFIG,
+          "HKEY_CURRENT_CONFIG" => ::Win32::Registry::HKEY_CURRENT_CONFIG,
         }[hive_name]
 
         raise Chef::Exceptions::Win32RegHiveMissing, "Registry Hive #{hive_name} does not exist" unless hive
