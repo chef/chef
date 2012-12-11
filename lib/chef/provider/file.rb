@@ -207,10 +207,10 @@ class Chef
       def compare_content
         if @new_resource.source.nil?
           #compare against a checksum of the content attribute
-          checksum(@current_resource.path) == new_resource_content_checksum
+          @current_resource.checksum == new_resource_content_checksum
         elsif @new_resource.local
           #compare against a checksum of the source
-          checksum(@current_resource.path) == checksum(@new_resource.source)
+          @current_resource.checksum == checksum(@new_resource.source)
         else
           #use the cookbook builtin checksum (returns nil if cookbook stored checksum matches file on disk)
           file_cache_location.nil?
