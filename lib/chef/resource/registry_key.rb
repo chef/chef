@@ -32,6 +32,7 @@ class Chef
         @architecture = :machine
         @recursive = false
         @key = name
+        @values = []
         @allowed_actions.push(:create, :create_if_missing, :delete, :delete_key)
       end
 
