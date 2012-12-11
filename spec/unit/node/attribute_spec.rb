@@ -1012,7 +1012,7 @@ describe Chef::Node::Attribute do
     end
 
     [
-      :merge,
+      :merge!,
       :update,
       :replace
     ].each do |mutator|
