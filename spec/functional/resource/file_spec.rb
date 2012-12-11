@@ -72,7 +72,7 @@ describe Chef::Resource::File do
           # TODO: most stable way to specify?
           resource.owner.should == Etc.getpwuid(Process.uid).name
           resource.group.should == Etc.getgrgid(Process.gid).name
-          resource.mode.should == (0100666 - File.umask).to_s(8)
+          resource.mode.should == ((0100666 - File.umask) & 07777).to_s(8)
         end
       end
 
@@ -140,10 +140,11 @@ describe Chef::Resource::File do
       end
 
       context "and mode is specified as a String" do
-        let(:expected_mode) { "0440" }
+        let(:set_mode) { "0440" }
+        let(:expected_mode) { "440" }
 
         before do
-          resource.mode(expected_mode)
+          resource.mode(set_mode)
           resource.run_action(:create)
         end
 
@@ -153,14 +154,15 @@ describe Chef::Resource::File do
       end
 
       context "and mode is specified as an Integer" do
-        let(:expected_mode) { 00440 }
+        let(:set_mode) { 00440 }
 
+        let(:expected_mode) { "440" }
         before do
-          resource.mode(expected_mode)
+          resource.mode(set_mode)
           resource.run_action(:create)
         end
 
-        it "sets mode on the new resource as an integer" do
+        it "sets mode on the new resource as a String" do
           resource.mode.should == expected_mode
         end
       end
@@ -177,7 +179,7 @@ describe Chef::Resource::File do
           # TODO: most stable way to specify?
           current_resource.owner.should == Etc.getpwuid(Process.uid).name
           current_resource.group.should == Etc.getgrgid(Process.gid).name
-          current_resource.mode.should == (0100666 - File.umask).to_s(8)
+          current_resource.mode.should == ((0100666 - File.umask) & 07777).to_s(8)
         end
       end
 
@@ -236,7 +238,8 @@ describe Chef::Resource::File do
       end
 
       context "and mode is specified as a String" do
-        let(:expected_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
+        let(:default_create_mode) { (0100666 - File.umask) }
+        let(:expected_mode) { (default_create_mode & 07777).to_s(8) }
 
         before do
           resource.mode(expected_mode)
@@ -248,13 +251,14 @@ describe Chef::Resource::File do
       end
 
       context "and mode is specified as an Integer" do
-        let(:expected_mode) { (0100666 - File.umask) & 07777 }
+        let(:set_mode) { (0100666 - File.umask) & 07777 }
+        let(:expected_mode) { set_mode.to_s(8) }
 
         before do
-          resource.mode(expected_mode)
+          resource.mode(set_mode)
         end
 
-        it "sets mode on the new resource as an integer" do
+        it "sets mode on the new resource as a String" do
           current_resource.mode.should == expected_mode
         end
       end
