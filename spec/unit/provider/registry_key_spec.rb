@@ -77,8 +77,8 @@ describe Chef::Provider::RegistryKey do
         @provider.load_current_resource
       end
 
-      it "should set the values in the current resource to nil" do
-        @provider.current_resource.values.should == nil
+      it "should set the values in the current resource to empty array" do
+        @provider.current_resource.values.should == []
       end
     end
   end
@@ -113,6 +113,26 @@ describe Chef::Provider::RegistryKey do
         @provider.action_create
       end
     end
+    context "when the key exists and the values in the new resource are empty" do
+      it "when a value is in the key, it should do nothing" do
+        @provider.new_resource.values([])
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_not_receive(:create_key)
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+      it "when no value is in the key, it should do nothing" do
+        @provider.new_resource.values([])
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( nil )
+        @double_registry.should_not_receive(:create_key)
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
     context "when the key does not exist" do
       before(:each) do
         @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
@@ -120,6 +140,16 @@ describe Chef::Provider::RegistryKey do
       it "should create the key and the value" do
         @double_registry.should_receive(:create_key).with(testkey1, false)
         @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
+    context "when the key does not exist and the values in the new resource are empty" do
+      it "should create the key" do
+        @new_resource.values([])
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+        @double_registry.should_receive(:create_key).with(testkey1, false)
+        @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
