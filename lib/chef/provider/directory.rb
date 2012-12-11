@@ -36,7 +36,6 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
-        load_current_resource_attrs
         setup_acl
 
         @current_resource

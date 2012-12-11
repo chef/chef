@@ -117,8 +117,19 @@ describe Chef::Provider::File do
     end
   end
 
-  context "load_current_resource_attrs", :windows_only do
-    pending "CHEF-3557: Fix implicit resource change collection on Windows"
+  describe "when reporting security metadata on windows" do
+
+    it "records the file owner" do
+      pending
+    end
+
+    it "records rights for each user in the ACL" do
+      pending
+    end
+
+    it "records deny_rights for each user in the ACL" do
+      pending
+    end
   end
 
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do

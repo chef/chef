@@ -143,10 +143,6 @@ class Chef
         @current_resource
       end
 
-      # TODO: remove me
-      def load_current_resource_attrs
-      end
-
       def setup_acl
         acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         acl_scanner.set_all!
