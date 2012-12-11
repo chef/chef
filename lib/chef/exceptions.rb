@@ -140,6 +140,7 @@ class Chef
     class Win32RegTypeDoesNotExist < ArgumentError; end
     class Win32RegBadType < ArgumentError; end
     class Win32RegBadValueSize < ArgumentError; end
+    class Win32RegTypesMismatch < ArgumentError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
