@@ -240,22 +240,35 @@ class Chef
 
       def action_create
         unless ::File.exists?(@new_resource.path) && compare_content
-          if !@new_resource.source.nil? 
-            copy
-          else
-            description = []
-            desc = "update content in file #{@new_resource.path}"
-            desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
-            desc << " from #{short_cksum(@current_resource.checksum)}" if ::File.exists?(@new_resource.path)
-            description << desc
-            description << diff_current_from_content(@new_resource.content) 
+					description = []
+					desc = "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)}" if ::File.exists?(@new_resource.path)
+					desc = "create file #{@new_resource.path}" unless ::File.exists?(@new_resource.path)
 
-            converge_by(description) do
-              Chef::Log.debug("#{@new_resource} has new contents")
-              backup
-              ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }
-              Chef::Log.info("#{@new_resource} contents updated in file #{@new_resource.path}")
-            end
+          unless @new_resource.source.nil?
+						@source_is_file = true
+						desc << " from cookbook file #{@new_resource.source}" unless @new_resource.local
+						desc << " from #{@new_resource.source}" if @new_resource.local
+						description << desc
+						description << diff_current(file_cache_location)
+          else
+            desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
+						description << desc
+						description << diff_current_from_content(@new_resource.content) 
+					end
+
+					converge_by(description) do
+						Chef::Log.debug("#{@new_resource} has new contents")
+						backup
+						deploy_tempfile do |tempfile|
+							Chef::Log.debug("#{@new_resource} staging to #{tempfile.path}")
+							tempfile.write @new_resource.content unless @source_is_file
+							tempfile.close
+							if @source_is_file
+								FileUtils.cp(file_cache_location, tempfile.path) unless @move
+								FileUtils.mv(file_cache_location, tempfile.path) if @move
+							end
+						end
+						Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
         end
         set_all_access_controls
@@ -266,31 +279,12 @@ class Chef
           #move only makes sense for local files
           @new_resource.local true
           @move = true
-          unless compare_content
-            copy
-          else
-            Chef::Log.info("#{@new_resource} removing source #{@new_resource.source}")
+					unless compare_content
+						action_create
+					else
+            Chef::Log.info("#{@new_resource} contents were identical. Not triggering actions and removing #{@new_resource.source}")
             FileUtils.rm(@new_resource.source)
           end
-        end
-        set_all_access_controls
-      end
-
-      def copy
-        description = []
-        description << "create a new cookbook_file #{@new_resource.path}" unless @new_resource.local
-        description << "copying file #{@new_resource.path} from #{@new_resource.source}" if @new_resource.local
-        description << diff_current(file_cache_location)
-        converge_by(description) do
-          Chef::Log.debug("#{@new_resource} has new contents")
-          backup
-          deploy_tempfile do |tempfile|
-            Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
-            tempfile.close
-            FileUtils.cp(file_cache_location, tempfile.path) unless @move
-            FileUtils.mv(file_cache_location, tempfile.path) if @move
-          end
-          Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
         end
       end
 
