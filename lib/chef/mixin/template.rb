@@ -30,6 +30,29 @@ class Chef
                 "include a node variable if you plan to use it."
         end
 
+        #
+        # Takes the name of the partial, plus a hash of options. Returns a
+        # string that contains the result of the evaluation of the partial.
+        #
+        # All variables from the parent template will be propagated down to
+        # the partial, unless you pass the +variables+ option (see below).
+        #
+        # Valid options are:
+        #
+        # :local:: If true then the partial name will be interpreted as the
+        #          path to a file on the local filesystem; if false (the
+        #          default) it will be looked up in the cookbook according to
+        #          the normal rules for templates.
+        # :source:: If specified then the partial will be looked up with this
+        #           name or path (according to the +local+ option) instead of
+        #           +partial_name+.
+        # :cookbook:: Search for the partial in the provided cookbook instead
+        #             of the cookbook that contains the top-level template.
+        # :variables:: A Hash of variable_name => value that will be made
+        #              available to the partial. If specified, none of the
+        #              variables from the master template will be, so if you
+        #              need them you will need to propagate them explicitly.
+        #
         def render(partial_name, options = {})
           raise "You cannot render partials in this context" unless @template_finder
 
