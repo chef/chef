@@ -39,7 +39,7 @@ describe Chef::Node do
     n1 = Chef::Node.build('alpha')
     n2 = Chef::Node.build('beta')
     n3 = Chef::Node.build('omega')
-    [n3, n1, n2].sort.first.should == n1
+    [n3, n1, n2].sort.should == [n1, n2, n3]
   end
 
   describe "when the node does not exist on the server" do
