@@ -429,6 +429,9 @@ class Chef
       when Chef::Exceptions::PrivateKeyMissing
         ui.error "Your private key could not be loaded from #{api_key}"
         ui.info  "Check your configuration file and ensure that your private key is readable"
+      when Chef::Exceptions::InvalidRedirect
+        ui.error "Invalid Redirect: #{e.message}"
+        ui.info  "Change your server location in knife.rb to the server's FQDN to avoid unwanted redirections."
       else
         ui.error "#{e.class.name}: #{e.message}"
       end

@@ -256,5 +256,11 @@ class Chef
 
     end # CookbookVersionSelection
 
+    # When the server sends a redirect, RFC 2616 states a user-agent should
+    # not follow it with a method other than GET or HEAD, unless a specific
+    # action is taken by the user. A redirect received as response to a
+    # non-GET and non-HEAD request will thus raise an InvalidRedirect.
+    class InvalidRedirect < StandardError; end
+
   end
 end
