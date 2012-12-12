@@ -29,14 +29,30 @@ class Chef
 
       def find(template_name, options = {})
         if options[:local]
-          return options[:source] ? options[:source] : template_name
+          return local_template_source(template_name, options)
         end
 
-        cookbook_name = options[:cookbook] ? options[:cookbook] : @cookbook_name
-
+        cookbook_name = find_cookbook_name(options)
         cookbook = @run_context.cookbook_collection[cookbook_name]
 
         cookbook.preferred_filename_on_disk_location(@node, :templates, template_name)
+      end
+
+    protected
+      def local_template_source(name, options)
+        if options[:source]
+          options[:source]
+        else
+          name
+        end
+      end
+
+      def find_cookbook_name(options)
+        if options[:cookbook]
+          options[:cookbook]
+        else
+          @cookbook_name
+        end
       end
     end
   end
