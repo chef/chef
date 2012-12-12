@@ -49,8 +49,8 @@ describe Chef::Provider::RegistryKey do
   describe "executing load_current_resource" do
     describe "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).with("HKLM\\Software\\Opscode\\Testing").and_return(true)
-        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval2 )
+        @double_registry.should_receive(:key_exists?).with(testkey1).and_return(true)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
         @provider.load_current_resource
       end
 
@@ -73,12 +73,12 @@ describe Chef::Provider::RegistryKey do
 
     describe "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).with("HKLM\\Software\\Opscode\\Testing").and_return(false)
+        @double_registry.should_receive(:key_exists?).with(testkey1).and_return(false)
         @provider.load_current_resource
       end
 
-      it "should set the values in the current resource to nil" do
-        @provider.current_resource.values.should == nil
+      it "should set the values in the current resource to empty array" do
+        @provider.current_resource.values.should == []
       end
     end
   end
@@ -86,40 +86,70 @@ describe Chef::Provider::RegistryKey do
   describe "action_create" do
     context "when the key exists" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with("HKLM\\Software\\Opscode\\Testing").and_return(true)
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
       end
       it "should do nothing if the key and the value both exist" do
-        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval1 )
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
         @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should create the value if the key exists but the value does not" do
-        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval2 )
-        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
+        @double_registry.should_receive(:set_value).with(testkey1, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should set the value if the key exists but the data does not match" do
-        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval1_wrong_data )
-        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_data )
+        @double_registry.should_receive(:set_value).with(testkey1, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should set the value if the key exists but the type does not match" do
-        @double_registry.should_receive(:get_values).with("HKLM\\Software\\Opscode\\Testing").and_return( testval1_wrong_type )
-        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_type )
+        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
+    context "when the key exists and the values in the new resource are empty" do
+      it "when a value is in the key, it should do nothing" do
+        @provider.new_resource.values([])
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_not_receive(:create_key)
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+      it "when no value is in the key, it should do nothing" do
+        @provider.new_resource.values([])
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( nil )
+        @double_registry.should_not_receive(:create_key)
+        @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
     end
     context "when the key does not exist" do
       before(:each) do
-        @double_registry.should_receive(:key_exists?).twice.with("HKLM\\Software\\Opscode\\Testing").and_return(false)
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
       end
-      it "should create they key and the value" do
-        @double_registry.should_receive(:create_key).with("HKLM\\Software\\Opscode\\Testing", false)
-        @double_registry.should_receive(:set_value).with("HKLM\\Software\\Opscode\\Testing", testval1)
+      it "should create the key and the value" do
+        @double_registry.should_receive(:create_key).with(testkey1, false)
+        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_create
+      end
+    end
+    context "when the key does not exist and the values in the new resource are empty" do
+      it "should create the key" do
+        @new_resource.values([])
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+        @double_registry.should_receive(:create_key).with(testkey1, false)
+        @double_registry.should_not_receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
@@ -127,12 +157,112 @@ describe Chef::Provider::RegistryKey do
   end
 
   describe "action_create_if_missing" do
+    context "when the key exists" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+      end
+      it "should do nothing if the key and the value both exist" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create_if_missing
+      end
+      it "should create the value if the key exists but the value does not" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
+        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_create_if_missing
+      end
+      it "should not set the value if the key exists but the data does not match" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_data )
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create_if_missing
+      end
+      it "should not set the value if the key exists but the type does not match" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_type )
+        @double_registry.should_not_receive(:set_value)
+        @provider.load_current_resource
+        @provider.action_create_if_missing
+      end
+    end
+    context "when the key does not exist" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+      end
+      it "should create the key and the value" do
+        @double_registry.should_receive(:create_key).with(testkey1, false)
+        @double_registry.should_receive(:set_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_create_if_missing
+      end
+    end
   end
 
   describe "action_delete" do
+    context "when the key exists" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+      end
+      it "deletes the value when the value exists" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_receive(:delete_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_delete
+      end
+      it "deletes the value when the value exists, but the type is wrong" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_type )
+        @double_registry.should_receive(:delete_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_delete
+      end
+      it "deletes the value when the value exists, but the data is wrong" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1_wrong_data )
+        @double_registry.should_receive(:delete_value).with(testkey1, testval1)
+        @provider.load_current_resource
+        @provider.action_delete
+      end
+      it "does not delete the value when the value does not exist" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval2 )
+        @double_registry.should_not_receive(:delete_value)
+        @provider.load_current_resource
+        @provider.action_delete
+      end
+    end
+    context "when the key does not exist" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+      end
+      it "does nothing" do
+        @double_registry.should_not_receive(:delete_value)
+        @provider.load_current_resource
+        @provider.action_delete
+      end
+    end
   end
 
   describe "action_delete_key" do
+    context "when the key exists" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(true)
+      end
+      it "deletes the key" do
+        @double_registry.should_receive(:get_values).with(testkey1).and_return( testval1 )
+        @double_registry.should_receive(:delete_key).with(testkey1, false)
+        @provider.load_current_resource
+        @provider.action_delete_key
+      end
+    end
+    context "when the key does not exist" do
+      before(:each) do
+        @double_registry.should_receive(:key_exists?).twice.with(testkey1).and_return(false)
+      end
+      it "does nothing" do
+        @double_registry.should_not_receive(:delete_key)
+        @provider.load_current_resource
+        @provider.action_delete_key
+      end
+    end
   end
 
 end
