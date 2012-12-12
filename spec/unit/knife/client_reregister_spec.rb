@@ -22,14 +22,11 @@ describe Chef::Knife::ClientReregister do
   before(:each) do
     @knife = Chef::Knife::ClientReregister.new
     @knife.name_args = [ 'adam' ]
-    @client_mock = mock('client_mock')
-    @client_mock.stub!(:save).and_return({ 'private_key' => 'foo_key' })
-    Chef::ApiClient.stub!(:load).and_return(@client_mock)
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
   end
 
-  describe 'run' do
+  shared_examples_for "client_reregister" do
     it 'should load and save the client' do
       Chef::ApiClient.should_receive(:load).with('adam').and_return(@client_mock)
       @client_mock.should_receive(:save).with(true).and_return({'private_key' => 'foo_key'})
@@ -55,6 +52,45 @@ describe Chef::Knife::ClientReregister do
         filehandle.should_receive(:print).with('foo_key')
         File.should_receive(:open).with('/tmp/monkeypants', 'w').and_yield(filehandle)
         @knife.run
+      end
+    end
+  end
+  describe 'run' do
+    context "when the response is a hash" do
+      before do
+        @client_mock = mock('client_mock')
+        @client_mock.stub!(:save).and_return({ 'private_key' => 'foo_key' })
+        Chef::ApiClient.stub!(:load).and_return(@client_mock)
+      end
+
+      it_should_behave_like "client_reregister"
+    end
+
+    context "when the response is a Chef::ApiClient" do
+      before do
+        @client_mock = mock(Chef::ApiClient)
+        @client_mock.stub!(:to_hash).and_return({ 'private_key' => 'foo_key' })
+        @client_mock.stub!(:is_a?).with(Chef::ApiClient).and_return(true)
+        @client_mock.stub!(:is_a?).with(Hash).and_return(false)
+        @client_mock.stub!(:save).and_return(@client_mock)
+        Chef::ApiClient.stub!(:load).and_return(@client_mock)
+      end
+
+      it_should_behave_like "client_reregister"
+    end
+
+    context "when the response is an unknown class" do
+      before do
+        @client_mock = mock("tomfoolery")
+        @client_mock.stub!(:is_a?).with(Chef::ApiClient).and_return(false)
+        @client_mock.stub!(:is_a?).with(Hash).and_return(false)
+        @client_mock.stub!(:save).and_return(@client_mock)
+        Chef::ApiClient.stub!(:load).and_return(@client_mock)
+      end
+
+      it "prints an error and exits" do
+        @knife.ui.should_receive(:fatal)
+        lambda { @knife.run }.should raise_error(SystemExit)
       end
     end
   end
