@@ -77,6 +77,7 @@ class Chef
           begin
             hive, key = get_hive_and_key(key_path)
           rescue Chef::Exceptions::Win32RegKeyMissing
+            return true
           end
           hive.open(key, ::Win32::Registry::KEY_SET_VALUE | registry_system_architecture) do |reg|
             reg.delete_value(value[:name])
@@ -198,8 +199,8 @@ class Chef
       end
 
       def data_exists?(key_path, value)
-        hive, key = get_hive_and_key(key_path)
         key_exists!(key_path)
+        hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
             if val_name == value[:name] &&
