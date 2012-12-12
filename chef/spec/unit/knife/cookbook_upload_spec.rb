@@ -126,9 +126,11 @@ describe Chef::Knife::CookbookUpload do
 
     describe 'when a frozen cookbook exists on the server' do
       it 'should fail to replace it' do
+        exception = Chef::Exceptions::CookbookFrozen.new
         @cookbook_uploader.should_receive(:upload_cookbooks).
-          and_raise(Net::HTTPServerException.new('message', stub(:code => "409")))
-        @knife.ui.should_receive(:error).with(/Failed to upload 1 cookbook/)
+          and_raise(exception)
+        @knife.ui.stub(:error)
+        @knife.ui.should_receive(:error).with(exception)
         lambda { @knife.run }.should raise_error(SystemExit)
       end
 
