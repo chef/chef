@@ -252,7 +252,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["id"].should == reg_child + '\Ood'
       @report["resources"][0]["after"][:values].should == [{:name=>"ReportingVal1", :type=>:string, :data=>"report1"},
                                                            {:name=>"ReportingVal2", :type=>:string, :data=>"report2"}]
-      @report["resources"][0]["before"][:values].should == nil
+      @report["resources"][0]["before"][:values].should == []
       @report["resources"][0]["result"].should == "create"
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"
@@ -366,7 +366,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["name"].should == resource_name
       @report["resources"][0]["id"].should == reg_child + '\Judoon'
       @report["resources"][0]["after"][:values].should == [{:name=>"ReportingVal3", :type=>:string, :data=>"report3"}]
-      @report["resources"][0]["before"][:values].should == nil
+      @report["resources"][0]["before"][:values].should == []
       @report["resources"][0]["result"].should == "create_if_missing"
       @report["status"].should == "success"
       @report["total_res_count"].should == "1"

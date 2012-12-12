@@ -627,22 +627,6 @@ describe 'Chef::Win32::Registry', :windows_only do
         end
       end
 
-      describe "create_value" do
-        it "can create a 32-bit only registry value" do
-          @registry.architecture = :i386
-          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
-          @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"}).should == true
-          @registry.architecture = :x86_64
-          lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Red", {:name=>"Buds", :type=>:string, :data=>"Closed"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
-        end
-        it "can create a 64-bit only registry value" do
-          @registry.architecture = :x86_64
-          @registry.create_value("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
-          @registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"}).should == true
-          @registry.architecture = :i386
-          lambda{@registry.data_exists?("HKLM\\Software\\Root\\Trunk\\Blue", {:name=>"Peter", :type=>:string, :data=>"Tiny"})}.should raise_error(Chef::Exceptions::Win32RegKeyMissing)
-        end
-      end
     end
   end
 end
