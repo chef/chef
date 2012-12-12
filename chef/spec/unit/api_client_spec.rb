@@ -196,7 +196,7 @@ describe Chef::ApiClient do
         @a_404_response = Net::HTTPNotFound.new("404 not found and such", nil, nil)
         @a_404_exception = Net::HTTPServerException.new("404 not found exception", @a_404_response)
 
-        @http_client.should_receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
+        @http_client.should_receive(:get_rest).with("clients/lost-my-key").and_raise(@a_404_exception)
       end
 
       it "raises a 404 error" do
@@ -208,7 +208,7 @@ describe Chef::ApiClient do
       before do
         @api_client_without_key = Chef::ApiClient.new
         @api_client_without_key.name("lost-my-key")
-        @http_client.should_receive(:get).with("clients/lost-my-key").and_return(@api_client_without_key)
+        @http_client.should_receive(:get_rest).with("clients/lost-my-key").and_return(@api_client_without_key)
       end
 
 
@@ -217,7 +217,7 @@ describe Chef::ApiClient do
           @api_client_with_key = Chef::ApiClient.new
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
-          @http_client.should_receive(:put).
+          @http_client.should_receive(:put_rest).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :private_key => true).
             and_return(@api_client_with_key)
         end
@@ -235,7 +235,7 @@ describe Chef::ApiClient do
       context "and the client exists on a Chef 10-like server" do
         before do
           @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
-          @http_client.should_receive(:put).
+          @http_client.should_receive(:put_rest).
             with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :private_key => true).
             and_return(@api_client_with_key)
         end
