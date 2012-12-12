@@ -28,8 +28,10 @@ class Chef
       end
 
       def find(template_name, options = {})
+        template_name = template_source_name(template_name, options)
+
         if options[:local]
-          return local_template_source(template_name, options)
+          return template_name
         end
 
         cookbook_name = find_cookbook_name(options)
@@ -39,7 +41,7 @@ class Chef
       end
 
     protected
-      def local_template_source(name, options)
+      def template_source_name(name, options)
         if options[:source]
           options[:source]
         else
