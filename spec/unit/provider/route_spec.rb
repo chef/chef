@@ -219,7 +219,7 @@ describe Chef::Provider::Route do
         File.should_receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
         #Chef::Log.should_receive(:debug).with("route[10.0.0.10] writing route.eth0\n10.0.0.10 via 10.0.0.9\n")
         @run_context.resource_collection << @new_resource
-        @provider.generate_config
+        @provider.generate_config(:add)
       end
     end
 
@@ -232,7 +232,7 @@ describe Chef::Provider::Route do
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
 
-      @provider.generate_config
+      @provider.generate_config(:add)
       route_file.string.split("\n").should have(3).items
       route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
       route_file.string.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
