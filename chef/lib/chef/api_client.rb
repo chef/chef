@@ -164,6 +164,7 @@ class Chef
     def self.json_create(o)
       client = Chef::ApiClient.new
       client.name(o["name"] || o["clientname"])
+      client.private_key(o["private_key"])
       client.public_key(o["public_key"])
       client.admin(o["admin"])
       client.couchdb_rev = o["_rev"]
