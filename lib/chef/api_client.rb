@@ -193,6 +193,11 @@ class Chef
       "client[#{@name}]"
     end
 
+    def inspect
+      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}'" +
+      "public_key:'#{public_key}' private_key:#{private_key}"
+    end
+
   end
 end
 
