@@ -67,6 +67,8 @@ RSpec.configure do |config|
 
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
+  config.filter_run_excluding :windows64_only => true unless windows64?
+  config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :unix_only => true unless unix?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
