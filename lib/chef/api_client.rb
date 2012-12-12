@@ -86,8 +86,8 @@ class Chef
       )
     end
 
-    # The hash representation of the object.  Includes the name and public_key,
-    # but never the private key.
+    # The hash representation of the object. Includes the name and public_key.
+    # Private key is included if available.
     #
     # @return [Hash]
     def to_hash
@@ -98,6 +98,7 @@ class Chef
         'json_class' => self.class.name,
         "chef_type" => "client"
       }
+      result["private_key"] = @private_key if @private_key
       result
     end
 
@@ -111,7 +112,7 @@ class Chef
     def self.json_create(o)
       client = Chef::ApiClient.new
       client.name(o["name"] || o["clientname"])
-      client.private_key(o["private_key"])
+      client.private_key(o["private_key"]) if o.key?("private_key")
       client.public_key(o["public_key"])
       client.admin(o["admin"])
       client

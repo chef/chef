@@ -100,33 +100,36 @@ describe Chef::ApiClient do
     end
   end
 
-  describe "serialize" do
+  describe "when serializing to JSON" do
     before(:each) do
       @client.name("black")
       @client.public_key("crowes")
+      @json = @client.to_json
+    end
+
+    it "serializes as a JSON object" do
+      @json.should match(/^\{.+\}$/)
+    end
+
+    it "includes the name value" do
+      @json.should include(%q{"name":"black"})
+    end
+
+    it "includes the public key value" do
+      @json.should include(%{"public_key":"crowes"})
+    end
+
+    it "includes the 'admin' flag" do
+      @json.should include(%q{"admin":false})
+    end
+
+    it "includes the private key when present" do
       @client.private_key("monkeypants")
-      @serial = @client.to_json
+      @client.to_json.should include(%q{"private_key":"monkeypants"})
     end
 
-    it "should serialize to a json hash" do
-      @client.to_json.should match(/^\{.+\}$/)
-    end
-
-    %w{
-      name
-      public_key
-    }.each do |t|
-      it "should include '#{t}'" do
-        @serial.should =~ /"#{t}":"#{@client.send(t.to_sym)}"/
-      end
-    end
-
-    it "should include 'admin'" do
-      @serial.should =~ /"admin":false/
-    end
-
-    it "should not include the private key" do
-      @serial.should_not =~ /"private_key":/
+    it "does not include the private key if not present" do
+      @json.should_not include("private_key")
     end
   end
 
