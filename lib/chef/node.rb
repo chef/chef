@@ -496,5 +496,9 @@ class Chef
       "node[#{name}]"
     end
 
+    def <=>(other_node)
+      self.name <=> other_node.name
+    end
+
   end
 end

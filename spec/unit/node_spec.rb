@@ -35,6 +35,13 @@ describe Chef::Node do
     lambda{Chef::Node.build('solo node')}.should raise_error(Chef::Exceptions::ValidationFailed)
   end
 
+  it "should be sortable" do
+    n1 = Chef::Node.build('alpha')
+    n2 = Chef::Node.build('beta')
+    n3 = Chef::Node.build('omega')
+    [n3, n1, n2].sort.first.should == n1
+  end
+
   describe "when the node does not exist on the server" do
     before do
       response = OpenStruct.new(:code => '404')
