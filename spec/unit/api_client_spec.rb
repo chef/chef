@@ -130,31 +130,36 @@ describe Chef::ApiClient do
     end
   end
 
-  describe "deserialize" do
+  describe "when deserializing from JSON" do
     before(:each) do
-      @client.name("black")
-      @client.public_key("crowes")
-      @client.private_key("monkeypants")
-      @client.admin(true)
-      @deserial = Chef::JSONCompat.from_json(@client.to_json)
+      client = {
+      "name" => "black",
+      "public_key" => "crowes",
+      "private_key" => "monkeypants",
+      "admin" => true,
+      "json_class" => "Chef::ApiClient"
+      }
+      @client = Chef::JSONCompat.from_json(client.to_json)
     end
 
     it "should deserialize to a Chef::ApiClient object" do
-      @deserial.should be_a_kind_of(Chef::ApiClient)
+      @client.should be_a_kind_of(Chef::ApiClient)
     end
 
-    %w{
-      name
-      public_key
-      admin
-    }.each do |t|
-      it "should match '#{t}'" do
-        @deserial.send(t.to_sym).should == @client.send(t.to_sym)
-      end
+    it "preserves the name" do
+      @client.name.should == "black"
     end
 
-    it "should not include the private key" do
-      @deserial.private_key.should == nil
+    it "preserves the public key" do
+      @client.public_key.should == "crowes"
+    end
+
+    it "preserves the admin status" do
+      @client.admin.should be_true
+    end
+
+    it "includes the private key if present" do
+      @client.private_key.should == "monkeypants"
     end
 
   end
