@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <!--
+    Versioning. These have to be changed for upgrades.
+  -->
+  <?define MajorVersion="<%= @major_version %>" ?>
+  <?define MinorVersion="<%= @minor_version %>" ?>
+  <?define MicroVersion="<%= @micro_version %>" ?>
+  <?define BuildVersion="<%= @build_version %>" ?>
+  <!-- Full version number to display -->
+  <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.MicroVersion).$(var.BuildVersion)" ?>
+  <!-- Full version number minus BuildVersion..mainly for UI -->
+  <?define DisplayVersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.MicroVersion)" ?>
+  <!--
+    Upgrade code HAS to be the same for all updates.
+    Once you've chosen it don't change it.
+  -->
+  <?define UpgradeCode="<%= @guid %>" ?>
+
+</Include>

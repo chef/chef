@@ -16,6 +16,10 @@ exists()
   fi
 }
 
+# copy off the timestamp for fingerprinting before we blow it away later
+mv $BUILD_NUMBER/build_timestamp $WORKSPACE/
+cd $BUILD_NUMBER
+
 # remove the chef package / clobber the files
 # then install the new package
 if exists dpkg;
@@ -80,3 +84,7 @@ done
 
 # run the tests
 sudo env PATH=$PATH TERM=xterm /opt/chef/embedded/bin/bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o $WORKSPACE/test.xml -f documentation spec
+
+# clean up the workspace to save disk space
+cd $WORKSPACE
+rm -rf $BUILD_NUMBER

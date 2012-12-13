@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <!-- http://wix.codeplex.com/SourceControl/changeset/view/792e101c5cf7#src%2fext%2fUIExtension%2fwixlib%2fWixUI_en-us.wxl -->
+  <String Id="LANG">1033</String>
+  <String Id="ProductName">Opscode Chef Client Installer for Windows</String>
+  <String Id="ManufacturerName">Opscode, Inc.</String>
+  <String Id="WelcomeDlgTitle">{\WixUI_Font_Bigger}Welcome to the [ProductName] Setup Wizard</String>
+
+  <String Id="LicenseAgreementDlgTitle">{\WixUI_Font_Title_White}End-User License Agreement</String>
+  <String Id="LicenseAgreementDlgDescription">{\WixUI_Font_Normal_White}Please read the following license agreement carefully</String>
+
+  <String Id="InstallDirDlgTitle">{\WixUI_Font_Title_White}Destination Folder</String>
+  <String Id="InstallDirDlgDescription">{\WixUI_Font_Normal_White}Click Next to install to the default folder or click Change to choose another.</String>
+
+  <String Id="ProgressDlgTitleInstalling">{\WixUI_Font_Title_White}Installing [ProductName]</String>
+
+  <String Id="VerifyReadyDlgInstallTitle">{\WixUI_Font_Title_White}Ready to install [ProductName]</String>
+</WixLocalization>

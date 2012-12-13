@@ -5,6 +5,9 @@
     "install-dirs": [
       "/opt/chef",
       "/opt/chef-server"
+    ],
+    "cache-dirs": [
+      "/var/cache/omnibus"
     ]
   },
   "run_list": [
