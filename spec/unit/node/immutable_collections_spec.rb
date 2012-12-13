@@ -21,13 +21,12 @@ require "chef/node/immutable_collections"
 
 describe Chef::Node::ImmutableMash do
   before do
-    @root = Chef::Node::Attribute.new({}, {}, {}, {})
     @data_in = {:top => {:second_level => "some value"},
                 "top_level_2" => %w[array of values],
                 :top_level_3 => [{:hash_array => 1, :hash_array_b => 2}],
                 :top_level_4 => {:level2 => {:key => "value"}}
     }
-    @immutable_mash = Chef::Node::ImmutableMash.new(@root, @data_in)
+    @immutable_mash = Chef::Node::ImmutableMash.new(@data_in)
   end
 
   it "element references like regular hash" do
@@ -87,8 +86,7 @@ end
 describe Chef::Node::ImmutableArray do
 
   before do
-    @root = Chef::Node::Attribute.new({}, {}, {}, {})
-    @immutable_array = Chef::Node::ImmutableArray.new(@root, %w[foo bar baz])
+    @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz])
   end
 
   ##
