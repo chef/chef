@@ -193,7 +193,7 @@ This file is used to list changes made in each version of #{cookbook_name}.
 
 * Initial release of #{cookbook_name}
 
-- - - 
+- - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
 
 The [Github Flavored Markdown page](http://github.github.com/github-flavored-markdown/) describes the differences between markdown on github and standard markdown.
@@ -271,12 +271,13 @@ EOH
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH
-maintainer       "#{copyright}"
-maintainer_email "#{email}"
-license          "#{license_name}"
-description      "Installs/Configures #{cookbook_name}"
+name             '#{cookbook_name}'
+maintainer       '#{copyright}'
+maintainer_email '#{email}'
+license          '#{license_name}'
+description      'Installs/Configures #{cookbook_name}'
 #{long_description}
-version          "0.1.0"
+version          '0.1.0'
 EOH
           end
         end
