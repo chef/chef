@@ -18,6 +18,7 @@
 
 require "chef/mixin/command"
 require "chef/mixin/from_file"
+require "chef/monkey_patches/fileutils"
 require "chef/provider/git"
 require "chef/provider/subversion"
 require 'chef/dsl/recipe'
@@ -263,7 +264,7 @@ class Chef
         target_dir_path = @new_resource.deploy_to + "/releases"
         converge_by("deploy from repo to #{@target_dir_path} ") do
           FileUtils.mkdir_p(target_dir_path)
-          run_command(:command => "cp -RPp #{::File.join(@new_resource.destination, ".")} #{release_path}")
+          FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, :preserve => true)
           Chef::Log.info "#{@new_resource} copied the cached checkout to #{release_path}"
           release_created(release_path)
         end
