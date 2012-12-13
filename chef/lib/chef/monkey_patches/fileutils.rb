@@ -22,41 +22,43 @@
 # patched in the trunk of Ruby, and this is a monkey patch of the offending
 # code.
 
-require 'fileutils'
+unless RUBY_VERSION =~ /^2/
+  require 'fileutils'
 
-class FileUtils::Entry_
-  def copy_metadata(path)
-    st = lstat()
-    if !st.symlink?
-      File.utime st.atime, st.mtime, path
-    end
-    begin
-      if st.symlink?
-        begin
-          File.lchown st.uid, st.gid, path
-        rescue NotImplementedError
-        end
-      else
-        File.chown st.uid, st.gid, path
+  class FileUtils::Entry_
+    def copy_metadata(path)
+      st = lstat()
+      if !st.symlink?
+        File.utime st.atime, st.mtime, path
       end
-    rescue Errno::EPERM
-      # clear setuid/setgid
-      if st.symlink?
-        begin
-          File.lchmod st.mode & 01777, path
-        rescue NotImplementedError
+      begin
+        if st.symlink?
+          begin
+            File.lchown st.uid, st.gid, path
+          rescue NotImplementedError
+          end
+        else
+          File.chown st.uid, st.gid, path
+        end
+      rescue Errno::EPERM
+        # clear setuid/setgid
+        if st.symlink?
+          begin
+            File.lchmod st.mode & 01777, path
+          rescue NotImplementedError
+          end
+        else
+          File.chmod st.mode & 01777, path
         end
       else
-        File.chmod st.mode & 01777, path
-      end
-    else
-      if st.symlink?
-        begin
-          File.lchmod st.mode, path
-        rescue NotImplementedError
+        if st.symlink?
+          begin
+            File.lchmod st.mode, path
+          rescue NotImplementedError
+          end
+        else
+          File.chmod st.mode, path
         end
-      else
-        File.chmod st.mode, path
       end
     end
   end
