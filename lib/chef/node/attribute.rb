@@ -66,8 +66,6 @@ class Chef
         :@force_override
       ]
 
-      attr_reader :serial_number
-
       [:all?,
        :any?,
        :assoc,
@@ -190,7 +188,6 @@ class Chef
        attr_reader :automatic
 
        def initialize(normal, default, override, automatic)
-         @serial_number = 0
          @set_unless_present = false
 
          @default = VividMash.new(self, default)
@@ -218,11 +215,8 @@ class Chef
        end
 
        # Clears merged_attributes, which will cause it to be recomputed on the
-       # next access. Additionally, increments the serial_number, which is used
-       # by the implementation of merged_attributes to detect reads from a
-       # stale merged attribute collection.
+       # next access. 
        def reset_cache
-         @serial_number += 1
          @merged_attributes = nil
          @combined_default  = nil
          @combined_override = nil
@@ -294,7 +288,7 @@ class Chef
                                     component_value = instance_variable_get(component_ivar)
                                     Chef::Mixin::DeepMerge.merge(merged, component_value)
                                   end
-                                  immutablize(self, resolved_attrs)
+                                  immutablize(resolved_attrs)
                                 end
        end
 
@@ -304,7 +298,7 @@ class Chef
                                     component_value = instance_variable_get(component_ivar)
                                     Chef::Mixin::DeepMerge.merge(merged, component_value)
                                   end
-                                  immutablize(self, resolved_attrs)
+                                  immutablize(resolved_attrs)
                                 end
        end
 
@@ -314,7 +308,7 @@ class Chef
                                     component_value = instance_variable_get(component_ivar)
                                     Chef::Mixin::DeepMerge.merge(merged, component_value)
                                   end
-                                  immutablize(self, resolved_attrs)
+                                  immutablize(resolved_attrs)
                                 end
        end
 
@@ -362,10 +356,6 @@ class Chef
 
        def set_unless?
          @set_unless_present
-       end
-
-       def stale_subtree?(serial_number)
-         serial_number != @serial_number
        end
 
     end
