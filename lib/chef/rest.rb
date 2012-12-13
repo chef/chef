@@ -222,6 +222,9 @@ class Chef
           elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
             false
           elsif redirect_location = redirected_to(response)
+            if method != :GET
+              Chef::Log.warn("Following a redirect with GET, original request's method was #{method.to_s}")
+            end
             follow_redirect {api_request(:GET, create_url(redirect_location))}
           else
             # have to decompress the body before making an exception for it. But the body could be nil.
