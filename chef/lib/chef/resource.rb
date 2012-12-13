@@ -262,8 +262,9 @@ F
 
     def load_prior_resource
       begin
+        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
+        Chef::Log.warn("From: #{self.source_line}") if self.source_line
         prior_resource = run_context.resource_collection.lookup(self.to_s)
-        Chef::Log.debug("Setting #{self.to_s} to the state of the prior #{self.to_s}")
         prior_resource.instance_variables.each do |iv|
           unless iv.to_sym == :@source_line || iv.to_sym == :@action || iv.to_sym == :@not_if || iv.to_sym == :@only_if
             self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
