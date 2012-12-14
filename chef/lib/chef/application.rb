@@ -28,9 +28,6 @@ require 'rbconfig'
 class Chef::Application
   include Mixlib::CLI
 
-  class Wakeup < Exception
-  end
-
   def initialize
     super
 
