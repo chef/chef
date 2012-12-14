@@ -99,11 +99,18 @@ class Chef
           begin
             response = nc.save(true, true)
             Chef::Log.debug("Registration response: #{response.inspect}")
-            raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
+            private_key = if response.respond_to?(:[])
+              response["private_key"]
+            else
+              response.private_key
+            end
+            unless private_key
+              raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!"
+            end
             # Write out the private key
             ::File.open(destination, "w") {|f|
               f.chmod(0600)
-              f.print(response["private_key"])
+              f.print(private_key)
             }
             throw :done
           rescue IOError
@@ -360,7 +367,7 @@ class Chef
       begin
         http_attempts += 1
 
-        res = yield rest_request
+        yield rest_request
 
       rescue SocketError, Errno::ETIMEDOUT => e
         e.message.replace "Error connecting to #{url} - #{e.message}"
@@ -452,7 +459,6 @@ class Chef
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
-      size, total = 0, response.header['Content-Length'].to_i
 
       inflater = if gzip_disabled?
         NoopInflater.new
@@ -471,7 +477,6 @@ class Chef
 
       response.read_body do |chunk|
         tf.write(inflater.inflate(chunk))
-        size += chunk.size
       end
       tf.close
       tf
