@@ -201,10 +201,13 @@ describe Chef::Knife::Ssh do
   describe "#ssh_command" do
     let(:execution_channel) { double(:execution_channel, :on_data => nil) }
     let(:session_channel) { double(:session_channel, :request_pty => nil)}
+
+    let(:execution_channel2) { double(:execution_channel, :on_data => nil) }
+    let(:session_channel2) { double(:session_channel, :request_pty => nil)}
+
     let(:session) { double(:session, :loop => nil) }
 
     let(:command) { "false" }
-    let(:exit_status) { 0 }
 
     before do
       execution_channel.
@@ -216,13 +219,46 @@ describe Chef::Knife::Ssh do
         with(command).
         and_yield(execution_channel, true)
 
+      execution_channel2.
+        should_receive(:on_request).
+        and_yield(nil, double(:data_stream, :read_long => exit_status2))
+
+      session_channel2.
+        should_receive(:exec).
+        with(command).
+        and_yield(execution_channel2, true)
+
       session.
         should_receive(:open_channel).
-        and_yield(session_channel)
+        and_yield(session_channel).
+        and_yield(session_channel2)
     end
 
-    it "returns the exit status of the command" do
-      @knife.ssh_command(command, session).should == exit_status
+    context "both connections return 0" do
+      let(:exit_status) { 0 }
+      let(:exit_status2) { 0 }
+
+      it "returns a 0 exit code" do
+        @knife.ssh_command(command, session).should == 0
+      end
+    end
+
+    context "the first connection returns 1 and the second returns 0" do
+      let(:exit_status) { 1 }
+      let(:exit_status2) { 0 }
+
+      it "returns a non-zero exit code" do
+        @knife.ssh_command(command, session).should == 1
+      end
+    end
+
+    context "the first connection returns 1 and the second returns 2" do
+      let(:exit_status) { 1 }
+      let(:exit_status2) { 2 }
+
+      it "returns a non-zero exit code" do
+        @knife.ssh_command(command, session).should == 2
+      end
     end
   end
 
@@ -254,4 +290,3 @@ describe Chef::Knife::Ssh do
     end
   end
 end
-
