@@ -92,9 +92,6 @@ class Chef
 
               Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
               client_sleep Chef::Config[:interval]
-            rescue Chef::Application::Wakeup => e
-              Chef::Log.debug("Received Wakeup signal.  Starting run.")
-              next
             rescue SystemExit => e
               raise
             rescue Exception => e
@@ -218,7 +215,7 @@ class Chef
           sleep chunk_length
         end
       end
-      
+
     end
   end
 end
