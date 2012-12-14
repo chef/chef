@@ -274,6 +274,12 @@ class Chef::Application::Client < Chef::Application
         Chef::Log.info("SIGUSR1 received, waking up")
         SELF_PIPE[1].putc('.') # wakeup master process from select
       end
+
+      trap("TERM") do
+        Chef::Log.info("SIGTERM received, exiting gracefully")
+        @exit_gracefully = true
+        SELF_PIPE[1].putc('.')
+      end
     end
 
     if Chef::Config[:version]
@@ -286,6 +292,7 @@ class Chef::Application::Client < Chef::Application
 
     loop do
       begin
+        Chef::Application.exit!("Exiting", 0) if @exit_gracefully
         if Chef::Config[:splay]
           splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
