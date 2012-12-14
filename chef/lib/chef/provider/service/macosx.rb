@@ -29,11 +29,8 @@ class Chef
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
 
-        def initialize(new_resource, run_context)
-          super
-          if Process.uid != 0
-            PLIST_DIRS << "~/Library/LaunchAgents"
-          end
+        if Process.uid != 0
+          PLIST_DIRS << "~/Library/LaunchAgents"
         end
 
         def load_current_resource
