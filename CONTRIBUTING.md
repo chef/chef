@@ -124,7 +124,7 @@ the patch is ready to be merged, we update the status to _Fix Reviewed_.
 Depending on the project, these tickets are then merged within a week or two, depending on the current release cycle. At this
 point the ticket status will be updated to _Fix Committed_ or _Closed_.
 
-Please see the [Code Review|http://wiki.opscode.com/display/chef/Code+Review] page on the wiki for additional information.
+Please see the [Code Review](http://wiki.opscode.com/display/chef/Code+Review) page on the wiki for additional information.
 
 ## Release Cycle
 
