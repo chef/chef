@@ -269,6 +269,7 @@ describe Chef::Knife::Ssh do
       Chef::Search::Query.stub!(:new).and_return(@query)
       @knife.stub(:ssh_command).and_return(exit_code)
       @knife.name_args = ['*:*', 'false']
+      @knife.config[:manual] = false
     end
 
     context "with an error" do
