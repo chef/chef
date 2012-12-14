@@ -132,36 +132,77 @@ describe Chef::Knife::Bootstrap do
     @knife.name_args.first.should == "barf"
   end
 
-  describe "when configuring the underlying knife ssh command" do
-    before do
-      @knife.name_args = ["foo.example.com"]
-      @knife.config[:ssh_user]      = "rooty"
-      @knife.config[:ssh_password]  = "open_sesame"
-      Chef::Config[:knife][:ssh_port] = "4001"
-      @knife.config[:identity_file] = "~/.ssh/me.rsa"
-      @knife.stub!(:read_template).and_return("")
-      @knife_ssh = @knife.knife_ssh
+  describe "when configuring the underlying knife ssh command"
+    context "from the command line" do
+      before do
+        @knife.name_args = ["foo.example.com"]
+        @knife.config[:ssh_user]      = "rooty"
+        @knife.config[:ssh_port]      = "4001"
+        @knife.config[:ssh_password]  = "open_sesame"
+        Chef::Config[:knife][:ssh_port] = nil
+        Chef::Config[:knife][:ssh_port] = nil
+        @knife.config[:identity_file] = "~/.ssh/me.rsa"
+        @knife.stub!(:read_template).and_return("")
+        @knife_ssh = @knife.knife_ssh
+      end
+  
+      it "configures the hostname" do
+        @knife_ssh.name_args.first.should == "foo.example.com"
+      end
+  
+      it "configures the ssh user" do
+        @knife_ssh.config[:ssh_user].should == 'rooty'
+      end
+  
+      it "configures the ssh password" do
+        @knife_ssh.config[:ssh_password].should == 'open_sesame'
+      end
+  
+      it "configures the ssh port" do
+        @knife_ssh.config[:ssh_port].should == '4001'
+      end
+  
+      it "configures the ssh identity file" do
+        @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
+      end
     end
 
-    it "configures the hostname" do
-      @knife_ssh.name_args.first.should == "foo.example.com"
-    end
+    context "from the knife config file" do
+      before do
+        @knife.name_args = ["config.example.com"]
+        @knife.config[:ssh_user] = nil
+        @knife.config[:ssh_port] = nil
+        @knife.config[:ssh_gateway] = nil
+        @knife.config[:identity_file] = nil
+        @knife.config[:host_key_verify] = nil
+        Chef::Config[:knife][:ssh_user] = "curiosity"
+        Chef::Config[:knife][:ssh_port] = "2430"
+        Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
+        Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
+        Chef::Config[:knife][:host_key_verify] = true
+        @knife.stub!(:read_template).and_return("")
+        @knife_ssh = @knife.knife_ssh
+      end
+  
+      it "configures the ssh user" do
+        @knife_ssh.config[:ssh_user].should == 'curiosity'
+      end
+  
+      it "configures the ssh port" do
+        @knife_ssh.config[:ssh_port].should == '2430'
+      end
+  
+      it "configures the ssh identity file" do
+        @knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
+      end
+  
+      it "configures the ssh gateway" do
+        @knife_ssh.config[:ssh_gateway].should == 'towel.blinkenlights.nl'
+      end
 
-    it "configures the ssh user" do
-      @knife_ssh.config[:ssh_user].should == 'rooty'
-    end
-
-    it "configures the ssh password" do
-      @knife_ssh.config[:ssh_password].should == 'open_sesame'
-    end
-
-    it "configures the ssh port" do
-      @knife_ssh.config[:ssh_port].should == '4001'
-    end
-
-    it "configures the ssh identity file" do
-      @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
-    end
+      it "configures the host key verify mode" do
+        @knife_ssh.config[:host_key_verify].should == true
+      end
   end
 
   describe "when falling back to password auth when host key auth fails" do
