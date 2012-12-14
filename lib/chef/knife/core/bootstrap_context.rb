@@ -25,7 +25,7 @@ class Chef
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap
-      # 
+      #
       class BootstrapContext
 
         def initialize(config, run_list, chef_config)
@@ -55,8 +55,9 @@ class Chef
         end
 
         def config_content
+          log_level = (chef_version.split('.')[0].to_i >= 11 ? ":auto" : ":info")
           client_rb = <<-CONFIG
-log_level        :auto
+log_level        #{log_level}
 log_location     STDOUT
 chef_server_url  "#{@chef_config[:chef_server_url]}"
 validation_client_name "#{@chef_config[:validation_client_name]}"
@@ -94,7 +95,7 @@ CONFIG
         def chef_version
           knife_config[:bootstrap_version] || Chef::VERSION
         end
-        
+
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
         end
