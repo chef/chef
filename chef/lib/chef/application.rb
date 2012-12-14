@@ -33,10 +33,6 @@ class Chef::Application
 
     @chef_client = nil
     @chef_client_json = nil
-    trap("TERM") do
-      Chef::Application.fatal!("SIGTERM received, stopping", 1)
-    end
-
     trap("INT") do
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
