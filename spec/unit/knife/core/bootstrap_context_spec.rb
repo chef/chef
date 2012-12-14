@@ -56,15 +56,41 @@ describe Chef::Knife::Core::BootstrapContext do
     @context.validation_key.should == IO.read(File.join(CHEF_SPEC_DATA, 'ssl', 'private_key.pem'))
   end
 
-  it "generates the config file data" do
+  def create_config_file(log_level)
     expected=<<-EXPECTED
-log_level        :auto
+log_level        :#{log_level}
 log_location     STDOUT
 chef_server_url  "http://chef.example.com:4444"
 validation_client_name "chef-validator-testing"
 # Using default node name (fqdn)
 EXPECTED
-    @context.config_content.should == expected
+  end
+
+  # Chef 12 should still produce this config
+  it "should create the correct config file" do
+    @context.config_content.should == create_config_file("auto")
+  end
+
+  context "when bootstrap version is 11 or higher" do
+    before do
+      @chef_config_version = @chef_config.merge({ :knife => { :bootstrap_version => '11.0.0' }})
+      @context = Chef::Knife::Core::BootstrapContext.new(@config, @run_list, @chef_config_version)
+    end
+
+    it "should create the correct config file" do
+      @context.config_content.should == create_config_file("auto")
+    end
+  end
+
+  context "when bootstrap version is less than 11" do
+    before do
+      @chef_config_version = @chef_config.merge({ :knife => { :bootstrap_version => '10.16.0' }})
+      @context = Chef::Knife::Core::BootstrapContext.new(@config, @run_list, @chef_config_version)
+    end
+
+    it "should create the correct config file" do
+      @context.config_content.should == create_config_file("info")
+    end
   end
 
   describe "when an explicit node name is given" do
