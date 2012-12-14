@@ -139,7 +139,7 @@ describe Chef::Knife::Bootstrap do
         @knife.config[:ssh_user]      = "rooty"
         @knife.config[:ssh_port]      = "4001"
         @knife.config[:ssh_password]  = "open_sesame"
-        Chef::Config[:knife][:ssh_port] = nil
+        Chef::Config[:knife][:ssh_user] = nil
         Chef::Config[:knife][:ssh_port] = nil
         @knife.config[:identity_file] = "~/.ssh/me.rsa"
         @knife.stub!(:read_template).and_return("")
