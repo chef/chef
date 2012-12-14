@@ -19,7 +19,7 @@ require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
   before do
-    @original_config = Chef::Config.configuration
+    @original_config = Chef::Config.configuration.dup
 
     @app = Chef::Application::Client.new
     @app.stub!(:configure_opt_parser).and_return(true)
@@ -132,5 +132,28 @@ describe Chef::Application::Client, "setup_application" do
   end
   after do
     Chef::Config[:solo] = false
+  end
+end
+
+describe Chef::Application::Client, "run_application", :unix_only do
+  before do
+    @pipe = IO.pipe
+    @app = Chef::Application::Client.new
+    @app.stub(:run_chef_client) do
+      @pipe[1].puts 'started'
+      sleep 1
+      @pipe[1].puts 'finished'
+    end
+  end
+
+  it "should exit gracefully when sent SIGTERM" do
+    pid = fork do
+      @app.run_application
+    end
+    @pipe[0].gets.should == "started\n"
+    Process.kill("TERM", pid)
+    Process.wait
+    IO.select([@pipe[0]], nil, nil, 0).should_not be_nil
+    @pipe[0].gets.should == "finished\n"
   end
 end
