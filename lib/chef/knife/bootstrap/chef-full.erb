@@ -16,10 +16,11 @@ version_string="-v <%= chef_version %>"
 if ! exists /usr/bin/chef-client; then
   if exists wget; then
     bash <(wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh} -O -) ${version_string}
+  elif exists curl; then
+    bash <(curl -L <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh}) ${version_string}
   else
-    if exists curl; then
-      bash <(curl -L <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> ${install_sh}) ${version_string}
-    fi
+    echo "Neither wget nor curl found. Please install one and try again." >&2
+    exit 1
   fi
 fi
 
