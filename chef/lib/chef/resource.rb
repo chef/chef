@@ -550,7 +550,7 @@ F
     end
 
     def defined_at
-      (file, line_no) = source_line.match(/(.*):(\d+)$/).matches
+      (file, line_no) = source_line.match(/(.*):(\d+):?.*$/).to_a[1,2] if source_line
       if cookbook_name && recipe_name && source_line
         "#{cookbook_name}::#{recipe_name} line #{line_no}"
       elsif source_line
