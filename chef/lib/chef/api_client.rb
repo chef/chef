@@ -164,7 +164,7 @@ class Chef
     def self.json_create(o)
       client = Chef::ApiClient.new
       client.name(o["name"] || o["clientname"])
-      client.private_key(o["private_key"])
+      client.private_key(o["private_key"]) if o["private_key"]
       client.public_key(o["public_key"])
       client.admin(o["admin"])
       client.couchdb_rev = o["_rev"]
@@ -284,8 +284,8 @@ class Chef
     end
 
     def inspect
-      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}'" +
-      "public_key:'#{public_key}' private_key:#{private_key}"
+      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' " +
+      "public_key:'#{public_key}' private_key:'#{private_key}'"
     end
 
   end
