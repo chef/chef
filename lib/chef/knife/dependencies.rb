@@ -43,12 +43,12 @@ class Chef
 
       def print_flattened_dependencies(entry, dependencies)
         if !dependencies[entry.path]
-          puts format_path(entry.path)
           dependencies[entry.path] = get_dependencies(entry)
           dependencies[entry.path].each do |child|
             child_entry = Chef::ChefFS::FileSystem.resolve_path(@root, child)
             print_flattened_dependencies(child_entry, dependencies)
           end
+          puts format_path(entry.path)
         end
       end
 
