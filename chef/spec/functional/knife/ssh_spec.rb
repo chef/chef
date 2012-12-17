@@ -23,6 +23,7 @@ describe Chef::Knife::Ssh do
 
   before(:all) do
     @original_config = Chef::Config.hash_dup
+    @original_knife_config = Chef::Config[:knife].dup
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
@@ -30,6 +31,7 @@ describe Chef::Knife::Ssh do
 
   after(:all) do
     Chef::Config.configuration = @original_config
+    Chef::Config[:knife] = @original_knife_config
     @server.stop
   end
 
