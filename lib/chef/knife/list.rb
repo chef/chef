@@ -16,6 +16,10 @@ class Chef
         :short => '-d',
         :boolean => true,
         :description => "When directories match the pattern, do not show the directories' children."
+      option :local,
+        :long => '--local',
+        :boolean => true,
+        :description => "List local directory instead of remote"
 
       def run
         patterns = name_args.length == 0 ? [""] : name_args
@@ -24,7 +28,7 @@ class Chef
         results = []
         dir_results = []
         pattern_args_from(patterns).each do |pattern|
-          Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|
+          Chef::ChefFS::FileSystem.list(options[:local] ? local_fs : chef_fs, pattern) do |result|
             if result.dir? && !config[:bare_directories]
               dir_results += add_dir_result(result)
             elsif result.exists?
