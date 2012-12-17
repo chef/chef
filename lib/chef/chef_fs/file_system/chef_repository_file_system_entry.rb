@@ -83,9 +83,6 @@ class Chef
           path == "/cookbooks"
         end
 
-        def is_under_cookbooks?
-        end
-
         def ignored?(child_name)
           # empty directories inside a cookbook are ignored
           if ignore_empty_directories?
@@ -95,13 +92,13 @@ class Chef
             end
           end
 
-          ignorer = self
+          ignorer = parent
           begin
             if ignorer.chefignore
               # Grab the path from entry to child
               path_to_child = child_name
               child = self
-              while child != ignorer
+              while child.parent != ignorer
                 path_to_child = PathUtils.join(child.name, path_to_child)
                 child = child.parent
               end
