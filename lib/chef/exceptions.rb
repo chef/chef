@@ -64,6 +64,7 @@ class Chef
     class AmbiguousRunlistSpecification < ArgumentError; end
     class CookbookFrozen < ArgumentError; end
     class CookbookNotFound < RuntimeError; end
+    class MetadataNotFound < RuntimeError; end
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
