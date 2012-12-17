@@ -16,14 +16,55 @@
 # limitations under the License.
 #
 
+require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
+require 'chef/chef_fs/file_system/multiplexed_dir'
 
 class Chef
   module ChefFS
     module FileSystem
-      class ChefRepositoryFileSystemRootDir < ChefRepositoryFileSystemEntry
-        def initialize(file_path)
-          super("", nil, file_path)
+      class ChefRepositoryFileSystemRootDir < BaseFSDir
+        def initialize(child_paths)
+          super("", nil)
+          @child_paths = child_paths
+        end
+
+        attr_reader :child_paths
+
+        def children
+          @children ||= child_paths.keys.map { |name| make_child_entry(name) }.select { |child| !child.nil? }
+        end
+
+        def can_have_child?(name, is_dir)
+          child_paths.has_key?(name) && is_dir
+        end
+
+        def create_child(name, file_contents = nil)
+          child_paths[name].each do |path|
+            Dir.mkdir(path)
+          end
+          make_child_entry(name)
+        end
+
+        def ignore_empty_directories?
+          false
+        end
+
+        def chefignore
+          nil
+        end
+
+        private
+
+        def make_child_entry(name)
+          paths = child_paths[name].select do |path|
+            File.exists?(path)
+          end
+          if paths.size == 0
+            return nil
+          end
+          dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path) }
+          MultiplexedDir.new(dirs)
         end
       end
     end
