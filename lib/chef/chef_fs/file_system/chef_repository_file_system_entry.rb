@@ -36,10 +36,9 @@ class Chef
           # Load /cookbooks/chefignore
           if path == '/cookbooks'
             @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
+            @ignore_empty_directories = true
           # If we are a cookbook or a cookbook subdirectory, empty directories
           # underneath us are ignored (since they cannot be uploaded)
-          elsif parent.path == '/cookbooks'
-            @ignore_empty_directories = true
           elsif parent && parent.ignore_empty_directories?
             @ignore_empty_directories = true
           end
