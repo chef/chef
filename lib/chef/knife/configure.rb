@@ -27,6 +27,7 @@ class Chef
       deps do
         require 'ohai'
         Chef::Knife::ClientCreate.load_deps
+        Chef::Knife::UserCreate.load_deps
       end
 
       banner "knife configure (options)"
@@ -40,15 +41,15 @@ class Chef
         :short => "-i",
         :long => "--initial",
         :boolean => true,
-        :description => "Create an initial API Client"
+        :description => "Create an initial API User"
 
       option :admin_client_name,
         :long => "--admin-client-name NAME",
-        :description => "The existing admin clientname (usually chef-webui)"
+        :description => "The existing admin clientname (usually admin)"
 
       option :admin_client_key,
         :long => "--admin-client-key PATH",
-        :description => "The path to the admin client's private key (usually a file named webui.pem)"
+        :description => "The path to the admin client's private key (usually a file named admin.pem)"
 
       option :validation_client_name,
         :long => "--validation-client-name NAME",
@@ -94,13 +95,15 @@ EOH
           Chef::Config[:chef_server_url] = chef_server
           Chef::Config[:node_name] = admin_client_name
           Chef::Config[:client_key] = admin_client_key
-          client_create = Chef::Knife::ClientCreate.new
-          client_create.name_args = [ new_client_name ]
-          client_create.config[:admin] = true
-          client_create.config[:file] = new_client_key
-          client_create.config[:yes] = true
-          client_create.config[:disable_editing] = true
-          client_create.run
+          user_create = Chef::Knife::UserCreate.new
+          user_create.name_args = [ new_client_name ]
+          user_create.config[:user_password] = config[:user_password] ||
+            ui.ask("Please enter a password for the new user: ") {|q| q.echo = false}
+          user_create.config[:admin] = true
+          user_create.config[:file] = new_client_key
+          user_create.config[:yes] = true
+          user_create.config[:disable_editing] = true
+          user_create.run
         else
           ui.msg("*****")
           ui.msg("")
@@ -133,9 +136,9 @@ EOH
         server_name = guess_servername
         @chef_server            = config[:chef_server_url] || ask_question("Please enter the chef server URL: ", :default => "http://#{server_name}:4000")
         if config[:initial]
-          @new_client_name        = config[:node_name] || ask_question("Please enter a clientname for the new client: ", :default => Etc.getlogin)
-          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin clientname: ", :default => 'chef-webui')
-          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin client's private key: ", :default => '/etc/chef/webui.pem')
+          @new_client_name        = config[:node_name] || ask_question("Please enter a name for the new user: ", :default => Etc.getlogin)
+          @admin_client_name      = config[:admin_client_name] || ask_question("Please enter the existing admin name: ", :default => 'admin')
+          @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", :default => '/etc/chef/admin.pem')
           @admin_client_key       = File.expand_path(@admin_client_key)
         else
           @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", :default => Etc.getlogin)
