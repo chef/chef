@@ -205,7 +205,7 @@ class Chef
 
       def load_lwrp_resource(cookbook_name, filename)
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
-        Chef::Resource.build_from_file(cookbook_name, filename, self)
+        Chef::Resource::LWRPBase.build_from_file(cookbook_name, filename, self)
         @events.lwrp_file_loaded(filename)
       rescue Exception => e
         @events.lwrp_file_load_failed(filename, e)
