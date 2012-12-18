@@ -53,7 +53,7 @@ class Chef
       end
 
       # Set the resource snake_case name. Should only be called via
-      # build_from_file Should only be called via build_from_file.
+      # build_from_file.
       def self.resource_name=(resource_name)
         @resource_name = resource_name
       end
