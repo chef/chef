@@ -26,7 +26,6 @@ class Chef
   class Provider
     include Chef::DSL::Recipe
     include Chef::Mixin::WhyRun
-    include Chef::Mixin::EnforceOwnershipAndPermissions
 
     attr_accessor :new_resource
     attr_accessor :current_resource

@@ -30,6 +30,7 @@ class Chef
 
   class Provider
     class File < Chef::Provider
+      include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::Checksum
       include Chef::Mixin::ShellOut
 
