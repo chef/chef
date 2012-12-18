@@ -13,6 +13,18 @@ class Chef
         :boolean => true,
         :default => false,
         :description => "Delete directories recursively."
+      option :remote_only,
+        :short => '-R',
+        :long => '--remote-only',
+        :boolean => true,
+        :default => false,
+        :description => "Only delete the remote copy (leave the local copy)."
+      option :local_only,
+        :short => '-L',
+        :long => '--local-only',
+        :boolean => true,
+        :default => false,
+        :description => "Only delete the local copy (leave the remote copy)."
 
       def run
         if name_args.length == 0
@@ -22,15 +34,40 @@ class Chef
         end
 
         # Get the matches (recursively)
-        pattern_args.each do |pattern|
-          Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|
-            begin
-              result.delete(config[:recurse])
-              puts "Deleted #{result.path_for_printing}"
-            rescue Chef::ChefFS::FileSystem::NotFoundError
-              STDERR.puts "#{result.path_for_printing}: No such file or directory"
+        if config[:remote_only]
+          pattern_args.each do |pattern|
+            Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|
+              delete_result(result)
             end
           end
+        elsif config[:local_only]
+          pattern_args.each do |pattern|
+            Chef::ChefFS::FileSystem.list(local_fs, pattern) do |result|
+              delete_result(result)
+            end
+          end
+        else
+          pattern_args.each do |pattern|
+            Chef::ChefFS::FileSystem.list_pairs(pattern, chef_fs, local_fs) do |chef_result, local_result|
+              delete_result(chef_result, local_result)
+            end
+          end
+        end
+      end
+
+      def delete_result(*results)
+        deleted_any = false
+        results.each do |result|
+          begin
+            result.delete(config[:recurse])
+            deleted_any = true
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+          end
+        end
+        if deleted_any
+          puts "Deleted #{format_path(results[0].path)}"
+        else
+          STDERR.puts "#{format_path(results[0].path)}: No such file or directory"
         end
       end
     end
