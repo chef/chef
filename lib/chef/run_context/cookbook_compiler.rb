@@ -19,7 +19,7 @@
 require 'chef/log'
 require 'chef/recipe'
 require 'chef/resource'
-require 'chef/provider'
+require 'chef/provider/lwrp_base'
 require 'chef/resource_definition_list'
 
 class Chef
@@ -196,7 +196,7 @@ class Chef
 
       def load_lwrp_provider(cookbook_name, filename)
         Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
-        Chef::Provider.build_from_file(cookbook_name, filename, self)
+        Chef::Provider::LWRPBase.build_from_file(cookbook_name, filename, self)
         @events.lwrp_file_loaded(filename)
       rescue Exception => e
         @events.lwrp_file_load_failed(filename, e)
