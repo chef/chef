@@ -28,17 +28,17 @@ describe Chef::ChecksumCache do
     @cache.reset!
   end
 
-  describe "loading the moneta backend" do
+  describe "loading the Juno backend" do
     it "should build a Chef::ChecksumCache object" do
       @cache.should be_a_kind_of(Chef::ChecksumCache)
     end
 
-    it "should set up a Moneta Cache adaptor" do
-      @cache.moneta.should be_a_kind_of(Moneta::Memory)
+    it "should set up a Juno Cache adaptor" do
+      @cache.juno.should be_a_kind_of(Juno::Adapters::Memory)
     end
 
-    it "should raise an exception if it cannot load the moneta adaptor" do
-      Chef::Log.should_receive(:fatal).with(/^Could not load Moneta back end/)
+    it "should raise an exception if it cannot load the Juno adaptor" do
+      Chef::Log.should_receive(:fatal).with(/^Could not load Juno back end/)
       lambda {
         c = Chef::ChecksumCache.instance.reset!('WTF')
       }.should raise_error(LoadError)
@@ -57,20 +57,20 @@ describe Chef::ChecksumCache do
     end
 
     it "returns a cached checksum value" do
-      @cache.moneta["chef-file-riseofthemachines"] = {"mtime" => "12345", "checksum" => "123abc"}
+      @cache.juno["chef-file-riseofthemachines"] = {"mtime" => "12345", "checksum" => "123abc"}
       fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(12345))
       File.should_receive(:stat).with("riseofthemachines").and_return(fstat)
       @cache.checksum_for_file("riseofthemachines").should == "123abc"
     end
 
     it "gives nil for a cache miss" do
-      @cache.moneta["chef-file-riseofthemachines"] = {"mtime" => "12345", "checksum" => "123abc"}
+      @cache.juno["chef-file-riseofthemachines"] = {"mtime" => "12345", "checksum" => "123abc"}
       fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(555555))
       @cache.lookup_checksum("chef-file-riseofthemachines", fstat).should be_nil
     end
 
     it "treats a non-matching mtime as a cache miss" do
-      @cache.moneta["chef-file-riseofthemachines"] = {"mtime" => "12345", "checksum" => "123abc"}
+      @cache.juno["chef-file-riseofthemachines"] = {"mtime" => "12345", "checksum" => "123abc"}
       fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(555555))
       @cache.lookup_checksum("chef-file-riseofthemachines", fstat).should be_nil
     end
@@ -106,7 +106,7 @@ describe Chef::ChecksumCache do
 
     it "returns a cached checksum value using a user defined key" do
       key = @cache.generate_key("riseofthemachines", "specs")
-      @cache.moneta[key] = {"mtime" => "12345", "checksum" => "123abc"}
+      @cache.juno[key] = {"mtime" => "12345", "checksum" => "123abc"}
       fstat = mock("File.stat('riseofthemachines')", :mtime => Time.at(12345))
       File.should_receive(:stat).with("riseofthemachines").and_return(fstat)
       @cache.checksum_for_file("riseofthemachines", key).should == "123abc"
@@ -144,7 +144,7 @@ describe Chef::ChecksumCache do
 
     context "with an existing set of cached checksums" do
       before do
-        Chef::Config[:cache_type] = "BasicFile"
+        Chef::Config[:cache_type] = "File"
         Chef::Config[:cache_options] = {:path => File.join(CHEF_SPEC_DATA, "checksum_cache")} 
 
         @expected_cached_checksums = ["chef-file--tmp-chef-rendered-template20100929-10863-600hhz-0",
@@ -195,7 +195,7 @@ describe Chef::ChecksumCache do
       end
 
       it "cleans all 0byte checksum files when it encounters a Marshal error" do
-        @cache.moneta.stub!(:fetch).and_raise(ArgumentError)
+        @cache.juno.stub!(:fetch).and_raise(ArgumentError)
         # This cache file is 0 bytes, raises an argument error when
         # attempting to Marshal.load
         File.should_receive(:unlink).with(File.join(CHEF_SPEC_DATA, "checksum_cache", "chef-file--tmp-chef-rendered-template20100929-10863-6m8zdk-0"))

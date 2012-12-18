@@ -81,7 +81,7 @@ client_key               '#{new_client_key}'
 validation_client_name   '#{validation_client_name}'
 validation_key           '#{validation_key}'
 chef_server_url          '#{chef_server}'
-cache_type               'BasicFile'
+cache_type               'File'
 cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
 EOH
           unless chef_repo.empty?

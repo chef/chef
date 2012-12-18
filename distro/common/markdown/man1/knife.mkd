@@ -99,10 +99,9 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
     URL of the Chef server. Corresponds to the `-s` or `--server-url`
     option. This is requested from the user when running this sub-command.
   * `cache_type`:
-    The type of cache to use. Default is BasicFile. This can be any type of
-    Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper,
-    File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant,
-    Xattr, YAML.
+    The type of cache to use. Default is File. This can be any type of
+    Cache that Juno supports: File, Berkeley, Couch, DataMapper,
+    File, LMC, Memcached, Memory, MongoDB, Redis, SDBM, YAML.
   * `cache_options`:
     Specifies various options to use for caching. These options are
     dependent on the `cache_type`.

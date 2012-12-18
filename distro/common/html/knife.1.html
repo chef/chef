@@ -182,10 +182,9 @@ Private key file to authenticate to the Chef server. Corresponds to the
 URL of the Chef server. Corresponds to the <code>-s</code> or <code>--server-url</code>
 option. This is requested from the user when running this sub-command.</li>
 <li><code>cache_type</code>:
-The type of cache to use. Default is BasicFile. This can be any type of
-Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper,
-File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant,
-Xattr, YAML.</li>
+The type of cache to use. Default is File. This can be any type of
+Cache that Juno supports: File, Berkeley, Couch, DataMapper,
+File, LMC, Memcached, Memory, MongoDB, Redis, SDBM, YAML.</li>
 <li><code>cache_options</code>:
 Specifies various options to use for caching. These options are
 dependent on the <code>cache_type</code>.</li>
