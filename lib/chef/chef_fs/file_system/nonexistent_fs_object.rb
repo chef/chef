@@ -34,6 +34,14 @@ class Chef
         def read
           raise Chef::ChefFS::FileSystem::NotFoundError, "Nonexistent #{path_for_printing}"
         end
+
+        def write(contents)
+          raise Chef::ChefFS::FileSystem::NotFoundError, "Nonexistent #{path_for_printing}"
+        end
+
+        def delete(recurse)
+          raise Chef::ChefFS::FileSystem::NotFoundError, "Nonexistent #{path_for_printing}"
+        end
       end
     end
   end
