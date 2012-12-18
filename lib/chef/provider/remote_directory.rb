@@ -30,6 +30,8 @@ require 'set'
 class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
+
+      include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::FileClass
 
       def action_create
