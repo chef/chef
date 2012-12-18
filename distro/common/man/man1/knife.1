@@ -163,7 +163,8 @@ If the config file exists, knife uses these settings for \fBGENERAL OPTIONS\fR d
 \fBchef_server_url\fR: URL of the Chef server\. Corresponds to the \fB\-s\fR or \fB\-\-server\-url\fR option\. This is requested from the user when running this sub\-command\.
 .
 .IP "\(bu" 4
-\fBcache_type\fR: The type of cache to use\. Default is BasicFile\. This can be any type of Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper, File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant, Xattr, YAML\.
+\fBcache_type\fR: The type of cache to use\. Default is File\. This can be any type of Cache that Juno supports: File, Berkeley, Couch, DataMapper,
+File, LMC, Memcached, Memory, MongoDB, Redis, SDBM, YAML\.
 .
 .IP "\(bu" 4
 \fBcache_options\fR: Specifies various options to use for caching\. These options are dependent on the \fBcache_type\fR\.

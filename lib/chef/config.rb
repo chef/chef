@@ -310,8 +310,8 @@ class Chef
     start_handlers []
 
     # Checksum Cache
-    # Uses Moneta on the back-end
-    cache_type "BasicFile"
+    # Uses Juno on the back-end
+    cache_type "File"
     cache_options({ :path => platform_specific_path("/var/chef/cache/checksums"), :skip_expires => true })
 
     # Set to false to silence Chef 11 deprecation warnings:

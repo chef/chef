@@ -25,14 +25,14 @@ require 'chef/config'
 require 'chef/client'
 require 'chef/mixin/convert_to_class_name'
 require 'singleton'
-require 'moneta'
+require 'juno'
 
 class Chef
   class ChecksumCache
     include Chef::Mixin::ConvertToClassName
     include ::Singleton
 
-    attr_reader :moneta
+    attr_reader :juno
 
     def initialize(*args)
       self.reset!(*args)
@@ -43,14 +43,13 @@ class Chef
       options ||= Chef::Config[:cache_options]
 
       begin
-        require "moneta/#{convert_to_snake_case(backend, 'Moneta')}"
-        require 'chef/monkey_patches/moneta'
+        require "juno/adapters/#{convert_to_snake_case(backend, 'Juno')}"
       rescue LoadError => e
-        Chef::Log.fatal("Could not load Moneta back end #{backend.inspect}")
+        Chef::Log.fatal("Could not load Juno back end #{backend.inspect}")
         raise e
       end
 
-      @moneta = Moneta.const_get(backend).new(options)
+      @juno = Juno::Adapters.const_get(backend).new(options)
     end
 
     def self.reset_cache_validity
@@ -80,7 +79,7 @@ class Chef
 
     def self.cleanup_checksum_cache
       Chef::Log.debug("Cleaning the checksum cache")
-      if (Chef::Config[:cache_type].to_s == "BasicFile")
+      if (Chef::Config[:cache_type].to_s == "File")
         all_cached_checksums.each do |cache_key, cksum_cache_file|
           unless valid_cached_checksums.include?(cache_key)
             remove_unused_checksum(cksum_cache_file)
@@ -124,7 +123,7 @@ class Chef
 
     def generate_checksum(key, file, fstat)
       checksum = checksum_file(file, Digest::SHA256.new)
-      moneta.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
+      juno.store(key, {"mtime" => fstat.mtime.to_f, "checksum" => checksum})
       validate_checksum(key)
       checksum
     end
@@ -148,7 +147,7 @@ class Chef
     private
 
     def fetch(key)
-      @moneta.fetch(key)
+      @juno.fetch(key)
     rescue ArgumentError => e
       Log.warn "Error loading cached checksum for key #{key.inspect}"
       Log.warn(e)
@@ -181,7 +180,7 @@ class Chef
   end
 end
 
-module Moneta
+module Juno
   module Defaults
     def default
       nil
