@@ -3,8 +3,8 @@ require 'chef/chef_fs/file_system'
 
 class Chef
   class Knife
-    class Dependencies < Chef::ChefFS::Knife
-      banner "knife dependencies PATTERN1 [PATTERNn]"
+    class Deps < Chef::ChefFS::Knife
+      banner "knife deps PATTERN1 [PATTERNn]"
 
       common_options
 
