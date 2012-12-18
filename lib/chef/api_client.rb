@@ -206,11 +206,6 @@ class Chef
       @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
-    def http_api_as_validator
-      @http_api_as_validator ||= Chef::REST.new(Chef::Config[:chef_server_url],
-                                                Chef::Config[:validation_client_name],
-                                                Chef::Config[:validation_key])
-    end
   end
 end
 

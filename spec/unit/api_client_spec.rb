@@ -146,17 +146,11 @@ describe Chef::ApiClient do
     before do
       Chef::Config[:node_name] = "silent-bob"
       Chef::Config[:client_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
-      Chef::Config[:validation_client_name] = "test-validator"
-      Chef::Config[:validation_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
     end
 
     after do
       Chef::Config[:node_name] = nil
       Chef::Config[:client_key] = nil
-    end
-
-    let :private_key_data do
-      File.open(Chef::Config[:client_key], "rb") {|f| f.read.chomp }
     end
 
     it "has an HTTP client configured with default credentials" do
@@ -165,12 +159,8 @@ describe Chef::ApiClient do
       @client.http_api.signing_key.to_s.should == private_key_data
     end
 
-    it "has an HTTP client configured with validator credentials" do
-      @client.http_api_as_validator.should be_a_kind_of(Chef::REST)
-      @client.http_api_as_validator.client_name.should == "test-validator"
-      @client.http_api_as_validator.signing_key.should == private_key_data
-    end
   end
+
 
   describe "when requesting a new key" do
     before do
