@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require 'chef/resource'
+
 class Chef
   class Resource
 

@@ -18,7 +18,7 @@
 
 require 'chef/log'
 require 'chef/recipe'
-require 'chef/resource'
+require 'chef/resource/lwrp_base'
 require 'chef/provider/lwrp_base'
 require 'chef/resource_definition_list'
 
