@@ -28,6 +28,7 @@ class Chef
 
     class Template < Chef::Provider::File
 
+      include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::Checksum
       include Chef::Mixin::Template
 
@@ -35,7 +36,7 @@ class Chef
         @current_resource = Chef::Resource::Template.new(@new_resource.name)
         super
       end
-      
+
       def define_resource_requirements
         super
 
