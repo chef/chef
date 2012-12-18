@@ -19,6 +19,16 @@
 require "rubygems"
 require "merb-core"
 require "rspec"
+require "chef/config"
+require "tmpdir"
+require "fileutils"
+
+# Avoid system-wide directories we may not be able to access
+fake_var_chef = Dir.mktmpdir("fake-var-chef")
+at_exit { FileUtils.remove_entry_secure(fake_var_chef) }
+Chef::Config[:file_cache_path]      = "#{fake_var_chef}/cache"
+Chef::Config[:cache_options][:path] = "#{fake_var_chef}/cache/checksums"
+Chef::Config[:checksum_path]        = "#{fake_var_chef}/checksums"
 
 Merb.push_path(:spec_helpers, "spec" / "spec_helpers", "**/*.rb")
 Merb.push_path(:spec_fixtures, "spec" / "fixtures", "**/*.rb")
