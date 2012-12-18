@@ -8,10 +8,15 @@ class Chef
 
       common_options
 
+      option :local,
+        :long => '--local',
+        :boolean => true,
+        :description => "Show local files instead of remote"
+
       def run
         # Get the matches (recursively)
         pattern_args.each do |pattern|
-          Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|
+          Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern) do |result|
             if result.dir?
               STDERR.puts "#{result.path_for_printing}: is a directory" if pattern.exact_path
             else
