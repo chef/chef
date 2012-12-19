@@ -349,7 +349,7 @@ describe Chef::REST do
           lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
 
           [:PUT, :POST, :DELETE].each do |method|
-            lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exception::InvalidRedirect)
+            lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exceptions::InvalidRedirect)
           end
         end
       end
