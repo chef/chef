@@ -108,7 +108,10 @@ describe Chef::ApiClient::Registration do
       registration.stub!(:private_key).and_return('--begin rsa key etc--')
     end
 
-    it "creates the file with 0600 permissions" do
+    # Permission read via File.stat is busted on windows, though creating the
+    # file with 0600 has the desired effect of giving access rights to the
+    # owner only. A platform-specific functional test would be helpful.
+    it "creates the file with 0600 permissions", :unix_only do
       File.should_not exist(key_location)
       registration.write_key
       File.should exist(key_location)
