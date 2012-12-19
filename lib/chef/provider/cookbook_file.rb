@@ -17,68 +17,47 @@
 #
 
 require 'chef/file_access_control'
-require 'chef/provider/file'
+require 'chef/provider/local_file'
 require 'tempfile'
 
 class Chef
   class Provider
-    class CookbookFile < Chef::Provider::File
+    class File
+      class CookbookFile < Chef::Provider::LocalFile
 
-      include Chef::Mixin::EnforceOwnershipAndPermissions
+        include Chef::Mixin::EnforceOwnershipAndPermissions
 
-      def whyrun_supported?
-        true
-      end
+        def whyrun_supported?
+          true
+        end
 
-      def load_current_resource
-        @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
-        super
-      end
+        def load_current_resource
+          @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
+          super
+        end
 
-      def action_create
-        if file_cache_location && content_stale? 
-          description = []
-          description << "create a new cookbook_file #{@new_resource.path}"
-          description << diff_current(file_cache_location)
-          converge_by(description) do
-            Chef::Log.debug("#{@new_resource} has new contents")
-            backup_new_resource
-            deploy_tempfile do |tempfile|
-              Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
-              tempfile.close
-              FileUtils.cp(file_cache_location, tempfile.path)
-            end
-            Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
+        def description
+          desc_array = []
+          desc_array << "create a new cookbook_file #{@new_resource.path}"
+          desc_array << diff_current(file_cache_location)
+          desc_array
+        end
+
+        def file_cache_location
+          @file_cache_location ||= begin
+            cookbook = run_context.cookbook_collection[resource_cookbook]
+            cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
           end
-        else
-          set_all_access_controls
         end
-      end
 
-      def file_cache_location
-        @file_cache_location ||= begin
-          cookbook = run_context.cookbook_collection[resource_cookbook]
-          cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
+        # Determine the cookbook to get the file from. If new resource sets an
+        # explicit cookbook, use it, otherwise fall back to the implicit cookbook
+        # i.e., the cookbook the resource was declared in.
+        def resource_cookbook
+          @new_resource.cookbook || @new_resource.cookbook_name
         end
-      end
 
-      # Determine the cookbook to get the file from. If new resource sets an
-      # explicit cookbook, use it, otherwise fall back to the implicit cookbook
-      # i.e., the cookbook the resource was declared in.
-      def resource_cookbook
-        @new_resource.cookbook || @new_resource.cookbook_name
       end
-
-      def backup_new_resource
-        if ::File.exists?(@new_resource.path)
-          backup @new_resource.path
-        end
-      end
-
-      def content_stale?
-        ( ! ::File.exist?(@new_resource.path)) || ( ! compare_content)
-      end
-
     end
   end
 end
