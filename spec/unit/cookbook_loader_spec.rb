@@ -204,4 +204,20 @@ describe Chef::CookbookLoader do
       end   
     end
   end # loading only one cookbook
+
+  describe Chef::CookbookLoader do
+    describe "load_cookbook" do
+      describe "without a metadata file" do
+        let(:cookbook_ldr) do
+          @repo_paths = [File.expand_path(File.join(CHEF_SPEC_DATA, "bad-cookbooks")) ]
+          Chef::CookbookLoader.new(@repo_paths)
+        end
+
+        it"should throw an exception and fail" do
+          expect { cookbook_ldr.load_cookbooks }.to raise_error(Chef::Exceptions::MetadataNotFound)
+        end
+      end
+    end
+  end
+
 end

@@ -90,7 +90,8 @@ describe Chef::Cookbook::SyntaxCheck do
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(@cookbook_path, 'attributes', f) }
     @defn_files = %w{client.rb server.rb}.map { |f| File.join(@cookbook_path, 'definitions', f)}
     @recipes = %w{default.rb gigantor.rb one.rb}.map { |f| File.join(@cookbook_path, 'recipes', f) }
-    @ruby_files = @attr_files + @defn_files + @recipes
+    @metadata_file = %w{metadata.rb}.map { |f| File.join(@cookbook_path, f) }
+    @ruby_files = @attr_files + @defn_files + @recipes + @metadata_file
 
     @template_files = %w{openldap_stuff.conf.erb openldap_variable_stuff.conf.erb test.erb}.map { |f| File.join(@cookbook_path, 'templates', 'default', f)}
 
@@ -174,8 +175,9 @@ describe Chef::Cookbook::SyntaxCheck do
         end
 
         it "does not remove the invalid file from the list of untested files" do
-          @syntax_check.untested_ruby_files.should include(File.join(@cookbook_path, 'recipes', 'default.rb'))
-          lambda { @syntax_check.validate_ruby_files }.should_not change(@syntax_check, :untested_ruby_files)
+          @syntax_check.untested_ruby_files.should match_array([File.join(@cookbook_path, 'recipes', 'default.rb'), File.join(@cookbook_path, 'metadata.rb')])
+          @syntax_check.validate_ruby_files
+          @syntax_check.untested_ruby_files.should match_array([File.join(@cookbook_path, 'recipes', 'default.rb')])
         end
 
         it "indicates that a template file has a syntax error" do
