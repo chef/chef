@@ -42,16 +42,25 @@ class Chef
 
       # Runs the client registration process, including creating the client on
       # the chef-server and writing its private key to disk.
+      #--
+      # If client creation fails with a 5xx, it is retried up to 5 times. These
+      # retries are on top of the retries with randomized exponential backoff
+      # built in to Chef::REST. The retries here are a workaround for failures
+      # caused by resource contention in Hosted Chef when creating a very large
+      # number of clients simultaneously, (e.g., spinning up 100s of ec2 nodes
+      # at once). Future improvements to the affected component should make
+      # these retries unnecessary.
       def run
         assert_destination_writable!
         retries = Config[:client_registration_retries] || 5
         begin
           create_or_update
         rescue Net::HTTPFatalError => e
-          # only retry 500s
-          raise if retries <= 0 or e.response.code != "500"
+          # HTTPFatalError implies 5xx.
+          raise if retries <= 0
           retries -= 1
           Chef::Log.warn("Failed to register new client, #{retries} tries remaining")
+          Chef::Log.warn("Response: HTTP #{e.response.code} - #{e}")
           retry
         end
         write_key
