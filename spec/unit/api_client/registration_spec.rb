@@ -31,7 +31,7 @@ describe Chef::ApiClient::Registration do
   let(:registration) { Chef::ApiClient::Registration.new("silent-bob", key_location) }
 
   let :private_key_data do
-    File.open(Chef::Config[:validation_key], "rb") {|f| f.read.chomp }
+    File.open(Chef::Config[:validation_key], "r") {|f| f.read.chomp }
   end
 
   before do

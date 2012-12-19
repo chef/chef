@@ -154,7 +154,7 @@ describe Chef::ApiClient do
     end
 
     let :private_key_data do
-      File.open(Chef::Config[:client_key], "rb") {|f| f.read.chomp }
+      File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
     end
 
     it "has an HTTP client configured with default credentials" do
