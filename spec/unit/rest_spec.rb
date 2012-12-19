@@ -347,8 +347,12 @@ describe Chef::REST do
           @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
 
           lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+
+          [:PUT, :POST, :DELETE].each do |method|
+            lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exception::InvalidRedirect)
+          end
         end
-       end
+      end
 
       it "should return `false` when response is 304 NotModified" do
         http_response = Net::HTTPNotModified.new("1.1", "304", "it's the same as when you asked 5 minutes ago")
