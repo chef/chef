@@ -139,7 +139,7 @@ class Chef::Provider::Route < Chef::Provider
       end
 
       #for now we always write the file (ugly but its what it is)
-      generate_config(:add)
+      generate_config
     end
 
     def action_delete
@@ -154,10 +154,10 @@ class Chef::Provider::Route < Chef::Provider
       end
 
       #for now we always write the file (ugly but its what it is)
-      generate_config(:delete)
+      generate_config
     end
 
-    def generate_config(action)
+    def generate_config
       conf = Hash.new
       case node[:platform]
       when "centos", "redhat", "fedora"
@@ -172,7 +172,7 @@ class Chef::Provider::Route < Chef::Provider
             end
 
             conf[dev] = String.new if conf[dev].nil?
-            case action
+            case @action
             when :add
               conf[dev] << config_file_contents(:add, :target => resource.target, :netmask => resource.netmask, :gateway => resource.gateway)
             when :delete
