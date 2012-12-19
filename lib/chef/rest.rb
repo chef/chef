@@ -84,43 +84,6 @@ class Chef
       @raw_key
     end
 
-    # Register the client
-    #--
-    # Requires you to load chef/api_client beforehand. explicit require is removed since
-    # most users of this class have no need for chef/api_client. This functionality
-    # should be moved anyway...
-    def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
-      if (File.exists?(destination) &&  !File.writable?(destination))
-        raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?"
-      end
-      nc = Chef::ApiClient.new
-      nc.name(name)
-
-      catch(:done) do
-        retries = config[:client_registration_retries] || 5
-        0.upto(retries) do |n|
-          begin
-            response = nc.save(true, true)
-            Chef::Log.debug("Registration response: #{response.inspect}")
-            raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
-            # Write out the private key
-            ::File.open(destination, "w") {|f|
-              f.chmod(0600)
-              f.print(response["private_key"])
-            }
-            throw :done
-          rescue IOError
-            raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
-          rescue Net::HTTPFatalError => e
-            Chef::Log.warn("Failed attempt #{n} of #{retries+1} on client creation")
-            raise unless e.response.code == "500"
-          end
-        end
-      end
-
-      true
-    end
-
     # Send an HTTP GET request to the path
     #
     # Using this method to +fetch+ a file is considered deprecated.

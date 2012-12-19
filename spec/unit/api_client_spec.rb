@@ -26,78 +26,53 @@ describe Chef::ApiClient do
     @client = Chef::ApiClient.new
   end
 
-  describe "initialize" do
-    it "should be a Chef::ApiClient" do
-      @client.should be_a_kind_of(Chef::ApiClient)
-    end
+  it "has a name attribute" do
+    @client.name("ops_master")
+    @client.name.should == "ops_master"
   end
 
-  describe "name" do
-    it "should let you set the name to a string" do
-      @client.name("ops_master").should == "ops_master"
-    end
-
-    it "should return the current name" do
-      @client.name "ops_master"
-      @client.name.should == "ops_master"
-    end
-
-    it "should not accept spaces" do
-      lambda { @client.name "ops master" }.should raise_error(ArgumentError)
-    end
-
-    it "should throw an ArgumentError if you feed it anything but a string" do
-      lambda { @client.name Hash.new }.should raise_error(ArgumentError)
-    end
+  it "does not allow spaces in the name" do
+    lambda { @client.name "ops master" }.should raise_error(ArgumentError)
   end
 
-  describe "admin" do
-    it "should let you set the admin bit" do
-      @client.admin(true).should == true
-    end
-
-    it "should return the current admin value" do
-      @client.admin true
-      @client.admin.should == true
-    end
-
-    it "should default to false" do
-      @client.admin.should == false
-    end
-
-    it "should throw an ArgumentError if you feed it anything but true or false" do
-      lambda { @client.name Hash.new }.should raise_error(ArgumentError)
-    end
+  it "only allows string values for the name" do
+    lambda { @client.name Hash.new }.should raise_error(ArgumentError)
   end
 
-  describe "public_key" do
-    it "should let you set the public key" do
-      @client.public_key("super public").should == "super public"
-    end
-
-    it "should return the current public key" do
-      @client.public_key("super public")
-      @client.public_key.should == "super public"
-    end
-
-    it "should throw an ArgumentError if you feed it something lame" do
-      lambda { @client.public_key Hash.new }.should raise_error(ArgumentError)
-    end
+  it "has an admin flag attribute" do
+    @client.admin(true)
+    @client.admin.should be_true
   end
 
-  describe "private_key" do
-    it "should let you set the private key" do
-      @client.private_key("super private").should == "super private"
-    end
+  it "defaults to non-admin" do
+    @client.admin.should be_false
+  end
 
-    it "should return the private key" do
-      @client.private_key("super private")
-      @client.private_key.should == "super private"
-    end
+  it "allows only boolean values for the admin flag" do
+    lambda { @client.admin(false) }.should_not raise_error
+    lambda { @client.admin(Hash.new) }.should raise_error(ArgumentError)
+  end
 
-    it "should throw an ArgumentError if you feed it something lame" do
-      lambda { @client.private_key Hash.new }.should raise_error(ArgumentError)
-    end
+
+  it "has a public key attribute" do
+    @client.public_key("super public")
+    @client.public_key.should == "super public"
+  end
+
+  it "accepts only String values for the public key" do
+    lambda { @client.public_key "" }.should_not raise_error
+    lambda { @client.public_key Hash.new }.should raise_error(ArgumentError)
+  end
+
+
+  it "has a private key attribute" do
+    @client.private_key("super private")
+    @client.private_key.should == "super private"
+  end
+
+  it "accepts only String values for the private key" do
+    lambda { @client.private_key "" }.should_not raise_error
+    lambda { @client.private_key Hash.new }.should raise_error(ArgumentError)
   end
 
   describe "when serializing to JSON" do
@@ -166,6 +141,29 @@ describe Chef::ApiClient do
     end
 
   end
+
+  describe "with correctly configured API credentials" do
+    before do
+      Chef::Config[:node_name] = "silent-bob"
+      Chef::Config[:client_key] = File.expand_path('ssl/private_key.pem', CHEF_SPEC_DATA)
+    end
+
+    after do
+      Chef::Config[:node_name] = nil
+      Chef::Config[:client_key] = nil
+    end
+
+    let :private_key_data do
+      File.open(Chef::Config[:client_key], "r") {|f| f.read.chomp }
+    end
+
+    it "has an HTTP client configured with default credentials" do
+      @client.http_api.should be_a_kind_of(Chef::REST)
+      @client.http_api.client_name.should == "silent-bob"
+      @client.http_api.signing_key.to_s.should == private_key_data
+    end
+  end
+
 
   describe "when requesting a new key" do
     before do
