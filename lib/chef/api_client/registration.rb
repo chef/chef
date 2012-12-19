@@ -73,7 +73,7 @@ class Chef
       end
 
       def write_key
-        ::File.open(destination, File::CREAT|File::TRUNC|File::RDWR|File::NOFOLLOW, 0600) do |f|
+        ::File.open(destination, file_flags, 0600) do |f|
           f.print(private_key)
         end
       rescue IOError => e
@@ -111,6 +111,13 @@ class Chef
         @http_api_as_validator ||= Chef::REST.new(Chef::Config[:chef_server_url],
                                                   Chef::Config[:validation_client_name],
                                                   Chef::Config[:validation_key])
+      end
+
+      def file_flags
+        base_flags = File::CREAT|File::TRUNC|File::RDWR
+        # Windows doesn't have symlinks, so it doesn't have NOFOLLOW
+        base_flags |= File::NOFOLLOW if defined?(File::NOFOLLOW)
+        base_flags
       end
     end
   end
