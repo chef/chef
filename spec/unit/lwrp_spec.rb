@@ -25,23 +25,23 @@ describe "override logging" do
 
   it "should log if attempting to load resource of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-      Chef::Resource.build_from_file("lwrp", file, nil)
+      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
     end
 
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Resource.build_from_file("lwrp", file, nil)
+      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
     end
   end
 
   it "should log if attempting to load provider of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-      Chef::Provider.build_from_file("lwrp", file, nil)
+      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
     end
 
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Provider.build_from_file("lwrp", file, nil)
+      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
     end
   end
 
@@ -61,11 +61,11 @@ describe "LWRP" do
 
     before do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, nil)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, nil)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
 
@@ -99,7 +99,7 @@ describe "LWRP" do
       run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @events)
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, run_context)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, run_context)
       end
 
       cls = Chef::Resource.const_get("LwrpNodeattr")
@@ -122,19 +122,19 @@ describe "LWRP" do
 
     before(:each) do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, @run_context)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, @run_context)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-        Chef::Provider.build_from_file("lwrp", file, @run_context)
+        Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
-        Chef::Provider.build_from_file("lwrp", file, @run_context)
+        Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
     end
