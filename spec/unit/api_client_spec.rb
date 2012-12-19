@@ -153,12 +153,15 @@ describe Chef::ApiClient do
       Chef::Config[:client_key] = nil
     end
 
+    let :private_key_data do
+      File.open(Chef::Config[:client_key], "rb") {|f| f.read.chomp }
+    end
+
     it "has an HTTP client configured with default credentials" do
       @client.http_api.should be_a_kind_of(Chef::REST)
       @client.http_api.client_name.should == "silent-bob"
       @client.http_api.signing_key.to_s.should == private_key_data
     end
-
   end
 
 

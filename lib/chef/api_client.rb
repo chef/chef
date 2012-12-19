@@ -158,19 +158,13 @@ class Chef
     end
 
     # Save this client via the REST API, returns a hash including the private key
-    def save(new_key=false, validation=false)
-      if validation
-        r = http_api_as_validator
-      else
-        r = http_api
-      end
-      # First, try and create a new registration
+    def save
       begin
-        r.post("clients", {:name => self.name, :admin => self.admin })
+        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin})
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
-        if e.response.code == "409"
-          r.put("clients/#{name}", { :name => self.name, :admin => self.admin, :private_key => new_key })
+        if e.response.code == "404"
+          http_api.post("clients", {:name => self.name, :admin => self.admin })
         else
           raise e
         end
