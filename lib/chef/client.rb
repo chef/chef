@@ -24,6 +24,7 @@ require 'chef/mixin/path_sanity'
 require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
+require 'chef/api_client/registration'
 require 'chef/platform'
 require 'chef/node'
 require 'chef/role'
@@ -347,7 +348,7 @@ class Chef
       else
         @events.registration_start(node_name, config)
         Chef::Log.info("Client key #{config[:client_key]} is not present - registering")
-        Chef::REST.new(config[:client_url], config[:validation_client_name], config[:validation_key]).register(client_name, config[:client_key])
+        Chef::ApiClient::Registration.new(node_name, config[:client_key]).run
         @events.registration_completed
       end
       # We now have the client key, and should use it from now on.
