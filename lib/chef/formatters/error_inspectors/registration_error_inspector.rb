@@ -42,7 +42,7 @@ E
 validation_key "#{api_key}"
 E
           when Chef::Exceptions::InvalidRedirect
-            error_description.section("Invalid Redirect:",<<-E
+            error_description.section("Invalid Redirect:",<<-E)
 Change your server location in client.rb to the server's FQDN to avoid unwanted redirections.
 E
           else
