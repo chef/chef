@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/checksum_cache'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/checksum'
 
 class Chef
   class Cookbook
@@ -25,9 +25,55 @@ class Chef
     # Encapsulates the process of validating the ruby syntax of files in Chef
     # cookbooks.
     class SyntaxCheck
+
+      # == Chef::Cookbook::SyntaxCheck::PersistentSet
+      # Implements set behavior with disk-based persistence. Objects in the set
+      # are expected to be strings containing only characters that are valid in
+      # filenames.
+      #
+      # This class is used to track which files have been syntax checked so
+      # that known good files are not rechecked.
+      class PersistentSet
+
+        attr_reader :cache_path
+
+        # Create a new PersistentSet. Values in the set are persisted by
+        # creating a file in the +cache_path+ directory. If not given, the
+        # value of Chef::Config[:cache_options][:path] is used.
+        def initialize(cache_path=Chef::Config[:cache_options][:path])
+          @cache_path = cache_path
+          @cache_path_created = false
+        end
+
+        # Adds +value+ to the set's collection.
+        def add(value)
+          ensure_cache_path_created
+          FileUtils.touch(File.join(cache_path, value))
+        end
+
+        # Returns true if the set includes +value+
+        def include?(value)
+          File.exist?(File.join(cache_path, value))
+        end
+
+        private
+
+        def ensure_cache_path_created
+          return true if @cache_path_created
+          FileUtils.mkdir_p(cache_path)
+          @cache_path_created = true
+        end
+
+      end
+
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::Checksum
 
       attr_reader :cookbook_path
+
+      # A PersistentSet object that tracks which files have already been
+      # validated.
+      attr_reader :validated_files
 
       # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
@@ -44,10 +90,7 @@ class Chef
       # cookbook_path::: the (on disk) path to the cookbook
       def initialize(cookbook_path)
         @cookbook_path = cookbook_path
-      end
-
-      def cache
-        Chef::ChecksumCache.instance
+        @validated_files = PersistentSet.new
       end
 
       def ruby_files
@@ -81,16 +124,11 @@ class Chef
       end
 
       def validated?(file)
-        !!cache.lookup_checksum(cache_key(file), File.stat(file))
+        validated_files.include?(checksum(file))
       end
 
       def validated(file)
-        cache.generate_checksum(cache_key(file), file, File.stat(file))
-      end
-
-      def cache_key(file)
-        @cache_keys ||= {}
-        @cache_keys[file] ||= cache.generate_key(file, "chef-test")
+        validated_files.add(checksum(file))
       end
 
       def validate_ruby_files
@@ -118,7 +156,7 @@ class Chef
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
         false
       end
-      
+
       def validate_ruby_file(ruby_file)
         Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
         result = shell_out("ruby -c #{ruby_file}")
@@ -130,7 +168,7 @@ class Chef
         result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
         false
       end
-      
+
     end
   end
 end
