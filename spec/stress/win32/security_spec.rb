@@ -48,14 +48,14 @@ describe 'Chef::ReservedNames::Win32::Security', :windows_only do
     FileUtils.rm_rf(@test_tempdir)
   end
 
-  it "should not leak when retrieving and reading the ACE from a file" do
+  it "should not leak when retrieving and reading the ACE from a file", :volatile do
     lambda {
       sids = Chef::ReservedNames::Win32::Security::SecurableObject.new(@monkeyfoo).security_descriptor.dacl.select { |ace| ace.sid }
       GC.start
     }.should_not leak_memory(:warmup => 50, :iterations => 100)
   end
 
-  it "should not leak when creating a new ACL and setting it on a file" do
+  it "should not leak when creating a new ACL and setting it on a file", :volatile do
     securable_object = Security::SecurableObject.new(@monkeyfoo)
     lambda {
       securable_object.dacl = Security::ACL.create([
