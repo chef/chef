@@ -112,7 +112,10 @@ describe Chef::Application::Solo do
         Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
         FileUtils.stub!(:mkdir_p).and_return(true)
         @tarfile = StringIO.new("remote_tarball_content")
-        @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
+        @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz", :ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE).and_yield(@tarfile)
+
+        @tarfile_with_verify = StringIO.new("remote_tarball_content")
+        @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz", :ssl_verify_mode => OpenSSL::SSL::VERIFY_PEER).and_yield(@tarfile_with_verify)
 
         @target_file = StringIO.new
         File.stub!(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
@@ -125,8 +128,15 @@ describe Chef::Application::Solo do
         @app.reconfigure
       end
 
-      it "should download the recipes" do
-        @app.should_receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
+      it "should download the recipes without peer verification" do
+        Chef::Config[:ssl_verify_mode] = :verify_none
+        @app.should_receive(:open).with("http://junglist.gen.nz/recipes.tgz", :ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE).and_yield(@tarfile)
+        @app.reconfigure
+      end
+
+      it "should download the recipes with peer verification" do
+        Chef::Config[:ssl_verify_mode] = :verify_peer
+        @app.should_receive(:open).with("http://junglist.gen.nz/recipes.tgz", :ssl_verify_mode => OpenSSL::SSL::VERIFY_PEER).and_yield(@tarfile_with_verify)
         @app.reconfigure
       end
 
