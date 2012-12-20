@@ -140,6 +140,49 @@ describe Chef::Application::Solo do
         @app.reconfigure
       end
     end
+
+    describe "when the recipe_url configuration option is specified with Amazon S3 schema" do
+      before do
+        Chef::Config[:recipe_url] = "s3://johnsmith/photos/puppy.jpg"
+        Chef::Config[:aws_access_key_id] = "AKIAIOSFODNN7EXAMPLE"
+        Chef::Config[:aws_secret_access_key] = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        @tarfile = StringIO.new("remote_tarball_content")
+        @app.stub!(:open).and_yield(@tarfile)
+
+        # Stub time to get static signature
+        # http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html#RESTAuthenticationExamples
+        Time.stub!(:now).and_return(Time.at(1175139620-60))
+
+        @tarfile = StringIO.new("remote_tarball_content")
+        @target_file = StringIO.new
+        File.stub!(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
+
+        Chef::Mixin::Command.stub!(:run_command).and_return(true)
+
+        Chef::Application.stub!(:fatal!).and_return(true)
+      end
+
+      it "should download the recipes" do
+        @app.should_receive(:open).with("https://s3.amazonaws.com/johnsmith/photos/puppy.jpg?AWSAccessKeyId=AKIAIOSFODNN7EXAMPLE&Expires=1175139620&Signature=NpgCjnDzrM%2BWFzoENXmpNDUsSn8%3D").and_yield(@tarfile)
+        @app.reconfigure
+      end
+
+      it "should hard fail if no credentials provided" do
+        Chef::Config[:aws_access_key_id] = nil
+        Chef::Config[:aws_secret_access_key] = nil
+        Chef::Application.should_receive(:fatal!).with("Please set credentials for S3 download", 1).and_return(true)
+        @app.reconfigure
+      end
+
+      it "should hard fail in case invalid URL provided" do
+        Chef::Config[:recipe_url] = "s3://"
+        Chef::Config[:aws_access_key_id] = "AKIAIOSFODNN7EXAMPLE"
+        Chef::Config[:aws_secret_access_key] = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        Chef::Application.should_receive(:fatal!).with("Cannot parse S3 URL: #{Chef::Config[:recipe_url]}", 1).and_return(true)
+        @app.reconfigure
+      end
+
+    end
   end
 
 

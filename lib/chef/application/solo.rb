@@ -214,18 +214,19 @@ class Chef::Application::Solo < Chef::Application
         begin
           if Chef::Config[:aws_access_key_id].nil? or Chef::Config[:aws_secret_access_key].nil?
             Chef::Application.fatal!("Please set credentials for S3 download", 1)
+          else
+            region, bucket, key = URI.split(Chef::Config[:recipe_url]).compact
+            recipe_url = "https://#{region}.amazonaws.com/#{bucket}#{key}"
+            expires = Time.now().to_i + 60
+            h = OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new,
+                                     Chef::Config[:aws_secret_access_key],
+                                     "GET\n\n\n#{expires}\n/#{bucket}#{key}")
+            sign = CGI::escape(Base64.encode64(h).strip)
+            Chef::Config[:recipe_url] = recipe_url + 
+                                        "?AWSAccessKeyId=#{Chef::Config[:aws_access_key_id]}" +
+                                        "&Expires=#{expires}" + 
+                                        "&Signature=#{sign}"
           end
-          region, bucket, key = URI.split(Chef::Config[:recipe_url]).compact
-          recipe_url = "https://#{region}.amazonaws.com/#{bucket}#{key}"
-          expires = Time.now().to_i + 60
-          h = OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new,
-                                   Chef::Config[:aws_secret_access_key],
-                                   "GET\n\n\n#{expires}\n/#{bucket}#{key}")
-          sign = CGI::escape(Base64.encode64(h).strip)
-          Chef::Config[:recipe_url] = recipe_url + 
-                                      "?AWSAccessKeyId=#{Chef::Config[:aws_access_key_id]}" +
-                                      "&Expires=#{expires}" + 
-                                      "&Signature=#{sign}"
         rescue URI::InvalidURIError
           Chef::Application.fatal!("Cannot parse S3 URL: #{Chef::Config[:recipe_url]}", 1)
         end
