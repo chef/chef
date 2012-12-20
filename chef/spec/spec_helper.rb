@@ -64,6 +64,9 @@ RSpec.configure do |config|
   config.filter_run :focus => true
   config.filter_run_excluding :external => true
 
+  # Tests that randomly fail, but may have value.
+  config.filter_run_excluding :volatile => true
+
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
