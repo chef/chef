@@ -19,7 +19,7 @@ name "chef-server"
 
 replaces        "chef-server"
 install_path    "/opt/chef-server"
-build_version   Omnibus::BuildVersion.full
+build_version   Omnibus::BuildVersion.new.semver
 build_iteration "1"
 
 deps = []
