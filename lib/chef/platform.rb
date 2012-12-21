@@ -20,9 +20,8 @@ require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
 
-# Actually, this file depends on nearly every provider in chef, but actually
-# requiring them causes circular requires resulting in uninitialized constant
-# errors.
+# This file depends on nearly every provider in chef, but requiring them
+# directly causes circular requires resulting in uninitialized constant errors.
 require 'chef/provider'
 require 'chef/provider/log'
 require 'chef/provider/user'

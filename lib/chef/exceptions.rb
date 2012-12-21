@@ -94,7 +94,8 @@ class Chef
     # Thrown when Win32 API layer binds to non-existent Win32 function.  Occurs
     # when older versions of Windows don't support newer Win32 API functions.
     class Win32APIFunctionNotImplemented < NotImplementedError; end
-
+    # Attempting to run windows code on a not-windows node
+    class Win32NotWindows < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
@@ -127,6 +128,19 @@ class Chef
     # attributes are updated. Attempting to read from a stale copy
     # of merged attributes will trigger this error.
     class StaleAttributeRead < StandardError; end
+
+    #Registry Helper throws the following errors
+    class Win32RegArchitectureIncorrect < RuntimeError; end
+    class Win32RegHiveMissing < ArgumentError; end
+    class Win32RegKeyMissing < RuntimeError; end
+    class Win32RegValueMissing < RuntimeError; end
+    class Win32RegDataMissing < RuntimeError; end
+    class Win32RegValueExists < RuntimeError; end
+    class Win32RegNoRecursive < ArgumentError; end
+    class Win32RegTypeDoesNotExist < ArgumentError; end
+    class Win32RegBadType < ArgumentError; end
+    class Win32RegBadValueSize < ArgumentError; end
+    class Win32RegTypesMismatch < ArgumentError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
