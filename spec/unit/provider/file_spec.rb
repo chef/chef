@@ -57,7 +57,7 @@ describe Chef::Provider::File do
     it "should collect the current state of the file on the filesystem and populate current_resource" do
       # test setup
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-      ::File.should_receive(:stat).exactly(2).times.with(@resource.path).and_return(stat_struct)
+      ::File.should_receive(:stat).exactly(1).times.with(@resource.path).and_return(stat_struct)
 
       # test execution
 
@@ -76,7 +76,7 @@ describe Chef::Provider::File do
     it "should NOT update the new_resource state with the current_resourse state if new_resource state is already specified" do
       # test setup
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-      ::File.should_receive(:stat).exactly(2).times.with(@resource.path).and_return(stat_struct)
+      ::File.should_receive(:stat).exactly(1).times.with(@resource.path).and_return(stat_struct)
 
       @provider.new_resource.group(1)
       @provider.new_resource.owner(1)
@@ -96,7 +96,7 @@ describe Chef::Provider::File do
         # test setup
         stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
         # called once in update_new_file_state and once in checksum
-        ::File.should_receive(:stat).twice.with(@provider.new_resource.path).and_return(stat_struct)  
+        ::File.should_receive(:stat).once.with(@provider.new_resource.path).and_return(stat_struct)  
         ::File.should_receive(:directory?).once.with(@provider.new_resource.path).and_return(false)
 
         Etc.should_receive(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
