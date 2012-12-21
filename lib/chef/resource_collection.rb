@@ -100,6 +100,10 @@ class Chef
         yield i
       end
     end
+
+    def empty?
+      @resources.empty?
+    end
     
     def lookup(resource)
       lookup_by = nil
