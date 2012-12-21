@@ -26,9 +26,8 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.1.0"
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
   s.add_dependency "highline", ">= 1.6.9"
-  %w{erubis moneta}.each { |gem| s.add_dependency gem }
+  s.add_dependency "erubis"
 
-  # development_dependency thin: eventmachine 0.12.10 doesn't support Ruby 1.9 on Windows
   %w(rdoc sdoc ronn rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.8.0" }
 

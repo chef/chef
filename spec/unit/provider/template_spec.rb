@@ -156,7 +156,6 @@ describe Chef::Provider::Template do
 
     describe "when the target has the correct content" do
       before do
-        Chef::ChecksumCache.instance.reset!
         File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
         @access_controls = mock("access controls")

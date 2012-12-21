@@ -48,9 +48,6 @@ class Chef
     end
 
     def self.platform_specific_path(path)
-      #10.times { puts "* " * 40}
-      #pp caller
-
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
         system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ""
@@ -309,10 +306,19 @@ class Chef
     # Start handlers
     start_handlers []
 
-    # Checksum Cache
-    # Uses Moneta on the back-end
-    cache_type "BasicFile"
-    cache_options({ :path => platform_specific_path("/var/chef/cache/checksums"), :skip_expires => true })
+    # Syntax Check Cache. Knife keeps track of files that is has already syntax
+    # checked by storing files in this directory. `syntax_check_cache_path` is
+    # the new (and preferred) configuration setting. If not set, knife will
+    # fall back to using cache_options[:path].
+    #
+    # Because many users will have knife configs with cache_options (generated
+    # by `knife configure`), the default for now is to *not* set
+    # syntax_check_cache_path, and thus fallback to cache_options[:path]. We
+    # leave that value to the same default as was previously set.
+    syntax_check_cache_path nil
+
+    # Deprecated:
+    cache_options({ :path => platform_specific_path("/var/chef/cache/checksums") })
 
     # Set to false to silence Chef 11 deprecation warnings:
     chef11_deprecation_warnings true
