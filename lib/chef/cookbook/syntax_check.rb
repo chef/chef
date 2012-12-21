@@ -39,9 +39,11 @@ class Chef
 
         # Create a new PersistentSet. Values in the set are persisted by
         # creating a file in the +cache_path+ directory. If not given, the
-        # value of Chef::Config[:cache_options][:path] is used.
-        def initialize(cache_path=Chef::Config[:cache_options][:path])
-          @cache_path = cache_path
+        # value of Chef::Config[:syntax_check_cache_path] is used; if that
+        # value is not configured, the value of
+        # Chef::Config[:cache_options][:path] is used.
+        def initialize(cache_path=nil)
+          @cache_path = cache_path || Chef::Config[:syntax_check_cache_path] || Chef::Config[:cache_options][:path]
           @cache_path_created = false
         end
 

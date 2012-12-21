@@ -125,12 +125,12 @@ describe Chef::Cookbook::SyntaxCheck do
     let(:cache_path) { Dir.mktmpdir }
 
     before do
-      Chef::Config[:cache_options] = {:path => cache_path }
+      Chef::Config[:syntax_check_cache_path] = cache_path
     end
 
     after do
       FileUtils.rm_rf(cache_path) if File.exist?(cache_path)
-      Chef::Config[:cache_options] = {:path => nil }
+      Chef::Config[:syntax_check_cache_path] = nil
     end
 
     describe "and the files have not been syntax checked previously" do
