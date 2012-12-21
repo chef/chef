@@ -42,6 +42,13 @@ class Chef
         # value of Chef::Config[:syntax_check_cache_path] is used; if that
         # value is not configured, the value of
         # Chef::Config[:cache_options][:path] is used.
+        #--
+        # history: prior to Chef 11, the cache implementation was based on
+        # moneta and configured via cache_options[:path]. Knife configs
+        # generated with Chef 11 will have `syntax_check_cache_path`, but older
+        # configs will have `cache_options[:path]`. `cache_options` is marked
+        # deprecated in chef/config.rb but doesn't currently trigger a warning.
+        # See also: CHEF-3715
         def initialize(cache_path=nil)
           @cache_path = cache_path || Chef::Config[:syntax_check_cache_path] || Chef::Config[:cache_options][:path]
           @cache_path_created = false
