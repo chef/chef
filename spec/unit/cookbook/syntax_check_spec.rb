@@ -126,11 +126,6 @@ describe Chef::Cookbook::SyntaxCheck do
 
     before do
       Chef::Config[:cache_options] = {:path => cache_path }
-      Chef::Config[:cache_type] = 'Memory'
-      @checksum_cache_klass = Class.new(Chef::ChecksumCache)
-      @checksum_cache = @checksum_cache_klass.instance
-      @checksum_cache.reset!('Memory')
-      syntax_check.stub!(:cache).and_return(@checksum_cache)
     end
 
     after do
