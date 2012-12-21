@@ -69,6 +69,8 @@ describe Chef::Resource::RemoteDirectory do
 
   it_behaves_like "a directory resource"
 
+  it_behaves_like "a securable resource with reporting"
+
   context "when creating the remote directory with purging disabled" do
 
     context "and the directory does not yet exist" do

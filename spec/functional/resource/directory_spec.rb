@@ -36,4 +36,6 @@ describe Chef::Resource::Directory do
 
   it_behaves_like "a directory resource"
 
+  it_behaves_like "a securable resource with reporting"
+
 end
