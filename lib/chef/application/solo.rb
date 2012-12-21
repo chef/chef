@@ -207,8 +207,10 @@ class Chef::Application::Solo < Chef::Application
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
       target_file = File.join(recipes_path, 'recipes.tgz')
 
-      verify_mode = OpenSSL::SSL::VERIFY_NONE
-      if Chef::Config[:ssl_verify_mode] == :verify_peer
+      verify_mode = nil
+      if Chef::Config[:ssl_verify_mode] == :verify_none
+        verify_mode = OpenSSL::SSL::VERIFY_NONE
+      elsif Chef::Config[:ssl_verify_mode] == :verify_peer
         verify_mode = OpenSSL::SSL::VERIFY_PEER
       end
 
