@@ -25,7 +25,6 @@ class Chef
     class CookbookTest < Knife
 
       deps do
-        require 'chef/checksum_cache'
         require 'chef/cookbook/syntax_check'
       end
 

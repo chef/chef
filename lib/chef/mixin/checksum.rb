@@ -17,7 +17,7 @@
 #
 
 require 'digest/sha2'
-require 'chef/checksum_cache'
+require 'chef/digester'
 
 class Chef
   module Mixin
