@@ -16,68 +16,6 @@
 # limitations under the License.
 #
 
-###################################################
-# OLD:
-###################################################
-# def test_ruby(cookbook_dir)
-#   cache = Chef::ChecksumCache.instance
-#   Dir[File.join(cookbook_dir, '**', '*.rb')].each do |ruby_file|
-#     key = cache.generate_key(ruby_file, "chef-test")
-#     fstat = File.stat(ruby_file)
-#
-#     if cache.lookup_checksum(key, fstat)
-#       Chef::Log.info("No change in checksum of #{ruby_file}")
-#     else
-#       Chef::Log.info("Testing #{ruby_file} for syntax errors...")
-#       Chef::Mixin::Command.run_command(:command => "ruby -c #{ruby_file}", :output_on_failure => true)
-#       cache.generate_checksum(key, ruby_file, fstat)
-#     end
-#   end
-# end
-#
-#def test_templates(cookbook_dir)
-#  cache = Chef::ChecksumCache.instance
-#  Dir[File.join(cookbook_dir, '**', '*.erb')].each do |erb_file|
-#    key = cache.generate_key(erb_file, "chef-test")
-#    fstat = File.stat(erb_file)
-#
-#    if cache.lookup_checksum(key, fstat)
-#      Chef::Log.info("No change in checksum of #{erb_file}")
-#    else
-#      Chef::Log.info("Testing template #{erb_file} for syntax errors...")
-#      Chef::Mixin::Command.run_command(:command => "sh -c 'erubis -x #{erb_file} | ruby -c'", :output_on_failure => true)
-#      cache.generate_checksum(key, erb_file, fstat)
-#    end
-#  end
-#end
-#
-
-###################################################
-# NEW:
-###################################################
-# def test_template_file(cookbook_dir, erb_file)
-#   Chef::Log.debug("Testing template #{erb_file} for syntax errors...")
-#   result = shell_out("sh -c 'erubis -x #{erb_file} | ruby -c'")
-#   result.error!
-# rescue Mixlib::ShellOut::ShellCommandFailed
-#   file_relative_path = erb_file[/^#{Regexp.escape(cookbook_dir+File::Separator)}(.*)/, 1]
-#   Chef::Log.fatal("Erb template #{file_relative_path} has a syntax error:")
-#   result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-#   exit(1)
-# end
-#
-# def test_ruby_file(cookbook_dir, ruby_file)
-#   Chef::Log.debug("Testing #{ruby_file} for syntax errors...")
-#   result = shell_out("ruby -c #{ruby_file}")
-#   result.error!
-# rescue Mixlib::ShellOut::ShellCommandFailed
-#   file_relative_path = ruby_file[/^#{Regexp.escape(cookbook_dir+File::Separator)}(.*)/, 1]
-#   Chef::Log.fatal("Cookbook file #{file_relative_path} has a syntax error:")
-#   result.stderr.each_line { |l| Chef::Log.fatal(l.chomp) }
-#   exit(1)
-# end
-#
-
 require 'spec_helper'
 require "chef/cookbook/syntax_check"
 

@@ -24,9 +24,9 @@ class Chef
     module Checksum
 
       def checksum(file)
-        Chef::ChecksumCache.checksum_for_file(file)
+        Chef::Digester.checksum_for_file(file)
       end
-      
+
     end
   end
 end

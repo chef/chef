@@ -21,7 +21,7 @@
 require 'digest'
 
 class Chef
-  class ChecksumCache
+  class Digester
 
     def self.instance
       @instance ||= new

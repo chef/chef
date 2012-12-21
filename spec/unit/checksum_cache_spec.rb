@@ -20,16 +20,16 @@
 
 require 'spec_helper'
 
-describe Chef::ChecksumCache do
+describe Chef::Digester do
   before(:each) do
-    @cache = Chef::ChecksumCache.instance
+    @cache = Chef::Digester.instance
   end
 
   describe "when computing checksums of cookbook files and templates" do
 
     it "proxies the class method checksum_for_file to the instance" do
       @cache.should_receive(:checksum_for_file).with("a_file_or_a_fail")
-      Chef::ChecksumCache.checksum_for_file("a_file_or_a_fail")
+      Chef::Digester.checksum_for_file("a_file_or_a_fail")
     end
 
     it "computes a checksum of a file" do
