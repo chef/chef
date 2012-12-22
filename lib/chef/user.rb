@@ -143,19 +143,39 @@ class Chef
     end
 
     def self.list(inflate=false)
-      if inflate
-        users = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
-        users.map do |name|
-          Chef::User.load(name)
-        end
+      response = if inflate
+                   users = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
+                   users.map do |name|
+                     Chef::User.load(name)
+                   end
+                 else
+                   Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
+                 end
+      if response.is_a? Array
+        transform_ohc_list_response(response)
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest('users')
+        response
       end
     end
 
     def self.load(name)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("users/#{name}")
       Chef::User.from_hash(response)
+    end
+
+    private
+
+    # Gross.  Transforms an API response in the form of:
+    # [ { "user" => { "username" => USERNAME }}, ...]
+    # into the form
+    # { "USERNAME" => "URI" }
+    def self.transform_ohc_list_response(response)
+      new_response = Hash.new
+      response.each do |u|
+        name = u['user']['username']
+        new_response[name] = Chef::Config[:chef_server_url] + "/users/#{name}"
+      end
+      new_response
     end
   end
 end

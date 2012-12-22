@@ -186,6 +186,26 @@ describe Chef::User do
       Chef::REST.stub!(:new).and_return(@http_client)
     end
 
+    describe "list" do
+      before(:each) do
+        Chef::Config[:chef_server_url] = "http://www.example.com"
+        @osc_response = { "admin" => "http://www.example.com/users/admin"}
+        @ohc_response = [ { "user" => { "username" => "admin" }} ]
+      end
+
+      it "lists all clients on an OSC server" do
+        @http_client.stub!(:get_rest).with("users").and_return(@osc_response)
+        Chef::User.list.should == @osc_response
+      end
+
+      it "lists all clients on an OHC/OPC server" do
+        @http_client.stub!(:get_rest).with("users").and_return(@ohc_response)
+        # We expect that Chef::User.list will give a consistent response
+        # so OHC API responses should be transformed to OSC-style output.
+        Chef::User.list.should == @osc_response
+      end
+    end
+
     describe "create" do
       it "creates a new user via the API" do
         @user.password "password"
