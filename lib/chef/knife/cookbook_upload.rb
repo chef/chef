@@ -231,7 +231,8 @@ WARNING
       rescue Net::HTTPServerException => e
         case e.response.code
         when "409"
-          ui.error "Version #{cookbook.version} of cookbook #{cookbook.name} is frozen. Use --force to override."
+          # Grab just the body of the json response
+          ui.error JSON.parse(e.response.body)['error'].first
           Log.debug(e)
           raise Exceptions::CookbookFrozen
         else
