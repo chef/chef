@@ -30,7 +30,9 @@
               %% how many nodes are deserialized at a time in
               %% preparing a response.
               {bulk_fetch_batch_size, <%= @bulk_fetch_batch_size %>},
-              {superusers, [<<"chef-webui">>]}
+              {superusers, [<<"chef-webui">>]},
+              %% metrics config
+              {root_metric_key, "<%= @root_metric_key %>"}
              ]},
   {chef_authn, [
                 {keyring, [{default, "/etc/chef-server/chef-webui.pem"}]}

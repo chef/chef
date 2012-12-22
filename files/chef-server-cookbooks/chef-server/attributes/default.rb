@@ -135,6 +135,7 @@ default['chef_server']['erchef']['url'] = "http://127.0.0.1:8000"
 default['chef_server']['erchef']['validation_client_name'] = "chef-validator"
 default['chef_server']['erchef']['umask'] = "0022"
 default['chef_server']['erchef']['web_ui_client_name'] = "chef-webui"
+default['chef_server']['erchef']['root_metric_key'] = "chefAPI"
 
 ####
 # Chef Server WebUI
