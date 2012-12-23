@@ -34,7 +34,7 @@ class Chef
             elsif result.exists?
               results << result
             elsif pattern.exact_path
-              STDERR.puts "#{format_path(result.path)}: No such file or directory"
+              ui.error "#{format_path(result.path)}: No such file or directory"
             end
           end
         end
@@ -49,8 +49,8 @@ class Chef
 
         print_result_paths results
         dir_results.each do |result, children|
-          puts ""
-          puts "#{format_path(result.path)}:"
+          output ""
+          output "#{format_path(result.path)}:"
           print_results(children.map { |result| result.name }.sort, "")
         end
       end
@@ -59,7 +59,7 @@ class Chef
         begin
           children = result.children.sort_by { |child| child.name }
         rescue Chef::ChefFS::FileSystem::NotFoundError
-          STDERR.puts "#{format_path(result.path)}: No such file or directory"
+          ui.error "#{format_path(result.path)}: No such file or directory"
           return []
         end
 
@@ -91,21 +91,20 @@ class Chef
 
         print_space = results.map { |result| result.length }.max + 2
         # TODO: tput cols is not cross platform
-        columns = $stdout.isatty ? Integer(`tput cols`) : 0
-        current_column = 0
+        columns = stdout.isatty ? Integer(`tput cols`) : 0
+        current_line = ''
         results.each do |result|
-          if current_column != 0 && current_column + print_space > columns
-            puts ""
-            current_column = 0
+          if current_line.length > 0 && current_line.length + print_space > columns
+            output current_line
+            current_line = ''
           end
-          if current_column == 0
-            print indent
-            current_column += indent.length
+          if current_line.length == 0
+            current_line << indent
           end
-          print result + (' ' * (print_space - result.length))
-          current_column += print_space
+          current_line << result
+          current_line << (' ' * (print_space - result.length))
         end
-        puts ""
+        output current_line if current_line.length > 0
       end
     end
   end

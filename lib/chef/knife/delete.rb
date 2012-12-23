@@ -65,9 +65,9 @@ class Chef
           end
         end
         if deleted_any
-          puts "Deleted #{format_path(results[0].path)}"
+          output("Deleted #{format_path(results[0].path)}")
         else
-          STDERR.puts "#{format_path(results[0].path)}: No such file or directory"
+          ui.error "#{format_path(results[0].path)}: No such file or directory"
         end
       end
     end

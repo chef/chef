@@ -39,7 +39,7 @@ class Chef
           data = IO.read(config[:input])
         end
         chef_rest = Chef::REST.new(Chef::Config[:chef_server_url])
-        puts api_request(chef_rest, config[:method].to_sym, chef_rest.create_url(name_args[0]), {}, data)
+        output api_request(chef_rest, config[:method].to_sym, chef_rest.create_url(name_args[0]), {}, data)
       end
 
       ACCEPT_ENCODING = "Accept-Encoding".freeze
