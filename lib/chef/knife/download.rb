@@ -41,7 +41,7 @@ class Chef
         end
 
         pattern_args.each do |pattern|
-          Chef::ChefFS::FileSystem.copy_to(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, config)
+          Chef::ChefFS::FileSystem.copy_to(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, config, ui)
         end
       end
     end
