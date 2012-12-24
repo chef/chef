@@ -11,11 +11,11 @@ class Chef
       option :recursive,
         :short => '-R',
         :boolean => true,
-        :description => "List directories recursively."
+        :description => "List directories recursively"
       option :bare_directories,
         :short => '-d',
         :boolean => true,
-        :description => "When directories match the pattern, do not show the directories' children."
+        :description => "When directories match the pattern, do not show the directories' children"
       option :local,
         :long => '--local',
         :boolean => true,
@@ -28,6 +28,10 @@ class Chef
         :short => '-1',
         :boolean => true,
         :description => "Show only one column of results"
+      option :trailing_slashes,
+        :short => '-p',
+        :boolean => true,
+        :description => "Show trailing slashes after directories"
 
       def run
         patterns = name_args.length == 0 ? [""] : name_args
@@ -71,7 +75,7 @@ class Chef
             printed_something = true
           end
           output "#{format_path(result.path)}:"
-          print_results(children.map { |result| result.name }.sort, "")
+          print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
         end
       end
 
@@ -94,26 +98,18 @@ class Chef
         result
       end
 
-      def list_dirs_recursive(children)
-        results = children.select { |child| child.dir? }.to_a
-        results.each do |child|
-          results += list_dirs_recursive(child.children)
-        end
-        results
-      end
-
       def print_result_paths(results, indent = "")
-        print_results(results.map { |result| format_path(result.path) }, indent)
+        print_results(results.map { |result| maybe_add_slash(format_path(result.path), result.dir?) }, indent)
       end
 
       def print_results(results, indent)
         return if results.length == 0
 
         print_space = results.map { |result| result.length }.max + 2
-        # TODO: tput cols is not cross platform
         if config[:one_column] || !stdout.isatty
           columns = 0
         else
+          # TODO: tput cols is not cross platform
           columns = Integer(`tput cols`)
         end
         current_line = ''
@@ -129,6 +125,14 @@ class Chef
           current_line << (' ' * (print_space - result.length))
         end
         output current_line.rstrip if current_line.length > 0
+      end
+
+      def maybe_add_slash(path, is_dir)
+        if config[:trailing_slashes] && is_dir
+          "#{path}/"
+        else
+          path
+        end
       end
     end
   end
