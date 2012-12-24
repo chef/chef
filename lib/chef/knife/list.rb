@@ -48,8 +48,13 @@ class Chef
         end
 
         print_result_paths results
+        printed_something = results.length > 0
         dir_results.each do |result, children|
-          output ""
+          if printed_something
+            output ""
+          else
+            printed_something = true
+          end
           output "#{format_path(result.path)}:"
           print_results(children.map { |result| result.name }.sort, "")
         end
@@ -95,7 +100,7 @@ class Chef
         current_line = ''
         results.each do |result|
           if current_line.length > 0 && current_line.length + print_space > columns
-            output current_line
+            output current_line.rstrip
             current_line = ''
           end
           if current_line.length == 0
@@ -104,7 +109,7 @@ class Chef
           current_line << result
           current_line << (' ' * (print_space - result.length))
         end
-        output current_line if current_line.length > 0
+        output current_line.rstrip if current_line.length > 0
       end
     end
   end
