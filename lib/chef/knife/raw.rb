@@ -85,7 +85,7 @@ class Chef
               msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
               Chef::Log.info(msg)
             end
-            puts response.body
+            output response.body
             response.error!
           end
         end
