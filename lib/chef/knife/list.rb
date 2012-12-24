@@ -24,6 +24,10 @@ class Chef
         :long => '--flat',
         :boolean => true,
         :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
+      option :one_column,
+        :short => '-1',
+        :boolean => true,
+        :description => "Show only one column of results"
 
       def run
         patterns = name_args.length == 0 ? [""] : name_args
@@ -107,7 +111,11 @@ class Chef
 
         print_space = results.map { |result| result.length }.max + 2
         # TODO: tput cols is not cross platform
-        columns = stdout.isatty ? Integer(`tput cols`) : 0
+        if config[:one_column] || !stdout.isatty
+          columns = 0
+        else
+          columns = Integer(`tput cols`)
+        end
         current_line = ''
         results.each do |result|
           if current_line.length > 0 && current_line.length + print_space > columns
