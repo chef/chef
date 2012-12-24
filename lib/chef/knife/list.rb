@@ -20,6 +20,10 @@ class Chef
         :long => '--local',
         :boolean => true,
         :description => "List local directory instead of remote"
+      option :flat,
+        :long => '--flat',
+        :boolean => true,
+        :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
 
       def run
         patterns = name_args.length == 0 ? [""] : name_args
@@ -37,6 +41,13 @@ class Chef
               ui.error "#{format_path(result.path)}: No such file or directory"
             end
           end
+        end
+
+        if config[:flat]
+          dir_results.each do |result, children|
+            results += children
+          end
+          dir_results = []
         end
 
         results = results.sort_by { |result| result.path }
