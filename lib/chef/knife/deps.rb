@@ -48,7 +48,7 @@ class Chef
             child_entry = Chef::ChefFS::FileSystem.resolve_path(@root, child)
             print_flattened_dependencies(child_entry, dependencies)
           end
-          puts format_path(entry.path)
+          output format_path(entry.path)
         end
       end
 
