@@ -18,7 +18,8 @@
 
 require 'tmpdir'
 require 'fileutils'
-require 'chef_zero/server'
+require 'chef_zero/rspec'
+require 'chef/config'
 require 'support/shared/integration/knife_support'
 require 'spec_helper'
 
@@ -32,6 +33,8 @@ require 'chef/knife/show'
 require 'chef/knife/upload'
 
 module IntegrationSupport
+  include ChefZero::RSpec
+
   def when_the_repository(description, contents, &block)
     context "When the local repository #{description}" do
       before :each do
@@ -45,60 +48,6 @@ module IntegrationSupport
         if @repository_dir
           FileUtils.remove_directory_secure(@repository_dir)
           @repository_dir = nil
-        end
-      end
-
-      instance_eval(&block)
-    end
-  end
-
-  def when_the_chef_server(description, &block)
-    context "When the Chef server #{description}" do
-      before :each do
-        raise "Attempt to create multiple servers in one test" if @server
-        # Set up configuration so that clients will point to the server
-        Thin::Logging.silent = true
-        @server = ChefZero::Server.new(:port => 8889)
-        Chef::Config.chef_server_url = @server.url
-        Chef::Config.node_name = 'admin'
-        Chef::Config.client_key = File.join(File.dirname(__FILE__), 'stickywicket.pem')
-
-        # Start the server
-        @server.start_background
-      end
-
-      def self.client(name, client)
-        before(:each) { @server.load_data({ 'clients' => { name => client }}) }
-      end
-
-      def self.cookbook(name, version, cookbook)
-        before(:each) { @server.load_data({ 'cookbooks' => { "#{name}-#{version}" => cookbook }}) }
-      end
-
-      def self.data_bag(name, data_bag)
-        before(:each) { @server.load_data({ 'data' => { name => data_bag }}) }
-      end
-
-      def self.environment(name, environment)
-        before(:each) { @server.load_data({ 'environments' => { name => environment }}) }
-      end
-
-      def self.node(name, node)
-        before(:each) { @server.load_data({ 'nodes' => { name => node }}) }
-      end
-
-      def self.role(name, role)
-        before(:each) { @server.load_data({ 'roles' => { name => role }}) }
-      end
-
-      def self.user(name, user)
-        before(:each) { @server.load_data({ 'users' => { name => user }}) }
-      end
-
-      after :each do
-        if @server
-          @server.stop
-          @server = nil
         end
       end
 
