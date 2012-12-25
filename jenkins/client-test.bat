@@ -33,8 +33,8 @@ mkdir .\bundle
 set PATH=C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;%PATH%
 call bundle install --without server --path bundle || GOTO :error
 
-rem # run the tests
-call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec || GOTO :error
+rem # run the tests -- exclude spec/stress on windows
+call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
 
 rem # uninstall chef
 call msiexec /qb /x %omnibus_package% || GOTO :error
