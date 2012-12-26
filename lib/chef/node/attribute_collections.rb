@@ -61,7 +61,7 @@ class Chef
       # also invalidate the cached merged_attributes on the root
       # Node::Attribute object.
       MUTATOR_METHODS.each do |mutator|
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
             root.reset_cache
             super
@@ -74,6 +74,10 @@ class Chef
       def initialize(root, data)
         @root = root
         super(data)
+      end
+
+      def dup
+        Array.new(map {|e| e.dup})
       end
 
     end
@@ -115,7 +119,7 @@ class Chef
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
       MUTATOR_METHODS.each do |mutator|
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
             root.reset_cache
             super
@@ -183,6 +187,10 @@ class Chef
         else
           value
         end
+      end
+
+      def dup
+        Mash.new(self)
       end
 
     end

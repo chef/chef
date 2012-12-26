@@ -26,6 +26,8 @@ class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
 
+      include Chef::Mixin::EnforceOwnershipAndPermissions
+
       def load_current_resource
         @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
         super

@@ -192,10 +192,8 @@ shared_examples_for Chef::Client do
       File.should_receive(:exists?).with(Chef::Config[:client_key]).exactly(1).times.and_return(false)
 
       #   Client.register will register with the validation client name.
-      Chef::REST.should_receive(:new).with(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key]).exactly(1).and_return(mock_chef_rest_for_client)
-      mock_chef_rest_for_client.should_receive(:register).with(@fqdn, Chef::Config[:client_key]).exactly(1).and_return(true)
+      Chef::ApiClient::Registration.any_instance.should_receive(:run)
       #   Client.register will then turn around create another
-
       #   Chef::REST object, this time with the client key it got from the
       #   previous step.
       Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], @fqdn, Chef::Config[:client_key]).exactly(1).and_return(mock_chef_rest_for_node)

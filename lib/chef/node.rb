@@ -45,6 +45,12 @@ class Chef
 
     attr_accessor :recipe_list, :run_state, :run_list
 
+    # RunContext will set itself as run_context via this setter when
+    # initialized. This is needed so DSL::IncludeAttribute (in particular,
+    # #include_recipe) can access the run_context to determine if an attributes
+    # file has been seen yet.
+    #--
+    # TODO: This is a pretty ugly way to solve that problem.
     attr_accessor :run_context
 
     include Chef::Mixin::FromFile

@@ -40,6 +40,29 @@ describe Chef::Knife do
     @stdout = StringIO.new
   end
 
+  describe "selecting a config file" do
+    context "when the current working dir is inside a symlinked directory" do
+      before do
+        Chef::Knife.reset_config_path!
+        # pwd according to your shell is /home/someuser/prod/chef-repo, but
+        # chef-repo is a symlink to /home/someuser/codes/chef-repo
+        ENV.stub!(:[]).with("PWD").and_return("/home/someuser/prod/chef-repo")
+        Dir.stub!(:pwd).and_return("/home/someuser/codes/chef-repo")
+      end
+
+      after do
+        Chef::Knife.reset_config_path!
+      end
+
+      it "loads the config from the non-dereferenced directory path" do
+        File.should_receive(:exist?).with("/home/someuser/prod/chef-repo/.chef").and_return(false)
+        File.should_receive(:exist?).with("/home/someuser/prod/.chef").and_return(true)
+        File.should_receive(:directory?).with("/home/someuser/prod/.chef").and_return(true)
+        Chef::Knife.chef_config_dir.should == "/home/someuser/prod/.chef"
+      end
+    end
+  end
+
   describe "after loading a subcommand" do
     before do
       Chef::Knife.reset_subcommands!

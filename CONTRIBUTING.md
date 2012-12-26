@@ -119,9 +119,12 @@ Opscode regularly reviews code contributions and provides suggestions for improv
 
 We find contributions by searching the ticket tracker for _resolved_ tickets with a status of _fixed_. If we have feedback we will
 reopen the ticket and you should resolve it again when you've made the changes or have a response to our feedback. When we believe
-the patch is ready to be merged, we will tag the _Code Reviewed_ field with _Reviewed_.
+the patch is ready to be merged, we update the status to _Fix Reviewed_.
 
-Depending on the project, these tickets are then merged within a week or two, depending on the current release cycle.
+Depending on the project, these tickets are then merged within a week or two, depending on the current release cycle. At this
+point the ticket status will be updated to _Fix Committed_ or _Closed_.
+
+Please see the [Code Review](http://wiki.opscode.com/display/chef/Code+Review) page on the wiki for additional information.
 
 ## Release Cycle
 

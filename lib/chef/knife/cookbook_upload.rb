@@ -95,7 +95,7 @@ class Chef
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
         justify_width = @server_side_cookbooks.map {|name| name.size}.max.to_i + 2
         if config[:all]
-
+          cookbook_repo.load_cookbooks
           cbs = []
           cookbook_repo.each do |cookbook_name, cookbook|
             cbs << cookbook
@@ -260,7 +260,7 @@ WARNING
         # the version is in the cookbooks being uploaded. If not, exit and warn the user.
         cookbook.metadata.dependencies.each do |cookbook_name, version|
           unless check_server_side_cookbooks(cookbook_name, version) || check_uploading_cookbooks(cookbook_name, version)
-            ui.error "Cookbook #{cookbook.name} depends on cookbook #{cookbook_name} version #{version},"
+            ui.error "Cookbook #{cookbook.name} depends on cookbook '#{cookbook_name}' version '#{version}',"
             ui.error "which is not currently being uploaded and cannot be found on the server."
             exit 1
           end

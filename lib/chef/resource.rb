@@ -20,6 +20,7 @@
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/dsl/platform_introspection'
+require 'chef/dsl/registry_helper'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
 require 'chef/resource_collection'
@@ -122,9 +123,11 @@ F
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
+    include Chef::DSL::RegistryHelper
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
 
+    extend Chef::Mixin::ConvertToClassName
 
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
@@ -660,95 +663,6 @@ F
     # Hook to allow a resource to run specific code after creation
     def after_created
       nil
-    end
-
-    extend Chef::Mixin::ConvertToClassName
-
-    def self.attribute(attr_name, validation_opts={})
-      # This atrocity is the only way to support 1.8 and 1.9 at the same time
-      # When you're ready to drop 1.8 support, do this:
-      # define_method attr_name.to_sym do |arg=nil|
-      # etc.
-      shim_method=<<-SHIM
-      def #{attr_name}(arg=nil)
-        _set_or_return_#{attr_name}(arg)
-      end
-      SHIM
-      class_eval(shim_method)
-
-      define_method("_set_or_return_#{attr_name.to_s}".to_sym) do |arg|
-        set_or_return(attr_name.to_sym, arg, validation_opts)
-      end
-    end
-
-    def self.build_from_file(cookbook_name, filename, run_context)
-      rname = filename_to_qualified_string(cookbook_name, filename)
-
-      # Add log entry if we override an existing light-weight resource.
-      class_name = convert_to_class_name(rname)
-      overriding = Chef::Resource.const_defined?(class_name)
-      Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
-
-      new_resource_class = Class.new self do |cls|
-
-        # default initialize method that ensures that when initialize is finally
-        # wrapped (see below), super is called in the event that the resource
-        # definer does not implement initialize
-        def initialize(name, run_context)
-          super(name, run_context)
-        end
-
-        @actions_to_create = []
-
-        class << cls
-          include Chef::Mixin::FromFile
-
-          attr_accessor :run_context
-          attr_reader :action_to_set_default
-
-          def node
-            self.run_context.node
-          end
-
-          def actions_to_create
-            @actions_to_create
-          end
-
-          define_method(:default_action) do |action_name|
-            actions_to_create.push(action_name)
-            @action_to_set_default = action_name
-          end
-
-          define_method(:actions) do |*action_names|
-            actions_to_create.push(*action_names)
-          end
-        end
-
-        # set the run context in the class instance variable
-        cls.run_context = run_context
-
-        # load resource definition from file
-        cls.class_from_file(filename)
-
-        # create a new constructor that wraps the old one and adds the actions
-        # specified in the DSL
-        old_init = instance_method(:initialize)
-
-        define_method(:initialize) do |name, *optional_args|
-          args_run_context = optional_args.shift
-          @resource_name = rname.to_sym
-          old_init.bind(self).call(name, args_run_context)
-          @action = self.class.action_to_set_default || @action
-          allowed_actions.push(self.class.actions_to_create).flatten!
-        end
-      end
-
-      # register new class as a Chef::Resource
-      class_name = convert_to_class_name(rname)
-      Chef::Resource.const_set(class_name, new_resource_class)
-      Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
-
-      new_resource_class
     end
 
     # Resources that want providers namespaced somewhere other than

@@ -34,7 +34,6 @@ describe Chef::Knife::Ssh do
 
   before do
     @knife = Chef::Knife::Ssh.new
-    @knife.config.clear
     @knife.config[:attribute] = "fqdn"
     @node_foo = Chef::Node.new
     @node_foo.automatic_attrs[:fqdn] = "foo.example.org"
@@ -195,5 +194,96 @@ describe Chef::Knife::Ssh do
       @knife.session.servers[0].user.should == "locutus"
     end
   end
-end
 
+  describe "#ssh_command" do
+    let(:execution_channel) { double(:execution_channel, :on_data => nil) }
+    let(:session_channel) { double(:session_channel, :request_pty => nil)}
+
+    let(:execution_channel2) { double(:execution_channel, :on_data => nil) }
+    let(:session_channel2) { double(:session_channel, :request_pty => nil)}
+
+    let(:session) { double(:session, :loop => nil) }
+
+    let(:command) { "false" }
+
+    before do
+      execution_channel.
+        should_receive(:on_request).
+        and_yield(nil, double(:data_stream, :read_long => exit_status))
+
+      session_channel.
+        should_receive(:exec).
+        with(command).
+        and_yield(execution_channel, true)
+
+      execution_channel2.
+        should_receive(:on_request).
+        and_yield(nil, double(:data_stream, :read_long => exit_status2))
+
+      session_channel2.
+        should_receive(:exec).
+        with(command).
+        and_yield(execution_channel2, true)
+
+      session.
+        should_receive(:open_channel).
+        and_yield(session_channel).
+        and_yield(session_channel2)
+    end
+
+    context "both connections return 0" do
+      let(:exit_status) { 0 }
+      let(:exit_status2) { 0 }
+
+      it "returns a 0 exit code" do
+        @knife.ssh_command(command, session).should == 0
+      end
+    end
+
+    context "the first connection returns 1 and the second returns 0" do
+      let(:exit_status) { 1 }
+      let(:exit_status2) { 0 }
+
+      it "returns a non-zero exit code" do
+        @knife.ssh_command(command, session).should == 1
+      end
+    end
+
+    context "the first connection returns 1 and the second returns 2" do
+      let(:exit_status) { 1 }
+      let(:exit_status2) { 2 }
+
+      it "returns a non-zero exit code" do
+        @knife.ssh_command(command, session).should == 2
+      end
+    end
+  end
+
+  describe "#run" do
+    before do
+      @query = Chef::Search::Query.new
+      @query.should_receive(:search).and_return([[@node_foo]])
+      Chef::Search::Query.stub!(:new).and_return(@query)
+      @knife.stub(:ssh_command).and_return(exit_code)
+      @knife.name_args = ['*:*', 'false']
+    end
+
+    context "with an error" do
+      let(:exit_code) { 1 }
+
+      it "should exit with a non-zero exit code" do
+        @knife.should_receive(:exit).with(exit_code)
+        @knife.run
+      end
+    end
+
+    context "with no error" do
+      let(:exit_code) { 0 }
+
+      it "should not exit" do
+        @knife.should_not_receive(:exit)
+        @knife.run
+      end
+    end
+  end
+end

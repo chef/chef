@@ -145,7 +145,7 @@ class Chef
             ui.fatal("No nodes returned from search!")
           else
             ui.fatal("#{@action_nodes.length} #{@action_nodes.length > 1 ? "nodes":"node"} found, " +
-                     "but do not have the required attribute to stablish the connection. " +
+                     "but does not have the required attribute to establish the connection. " +
                      "Try setting another attribute to open the connection using --attribute.")
           end
           exit 10
@@ -221,7 +221,7 @@ class Chef
               end
             end
             ch.on_request "exit-status" do |ichannel, data|
-              exit_status = data.read_long
+              exit_status = [exit_status, data.read_long].max
             end
           end
         end
@@ -439,7 +439,11 @@ class Chef
         end
 
         session.close
-        exit_status
+        if exit_status != 0
+          exit exit_status
+        else
+          exit_status
+        end
       end
 
     end

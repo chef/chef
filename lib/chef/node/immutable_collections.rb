@@ -3,12 +3,12 @@ class Chef
   class Node
 
     module Immutablize
-      def immutablize(root, value)
+      def immutablize(value)
         case value
         when Hash
-          ImmutableMash.new(root, value)
+          ImmutableMash.new(value)
         when Array
-          ImmutableArray.new(root, value)
+          ImmutableArray.new(value)
         else
           value
         end
@@ -27,8 +27,6 @@ class Chef
     #   detect staleness and raise an error if accessed when stale.
     class ImmutableArray < Array
       include Immutablize
-
-      attr_reader :root
 
       alias :internal_push :<<
       private :internal_push
@@ -68,104 +66,9 @@ class Chef
         :unshift
       ]
 
-      # A list of methods that read values from the Array. Each of these is
-      # overridden to verify that the Chef::Node::Attribute object that this
-      # object belongs to has not been modified since the value was computed.
-      READER_METHODS =
-      [
-        :&,
-        :*,
-        :+,
-        :-,
-        :[],
-        :all?,
-        :any?,
-        :assoc,
-        :at,
-        :chunk,
-        :collect,
-        :collect_concat,
-        :combination,
-        :compact,
-        :concat,
-        :count,
-        :cycle,
-        :detect,
-        :drop,
-        :drop_while,
-        :each,
-        :each_cons,
-        :each_entry,
-        :each_index,
-        :each_slice,
-        :each_with_index,
-        :each_with_object,
-        :empty?,
-        :entries,
-        :fetch,
-        :find,
-        :find_all,
-        :find_index,
-        :first,
-        :flat_map,
-        :flatten,
-        :grep,
-        :group_by,
-        :include?,
-        :index,
-        :inject,
-        :join,
-        :last,
-        :length,
-        :map,
-        :max,
-        :max_by,
-        :member?,
-        :min,
-        :min_by,
-        :minmax,
-        :minmax_by,
-        :none?,
-        :one?,
-        :pack,
-        :partition,
-        :permutation,
-        :product,
-        :rassoc,
-        :reduce,
-        :reject,
-        :repeated_combination,
-        :repeated_permutation,
-        :reverse,
-        :reverse_each,
-        :rindex,
-        :rotate,
-        :sample,
-        :select,
-        :shelljoin,
-        :shuffle,
-        :size,
-        :slice,
-        :slice_before,
-        :sort,
-        :sort_by,
-        :take,
-        :take_while,
-        :to_a,
-        :to_ary,
-        :to_set,
-        :transpose,
-        :uniq,
-        :values_at,
-        :zip,
-        :|
-      ]
-
-      def initialize(root, array_data)
-        @root = root
-        @serial_number = root.serial_number
+      def initialize(array_data)
         array_data.each do |value|
-          internal_push(immutablize(root, value))
+          internal_push(immutablize(value))
         end
       end
 
@@ -173,7 +76,7 @@ class Chef
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator_method_name}(*args, &block)
             msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
             %Q(To set an attribute use code like `node.default["key"] = "value"')
@@ -182,21 +85,10 @@ class Chef
         METHOD_DEFN
       end
 
-      READER_METHODS.each do |reader|
-        class_eval(<<-METHOD_DEFN)
-          def #{reader}(*args, &block)
-            if root.stale_subtree?(@serial_number)
-              raise Exceptions::StaleAttributeRead,
-                "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
-            end
-            super
-          end
-        METHOD_DEFN
+      def dup
+        Array.new(map {|e| e.dup })
       end
 
-      def dup
-        Array.new(self)
-      end
     end
 
     # == ImmutableMash
@@ -214,8 +106,6 @@ class Chef
     class ImmutableMash < Mash
 
       include Immutablize
-
-      attr_reader :root
 
       alias :internal_set :[]=
       private :internal_set
@@ -238,89 +128,9 @@ class Chef
         :shift
       ]
 
-      READER_METHODS = [
-        :[],
-        :all?,
-        :any?,
-        :assoc,
-        :chunk,
-        :collect,
-        :collect_concat,
-        :count,
-        :cycle,
-        :detect,
-        :drop,
-        :drop_while,
-        :each,
-        :each_cons,
-        :each_entry,
-        :each_key,
-        :each_pair,
-        :each_slice,
-        :each_value,
-        :each_with_index,
-        :each_with_object,
-        :empty?,
-        :entries,
-        :except,
-        :fetch,
-        :find,
-        :find_all,
-        :find_index,
-        :first,
-        :flat_map,
-        :flatten,
-        :grep,
-        :group_by,
-        :has_key?,
-        :has_value?,
-        :include?,
-        :index,
-        :inject,
-        :invert,
-        :key,
-        :key?,
-        :keys,
-        :length,
-        :map,
-        :max,
-        :max_by,
-        :member?,
-        :merge,
-        :min,
-        :min_by,
-        :minmax,
-        :minmax_by,
-        :none?,
-        :one?,
-        :partition,
-        :rassoc,
-        :reduce,
-        :reject,
-        :reverse_each,
-        :select,
-        :size,
-        :slice_before,
-        :sort,
-        :sort_by,
-        :store,
-        :symbolize_keys,
-        :take,
-        :take_while,
-        :to_a,
-        :to_hash,
-        :to_set,
-        :value?,
-        :values,
-        :values_at,
-        :zip
-      ]
-
-      def initialize(root, mash_data)
-        @serial_number = root.serial_number
-        @root = root
+      def initialize(mash_data)
         mash_data.each do |key, value|
-          internal_set(key, immutablize(root, value))
+          internal_set(key, immutablize(value))
         end
       end
 
@@ -330,24 +140,12 @@ class Chef
       # This is the magic that makes this object "Immutable"
       DISALLOWED_MUTATOR_METHODS.each do |mutator_method_name|
         # Ruby 1.8 blocks can't have block arguments, so we must use string eval:
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
         def #{mutator_method_name}(*args, &block)
           msg = "Node attributes are read-only when you do not specify which precedence level to set. " +
           %Q(To set an attribute use code like `node.default["key"] = "value"')
           raise Exceptions::ImmutableAttributeModification, msg
         end
-        METHOD_DEFN
-      end
-
-      READER_METHODS.each do |reader_method|
-        class_eval(<<-METHOD_DEFN)
-          def #{reader_method}(*args, &block)
-            if root.stale_subtree?(@serial_number)
-              raise Exceptions::StaleAttributeRead,
-                "Node attributes have been modified since this value was read. Get an updated value by reading from node, e.g., `node[:key]`"
-            end
-            super
-          end
         METHOD_DEFN
       end
 
@@ -381,6 +179,7 @@ class Chef
       def dup
         Mash.new(self)
       end
+
     end
 
   end

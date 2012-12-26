@@ -34,10 +34,13 @@ class Chef
         :description => "Don't take action, only print what would happen"
 
       def run
-        patterns = pattern_args_from(name_args.length > 0 ? name_args : [ "" ])
+        if name_args.length == 0
+          show_usage
+          ui.fatal("Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"")
+          exit 1
+        end
 
-        # Get the matches (recursively)
-        patterns.each do |pattern|
+        pattern_args.each do |pattern|
           Chef::ChefFS::FileSystem.copy_to(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, config)
         end
       end

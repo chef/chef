@@ -26,6 +26,9 @@ require 'fileutils'
 class Chef
   class Provider
     class Directory < Chef::Provider::File
+
+      include Chef::Mixin::EnforceOwnershipAndPermissions
+
       def whyrun_supported?
         true
       end

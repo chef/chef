@@ -98,14 +98,9 @@ If the config file exists, knife uses these settings for __GENERAL OPTIONS__ def
   * `chef_server_url`:
     URL of the Chef server. Corresponds to the `-s` or `--server-url`
     option. This is requested from the user when running this sub-command.
-  * `cache_type`:
-    The type of cache to use. Default is BasicFile. This can be any type of
-    Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper,
-    File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant,
-    Xattr, YAML.
-  * `cache_options`:
-    Specifies various options to use for caching. These options are
-    dependent on the `cache_type`.
+  * `syntax_check_cache_path`:
+    Specifies the path to a directory where knife caches information
+    about files that it has syntax checked.
   * `validation_client_name`:
     Specifies the name of the client used to validate new clients.
   * `validation_key`:

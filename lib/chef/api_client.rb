@@ -86,8 +86,8 @@ class Chef
       )
     end
 
-    # The hash representation of the object.  Includes the name and public_key,
-    # but never the private key.
+    # The hash representation of the object. Includes the name and public_key.
+    # Private key is included if available.
     #
     # @return [Hash]
     def to_hash
@@ -98,6 +98,7 @@ class Chef
         'json_class' => self.class.name,
         "chef_type" => "client"
       }
+      result["private_key"] = @private_key if @private_key
       result
     end
 
@@ -111,9 +112,19 @@ class Chef
     def self.json_create(o)
       client = Chef::ApiClient.new
       client.name(o["name"] || o["clientname"])
+      client.private_key(o["private_key"]) if o.key?("private_key")
       client.public_key(o["public_key"])
       client.admin(o["admin"])
       client
+    end
+
+    def self.http_api
+      Chef::REST.new(Chef::Config[:chef_server_url])
+    end
+
+    def self.reregister(name)
+      api_client = load(name)
+      api_client.reregister
     end
 
     def self.list(inflate=false)
@@ -125,13 +136,13 @@ class Chef
         end
         response
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients")
+        http_api.get("clients")
       end
     end
 
     # Load a client by name via the API
     def self.load(name)
-      response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{name}")
+      response = http_api.get("clients/#{name}")
       if response.kind_of?(Chef::ApiClient)
         response
       else
@@ -143,37 +154,50 @@ class Chef
 
     # Remove this client via the REST API
     def destroy
-      Chef::REST.new(Chef::Config[:chef_server_url]).delete_rest("clients/#{@name}")
+      http_api.delete("clients/#{@name}")
     end
 
     # Save this client via the REST API, returns a hash including the private key
-    def save(new_key=false, validation=false)
-      if validation
-        r = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
-      else
-        r = Chef::REST.new(Chef::Config[:chef_server_url])
-      end
-      # First, try and create a new registration
+    def save
       begin
-        r.post_rest("clients", {:name => self.name, :admin => self.admin })
+        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin})
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
-        if e.response.code == "409"
-          r.put_rest("clients/#{name}", { :name => self.name, :admin => self.admin, :private_key => new_key })
+        if e.response.code == "404"
+          http_api.post("clients", {:name => self.name, :admin => self.admin })
         else
           raise e
         end
       end
     end
 
+    def reregister
+      reregistered_self = http_api.put("clients/#{name}", { :name => name, :admin => admin, :private_key => true })
+      if reregistered_self.respond_to?(:[])
+        private_key(reregistered_self["private_key"])
+      else
+        private_key(reregistered_self.private_key)
+      end
+      self
+    end
+
     # Create the client via the REST API
     def create
-      Chef::REST.new(Chef::Config[:chef_server_url]).post_rest("clients", self)
+      http_api.post("clients", self)
     end
 
     # As a string
     def to_s
       "client[#{@name}]"
+    end
+
+    def inspect
+      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' " +
+      "public_key:'#{public_key}' private_key:'#{private_key}'"
+    end
+
+    def http_api
+      @http_api ||= Chef::REST.new(Chef::Config[:chef_server_url])
     end
 
   end

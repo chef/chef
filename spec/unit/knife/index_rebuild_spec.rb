@@ -19,47 +19,110 @@
 require 'spec_helper'
 
 describe Chef::Knife::IndexRebuild do
-  before do
-    Chef::Config[:node_name]  = "webmonkey.example.com"
-    @knife = Chef::Knife::IndexRebuild.new
-    @rest_client = mock("Chef::REST (mock)", :post_rest => { :result => :true })
-    @knife.ui.stub!(:output)
-    @knife.stub!(:rest).and_return(@rest_client)
 
-    @out = StringIO.new
-    @knife.ui.stub!(:stdout).and_return(@out)
+  let(:knife){Chef::Knife::IndexRebuild.new}
+  let(:rest_client){mock(Chef::REST)}
+
+  let(:stub_rest!) do
+    knife.should_receive(:rest).and_return(rest_client)
   end
 
-  it "asks a yes/no confirmation and aborts on 'no'" do
-    @knife.ui.stub!(:stdin).and_return(StringIO.new("NO\n"))
-    @knife.should_receive(:puts)
-    @knife.should_receive(:exit).with(7)
-    @knife.run
-    @out.string.should match(/yes\/no/)
+  before :each do
+    # This keeps the test output clean
+    knife.ui.stub!(:stdout).and_return(StringIO.new)
   end
 
-  it "asks a confirmation and continues on 'yes'" do
-    @knife.ui.stub!(:stdin).and_return(StringIO.new("yes\n"))
-    @knife.should_not_receive(:exit)
-    @knife.run
-    @out.string.should match(/yes\/no/)
-  end
-
-  describe "after confirming the operation" do
-    before do
-      @knife.ui.stub!(:print)
-      @knife.ui.stub!(:puts)
-      @knife.stub!(:nag)
-      @knife.ui.stub!(:output)
+  context "#grab_api_info" do
+    let(:http_not_found_response) do
+      e = Net::HTTPNotFound.new("1.1", 404, "blah")
+      e.stub(:[]).with("x-ops-api-info").and_return(api_header_value)
+      e
     end
 
-    it "POSTs to /search/reindex and displays the result" do
-      @rest_client = mock("Chef::REST")
-      @knife.stub!(:rest).and_return(@rest_client)
-      @rest_client.should_receive(:post_rest).with("/search/reindex", {}).and_return("monkey")
-      @knife.should_receive(:output).with("monkey")
-      @knife.run
+    let(:http_server_exception) do
+      Net::HTTPServerException.new("404: Not Found", http_not_found_response)
+    end
+
+    before(:each) do
+      stub_rest!
+      rest_client.stub(:get_rest).and_raise(http_server_exception)
+    end
+
+    context "against a Chef 11 server" do
+      let(:api_header_value){"flavor=osc;version=11.0.0;erchef=1.2.3"}
+      it "retrieves API information" do
+        knife.grab_api_info.should == {"flavor" => "osc", "version" => "11.0.0", "erchef" => "1.2.3"}
+      end
+    end # Chef 11
+
+    context "against a Chef 10 server" do
+      let(:api_header_value){nil}
+      it "finds no API information" do
+        knife.grab_api_info.should == {}
+      end
+    end # Chef 10
+  end # grab_api_info
+
+  context "#unsupported_version?" do
+    context "with Chef 11 API metadata" do
+      it "is unsupported" do
+        knife.unsupported_version?({"version" => "11.0.0", "flavor" => "osc", "erchef" => "1.2.3"}).should be_true
+      end
+
+      it "only truly relies on the version being non-nil" do
+        knife.unsupported_version?({"version" => "1", "flavor" => "osc", "erchef" => "1.2.3"}).should be_true
+      end
+    end
+
+    context "with Chef 10 API metadata" do
+      it "is supported" do
+        # Chef 10 will have no metadata
+        knife.unsupported_version?({}).should be_false
+      end
+    end
+  end # unsupported_version?
+
+  context "Simulating a 'knife index rebuild' run" do
+
+    before :each do
+      knife.should_receive(:grab_api_info).and_return(api_info)
+      server_specific_stubs!
+    end
+
+    context "against a Chef 11 server" do
+      let(:api_info) do
+        {"flavor" => "osc", 
+          "version" => "11.0.0",
+          "erchef" => "1.2.3"
+        }
+      end
+      let(:server_specific_stubs!) do
+        knife.should_receive(:unsupported_server_message).with(api_info)
+        knife.should_receive(:exit).with(1)
+      end
+
+      it "should not be allowed" do
+        knife.run
+      end
+    end
+
+    context "against a Chef 10 server" do
+      let(:api_info){ {} }
+      let(:server_specific_stubs!) do
+        stub_rest!
+        rest_client.should_receive(:post_rest).with("/search/reindex", {}).and_return("representative output")
+        knife.should_not_receive(:unsupported_server_message)
+        knife.should_receive(:deprecated_server_message)
+        knife.should_receive(:nag)
+        knife.should_receive(:output).with("representative output")
+      end
+      it "should be allowed" do
+        knife.run
+      end
     end
   end
 
 end
+
+
+
