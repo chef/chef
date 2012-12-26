@@ -241,7 +241,7 @@ class Chef
     #
     # NOTE: It's used by cookbook authors
     def recipe?(recipe_name)
-      run_list.include?(recipe_name) || self[recipes].include?(recipe_name)
+      run_list.include?(recipe_name) || Array(self[:recipes]).include?(recipe_name)
     end
 
     # Returns true if this Node expects a given role, false if not.
