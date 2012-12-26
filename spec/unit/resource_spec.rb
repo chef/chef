@@ -421,7 +421,6 @@ describe Chef::Resource do
   end
 
   describe "when invoking its action" do
-
     before do
       @resource = Chef::Resource.new("provided", @run_context)
       @resource.provider = Chef::Provider::SnakeOil
@@ -489,6 +488,107 @@ describe Chef::Resource do
       snitch_var2.should be_false
     end
 
+  end
+
+  describe "should_skip?" do
+    before do
+      @resource = Chef::Resource::Cat.new("sugar", @run_context)
+    end
+
+    it "should return false by default" do
+      @resource.should_skip?(:purr).should be_false
+    end
+
+    it "should return false when if_only is met" do
+      @resource.only_if { true }
+      @resource.should_skip?(:purr).should be_false
+    end
+
+    it "should return true when if_only is not met" do
+      @resource.only_if { false }
+      @resource.should_skip?(:purr).should be_true
+    end
+
+    it "should return true when not_if is met" do
+      @resource.not_if { true }
+      @resource.should_skip?(:purr).should be_true
+    end
+
+    it "should return false when if_only is not met" do
+      @resource.not_if { false }
+      @resource.should_skip?(:purr).should be_false
+    end
+
+    it "should return true when if_only is met but also not_if is met" do
+      @resource.only_if { true }
+      @resource.not_if { true }
+      @resource.should_skip?(:purr).should be_true
+    end
+
+    it "should return true when one of multiple if_only's is not met" do
+      @resource.only_if { true }
+      @resource.only_if { false }
+      @resource.only_if { true }
+      @resource.should_skip?(:purr).should be_true
+    end
+
+    it "should return true when one of multiple not_if's is met" do
+      @resource.not_if { false }
+      @resource.not_if { true }
+      @resource.not_if { false }
+      @resource.should_skip?(:purr).should be_true
+    end
+
+    it "should return true when action is :nothing" do
+      @resource.should_skip?(:nothing).should be_true
+    end
+
+    it "should return true when action is :nothing ignoring only_if/not_if conditionals" do
+      @resource.only_if { true }
+      @resource.not_if { false }
+      @resource.should_skip?(:nothing).should be_true
+    end
+
+  end
+
+  describe "when resource action is :nothing" do
+    before do
+      @resource1 = Chef::Resource::Cat.new("sugar", @run_context)
+      @resource1.action = :nothing
+
+      @node.automatic_attrs[:platform] = "fubuntu"
+      @node.automatic_attrs[:platform_version] = '10.04'
+    end
+
+    it "should not run only_if/not_if conditionals (CHEF-972)" do
+      snitch_var1 = 0
+      @resource1.only_if { snitch_var1 = 1 }
+      @resource1.not_if { snitch_var1 = 2 }
+      @resource1.run_action(:nothing)
+      snitch_var1.should == 0
+    end
+
+    it "should run only_if/not_if conditionals when notified to run another action (CHEF-972)" do
+      snitch_var1 = snitch_var2 = 0
+      @runner = Chef::Runner.new(@run_context)
+      Chef::Platform.set(
+        :resource => :cat,
+        :provider => Chef::Provider::SnakeOil
+      )
+
+      @resource1.only_if { snitch_var1 = 1 }
+      @resource1.not_if { snitch_var2 = 2 }
+      @resource2 = Chef::Resource::Cat.new("coffee", @run_context)
+      @resource2.notifies :purr, @resource1
+      @resource2.action = :purr
+
+      @run_context.resource_collection << @resource1
+      @run_context.resource_collection << @resource2
+      @runner.converge
+
+      snitch_var1.should == 1
+      snitch_var2.should == 2
+    end
   end
 
   describe "building the platform map" do

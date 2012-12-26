@@ -622,6 +622,11 @@ F
     # general it's not a good idea to rely on side effects from not_if or
     # only_if commands/blocks being evaluated.
     def should_skip?(action)
+      if (action == :nothing)
+        Chef::Log.debug("Skipping #{self} due to :nothing action")
+        return true
+      end
+
       conditionals = only_if + not_if
       return false if conditionals.empty?
 
