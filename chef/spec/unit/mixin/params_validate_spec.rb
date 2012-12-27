@@ -366,5 +366,26 @@ describe Chef::Mixin::ParamsValidate do
     @vo.set_or_return(:name, value, { }).object_id.should == value.object_id
     @vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id.should == value.object_id
   end
+
+  it "should allow DynamicEvaluator instance to be set for value regardless of restriction" do
+    value = Chef::DelayedEvaluator.new{ 'test' }
+    @vo.set_or_return(:test, value, {:kind_of => String})
+    @vo.set_or_return(:test, nil, {:kind_of => String}).should == 'test'
+  end
+
+  it "should raise an error when evaluated attribute is not valid" do
+    value = Chef::DelayedEvaluator.new{ 'test' }
+    @vo.set_or_return(:test, value, {:kind_of => Numeric})
+    lambda do
+      @vo.set_or_return(:test, nil, {:kind_of => Numeric})
+    end.should raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "should not evaluate non DelayedEvaluator instances" do
+    value = lambda{ 'test' }
+    @vo.set_or_return(:test, value, {})
+    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
+    @vo.set_or_return(:test, nil, {}).should be_a(Proc)
+  end
   
 end
