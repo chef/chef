@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ require 'chef/resource_collection/stepable_iterator'
 class Chef
   class ResourceCollection
     include Enumerable
-    
+
     attr_reader :iterator
 
     def initialize
@@ -31,18 +31,18 @@ class Chef
       @resources_by_name = Hash.new
       @insert_after_idx = nil
     end
-    
+
     def all_resources
       @resources
     end
-    
+
     def [](index)
       @resources[index]
     end
-    
+
     def []=(index, arg)
       is_chef_resource(arg)
-      @resources[index] = arg 
+      @resources[index] = arg
       @resources_by_name[arg.to_s] = index
     end
 
@@ -50,7 +50,7 @@ class Chef
       args.flatten.each do |a|
         is_chef_resource(a)
         @resources << a
-        @resources_by_name[a.to_s] = @resources.length - 1 
+        @resources_by_name[a.to_s] = @resources.length - 1
       end
     end
 
@@ -67,12 +67,12 @@ class Chef
         end
         @resources_by_name[resource.to_s] = @insert_after_idx + 1
         @insert_after_idx += 1
-      else  
+      else
         @resources << resource
         @resources_by_name[resource.to_s] = @resources.length - 1
       end
     end
-    
+
     def push(*args)
       args.flatten.each do |arg|
         is_chef_resource(arg)
@@ -80,7 +80,7 @@ class Chef
         @resources_by_name[arg.to_s] = @resources.length - 1
       end
     end
-  
+
     def each
       @resources.each do |resource|
         yield resource
@@ -94,13 +94,17 @@ class Chef
         yield resource
       end
     end
-    
+
     def each_index
       @resources.each_index do |i|
         yield i
       end
     end
-    
+
+    def empty?
+      @resources.empty?
+    end
+
     def lookup(resource)
       lookup_by = nil
       if resource.kind_of?(Chef::Resource)
@@ -125,7 +129,7 @@ class Chef
     # find("file[foobar]", "file[baz]")
     # find("file[foobar,baz]")
     #
-    # Returns the matching resource, or an Array of matching resources. 
+    # Returns the matching resource, or an Array of matching resources.
     #
     # Raises an ArgumentError if you feed it bad lookup information
     # Raises a Runtime Error if it can't find the resources you are looking for.
@@ -145,12 +149,12 @@ class Chef
       flat_results = results.flatten
       flat_results.length == 1 ? flat_results[0] : flat_results
     end
-    
+
     # resources is a poorly named, but we have to maintain it for back
     # compat.
     alias_method :resources, :find
-    
-    # Serialize this object as a hash 
+
+    # Serialize this object as a hash
     def to_json(*a)
       instance_vars = Hash.new
       self.instance_variables.each do |iv|
@@ -162,7 +166,7 @@ class Chef
       }
       results.to_json(*a)
     end
-    
+
     def self.json_create(o)
       collection = self.new()
       o["instance_vars"].each do |k,v|
@@ -172,7 +176,7 @@ class Chef
     end
 
     private
-    
+
       def find_resource_by_hash(arg)
         results = Array.new
         arg.each do |resource_name, name_list|
@@ -193,7 +197,7 @@ class Chef
           arg =~ /^.+\[(.+)\]$/
           resource_list = $1
           resource_list.split(",").each do |name|
-            resource_name = "#{resource_type}[#{name}]" 
+            resource_name = "#{resource_type}[#{name}]"
             results << lookup(resource_name)
           end
         when /^(.+)\[(.+)\]$/
@@ -209,7 +213,7 @@ class Chef
 
       def is_chef_resource(arg)
         unless arg.kind_of?(Chef::Resource)
-          raise ArgumentError, "Members must be Chef::Resource's" 
+          raise ArgumentError, "Members must be Chef::Resource's"
         end
         true
       end
