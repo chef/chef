@@ -206,7 +206,7 @@ class Chef
           resource_name = "#{resource_type}[#{name}]"
           results << lookup(resource_name)
         else
-          raise ArgumentError, "You must have a string like resource_type[name]!"
+          raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
         end
         return results
       end
