@@ -20,54 +20,66 @@ require 'tmpdir'
 require 'fileutils'
 require 'chef_zero/rspec'
 require 'chef/config'
+require 'json'
 require 'support/shared/integration/knife_support'
 require 'spec_helper'
-
-require 'chef/knife/delete'
-require 'chef/knife/deps'
-require 'chef/knife/diff'
-require 'chef/knife/download'
-require 'chef/knife/list'
-require 'chef/knife/raw'
-require 'chef/knife/show'
-require 'chef/knife/upload'
 
 module IntegrationSupport
   include ChefZero::RSpec
 
-  def when_the_repository(description, contents, &block)
+  def when_the_repository(description, &block)
     context "When the local repository #{description}" do
       before :each do
         raise "Can only create one directory per test" if @repository_dir
         @repository_dir = Dir.mktmpdir('chef_repo')
-        create_child_files(@repository_dir, contents)
         Chef::Config.chef_repo_path = @repository_dir
       end
 
       after :each do
         if @repository_dir
-          FileUtils.remove_directory_secure(@repository_dir)
+          FileUtils.remove_entry_secure(@repository_dir)
           @repository_dir = nil
         end
       end
 
-      instance_eval(&block)
-    end
-  end
+      def directory(relative_path, &block)
+        old_parent_path = @parent_path
+        @parent_path = path_to(relative_path)
+        FileUtils.mkdir_p(@parent_path)
+        instance_eval(&block) if block
+        @parent_path = old_parent_path
+      end
 
-  private
-
-  def create_child_files(real_dir, contents)
-    contents.each_pair do |entry_name, entry_contents|
-      entry_path = File.join(real_dir, entry_name)
-      if entry_contents.is_a? Hash
-        Dir.mkdir(entry_path)
-        create_child_files(entry_path, entry_contents)
-      else
-        File.open(entry_path, "w") do |file|
-          file.write(entry_contents)
+      def file(relative_path, contents)
+        filename = path_to(relative_path)
+        dir = File.dirname(filename)
+        FileUtils.mkdir_p(dir) unless dir == '.'
+        File.open(filename, 'w') do |file|
+          if contents.is_a? Hash
+            file.write(JSON.pretty_generate(contents))
+          else
+            file.write(contents)
+          end
         end
       end
+
+      def path_to(relative_path)
+        File.expand_path(relative_path, (@parent_path || @repository_dir))
+      end
+
+      def self.directory(relative_path, &block)
+        before :each do
+          directory(relative_path, &block)
+        end
+      end
+
+      def self.file(relative_path, contents)
+        before :each do
+          file(relative_path, contents)
+        end
+      end
+
+      instance_eval(&block)
     end
   end
 end
