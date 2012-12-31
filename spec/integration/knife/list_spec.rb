@@ -188,4 +188,69 @@ role2.json
 "
     end
   end
+
+  context "--local" do
+    when_the_repository "is empty" do
+      it "knife list --local / returns nothing" do
+        knife('list', '--local', '/').stdout.should == ""
+      end
+
+      it "knife list /roles returns nothing" do
+        knife('list', '--local', '/roles').stdout.should == ""
+      end
+    end
+
+    when_the_repository "has a bunch of stuff" do
+      directory 'clients' do
+        file 'client1.json', {}
+        file 'client2.json', {}
+      end
+      directory 'cookbooks' do
+        directory 'cookbook1' do
+          file 'metadata.rb', ''
+        end
+        directory 'cookbook2' do
+          file 'metadata.rb', ''
+          file 'recipes/default.rb', ''
+        end
+      end
+      file 'data_bags/bag1/item1.json', {}
+      file 'data_bags/bag1/item2.json', {}
+      file 'data_bags/bag2/item1.json', {}
+      file 'data_bags/bag2/item2.json', {}
+      file 'environments/environment1.json', {}
+      file 'environments/environment2.json', {}
+      file 'nodes/node1.json', {}
+      file 'nodes/node2.json', {}
+      file 'roles/role1.json', {}
+      file 'roles/role2.json', {}
+      file 'users/user1.json', {}
+      file 'users/user2.json', {}
+
+      it "knife list -Rp --flat / returns everything" do
+        knife('list', '-Rp', '--flat', '/').stdout.should == "/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/metadata.rb
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/metadata.rb
+/cookbooks/cookbook2/recipes/
+/cookbooks/cookbook2/recipes/default.rb
+/data_bags/
+/data_bags/bag1/
+/data_bags/bag1/item1.json
+/data_bags/bag1/item2.json
+/data_bags/bag2/
+/data_bags/bag2/item1.json
+/data_bags/bag2/item2.json
+/environments/
+/environments/_default.json
+/environments/environment1.json
+/environments/environment2.json
+/roles/
+/roles/role1.json
+/roles/role2.json
+"
+      end
+    end
+  end
 end
