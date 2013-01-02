@@ -12,7 +12,7 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 4f3f65d1e184bf780d471c17b9e070a6ce3ac7cf
+  revision: b22fa6b16ff7f475049c668d80c9e970ec6840d1
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -52,7 +52,7 @@ GEM
     systemu (2.5.2)
     uber-s3 (0.2.4)
       mime-types (~> 1.17)
-    vagrant (1.0.3)
+    vagrant (1.0.5)
       archive-tar-minitar (= 0.5.2)
       childprocess (~> 0.3.1)
       erubis (~> 2.7.0)
