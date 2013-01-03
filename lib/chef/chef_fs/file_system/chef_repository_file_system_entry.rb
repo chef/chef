@@ -17,7 +17,6 @@
 #
 
 require 'chef/chef_fs/file_system/file_system_entry'
-require 'chef/cookbook/chefignore'
 require 'chef/cookbook/cookbook_version_loader'
 require 'chef/node'
 require 'chef/role'
@@ -31,23 +30,16 @@ class Chef
       # ChefRepositoryFileSystemEntry works just like FileSystemEntry,
       # except can inflate Chef objects
       class ChefRepositoryFileSystemEntry < FileSystemEntry
-        def initialize(name, parent, file_path = nil)
+        def initialize(name, parent, file_path = nil, ignore_empty_directories = nil, chefignore = nil)
           super(name, parent, file_path)
-          # Load /cookbooks/chefignore
-          if path == '/cookbooks'
-            @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
-            @ignore_empty_directories = true
-          # If we are a cookbook or a cookbook subdirectory, empty directories
-          # underneath us are ignored (since they cannot be uploaded)
-          elsif parent && parent.ignore_empty_directories?
-            @ignore_empty_directories = true
-          end
         end
 
-        attr_reader :chefignore
+        def chefignore
+          nil
+        end
 
         def ignore_empty_directories?
-          @ignore_empty_directories
+          parent.ignore_empty_directories?
         end
 
         def chef_object
@@ -69,43 +61,36 @@ class Chef
         def children
           @children ||=
             Dir.entries(file_path).
-                select { |entry| entry != '.' && entry != '..' && !ignored?(entry) }.
-                map { |entry| ChefRepositoryFileSystemEntry.new(entry, self) }
+                select { |entry| entry != '.' && entry != '..' }.
+                map { |entry| ChefRepositoryFileSystemEntry.new(entry, self) }.
+                select { |entry| !ignored?(entry) }
         end
-
-        attr_reader :chefignore
 
         private
 
-        def is_cookbooks_dir?
-          # We check name first because it's a faster fail than path
-          path == "/cookbooks"
-        end
-
-        def ignored?(child_name)
-          # empty directories inside a cookbook are ignored
-          if ignore_empty_directories?
-            child_path = PathUtils.join(file_path, child_name)
-            if File.directory?(child_path) && Dir.entries(child_path) == [ '.', '..' ]
+        def ignored?(child_entry)
+          if child_entry.dir?
+            # empty cookbooks and cookbook directories are ignored
+            if ignore_empty_directories? && child_entry.children.size == 0
               return true
             end
-          end
-
-          ignorer = parent
-          begin
-            if ignorer.chefignore
-              # Grab the path from entry to child
-              path_to_child = child_name
-              child = self
-              while child.parent != ignorer
-                path_to_child = PathUtils.join(child.name, path_to_child)
-                child = child.parent
+          else
+            ignorer = parent
+            begin
+              if ignorer.chefignore
+                # Grab the path from entry to child
+                path_to_child = child_entry.name
+                child = self
+                while child.parent != ignorer
+                  path_to_child = PathUtils.join(child.name, path_to_child)
+                  child = child.parent
+                end
+                # Check whether that relative path is ignored
+                return ignorer.chefignore.ignored?(path_to_child)
               end
-              # Check whether that relative path is ignored
-              return ignorer.chefignore.ignored?(path_to_child)
-            end
-            ignorer = ignorer.parent
-          end while ignorer
+              ignorer = ignorer.parent
+            end while ignorer
+          end
         end
 
       end
