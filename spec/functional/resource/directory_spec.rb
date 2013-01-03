@@ -23,6 +23,8 @@ describe Chef::Resource::Directory do
 
   let(:directory_base) { "directory_spec" }
 
+  let(:default_mode) { "755" }
+
   def create_resource
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new

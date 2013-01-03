@@ -110,6 +110,7 @@ class Chef
           end 
         end
         set_all_access_controls
+        update_new_file_state
       end
 
       def action_delete

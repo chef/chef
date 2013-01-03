@@ -123,7 +123,8 @@ describe Chef::Provider::Directory do
   it "should not create the directory if it already exists" do
     stub_file_cstats
     @new_resource.path "/tmp/foo"
-    File.should_receive(:exist?).exactly(2).and_return(true)
+    File.should_receive(:directory?).twice.and_return(true)
+    File.should_receive(:exist?).exactly(3).and_return(true)
     Dir.should_not_receive(:mkdir).with(@new_resource.path)
     @directory.should_receive(:set_all_access_controls)
     @directory.run_action(:create)

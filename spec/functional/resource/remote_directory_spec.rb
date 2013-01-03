@@ -22,6 +22,7 @@ describe Chef::Resource::RemoteDirectory do
   include_context Chef::Resource::Directory
 
   let(:directory_base) { "directory_spec" }
+  let(:default_mode) { "755" }
 
   def create_resource
     cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))

@@ -98,8 +98,10 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       context "and mode is specified as a String" do
-        let(:set_mode) { "0440" }
-        let(:expected_mode) { "440" }
+        # Need full permission for owner here or else remote directory gets
+        # into trouble trying to manage nested directories
+        let(:set_mode) { "0740" }
+        let(:expected_mode) { "740" }
 
         before do
           resource.mode(set_mode)
@@ -112,9 +114,9 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       context "and mode is specified as an Integer" do
-        let(:set_mode) { 00440 }
+        let(:set_mode) { 00740 }
 
-        let(:expected_mode) { "440" }
+        let(:expected_mode) { "740" }
         before do
           resource.mode(set_mode)
           resource.run_action(:create)
