@@ -27,17 +27,25 @@ require 'spec_helper'
 module IntegrationSupport
   include ChefZero::RSpec
 
-  def when_the_repository(description, &block)
-    context "When the local repository #{description}" do
+  def when_the_repository(description, *args, &block)
+    context "When the local repository #{description}", *args do
       before :each do
         raise "Can only create one directory per test" if @repository_dir
         @repository_dir = Dir.mktmpdir('chef_repo')
+        @old_chef_repo_path = Chef::Config.chef_repo_path
+        @old_cookbook_path = Chef::Config.cookbook_path
         Chef::Config.chef_repo_path = @repository_dir
+        Chef::Config.cookbook_path = File.join(@repository_dir, 'cookbooks')
       end
 
       after :each do
         if @repository_dir
+          Chef::Config.chef_repo_path = @old_chef_repo_path
+          Chef::Config.cookbook_path = @old_cookbook_path
           FileUtils.remove_entry_secure(@repository_dir)
+
+          @old_chef_repo_path = nil
+          @old_cookbook_path = nil
           @repository_dir = nil
         end
       end

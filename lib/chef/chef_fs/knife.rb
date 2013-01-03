@@ -48,7 +48,7 @@ class Chef
         end
       end
 
-      # Smooth out some inappropriate (for know) variable defaults in Chef.
+      # Smooth out some inappropriate (for now) variable defaults in Chef.
       def config_var(name)
         case name
         when :data_bag_path
