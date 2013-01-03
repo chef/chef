@@ -16,7 +16,7 @@
 #
 
 name "bookshelf"
-version "92fd6d3308ad7bcdd4e7ab64c39c7678973df448"
+version "4b2721362596262527f4bff70e97bff56204d957"
 
 dependencies ["erlang", "rebar", "rsync"]
 
