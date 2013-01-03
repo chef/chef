@@ -233,6 +233,8 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
         end
       end
     end
+
+    # TODO different cwd
   end
 
   context "--local" do
@@ -332,5 +334,6 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
         end
       end
     end
+    # TODO different cwd
   end
 end
