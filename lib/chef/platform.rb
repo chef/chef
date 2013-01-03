@@ -272,7 +272,8 @@ class Chef
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::SmartOS,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Smartos
             }
           },
           :netbsd => {
