@@ -35,7 +35,7 @@ class Chef
           block.call(entry)
         end
 
-        if entry.dir? && pattern.could_match_children?(entry.path)
+        if pattern.could_match_children?(entry.path)
           # If it's possible that our children could match, descend in and add matches.
           exact_child_name = pattern.exact_child_name_under(entry.path)
 
@@ -48,7 +48,7 @@ class Chef
             end
 
           # Otherwise, go through all children and find any matches
-          else
+          elsif entry.dir?
             entry.children.each do |child|
               list(child, pattern, &block)
             end

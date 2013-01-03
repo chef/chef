@@ -204,6 +204,24 @@ ERROR: /environments/missing_file.json: No such file or directory
         stdout.should == ''
       end
     end
+
+    it "knife list /blarghle reports missing directory" do
+      knife('list', '/blarghle') do
+        stderr.should == "WARNING: No knife configuration file found
+ERROR: /blarghle: No such file or directory
+"
+        stdout.should == ''
+      end
+    end
+
+    it "knife list /blarghle/blorghle reports missing directory" do
+      knife('list', '/blarghle/blorghle') do
+        stderr.should == "WARNING: No knife configuration file found
+ERROR: /blarghle/blorghle: No such file or directory
+"
+        stdout.should == ''
+      end
+    end
   end
 
   context "--local" do
