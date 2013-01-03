@@ -53,13 +53,11 @@ cookbooks
       directory 'cookbooks/cookbook1/recipes'
 
       it "knife list --local -R / does not return it" do
-        pending 'figure out if knife cookbook upload -a ignores it too' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list', '--local', '-R', '/').stdout.should == "/:
 cookbooks
 
 /cookbooks:
 "
-        end
       end
     end
 
@@ -90,13 +88,11 @@ x.txt
       directory 'cookbooks/cookbook1/templates/default'
 
       it "knife list --local -R / does not return it" do
-        pending 'figure out if knife cookbook upload -a ignores it too' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list', '--local', '-R', '/').stdout.should == "/:
 cookbooks
 
 /cookbooks:
 "
-        end
       end
     end
 
@@ -106,8 +102,7 @@ cookbooks
       directory 'cookbooks/cookbook1/files/default'
 
       it "knife list --local -R / does not return the empty ones" do
-        pending 'exclude directories with only empty children' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list', '--local', '-R', '/').stdout.should == "/:
 cookbooks
 
 /cookbooks:
@@ -116,13 +111,12 @@ cookbook1
 /cookbooks/cookbook1:
 templates
 
-/cookbooks/cookbook1/:
+/cookbooks/cookbook1/templates:
 default
 
 /cookbooks/cookbook1/templates/default:
 x.txt
 "
-        end
       end
     end
 
@@ -296,9 +290,338 @@ e.json
         end
       end
     end
+
+    when_the_repository "has a file in cookbooks/" do
+      file 'cookbooks/file', ''
+      it 'does not show up in list -R' do
+        pending "don't show files when only directories are allowed" do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+"
+        end
+      end
+    end
+
+    when_the_repository "has a file in data_bags/" do
+      file 'data_bags/file', ''
+      it 'does not show up in list -R' do
+        pending "don't show files when only directories are allowed" do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+data_bags
+
+/data_bags:
+"
+        end
+      end
+    end
   end
 
-  # TODO chefignore
+  context 'chefignore tests' do
+    when_the_repository "has lots of stuff in it" do
+      file 'roles/x.json', {}
+      file 'environments/x.json', {}
+      file 'data_bags/bag1/x.json', {}
+      file 'cookbooks/cookbook1/x.json', {}
+
+      context "and has a chefignore everywhere except cookbooks" do
+        chefignore = "x.json\nroles/x.json\nenvironments/x.json\ndata_bags/bag1/x.json\nbag1/x.json\ncookbooks/cookbook1/x.json\ncookbook1/x.json\n"
+        file 'chefignore', chefignore
+        file 'roles/chefignore', chefignore
+        file 'environments/chefignore', chefignore
+        file 'data_bags/chefignore', chefignore
+        file 'data_bags/bag1/chefignore', chefignore
+        file 'cookbooks/cookbook1/chefignore', chefignore
+
+        it 'nothing is ignored' do
+          # NOTE: many of the "chefignore" files should probably not show up
+          # themselves, but we have other tests that talk about that
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+data_bags
+environments
+roles
+
+/cookbooks:
+cookbook1
+
+/cookbooks/cookbook1:
+chefignore
+x.json
+
+/data_bags:
+bag1
+chefignore
+
+/data_bags/bag1:
+chefignore
+x.json
+
+/environments:
+chefignore
+x.json
+
+/roles:
+chefignore
+x.json
+"
+        end
+      end
+    end
+
+    when_the_repository 'has a cookbook with only chefignored files' do
+      file 'cookbooks/cookbook1/templates/default/x.rb', ''
+      file 'cookbooks/cookbook1/libraries/x.rb', ''
+      file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
+
+      it 'the cookbook is not listed' do
+        knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+"
+      end
+    end
+
+    when_the_repository "has multiple cookbooks" do
+      file 'cookbooks/cookbook1/x.json', {}
+      file 'cookbooks/cookbook1/y.json', {}
+      file 'cookbooks/cookbook2/x.json', {}
+      file 'cookbooks/cookbook2/y.json', {}
+
+      context 'and has a chefignore with filenames' do
+        file 'cookbooks/chefignore', "x.json\n"
+
+        it 'matching files and directories get ignored in all cookbooks' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+y.json
+
+/cookbooks/cookbook2:
+y.json
+"
+        end
+      end
+
+      context "and has a chefignore with wildcards" do
+        file 'cookbooks/chefignore', "x.*\n"
+        file 'cookbooks/cookbook1/x.rb', ''
+
+        it 'matching files and directories get ignored in all cookbooks' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+y.json
+
+/cookbooks/cookbook2:
+y.json
+"
+        end
+      end
+
+      context "and has a chefignore with relative paths" do
+        file 'cookbooks/cookbook1/recipes/x.rb', ''
+        file 'cookbooks/cookbook2/recipes/y.rb', ''
+        file 'cookbooks/chefignore', "recipes/x.rb\n"
+
+        it 'matching directories get ignored' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+x.json
+y.json
+
+/cookbooks/cookbook2:
+recipes
+x.json
+y.json
+
+/cookbooks/cookbook2/recipes:
+y.rb
+"
+        end
+      end
+
+      context "and has a chefignore with subdirectories" do
+        file 'cookbooks/cookbook1/recipes/y.rb', ''
+        file 'cookbooks/chefignore', "recipes\n"
+
+        it 'matching directories do NOT get ignored' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+recipes
+x.json
+y.json
+
+/cookbooks/cookbook1/recipes:
+y.rb
+
+/cookbooks/cookbook2:
+x.json
+y.json
+"
+        end
+      end
+
+      context "and has a chefignore that ignores all files in a subdirectory" do
+        file 'cookbooks/cookbook1/templates/default/x.rb', ''
+        file 'cookbooks/cookbook1/libraries/x.rb', ''
+        file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
+
+        it 'ignores the subdirectory entirely' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+x.json
+y.json
+
+/cookbooks/cookbook2:
+x.json
+y.json
+"
+        end
+      end
+
+      context "and has an empty chefignore" do
+        file 'cookbooks/chefignore', "\n"
+
+        it 'nothing is ignored' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+x.json
+y.json
+
+/cookbooks/cookbook2:
+x.json
+y.json
+"
+        end
+      end
+
+      context "and has a chefignore with comments and empty lines" do
+        file 'cookbooks/chefignore', "\n\n # blah\n#\nx.json\n\n"
+
+        it 'matching files and directories get ignored in all cookbooks' do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+cookbook1
+cookbook2
+
+/cookbooks/cookbook1:
+y.json
+
+/cookbooks/cookbook2:
+y.json
+"
+        end
+      end
+    end
+
+    when_the_repository "has multiple cookbook paths" do
+      before :each do
+        Chef::Config.cookbook_path = [
+          File.join(Chef::Config.chef_repo_path, 'cookbooks1'),
+          File.join(Chef::Config.chef_repo_path, 'cookbooks2')
+        ]
+      end
+
+      file 'cookbooks1/mycookbook/metadata.rb', ''
+      file 'cookbooks1/mycookbook/x.json', {}
+      file 'cookbooks2/yourcookbook/metadata.rb', ''
+      file 'cookbooks2/yourcookbook/x.json', ''
+
+      context "and multiple chefignores" do
+        file 'cookbooks1/chefignore', "metadata.rb\n"
+        file 'cookbooks2/chefignore', "x.json\n"
+        it "chefignores apply only to the directories they are in" do
+          knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+mycookbook
+yourcookbook
+
+/cookbooks/mycookbook:
+x.json
+
+/cookbooks/yourcookbook:
+metadata.rb
+"
+        end
+
+        context "and conflicting cookbooks" do
+          file 'cookbooks1/yourcookbook/metadata.rb', ''
+          file 'cookbooks1/yourcookbook/x.json', ''
+          file 'cookbooks1/yourcookbook/onlyincookbooks1.rb', ''
+          file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
+
+          it "chefignores apply only to the winning cookbook" do
+            knife('list', '--local', '-R', '/').stdout.should == "/:
+cookbooks
+
+/cookbooks:
+chefignore
+mycookbook
+yourcookbook
+
+/cookbooks/mycookbook:
+x.json
+
+/cookbooks/yourcookbook:
+onlyincookbooks1.rb
+x.json
+"
+          end
+        end
+      end
+    end
+  end
+
   # TODO alternate repo_path / *_path
   # TODO multiple *_path
   # TODO nonexistent repo_path / *_path
