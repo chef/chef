@@ -40,13 +40,15 @@ module IntegrationSupport
 
       after :each do
         if @repository_dir
-          Chef::Config.chef_repo_path = @old_chef_repo_path
-          Chef::Config.cookbook_path = @old_cookbook_path
-          FileUtils.remove_entry_secure(@repository_dir)
-
-          @old_chef_repo_path = nil
-          @old_cookbook_path = nil
-          @repository_dir = nil
+          begin
+            Chef::Config.chef_repo_path = @old_chef_repo_path
+            Chef::Config.cookbook_path = @old_cookbook_path
+            FileUtils.remove_entry_secure(@repository_dir)
+          ensure
+            @old_chef_repo_path = nil
+            @old_cookbook_path = nil
+            @repository_dir = nil
+          end
         end
       end
 
