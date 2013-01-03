@@ -2,9 +2,9 @@ require 'chef/knife'
 require 'chef/application/knife'
 
 module KnifeSupport
-  def knife(*args)
+  def knife(*args, &block)
     result = KnifeRunner.new
-    result.run(*args)
+    result.run(*args, &block)
     result
   end
 
@@ -19,7 +19,7 @@ module KnifeSupport
       @stderr.string
     end
 
-    def run(*args)
+    def run(*args, &block)
       # This is Chef::Knife.run without load_commands and load_deps--we'll
       # load stuff ourselves, thank you very much
       subcommand_class = Chef::Knife.subcommand_class_from(args)
@@ -35,6 +35,8 @@ module KnifeSupport
       Chef::Config[:verbosity] = 0
       instance.configure_chef
       instance.run
+
+      instance_eval(&block) if block
     end
   end
 end

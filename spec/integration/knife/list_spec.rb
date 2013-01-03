@@ -187,6 +187,23 @@ role2.json
 /roles/role2.json
 "
     end
+
+    it "knife list /data**.json returns all data bag json files" do
+      knife('list', '/data**.json').stdout.should == "/data_bags/bag1/item1.json
+/data_bags/bag1/item2.json
+/data_bags/bag2/item1.json
+/data_bags/bag2/item2.json
+"
+    end
+
+    it "knife list /environments/missing_file.json reports missing file" do
+      knife('list', '/environments/missing_file.json') do
+        stderr.should == "WARNING: No knife configuration file found
+ERROR: /environments/missing_file.json: No such file or directory
+"
+        stdout.should == ''
+      end
+    end
   end
 
   context "--local" do
@@ -201,23 +218,28 @@ role2.json
     end
 
     when_the_repository "has a bunch of stuff" do
-      directory 'clients' do
-        file 'client1.json', {}
-        file 'client2.json', {}
+      file 'clients/client1.json', {}
+      file 'clients/client2.json', {}
+
+      directory 'cookbooks/cookbook1' do
+        file 'metadata.rb', ''
       end
-      directory 'cookbooks' do
-        directory 'cookbook1' do
-          file 'metadata.rb', ''
+      directory 'cookbooks/cookbook2' do
+        file 'metadata.rb', ''
+        file 'recipes/default.rb', ''
+      end
+
+      directory 'data_bags' do
+        directory 'bag1' do
+          file 'item1.json', {}
+          file 'item2.json', {}
         end
-        directory 'cookbook2' do
-          file 'metadata.rb', ''
-          file 'recipes/default.rb', ''
+        directory 'bag2' do
+          file 'item1.json', {}
+          file 'item2.json', {}
         end
       end
-      file 'data_bags/bag1/item1.json', {}
-      file 'data_bags/bag1/item2.json', {}
-      file 'data_bags/bag2/item1.json', {}
-      file 'data_bags/bag2/item2.json', {}
+
       file 'environments/environment1.json', {}
       file 'environments/environment2.json', {}
       file 'nodes/node1.json', {}
@@ -252,5 +274,9 @@ role2.json
 "
       end
     end
+
+    # TODO extra files and empty directories
+    # TODO directories that don't exist
+    # TODO alternate repo_path / *_path
   end
 end
