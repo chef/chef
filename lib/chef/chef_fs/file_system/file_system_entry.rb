@@ -34,7 +34,7 @@ class Chef
         attr_reader :file_path
 
         def path_for_printing
-          Chef::ChefFS::PathUtils::relative_to(file_path, File.expand_path(Dir.pwd))
+          file_path
         end
 
         def children
