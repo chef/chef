@@ -83,7 +83,13 @@ class Chef
         if object.is_a?(Chef::CookbookVersion)
           return object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}"}
         elsif object.is_a?(Chef::Node)
-          return [ "/environments/#{object.chef_environment}.json" ] + dependencies_from_runlist(object.run_list)
+          result = []
+          # /environments/_default.json is an annoying dependency, since you
+          # can't upload it anyway
+          if object.chef_environment != '_default'
+            result << "/environments/#{object.chef_environment}.json"
+          end
+          return result + dependencies_from_runlist(object.run_list)
         elsif object.is_a?(Chef::Role)
           result = []
           object.env_run_lists.each_pair do |env,run_list|
