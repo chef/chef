@@ -43,6 +43,17 @@ build do
 # limitations under the License.
 #
 
+# Ensure the calling environment (ಠ_ಠ Bundler) does not infect our Ruby environment if
+# chef-server-ctl is called from a Ruby script.
+for ruby_env_var in RUBYOPT \
+                    BUNDLE_BIN_PATH \
+                    BUNDLE_GEMFILE \
+                    GEM_PATH \
+                    GEM_HOME
+do
+  unset $ruby_env_var
+done
+
 #{install_dir}/embedded/bin/omnibus-ctl chef-server #{install_dir}/embedded/service/omnibus-ctl $@
        EOH
     end
