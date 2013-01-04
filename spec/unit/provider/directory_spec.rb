@@ -36,80 +36,98 @@ describe Chef::Provider::Directory do
     @directory = Chef::Provider::Directory.new(@new_resource, @run_context)
   end
 
-  context "load_current_resource_attrs", :unix_only do
-    it "should load the current resource based on the new resource" do
-      File.stub!(:exist?).and_return(true)
+
+  describe "scanning file security metadata on windows" do
+    before do
+    end
+
+    it "describes the directory's access rights" do
+      pending
+    end
+  end
+
+  describe "scanning file security metadata on unix" do
+    let(:mock_stat) do
       cstats = mock("stats")
       cstats.stub!(:uid).and_return(500)
       cstats.stub!(:gid).and_return(500)
       cstats.stub!(:mode).and_return(0755)
-      File.should_receive(:stat).twice.and_return(cstats)
+      cstats
+    end
+
+    it "describes the access mode as a String of octal integers" do
+      File.stub!(:exist?).and_return(true)
+      File.should_receive(:stat).and_return(mock_stat)
       @directory.load_current_resource
-      @directory.current_resource.path.should eql(@new_resource.path)
-      @directory.current_resource.owner.should eql(500)
-      @directory.current_resource.group.should eql(500)
-      @directory.current_resource.mode.should == 00755
+      @directory.current_resource.mode.should == "0755"
     end
-  
-    it "should create a new directory on create, setting updated to true" do
-      @new_resource.path "/tmp/foo"
-  
-      File.should_receive(:exist?).exactly(3).and_return(false)
-      Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
-  
-      @directory.should_receive(:set_all_access_controls)
-      @directory.stub!(:update_new_file_state)
-      @directory.run_action(:create)
-      @directory.new_resource.should be_updated
+
+    context "when user and group are specified with UID/GID" do
+      it "describes the current owner and group as UID and GID" do
+        File.stub!(:exist?).and_return(true)
+        File.should_receive(:stat).and_return(mock_stat)
+        @directory.load_current_resource
+        @directory.current_resource.path.should eql(@new_resource.path)
+        @directory.current_resource.owner.should eql(500)
+        @directory.current_resource.group.should eql(500)
+      end
     end
-  
-    it "should raise an exception if the parent directory does not exist and recursive is false" do 
-      @new_resource.path "/tmp/some/dir"
-      @new_resource.recursive false
-      lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist) 
-    end
-  
-    it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct" do
-      @new_resource.path "/path/to/dir"
-      @new_resource.recursive true
-      File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
-      File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
-  
-      File.should_receive(:exist?).with('/path/to').ordered.and_return(false)
-      File.should_receive(:exist?).with('/path').ordered.and_return(true)
-      File.should_receive(:writable?).with('/path').ordered.and_return(true)
-      File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
-   
-      FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true) 
-      @directory.should_receive(:set_all_access_controls)
-      @directory.stub!(:update_new_file_state)
-      @directory.run_action(:create)
-      @new_resource.should be_updated
-    end
-   
-    # it "should raise an error when creating a directory recursively and permissions do not allow creation" do
-      
-    # end
-  
-    it "should raise an error when creating a directory when parent directory is a file" do
-      File.should_receive(:directory?).and_return(false)
-      Dir.should_not_receive(:mkdir).with(@new_resource.path)
-      lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-      @directory.new_resource.should_not be_updated
-    end
-    
-    it "should not create the directory if it already exists" do
-      stub_file_cstats
-      @new_resource.path "/tmp/foo"
-      File.should_receive(:exist?).exactly(3).and_return(true)
-      Dir.should_not_receive(:mkdir).with(@new_resource.path)
-      @directory.should_receive(:set_all_access_controls)
-      @directory.run_action(:create)
+
+    context "when user/group are specified with user/group names" do
     end
   end
 
-  context "load_current_resource_attrs", :windows_only do
-    pending "CHEF-3557: Fix implicit resource change collection on Windows"
+  it "should create a new directory on create, setting updated to true" do
+    @new_resource.path "/tmp/foo"
+
+    File.should_receive(:exist?).exactly(2).and_return(false)
+    Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
+
+    @directory.should_receive(:set_all_access_controls)
+    @directory.stub!(:update_new_file_state)
+    @directory.run_action(:create)
+    @directory.new_resource.should be_updated
+  end
+
+  it "should raise an exception if the parent directory does not exist and recursive is false" do 
+    @new_resource.path "/tmp/some/dir"
+    @new_resource.recursive false
+    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist) 
+  end
+
+  it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct" do
+    @new_resource.path "/path/to/dir"
+    @new_resource.recursive true
+    File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
+
+    File.should_receive(:exist?).with('/path/to').ordered.and_return(false)
+    File.should_receive(:exist?).with('/path').ordered.and_return(true)
+    File.should_receive(:writable?).with('/path').ordered.and_return(true)
+    File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
+
+    FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true) 
+    @directory.should_receive(:set_all_access_controls)
+    @directory.stub!(:update_new_file_state)
+    @directory.run_action(:create)
+    @new_resource.should be_updated
+  end
+
+
+  it "should raise an error when creating a directory when parent directory is a file" do
+    File.should_receive(:directory?).and_return(false)
+    Dir.should_not_receive(:mkdir).with(@new_resource.path)
+    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
+    @directory.new_resource.should_not be_updated
+  end
+
+  it "should not create the directory if it already exists" do
+    stub_file_cstats
+    @new_resource.path "/tmp/foo"
+    File.should_receive(:directory?).twice.and_return(true)
+    File.should_receive(:exist?).exactly(3).and_return(true)
+    Dir.should_not_receive(:mkdir).with(@new_resource.path)
+    @directory.should_receive(:set_all_access_controls)
+    @directory.run_action(:create)
   end
 
   it "should delete the directory if it exists, and is writable with action_delete" do

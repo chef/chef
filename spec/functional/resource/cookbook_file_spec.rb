@@ -32,6 +32,10 @@ describe Chef::Resource::CookbookFile do
     content
   end
 
+  let(:default_mode) { "600" }
+
+  it_behaves_like "a securable resource with reporting"
+
   def create_resource
     # set up cookbook collection for this run to use, based on our
     # spec data.

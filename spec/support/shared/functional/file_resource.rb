@@ -143,6 +143,9 @@ shared_examples_for "a file with the correct content" do
 end
 
 shared_examples_for "a file resource" do
+  before do
+    Chef::Log.level = :info
+  end
    # note the stripping of the drive letter from the tmpdir on windows
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 

@@ -49,7 +49,11 @@ describe Chef::Resource::Template do
     create_resource
   end
 
+  let(:default_mode) { "600" }
+
   it_behaves_like "a file resource"
+
+  it_behaves_like "a securable resource with reporting"
 
   context "when the target file does not exist" do
     it "creates the template with the rendered content using the variable attribute when the :create action is run" do

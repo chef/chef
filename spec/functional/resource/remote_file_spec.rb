@@ -45,6 +45,8 @@ describe Chef::Resource::RemoteFile do
     create_resource
   end
 
+  let(:default_mode) { "600" }
+
   before(:all) do
     @server = TinyServer::Manager.new
     @server.start
@@ -62,4 +64,6 @@ describe Chef::Resource::RemoteFile do
   end
 
   it_behaves_like "a file resource"
+
+  it_behaves_like "a securable resource with reporting"
 end
