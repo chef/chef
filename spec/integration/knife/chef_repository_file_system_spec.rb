@@ -12,7 +12,8 @@ describe 'knife list' do
       directory "data_bags/bag1"
 
       it "knife list --local -R / returns them" do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 data_bags
 environments
 roles
@@ -25,7 +26,7 @@ bag1
 /environments:
 
 /roles:
-"
+EOM
       end
     end
 
@@ -33,7 +34,7 @@ bag1
       directory "data_bags"
 
       it "knife list --local / returns it" do
-        knife('list', '--local', '/').stdout.should == "/data_bags\n"
+        knife('list --local /').should_succeed "/data_bags\n"
       end
     end
 
@@ -41,11 +42,12 @@ bag1
       directory 'cookbooks/cookbook1'
 
       it "knife list --local -R / does not return it" do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
-"
+EOM
       end
     end
 
@@ -53,11 +55,12 @@ cookbooks
       directory 'cookbooks/cookbook1/recipes'
 
       it "knife list --local -R / does not return it" do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
-"
+EOM
       end
     end
 
@@ -66,7 +69,8 @@ cookbooks
       file 'cookbooks/cookbook1/templates/default/x.txt', ''
 
       it "knife list --local -R / does not return the empty ones" do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -80,7 +84,7 @@ default
 
 /cookbooks/cookbook1/templates/default:
 x.txt
-"
+EOM
       end
     end
 
@@ -88,11 +92,12 @@ x.txt
       directory 'cookbooks/cookbook1/templates/default'
 
       it "knife list --local -R / does not return it" do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
-"
+EOM
       end
     end
 
@@ -102,7 +107,8 @@ cookbooks
       directory 'cookbooks/cookbook1/files/default'
 
       it "knife list --local -R / does not return the empty ones" do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -116,7 +122,7 @@ default
 
 /cookbooks/cookbook1/templates/default:
 x.txt
-"
+EOM
       end
     end
 
@@ -126,7 +132,7 @@ x.txt
       end
 
       it "knife list --local -R / should NOT return it" do
-        knife('list', '--local', '-R', '/').stdout.should == ""
+        knife('list --local -R /').should_succeed ""
       end
     end
 
@@ -149,7 +155,8 @@ x.txt
 
       it "knife list --local -R / should NOT return them" do
         pending "Decide whether this is a good/bad idea" do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 data_bags
 environments
 roles
@@ -165,7 +172,7 @@ environment1.json
 
 /roles:
 role1.json
-"
+EOM
         end
       end
     end
@@ -226,7 +233,8 @@ role1.json
 
       it "knife list --local -R / should NOT return them" do
         pending "Decide whether this is a good idea" do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -286,7 +294,7 @@ c
 /cookbooks/cookbook1/templates/c:
 d.rb
 e.json
-"
+EOM
         end
       end
     end
@@ -295,11 +303,12 @@ e.json
       file 'cookbooks/file', ''
       it 'does not show up in list -R' do
         pending "don't show files when only directories are allowed" do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
-"
+EOM
         end
       end
     end
@@ -308,11 +317,12 @@ cookbooks
       file 'data_bags/file', ''
       it 'does not show up in list -R' do
         pending "don't show files when only directories are allowed" do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 data_bags
 
 /data_bags:
-"
+EOM
         end
       end
     end
@@ -337,7 +347,8 @@ data_bags
         it 'nothing is ignored' do
           # NOTE: many of the "chefignore" files should probably not show up
           # themselves, but we have other tests that talk about that
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 data_bags
 environments
@@ -365,7 +376,7 @@ x.json
 /roles:
 chefignore
 x.json
-"
+EOM
         end
       end
     end
@@ -376,12 +387,13 @@ x.json
       file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
 
       it 'the cookbook is not listed' do
-        knife('list', '--local', '-R', '/').stdout.should == "/:
+        knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
 chefignore
-"
+EOM
       end
     end
 
@@ -395,7 +407,8 @@ chefignore
         file 'cookbooks/chefignore', "x.json\n"
 
         it 'matching files and directories get ignored in all cookbooks' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -408,7 +421,7 @@ y.json
 
 /cookbooks/cookbook2:
 y.json
-"
+EOM
         end
       end
 
@@ -417,7 +430,8 @@ y.json
         file 'cookbooks/cookbook1/x.rb', ''
 
         it 'matching files and directories get ignored in all cookbooks' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -430,7 +444,7 @@ y.json
 
 /cookbooks/cookbook2:
 y.json
-"
+EOM
         end
       end
 
@@ -440,7 +454,8 @@ y.json
         file 'cookbooks/chefignore', "recipes/x.rb\n"
 
         it 'matching directories get ignored' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -459,7 +474,7 @@ y.json
 
 /cookbooks/cookbook2/recipes:
 y.rb
-"
+EOM
         end
       end
 
@@ -468,7 +483,8 @@ y.rb
         file 'cookbooks/chefignore', "recipes\n"
 
         it 'matching directories do NOT get ignored' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -487,7 +503,7 @@ y.rb
 /cookbooks/cookbook2:
 x.json
 y.json
-"
+EOM
         end
       end
 
@@ -497,7 +513,8 @@ y.json
         file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
 
         it 'ignores the subdirectory entirely' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -512,7 +529,7 @@ y.json
 /cookbooks/cookbook2:
 x.json
 y.json
-"
+EOM
         end
       end
 
@@ -520,7 +537,8 @@ y.json
         file 'cookbooks/chefignore', "\n"
 
         it 'nothing is ignored' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -535,7 +553,7 @@ y.json
 /cookbooks/cookbook2:
 x.json
 y.json
-"
+EOM
         end
       end
 
@@ -543,7 +561,8 @@ y.json
         file 'cookbooks/chefignore', "\n\n # blah\n#\nx.json\n\n"
 
         it 'matching files and directories get ignored in all cookbooks' do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -556,7 +575,7 @@ y.json
 
 /cookbooks/cookbook2:
 y.json
-"
+EOM
         end
       end
     end
@@ -578,7 +597,8 @@ y.json
         file 'cookbooks1/chefignore', "metadata.rb\n"
         file 'cookbooks2/chefignore', "x.json\n"
         it "chefignores apply only to the directories they are in" do
-          knife('list', '--local', '-R', '/').stdout.should == "/:
+          knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -591,7 +611,7 @@ x.json
 
 /cookbooks/yourcookbook:
 metadata.rb
-"
+EOM
         end
 
         context "and conflicting cookbooks" do
@@ -601,7 +621,8 @@ metadata.rb
           file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
 
           it "chefignores apply only to the winning cookbook" do
-            knife('list', '--local', '-R', '/').stdout.should == "/:
+            knife('list --local -R /').should_succeed <<EOM
+/:
 cookbooks
 
 /cookbooks:
@@ -615,7 +636,7 @@ x.json
 /cookbooks/yourcookbook:
 onlyincookbooks1.rb
 x.json
-"
+EOM
           end
         end
       end
