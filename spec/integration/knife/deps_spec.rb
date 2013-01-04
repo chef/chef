@@ -45,8 +45,8 @@ EOM
 
     when_the_chef_server 'has a node with no environment or run_list' do
       node 'mort', {}
-      it 'knife deps reports just the node and _default environment' do
-        knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed "/environments/_default.json\n/nodes/mort.json\n"
+      it 'knife deps reports just the node' do
+        knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed "/nodes/mort.json\n"
       end
     end
     when_the_chef_server 'has a node with an environment' do
@@ -63,7 +63,6 @@ EOM
       node 'mort', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       it 'knife deps reports just the node' do
         knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed <<EOM
-/environments/_default.json
 /roles/minor.json
 /cookbooks/quiche
 /cookbooks/soup
@@ -117,7 +116,6 @@ EOM
       end
       it 'knife deps * reports all dependencies of all things' do
         knife('deps --remote --repo-mode=everything /nodes/*').should_succeed <<EOM
-/environments/_default.json
 /roles/minor.json
 /nodes/bart.json
 /environments/desert.json
@@ -129,7 +127,6 @@ EOM
       end
       it 'knife deps a b reports all dependencies of a and b' do
         knife('deps --remote --repo-mode=everything /nodes/bart.json /nodes/mort.json').should_succeed <<EOM
-/environments/_default.json
 /roles/minor.json
 /nodes/bart.json
 /environments/desert.json
@@ -142,7 +139,6 @@ EOM
       it 'knife deps --tree /* shows dependencies in a tree' do
         knife('deps --remote --tree --repo-mode=everything /nodes/*').should_succeed <<EOM
 /nodes/bart.json
-  /environments/_default.json
   /roles/minor.json
 /nodes/mort.json
   /environments/desert.json
@@ -155,7 +151,6 @@ EOM
       it 'knife deps --tree --no-recurse shows only the first level of dependencies' do
         knife('deps --remote --tree --no-recurse --repo-mode=everything /nodes/*').should_succeed <<EOM
 /nodes/bart.json
-  /environments/_default.json
   /roles/minor.json
 /nodes/mort.json
   /environments/desert.json
