@@ -73,7 +73,19 @@ module IntegrationSupport
         end
       end
 
+      def symlink(relative_path, relative_dest)
+        filename = path_to(relative_path)
+        dir = File.dirname(filename)
+        FileUtils.mkdir_p(dir) unless dir == '.'
+        dest_filename = path_to(relative_dest)
+        File.symlink(dest_filename, filename)
+      end
+
       def path_to(relative_path)
+        File.expand_path(relative_path, (@parent_path || @repository_dir))
+      end
+
+      def self.path_to(relative_path)
         File.expand_path(relative_path, (@parent_path || @repository_dir))
       end
 
@@ -86,6 +98,22 @@ module IntegrationSupport
       def self.file(relative_path, contents)
         before :each do
           file(relative_path, contents)
+        end
+      end
+
+      def self.symlink(relative_path, relative_dest)
+        before :each do
+          symlink(relative_path, relative_dest)
+        end
+      end
+
+      def self.cwd(relative_path)
+        before :each do
+          @old_cwd = Dir.pwd
+          Dir.chdir(path_to(relative_path))
+        end
+        after :each do
+          Dir.chdir(@old_cwd)
         end
       end
 

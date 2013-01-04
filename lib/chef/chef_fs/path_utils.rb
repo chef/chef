@@ -30,7 +30,7 @@ class Chef
         source_parts = Chef::ChefFS::PathUtils.split(source)
         dest_parts = Chef::ChefFS::PathUtils.split(dest)
         i = 0
-        until i >= source_parts.length || i >= dest_parts.length || source_parts[i] != source_parts[i]
+        until i >= source_parts.length || i >= dest_parts.length || source_parts[i] != dest_parts[i]
           i+=1
         end
         # dot-dot up from 'source' to the common ancestor, then
@@ -59,6 +59,26 @@ class Chef
         Chef::ChefFS::windows? ? '[/\\]' : '/'
       end
 
+      # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
+      # or /x/y/*/blah when /x/y/z/blah exists), call File.realpath on the biggest
+      # part that actually exists.
+      #
+      # If /x is a symlink to /blarghle, and has no subdirectories, then:
+      # PathUtils.realest_path('/x/y/z') == '/blarghle/y/z'
+      # PathUtils.realest_path('/x/*/z') == '/blarghle/*/z'
+      # PathUtils.realest_path('/*/y/z') == '/*/y/z'
+      def self.realest_path(path)
+        begin
+          File.realpath(path)
+        rescue Errno::ENOENT
+          dirname = File.dirname(path)
+          if dirname
+            PathUtils.join(realest_path(dirname), File.basename(path))
+          else
+            path
+          end
+        end
+      end
     end
   end
 end

@@ -113,21 +113,23 @@ class Chef
       # If the path does not reach into ANY specified directory, nil is returned.
       def server_path(file_path)
         pwd = File.expand_path(Dir.pwd)
-        absolute_path = File.expand_path(file_path, pwd)
+        absolute_path = Chef::ChefFS::PathUtils.realest_path(File.expand_path(file_path, pwd))
 
         # Check all object paths (cookbooks_dir, data_bags_dir, etc.)
         object_paths.each_pair do |name, paths|
           paths.each do |path|
-            if absolute_path[0,path.length] == path
-              relative_path = Chef::ChefFS::PathUtils::relative_to(path, absolute_path)
+            realest_path = Chef::ChefFS::PathUtils.realest_path(path)
+            if absolute_path[0,realest_path.length] == realest_path
+              relative_path = Chef::ChefFS::PathUtils::relative_to(realest_path, absolute_path)
               return relative_path == '.' ? "/#{name}" : "/#{name}/#{relative_path}"
             end
           end
         end
 
         # Check chef_repo_path
-        if chef_repo_path[0,absolute_path.length] == absolute_path
-          relative_path = Chef::ChefFS::PathUtils::relative_to(chef_repo_path, absolute_path)
+        realest_chef_repo_path = Chef::ChefFS::PathUtils.realest_path(chef_repo_path)
+        if absolute_path[0,realest_chef_repo_path.length] == realest_chef_repo_path
+          relative_path = Chef::ChefFS::PathUtils::relative_to(realest_chef_repo_path, absolute_path)
           return relative_path == '.' ? '/' : "/#{relative_path}"
         end
 
