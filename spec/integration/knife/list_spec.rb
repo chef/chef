@@ -225,7 +225,179 @@ EOM
       end
     end
 
-    # TODO different cwd
+    context 'symlink tests' do
+      when_the_repository 'is empty' do
+        context 'when cwd is at the top of the repository' do
+          cwd '.'
+
+          it "knife list -Rp --flat returns everything" do
+            knife('list -Rp --flat').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook1/
+cookbooks/cookbook1/metadata.rb
+cookbooks/cookbook2/
+cookbooks/cookbook2/metadata.rb
+cookbooks/cookbook2/recipes/
+cookbooks/cookbook2/recipes/default.rb
+data_bags/
+data_bags/bag1/
+data_bags/bag1/item1.json
+data_bags/bag1/item2.json
+data_bags/bag2/
+data_bags/bag2/item1.json
+data_bags/bag2/item2.json
+environments/
+environments/_default.json
+environments/environment1.json
+environments/environment2.json
+roles/
+roles/role1.json
+roles/role2.json
+EOM
+          end
+        end
+      end
+
+      when_the_repository 'has a cookbooks directory' do
+        directory 'cookbooks'
+        context 'when cwd is in cookbooks/' do
+          cwd 'cookbooks'
+
+          it "knife list -Rp --flat / returns everything" do
+            knife('list -Rp --flat /').should_succeed <<EOM
+./
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+/data_bags/
+/data_bags/bag1/
+/data_bags/bag1/item1.json
+/data_bags/bag1/item2.json
+/data_bags/bag2/
+/data_bags/bag2/item1.json
+/data_bags/bag2/item2.json
+/environments/
+/environments/_default.json
+/environments/environment1.json
+/environments/environment2.json
+/roles/
+/roles/role1.json
+/roles/role2.json
+EOM
+          end
+
+          it "knife list -Rp --flat .. returns everything" do
+            knife('list -Rp --flat ..').should_succeed <<EOM
+./
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+/data_bags/
+/data_bags/bag1/
+/data_bags/bag1/item1.json
+/data_bags/bag1/item2.json
+/data_bags/bag2/
+/data_bags/bag2/item1.json
+/data_bags/bag2/item2.json
+/environments/
+/environments/_default.json
+/environments/environment1.json
+/environments/environment2.json
+/roles/
+/roles/role1.json
+/roles/role2.json
+EOM
+          end
+
+          it "knife list -Rp --flat returns cookbooks" do
+            knife('list -Rp --flat').should_succeed <<EOM
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+EOM
+          end
+        end
+      end
+
+      when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory' do
+        directory 'cookbooks'
+        symlink 'symlinked', 'cookbooks'
+
+        context 'when cwd is in cookbooks/' do
+          cwd 'cookbooks'
+
+          it "knife list -Rp --flat returns cookbooks" do
+            knife('list -Rp --flat').should_succeed <<EOM
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+EOM
+          end
+        end
+
+        context 'when cwd is in symlinked/' do
+          cwd 'symlinked'
+
+          it "knife list -Rp --flat returns cookbooks" do
+            knife('list -Rp --flat').should_succeed <<EOM
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+EOM
+          end
+        end
+      end
+
+      when_the_repository 'has a real_cookbooks directory and a cookbooks symlink to it' do
+        directory 'real_cookbooks'
+        symlink 'cookbooks', 'real_cookbooks'
+
+        context 'when cwd is in real_cookbooks/' do
+          cwd 'real_cookbooks'
+
+          it "knife list -Rp --flat returns cookbooks" do
+            knife('list -Rp --flat').should_succeed <<EOM
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+EOM
+          end
+        end
+
+        context 'when cwd is in cookbooks/' do
+          cwd 'cookbooks'
+
+          it "knife list -Rp --flat returns cookbooks" do
+            knife('list -Rp --flat').should_succeed <<EOM
+cookbook1/
+cookbook1/metadata.rb
+cookbook2/
+cookbook2/metadata.rb
+cookbook2/recipes/
+cookbook2/recipes/default.rb
+EOM
+          end
+        end
+      end
+    end
   end
 
   context "--local" do
@@ -310,6 +482,5 @@ EOM
         end
       end
     end
-    # TODO different cwd
   end
 end

@@ -597,7 +597,7 @@ EOM
         file 'cookbooks1/chefignore', "metadata.rb\n"
         file 'cookbooks2/chefignore', "x.json\n"
         it "chefignores apply only to the directories they are in" do
-          knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{File.basename(Chef::Config.chef_repo_path)}/cookbooks2/chefignore and #{File.basename(Chef::Config.chef_repo_path)}/cookbooks1/chefignore\n")
+          knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks2/chefignore and #{Chef::Config.chef_repo_path}/cookbooks1/chefignore\n")
 /:
 cookbooks
 
@@ -621,7 +621,7 @@ EOM
           file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
 
           it "chefignores apply only to the winning cookbook" do
-            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{File.basename(Chef::Config.chef_repo_path)}/cookbooks2/chefignore and #{File.basename(Chef::Config.chef_repo_path)}/cookbooks1/chefignore\nWARN: Child with name 'yourcookbook' found in multiple directories: #{File.basename(Chef::Config.chef_repo_path)}/cookbooks2/yourcookbook and #{File.basename(Chef::Config.chef_repo_path)}/cookbooks1/yourcookbook\n")
+            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks2/chefignore and #{Chef::Config.chef_repo_path}/cookbooks1/chefignore\nWARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook\n")
 /:
 cookbooks
 
