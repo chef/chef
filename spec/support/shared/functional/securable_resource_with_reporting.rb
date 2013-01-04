@@ -12,7 +12,7 @@ shared_examples_for "a securable resource with reporting" do
   # umask
   # let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
-  describe "reading file security metadata for reporting on unix",:unix_only => true do
+  describe "reading file security metadata for reporting on unix", :unix_only => true do
     context "when the target file doesn't exist" do
       before do
         resource.action(:create)
@@ -266,7 +266,7 @@ shared_examples_for "a securable resource with reporting" do
       context "and no security metadata is specified in new_resource" do
         it "sets the metadata values on the new_resource as strings after creating" do
           resource.run_action(:create)
-          # todo: most stable way to specify?
+          # TODO: most stable way to specify?
           resource.owner.should == etc.getpwuid(process.uid).name
           resource.state[:expanded_rights].should == { "CURRENTUSER" => { "permissions" => ALL_EXPANDED_PERMISSIONS, "flags" => [] }}
           resource.state[:expanded_deny_rights].should == {}
@@ -277,7 +277,7 @@ shared_examples_for "a securable resource with reporting" do
 
       context "and owner is specified with a string (username) in new_resource" do
 
-        # todo/bug: duplicated from the "securable resource" tests
+        # TODO/bug: duplicated from the "securable resource" tests
         let(:expected_user_name) { 'Guest' }
 
         before do
@@ -293,7 +293,7 @@ shared_examples_for "a securable resource with reporting" do
 
       context "and owner is specified with a fully qualified domain user" do
 
-        # todo: duplicated from "securable resource"
+        # TODO: duplicated from "securable resource"
         let(:expected_user_name) { 'domain\user' }
 
         before do
@@ -310,13 +310,13 @@ shared_examples_for "a securable resource with reporting" do
 
     context "when the target file exists" do
       before do
-        fileutils.touch(resource.path)
+        FileUtils.touch(resource.path)
         resource.action(:create)
       end
 
       context "and no security metadata is specified in new_resource" do
         it "sets the current values on current resource as strings" do
-          # todo: most stable way to specify?
+          # TODO: most stable way to specify?
           current_resource.owner.should == etc.getpwuid(process.uid).name
           current_resource.expanded_rights.should == { "CURRENTUSER" => ALL_EXPANDED_PERMISSIONS }
         end
