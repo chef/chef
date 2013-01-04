@@ -281,7 +281,7 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
       file 'users/user2.json', {}
 
       it "knife list -Rp --flat / returns everything" do
-        knife('list', '-Rp', '--flat', '/').stdout.should == "/cookbooks/
+        knife('list', '-Rp', '--local', '--flat', '/').stdout.should == "/cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/
@@ -296,7 +296,6 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
 /data_bags/bag2/item1.json
 /data_bags/bag2/item2.json
 /environments/
-/environments/_default.json
 /environments/environment1.json
 /environments/environment2.json
 /roles/
