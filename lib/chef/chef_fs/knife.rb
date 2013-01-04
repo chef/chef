@@ -67,7 +67,12 @@ class Chef
       def object_paths
         @object_paths ||= begin
           result = {}
-          %w(clients cookbooks data_bags environments nodes roles users).each do |object_name|
+          if config[:repo_mode] == 'everything'
+            object_names = %w(clients cookbooks data_bags environments nodes roles users)
+          else
+            object_names = %w(cookbooks data_bags environments roles)
+          end
+          object_names.each do |object_name|
             variable_name = "#{object_name[0..-2]}_path" # cookbooks -> cookbook_path
             paths = config_var(variable_name.to_sym)
             if !paths
