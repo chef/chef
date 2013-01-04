@@ -22,8 +22,8 @@ class Chef
         :description => "List dependencies on the server instead of the local filesystem"
 
       def run
-        if config[:tree] && config[:recurse]
-          ui.error "--recurse requires --tree"
+        if config[:recurse] == false && !config[:tree]
+          ui.error "--no-recurse requires --tree"
           exit(1)
         end
         config[:recurse] = true if config[:recurse].nil?
@@ -55,7 +55,7 @@ class Chef
       def print_dependencies_tree(entry, dependencies, printed = {}, depth = 0)
         dependencies[entry.path] = get_dependencies(entry) if !dependencies[entry.path]
         output "#{'  '*depth}#{format_path(entry.path)}"
-        if !printed[entry.path] && (config[:recurse] || depth <= 1)
+        if !printed[entry.path] && (config[:recurse] || depth == 0)
           printed[entry.path] = true
           dependencies[entry.path].each do |child|
             child_entry = Chef::ChefFS::FileSystem.resolve_path(@root, child)
@@ -68,11 +68,11 @@ class Chef
         begin
           object = entry.chef_object
         rescue Chef::ChefFS::FileSystem::NotFoundError
-          ui.error "#{result.path_for_printing}: No such file or directory"
+          ui.error "#{format_path(entry.path)}: No such file or directory"
           return []
         end
         if !object
-          ui.error "#{entry} is not a Chef object!"
+          ui.error "#{format_path(entry.path)} is not a Chef object!"
           return []
         end
 

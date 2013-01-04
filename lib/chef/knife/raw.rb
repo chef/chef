@@ -9,13 +9,13 @@ class Chef
         :long => '--method METHOD',
         :short => '-m METHOD',
         :default => "GET",
-        :description => "Request method (GET, POST, PUT or DELETE)"
+        :description => "Request method (GET, POST, PUT or DELETE).  Default: GET"
 
       option :pretty,
         :long => '--[no-]pretty',
         :boolean => true,
         :default => true,
-        :description => "Pretty-print JSON output"
+        :description => "Pretty-print JSON output.  Default: true"
 
       option :input,
         :long => '--input FILE',
