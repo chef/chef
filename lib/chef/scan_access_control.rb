@@ -118,10 +118,8 @@ class Chef
 
     def current_mode
       case new_resource.mode
-      when String, nil
-        (stat.mode & 007777).to_s(8)
-      when Integer
-        stat.mode & 007777
+      when String, Integer, nil
+        "0#{(stat.mode & 07777).to_s(8)}"
       else
         Chef::Log.error("The `mode` parameter of the #@new_resource resource is set to an invalid value (#{new_resource.mode.inspect})")
         raise ArgumentError, "Invalid value #{new_resource.mode.inspect} for `mode` on resource #@new_resource"

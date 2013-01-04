@@ -85,7 +85,7 @@ EXPECTED
       @provider.current_resource = @current_resource
     end
 
-    after { ::File.exist?(@install_to) && FileUtils.rm(@install_to) }
+    after { ::File.exist?(File.dirname(@install_to)) && FileUtils.rm_rf(@install_to) }
 
     it "loads the current file state" do
       @provider.load_current_resource
@@ -95,12 +95,6 @@ EXPECTED
     it "looks up a file from the cookbook cache" do
       expected = CHEF_SPEC_DATA + "/cookbooks/apache2/files/default/apache2_module_conf_generate.pl"
       @provider.file_cache_location.should == expected
-    end
-
-    it "stages the cookbook to a temporary file" do
-      @new_resource.path(@install_to)
-      @provider.should_receive(:deploy_tempfile)
-      @provider.run_action(:create)
     end
 
     it "installs the file from the cookbook cache" do

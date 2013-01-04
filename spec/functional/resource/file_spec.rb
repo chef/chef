@@ -46,7 +46,17 @@ describe Chef::Resource::File do
     "This is file content that is not managed by chef"
   end
 
+  let(:current_resource) do
+    provider = resource.provider_for_action(resource.action)
+    provider.load_current_resource
+    provider.current_resource
+  end
+
+  let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
+
   it_behaves_like "a file resource"
+
+  it_behaves_like "a securable resource with reporting"
 
   describe "when running action :touch" do
     context "and the target file does not exist" do

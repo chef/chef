@@ -51,14 +51,17 @@ class Chef
       def action_create
         render_with_context(template_location) do |rendered_template|
           rendered(rendered_template)
-          update = ::File.exist?(@new_resource.path)
-          if update && content_matches?
+          if file_already_exists? && content_matches?
             Chef::Log.debug("#{@new_resource} content has not changed.")
             set_all_access_controls
+            update_new_file_state(@new_resource.path)
           else
-            description = [] 
-            action_message = update ? "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}" :
+            description = []
+            action_message = if file_already_exists?
+              "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}"
+            else
               "create #{@new_resource}"
+            end
             description << action_message
             description << diff_current(rendered_template.path)
             converge_by(description) do
@@ -66,17 +69,10 @@ class Chef
               FileUtils.mv(rendered_template.path, @new_resource.path)
               Chef::Log.info("#{@new_resource} updated content")
               access_controls.set_all!
-              stat = ::File.stat(@new_resource.path)
-
-              # template depends on the checksum not changing, and updates it
-              # itself later in the code, so we cannot set it here, as we do with
-              # all other < File child provider classes
-              @new_resource.owner(stat.uid)
-              @new_resource.mode(stat.mode & 07777)
-              @new_resource.group(stat.gid)
+              update_new_file_state(@new_resource.path)
             end
           end
-        end  
+        end
       end
 
       def template_finder
@@ -106,6 +102,10 @@ class Chef
       end
 
       private
+
+      def file_already_exists?
+        ::File.exist?(@new_resource.path)
+      end
 
       def render_with_context(template_location, &block)
         context = {}

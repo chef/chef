@@ -48,6 +48,7 @@ class Chef
               tempfile.close
               FileUtils.cp(file_cache_location, tempfile.path)
             end
+            update_new_file_state
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
         else

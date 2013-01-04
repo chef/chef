@@ -60,7 +60,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the mode of the current resource to the current mode as a String" do
-        @current_resource.mode.should == "644"
+        @current_resource.mode.should == "0644"
       end
 
       context "on unix", :unix_only do
@@ -91,7 +91,7 @@ describe Chef::ScanAccessControl do
       end
 
       it "sets the mode of the current resource to the file's current mode as a string" do
-        @current_resource.mode.should == "644"
+        @current_resource.mode.should == "0644"
       end
     end
 
@@ -101,8 +101,8 @@ describe Chef::ScanAccessControl do
         @scanner.set_all!
       end
 
-      it "sets the mode of the current resource to the current mode as an integer" do
-        @current_resource.mode.should == 00644
+      it "sets the mode of the current resource to the current mode as a String" do
+        @current_resource.mode.should == "0644"
       end
 
     end
