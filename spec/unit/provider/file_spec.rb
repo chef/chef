@@ -68,7 +68,7 @@ describe Chef::Provider::File do
       @provider.load_current_resource
 
       # post-condition checks
-      @provider.current_resource.mode.should == "600"
+      @provider.current_resource.mode.should == "0600"
       @provider.current_resource.owner.should == "root"
       @provider.current_resource.group.should == "wheel"
     end
@@ -112,7 +112,7 @@ describe Chef::Provider::File do
         # post-condition checks
         @provider.new_resource.group.should == "wheel"
         @provider.new_resource.owner.should == "root"
-        @provider.new_resource.mode.should == "600"
+        @provider.new_resource.mode.should == "0600"
       end
     end
   end

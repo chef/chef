@@ -30,7 +30,7 @@ shared_examples_for "a securable resource with reporting" do
           # TODO: most stable way to specify?
           resource.owner.should == Etc.getpwuid(Process.uid).name
           resource.group.should == Etc.getgrgid(Process.gid).name
-          resource.mode.should == default_mode
+          resource.mode.should == "0#{default_mode}"
         end
       end
 
@@ -101,7 +101,7 @@ shared_examples_for "a securable resource with reporting" do
         # Need full permission for owner here or else remote directory gets
         # into trouble trying to manage nested directories
         let(:set_mode) { "0740" }
-        let(:expected_mode) { "740" }
+        let(:expected_mode) { "0740" }
 
         before do
           resource.mode(set_mode)
@@ -116,7 +116,7 @@ shared_examples_for "a securable resource with reporting" do
       context "and mode is specified as an Integer" do
         let(:set_mode) { 00740 }
 
-        let(:expected_mode) { "740" }
+        let(:expected_mode) { "0740" }
         before do
           resource.mode(set_mode)
           resource.run_action(:create)
@@ -139,7 +139,7 @@ shared_examples_for "a securable resource with reporting" do
           # TODO: most stable way to specify?
           current_resource.owner.should == Etc.getpwuid(Process.uid).name
           current_resource.group.should == Etc.getgrgid(Process.gid).name
-          current_resource.mode.should == ((0100666 - File.umask) & 07777).to_s(8)
+          current_resource.mode.should == "0#{((0100666 - File.umask) & 07777).to_s(8)}"
         end
       end
 
@@ -199,7 +199,7 @@ shared_examples_for "a securable resource with reporting" do
 
       context "and mode is specified as a String" do
         let(:default_create_mode) { (0100666 - File.umask) }
-        let(:expected_mode) { (default_create_mode & 07777).to_s(8) }
+        let(:expected_mode) { "0#{(default_create_mode & 07777).to_s(8)}" }
 
         before do
           resource.mode(expected_mode)
@@ -212,7 +212,7 @@ shared_examples_for "a securable resource with reporting" do
 
       context "and mode is specified as an Integer" do
         let(:set_mode) { (0100666 - File.umask) & 07777 }
-        let(:expected_mode) { set_mode.to_s(8) }
+        let(:expected_mode) { "0#{set_mode.to_s(8)}" }
 
         before do
           resource.mode(set_mode)

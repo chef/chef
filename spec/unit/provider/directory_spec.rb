@@ -59,7 +59,7 @@ describe Chef::Provider::Directory do
       File.stub!(:exist?).and_return(true)
       File.should_receive(:stat).and_return(mock_stat)
       @directory.load_current_resource
-      @directory.current_resource.mode.should == "755"
+      @directory.current_resource.mode.should == "0755"
     end
 
     context "when user and group are specified with UID/GID" do
