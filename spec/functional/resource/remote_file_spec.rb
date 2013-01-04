@@ -45,7 +45,12 @@ describe Chef::Resource::RemoteFile do
     create_resource
   end
 
-  let(:default_mode) { "600" }
+  let(:default_mode) do
+    t = Tempfile.new("get-the-mode")
+    m = t.stat.mode
+    t.close
+    (07777 & m).to_s(8)
+  end
 
   before(:all) do
     @server = TinyServer::Manager.new
