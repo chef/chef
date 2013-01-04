@@ -17,7 +17,6 @@
 #
 
 require 'spec_helper'
-require 'support/shared/unit/file_system_support'
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_pattern'
 
@@ -35,7 +34,7 @@ describe Chef::ChefFS::FileSystem do
         list_should_yield_paths(fs, '/a', '/a')
       end
       it '/a/b' do
-        list_should_yield_paths(fs, '/a/b')
+        list_should_yield_paths(fs, '/a/b', '/a/b')
       end
       it '/*' do
         list_should_yield_paths(fs, '/*', '/')
@@ -105,7 +104,7 @@ describe Chef::ChefFS::FileSystem do
       end
       it 'nonexistent /a/ab/blah/bjork' do
         no_blocking_calls_allowed
-        list_should_yield_paths(fs, '/a/ab/blah/bjork')
+        list_should_yield_paths(fs, '/a/ab/blah/bjork', '/a/ab/blah/bjork')
       end
     end
 
