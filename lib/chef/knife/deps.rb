@@ -21,6 +21,8 @@ class Chef
         :boolean => true,
         :description => "List dependencies on the server instead of the local filesystem"
 
+      attr_accessor :exit_code
+
       def run
         if config[:recurse] == false && !config[:tree]
           ui.error "--no-recurse requires --tree"
@@ -39,6 +41,7 @@ class Chef
             end
           end
         end
+        exit exit_code if exit_code
       end
 
       def print_flattened_dependencies(entry, dependencies)
@@ -69,10 +72,11 @@ class Chef
           object = entry.chef_object
         rescue Chef::ChefFS::FileSystem::NotFoundError
           ui.error "#{format_path(entry.path)}: No such file or directory"
+          self.exit_code = 2
           return []
         end
         if !object
-          ui.error "#{format_path(entry.path)} is not a Chef object!"
+          # If it's not a Chef object, it has no deps
           return []
         end
 
