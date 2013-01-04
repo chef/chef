@@ -92,7 +92,10 @@ jenkins_build_support.each do |(build, supported_platforms)|
   build_platform = supported_platforms.first
 
   # find the build in the local packages
-  build_package = local_packages.find {|b| b.include?(build)}
+  build_package = local_packages.find do |b|
+    # ensure we ignore the BUILD_VERSION file
+    b.include?(build) && !b.include?("BUILD_VERSION")
+  end
 
   unless build_package
     error_msg = "Could not locate build package for [#{build_platform.join("-")}]."
