@@ -144,6 +144,7 @@ class Chef
       end
 
       def setup_acl
+        return if Chef::Platform.windows?
         acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
         acl_scanner.set_all!
       end
