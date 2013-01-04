@@ -1,5 +1,7 @@
 require 'chef/knife'
 require 'chef/application/knife'
+require 'logger'
+require 'chef/log'
 
 module KnifeSupport
   def knife(*args, &block)
@@ -16,6 +18,8 @@ module KnifeSupport
     # load stuff ourselves, thank you very much
     stdout = StringIO.new
     stderr = StringIO.new
+    old_loggers = Chef::Log.loggers
+    old_log_level = Chef::Log.level
     begin
       subcommand_class = Chef::Knife.subcommand_class_from(args)
       subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
@@ -27,6 +31,11 @@ module KnifeSupport
       # Don't print stuff
       Chef::Config[:verbosity] = 0
       instance.configure_chef
+      logger = Logger.new(stderr)
+      logger.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg}\n" }
+      Chef::Log.use_log_devices([logger])
+      Chef::Log.level = :warn
+      Chef::Log::Formatter.show_time = false
       instance.run
 
       exit_code = 0
@@ -34,6 +43,9 @@ module KnifeSupport
     # This is how rspec catches exit()
     rescue SystemExit => e
       exit_code = e.status
+    ensure
+      Chef::Log.use_log_devices(old_loggers)
+      Chef::Log.level = old_log_level
     end
 
     KnifeResult.new(stdout.string, stderr.string, exit_code)
