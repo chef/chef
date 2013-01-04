@@ -7,15 +7,17 @@ describe 'knife list' do
 
   when_the_chef_server "is empty" do
     it "knife list / returns all top level directories" do
-      knife('list', '/').stdout.should == "/cookbooks
+      knife('list /').should_succeed <<EOM
+/cookbooks
 /data_bags
 /environments
 /roles
-"
+EOM
     end
 
     it "knife list -R / returns everything" do
-      knife('list', '-R', '/').stdout.should == "/:
+      knife('list -R /').should_succeed <<EOM
+/:
 cookbooks
 data_bags
 environments
@@ -29,7 +31,7 @@ roles
 _default.json
 
 /roles:
-"
+EOM
     end
   end
 
@@ -50,15 +52,17 @@ _default.json
     user 'user2', {}
 
     it "knife list / returns all top level directories" do
-      knife('list', '/').stdout.should == "/cookbooks
+      knife('list /').should_succeed <<EOM
+/cookbooks
 /data_bags
 /environments
 /roles
-"
+EOM
     end
 
     it "knife list -R / returns everything" do
-      knife('list', '-R', '/').stdout.should == "/:
+      knife('list -R /').should_succeed <<EOM
+/:
 cookbooks
 data_bags
 environments
@@ -98,11 +102,12 @@ environment2.json
 /roles:
 role1.json
 role2.json
-"
+EOM
     end
 
     it "knife list -R --flat / returns everything" do
-      knife('list', '-R', '--flat', '/').stdout.should == "/cookbooks
+      knife('list -R --flat /').should_succeed <<EOM
+/cookbooks
 /cookbooks/cookbook1
 /cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2
@@ -123,11 +128,12 @@ role2.json
 /roles
 /roles/role1.json
 /roles/role2.json
-"
+EOM
     end
 
     it "knife list -Rp --flat / returns everything" do
-      knife('list', '-Rp', '--flat', '/').stdout.should == "/cookbooks/
+      knife('list -Rp --flat /').should_succeed <<EOM
+/cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/
@@ -148,35 +154,39 @@ role2.json
 /roles/
 /roles/role1.json
 /roles/role2.json
-"
+EOM
     end
 
     it "knife list /cookbooks returns the list of cookbooks" do
-      knife('list', '/cookbooks').stdout.should == "/cookbooks/cookbook1
+      knife('list /cookbooks').should_succeed <<EOM
+/cookbooks/cookbook1
 /cookbooks/cookbook2
-"
+EOM
     end
 
     it "knife list /cookbooks/*2/*/*.rb returns the one file" do
-      knife('list', '/cookbooks/*2/*/*.rb').stdout.should == "/cookbooks/cookbook2/recipes/default.rb\n"
+      knife('list /cookbooks/*2/*/*.rb').should_succeed "/cookbooks/cookbook2/recipes/default.rb\n"
     end
 
     it "knife list /**.rb returns all ruby files" do
-      knife('list', '/**.rb').stdout.should == "/cookbooks/cookbook1/metadata.rb
+      knife('list /**.rb').should_succeed <<EOM
+/cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/metadata.rb
 /cookbooks/cookbook2/recipes/default.rb
-"
+EOM
     end
 
     it "knife list /cookbooks/**.rb returns all ruby files" do
-      knife('list', '/cookbooks/**.rb').stdout.should == "/cookbooks/cookbook1/metadata.rb
+      knife('list /cookbooks/**.rb').should_succeed <<EOM
+/cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/metadata.rb
 /cookbooks/cookbook2/recipes/default.rb
-"
+EOM
     end
 
     it "knife list /**.json returns all json files" do
-      knife('list', '/**.json').stdout.should == "/data_bags/bag1/item1.json
+      knife('list /**.json').should_succeed <<EOM
+/data_bags/bag1/item1.json
 /data_bags/bag1/item2.json
 /data_bags/bag2/item1.json
 /data_bags/bag2/item2.json
@@ -185,52 +195,33 @@ role2.json
 /environments/environment2.json
 /roles/role1.json
 /roles/role2.json
-"
+EOM
     end
 
     it "knife list /data**.json returns all data bag json files" do
-      knife('list', '/data**.json').stdout.should == "/data_bags/bag1/item1.json
+      knife('list /data**.json').should_succeed <<EOM
+/data_bags/bag1/item1.json
 /data_bags/bag1/item2.json
 /data_bags/bag2/item1.json
 /data_bags/bag2/item2.json
-"
+EOM
     end
 
     it "knife list /environments/missing_file.json reports missing file" do
-      knife('list', '/environments/missing_file.json') do
-        stderr.should == "WARNING: No knife configuration file found
-ERROR: /environments/missing_file.json: No such file or directory
-"
-        stdout.should == ''
-      end
+      knife('list /environments/missing_file.json').should_fail "ERROR: /environments/missing_file.json: No such file or directory\n"
     end
 
     context "missing file/directory exact match tests" do
       it "knife list /blarghle reports missing directory" do
-        knife('list', '/blarghle') do
-          stderr.should == "WARNING: No knife configuration file found
-ERROR: /blarghle: No such file or directory
-"
-          stdout.should == ''
-        end
+        knife('list /blarghle').should_fail "ERROR: /blarghle: No such file or directory\n"
       end
 
       it "knife list /roles/blarghle reports missing directory" do
-        knife('list', '/roles/blarghle') do
-          stderr.should == "WARNING: No knife configuration file found
-ERROR: /roles/blarghle: No such file or directory
-"
-          stdout.should == ''
-        end
+        knife('list /roles/blarghle').should_fail "ERROR: /roles/blarghle: No such file or directory\n"
       end
 
       it "knife list /roles/blarghle/blorghle reports missing directory" do
-        knife('list', '/roles/blarghle/blorghle') do
-          stderr.should == "WARNING: No knife configuration file found
-ERROR: /roles/blarghle/blorghle: No such file or directory
-"
-          stdout.should == ''
-        end
+        knife('list /roles/blarghle/blorghle').should_fail "ERROR: /roles/blarghle/blorghle: No such file or directory\n"
       end
     end
 
@@ -240,11 +231,11 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
   context "--local" do
     when_the_repository "is empty" do
       it "knife list --local / returns nothing" do
-        knife('list', '--local', '/').stdout.should == ""
+        knife('list --local /').should_succeed ""
       end
 
       it "knife list /roles returns nothing" do
-        knife('list', '--local', '/roles').stdout.should == ""
+        knife('list --local /roles').should_fail "ERROR: /roles: No such file or directory\n"
       end
     end
 
@@ -281,7 +272,8 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
       file 'users/user2.json', {}
 
       it "knife list -Rp --flat / returns everything" do
-        knife('list', '-Rp', '--local', '--flat', '/').stdout.should == "/cookbooks/
+        knife('list -Rp --local --flat /').should_succeed <<EOM
+/cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb
 /cookbooks/cookbook2/
@@ -301,35 +293,20 @@ ERROR: /roles/blarghle/blorghle: No such file or directory
 /roles/
 /roles/role1.json
 /roles/role2.json
-"
+EOM
       end
 
       context "missing file/directory tests" do
         it "knife list --local /blarghle reports missing directory" do
-          knife('list', '--local', '/blarghle') do
-            stderr.should == "WARNING: No knife configuration file found
-ERROR: /blarghle: No such file or directory
-"
-            stdout.should == ''
-          end
+          knife('list --local /blarghle').should_fail "ERROR: /blarghle: No such file or directory\n"
         end
 
         it "knife list /roles/blarghle reports missing directory" do
-          knife('list', '--local', '/roles/blarghle') do
-            stderr.should == "WARNING: No knife configuration file found
-ERROR: /roles/blarghle: No such file or directory
-"
-            stdout.should == ''
-          end
+          knife('list --local /roles/blarghle').should_fail "ERROR: /roles/blarghle: No such file or directory\n"
         end
 
         it "knife list /roles/blarghle/blorghle reports missing directory" do
-          knife('list', '--local', '/roles/blarghle/blorghle') do
-            stderr.should == "WARNING: No knife configuration file found
-ERROR: /roles/blarghle/blorghle: No such file or directory
-"
-            stdout.should == ''
-          end
+          knife('list --local /roles/blarghle/blorghle').should_fail "ERROR: /roles/blarghle/blorghle: No such file or directory\n"
         end
       end
     end

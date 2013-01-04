@@ -33,6 +33,8 @@ class Chef
         :boolean => true,
         :description => "Show trailing slashes after directories"
 
+      attr_accessor :exit_code
+
       def run
         patterns = name_args.length == 0 ? [""] : name_args
 
@@ -47,6 +49,7 @@ class Chef
               results << result
             elsif pattern.exact_path
               ui.error "#{format_path(result.path)}: No such file or directory"
+              self.exit_code = 1
             end
           end
         end
@@ -77,6 +80,8 @@ class Chef
           output "#{format_path(result.path)}:"
           print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
         end
+
+        exit self.exit_code if self.exit_code
       end
 
       def add_dir_result(result)
