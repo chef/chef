@@ -89,3 +89,7 @@ if exists rpm;
 then
   sudo -i $(pwd)/jenkins/sign-rpm "foo" $(pwd)/pkg/*rpm
 fi
+
+# Dump the build-generated version so the Omnitruck release script uses the
+# correct version string format.
+echo "`awk -v p=$project_name '$1 == p {print $2}' /opt/${project_name}/version-manifest.txt`" > pkg/BUILD_VERSION
