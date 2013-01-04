@@ -20,6 +20,11 @@ require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
 require 'chef/chef_fs/file_system/multiplexed_dir'
+require 'chef/api_client'
+require 'chef/data_bag_item'
+require 'chef/environment'
+require 'chef/node'
+require 'chef/role'
 
 class Chef
   module ChefFS
@@ -55,6 +60,10 @@ class Chef
           nil
         end
 
+        def json_class
+          nil
+        end
+
         private
 
         def make_child_entry(name)
@@ -67,7 +76,23 @@ class Chef
           if name == 'cookbooks'
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
           else
-            dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path) }
+            json_class = case name
+              when 'clients'
+                Chef::ApiClient
+              when 'data_bags'
+                Chef::DataBagItem
+              when 'environments'
+                Chef::Environment
+              when 'nodes'
+                Chef::Node
+              when 'roles'
+                Chef::Role
+              when 'users'
+                nil
+              else
+                raise "Unknown top level path #{name}"
+              end
+            dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, json_class) }
           end
           MultiplexedDir.new(dirs)
         end

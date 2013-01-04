@@ -1,5 +1,6 @@
 require 'chef/chef_fs/knife'
 require 'chef/chef_fs/file_system'
+require 'chef/run_list'
 
 class Chef
   class Knife
@@ -69,42 +70,54 @@ class Chef
 
       def get_dependencies(entry)
         begin
-          object = entry.chef_object
+          if entry.parent && entry.parent.path == '/cookbooks'
+            return entry.chef_object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}"}
+
+          elsif entry.parent && entry.parent.path == '/nodes'
+            node = JSON.parse(entry.read, :create_additions => false)
+            result = []
+            if node['chef_environment'] && node['chef_environment'] != '_default'
+              result << "/environments/#{node['chef_environment']}.json"
+            end
+            if node['run_list']
+              result += dependencies_from_runlist(node['run_list'])
+            end
+            result
+
+          elsif entry.parent && entry.parent.path == '/roles'
+            role = JSON.parse(entry.read, :create_additions => false)
+            result = []
+            if role['run_list']
+              dependencies_from_runlist(role['run_list']).each do |dependency|
+                result << dependency if !result.include?(dependency)
+              end
+            end
+            if role['env_run_lists']
+              role['env_run_lists'].each_pair do |env,run_list|
+                dependencies_from_runlist(run_list).each do |dependency|
+                  result << dependency if !result.include?(dependency)
+                end
+              end
+            end
+            result
+
+          elsif !entry.exists?
+            raise Chef::ChefFS::FileSystem::NotFoundError, "Nonexistent #{entry.path_for_printing}"
+
+          else
+            []
+          end
         rescue Chef::ChefFS::FileSystem::NotFoundError
           ui.error "#{format_path(entry.path)}: No such file or directory"
           self.exit_code = 2
-          return []
-        end
-        if !object
-          # If it's not a Chef object, it has no deps
-          return []
-        end
-
-        if object.is_a?(Chef::CookbookVersion)
-          return object.metadata.dependencies.keys.map { |cookbook| "/cookbooks/#{cookbook}"}
-        elsif object.is_a?(Chef::Node)
-          result = []
-          # /environments/_default.json is an annoying dependency, since you
-          # can't upload it anyway
-          if object.chef_environment != '_default'
-            result << "/environments/#{object.chef_environment}.json"
-          end
-          return result + dependencies_from_runlist(object.run_list)
-        elsif object.is_a?(Chef::Role)
-          result = []
-          object.env_run_lists.each_pair do |env,run_list|
-            dependencies_from_runlist(run_list).each do |dependency|
-              result << dependency if !result.include?(dependency)
-            end
-          end
-          return result
-        else
-          return []
+          []
         end
       end
 
       def dependencies_from_runlist(run_list)
-        result = run_list.map do |run_list_item|
+        chef_run_list = Chef::RunList.new
+        chef_run_list.reset!(run_list)
+        chef_run_list.map do |run_list_item|
           case run_list_item.type
           when :role
             "/roles/#{run_list_item.name}.json"
