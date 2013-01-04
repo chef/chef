@@ -19,22 +19,30 @@ module KnifeSupport
       @stderr.string
     end
 
+    def exit_code
+      @exit_code
+    end
+
     def run(*args, &block)
       # This is Chef::Knife.run without load_commands and load_deps--we'll
       # load stuff ourselves, thank you very much
-      subcommand_class = Chef::Knife.subcommand_class_from(args)
-      subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
-      instance = subcommand_class.new(args)
-
-      # Capture stdout/stderr
       @stdout = StringIO.new
       @stderr = StringIO.new
-      instance.ui = Chef::Knife::UI.new(@stdout, @stderr, STDIN, {})
+      begin
+        subcommand_class = Chef::Knife.subcommand_class_from(args)
+        subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
+        instance = subcommand_class.new(args)
 
-      # Don't print stuff
-      Chef::Config[:verbosity] = 0
-      instance.configure_chef
-      instance.run
+        # Capture stdout/stderr
+        instance.ui = Chef::Knife::UI.new(@stdout, @stderr, STDIN, {})
+
+        # Don't print stuff
+        Chef::Config[:verbosity] = 0
+        instance.configure_chef
+        @exit_code = instance.run
+      rescue SystemExit => e
+        @exit_code = e.status
+      end
 
       instance_eval(&block) if block
     end
