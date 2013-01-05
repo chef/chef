@@ -43,7 +43,7 @@ EOM
       directory 'cookbooks/cookbook1'
 
       it "knife list --local -R / does not return it" do
-        knife('list --local -R /').should_succeed <<EOM
+        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
 /:
 cookbooks
 
@@ -56,7 +56,7 @@ EOM
       directory 'cookbooks/cookbook1/recipes'
 
       it "knife list --local -R / does not return it" do
-        knife('list --local -R /').should_succeed <<EOM
+        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
 /:
 cookbooks
 
@@ -93,7 +93,7 @@ EOM
       directory 'cookbooks/cookbook1/templates/default'
 
       it "knife list --local -R / does not return it" do
-        knife('list --local -R /').should_succeed <<EOM
+        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
 /:
 cookbooks
 
@@ -178,7 +178,7 @@ EOM
       end
     end
 
-    when_the_repository "has extraneous subdirectories and files under cookbooks" do
+    when_the_repository "has extraneous subdirectories and files under a cookbook" do
       directory 'cookbooks/cookbook1' do
         file 'a.rb', ''
         file 'blarghle/blah.rb', ''
@@ -303,14 +303,12 @@ EOM
     when_the_repository "has a file in cookbooks/" do
       file 'cookbooks/file', ''
       it 'does not show up in list -R' do
-        pending "don't show files when only directories are allowed" do
-          knife('list --local -R /').should_succeed <<EOM
+        knife('list --local -R /').should_succeed <<EOM
 /:
 cookbooks
 
 /cookbooks:
 EOM
-        end
       end
     end
 
@@ -388,12 +386,11 @@ EOM
       file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
 
       it 'the cookbook is not listed' do
-        knife('list --local -R /').should_succeed <<EOM
+        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
 /:
 cookbooks
 
 /cookbooks:
-chefignore
 EOM
       end
     end
@@ -413,7 +410,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -436,7 +432,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -460,7 +455,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -489,7 +483,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -519,7 +512,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -543,7 +535,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -567,7 +558,6 @@ EOM
 cookbooks
 
 /cookbooks:
-chefignore
 cookbook1
 cookbook2
 
@@ -598,12 +588,11 @@ EOM
         file 'cookbooks1/chefignore', "metadata.rb\n"
         file 'cookbooks2/chefignore', "x.json\n"
         it "chefignores apply only to the directories they are in" do
-          knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/chefignore and #{Chef::Config.chef_repo_path}/cookbooks2/chefignore\n")
+          knife('list --local -R /').should_succeed <<EOM
 /:
 cookbooks
 
 /cookbooks:
-chefignore
 mycookbook
 yourcookbook
 
@@ -622,12 +611,11 @@ EOM
           file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
 
           it "chefignores apply only to the winning cookbook" do
-            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/chefignore and #{Chef::Config.chef_repo_path}/cookbooks2/chefignore\nWARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
+            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
 /:
 cookbooks
 
 /cookbooks:
-chefignore
 mycookbook
 yourcookbook
 
@@ -644,11 +632,41 @@ EOM
     end
 
     when_the_repository 'has a cookbook named chefignore' do
-      it 'todo', :pending
+      file 'cookbooks/chefignore/metadata.rb', {}
+      it 'knife list -R /cookbooks shows it' do
+        knife('list --local -R /cookbooks').should_succeed <<EOM
+/cookbooks:
+chefignore
+
+/cookbooks/chefignore:
+metadata.rb
+EOM
+      end
     end
 
     when_the_repository 'has multiple cookbook paths, one with a chefignore file and the other with a cookbook named chefignore' do
-      it 'todo', :pending
+      file 'cookbooks1/chefignore', ''
+      file 'cookbooks1/blah/metadata.rb', ''
+      file 'cookbooks2/chefignore/metadata.rb', ''
+      before :each do
+        Chef::Config.cookbook_path = [
+          File.join(Chef::Config.chef_repo_path, 'cookbooks1'),
+          File.join(Chef::Config.chef_repo_path, 'cookbooks2')
+        ]
+      end
+      it 'knife list -R /cookbooks shows the chefignore cookbook' do
+        knife('list --local -R /cookbooks').should_succeed <<EOM
+/cookbooks:
+blah
+chefignore
+
+/cookbooks/blah:
+metadata.rb
+
+/cookbooks/chefignore:
+metadata.rb
+EOM
+      end
     end
   end
 
@@ -896,9 +914,21 @@ EOM
           file 'cookbooks/blah', ''
           file 'cookbooks2/blah/metadata.rb', ''
           it 'knife list -R cookbooks shows files in blah' do
-            pending "don't count files in cookbooks" do
-              knife('list --local -R /cookbooks').should_succeed ''
-            end
+            knife('list --local -R /cookbooks').should_succeed <<EOM
+/cookbooks:
+blah
+cookbook1
+cookbook2
+
+/cookbooks/blah:
+metadata.rb
+
+/cookbooks/cookbook1:
+metadata.rb
+
+/cookbooks/cookbook2:
+metadata.rb
+EOM
           end
         end
 
@@ -906,7 +936,7 @@ EOM
           directory 'cookbooks/blah'
           file 'cookbooks2/blah/metadata.rb', ''
           it 'knife list -R cookbooks shows files in blah' do
-            knife('list --local -R /cookbooks').should_succeed <<EOM
+            knife('list --local -R /cookbooks').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
 /cookbooks:
 blah
 cookbook1

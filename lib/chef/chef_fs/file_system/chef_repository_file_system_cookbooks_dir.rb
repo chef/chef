@@ -25,13 +25,26 @@ class Chef
       class ChefRepositoryFileSystemCookbooksDir < ChefRepositoryFileSystemEntry
         def initialize(name, parent, file_path)
           super(name, parent, file_path)
-          @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
+          begin
+            @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
+          rescue Errno::EISDIR
+            # Work around a bug in Chefignore when chefignore is a directory
+          end
         end
 
         attr_reader :chefignore
 
         def ignore_empty_directories?
           true
+        end
+
+        def ignored?(entry)
+          return true if !entry.dir?
+          result = super(entry)
+          if result
+            Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
+          end
+          result
         end
       end
     end
