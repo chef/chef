@@ -119,7 +119,9 @@ class Chef
         object_paths.each_pair do |name, paths|
           paths.each do |path|
             realest_path = Chef::ChefFS::PathUtils.realest_path(path)
-            if absolute_path[0,realest_path.length] == realest_path
+            if absolute_path[0,realest_path.length] == realest_path &&
+              (absolute_path.length == realest_path.length ||
+                absolute_path[realest_path.length] =~ /#{PathUtils.regexp_path_separator}/)
               relative_path = Chef::ChefFS::PathUtils::relative_to(absolute_path, realest_path)
               return relative_path == '.' ? "/#{name}" : "/#{name}/#{relative_path}"
             end
