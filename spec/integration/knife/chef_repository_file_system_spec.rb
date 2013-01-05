@@ -641,6 +641,14 @@ EOM
         end
       end
     end
+
+    when_the_repository 'has a cookbook named chefignore' do
+      it 'todo', :pending
+    end
+
+    when_the_repository 'has multiple cookbook paths, one with a chefignore file and the other with a cookbook named chefignore' do
+      it 'todo', :pending
+    end
   end
 
   # TODO alternate repo_path / *_path
@@ -864,17 +872,165 @@ EOM
 
       context 'when paths are set to point to both versions of each' do
         before :each do
-          %w(client cookbooks data_bag environment node role user).each do |object_name|
+          %w(client cookbook data_bag environment node role user).each do |object_name|
             Chef::Config["#{object_name}_path".to_sym] = [
               File.join(Chef::Config.chef_repo_path, "#{object_name}s"),
               File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
             ]
           end
-          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo_top')
+          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2')
         end
+
+        context 'when there is a directory in clients1 and file in clients2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a file in cookbooks1 and directory in cookbooks2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is an empty directory in cookbooks1 and a real cookbook in cookbooks2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a file in data_bags1 and a directory in data_bags2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a directory in data_bags1 and a directory in data_bags2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a directory in environments1 and file in environments2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a directory in nodes1 and file in nodes2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a directory in roles1 and file in roles2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when there is a directory in users1 and file in users2 with the same name' do
+          it 'todo', :pending
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -R lists data bags' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+bag
+bag2
+
+bag:
+item.json
+
+bag2:
+item2.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -R lists everything' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+cookbooks
+data_bags
+environments
+roles
+
+cookbooks:
+cookbook1
+cookbook2
+
+cookbooks/cookbook1:
+metadata.rb
+
+cookbooks/cookbook2:
+metadata.rb
+
+data_bags:
+bag
+bag2
+
+data_bags/bag:
+item.json
+
+data_bags/bag2:
+item2.json
+
+environments:
+env1.json
+env2.json
+
+roles:
+role1.json
+role2.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside data_bags2' do
+          cwd 'data_bags2'
+          it 'knife list --local -R lists data bags' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+bag
+bag2
+
+bag:
+item.json
+
+bag2:
+item2.json
+EOM
+          end
+        end
+      end
+
+      context 'when when chef_repo_path is set to both places and no other _path is set' do
+        before :each do
+          %w(client cookbook data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = nil
+          end
+          Chef::Config.chef_repo_path = [
+            Chef::Config.chef_repo_path,
+            File.join(Chef::Config.chef_repo_path, 'chef_repo2')
+          ]
+        end
+        it 'todo', :pending
+      end
+
+      context 'when cookbook_path is set and nothing else' do
+        it 'todo', :pending
+      end
+      context 'when cookbook_path is set to multiple places and nothing else is set' do
+        it 'todo', :pending
+      end
+      context 'when data_bag_path and chef_repo_path are set, and nothing else' do
+        it 'todo', :pending
+      end
+      context 'when data_bag_path is set and nothing else' do
+        it 'todo', :pending
+      end
+    end
+
+    when_the_repository 'is empty' do
+      context 'when the repository _paths point to places that do not exist' do
+        it 'todo', :pending
       end
     end
   end
-
-  # TODO nonexistent repo_path / *_path
 end
