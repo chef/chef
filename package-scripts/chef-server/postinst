@@ -18,9 +18,14 @@ if [ -e /etc/opscode/chef-server-running.json ]; then
   echo
   echo "The next step in the upgrade process is to run:"
   echo
-  echo -e "\033[1;31mchef-server-ctl upgrade\033[0m"
+  echo -e "\033[1;31msudo chef-server-ctl upgrade\033[0m"
+  echo -e "\033[1;31msudo chef-server-ctl reconfigure\033[0m"
 else
   echo -e "\033[1mThank you for installing Chef Server!\033[0m"
+  echo
+  echo "The next step in the install process is to run:"
+  echo
+  echo -e "\033[1msudo chef-server-ctl reconfigure\033[0m"
 fi
 
 exit 0
