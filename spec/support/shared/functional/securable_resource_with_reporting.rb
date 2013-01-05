@@ -225,7 +225,11 @@ shared_examples_for "a securable resource with reporting" do
     end
   end
 
-  describe "reading file security metadata for reporting on windows",:windows_only => true, :focus => true do
+  describe "reading file security metadata for reporting on windows", :windows_only do
+
+    before do
+      pending "windows reporting not yet fully supported"
+    end
 
     ALL_EXPANDED_PERMISSIONS = ["generic read",
                                 "generic write",
