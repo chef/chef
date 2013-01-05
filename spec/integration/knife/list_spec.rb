@@ -328,6 +328,22 @@ EOM
         end
       end
 
+      when_the_repository 'has a cookbooks/cookbook2 directory' do
+        directory 'cookbooks/cookbook2'
+
+        context 'when cwd is in cookbooks/cookbook2' do
+          cwd 'cookbooks/cookbook2'
+
+          it "knife list -Rp --flat returns cookbooks" do
+            knife('list -Rp --flat').should_succeed <<EOM
+metadata.rb
+recipes/
+recipes/default.rb
+EOM
+          end
+        end
+      end
+
       when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory' do
         directory 'cookbooks'
         symlink 'symlinked', 'cookbooks'

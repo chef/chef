@@ -120,7 +120,7 @@ class Chef
           paths.each do |path|
             realest_path = Chef::ChefFS::PathUtils.realest_path(path)
             if absolute_path[0,realest_path.length] == realest_path
-              relative_path = Chef::ChefFS::PathUtils::relative_to(realest_path, absolute_path)
+              relative_path = Chef::ChefFS::PathUtils::relative_to(absolute_path, realest_path)
               return relative_path == '.' ? "/#{name}" : "/#{name}/#{relative_path}"
             end
           end
@@ -128,9 +128,8 @@ class Chef
 
         # Check chef_repo_path
         realest_chef_repo_path = Chef::ChefFS::PathUtils.realest_path(chef_repo_path)
-        if absolute_path[0,realest_chef_repo_path.length] == realest_chef_repo_path
-          relative_path = Chef::ChefFS::PathUtils::relative_to(realest_chef_repo_path, absolute_path)
-          return relative_path == '.' ? '/' : "/#{relative_path}"
+        if absolute_path == realest_chef_repo_path
+          return '/'
         end
 
         nil
@@ -167,6 +166,10 @@ class Chef
         # TODO support absolute file paths and not just patterns?  Too much?
         # Could be super useful in a world with multiple repo paths
         args.map do |arg|
+          if !base_path && !PathUtils.is_absolute?(arg)
+            ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
+            exit(1)
+          end
           Chef::ChefFS::FilePattern::relative_to(base_path, arg)
         end
       end
