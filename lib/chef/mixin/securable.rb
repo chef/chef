@@ -171,21 +171,10 @@ class Chef
       end
 
       #==WindowsSecurableAttributes
-      # Defines methods #rights, #deny_rights, and #inherits to describe
-      # Windows file security ACLs on the including class. The including class
-      # is also extended with WindowsMacros, so more rights attributes may be
-      # defined.
+      # Defines #inherits to describe Windows file security ACLs on the
+      # including class
       module WindowsSecurableAttributes
 
-        # Callback that fires when included; will extend the including class
-        # with WindowsMacros and define #rights and #deny_rights on it.
-        def self.included(including_class)
-          including_class.extend(WindowsMacros)
-
-          # create a default 'rights' attribute
-          including_class.rights_attribute(:rights)
-          including_class.rights_attribute(:deny_rights)
-        end
 
         def inherits(arg=nil)
           set_or_return(
@@ -198,7 +187,18 @@ class Chef
 
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         include WindowsSecurableAttributes
-      end # Windows-specific
+      end
+
+      # Callback that fires when included; will extend the including class
+      # with WindowsMacros and define #rights and #deny_rights on it.
+      def self.included(including_class)
+        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+          including_class.extend(WindowsMacros)
+          # create a default 'rights' attribute
+          including_class.rights_attribute(:rights)
+          including_class.rights_attribute(:deny_rights)
+        end
+      end
 
     end
   end
