@@ -24,7 +24,7 @@ class Chef
             multiplexed_dirs.each do |dir|
               dir.children.each do |child|
                 if seen[child.name]
-                  Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{child.path_for_printing} and #{seen[child.name].path_for_printing}")
+                  Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{child.path_for_printing}")
                 else
                   result << child
                   seen[child.name] = child

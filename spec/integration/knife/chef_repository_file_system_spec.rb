@@ -1,7 +1,8 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/knife/list'
+require 'chef/knife/show'
 
-describe 'knife list' do
+describe 'General chef_repo file system checks' do
   extend IntegrationSupport
   include KnifeSupport
 
@@ -597,7 +598,7 @@ EOM
         file 'cookbooks1/chefignore', "metadata.rb\n"
         file 'cookbooks2/chefignore', "x.json\n"
         it "chefignores apply only to the directories they are in" do
-          knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks2/chefignore and #{Chef::Config.chef_repo_path}/cookbooks1/chefignore\n")
+          knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/chefignore and #{Chef::Config.chef_repo_path}/cookbooks2/chefignore\n")
 /:
 cookbooks
 
@@ -621,7 +622,7 @@ EOM
           file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
 
           it "chefignores apply only to the winning cookbook" do
-            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks2/chefignore and #{Chef::Config.chef_repo_path}/cookbooks1/chefignore\nWARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook\n")
+            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'chefignore' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/chefignore and #{Chef::Config.chef_repo_path}/cookbooks2/chefignore\nWARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
 /:
 cookbooks
 
@@ -882,39 +883,153 @@ EOM
         end
 
         context 'when there is a directory in clients1 and file in clients2 with the same name' do
-          it 'todo', :pending
+          directory 'clients/blah.json'
+          file 'clients2/blah.json', {}
+          it 'knife show /clients/blah.json succeeds' do
+            pending "don't count directories in clients" do
+              knife('show --local /clients/blah.json').should_succeed ''
+            end
+          end
         end
 
         context 'when there is a file in cookbooks1 and directory in cookbooks2 with the same name' do
-          it 'todo', :pending
+          file 'cookbooks/blah', ''
+          file 'cookbooks2/blah/metadata.rb', ''
+          it 'knife list -R cookbooks shows files in blah' do
+            pending "don't count files in cookbooks" do
+              knife('list --local -R /cookbooks').should_succeed ''
+            end
+          end
         end
 
         context 'when there is an empty directory in cookbooks1 and a real cookbook in cookbooks2 with the same name' do
-          it 'todo', :pending
+          directory 'cookbooks/blah'
+          file 'cookbooks2/blah/metadata.rb', ''
+          it 'knife list -R cookbooks shows files in blah' do
+            knife('list --local -R /cookbooks').should_succeed <<EOM
+/cookbooks:
+blah
+cookbook1
+cookbook2
+
+/cookbooks/blah:
+metadata.rb
+
+/cookbooks/cookbook1:
+metadata.rb
+
+/cookbooks/cookbook2:
+metadata.rb
+EOM
+          end
+        end
+
+        context 'when there is a cookbook in cookbooks1 and a cookbook in cookbooks2 with the same name' do
+          file 'cookbooks/blah/metadata.json', {}
+          file 'cookbooks2/blah/metadata.rb', ''
+          it 'knife list -R cookbooks shows files in the first cookbook and not the second' do
+            knife('list --local -R /cookbooks').should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
+/cookbooks:
+blah
+cookbook1
+cookbook2
+
+/cookbooks/blah:
+metadata.json
+
+/cookbooks/cookbook1:
+metadata.rb
+
+/cookbooks/cookbook2:
+metadata.rb
+EOM
+          end
         end
 
         context 'when there is a file in data_bags1 and a directory in data_bags2 with the same name' do
-          it 'todo', :pending
+          file 'data_bags/blah', ''
+          file 'data_bags2/blah/item.json', ''
+          it 'knife list -R data_bags shows files in blah' do
+            pending "Don't count files as data bags" do
+              knife('list --local -R /data_bags').should_succeed <<EOM
+/data_bags:
+bag
+bag2
+blah
+
+/data_bags/bag:
+item.json
+
+/data_bags/bag2:
+item2.json
+
+/data_bags/blah:
+item.json
+EOM
+            end
+          end
         end
 
-        context 'when there is a directory in data_bags1 and a directory in data_bags2 with the same name' do
-          it 'todo', :pending
+        context 'when there is a data bag in data_bags1 and a data bag in data_bags2 with the same name' do
+          file 'data_bags/blah/item1.json', ''
+          file 'data_bags2/blah/item2.json', ''
+          it 'knife list -R data_bags shows only items in data_bags1' do
+            knife('list --local -R /data_bags').should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
+/data_bags:
+bag
+bag2
+blah
+
+/data_bags/bag:
+item.json
+
+/data_bags/bag2:
+item2.json
+
+/data_bags/blah:
+item1.json
+EOM
+          end
         end
 
         context 'when there is a directory in environments1 and file in environments2 with the same name' do
-          it 'todo', :pending
+          directory 'environments/blah.json'
+          file 'environments2/blah.json', {}
+          it 'knife show /environments/blah.json succeeds' do
+            pending "don't count directories in environments" do
+              knife('show --local /environments/blah.json').should_succeed ''
+            end
+          end
         end
 
         context 'when there is a directory in nodes1 and file in nodes2 with the same name' do
-          it 'todo', :pending
+          directory 'nodes/blah.json'
+          file 'nodes2/blah.json', {}
+          it 'knife show /nodes/blah.json succeeds' do
+            pending "don't count directories in nodes" do
+              knife('show --local /nodes/blah.json').should_succeed ''
+            end
+          end
         end
 
         context 'when there is a directory in roles1 and file in roles2 with the same name' do
-          it 'todo', :pending
+          directory 'roles/blah.json'
+          file 'roles2/blah.json', {}
+          it 'knife show /roles/blah.json succeeds' do
+            pending "don't count directories in roles" do
+              knife('show --local /roles/blah.json').should_succeed ''
+            end
+          end
         end
 
         context 'when there is a directory in users1 and file in users2 with the same name' do
-          it 'todo', :pending
+          directory 'users/blah.json'
+          file 'users2/blah.json', {}
+          it 'knife show /users/blah.json succeeds' do
+            pending "don't count directories in users" do
+              knife('show --local /users/blah.json').should_succeed ''
+            end
+          end
         end
 
         context 'when cwd is at the top level' do
