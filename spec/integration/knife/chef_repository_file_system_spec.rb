@@ -644,7 +644,237 @@ EOM
   end
 
   # TODO alternate repo_path / *_path
-  # TODO multiple *_path
+  context 'alternate *_path' do
+    when_the_repository 'has clients and clients2, cookbooks and cookbooks2, etc.' do
+      file 'clients/client1.json', {}
+      file 'cookbooks/cookbook1/metadata.rb', ''
+      file 'data_bags/bag/item.json', {}
+      file 'environments/env1.json', {}
+      file 'nodes/node1.json', {}
+      file 'roles/role1.json', {}
+      file 'users/user1.json', {}
+
+      file 'clients2/client1.json', {}
+      file 'cookbooks2/cookbook2/metadata.rb', ''
+      file 'data_bags2/bag2/item2.json', {}
+      file 'environments2/env2.json', {}
+      file 'nodes2/node2.json', {}
+      file 'roles2/role2.json', {}
+      file 'users2/user2.json', {}
+
+      directory 'chef_repo2' do
+        file 'clients/client3.json', {}
+        file 'cookbooks/cookbook3/metadata.rb', ''
+        file 'data_bags/bag3/item3.json', {}
+        file 'environments/env3.json', {}
+        file 'nodes/node3.json', {}
+        file 'roles/role3.json', {}
+        file 'users/user3.json', {}
+      end
+
+      context 'when all _paths are set to alternates' do
+        before :each do
+          %w(client cookbook data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
+          end
+          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2')
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -R lists everything' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+cookbooks
+data_bags
+environments
+roles
+
+cookbooks:
+cookbook2
+
+cookbooks/cookbook2:
+metadata.rb
+
+data_bags:
+bag2
+
+data_bags/bag2:
+item2.json
+
+environments:
+env2.json
+
+roles:
+role2.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside data_bags2' do
+          cwd 'data_bags2'
+          it 'knife list --local -R lists data bags' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+bag2
+
+bag2:
+item2.json
+EOM
+          end
+          it 'knife list --local -R ../roles lists roles' do
+            knife('list --local -R ../roles').should_succeed "/roles/role2.json\n"
+          end
+        end
+      end
+
+      context 'when all _paths except chef_repo_path are set to alternates' do
+        before :each do
+          %w(client cookbook data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
+          end
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -R lists everything' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+cookbooks
+data_bags
+environments
+roles
+
+cookbooks:
+cookbook2
+
+cookbooks/cookbook2:
+metadata.rb
+
+data_bags:
+bag2
+
+data_bags/bag2:
+item2.json
+
+environments:
+env2.json
+
+roles:
+role2.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside data_bags2' do
+          cwd 'data_bags2'
+          it 'knife list --local -R lists data bags' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+bag2
+
+bag2:
+item2.json
+EOM
+          end
+        end
+      end
+
+      context 'when only chef_repo_path is set to its alternate' do
+        before :each do
+          %w(client cookbook data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = nil
+          end
+          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2')
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -R fails' do
+            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -R lists everything' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+cookbooks
+data_bags
+environments
+roles
+
+cookbooks:
+cookbook3
+
+cookbooks/cookbook3:
+metadata.rb
+
+data_bags:
+bag3
+
+data_bags/bag3:
+item3.json
+
+environments:
+env3.json
+
+roles:
+role3.json
+EOM
+          end
+        end
+      end
+
+      context 'when paths are set to point to both versions of each' do
+        before :each do
+          %w(client cookbooks data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = [
+              File.join(Chef::Config.chef_repo_path, "#{object_name}s"),
+              File.join(Chef::Config.chef_repo_path, "#{object_name}s2")
+            ]
+          end
+          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo_top')
+        end
+      end
+    end
+  end
+
   # TODO nonexistent repo_path / *_path
-  # TODO empty *_path
 end

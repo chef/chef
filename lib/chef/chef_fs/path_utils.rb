@@ -79,6 +79,10 @@ class Chef
           end
         end
       end
+
+      def self.is_absolute?(path)
+        path =~ /^#{regexp_path_separator}/
+      end
     end
   end
 end
