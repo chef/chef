@@ -17,6 +17,9 @@
 #
 
 shared_examples_for "a directory resource" do
+
+  let(:expect_updated?) {true}
+
   context "when the target directory does not exist" do
     before do
       # assert pre-condition
