@@ -671,6 +671,16 @@ roles/role3.json
 EOM
           end
         end
+
+        context 'when cwd is inside chef_repo2/data_bags' do
+          cwd 'chef_repo2/data_bags'
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag3/
+bag3/item3.json
+EOM
+          end
+        end
       end
 
       context 'when paths are set to point to both versions of each' do
@@ -952,22 +962,236 @@ EOM
       end
 
       context 'when cookbook_path is set and nothing else' do
-        it 'todo', :pending
+        before :each do
+          %w(client data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = nil
+          end
+          Chef::Config.cookbook_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2', 'cookbooks')
+          Chef::Config.chef_repo_path = nil
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag3/
+data_bags/bag3/item3.json
+environments/
+environments/env3.json
+roles/
+roles/role3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2/data_bags' do
+          cwd 'chef_repo2/data_bags'
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag3/
+bag3/item3.json
+EOM
+          end
+        end
       end
+
       context 'when cookbook_path is set to multiple places and nothing else is set' do
-        it 'todo', :pending
+        before :each do
+          %w(client data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = nil
+          end
+          Chef::Config.cookbook_path = [
+            File.join(Chef::Config.chef_repo_path, 'cookbooks'),
+            File.join(Chef::Config.chef_repo_path, 'chef_repo2', 'cookbooks')
+          ]
+          Chef::Config.chef_repo_path = nil
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook1/
+cookbooks/cookbook1/metadata.rb
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
+data_bags/bag3/
+data_bags/bag3/item3.json
+environments/
+environments/env1.json
+environments/env3.json
+roles/
+roles/role1.json
+roles/role3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+bag3/
+bag3/item3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook1/
+cookbooks/cookbook1/metadata.rb
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
+data_bags/bag3/
+data_bags/bag3/item3.json
+environments/
+environments/env1.json
+environments/env3.json
+roles/
+roles/role1.json
+roles/role3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2/data_bags' do
+          cwd 'chef_repo2/data_bags'
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+bag3/
+bag3/item3.json
+EOM
+          end
+        end
       end
+
       context 'when data_bag_path and chef_repo_path are set, and nothing else' do
-        it 'todo', :pending
+        before :each do
+          %w(client cookbook  environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = nil
+          end
+          Chef::Config.data_bag_path = File.join(Chef::Config.chef_repo_path, 'data_bags')
+          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2')
+        end
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
+environments/
+environments/env3.json
+roles/
+roles/role3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2/data_bags' do
+          cwd 'chef_repo2/data_bags'
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          end
+        end
       end
+
       context 'when data_bag_path is set and nothing else' do
-        it 'todo', :pending
+        before :each do
+          %w(client cookbook  environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = nil
+          end
+          Chef::Config.data_bag_path = File.join(Chef::Config.chef_repo_path, 'data_bags')
+          Chef::Config.chef_repo_path = nil
+        end
+
+        it 'knife list --local -Rfp / fails' do
+          knife('list --local -Rfp /').should_fail("ERROR: Must specify either chef_repo_path or cookbook_path in Chef config file\n")
+        end
+
+        it 'knife list --local -Rfp /data_bags fails' do
+          knife('list --local -Rfp /data_bags').should_fail("ERROR: Must specify either chef_repo_path or cookbook_path in Chef config file\n")
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Must specify either chef_repo_path or cookbook_path in Chef config file\n")
+          end
+        end
       end
     end
 
     when_the_repository 'is empty' do
       context 'when the repository _paths point to places that do not exist' do
-        it 'todo', :pending
+        before :each do
+          %w(client cookbook data_bag environment node role user).each do |object_name|
+            Chef::Config["#{object_name}_path".to_sym] = File.join(Chef::Config.chef_repo_path, 'nowhere', object_name)
+          end
+          Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'nowhere')
+        end
+
+        it 'knife list --local -Rfp / fails' do
+          knife('list --local -Rfp /').should_succeed ''
+        end
+
+        it 'knife list --local -Rfp /data_bags fails' do
+          knife('list --local -Rfp /data_bags').should_fail("ERROR: /data_bags: No such file or directory\n")
+        end
       end
     end
   end
