@@ -131,8 +131,8 @@ EOM
 EOM
     end
 
-    it "knife list -Rp --flat / returns everything" do
-      knife('list -Rp --flat /').should_succeed <<EOM
+    it "knife list -Rfp / returns everything" do
+      knife('list -Rfp /').should_succeed <<EOM
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb
@@ -230,8 +230,8 @@ EOM
         context 'when cwd is at the top of the repository' do
           cwd '.'
 
-          it "knife list -Rp --flat returns everything" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns everything" do
+            knife('list -Rfp').should_succeed <<EOM
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -263,8 +263,8 @@ EOM
         context 'when cwd is in cookbooks/' do
           cwd 'cookbooks'
 
-          it "knife list -Rp --flat / returns everything" do
-            knife('list -Rp --flat /').should_succeed <<EOM
+          it "knife list -Rfp / returns everything" do
+            knife('list -Rfp /').should_succeed <<EOM
 ./
 cookbook1/
 cookbook1/metadata.rb
@@ -289,8 +289,8 @@ cookbook2/recipes/default.rb
 EOM
           end
 
-          it "knife list -Rp --flat .. returns everything" do
-            knife('list -Rp --flat ..').should_succeed <<EOM
+          it "knife list -Rfp .. returns everything" do
+            knife('list -Rfp ..').should_succeed <<EOM
 ./
 cookbook1/
 cookbook1/metadata.rb
@@ -315,8 +315,8 @@ cookbook2/recipes/default.rb
 EOM
           end
 
-          it "knife list -Rp --flat returns cookbooks" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns cookbooks" do
+            knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
 cookbook2/
@@ -334,8 +334,8 @@ EOM
         context 'when cwd is in cookbooks/cookbook2' do
           cwd 'cookbooks/cookbook2'
 
-          it "knife list -Rp --flat returns cookbooks" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns cookbooks" do
+            knife('list -Rfp').should_succeed <<EOM
 metadata.rb
 recipes/
 recipes/default.rb
@@ -351,8 +351,8 @@ EOM
         context 'when cwd is in cookbooks/' do
           cwd 'cookbooks'
 
-          it "knife list -Rp --flat returns cookbooks" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns cookbooks" do
+            knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
 cookbook2/
@@ -366,8 +366,8 @@ EOM
         context 'when cwd is in symlinked/' do
           cwd 'symlinked'
 
-          it "knife list -Rp --flat returns cookbooks" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns cookbooks" do
+            knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
 cookbook2/
@@ -386,8 +386,8 @@ EOM
         context 'when cwd is in real_cookbooks/' do
           cwd 'real_cookbooks'
 
-          it "knife list -Rp --flat returns cookbooks" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns cookbooks" do
+            knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
 cookbook2/
@@ -401,8 +401,8 @@ EOM
         context 'when cwd is in cookbooks/' do
           cwd 'cookbooks'
 
-          it "knife list -Rp --flat returns cookbooks" do
-            knife('list -Rp --flat').should_succeed <<EOM
+          it "knife list -Rfp returns cookbooks" do
+            knife('list -Rfp').should_succeed <<EOM
 cookbook1/
 cookbook1/metadata.rb
 cookbook2/
@@ -459,7 +459,7 @@ EOM
       file 'users/user1.json', {}
       file 'users/user2.json', {}
 
-      it "knife list -Rp --flat / returns everything" do
+      it "knife list -Rfp / returns everything" do
         knife('list -Rp --local --flat /').should_succeed <<EOM
 /cookbooks/
 /cookbooks/cookbook1/
