@@ -1155,7 +1155,122 @@ EOM
             File.join(Chef::Config.chef_repo_path, 'chef_repo2')
           ]
         end
-        it 'todo', :pending
+
+        context 'when cwd is at the top level' do
+          cwd '.'
+          it 'knife list --local -R lists everything' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+cookbooks
+data_bags
+environments
+roles
+
+cookbooks:
+cookbook1
+cookbook3
+
+cookbooks/cookbook1:
+metadata.rb
+
+cookbooks/cookbook3:
+metadata.rb
+
+data_bags:
+bag
+bag3
+
+data_bags/bag:
+item.json
+
+data_bags/bag3:
+item3.json
+
+environments:
+env1.json
+env3.json
+
+roles:
+role1.json
+role3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife list --local -R lists data bags' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+bag
+bag3
+
+bag:
+item.json
+
+bag3:
+item3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2' do
+          cwd 'chef_repo2'
+          it 'knife list --local -R lists everything' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+cookbooks
+data_bags
+environments
+roles
+
+cookbooks:
+cookbook1
+cookbook3
+
+cookbooks/cookbook1:
+metadata.rb
+
+cookbooks/cookbook3:
+metadata.rb
+
+data_bags:
+bag
+bag3
+
+data_bags/bag:
+item.json
+
+data_bags/bag3:
+item3.json
+
+environments:
+env1.json
+env3.json
+
+roles:
+role1.json
+role3.json
+EOM
+          end
+        end
+
+        context 'when cwd is inside chef_repo2/data_bags' do
+          cwd 'chef_repo2/data_bags'
+          it 'knife list --local -R lists data bags' do
+            knife('list --local -R').should_succeed <<EOM
+.:
+bag
+bag3
+
+bag:
+item.json
+
+bag3:
+item3.json
+EOM
+          end
+        end
       end
 
       context 'when cookbook_path is set and nothing else' do

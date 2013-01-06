@@ -36,31 +36,38 @@ class Chef
         @chef_fs ||= Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", Chef::Config, config[:repo_mode])
       end
 
-      def chef_repo_path
-        @chef_repo_path ||= begin
-          if Chef::Config.chef_repo_path
-            File.expand_path(Chef::Config.chef_repo_path)
-          elsif Chef::Config.cookbook_path
-            File.expand_path('..', Array(Chef::Config.cookbook_path).flatten.first)
+      def chef_repo_paths
+        @chef_repo_paths ||= begin
+          result = config_paths(:chef_repo_path)
+          if result
+            result
           else
-            nil
+            cookbook_paths = Array(Chef::Config[:cookbook_path]).flatten
+            if cookbook_paths
+              cookbook_paths.map { |path| File.expand_path('..', path) }
+            else
+              nil
+            end
           end
         end
       end
 
       # Smooth out some inappropriate (for now) variable defaults in Chef.
-      def config_var(name)
-        case name
+      def config_paths(name)
+        result = case name
         when :data_bag_path
           Chef::Config[name] == Chef::Config.platform_specific_path('/var/chef/data_bags') ? nil : Chef::Config[name]
         when :node_path
           Chef::Config[name] == '/var/chef/node' ? nil : Chef::Config[name]
         when :role_path
           Chef::Config[name] == Chef::Config.platform_specific_path('/var/chef/roles') ? nil : Chef::Config[name]
-        when :chef_repo_path
-          chef_repo_path
         else
           Chef::Config[name]
+        end
+        if result
+          Array(result).flatten
+        else
+          nil
         end
       end
 
@@ -74,17 +81,17 @@ class Chef
           end
           object_names.each do |object_name|
             variable_name = "#{object_name[0..-2]}_path" # cookbooks -> cookbook_path
-            paths = config_var(variable_name.to_sym)
+            paths = config_paths(variable_name.to_sym)
             if !paths
-              if !chef_repo_path
+              if !chef_repo_paths
                 # TODO if chef_repo is not specified and repo_mode does not require
-                # clients/users/nodes, don't require them to be specified.
+                # clients/users/nodes, don't require them to be specified unless used.
                 Chef::Log.error("Must specify either chef_repo_path or #{variable_name} in Chef config file")
                 exit(1)
               end
-              paths = File.join(chef_repo_path, object_name)
+              paths = chef_repo_paths.map { |path| File.join(path, object_name) }
             end
-            paths = Array(paths).flatten.map { |path| File.expand_path(path) }
+            paths = paths.flatten.map { |path| File.expand_path(path) }
             result[object_name] = paths
           end
           result
@@ -129,9 +136,11 @@ class Chef
         end
 
         # Check chef_repo_path
-        realest_chef_repo_path = Chef::ChefFS::PathUtils.realest_path(chef_repo_path)
-        if absolute_path == realest_chef_repo_path
-          return '/'
+        chef_repo_paths.each do |chef_repo_path|
+          realest_chef_repo_path = Chef::ChefFS::PathUtils.realest_path(chef_repo_path)
+          if absolute_path == realest_chef_repo_path
+            return '/'
+          end
         end
 
         nil
