@@ -42,9 +42,8 @@ class Chef
           if result
             result
           else
-            cookbook_paths = Array(Chef::Config[:cookbook_path]).flatten
-            if cookbook_paths
-              cookbook_paths.map { |path| File.expand_path('..', path) }
+            if Chef::Config[:cookbook_path]
+              Array(Chef::Config[:cookbook_path]).flatten.map { |path| File.expand_path('..', path) }
             else
               nil
             end
@@ -84,8 +83,6 @@ class Chef
             paths = config_paths(variable_name.to_sym)
             if !paths
               if !chef_repo_paths
-                # TODO if chef_repo is not specified and repo_mode does not require
-                # clients/users/nodes, don't require them to be specified unless used.
                 Chef::Log.error("Must specify either chef_repo_path or #{variable_name} in Chef config file")
                 exit(1)
               end
