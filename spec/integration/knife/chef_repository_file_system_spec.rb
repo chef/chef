@@ -12,21 +12,12 @@ describe 'General chef_repo file system checks' do
       directory "environments"
       directory "data_bags/bag1"
 
-      it "knife list --local -R / returns them" do
-        knife('list --local -R /').should_succeed <<EOM
-/:
-data_bags
-environments
-roles
-
-/data_bags:
-bag1
-
-/data_bags/bag1:
-
-/environments:
-
-/roles:
+      it "knife list --local -Rfp / returns them" do
+        knife('list --local -Rfp /').should_succeed <<EOM
+/data_bags/
+/data_bags/bag1/
+/environments/
+/roles/
 EOM
       end
     end
@@ -42,12 +33,9 @@ EOM
     when_the_repository "has an empty cookbook directory" do
       directory 'cookbooks/cookbook1'
 
-      it "knife list --local -R / does not return it" do
-        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
-/:
-cookbooks
-
-/cookbooks:
+      it "knife list --local -Rfp / does not return it" do
+        knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
+/cookbooks/
 EOM
       end
     end
@@ -55,12 +43,9 @@ EOM
     when_the_repository "has only empty cookbook subdirectories" do
       directory 'cookbooks/cookbook1/recipes'
 
-      it "knife list --local -R / does not return it" do
-        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
-/:
-cookbooks
-
-/cookbooks:
+      it "knife list --local -Rfp / does not return it" do
+        knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
+/cookbooks/
 EOM
       end
     end
@@ -69,22 +54,13 @@ EOM
       directory 'cookbooks/cookbook1/recipes'
       file 'cookbooks/cookbook1/templates/default/x.txt', ''
 
-      it "knife list --local -R / does not return the empty ones" do
-        knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-
-/cookbooks/cookbook1:
-templates
-
-/cookbooks/cookbook1/templates:
-default
-
-/cookbooks/cookbook1/templates/default:
-x.txt
+      it "knife list --local -Rfp / does not return the empty ones" do
+        knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/templates/
+/cookbooks/cookbook1/templates/default/
+/cookbooks/cookbook1/templates/default/x.txt
 EOM
       end
     end
@@ -92,12 +68,9 @@ EOM
     when_the_repository "has only empty cookbook sub-sub-directories" do
       directory 'cookbooks/cookbook1/templates/default'
 
-      it "knife list --local -R / does not return it" do
-        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
-/:
-cookbooks
-
-/cookbooks:
+      it "knife list --local -Rfp / does not return it" do
+        knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
+/cookbooks/
 EOM
       end
     end
@@ -107,22 +80,13 @@ EOM
       directory 'cookbooks/cookbook1/templates/rhel'
       directory 'cookbooks/cookbook1/files/default'
 
-      it "knife list --local -R / does not return the empty ones" do
-        knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-
-/cookbooks/cookbook1:
-templates
-
-/cookbooks/cookbook1/templates:
-default
-
-/cookbooks/cookbook1/templates/default:
-x.txt
+      it "knife list --local -Rfp / does not return the empty ones" do
+        knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/templates/
+/cookbooks/cookbook1/templates/default/
+/cookbooks/cookbook1/templates/default/x.txt
 EOM
       end
     end
@@ -132,8 +96,8 @@ EOM
         file "_default.json", {}
       end
 
-      it "knife list --local -R / should NOT return it" do
-        knife('list --local -R /').should_succeed ""
+      it "knife list --local -Rfp / should NOT return it" do
+        knife('list --local -Rfp /').should_succeed ""
       end
     end
 
@@ -154,25 +118,16 @@ EOM
         file "subdir/environment.json", {}
       end
 
-      it "knife list --local -R / should NOT return them" do
+      it "knife list --local -Rfp / should NOT return them" do
         pending "Decide whether this is a good/bad idea" do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-data_bags
-environments
-roles
-
-/data_bags:
-bag1
-
-/data_bags/bag1:
-item1.json
-
-/environments:
-environment1.json
-
-/roles:
-role1.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/data_bags/
+/data_bags/bag1/
+/data_bags/bag1/item1.json
+/environments/
+/environments/environment1.json
+/roles/
+/roles/role1.json
 EOM
         end
       end
@@ -232,69 +187,40 @@ EOM
         end
       end
 
-      it "knife list --local -R / should NOT return them" do
+      it "knife list --local -Rfp / should NOT return them" do
         pending "Decide whether this is a good idea" do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-
-/cookbooks/cookbook1:
-a.rb
-attributes
-definitions
-files
-libraries
-providers
-recipes
-resources
-templates
-
-/cookbooks/cookbook1/attributes:
-a.rb
-
-/cookbooks/cookbook1/definitions:
-a.rb
-
-/cookbooks/cookbook1/files:
-a.rb
-b.json
-c
-
-/cookbooks/cookbook1/files/c:
-d.rb
-e.json
-
-/cookbooks/cookbook1/libraries:
-a.rb
-
-/cookbooks/cookbook1/providers:
-a.rb
-c
-
-/cookbooks/cookbook1/providers/c:
-d.rb
-
-/cookbooks/cookbook1/recipes:
-a.rb
-
-/cookbooks/cookbook1/resources:
-a.rb
-c
-
-/cookbooks/cookbook1/resources/c:
-d.rb
-
-/cookbooks/cookbook1/templates:
-a.rb
-b.json
-c
-
-/cookbooks/cookbook1/templates/c:
-d.rb
-e.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/a.rb
+/cookbooks/cookbook1/attributes/
+/cookbooks/cookbook1/attributes/a.rb
+/cookbooks/cookbook1/definitions/
+/cookbooks/cookbook1/definitions/a.rb
+/cookbooks/cookbook1/files/
+/cookbooks/cookbook1/files/a.rb
+/cookbooks/cookbook1/files/b.json
+/cookbooks/cookbook1/files/c/
+/cookbooks/cookbook1/files/c/d.rb
+/cookbooks/cookbook1/files/c/e.json
+/cookbooks/cookbook1/libraries/
+/cookbooks/cookbook1/libraries/a.rb
+/cookbooks/cookbook1/providers/
+/cookbooks/cookbook1/providers/a.rb
+/cookbooks/cookbook1/providers/c/
+/cookbooks/cookbook1/providers/c/d.rb
+/cookbooks/cookbook1/recipes/
+/cookbooks/cookbook1/recipes/a.rb
+/cookbooks/cookbook1/resources/
+/cookbooks/cookbook1/resources/a.rb
+/cookbooks/cookbook1/resources/c/
+/cookbooks/cookbook1/resources/c/d.rb
+/cookbooks/cookbook1/templates/
+/cookbooks/cookbook1/templates/a.rb
+/cookbooks/cookbook1/templates/b.json
+/cookbooks/cookbook1/templates/c/
+/cookbooks/cookbook1/templates/c/d.rb
+/cookbooks/cookbook1/templates/c/e.json
 EOM
         end
       end
@@ -302,25 +228,19 @@ EOM
 
     when_the_repository "has a file in cookbooks/" do
       file 'cookbooks/file', ''
-      it 'does not show up in list -R' do
-        knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
+      it 'does not show up in list -Rfp' do
+        knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
 EOM
       end
     end
 
     when_the_repository "has a file in data_bags/" do
       file 'data_bags/file', ''
-      it 'does not show up in list -R' do
+      it 'does not show up in list -Rfp' do
         pending "don't show files when only directories are allowed" do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-data_bags
-
-/data_bags:
+          knife('list --local -Rfp /').should_succeed <<EOM
+/data_bags/
 EOM
         end
       end
@@ -346,35 +266,22 @@ EOM
         it 'nothing is ignored' do
           # NOTE: many of the "chefignore" files should probably not show up
           # themselves, but we have other tests that talk about that
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-data_bags
-environments
-roles
-
-/cookbooks:
-cookbook1
-
-/cookbooks/cookbook1:
-chefignore
-x.json
-
-/data_bags:
-bag1
-chefignore
-
-/data_bags/bag1:
-chefignore
-x.json
-
-/environments:
-chefignore
-x.json
-
-/roles:
-chefignore
-x.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/chefignore
+/cookbooks/cookbook1/x.json
+/data_bags/
+/data_bags/bag1/
+/data_bags/bag1/chefignore
+/data_bags/bag1/x.json
+/data_bags/chefignore
+/environments/
+/environments/chefignore
+/environments/x.json
+/roles/
+/roles/chefignore
+/roles/x.json
 EOM
         end
       end
@@ -386,11 +293,8 @@ EOM
       file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
 
       it 'the cookbook is not listed' do
-        knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
-/:
-cookbooks
-
-/cookbooks:
+        knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
+/cookbooks/
 EOM
       end
     end
@@ -405,19 +309,12 @@ EOM
         file 'cookbooks/chefignore', "x.json\n"
 
         it 'matching files and directories get ignored in all cookbooks' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-y.json
-
-/cookbooks/cookbook2:
-y.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
@@ -427,19 +324,12 @@ EOM
         file 'cookbooks/cookbook1/x.rb', ''
 
         it 'matching files and directories get ignored in all cookbooks' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-y.json
-
-/cookbooks/cookbook2:
-y.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
@@ -450,53 +340,35 @@ EOM
         file 'cookbooks/chefignore', "recipes/x.rb\n"
 
         it 'matching directories get ignored' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-x.json
-y.json
-
-/cookbooks/cookbook2:
-recipes
-x.json
-y.json
-
-/cookbooks/cookbook2/recipes:
-y.rb
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/x.json
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/recipes/
+/cookbooks/cookbook2/recipes/y.rb
+/cookbooks/cookbook2/x.json
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
 
       context "and has a chefignore with subdirectories" do
         file 'cookbooks/cookbook1/recipes/y.rb', ''
-        file 'cookbooks/chefignore', "recipes\n"
+        file 'cookbooks/chefignore', "recipes\nrecipes/\n"
 
         it 'matching directories do NOT get ignored' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-recipes
-x.json
-y.json
-
-/cookbooks/cookbook1/recipes:
-y.rb
-
-/cookbooks/cookbook2:
-x.json
-y.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/recipes/
+/cookbooks/cookbook1/recipes/y.rb
+/cookbooks/cookbook1/x.json
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/x.json
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
@@ -507,21 +379,14 @@ EOM
         file 'cookbooks/chefignore', "libraries/x.rb\ntemplates/default/x.rb\n"
 
         it 'ignores the subdirectory entirely' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-x.json
-y.json
-
-/cookbooks/cookbook2:
-x.json
-y.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/x.json
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/x.json
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
@@ -530,21 +395,14 @@ EOM
         file 'cookbooks/chefignore', "\n"
 
         it 'nothing is ignored' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-x.json
-y.json
-
-/cookbooks/cookbook2:
-x.json
-y.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/x.json
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/x.json
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
@@ -553,19 +411,12 @@ EOM
         file 'cookbooks/chefignore', "\n\n # blah\n#\nx.json\n\n"
 
         it 'matching files and directories get ignored in all cookbooks' do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-cookbook1
-cookbook2
-
-/cookbooks/cookbook1:
-y.json
-
-/cookbooks/cookbook2:
-y.json
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/y.json
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/y.json
 EOM
         end
       end
@@ -588,19 +439,12 @@ EOM
         file 'cookbooks1/chefignore', "metadata.rb\n"
         file 'cookbooks2/chefignore', "x.json\n"
         it "chefignores apply only to the directories they are in" do
-          knife('list --local -R /').should_succeed <<EOM
-/:
-cookbooks
-
-/cookbooks:
-mycookbook
-yourcookbook
-
-/cookbooks/mycookbook:
-x.json
-
-/cookbooks/yourcookbook:
-metadata.rb
+          knife('list --local -Rfp /').should_succeed <<EOM
+/cookbooks/
+/cookbooks/mycookbook/
+/cookbooks/mycookbook/x.json
+/cookbooks/yourcookbook/
+/cookbooks/yourcookbook/metadata.rb
 EOM
         end
 
@@ -611,20 +455,13 @@ EOM
           file 'cookbooks2/yourcookbook/onlyincookbooks2.rb', ''
 
           it "chefignores apply only to the winning cookbook" do
-            knife('list --local -R /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
-/:
-cookbooks
-
-/cookbooks:
-mycookbook
-yourcookbook
-
-/cookbooks/mycookbook:
-x.json
-
-/cookbooks/yourcookbook:
-onlyincookbooks1.rb
-x.json
+            knife('list --local -Rfp /').should_succeed(<<EOM, :stderr => "WARN: Child with name 'yourcookbook' found in multiple directories: #{Chef::Config.chef_repo_path}/cookbooks1/yourcookbook and #{Chef::Config.chef_repo_path}/cookbooks2/yourcookbook\n")
+/cookbooks/
+/cookbooks/mycookbook/
+/cookbooks/mycookbook/x.json
+/cookbooks/yourcookbook/
+/cookbooks/yourcookbook/onlyincookbooks1.rb
+/cookbooks/yourcookbook/x.json
 EOM
           end
         end
@@ -633,13 +470,10 @@ EOM
 
     when_the_repository 'has a cookbook named chefignore' do
       file 'cookbooks/chefignore/metadata.rb', {}
-      it 'knife list -R /cookbooks shows it' do
-        knife('list --local -R /cookbooks').should_succeed <<EOM
-/cookbooks:
-chefignore
-
-/cookbooks/chefignore:
-metadata.rb
+      it 'knife list -Rfp /cookbooks shows it' do
+        knife('list --local -Rfp /cookbooks').should_succeed <<EOM
+/cookbooks/chefignore/
+/cookbooks/chefignore/metadata.rb
 EOM
       end
     end
@@ -654,17 +488,12 @@ EOM
           File.join(Chef::Config.chef_repo_path, 'cookbooks2')
         ]
       end
-      it 'knife list -R /cookbooks shows the chefignore cookbook' do
-        knife('list --local -R /cookbooks').should_succeed <<EOM
-/cookbooks:
-blah
-chefignore
-
-/cookbooks/blah:
-metadata.rb
-
-/cookbooks/chefignore:
-metadata.rb
+      it 'knife list -Rfp /cookbooks shows the chefignore cookbook' do
+        knife('list --local -Rfp /cookbooks').should_succeed <<EOM
+/cookbooks/blah/
+/cookbooks/blah/metadata.rb
+/cookbooks/chefignore/
+/cookbooks/chefignore/metadata.rb
 EOM
       end
     end
@@ -709,62 +538,46 @@ EOM
 
         context 'when cwd is at the top level' do
           cwd '.'
-          it 'knife list --local -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           cwd 'data_bags'
-          it 'knife list --local -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside chef_repo2' do
           cwd 'chef_repo2'
-          it 'knife list --local -R lists everything' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-cookbooks
-data_bags
-environments
-roles
-
-cookbooks:
-cookbook2
-
-cookbooks/cookbook2:
-metadata.rb
-
-data_bags:
-bag2
-
-data_bags/bag2:
-item2.json
-
-environments:
-env2.json
-
-roles:
-role2.json
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook2/
+cookbooks/cookbook2/metadata.rb
+data_bags/
+data_bags/bag2/
+data_bags/bag2/item2.json
+environments/
+environments/env2.json
+roles/
+roles/role2.json
 EOM
           end
         end
 
         context 'when cwd is inside data_bags2' do
           cwd 'data_bags2'
-          it 'knife list --local -R lists data bags' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-bag2
-
-bag2:
-item2.json
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag2/
+bag2/item2.json
 EOM
           end
-          it 'knife list --local -R ../roles lists roles' do
-            knife('list --local -R ../roles').should_succeed "/roles/role2.json\n"
+          it 'knife list --local -Rfp ../roles lists roles' do
+            knife('list --local -Rfp ../roles').should_succeed "/roles/role2.json\n"
           end
         end
       end
@@ -778,58 +591,42 @@ EOM
 
         context 'when cwd is at the top level' do
           cwd '.'
-          it 'knife list --local -R lists everything' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-cookbooks
-data_bags
-environments
-roles
-
-cookbooks:
-cookbook2
-
-cookbooks/cookbook2:
-metadata.rb
-
-data_bags:
-bag2
-
-data_bags/bag2:
-item2.json
-
-environments:
-env2.json
-
-roles:
-role2.json
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook2/
+cookbooks/cookbook2/metadata.rb
+data_bags/
+data_bags/bag2/
+data_bags/bag2/item2.json
+environments/
+environments/env2.json
+roles/
+roles/role2.json
 EOM
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           cwd 'data_bags'
-          it 'knife list --local -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside chef_repo2' do
           cwd 'chef_repo2'
-          it 'knife list -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside data_bags2' do
           cwd 'data_bags2'
-          it 'knife list --local -R lists data bags' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-bag2
-
-bag2:
-item2.json
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag2/
+bag2/item2.json
 EOM
           end
         end
@@ -845,45 +642,32 @@ EOM
 
         context 'when cwd is at the top level' do
           cwd '.'
-          it 'knife list --local -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           cwd 'data_bags'
-          it 'knife list --local -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside chef_repo2' do
           cwd 'chef_repo2'
-          it 'knife list --local -R lists everything' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-cookbooks
-data_bags
-environments
-roles
-
-cookbooks:
-cookbook3
-
-cookbooks/cookbook3:
-metadata.rb
-
-data_bags:
-bag3
-
-data_bags/bag3:
-item3.json
-
-environments:
-env3.json
-
-roles:
-role3.json
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag3/
+data_bags/bag3/item3.json
+environments/
+environments/env3.json
+roles/
+roles/role3.json
 EOM
           end
         end
@@ -913,21 +697,14 @@ EOM
         context 'when there is a file in cookbooks1 and directory in cookbooks2 with the same name' do
           file 'cookbooks/blah', ''
           file 'cookbooks2/blah/metadata.rb', ''
-          it 'knife list -R cookbooks shows files in blah' do
-            knife('list --local -R /cookbooks').should_succeed <<EOM
-/cookbooks:
-blah
-cookbook1
-cookbook2
-
-/cookbooks/blah:
-metadata.rb
-
-/cookbooks/cookbook1:
-metadata.rb
-
-/cookbooks/cookbook2:
-metadata.rb
+          it 'knife list -Rfp cookbooks shows files in blah' do
+            knife('list --local -Rfp /cookbooks').should_succeed <<EOM
+/cookbooks/blah/
+/cookbooks/blah/metadata.rb
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/metadata.rb
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/metadata.rb
 EOM
           end
         end
@@ -935,21 +712,14 @@ EOM
         context 'when there is an empty directory in cookbooks1 and a real cookbook in cookbooks2 with the same name' do
           directory 'cookbooks/blah'
           file 'cookbooks2/blah/metadata.rb', ''
-          it 'knife list -R cookbooks shows files in blah' do
-            knife('list --local -R /cookbooks').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
-/cookbooks:
-blah
-cookbook1
-cookbook2
-
-/cookbooks/blah:
-metadata.rb
-
-/cookbooks/cookbook1:
-metadata.rb
-
-/cookbooks/cookbook2:
-metadata.rb
+          it 'knife list -Rfp cookbooks shows files in blah' do
+            knife('list --local -Rfp /cookbooks').should_succeed(<<EOM, :stderr => "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
+/cookbooks/blah/
+/cookbooks/blah/metadata.rb
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/metadata.rb
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/metadata.rb
 EOM
           end
         end
@@ -957,21 +727,14 @@ EOM
         context 'when there is a cookbook in cookbooks1 and a cookbook in cookbooks2 with the same name' do
           file 'cookbooks/blah/metadata.json', {}
           file 'cookbooks2/blah/metadata.rb', ''
-          it 'knife list -R cookbooks shows files in the first cookbook and not the second' do
-            knife('list --local -R /cookbooks').should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
-/cookbooks:
-blah
-cookbook1
-cookbook2
-
-/cookbooks/blah:
-metadata.json
-
-/cookbooks/cookbook1:
-metadata.rb
-
-/cookbooks/cookbook2:
-metadata.rb
+          it 'knife list -Rfp cookbooks shows files in the first cookbook and not the second' do
+            knife('list --local -Rfp /cookbooks').should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
+/cookbooks/blah/
+/cookbooks/blah/metadata.json
+/cookbooks/cookbook1/
+/cookbooks/cookbook1/metadata.rb
+/cookbooks/cookbook2/
+/cookbooks/cookbook2/metadata.rb
 EOM
           end
         end
@@ -979,22 +742,15 @@ EOM
         context 'when there is a file in data_bags1 and a directory in data_bags2 with the same name' do
           file 'data_bags/blah', ''
           file 'data_bags2/blah/item.json', ''
-          it 'knife list -R data_bags shows files in blah' do
+          it 'knife list -Rfp data_bags shows files in blah' do
             pending "Don't count files as data bags" do
-              knife('list --local -R /data_bags').should_succeed <<EOM
-/data_bags:
-bag
-bag2
-blah
-
-/data_bags/bag:
-item.json
-
-/data_bags/bag2:
-item2.json
-
-/data_bags/blah:
-item.json
+              knife('list --local -Rfp /data_bags').should_succeed <<EOM
+/data_bags/bag/
+/data_bags/bag/item.json
+/data_bags/bag2/
+/data_bags/bag2/item2.json
+/data_bags/blah/
+/data_bags/blah/item1.json
 EOM
             end
           end
@@ -1003,21 +759,14 @@ EOM
         context 'when there is a data bag in data_bags1 and a data bag in data_bags2 with the same name' do
           file 'data_bags/blah/item1.json', ''
           file 'data_bags2/blah/item2.json', ''
-          it 'knife list -R data_bags shows only items in data_bags1' do
-            knife('list --local -R /data_bags').should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
-/data_bags:
-bag
-bag2
-blah
-
-/data_bags/bag:
-item.json
-
-/data_bags/bag2:
-item2.json
-
-/data_bags/blah:
-item1.json
+          it 'knife list -Rfp data_bags shows only items in data_bags1' do
+            knife('list --local -Rfp /data_bags').should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
+/data_bags/bag/
+/data_bags/bag/item.json
+/data_bags/bag2/
+/data_bags/bag2/item2.json
+/data_bags/blah/
+/data_bags/blah/item1.json
 EOM
           end
         end
@@ -1064,82 +813,55 @@ EOM
 
         context 'when cwd is at the top level' do
           cwd '.'
-          it 'knife list --local -R fails' do
-            knife('list --local -R').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
+          it 'knife list --local -Rfp fails' do
+            knife('list --local -Rfp').should_fail("ERROR: Attempt to use relative path '' when current directory is outside the repository path\n")
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           cwd 'data_bags'
-          it 'knife list --local -R lists data bags' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-bag
-bag2
-
-bag:
-item.json
-
-bag2:
-item2.json
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+bag2/
+bag2/item2.json
 EOM
           end
         end
 
         context 'when cwd is inside chef_repo2' do
           cwd 'chef_repo2'
-          it 'knife list --local -R lists everything' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-cookbooks
-data_bags
-environments
-roles
-
-cookbooks:
-cookbook1
-cookbook2
-
-cookbooks/cookbook1:
-metadata.rb
-
-cookbooks/cookbook2:
-metadata.rb
-
-data_bags:
-bag
-bag2
-
-data_bags/bag:
-item.json
-
-data_bags/bag2:
-item2.json
-
-environments:
-env1.json
-env2.json
-
-roles:
-role1.json
-role2.json
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook1/
+cookbooks/cookbook1/metadata.rb
+cookbooks/cookbook2/
+cookbooks/cookbook2/metadata.rb
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
+data_bags/bag2/
+data_bags/bag2/item2.json
+environments/
+environments/env1.json
+environments/env2.json
+roles/
+roles/role1.json
+roles/role2.json
 EOM
           end
         end
 
         context 'when cwd is inside data_bags2' do
           cwd 'data_bags2'
-          it 'knife list --local -R lists data bags' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-bag
-bag2
-
-bag:
-item.json
-
-bag2:
-item2.json
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+bag2/
+bag2/item2.json
 EOM
           end
         end
@@ -1158,116 +880,72 @@ EOM
 
         context 'when cwd is at the top level' do
           cwd '.'
-          it 'knife list --local -R lists everything' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-cookbooks
-data_bags
-environments
-roles
-
-cookbooks:
-cookbook1
-cookbook3
-
-cookbooks/cookbook1:
-metadata.rb
-
-cookbooks/cookbook3:
-metadata.rb
-
-data_bags:
-bag
-bag3
-
-data_bags/bag:
-item.json
-
-data_bags/bag3:
-item3.json
-
-environments:
-env1.json
-env3.json
-
-roles:
-role1.json
-role3.json
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook1/
+cookbooks/cookbook1/metadata.rb
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
+data_bags/bag3/
+data_bags/bag3/item3.json
+environments/
+environments/env1.json
+environments/env3.json
+roles/
+roles/role1.json
+roles/role3.json
 EOM
           end
         end
 
         context 'when cwd is inside the data_bags directory' do
           cwd 'data_bags'
-          it 'knife list --local -R lists data bags' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-bag
-bag3
-
-bag:
-item.json
-
-bag3:
-item3.json
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+bag3/
+bag3/item3.json
 EOM
           end
         end
 
         context 'when cwd is inside chef_repo2' do
           cwd 'chef_repo2'
-          it 'knife list --local -R lists everything' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-cookbooks
-data_bags
-environments
-roles
-
-cookbooks:
-cookbook1
-cookbook3
-
-cookbooks/cookbook1:
-metadata.rb
-
-cookbooks/cookbook3:
-metadata.rb
-
-data_bags:
-bag
-bag3
-
-data_bags/bag:
-item.json
-
-data_bags/bag3:
-item3.json
-
-environments:
-env1.json
-env3.json
-
-roles:
-role1.json
-role3.json
+          it 'knife list --local -Rfp lists everything' do
+            knife('list --local -Rfp').should_succeed <<EOM
+cookbooks/
+cookbooks/cookbook1/
+cookbooks/cookbook1/metadata.rb
+cookbooks/cookbook3/
+cookbooks/cookbook3/metadata.rb
+data_bags/
+data_bags/bag/
+data_bags/bag/item.json
+data_bags/bag3/
+data_bags/bag3/item3.json
+environments/
+environments/env1.json
+environments/env3.json
+roles/
+roles/role1.json
+roles/role3.json
 EOM
           end
         end
 
         context 'when cwd is inside chef_repo2/data_bags' do
           cwd 'chef_repo2/data_bags'
-          it 'knife list --local -R lists data bags' do
-            knife('list --local -R').should_succeed <<EOM
-.:
-bag
-bag3
-
-bag:
-item.json
-
-bag3:
-item3.json
+          it 'knife list --local -Rfp lists data bags' do
+            knife('list --local -Rfp').should_succeed <<EOM
+bag/
+bag/item.json
+bag3/
+bag3/item3.json
 EOM
           end
         end

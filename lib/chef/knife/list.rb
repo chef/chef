@@ -4,7 +4,7 @@ require 'chef/chef_fs/file_system'
 class Chef
   class Knife
     class List < Chef::ChefFS::Knife
-      banner "knife list [-dR] [PATTERN1 ... PATTERNn]"
+      banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn]"
 
       common_options
 
@@ -21,6 +21,7 @@ class Chef
         :boolean => true,
         :description => "List local directory instead of remote"
       option :flat,
+        :short => '-f',
         :long => '--flat',
         :boolean => true,
         :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
