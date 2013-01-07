@@ -84,6 +84,7 @@ describe Chef::Provider::Directory do
     @new_resource.path "/tmp/foo"
 
     File.should_receive(:exist?).exactly(2).and_return(false)
+    File.should_receive(:directory?).with("/tmp").and_return(true)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
 
     @directory.should_receive(:set_all_access_controls)
@@ -127,6 +128,7 @@ describe Chef::Provider::Directory do
     stub_file_cstats
     @new_resource.path "/tmp/foo"
     File.should_receive(:directory?).twice.and_return(true)
+    File.should_receive(:writable?).with("/tmp").and_return(true)
     File.should_receive(:exist?).exactly(3).and_return(true)
     Dir.should_not_receive(:mkdir).with(@new_resource.path)
     @directory.should_receive(:set_all_access_controls)
