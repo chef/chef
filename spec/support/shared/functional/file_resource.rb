@@ -149,6 +149,13 @@ shared_examples_for "a file resource" do
    # note the stripping of the drive letter from the tmpdir on windows
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
+  # Most tests update the resource, but a few do not. We need to test that the
+  # resource is marked updated or not correctly, but the test contexts are
+  # composed between correct/incorrect content and correct/incorrect
+  # permissions. We override this "let" definition in the context where content
+  # and permissions are correct.
+  let(:expect_updated?) { true }
+
   def binread(file)
     content = File.open(file, "rb") do |f|
       f.read
@@ -242,7 +249,7 @@ shared_examples_for "a file resource" do
       include_context "setup broken permissions"
 
       it_behaves_like "a file with the wrong content"
-  
+
       it_behaves_like "a securable resource"
     end
   end
@@ -258,6 +265,11 @@ shared_examples_for "a file resource" do
     end
 
     describe "and the target file has the correct permissions" do
+
+      # When permissions and content are correct, chef should do nothing and
+      # the resource should not be marked updated.
+      let(:expect_updated?) { false }
+
       include_context "setup correct permissions"
 
       it_behaves_like "a file with the correct content"
