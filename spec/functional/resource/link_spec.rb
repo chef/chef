@@ -25,6 +25,8 @@ end
 describe Chef::Resource::Link, :not_supported_on_win2k3 do
   let(:file_base) { "file_spec" }
 
+  let(:expect_updated?) {true}
+
   let(:base_dir) do
     if windows?
       Chef::ReservedNames::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))

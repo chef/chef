@@ -24,42 +24,32 @@
 require 'etc'
 
 shared_context "setup correct permissions" do
-  context "on unix", :unix_only do
-    context "with root", :requires_root do
-      before :each do
-        File.chown(Etc.getpwnam('nobody').uid, 1337, path)
-        File.chmod(0776, path)
-        now = Time.now.to_i
-        File.utime(now - 9000, now - 9000, path)
-      end
-    end
 
-    context "without root", :requires_unprivileged_user do
-      before :each do
-        File.chmod(0776, path)
-        now = Time.now.to_i
-        File.utime(now - 9000, now - 9000, path)
-      end
-    end
+  # I could not get this to work with :requires_unprivileged_user for whatever
+  # reason. The setup when running as root is the same as non-root, except we
+  # also do a chown, so this sets up correct context for either case.
+  before :each, :unix_only do
+    File.chmod(0776, path)
+    now = Time.now.to_i
+    File.utime(now - 9000, now - 9000, path)
+  end
+
+  # Root only context.
+  before :each, :unix_only, :requires_root do
+    File.chown(Etc.getpwnam('nobody').uid, 1337, path)
   end
 
   # FIXME: windows
 end
 
 shared_context "setup broken permissions" do
-  context "on unix", :unix_only do
-    context "with root", :requires_root do
-      before :each do
-        File.chown(0, 0, path)
-        File.chmod(0644, path)
-      end
-    end
-  
-    context "without root", :requires_unprivileged_user do
-      before :each do
-        File.chmod(0644, path)
-      end
-    end
+
+  before :each, :unix_only do
+    File.chmod(0644, path)
+  end
+
+  before :each, :unix_only, :requires_root do
+    File.chown(0, 0, path)
   end
 
   # FIXME: windows
@@ -85,9 +75,10 @@ shared_examples_for "a securable resource" do
         File.lstat(path).uid.should == expected_uid
       end
 
-      it "is marked as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
+
     end
 
     describe "when setting the group", :requires_root do
@@ -100,8 +91,8 @@ shared_examples_for "a securable resource" do
         File.lstat(path).gid.should == expected_gid
       end
 
-      it "is marked as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
 
     end
@@ -119,8 +110,8 @@ shared_examples_for "a securable resource" do
         end
       end
 
-      it "marks the resource as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
     end
 
@@ -137,8 +128,8 @@ shared_examples_for "a securable resource" do
         end
       end
 
-      it "is marked as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
     end
   end
