@@ -186,6 +186,7 @@ class Chef::Application::Client < Chef::Application
 
   def initialize
     super
+    @exit_gracefully = false
   end
 
   # Reconfigure the chef client
