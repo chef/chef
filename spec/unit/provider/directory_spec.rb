@@ -47,6 +47,9 @@ describe Chef::Provider::Directory do
   end
 
   describe "scanning file security metadata on unix" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(false)
+    end
     let(:mock_stat) do
       cstats = mock("stats")
       cstats.stub!(:uid).and_return(500)
