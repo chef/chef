@@ -80,11 +80,15 @@ describe Chef::Provider::Directory do
     end
   end
 
-  it "should create a new directory on create, setting updated to true" do
+  # Unix only for now. While file security attribute reporting for windows is
+  # disabled, unix and windows differ in the number of exist? calls that are
+  # made by the provider.
+  it "should create a new directory on create, setting updated to true", :unix_only do
     @new_resource.path "/tmp/foo"
 
     File.should_receive(:exist?).exactly(2).and_return(false)
     File.should_receive(:directory?).with("/tmp").and_return(true)
+    File.should_receive(:writeable?).with("/tmp").and_return(true)
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
 
     @directory.should_receive(:set_all_access_controls)
@@ -99,7 +103,10 @@ describe Chef::Provider::Directory do
     lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist) 
   end
 
-  it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct" do
+  # Unix only for now. While file security attribute reporting for windows is
+  # disabled, unix and windows differ in the number of exist? calls that are
+  # made by the provider.
+  it "should create a new directory when parent directory does not exist if recursive is true and permissions are correct", :unix_only do
     @new_resource.path "/path/to/dir"
     @new_resource.recursive true
     File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
@@ -124,7 +131,10 @@ describe Chef::Provider::Directory do
     @directory.new_resource.should_not be_updated
   end
 
-  it "should not create the directory if it already exists" do
+  # Unix only for now. While file security attribute reporting for windows is
+  # disabled, unix and windows differ in the number of exist? calls that are
+  # made by the provider.
+  it "should not create the directory if it already exists", :unix_only do
     stub_file_cstats
     @new_resource.path "/tmp/foo"
     File.should_receive(:directory?).twice.and_return(true)
