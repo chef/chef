@@ -274,6 +274,24 @@ describe Chef::Environment do
       Chef::Environment.validate_cookbook_version("= 1").should == false
       Chef::Environment.validate_cookbook_version("= 1.2.3.4").should == false
     end
+
+    describe "in solo mode" do
+      before do
+        Chef::Config[:solo] = true
+      end
+
+      after do
+        Chef::Config[:solo] = false
+      end
+
+      it "should raise and exception" do
+        lambda {
+          Chef::Environment.validate_cookbook_version("= 1.2.3.4")
+        }.should raise_error Chef::Exceptions::IllegalVersionConstraint,
+                             "Environment cookbook version constraints not allowed in chef-solo"
+      end
+    end
+
   end
 
   describe "when updating from a parameter hash" do
