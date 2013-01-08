@@ -54,6 +54,9 @@ describe Chef::Provider::File do
   end
 
   describe "examining file security metadata on Unix" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(false)
+    end
     it "should collect the current state of the file on the filesystem and populate current_resource" do
       # test setup
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)

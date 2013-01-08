@@ -117,19 +117,25 @@ describe Chef::Provider::Template do
       end
 
       context "and no access control settings are set on the resource" do
-        it "sets access control metadata on the new resource" do
-          @access_controls.stub!(:requires_changes?).and_return(false)
-          @access_controls.should_receive(:set_all!)
-          @node.normal[:slappiness] = "happiness"
-          @provider.should_receive(:backup)
-          @provider.run_action(:create)
-          IO.read(@rendered_file_location).should == "slappiness is happiness"
-          @resource.should be_updated_by_last_action
+        context "on a Unix system" do
+          before do
+            Chef::Platform.stub!(:windows?).and_return(false)
+          end
 
-          # Veracity of actual data checked in functional tests
-          @resource.owner.should be_a_kind_of(String)
-          @resource.group.should be_a_kind_of(String)
-          @resource.mode.should be_a_kind_of(String)
+          it "sets access control metadata on the new resource" do
+            @access_controls.stub!(:requires_changes?).and_return(false)
+            @access_controls.should_receive(:set_all!)
+            @node.normal[:slappiness] = "happiness"
+            @provider.should_receive(:backup)
+            @provider.run_action(:create)
+            IO.read(@rendered_file_location).should == "slappiness is happiness"
+            @resource.should be_updated_by_last_action
+
+            # Veracity of actual data checked in functional tests
+            @resource.owner.should be_a_kind_of(String)
+            @resource.group.should be_a_kind_of(String)
+            @resource.mode.should be_a_kind_of(String)
+          end
         end
       end
     end
