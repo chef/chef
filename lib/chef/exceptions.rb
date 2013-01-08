@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -129,7 +130,7 @@ class Chef
     # of merged attributes will trigger this error.
     class StaleAttributeRead < StandardError; end
 
-    #Registry Helper throws the following errors
+    # Registry Helper throws the following errors
     class Win32RegArchitectureIncorrect < RuntimeError; end
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
@@ -141,6 +142,9 @@ class Chef
     class Win32RegBadType < ArgumentError; end
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
+
+    class InvalidEnvironmentPath < ArgumentError; end
+    class EnvironmentNotFound < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
