@@ -1,6 +1,7 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
 # Author:: Christopher Walters (<cw@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright (c) 2010 Thomas Bishop
 # Copyright:: Copyright (c) 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -62,7 +63,9 @@ describe Chef::Exceptions do
     Chef::Exceptions::ResourceNotFound => RuntimeError,
     Chef::Exceptions::InvalidResourceSpecification => ArgumentError,
     Chef::Exceptions::SolrConnectionError => RuntimeError,
-    Chef::Exceptions::InvalidDataBagPath => ArgumentError
+    Chef::Exceptions::InvalidDataBagPath => ArgumentError,
+    Chef::Exceptions::InvalidEnvironmentPath => ArgumentError,
+    Chef::Exceptions::EnvironmentNotFound => RuntimeError
   }
 
   exception_to_super_class.each do |exception, expected_super_class|
