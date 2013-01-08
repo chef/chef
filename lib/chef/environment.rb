@@ -302,8 +302,13 @@ class Chef
 
     def self.validate_cookbook_version(version)
       begin
-        Chef::VersionConstraint.new version
-        true
+        if Chef::Config[:solo]
+          raise Chef::Exceptions::IllegalVersionConstraint,
+                "Environment cookbook version constraints not allowed in chef-solo"
+        else
+          Chef::VersionConstraint.new version
+          true
+        end
       rescue ArgumentError
         false
       end
