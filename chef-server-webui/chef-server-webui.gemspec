@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = "chef@opscode.com"
   s.homepage = "http://wiki.opscode.com/display/chef"
 
-  a.add_dependency "extlib", "~> 0.9.16"
+  s.add_dependency "extlib", "~> 0.9.16"
 
   s.add_dependency "merb-core", "~> 1.1.0"
   s.add_dependency "merb-assets", "~> 1.1.0"
