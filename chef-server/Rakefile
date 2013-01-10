@@ -17,7 +17,7 @@
 #
 
 require File.dirname(__FILE__) + '/lib/chef-server/version'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 GEM_NAME = "chef-server"
 
@@ -33,6 +33,6 @@ task :uninstall do
   sh %{gem uninstall #{GEM_NAME} -x -v #{ChefServer::VERSION} }
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
