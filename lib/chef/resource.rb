@@ -623,6 +623,7 @@ F
     # only_if commands/blocks being evaluated.
     def should_skip?(action)
       if (action == :nothing)
+        events.resource_skipped(self, action, Conditional.only_if('action == :nothing'))
         Chef::Log.debug("Skipping #{self} due to :nothing action")
         return true
       end
