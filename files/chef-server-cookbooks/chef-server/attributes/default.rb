@@ -22,7 +22,6 @@ default['chef_server']['api_version'] = "11.0.0"
 default['chef_server']['flavor'] = "osc" # Open Source Chef
 
 default['chef_server']['notification_email'] = "info@example.com"
-default['chef_server']['database_type'] = "postgresql"
 default['chef_server']['bootstrap']['enable'] = true
 
 ####
@@ -233,17 +232,6 @@ default['chef_server']['nginx']['gzip_types'] = [ "text/plain", "text/css", "app
 default['chef_server']['nginx']['keepalive_timeout'] = 65
 default['chef_server']['nginx']['client_max_body_size'] = '250m'
 default['chef_server']['nginx']['cache_max_size'] = '5000m'
-
-###
-# MySQL
-###
-default['chef_server']['mysql']['enable'] = false
-default['chef_server']['mysql']['sql_user'] = "opscode_chef"
-default['chef_server']['mysql']['sql_password'] = "snakepliskin"
-default['chef_server']['mysql']['vip'] = "127.0.0.1"
-default['chef_server']['mysql']['destructive_migrate'] = false
-default['chef_server']['mysql']['install_libs'] = true
-default['chef_server']['mysql']['mysql2_versions'] = IO.readlines("/opt/chef-server/version-manifest.txt").detect { |l| l =~ /^mysql2/ }.gsub(/^mysql2\s+(\d.+)$/, '\1').chomp.strip.split("-")
 
 ###
 # PostgreSQL

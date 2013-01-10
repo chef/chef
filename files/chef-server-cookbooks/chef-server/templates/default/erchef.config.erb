@@ -71,33 +71,22 @@
                {estatsd_port, <%= node['chef_server']['estatsd']['port'] %> }
               ]},
   {sqerl, [
-           %% The database system you are using (e.g., mysql, pgsql)
-           {db_type, <%= node['chef_server']['database_type'] == "postgresql" ? "pgsql" : "mysql" %> },
+           %% The only database supported is Postgres
+           {db_type, pgsql},
 
            %% Database connection parameters
-           {db_host, "<%= node['chef_server'][node['chef_server']['database_type']]['vip'] %>"},
-           {db_port, <%= node['chef_server']['database_type'] == "postgresql" ? 5432 : 3306 %>},
-           {db_user, "<%= node['chef_server'][node['chef_server']['database_type']]['sql_user'] %>"},
-           {db_pass, "<%= node['chef_server'][node['chef_server']['database_type']]['sql_password'] %>"},
+           {db_host, "<%= node['chef_server']['postgresql']['vip'] %>"},
+           {db_port, <%= node['chef_server']['postgresql']['port'] %>},
+           {db_user, "<%= node['chef_server']['postgresql']['sql_user'] %>"},
+           {db_pass, "<%= node['chef_server']['postgresql']['sql_password'] %>"},
            {db_name, "opscode_chef" },
 
-           {prepared_statements, {chef_sql, osc_statements, [<%= node['chef_server']['database_type'] == "postgresql" ? "pgsql" : "mysql" %>]}},
+           {prepared_statements, {chef_sql, osc_statements, [pgsql]}},
            {column_transforms,
-           <%-if node['chef_server']['database_type'] == "mysql" %>
-                              [{<<"frozen">>,
-                                {sqerl_transformers, convert_integer_to_boolean}},
-                               {<<"admin">>,
-                                {sqerl_transformers, convert_integer_to_boolean}},
-                               {<<"validator">>,
-                                {sqerl_transformers, convert_integer_to_boolean}}]
-           <%- elsif node['chef_server']['database_type'] == "postgresql" %>
                               [{<<"created_at">>,
                                 {sqerl_transformers, convert_YMDHMS_tuple_to_datetime}},
                                {<<"updated_at">>,
                                 {sqerl_transformers, convert_YMDHMS_tuple_to_datetime}}]
-           <% else %>
-                              undefined
-           <%- end %>
            }
           ]},
   {pooler, [
