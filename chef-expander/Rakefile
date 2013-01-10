@@ -18,13 +18,13 @@
 
 $: << File.dirname(__FILE__)
 require 'lib/chef/expander/version'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'rdoc/task'
 require '../chef/tasks/rspec.rb'
 
 spec = eval(File.read("chef-expander.gemspec"))
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 

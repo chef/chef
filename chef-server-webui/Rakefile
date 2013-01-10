@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/lib/chef-server-webui/version'
 
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 begin
   require 'merb-core'
@@ -18,7 +18,7 @@ SUMMARY = "A systems integration framework, built to bring the benefits of confi
 
 spec = eval(File.read("chef-server-webui.gemspec"))
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 

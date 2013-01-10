@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/lib/chef-server-api/version'
 
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 begin
   require 'merb-core'
@@ -12,9 +12,9 @@ end
 
 GEM_NAME = "chef-server-api"
 
-spec = eval(File.read("chef-server-api.gemspec"))
+spec = eval(File.read("chef-server-api.gemspec"), nil, "chef-server-api.gemspec", 1)
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
