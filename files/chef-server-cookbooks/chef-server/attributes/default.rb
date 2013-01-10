@@ -129,6 +129,7 @@ default['chef_server']['erchef']['cache_ttl'] = '3600'
 default['chef_server']['erchef']['db_pool_size'] = '20'
 default['chef_server']['erchef']['ibrowse_max_sessions'] = 256
 default['chef_server']['erchef']['ibrowse_max_pipeline_size'] = 1
+default['chef_server']['erchef']['bookshelf_url_ttl'] = 900
 default['chef_server']['erchef']['s3_bucket'] = 'bookshelf'
 default['chef_server']['erchef']['proxy_user'] = "pivotal"
 default['chef_server']['erchef']['url'] = "http://127.0.0.1:8000"
