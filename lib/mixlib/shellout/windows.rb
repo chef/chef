@@ -23,7 +23,7 @@ require 'windows/handle'
 require 'windows/process'
 require 'windows/synchronize'
 
-require 'mixlib/shellout/windows/localsystem'
+require 'mixlib/shellout/windows/local_system'
 require 'mixlib/shellout/windows/core_ext'
 
 module Mixlib
