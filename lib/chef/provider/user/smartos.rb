@@ -15,7 +15,7 @@ class Chef
             useradd << universal_options
             useradd << useradd_options
           end
-          Chef::Log.info(command)
+
           run_command(:command => command)
 
           # SmartOS locks new users by default until password is set
