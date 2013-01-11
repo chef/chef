@@ -28,6 +28,7 @@ require 'windows/synchronize'
 module Windows
   module Process
     API.new('CreateProcess', 'SPPPLLLPPP', 'B')
+    API.new('CreateProcessAsUser', 'PSPPPLLLPPP', 'B', 'advapi32.dll')
   end
 end
 
@@ -45,7 +46,7 @@ module Process
     valid_keys = %w/
       app_name command_line inherit creation_flags cwd environment
       startup_info thread_inherit process_inherit close_handles with_logon
-      domain password
+      domain password remote_call
     /
 
     valid_si_keys = %/
@@ -59,6 +60,9 @@ module Process
       'creation_flags' => 0,
       'close_handles'  => true
     }
+
+    #See if running as local service
+    is_local_service = ENV["USERNAME"].downcase == "local service" 
 
     # Validate the keys, and convert symbols and case to lowercase strings.
     args.each{ |key, val|
@@ -102,10 +106,11 @@ module Process
         env = hash['environment'].split(File::PATH_SEPARATOR)
       end
       # The argument format is a series of null-terminated strings, with an additional null terminator.
-      env = env.map { |e| e + "\0" }.join("") + "\0"
-      if hash['with_logon']
-        env = env.multi_to_wide(e)
-      end
+      # If calling CreateProcessWithLogonW must put the hash in a wide format
+      env = env.map do |e|
+        hash['with_logon'].nil? || is_local_service || hash['remote_call'] ? e + "\0" : multi_to_wide(e)
+      end.join("") + "\0"
+
       env = [env].pack('p*').unpack('L').first
     else
       env = nil
@@ -182,28 +187,69 @@ module Process
     end
 
     if hash['with_logon']
-      logon  = multi_to_wide(hash['with_logon'])
-      domain = multi_to_wide(hash['domain'])
-      app    = hash['app_name'].nil? ? nil : multi_to_wide(hash['app_name'])
-      cmd    = hash['command_line'].nil? ? nil : multi_to_wide(hash['command_line'])
-      cwd    = multi_to_wide(hash['cwd'])
-      passwd = multi_to_wide(hash['password'])
+      # Need to do a LogonUser and CreateProcessAsUser to work on all windows platforms
 
-      hash['creation_flags'] |= CREATE_UNICODE_ENVIRONMENT
+      if is_local_service || hash['remote_call']
+        include Process::Constants
+        extend Process::Functions
 
-      process_ran = CreateProcessWithLogonW(
-        logon,                  # User
-        domain,                 # Domain
-        passwd,                 # Password
-        LOGON_WITH_PROFILE,     # Logon flags
-        app,                    # App name
-        cmd,                    # Command line
-        hash['creation_flags'], # Creation flags
-        env,                    # Environment
-        cwd,                    # Working directory
-        startinfo,              # Startup Info
-        procinfo                # Process Info
-      )
+        Process.is_local_system?
+
+        logon  = hash['with_logon']
+        domain = hash['domain']
+        app    = hash['app_name']
+        cmd    = hash['command_line']
+        cwd    = hash['cwd']
+        passwd = hash['password']
+        token  = FFI::MemoryPointer.new(:ulong)
+        
+        LogonUser(
+          logon,                      # User
+          domain,                     # Domain
+          passwd,                     # Password
+          LOGON32_LOGON_INTERACTIVE,  # Logon Type
+          LOGON32_PROVIDER_DEFAULT,   # Logon Provider
+          token                       # User token handle
+        )
+
+        token = token.read_ulong
+
+        process_ran = CreateProcessAsUser(
+          token,                  # User token handle
+          app,                    # App name
+          cmd,                    # Command line 
+          process_security,       # Process attributes
+          thread_security,        # Thread attributes
+          hash['inherit'],        # Inherit handles
+          hash['creation_flags'], # Creation Flags
+          env,                    # Environment
+          cwd,                    # Working directory
+          startinfo,              # Startup Info
+          procinfo                # Process Info
+        )
+      else
+        logon       = multi_to_wide(hash['with_logon'])
+        domain      = multi_to_wide(hash['domain'])
+        app         = hash['app_name'].nil? ? nil : multi_to_wide(hash['app_name'])
+        cmd         = hash['command_line'].nil? ? nil : multi_to_wide(hash['command_line'])
+        cwd         = multi_to_wide(hash['cwd'])
+        passwd      = multi_to_wide(hash['password'])
+        hash['creation_flags'] |= CREATE_UNICODE_ENVIRONMENT
+
+        process_ran = CreateProcessWithLogonW(
+          logon,                      # User
+          domain,                     # Domain
+          passwd,                     # Password
+          LOGON_WITH_PROFILE,         # Logon flags
+          app,                        # App name
+          cmd,                        # Command line
+          hash['creation_flags'],     # Creation flags
+          env,                        # Environment
+          cwd,                        # Working directory
+          startinfo,                  # Startup Info
+          procinfo                    # Process Info
+        )
+      end        
     else
       process_ran = CreateProcess(
         hash['app_name'],       # App name
