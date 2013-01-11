@@ -65,3 +65,6 @@ require 'chef/resource/template'
 require 'chef/resource/timestamped_deploy'
 require 'chef/resource/user'
 require 'chef/resource/yum_package'
+
+# Add ChefPackages
+require 'chef/chef_package'
