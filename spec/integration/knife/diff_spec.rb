@@ -112,6 +112,29 @@ M\t/roles/x.json
 EOM
         end
       end
+
+      context 'as well as one extra copy of each thing' do
+        file 'clients/y.json', {}
+        file 'cookbooks/x/blah.rb', ''
+        file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
+        file 'data_bags/x/z.json', {}
+        file 'data_bags/y/zz.json', {}
+        file 'environments/y.json', {}
+        file 'nodes/y.json', {}
+        file 'roles/y.json', {}
+        file 'users/y.json', {}
+
+        it 'knife diff reports the new files as added' do
+          knife('diff --name-status /').should_succeed <<EOM
+A\t/cookbooks/x/blah.rb
+A\t/cookbooks/y
+A\t/data_bags/x/z.json
+A\t/data_bags/y
+A\t/environments/y.json
+A\t/roles/y.json
+EOM
+        end
+      end
     end
 
     when_the_repository 'is empty' do
