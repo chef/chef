@@ -369,18 +369,36 @@ describe Chef::Mixin::ParamsValidate do
     @vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id.should == value.object_id
   end
 
-  it "should allow DynamicEvaluator instance to be set for value regardless of restriction" do
+  it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do
     value = Chef::DelayedEvaluator.new{ 'test' }
-    @vo.set_or_return(:test, value, {:kind_of => String})
-    @vo.set_or_return(:test, nil, {:kind_of => String}).should == 'test'
+    @vo.set_or_return(:test, value, {:kind_of => Numeric})
   end
 
-  it "should raise an error when evaluated attribute is not valid" do
+  it "should raise an error when delayed evaluated attribute is not valid" do
     value = Chef::DelayedEvaluator.new{ 'test' }
     @vo.set_or_return(:test, value, {:kind_of => Numeric})
     lambda do
       @vo.set_or_return(:test, nil, {:kind_of => Numeric})
     end.should raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "should create DelayedEvaluator instance when passed a block" do
+    @vo.set_or_return(:delayed, nil, {}) do
+      'test'
+    end
+    @vo.instance_variable_get(:@delayed).should be_a(Chef::DelayedEvaluator)
+  end
+
+  it "should execute block on each call when DelayedEvaluator" do
+    value = 'fubar'
+    @vo.set_or_return(:test, nil, {}) do
+      value
+    end
+    @vo.set_or_return(:test, nil, {}).should == 'fubar'
+    value = 'foobar'
+    @vo.set_or_return(:test, nil, {}).should == 'foobar'
+    value = 'fauxbar'
+    @vo.set_or_return(:test, nil, {}).should == 'fauxbar'
   end
 
   it "should not evaluate non DelayedEvaluator instances" do
