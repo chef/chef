@@ -170,6 +170,15 @@ default['chef_server']['chef-pedant']['log_directory'] = "/var/log/chef-server/c
 default['chef_server']['chef-pedant']['log_http_requests'] = true
 
 ###
+# Estatsd
+###
+default['chef_server']['estatsd']['enable'] = true
+default['chef_server']['estatsd']['dir'] = "/var/opt/chef-server/estatsd"
+default['chef_server']['estatsd']['log_directory'] = "/var/log/chef-server/estatsd"
+default['chef_server']['estatsd']['vip'] = "127.0.0.1"
+default['chef_server']['estatsd']['port'] = 9466
+
+###
 # Load Balancer
 ###
 default['chef_server']['lb']['enable'] = true

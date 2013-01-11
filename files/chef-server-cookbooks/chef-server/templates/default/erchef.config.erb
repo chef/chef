@@ -67,8 +67,8 @@
                  ]},
   {stats_hero, [
                {udp_socket_pool_size, 1 },
-               {estatsd_host, "127.0.0.1" },
-               {estatsd_port, 5665 }
+               {estatsd_host, "<%= node['chef_server']['estatsd']['vip'] %>" },
+               {estatsd_port, <%= node['chef_server']['estatsd']['port'] %> }
               ]},
   {sqerl, [
            %% The database system you are using (e.g., mysql, pgsql)
