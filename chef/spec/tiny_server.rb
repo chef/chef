@@ -77,11 +77,11 @@ module TinyServer
 
     def block_until_started
       200.times do
-        if started?
-          raise "ivar weirdness" if @server.nil?
+        if started? && !@server.nil?
           return true
         end
       end
+      raise "ivar weirdness" if started? && @server.nil?
       raise "TinyServer failed to boot :/"
     end
 
