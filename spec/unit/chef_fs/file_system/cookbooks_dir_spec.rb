@@ -274,7 +274,11 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
       it 'all files can be read' do
         should_get_cookbook
         files.each do |path|
-          @rest.should_receive(:get_rest).with("cookbook_file:#{path}").once.and_return("This is #{path}'s content")
+          cookbook_file = double(path)
+          cookbook_file.should_receive(:open).with(no_args()).once
+          cookbook_file.should_receive(:read).with(no_args()).once.and_return("This is #{path}'s content")
+          cookbook_file.should_receive(:close!).with(no_args()).once
+          @rest.should_receive(:get_rest).with("cookbook_file:#{path}", true).once.and_return(cookbook_file)
           @rest.should_receive(:sign_on_redirect).with(no_args()).once.and_return(true)
           @rest.should_receive(:sign_on_redirect=).with(false).once
           @rest.should_receive(:sign_on_redirect=).with(true).once
