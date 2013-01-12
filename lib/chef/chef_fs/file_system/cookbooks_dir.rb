@@ -45,7 +45,7 @@ class Chef
           # TODO this only works on the file system.  And it can't be broken into
           # pieces.
           begin
-            uploader = Chef::CookbookUploader.new(other_cookbook_version, other.parent.file_path)
+            uploader = Chef::CookbookUploader.new(other_cookbook_version, other.parent.file_path, :rest => rest)
             # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
             old_cookbook_path = Chef::Config.cookbook_path
             Chef::Config.cookbook_path = other.parent.file_path if !Chef::Config.cookbook_path
