@@ -115,13 +115,13 @@ class Chef
       #       puts message
       #     end
       #
-      def self.copy_to(pattern, src_root, dest_root, recurse_depth, options, ui)
+      def self.copy_to(pattern, src_root, dest_root, recurse_depth, options, ui, format_path)
         found_result = false
         error = false
         list_pairs(pattern, src_root, dest_root) do |src, dest|
           found_result = true
-          new_dest_parent = get_or_create_parent(dest, options, ui)
-          child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui)
+          new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
+          child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
           error ||= child_error
         end
         if !found_result && pattern.exact_path
@@ -222,7 +222,7 @@ class Chef
       private
 
       # Copy two entries (could be files or dirs)
-      def self.copy_entries(src_entry, dest_entry, new_dest_parent, recurse_depth, options, ui)
+      def self.copy_entries(src_entry, dest_entry, new_dest_parent, recurse_depth, options, ui, format_path)
         # A NOTE about this algorithm:
         # There are cases where this algorithm does too many network requests.
         # knife upload with a specific filename will first check if the file
@@ -236,18 +236,20 @@ class Chef
 
         error = false
         begin
+          dest_path = format_path.call(dest_entry)
+          src_path = format_path.call(src_entry)
           if !src_entry.exists?
             if options[:purge]
               # If we would not have uploaded it, we will not purge it.
               if src_entry.parent.can_have_child?(dest_entry.name, dest_entry.dir?)
                 if options[:dry_run]
-                  ui.output "Would delete #{dest_entry.path_for_printing}"
+                  ui.output "Would delete #{dest_path}"
                 else
                   dest_entry.delete(true)
-                  ui.output "Deleted extra entry #{dest_entry.path_for_printing} (purge is on)"
+                  ui.output "Deleted extra entry #{dest_path} (purge is on)"
                 end
               else
-                Chef::Log.info("Not deleting extra entry #{dest_entry.path_for_printing} (purge is off)")
+                Chef::Log.info("Not deleting extra entry #{dest_path} (purge is off)")
               end
             end
 
@@ -256,36 +258,36 @@ class Chef
               # If the entry can do a copy directly from filesystem, do that.
               if new_dest_parent.respond_to?(:create_child_from)
                 if options[:dry_run]
-                  ui.output "Would create #{dest_entry.path_for_printing}"
+                  ui.output "Would create #{dest_path}"
                 else
                   new_dest_parent.create_child_from(src_entry)
-                  ui.output "Created #{dest_entry.path_for_printing}"
+                  ui.output "Created #{dest_path}"
                 end
                 return
               end
 
               if src_entry.dir?
                 if options[:dry_run]
-                  ui.output "Would create #{dest_entry.path_for_printing}"
+                  ui.output "Would create #{dest_path}"
                   new_dest_dir = new_dest_parent.child(src_entry.name)
                 else
                   new_dest_dir = new_dest_parent.create_child(src_entry.name, nil)
-                  ui.output "Created #{dest_entry.path_for_printing}"
+                  ui.output "Created #{dest_path}"
                 end
                 # Directory creation is recursive.
                 if recurse_depth != 0
                   src_entry.children.each do |src_child|
                     new_dest_child = new_dest_dir.child(src_child.name)
-                    child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui)
+                    child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                     error ||= child_error
                   end
                 end
               else
                 if options[:dry_run]
-                  ui.output "Would create #{dest_entry.path_for_printing}"
+                  ui.output "Would create #{dest_path}"
                 else
-                  return if new_dest_parent.create_child(src_entry.name, src_entry.read) == :skipped
-                  ui.output "Created #{dest_entry.path_for_printing}"
+                  new_dest_parent.create_child(src_entry.name, src_entry.read)
+                  ui.output "Created #{dest_path}"
                 end
               end
             end
@@ -297,10 +299,10 @@ class Chef
             if dest_entry.respond_to?(:copy_from)
               if options[:force] || compare(src_entry, dest_entry)[0] == false
                 if options[:dry_run]
-                  ui.output "Would update #{dest_entry.path_for_printing}"
+                  ui.output "Would update #{dest_path}"
                 else
                   dest_entry.copy_from(src_entry)
-                  ui.output "Updated #{dest_entry.path_for_printing}"
+                  ui.output "Updated #{dest_path}"
                 end
               end
               return
@@ -312,18 +314,18 @@ class Chef
                 # If both are directories, recurse into their children
                 if recurse_depth != 0
                   child_pairs(src_entry, dest_entry).each do |src_child, dest_child|
-                    child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui)
+                    child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                     error ||= child_error
                   end
                 end
               else
                 # If they are different types.
-                ui.error("File #{dest_entry.path_for_printing} is a directory while file #{dest_entry.path_for_printing} is a regular file\n")
+                ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n")
                 return
               end
             else
               if dest_entry.dir?
-                ui.error("File #{dest_entry.path_for_printing} is a directory while file #{dest_entry.path_for_printing} is a regular file\n")
+                ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n")
                 return
               else
 
@@ -337,11 +339,11 @@ class Chef
                 end
                 if should_copy
                   if options[:dry_run]
-                    ui.output "Would update #{dest_entry.path_for_printing}"
+                    ui.output "Would update #{dest_path}"
                   else
                     src_value = src_entry.read if src_value.nil?
                     dest_entry.write(src_value)
-                    ui.output "Updated #{dest_entry.path_for_printing}"
+                    ui.output "Updated #{dest_path}"
                   end
                 end
               end
@@ -356,15 +358,16 @@ class Chef
         error
       end
 
-      def self.get_or_create_parent(entry, options, ui)
+      def self.get_or_create_parent(entry, options, ui, format_path)
         parent = entry.parent
         if parent && !parent.exists?
-          parent_parent = get_or_create_parent(entry.parent, options, ui)
+          parent_path = format_path.call(parent)
+          parent_parent = get_or_create_parent(entry.parent, options, ui, format_path)
           if options[:dry_run]
-            ui.output "Would create #{parent.path_for_printing}"
+            ui.output "Would create #{parent_path}"
           else
             parent = parent_parent.create_child(parent.name, true)
-            ui.output "Created #{parent.path_for_printing}"
+            ui.output "Created #{parent_path}"
           end
         end
         return parent
