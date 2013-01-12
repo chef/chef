@@ -37,10 +37,10 @@ EOM
 
       it 'knife upload --purge deletes everything' do
         knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARN: The default environment (_default.json) cannot be deleted.  Skipping.\n")
-Deleted extra entry remote/cookbooks/x (purge is on)
-Deleted extra entry remote/data_bags/x (purge is on)
-Deleted extra entry remote/environments/x.json (purge is on)
-Deleted extra entry remote/roles/x.json (purge is on)
+Deleted extra entry /cookbooks/x (purge is on)
+Deleted extra entry /data_bags/x (purge is on)
+Deleted extra entry /environments/x.json (purge is on)
+Deleted extra entry /roles/x.json (purge is on)
 EOM
         knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
@@ -139,7 +139,7 @@ EOM
 }
 EOM
         it 'knife upload changes the role' do
-          knife('upload /').should_succeed "Updated remote/roles/x.json\n"
+          knife('upload /').should_succeed "Updated /roles/x.json\n"
           knife('diff --name-status /').should_succeed ''
         end
       end
@@ -194,13 +194,13 @@ EOM
 
         it 'knife upload adds the new files' do
           knife('upload /').should_succeed <<EOM
-Updated remote/cookbooks/x
-Created remote/cookbooks/y
-Created remote/data_bags/x/z.json
-Created remote/data_bags/y
-Created remote/data_bags/y/zz.json
-Created remote/environments/y.json
-Created remote/roles/y.json
+Updated /cookbooks/x
+Created /cookbooks/y
+Created /data_bags/x/z.json
+Created /data_bags/y
+Created /data_bags/y/zz.json
+Created /environments/y.json
+Created /roles/y.json
 EOM
           knife('diff --name-status /').should_succeed ''
         end
