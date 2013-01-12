@@ -270,7 +270,7 @@ class Chef
                   new_dest_dir = new_dest_parent.child(src_entry.name)
                 else
                   new_dest_dir = new_dest_parent.create_child(src_entry.name, nil)
-                  ui.output "Created #{dest_entry.path_for_printing}/"
+                  ui.output "Created #{dest_entry.path_for_printing}"
                 end
                 # Directory creation is recursive.
                 if recurse_depth != 0
