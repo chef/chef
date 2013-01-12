@@ -241,4 +241,143 @@ EOM
       end
     end
   end
+
+  # Test upload of an item when the other end doesn't even have the container
+  when_the_chef_server 'is empty' do
+    when_the_repository 'has two data bag items' do
+      file 'data_bags/x/y.json', <<EOM
+{
+  "id": "y"
+}
+EOM
+      file 'data_bags/x/z.json', <<EOM
+{
+  "id": "z"
+}
+EOM
+      it 'knife upload of one data bag item itself succeeds' do
+        knife('upload /data_bags/x/y.json').should_succeed <<EOM
+Created /data_bags/x
+Created /data_bags/x/y.json
+EOM
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+A\t/data_bags/x/z.json
+EOM
+      end
+    end
+  end
+
+  when_the_chef_server 'has three data bag items' do
+    data_bag 'x', { 'deleted' => {}, 'modified' => {}, 'unmodified' => {} }
+    when_the_repository 'has a modified, unmodified, added and deleted data bag item' do
+      file 'data_bags/x/added.json', <<EOM
+{
+  "id": "added"
+}
+EOM
+      file 'data_bags/x/modified.json', <<EOM
+{
+  "id": "modified",
+  "foo": "bar"
+}
+EOM
+      file 'data_bags/x/unmodified.json', <<EOM
+{
+  "id": "unmodified"
+}
+EOM
+      it 'knife upload of the modified file succeeds' do
+        knife('upload /data_bags/x/modified.json').should_succeed <<EOM
+Updated /data_bags/x/modified.json
+EOM
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+D\t/data_bags/x/deleted.json
+A\t/data_bags/x/added.json
+EOM
+      end
+      it 'knife upload of the unmodified file does nothing' do
+        knife('upload /data_bags/x/unmodified.json').should_succeed ''
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+D\t/data_bags/x/deleted.json
+M\t/data_bags/x/modified.json
+A\t/data_bags/x/added.json
+EOM
+      end
+      it 'knife upload of the added file succeeds' do
+        knife('upload /data_bags/x/added.json').should_succeed <<EOM
+Created /data_bags/x/added.json
+EOM
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+D\t/data_bags/x/deleted.json
+M\t/data_bags/x/modified.json
+EOM
+      end
+      it 'knife upload of the deleted file does nothing' do
+        knife('upload /data_bags/x/deleted.json').should_succeed ''
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+D\t/data_bags/x/deleted.json
+M\t/data_bags/x/modified.json
+A\t/data_bags/x/added.json
+EOM
+      end
+      it 'knife upload --purge of the deleted file deletes it' do
+        knife('upload --purge /data_bags/x/deleted.json').should_succeed <<EOM
+Deleted extra entry /data_bags/x/deleted.json (purge is on)
+EOM
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+M\t/data_bags/x/modified.json
+A\t/data_bags/x/added.json
+EOM
+      end
+      it 'knife upload of the entire data bag uploads everything' do
+        knife('upload /data_bags/x').should_succeed <<EOM
+Created /data_bags/x/added.json
+Updated /data_bags/x/modified.json
+EOM
+        knife('diff --name-status /data_bags').should_succeed <<EOM
+D\t/data_bags/x/deleted.json
+EOM
+      end
+      it 'knife upload --purge of the entire data bag uploads everything' do
+        knife('upload --purge /data_bags/x').should_succeed <<EOM
+Created /data_bags/x/added.json
+Updated /data_bags/x/modified.json
+Deleted extra entry /data_bags/x/deleted.json (purge is on)
+EOM
+        knife('diff --name-status /data_bags').should_succeed ''
+      end
+    end
+  end
+
+  # Cookbook upload is a funny thing ... direct cookbook upload works, but
+  # upload of a file is designed not to work at present.  Make sure that is the
+  # case.
+  when_the_chef_server 'has a cookbook' do
+    cookbook 'x', '1.0.0', { 'metadata.rb' => '', 'z.rb' => '' }
+    when_the_repository 'has a modified, extra and missing file for the cookbook' do
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/y.rb', 'hi'
+      it 'knife upload of any individual file fails' do
+        knife('upload /cookbooks/x/metadata.rb').should_fail "ERROR: remote/cookbooks/x/metadata.rb cannot be updated.\n"
+        knife('upload /cookbooks/x/y.rb').should_fail "ERROR: remote/cookbooks/x cannot have a child created under it.\n"
+        knife('upload --purge /cookbooks/x/z.rb').should_fail "ERROR: remote/cookbooks/x/z.rb cannot be deleted.\n"
+      end
+      # TODO this is a bit of an inconsistency: if we didn't specify --purge,
+      # technically we shouldn't have deleted missing files.  But ... cookbooks
+      # are a special case.
+      it 'knife upload of the cookbook itself succeeds' do
+        knife('upload /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+      it 'knife upload --purge of the cookbook itself succeeds' do
+        knife('upload /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+  end
+
 end
