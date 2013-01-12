@@ -100,17 +100,17 @@ module KnifeSupport
       # TODO make this go away
       stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, '')
 
-      if expected[:stdout].is_a?(Regexp)
-        @stdout.should =~ expected[:stdout]
-      else
-        @stdout.should == expected[:stdout]
-      end
       if expected[:stderr].is_a?(Regexp)
         stderr_actual.should =~ expected[:stderr]
       else
         stderr_actual.should == expected[:stderr]
       end
       @exit_code.should == expected[:exit_code]
+      if expected[:stdout].is_a?(Regexp)
+        @stdout.should =~ expected[:stdout]
+      else
+        @stdout.should == expected[:stdout]
+      end
     end
   end
 end
