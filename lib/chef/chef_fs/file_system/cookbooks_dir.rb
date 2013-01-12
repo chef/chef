@@ -46,7 +46,18 @@ class Chef
           # pieces.
           begin
             uploader = Chef::CookbookUploader.new(other_cookbook_version, other.parent.file_path)
-            uploader.upload_cookbooks
+            # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
+            old_cookbook_path = Chef::Config.cookbook_path
+            Chef::Config.cookbook_path = other.parent.file_path if !Chef::Config.cookbook_path
+            begin
+              if uploader.respond_to?(:upload_cookbook)
+                uploader.upload_cookbook
+              else
+                uploader.upload_cookbooks
+              end
+            ensure
+              Chef::Config.cookbook_path = old_cookbook_path
+            end
           rescue Net::HTTPServerException => e
             case e.response.code
             when "409"
