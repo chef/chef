@@ -366,7 +366,7 @@ class Chef
           if options[:dry_run]
             ui.output "Would create #{parent_path}"
           else
-            parent = parent_parent.create_child(parent.name, true)
+            parent = parent_parent.create_child(parent.name, nil)
             ui.output "Created #{parent_path}"
           end
         end
