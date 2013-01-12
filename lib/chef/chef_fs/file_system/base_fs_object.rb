@@ -17,6 +17,7 @@
 #
 
 require 'chef/chef_fs/path_utils'
+require 'chef/chef_fs/file_system/operation_not_allowed_error'
 
 class Chef
   module ChefFS
@@ -38,42 +39,6 @@ class Chef
         attr_reader :name
         attr_reader :parent
         attr_reader :path
-
-        def root
-          parent ? parent.root : self
-        end
-
-        def path_for_printing
-          if parent
-            parent_path = parent.path_for_printing
-            if parent_path == '.'
-              name
-            else
-              Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
-            end
-          else
-            name
-          end
-        end
-
-        def dir?
-          false
-        end
-
-        def exists?
-          true
-        end
-
-        def child(name)
-          NonexistentFSObject.new(name, self)
-        end
-
-        # Override can_have_child? to report whether a given file *could* be added
-        # to this directory.  (Some directories can't have subdirs, some can only have .json
-        # files, etc.)
-        def can_have_child?(name, is_dir)
-          false
-        end
 
         # Override this if you have a special comparison algorithm that can tell
         # you whether this entry is the same as another--either a quicker or a
@@ -112,9 +77,96 @@ class Chef
           nil
         end
 
+        # Override can_have_child? to report whether a given file *could* be added
+        # to this directory.  (Some directories can't have subdirs, some can only have .json
+        # files, etc.)
+        def can_have_child?(name, is_dir)
+          false
+        end
+
+        # Get a child of this entry with the given name.  This MUST always
+        # return a child, even if it is NonexistentFSObject.  Overriders should
+        # take caution not to do expensive network requests to get the list of
+        # children to fulfill this request, unless absolutely necessary here; it
+        # is intended as a quick way to traverse a hierarchy.
+        #
+        # For example, knife show /data_bags/x/y.json will call
+        # root.child('data_bags').child('x').child('y.json'), which can then
+        # directly perform a network request to retrieve the y.json data bag.  No
+        # network request was necessary to retrieve
+        def child(name)
+          NonexistentFSObject.new(name, self)
+        end
+
+        # Override children to report your *actual* list of children as an array.
+        def children
+          raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
+          []
+        end
+
+        # Expand this entry into a chef object (Chef::Role, ::Node, etc.)
         def chef_object
-          raise Chef::ChefFS::FileSystem::NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
+          raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
           nil
+        end
+
+        # Create a child of this entry with the given name and contents.  If
+        # contents is nil, create a directory.
+        #
+        # NOTE: create_child_from is an optional method that can also be added to
+        # your entry class, and will be called without actually reading the
+        # file_contents.  This is used for knife upload /cookbooks/cookbookname.
+        def create_child(name, file_contents)
+          raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
+          raise OperationNotAllowedError.new(:create_child), "#{path_for_printing} cannot have a child created under it."
+        end
+
+        # Delete this item, possibly recursively.  Entries MUST NOT delete a
+        # directory unless recurse is true.
+        def delete(recurse)
+          raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
+          raise OperationNotAllowedError.new(:delete), "#{path_for_printing} cannot be deleted."
+        end
+
+        # Ask whether this entry is a directory.  If not, it is a file.
+        def dir?
+          false
+        end
+
+        # Ask whether this entry exists.
+        def exists?
+          true
+        end
+
+        # Printable path, generally used to distinguish paths in one root from
+        # paths in another.
+        def path_for_printing
+          if parent
+            parent_path = parent.path_for_printing
+            if parent_path == '.'
+              name
+            else
+              Chef::ChefFS::PathUtils::join(parent.path_for_printing, name)
+            end
+          else
+            name
+          end
+        end
+
+        def root
+          parent ? parent.root : self
+        end
+
+        # Read the contents of this file entry.
+        def read
+          raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
+          raise OperationNotAllowedError.new(:read), "#{path_for_printing} cannot be read."
+        end
+
+        # Write the contents of this file entry.
+        def write(file_contents)
+          raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
+          raise OperationNotAllowedError.new(:write), "#{path_for_printing} cannot be updated."
         end
 
         # Important directory attributes: name, parent, path, root
@@ -124,3 +176,5 @@ class Chef
     end
   end
 end
+
+require 'chef/chef_fs/file_system/nonexistent_fs_object'
