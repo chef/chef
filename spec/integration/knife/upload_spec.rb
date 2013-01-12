@@ -353,9 +353,9 @@ EOM
   # upload of a file is designed not to work at present.  Make sure that is the
   # case.
   when_the_chef_server 'has a cookbook' do
-    cookbook 'x', '1.0.0', { 'metadata.rb' => '', 'z.rb' => '' }
+    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => '' }
     when_the_repository 'has a modified, extra and missing file for the cookbook' do
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', 'version  "1.0.0"'
       file 'cookbooks/x/y.rb', 'hi'
       it 'knife upload of any individual file fails' do
         knife('upload /cookbooks/x/metadata.rb').should_fail "ERROR: remote/cookbooks/x/metadata.rb cannot be updated.\n"
@@ -378,6 +378,29 @@ EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
+    when_the_repository 'has a missing file for the cookbook' do
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      it 'knife upload of the cookbook succeeds' do
+        knife('upload /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+    when_the_repository 'has an extra file for the cookbook' do
+      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/z.rb', ''
+      file 'cookbooks/x/blah.rb', ''
+      it 'knife upload of the cookbook succeeds' do
+        knife('upload /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
   end
 
+  # Upload from a cwd
+  # Upload with *'s
+  # Upload with JSON that isn't *really* modified
 end
