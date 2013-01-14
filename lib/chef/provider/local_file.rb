@@ -43,8 +43,11 @@ class Chef
 
       def description
         descarray = []
-        desc = "update content in file #{@new_resource.path}" if ::File.exists?(@new_resource.path)
-        desc = "create file #{@new_resource.path}" unless ::File.exists?(@new_resource.path)
+        desc = if ::File.exists?(@new_resource.path)
+          "update content in file #{@new_resource.path}"
+        else 
+          "create file #{@new_resource.path}"
+        end
 
         desc << " with file #{@new_resource.source}"
         descarray << desc
@@ -60,8 +63,11 @@ class Chef
             deploy_tempfile do |tempfile|
               Chef::Log.debug("#{@new_resource} staging to #{tempfile.path}")
               tempfile.close
-              FileUtils.cp(file_cache_location, tempfile.path) unless @move
-              FileUtils.mv(file_cache_location, tempfile.path) if @move
+              if @move
+                FileUtils.mv(file_cache_location, tempfile.path)
+              else
+                FileUtils.cp(file_cache_location, tempfile.path)
+              end
             end
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
