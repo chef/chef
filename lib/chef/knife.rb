@@ -164,6 +164,7 @@ class Chef
       subcommand_class.options = options.merge!(subcommand_class.options)
       subcommand_class.load_deps
       instance = subcommand_class.new(args)
+      instance.configure_chef
       instance.run_with_pretty_exceptions
     end
 
@@ -263,8 +264,6 @@ class Chef
 
       command_name_words = self.class.snake_case_name.split('_')
 
-      configure_chef
-      configure_from_file_settings! if allow_auto_knife_config?
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
       @name_args.delete(command_name_words.join('-'))
@@ -274,6 +273,7 @@ class Chef
       # the case that command name words could be joined by an underscore :/
       command_name_words = command_name_words.join('_')
       @name_args.reject! { |name_arg| command_name_words == name_arg }
+
 
       if config[:help]
         msg opt_parser
