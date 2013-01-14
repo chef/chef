@@ -24,26 +24,24 @@ require 'chef/mixin/securable'
 
 class Chef
   class Resource
-    class File
-      class CookbookFile < Chef::Resource::LocalFile
-        include Chef::Mixin::Securable
+		class CookbookFile < Chef::Resource::LocalFile
+			include Chef::Mixin::Securable
 
-        provides :cookbook_file, :on_platforms => :all
+			provides :cookbook_file, :on_platforms => :all
 
-        def initialize(name, run_context=nil)
-          super
-          @provider = Chef::Provider::CookbookFile
-          @resource_name = :cookbook_file
-          @source = ::File.basename(name)
-          @allowed_actions.delete(:move)
-          @cookbook = nil
-        end
+			def initialize(name, run_context=nil)
+				super
+				@provider = Chef::Provider::CookbookFile
+				@resource_name = :cookbook_file
+				@source = ::File.basename(name)
+				@allowed_actions.delete(:move)
+				@cookbook = nil
+			end
 
-        def cookbook(cookbook_name=nil)
-          set_or_return(:cookbook, cookbook_name, :kind_of => String)
-        end
+			def cookbook(cookbook_name=nil)
+				set_or_return(:cookbook, cookbook_name, :kind_of => String)
+			end
 
-      end
-    end
-  end
+		end
+	end
 end

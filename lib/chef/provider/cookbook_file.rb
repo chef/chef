@@ -22,42 +22,40 @@ require 'tempfile'
 
 class Chef
   class Provider
-    class File
-      class CookbookFile < Chef::Provider::LocalFile
+    class CookbookFile < Chef::Provider::LocalFile
 
-        include Chef::Mixin::EnforceOwnershipAndPermissions
+      include Chef::Mixin::EnforceOwnershipAndPermissions
 
-        def whyrun_supported?
-          true
-        end
-
-        def load_current_resource
-          @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
-          super
-        end
-
-        def description
-          desc_array = []
-          desc_array << "create a new cookbook_file #{@new_resource.path}"
-          desc_array << diff_current(file_cache_location)
-          desc_array
-        end
-
-        def file_cache_location
-          @file_cache_location ||= begin
-            cookbook = run_context.cookbook_collection[resource_cookbook]
-            cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
-          end
-        end
-
-        # Determine the cookbook to get the file from. If new resource sets an
-        # explicit cookbook, use it, otherwise fall back to the implicit cookbook
-        # i.e., the cookbook the resource was declared in.
-        def resource_cookbook
-          @new_resource.cookbook || @new_resource.cookbook_name
-        end
-
+      def whyrun_supported?
+        true
       end
+
+      def load_current_resource
+        @current_resource = Chef::Resource::CookbookFile.new(@new_resource.name)
+        super
+      end
+
+      def description
+        desc_array = []
+        desc_array << "create a new cookbook_file #{@new_resource.path}"
+        desc_array << diff_current(file_cache_location)
+        desc_array
+      end
+
+      def file_cache_location
+        @file_cache_location ||= begin
+          cookbook = run_context.cookbook_collection[resource_cookbook]
+          cookbook.preferred_filename_on_disk_location(node, :files, @new_resource.source, @new_resource.path)
+        end
+      end
+
+      # Determine the cookbook to get the file from. If new resource sets an
+      # explicit cookbook, use it, otherwise fall back to the implicit cookbook
+      # i.e., the cookbook the resource was declared in.
+      def resource_cookbook
+        @new_resource.cookbook || @new_resource.cookbook_name
+      end
+
     end
   end
 end
