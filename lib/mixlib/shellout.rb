@@ -42,7 +42,6 @@ module Mixlib
     attr_accessor :domain
     attr_accessor :password
     attr_accessor :with_logon
-    attr_accessor :remote_call
 
     # Group the command will run as. Normally set via options passed to new
     attr_accessor :group
@@ -272,8 +271,6 @@ module Mixlib
         when 'user'
           self.user = setting
           self.with_logon = setting
-        when 'remote_call'
-          self.remote_call = setting
         when 'group'
           self.group = setting
         when 'umask'
