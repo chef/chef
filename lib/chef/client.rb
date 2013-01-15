@@ -443,6 +443,10 @@ class Chef
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
 
+        if Chef::Platform.windows?
+          do_windows_admin_check
+        end
+
         run_context = setup_run_context
 
         converge(run_context)
@@ -517,6 +521,23 @@ class Chef
         Chef::Log.warn("Node #{node_name} has an empty run list.") if run_context.node.run_list.empty?
       end
 
+    end
+
+    def do_windows_admin_check
+      unless Chef::Config[:solo]
+        require 'chef/win32/security'
+
+        if !Chef::ReservedNames::Win32::Security.has_admin_rights?
+          message = "chef-client doesn't have administrator privilages on node #{node_name}."
+          if Chef::Config[:fatal_windows_admin_check]
+            Chef::Log.fatal(message)
+            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
+            raise Chef::Exceptions::WindowsNotAdmin, message
+          else
+            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
+          end
+        end
+      end
     end
   end
 end

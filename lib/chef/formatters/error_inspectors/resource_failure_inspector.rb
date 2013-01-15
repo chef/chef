@@ -50,6 +50,14 @@ class Chef
           if exception.respond_to?(:source_listing)
             error_description.section("Template Context:", "#{exception.source_location}\n#{exception.source_listing}")
           end
+
+          if !Chef::Config[:solo] && Chef::Platform.windows?
+            require 'chef/win32/security'
+
+            if !Chef::ReservedNames::Win32::Security.has_admin_rights?
+              error_description.section("Missing Windows Admin Privilages", "chef-client doesn't have administrator privilages. This can be a possible reason for the resource failure.")
+            end
+          end
         end
 
         def recipe_snippet

@@ -197,6 +197,14 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
+  if Chef::Platform.windows?
+    option :fatal_windows_admin_check,
+      :short        => "-A",
+      :long         => "--fatal-windows-admin-check",
+      :description  => "Fail the run when chef-client doesn't have administrator privilages on Windows",
+      :boolean      => true
+  end
+
   attr_reader :chef_client_json
 
   def initialize

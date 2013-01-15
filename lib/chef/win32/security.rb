@@ -478,6 +478,12 @@ class Chef
           token.adjust_privileges(old_privileges)
         end
       end
+
+      # Checks if the caller has the admin privilages in their
+      # security token
+      def self.has_admin_rights?
+        false # DO THE ADMIN CHECK HERE
+      end
     end
   end
 end
