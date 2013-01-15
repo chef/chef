@@ -1,6 +1,7 @@
 #--
-# Author:: Kevin Moser (<kevin.moser@nordstrom.com>)
-# Copyright:: Copyright (c) 2012, 2013 Nordstrom, Inc.
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
+# Copyright:: Copyright (c) 2011, 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
