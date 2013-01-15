@@ -527,7 +527,9 @@ class Chef
       unless Chef::Config[:solo]
         require 'chef/win32/security'
 
-        if !Chef::ReservedNames::Win32::Security.has_admin_rights?
+        Chef::Log.debug("Checking for administrator privilages....")
+
+        if !Chef::ReservedNames::Win32::Security.has_admin_privilages?
           message = "chef-client doesn't have administrator privilages on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
             Chef::Log.fatal(message)
@@ -536,6 +538,8 @@ class Chef
           else
             Chef::Log.warn("#{message} This might cause unexpected resource failures.")
           end
+        else
+          Chef::Log.debug("chef-client has administrator privilages on node #{node_name}.")
         end
       end
     end
