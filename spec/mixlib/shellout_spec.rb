@@ -31,6 +31,9 @@ describe Mixlib::ShellOut do
     context 'with default settings' do
       its(:cwd) { should be_nil }
       its(:user) { should be_nil }
+      its(:with_logon) { should be_nil }
+      its(:domain) { should be_nil }
+      its(:password) { should be_nil }
       its(:group) { should be_nil }
       its(:umask) { should be_nil }
       its(:timeout) { should eql(600) }
