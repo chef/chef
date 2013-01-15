@@ -1,7 +1,6 @@
 #--
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Author:: John Keiser (<jkeiser@opscode.com>)
-# Copyright:: Copyright (c) 2011, 2012 Opscode, Inc.
+# Author:: Kevin Moser (<kevin.moser@nordstrom.com>)
+# Copyright:: Copyright (c) 2012, 2013 Nordstrom, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,41 +17,65 @@
 #
 
 require 'win32/process'
-require 'windows/handle'
-require 'windows/process'
-require 'windows/synchronize'
 
-# Override module Windows::Process.CreateProcess to fix bug when
-# using both app_name and command_line
-#
-module Windows
-  module Process
-    API.new('CreateProcess', 'SPPPLLLPPP', 'B')
-    API.new('CreateProcessAsUser', 'PSPPPLLLPPP', 'B', 'advapi32.dll')
+# Add new constants for Logon
+module Process::Constants
+  LOGON32_LOGON_INTERACTIVE = 0x00000002
+  LOGON32_PROVIDER_DEFAULT  = 0x00000000
+  UOI_NAME = 0x00000002
+end  
+
+# Define the functions needed to check with Service windows station
+module Process::Functions
+  module FFI::Library
+    # Wrapper method for attach_function + private
+    def attach_pfunc(*args)
+      attach_function(*args)
+      private args[0]
+    end
   end
+
+  extend FFI::Library
+
+  ffi_lib :advapi32
+
+  attach_pfunc :LogonUserW,
+    [:buffer_in, :buffer_in, :buffer_in, :ulong, :ulong, :pointer], :bool
+
+  attach_pfunc :CreateProcessAsUserW,
+    [:ulong, :buffer_in, :buffer_in, :pointer, :pointer, :bool,
+      :ulong, :buffer_in, :buffer_in, :pointer, :pointer], :bool
+
+  ffi_lib :user32
+
+  attach_pfunc :GetProcessWindowStation,
+    [], :ulong
+
+  attach_pfunc :GetUserObjectInformationA,
+    [:ulong, :uint, :buffer_out, :ulong, :pointer], :bool
 end
 
-#
-# Override Win32::Process.create to take a proper environment hash
-# so that variables can contain semicolons
-# (submitted patch to owner)
-#
+# Override Process.create to check for running in the Service window station and doing
+# a full logon with LogonUser, instead of a CreateProcessWithLogon
 module Process
+  include Process::Constants
+  include Process::Structs
+
   def create(args)
     unless args.kind_of?(Hash)
-      raise TypeError, 'Expecting hash-style keyword arguments'
+      raise TypeError, 'hash keyword arguments expected'
     end
 
-    valid_keys = %w/
+    valid_keys = %w[
       app_name command_line inherit creation_flags cwd environment
       startup_info thread_inherit process_inherit close_handles with_logon
-      domain password remote_call
-    /
+      domain password
+    ]
 
-    valid_si_keys = %/
+    valid_si_keys = %w[
       startf_flags desktop title x y x_size y_size x_count_chars
       y_count_chars fill_attribute sw_flags stdin stdout stderr
-    /
+    ]
 
     # Set default values
     hash = {
@@ -60,9 +83,6 @@ module Process
       'creation_flags' => 0,
       'close_handles'  => true
     }
-
-    #See if running as local service
-    is_local_service = ENV["USERNAME"].downcase == "local service" 
 
     # Validate the keys, and convert symbols and case to lowercase strings.
     args.each{ |key, val|
@@ -97,47 +117,43 @@ module Process
       end
     end
 
-    # The environment string should be passed as an array of A=B paths, or
-    # as a string of ';' separated paths.
+    env = nil
+
+    # The env string should be passed as a string of ';' separated paths.
     if hash['environment']
       env = hash['environment']
-      if !env.respond_to?(:join)
-        # Backwards compat for ; separated paths
+
+      unless env.respond_to?(:join)
         env = hash['environment'].split(File::PATH_SEPARATOR)
       end
-      # The argument format is a series of null-terminated strings, with an additional null terminator.
-      # If calling CreateProcessWithLogonW must put the hash in a wide format
-      env = env.map do |e|
-        hash['with_logon'].nil? || is_local_service || hash['remote_call'] ? e + "\0" : multi_to_wide(e)
-      end.join("") + "\0"
 
-      env = [env].pack('p*').unpack('L').first
-    else
-      env = nil
+      env = env.map{ |e| e + 0.chr }.join('') + 0.chr
+      env.to_wide_string! if hash['with_logon']
     end
 
-    startinfo = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    startinfo = startinfo.pack('LLLLLLLLLLLLSSLLLL')
-    procinfo  = [0,0,0,0].pack('LLLL')
-
     # Process SECURITY_ATTRIBUTE structure
-    process_security = 0
+    process_security = nil
+
     if hash['process_inherit']
-      process_security = [0,0,0].pack('LLL')
-      process_security[0,4] = [12].pack('L') # sizeof(SECURITY_ATTRIBUTE)
-      process_security[8,4] = [1].pack('L')  # TRUE
+      process_security = SECURITY_ATTRIBUTES.new
+      process_security[:nLength] = 12
+      process_security[:bInheritHandle] = true
     end
 
     # Thread SECURITY_ATTRIBUTE structure
-    thread_security = 0
+    thread_security = nil
+
     if hash['thread_inherit']
-      thread_security = [0,0,0].pack('LLL')
-      thread_security[0,4] = [12].pack('L') # sizeof(SECURITY_ATTRIBUTE)
-      thread_security[8,4] = [1].pack('L')  # TRUE
+      thread_security = SECURITY_ATTRIBUTES.new
+      thread_security[:nLength] = 12
+      thread_security[:bInheritHandle] = true
     end
 
     # Automatically handle stdin, stdout and stderr as either IO objects
-    # or file descriptors.  This won't work for StringIO, however.
+    # or file descriptors. This won't work for StringIO, however. It also
+    # will not work on JRuby because of the way it handles internal file
+    # descriptors.
+    #
     ['stdin', 'stdout', 'stderr'].each{ |io|
       if si_hash[io]
         if si_hash[io].respond_to?(:fileno)
@@ -147,7 +163,15 @@ module Process
         end
 
         if handle == INVALID_HANDLE_VALUE
-          raise Error, get_last_error
+          ptr = FFI::MemoryPointer.new(:int)
+
+          if windows_version >= 6 && get_errno(ptr) == 0
+            errno = ptr.read_int
+          else
+            errno = FFI.errno
+          end
+
+          raise SystemCallError.new("get_osfhandle", errno)
         end
 
         # Most implementations of Ruby on Windows create inheritable
@@ -158,7 +182,7 @@ module Process
           HANDLE_FLAG_INHERIT
         )
 
-        raise Error, get_last_error unless bool
+        raise SystemCallError.new("SetHandleInformation", FFI.errno) unless bool
 
         si_hash[io] = handle
         si_hash['startf_flags'] ||= 0
@@ -167,43 +191,85 @@ module Process
       end
     }
 
-    # The bytes not covered here are reserved (null)
+    procinfo  = PROCESS_INFORMATION.new
+    startinfo = STARTUPINFO.new
+
     unless si_hash.empty?
-      startinfo[0,4]  = [startinfo.size].pack('L')
-      startinfo[8,4]  = [si_hash['desktop']].pack('p*') if si_hash['desktop']
-      startinfo[12,4] = [si_hash['title']].pack('p*') if si_hash['title']
-      startinfo[16,4] = [si_hash['x']].pack('L') if si_hash['x']
-      startinfo[20,4] = [si_hash['y']].pack('L') if si_hash['y']
-      startinfo[24,4] = [si_hash['x_size']].pack('L') if si_hash['x_size']
-      startinfo[28,4] = [si_hash['y_size']].pack('L') if si_hash['y_size']
-      startinfo[32,4] = [si_hash['x_count_chars']].pack('L') if si_hash['x_count_chars']
-      startinfo[36,4] = [si_hash['y_count_chars']].pack('L') if si_hash['y_count_chars']
-      startinfo[40,4] = [si_hash['fill_attribute']].pack('L') if si_hash['fill_attribute']
-      startinfo[44,4] = [si_hash['startf_flags']].pack('L') if si_hash['startf_flags']
-      startinfo[48,2] = [si_hash['sw_flags']].pack('S') if si_hash['sw_flags']
-      startinfo[56,4] = [si_hash['stdin']].pack('L') if si_hash['stdin']
-      startinfo[60,4] = [si_hash['stdout']].pack('L') if si_hash['stdout']
-      startinfo[64,4] = [si_hash['stderr']].pack('L') if si_hash['stderr']
+      startinfo[:cb]              = startinfo.size
+      startinfo[:lpDesktop]       = si_hash['desktop'] if si_hash['desktop']
+      startinfo[:lpTitle]         = si_hash['title'] if si_hash['title']
+      startinfo[:dwX]             = si_hash['x'] if si_hash['x']
+      startinfo[:dwY]             = si_hash['y'] if si_hash['y']
+      startinfo[:dwXSize]         = si_hash['x_size'] if si_hash['x_size']
+      startinfo[:dwYSize]         = si_hash['y_size'] if si_hash['y_size']
+      startinfo[:dwXCountChars]   = si_hash['x_count_chars'] if si_hash['x_count_chars']
+      startinfo[:dwYCountChars]   = si_hash['y_count_chars'] if si_hash['y_count_chars']
+      startinfo[:dwFillAttribute] = si_hash['fill_attribute'] if si_hash['fill_attribute']
+      startinfo[:dwFlags]         = si_hash['startf_flags'] if si_hash['startf_flags']
+      startinfo[:wShowWindow]     = si_hash['sw_flags'] if si_hash['sw_flags']
+      startinfo[:cbReserved2]     = 0
+      startinfo[:hStdInput]       = si_hash['stdin'] if si_hash['stdin']
+      startinfo[:hStdOutput]      = si_hash['stdout'] if si_hash['stdout']
+      startinfo[:hStdError]       = si_hash['stderr'] if si_hash['stderr']
     end
 
+    app = nil
+    cmd = nil
+
+    # Convert strings to wide character strings if present
+    if hash['app_name']
+      app = hash['app_name'].to_wide_string
+    end
+
+    if hash['command_line']
+      cmd = hash['command_line'].to_wide_string
+    end
+
+    if hash['cwd']
+      cwd = hash['cwd'].to_wide_string
+    end
+
+    inherit  = hash['inherit'] || false
+
     if hash['with_logon']
-      # Need to do a LogonUser and CreateProcessAsUser to work on all windows platforms
+      logon = hash['with_logon'].to_wide_string
 
-      if is_local_service || hash['remote_call']
-        include Process::Constants
-        extend Process::Functions
+      if hash['password']
+        passwd = hash['password'].to_wide_string
+      else
+        raise ArgumentError, 'password must be specified if with_logon is used'
+      end
 
-        Process.is_local_system?
+      if hash['domain']
+        domain = hash['domain'].to_wide_string
+      end
 
-        logon  = hash['with_logon']
-        domain = hash['domain']
-        app    = hash['app_name']
-        cmd    = hash['command_line']
-        cwd    = hash['cwd']
-        passwd = hash['password']
-        token  = FFI::MemoryPointer.new(:ulong)
-        
-        LogonUser(
+      hash['creation_flags'] |= CREATE_UNICODE_ENVIRONMENT
+
+      winsta_name = FFI::MemoryPointer.new(:char, 256)
+      return_size = FFI::MemoryPointer.new(:ulong)
+
+      bool = GetUserObjectInformationA(
+        GetProcessWindowStation(),  # Window station handle
+        UOI_NAME,                   # Information to get
+        winsta_name,                # Buffer to receive information
+        winsta_name.size,           # Size of buffer
+        return_size                 # Size filled into buffer
+      )
+
+      unless bool
+        raise SystemCallError.new("GetUserObjectInformationA", FFI.errno)
+      end
+
+      winsta_name = winsta_name.read_string(return_size.read_ulong)
+
+      # If running in the service windows station must do a log on to get
+      # to the interactive desktop.  Running process user account must have
+      # the 'Replace a process level token' permission
+      if winsta_name =~ /^Service-0x0-.*$/i
+        token = FFI::MemoryPointer.new(:ulong)
+
+        bool = LogonUserW(
           logon,                      # User
           domain,                     # Domain
           passwd,                     # Password
@@ -212,220 +278,82 @@ module Process
           token                       # User token handle
         )
 
+        unless bool
+          raise SystemCallError.new("LogonUserW", FFI.errno)
+        end
+
         token = token.read_ulong
 
-        process_ran = CreateProcessAsUser(
+        bool = CreateProcessAsUserW(
           token,                  # User token handle
           app,                    # App name
           cmd,                    # Command line 
           process_security,       # Process attributes
           thread_security,        # Thread attributes
-          hash['inherit'],        # Inherit handles
+          inherit,                # Inherit handles
           hash['creation_flags'], # Creation Flags
           env,                    # Environment
           cwd,                    # Working directory
           startinfo,              # Startup Info
           procinfo                # Process Info
         )
-      else
-        logon       = multi_to_wide(hash['with_logon'])
-        domain      = multi_to_wide(hash['domain'])
-        app         = hash['app_name'].nil? ? nil : multi_to_wide(hash['app_name'])
-        cmd         = hash['command_line'].nil? ? nil : multi_to_wide(hash['command_line'])
-        cwd         = multi_to_wide(hash['cwd'])
-        passwd      = multi_to_wide(hash['password'])
-        hash['creation_flags'] |= CREATE_UNICODE_ENVIRONMENT
 
-        process_ran = CreateProcessWithLogonW(
-          logon,                      # User
-          domain,                     # Domain
-          passwd,                     # Password
-          LOGON_WITH_PROFILE,         # Logon flags
-          app,                        # App name
-          cmd,                        # Command line
-          hash['creation_flags'],     # Creation flags
-          env,                        # Environment
-          cwd,                        # Working directory
-          startinfo,                  # Startup Info
-          procinfo                    # Process Info
+        unless bool
+          raise SystemCallError.new("CreateProcessAsUserW (You must hold the 'Replace a process level token' permission)", FFI.errno)
+        end
+      else
+        bool = CreateProcessWithLogonW(
+          logon,                  # User
+          domain,                 # Domain
+          passwd,                 # Password
+          LOGON_WITH_PROFILE,     # Logon flags
+          app,                    # App name
+          cmd,                    # Command line
+          hash['creation_flags'], # Creation flags
+          env,                    # Environment
+          cwd,                    # Working directory
+          startinfo,              # Startup Info
+          procinfo                # Process Info
         )
-      end        
+      end
+
+      unless bool
+        raise SystemCallError.new("CreateProcessWithLogonW", FFI.errno)
+      end
     else
-      process_ran = CreateProcess(
-        hash['app_name'],       # App name
-        hash['command_line'],   # Command line
+      bool = CreateProcessW(
+        app,                    # App name
+        cmd,                    # Command line
         process_security,       # Process attributes
         thread_security,        # Thread attributes
-        hash['inherit'],        # Inherit handles?
+        inherit,                # Inherit handles?
         hash['creation_flags'], # Creation flags
         env,                    # Environment
-        hash['cwd'],            # Working directory
+        cwd,                    # Working directory
         startinfo,              # Startup Info
         procinfo                # Process Info
       )
-    end
 
-    # TODO: Close stdin, stdout and stderr handles in the si_hash unless
-    # they're pointing to one of the standard handles already. [Maybe]
-    if !process_ran
-      raise_last_error("CreateProcess()")
+      unless bool
+        raise SystemCallError.new("CreateProcessW", FFI.errno)
+      end
     end
 
     # Automatically close the process and thread handles in the
     # PROCESS_INFORMATION struct unless explicitly told not to.
     if hash['close_handles']
-      CloseHandle(procinfo[0,4].unpack('L').first)
-      CloseHandle(procinfo[4,4].unpack('L').first)
+      CloseHandle(procinfo[:hProcess])
+      CloseHandle(procinfo[:hThread])
+      CloseHandle(token)
     end
 
     ProcessInfo.new(
-      procinfo[0,4].unpack('L').first, # hProcess
-      procinfo[4,4].unpack('L').first, # hThread
-      procinfo[8,4].unpack('L').first, # hProcessId
-      procinfo[12,4].unpack('L').first # hThreadId
+      procinfo[:hProcess],
+      procinfo[:hThread],
+      procinfo[:dwProcessId],
+      procinfo[:dwThreadId]
     )
   end
-
-  def self.raise_last_error(operation)
-    error_string = "#{operation} failed: #{get_last_error}"
-    last_error_code = GetLastError()
-    if ERROR_CODE_MAP.has_key?(last_error_code)
-      raise ERROR_CODE_MAP[last_error_code], error_string
-    else
-      raise Error, error_string
-    end
-  end
-
-  # List from ruby/win32/win32.c
-  ERROR_CODE_MAP = {
-    ERROR_INVALID_FUNCTION => Errno::EINVAL,
-    ERROR_FILE_NOT_FOUND => Errno::ENOENT,
-    ERROR_PATH_NOT_FOUND => Errno::ENOENT,
-    ERROR_TOO_MANY_OPEN_FILES => Errno::EMFILE,
-    ERROR_ACCESS_DENIED => Errno::EACCES,
-    ERROR_INVALID_HANDLE => Errno::EBADF,
-    ERROR_ARENA_TRASHED => Errno::ENOMEM,
-    ERROR_NOT_ENOUGH_MEMORY => Errno::ENOMEM,
-    ERROR_INVALID_BLOCK => Errno::ENOMEM,
-    ERROR_BAD_ENVIRONMENT => Errno::E2BIG,
-    ERROR_BAD_FORMAT => Errno::ENOEXEC,
-    ERROR_INVALID_ACCESS => Errno::EINVAL,
-    ERROR_INVALID_DATA => Errno::EINVAL,
-    ERROR_INVALID_DRIVE => Errno::ENOENT,
-    ERROR_CURRENT_DIRECTORY => Errno::EACCES,
-    ERROR_NOT_SAME_DEVICE => Errno::EXDEV,
-    ERROR_NO_MORE_FILES => Errno::ENOENT,
-    ERROR_WRITE_PROTECT => Errno::EROFS,
-    ERROR_BAD_UNIT => Errno::ENODEV,
-    ERROR_NOT_READY => Errno::ENXIO,
-    ERROR_BAD_COMMAND => Errno::EACCES,
-    ERROR_CRC => Errno::EACCES,
-    ERROR_BAD_LENGTH => Errno::EACCES,
-    ERROR_SEEK => Errno::EIO,
-    ERROR_NOT_DOS_DISK => Errno::EACCES,
-    ERROR_SECTOR_NOT_FOUND => Errno::EACCES,
-    ERROR_OUT_OF_PAPER => Errno::EACCES,
-    ERROR_WRITE_FAULT => Errno::EIO,
-    ERROR_READ_FAULT => Errno::EIO,
-    ERROR_GEN_FAILURE => Errno::EACCES,
-    ERROR_LOCK_VIOLATION => Errno::EACCES,
-    ERROR_SHARING_VIOLATION => Errno::EACCES,
-    ERROR_WRONG_DISK => Errno::EACCES,
-    ERROR_SHARING_BUFFER_EXCEEDED => Errno::EACCES,
-#    ERROR_BAD_NETPATH => Errno::ENOENT,
-#    ERROR_NETWORK_ACCESS_DENIED => Errno::EACCES,
-#    ERROR_BAD_NET_NAME => Errno::ENOENT,
-    ERROR_FILE_EXISTS => Errno::EEXIST,
-    ERROR_CANNOT_MAKE => Errno::EACCES,
-    ERROR_FAIL_I24 => Errno::EACCES,
-    ERROR_INVALID_PARAMETER => Errno::EINVAL,
-    ERROR_NO_PROC_SLOTS => Errno::EAGAIN,
-    ERROR_DRIVE_LOCKED => Errno::EACCES,
-    ERROR_BROKEN_PIPE => Errno::EPIPE,
-    ERROR_DISK_FULL => Errno::ENOSPC,
-    ERROR_INVALID_TARGET_HANDLE => Errno::EBADF,
-    ERROR_INVALID_HANDLE => Errno::EINVAL,
-    ERROR_WAIT_NO_CHILDREN => Errno::ECHILD,
-    ERROR_CHILD_NOT_COMPLETE => Errno::ECHILD,
-    ERROR_DIRECT_ACCESS_HANDLE => Errno::EBADF,
-    ERROR_NEGATIVE_SEEK => Errno::EINVAL,
-    ERROR_SEEK_ON_DEVICE => Errno::EACCES,
-    ERROR_DIR_NOT_EMPTY => Errno::ENOTEMPTY,
-#    ERROR_DIRECTORY => Errno::ENOTDIR,
-    ERROR_NOT_LOCKED => Errno::EACCES,
-    ERROR_BAD_PATHNAME => Errno::ENOENT,
-    ERROR_MAX_THRDS_REACHED => Errno::EAGAIN,
-#    ERROR_LOCK_FAILED => Errno::EACCES,
-    ERROR_ALREADY_EXISTS => Errno::EEXIST,
-    ERROR_INVALID_STARTING_CODESEG => Errno::ENOEXEC,
-    ERROR_INVALID_STACKSEG => Errno::ENOEXEC,
-    ERROR_INVALID_MODULETYPE => Errno::ENOEXEC,
-    ERROR_INVALID_EXE_SIGNATURE => Errno::ENOEXEC,
-    ERROR_EXE_MARKED_INVALID => Errno::ENOEXEC,
-    ERROR_BAD_EXE_FORMAT => Errno::ENOEXEC,
-    ERROR_ITERATED_DATA_EXCEEDS_64k => Errno::ENOEXEC,
-    ERROR_INVALID_MINALLOCSIZE => Errno::ENOEXEC,
-    ERROR_DYNLINK_FROM_INVALID_RING => Errno::ENOEXEC,
-    ERROR_IOPL_NOT_ENABLED => Errno::ENOEXEC,
-    ERROR_INVALID_SEGDPL => Errno::ENOEXEC,
-    ERROR_AUTODATASEG_EXCEEDS_64k => Errno::ENOEXEC,
-    ERROR_RING2SEG_MUST_BE_MOVABLE => Errno::ENOEXEC,
-    ERROR_RELOC_CHAIN_XEEDS_SEGLIM => Errno::ENOEXEC,
-    ERROR_INFLOOP_IN_RELOC_CHAIN => Errno::ENOEXEC,
-    ERROR_FILENAME_EXCED_RANGE => Errno::ENOENT,
-    ERROR_NESTING_NOT_ALLOWED => Errno::EAGAIN,
-#    ERROR_PIPE_LOCAL => Errno::EPIPE,
-    ERROR_BAD_PIPE => Errno::EPIPE,
-    ERROR_PIPE_BUSY => Errno::EAGAIN,
-    ERROR_NO_DATA => Errno::EPIPE,
-    ERROR_PIPE_NOT_CONNECTED => Errno::EPIPE,
-    ERROR_OPERATION_ABORTED => Errno::EINTR,
-#    ERROR_NOT_ENOUGH_QUOTA => Errno::ENOMEM,
-    ERROR_MOD_NOT_FOUND => Errno::ENOENT,
-    WSAEINTR => Errno::EINTR,
-    WSAEBADF => Errno::EBADF,
-#    WSAEACCES => Errno::EACCES,
-    WSAEFAULT => Errno::EFAULT,
-    WSAEINVAL => Errno::EINVAL,
-    WSAEMFILE => Errno::EMFILE,
-    WSAEWOULDBLOCK => Errno::EWOULDBLOCK,
-    WSAEINPROGRESS => Errno::EINPROGRESS,
-    WSAEALREADY => Errno::EALREADY,
-    WSAENOTSOCK => Errno::ENOTSOCK,
-    WSAEDESTADDRREQ => Errno::EDESTADDRREQ,
-    WSAEMSGSIZE => Errno::EMSGSIZE,
-    WSAEPROTOTYPE => Errno::EPROTOTYPE,
-    WSAENOPROTOOPT => Errno::ENOPROTOOPT,
-    WSAEPROTONOSUPPORT => Errno::EPROTONOSUPPORT,
-    WSAESOCKTNOSUPPORT => Errno::ESOCKTNOSUPPORT,
-    WSAEOPNOTSUPP => Errno::EOPNOTSUPP,
-    WSAEPFNOSUPPORT => Errno::EPFNOSUPPORT,
-    WSAEAFNOSUPPORT => Errno::EAFNOSUPPORT,
-    WSAEADDRINUSE => Errno::EADDRINUSE,
-    WSAEADDRNOTAVAIL => Errno::EADDRNOTAVAIL,
-    WSAENETDOWN => Errno::ENETDOWN,
-    WSAENETUNREACH => Errno::ENETUNREACH,
-    WSAENETRESET => Errno::ENETRESET,
-    WSAECONNABORTED => Errno::ECONNABORTED,
-    WSAECONNRESET => Errno::ECONNRESET,
-    WSAENOBUFS => Errno::ENOBUFS,
-    WSAEISCONN => Errno::EISCONN,
-    WSAENOTCONN => Errno::ENOTCONN,
-    WSAESHUTDOWN => Errno::ESHUTDOWN,
-    WSAETOOMANYREFS => Errno::ETOOMANYREFS,
-#    WSAETIMEDOUT => Errno::ETIMEDOUT,
-    WSAECONNREFUSED => Errno::ECONNREFUSED,
-    WSAELOOP => Errno::ELOOP,
-    WSAENAMETOOLONG => Errno::ENAMETOOLONG,
-    WSAEHOSTDOWN => Errno::EHOSTDOWN,
-    WSAEHOSTUNREACH => Errno::EHOSTUNREACH,
-#    WSAEPROCLIM => Errno::EPROCLIM,
-#    WSAENOTEMPTY => Errno::ENOTEMPTY,
-    WSAEUSERS => Errno::EUSERS,
-    WSAEDQUOT => Errno::EDQUOT,
-    WSAESTALE => Errno::ESTALE,
-    WSAEREMOTE => Errno::EREMOTE
-  }
 
   module_function :create
 end
