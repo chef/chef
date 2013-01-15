@@ -410,6 +410,25 @@ class Chef
       raise
     end
 
+    def do_windows_admin_check
+      if !Chef::Config[:solo] && Chef::Platform.windows?
+        Chef::Log.debug("Checking for administrator privilages....")
+
+        if !has_admin_privilages?
+          message = "chef-client doesn't have administrator privilages on node #{node_name}."
+          if Chef::Config[:fatal_windows_admin_check]
+            Chef::Log.fatal(message)
+            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
+            raise Chef::Exceptions::WindowsNotAdmin, message
+          else
+            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
+          end
+        else
+          Chef::Log.debug("chef-client has administrator privilages on node #{node_name}.")
+        end
+      end
+    end
+
     private
 
     # Do a full run for this Chef::Client.  Calls:
@@ -443,9 +462,7 @@ class Chef
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
 
-        if Chef::Platform.windows?
-          do_windows_admin_check
-        end
+        do_windows_admin_check
 
         run_context = setup_run_context
 
@@ -523,26 +540,12 @@ class Chef
 
     end
 
-    def do_windows_admin_check
-      unless Chef::Config[:solo]
-        require 'chef/win32/security'
+    def has_admin_privilages?
+      require 'chef/win32/security'
 
-        Chef::Log.debug("Checking for administrator privilages....")
-
-        if !Chef::ReservedNames::Win32::Security.has_admin_privilages?
-          message = "chef-client doesn't have administrator privilages on node #{node_name}."
-          if Chef::Config[:fatal_windows_admin_check]
-            Chef::Log.fatal(message)
-            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
-            raise Chef::Exceptions::WindowsNotAdmin, message
-          else
-            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
-          end
-        else
-          Chef::Log.debug("chef-client has administrator privilages on node #{node_name}.")
-        end
-      end
+      Chef::ReservedNames::Win32::Security.has_admin_privilages?
     end
+
   end
 end
 

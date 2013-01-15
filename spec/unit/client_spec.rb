@@ -335,6 +335,84 @@ shared_examples_for Chef::Client do
     end
   end
 
+  describe "windows_admin_check" do
+    before do
+      @client = Chef::Client.new
+    end
+
+    context "during a solo run" do
+      before do
+        @original_solo = Chef::Config[:solo]
+        Chef::Config[:solo] = true
+      end
+
+      after do
+        Chef::Config[:solo] = @original_solo
+      end
+
+      it "shouldn't be called" do
+        @client.should_not_receive(:has_admin_privilages?)
+        @client.do_windows_admin_check
+      end
+    end
+
+    context "platform is not windows" do
+      before do
+        Chef::Platform.stub(:windows?).and_return(false)
+      end
+
+      it "shouldn't be called" do
+        @client.should_not_receive(:has_admin_privilages?)
+        @client.do_windows_admin_check
+      end
+    end
+
+    context "platform is windows" do
+      before do
+        Chef::Platform.stub(:windows?).and_return(true)
+      end
+
+      it "should be called" do
+        @client.should_receive(:has_admin_privilages?)
+        @client.do_windows_admin_check
+      end
+
+      context "admin privilages exist" do
+        before do
+          @client.should_receive(:has_admin_privilages?).and_return(true)
+        end
+
+        it "should not log a warning message" do
+          Chef::Log.should_not_receive(:warn)
+          @client.do_windows_admin_check
+        end
+
+        context "fatal admin check is configured" do
+          it "should not raise an exception" do
+            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+          end
+        end
+      end
+
+      context "admin privilages doesn't exist" do
+        before do
+          @client.should_receive(:has_admin_privilages?).and_return(false)
+        end
+
+        it "should log a warning message" do
+          Chef::Log.should_receive(:warn)
+          @client.do_windows_admin_check
+        end
+
+        context "fatal admin check is configured" do
+          it "should raise an exception" do
+            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+          end
+        end
+      end
+    end
+  end
+
   describe "when a run list override is provided" do
     before do
       @node = Chef::Node.new
