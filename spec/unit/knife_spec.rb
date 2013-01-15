@@ -180,6 +180,36 @@ describe Chef::Knife do
       lambda {Chef::Knife.run(%w{fuuu uuuu fuuuu})}.should raise_error(SystemExit) { |e| e.status.should_not == 0 }
     end
 
+    describe "merging configuration options" do
+      before do
+        KnifeSpecs::TestYourself.option(:opt_with_default,
+                                        :short => "-D VALUE",
+                                        :default => "default-value")
+        Chef::Config[:knife] = {}
+      end
+
+      it "prefers the default value if no config or command line value is present" do
+        knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
+        knife_command.configure_chef
+        knife_command.config[:opt_with_default].should == "default-value"
+      end
+
+      it "prefers a value in Chef::Config[:knife] to the default" do
+        Chef::Config[:knife][:opt_with_default] = "from-knife-config"
+        knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
+        knife_command.configure_chef
+        knife_command.config[:opt_with_default].should == "from-knife-config"
+      end
+
+      it "prefers a value from command line over Chef::Config and the default" do
+        Chef::Config[:knife][:opt_with_default] = "from-knife-config"
+        knife_command = KnifeSpecs::TestYourself.new(["-D", "from-cli"])
+        knife_command.configure_chef
+        knife_command.config[:opt_with_default].should == "from-cli"
+      end
+    end
+
+
   end
 
   describe "when first created" do

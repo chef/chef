@@ -35,6 +35,8 @@ describe Chef::Knife::Bootstrap do
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
     @knife = Chef::Knife::Bootstrap.new
+    # Merge default settings in.
+    @knife.merge_configs
     @knife.config[:template_file] = File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "test.erb"))
     @stdout = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
