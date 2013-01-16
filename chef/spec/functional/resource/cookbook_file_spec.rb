@@ -54,4 +54,22 @@ describe Chef::Resource::CookbookFile do
   end
 
   it_behaves_like "a file resource"
+
+  # These examples cover CHEF-3467 where unexpected and incorrect 
+  # permissions can result on Windows because CookbookFile's implementation
+  # stages files in temp.
+  context "targets a file outside of the system temp directory" do
+    let(:windows_non_temp_dir) { File.join(ENV['systemdrive'], make_tmpname(file_base, "non-temp")) }
+    let(:path) { File.join(windows_non_temp_dir, make_tmpname(file_base, nil)) }
+
+    before do
+      FileUtils::mkdir_p(windows_non_temp_dir) if Chef::Platform.windows?
+    end
+
+    after do
+      FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exists?(windows_non_temp_dir) 
+    end    
+    
+    it_behaves_like "a file that inherits permissions from a parent directory"
+  end
 end
