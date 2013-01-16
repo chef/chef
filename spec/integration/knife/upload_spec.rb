@@ -495,7 +495,7 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'y.rb' => 'hi' }
 
       it 'knife upload /cookbooks/x uploads the new version' do
         knife('upload --purge /cookbooks/x').should_succeed <<EOM
