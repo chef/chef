@@ -134,6 +134,22 @@ A\t/environments/y.json
 A\t/roles/y.json
 EOM
         end
+
+        context 'when cwd is the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife diff reports different data bags' do
+            knife('diff --name-status').should_succeed <<EOM
+A\tx/z.json
+A\ty
+EOM
+          end
+          it 'knife diff * reports different data bags' do
+            knife('diff --name-status *').should_succeed <<EOM
+A\tx/z.json
+A\ty
+EOM
+          end
+        end
       end
     end
 
@@ -144,6 +160,56 @@ D\t/cookbooks
 D\t/data_bags
 D\t/environments
 D\t/roles
+EOM
+      end
+    end
+  end
+
+  when_the_repository 'has a cookbook' do
+    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+    file 'cookbooks/x/onlyin1.0.0.rb', ''
+
+    when_the_chef_server 'has a later version for the cookbook' do
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+
+      it 'knife diff /cookbooks/x shows differences' do
+        knife('diff --name-status /cookbooks/x').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+D\t/cookbooks/x/onlyin1.0.1.rb
+A\t/cookbooks/x/onlyin1.0.0.rb
+EOM
+      end
+    end
+
+    when_the_chef_server 'has an earlier version for the cookbook' do
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+      it 'knife diff /cookbooks/x shows no differences' do
+        knife('diff --name-status /cookbooks/x').should_succeed ''
+      end
+    end
+
+    when_the_chef_server 'has a later version for the cookbook, and no current version' do
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+
+      it 'knife diff /cookbooks/x shows the differences' do
+        knife('diff --name-status /cookbooks/x').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+D\t/cookbooks/x/onlyin1.0.1.rb
+A\t/cookbooks/x/onlyin1.0.0.rb
+EOM
+      end
+    end
+
+    when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+
+      it 'knife diff /cookbooks/x shows the differences' do
+        knife('diff --name-status /cookbooks/x').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+D\t/cookbooks/x/onlyin0.9.9.rb
+A\t/cookbooks/x/onlyin1.0.0.rb
 EOM
       end
     end
