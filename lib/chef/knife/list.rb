@@ -49,7 +49,7 @@ class Chef
             elsif result.exists?
               results << result
             elsif pattern.exact_path
-              ui.error "#{format_path(result.path)}: No such file or directory"
+              ui.error "#{format_path(result)}: No such file or directory"
               self.exit_code = 1
             end
           end
@@ -78,7 +78,7 @@ class Chef
           else
             printed_something = true
           end
-          output "#{format_path(result.path)}:"
+          output "#{format_path(result)}:"
           print_results(children.map { |result| maybe_add_slash(result.name, result.dir?) }.sort, "")
         end
 
@@ -89,7 +89,7 @@ class Chef
         begin
           children = result.children.sort_by { |child| child.name }
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          ui.error "#{format_path(e.entry.path)}: No such file or directory"
+          ui.error "#{format_path(e.entry)}: No such file or directory"
           return []
         end
 
@@ -105,7 +105,7 @@ class Chef
       end
 
       def print_result_paths(results, indent = "")
-        print_results(results.map { |result| maybe_add_slash(format_path(result.path), result.dir?) }, indent)
+        print_results(results.map { |result| maybe_add_slash(format_path(result), result.dir?) }, indent)
       end
 
       def print_results(results, indent)

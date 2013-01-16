@@ -52,13 +52,13 @@ class Chef
             child_entry = Chef::ChefFS::FileSystem.resolve_path(@root, child)
             print_flattened_dependencies(child_entry, dependencies)
           end
-          output format_path(entry.path)
+          output format_path(entry)
         end
       end
 
       def print_dependencies_tree(entry, dependencies, printed = {}, depth = 0)
         dependencies[entry.path] = get_dependencies(entry) if !dependencies[entry.path]
-        output "#{'  '*depth}#{format_path(entry.path)}"
+        output "#{'  '*depth}#{format_path(entry)}"
         if !printed[entry.path] && (config[:recurse] || depth == 0)
           printed[entry.path] = true
           dependencies[entry.path].each do |child|
@@ -108,7 +108,7 @@ class Chef
             []
           end
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          ui.error "#{format_path(e.entry.path)}: No such file or directory"
+          ui.error "#{format_path(e.entry)}: No such file or directory"
           self.exit_code = 2
           []
         end

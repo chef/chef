@@ -67,7 +67,7 @@ class Chef
 
       def format_path_with_root(entry)
         root = entry.root == chef_fs ? " (remote)" : " (local)"
-        "#{format_path(entry.path)}#{root}"
+        "#{format_path(entry)}#{root}"
       end
 
       def delete_result(*results)
@@ -92,9 +92,9 @@ class Chef
           end
         end
         if deleted_any
-          output("Deleted #{format_path(results[0].path)}")
+          output("Deleted #{format_path(results[0])}")
         elsif !found_any
-          ui.error "#{format_path(results[0].path)}: No such file or directory"
+          ui.error "#{format_path(results[0])}: No such file or directory"
           error = true
         end
         error
