@@ -1,5 +1,6 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/knife/raw'
+require 'chef/knife/show'
 
 describe 'knife raw' do
   extend IntegrationSupport
@@ -38,6 +39,133 @@ EOM
 
     it 'knife raw /blarghle returns 404' do
       knife('raw /blarghle').should_fail(/ERROR: Server responded with error 404 "Not Found"/)
+    end
+
+    it 'knife raw -m DELETE /roles/x succeeds' do
+      knife('raw -m DELETE /roles/x').should_succeed <<EOM
+{
+  "name": "x",
+  "description": "",
+  "json_class": "Chef::Role",
+  "chef_type": "role",
+  "default_attributes": {
+  },
+  "override_attributes": {
+  },
+  "run_list": [
+
+  ],
+  "env_run_lists": {
+  }
+}
+EOM
+      knife('show /roles/x.json').should_fail "ERROR: /roles/x.json: No such file or directory\n"
+    end
+
+    it 'knife raw -m PUT -i blah.txt /roles/x succeeds' do
+      Tempfile.open('raw_put_input') do |file|
+        file.write <<EOM
+{
+  "name": "x",
+  "description": "eek",
+  "json_class": "Chef::Role",
+  "chef_type": "role",
+  "default_attributes": {
+  },
+  "override_attributes": {
+  },
+  "run_list": [
+
+  ],
+  "env_run_lists": {
+  }
+}
+EOM
+        file.close
+
+        knife("raw -m PUT -i #{file.path} /roles/x").should_succeed <<EOM
+{
+  "name": "x",
+  "description": "eek",
+  "json_class": "Chef::Role",
+  "chef_type": "role",
+  "default_attributes": {
+  },
+  "override_attributes": {
+  },
+  "run_list": [
+
+  ],
+  "env_run_lists": {
+  }
+}
+EOM
+        knife('show /roles/x.json').should_succeed <<EOM
+/roles/x.json:
+{
+  "name": "x",
+  "description": "eek",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+  },
+  "override_attributes": {
+  },
+  "chef_type": "role",
+  "run_list": [
+
+  ],
+  "env_run_lists": {
+  }
+}
+EOM
+      end
+    end
+
+    it 'knife raw -m POST -i blah.txt /roles succeeds' do
+      Tempfile.open('raw_put_input') do |file|
+        file.write <<EOM
+{
+  "name": "y",
+  "description": "eek",
+  "json_class": "Chef::Role",
+  "chef_type": "role",
+  "default_attributes": {
+  },
+  "override_attributes": {
+  },
+  "run_list": [
+
+  ],
+  "env_run_lists": {
+  }
+}
+EOM
+        file.close
+
+        knife("raw -m POST -i #{file.path} /roles").should_succeed <<EOM
+{
+  "uri": "#{ChefZero::RSpec.server.url}/roles/y"
+}
+EOM
+        knife('show /roles/y.json').should_succeed <<EOM
+/roles/y.json:
+{
+  "name": "y",
+  "description": "eek",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+  },
+  "override_attributes": {
+  },
+  "chef_type": "role",
+  "run_list": [
+
+  ],
+  "env_run_lists": {
+  }
+}
+EOM
+      end
     end
   end
 end
