@@ -6,8 +6,8 @@ describe 'knife delete' do
   extend IntegrationSupport
   include KnifeSupport
 
-    let :everything do
-      <<EOM
+  let :everything do
+    <<EOM
 /cookbooks
 /cookbooks/x
 /cookbooks/x/metadata.rb
@@ -20,26 +20,26 @@ describe 'knife delete' do
 /roles
 /roles/x.json
 EOM
-    end
+  end
 
-    let :server_nothing do
-      <<EOM
+  let :server_nothing do
+    <<EOM
 /cookbooks
 /data_bags
 /environments
 /environments/_default.json
 /roles
 EOM
-    end
+  end
 
-    let :nothing do
-      <<EOM
+  let :nothing do
+    <<EOM
 /cookbooks
 /data_bags
 /environments
 /roles
 EOM
-    end
+  end
 
   when_the_chef_server "has one of each thing" do
     client 'x', '{}'
