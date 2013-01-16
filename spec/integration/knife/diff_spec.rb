@@ -97,7 +97,11 @@ EOM
 EOM
 
       it 'knife diff reports no differences' do
-        knife('diff /').should_succeed :stdout => ''
+        knife('diff /').should_succeed ''
+      end
+
+      it 'knife diff /environments/nonexistent.json reports an error' do
+        knife('diff /environments/nonexistent.json').should_fail "ERROR: /environments/nonexistent.json: No such file or directory on remote or local\n"
       end
 
       context 'except the role file' do
