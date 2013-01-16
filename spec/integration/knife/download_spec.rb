@@ -134,6 +134,30 @@ EOM
         end
       end
 
+      context 'except the role file is textually different, but not ACTUALLY different' do
+        file 'roles/x.json', <<EOM
+{
+  "chef_type": "role",
+  "default_attributes": {
+  },
+  "env_run_lists": {
+  },
+  "json_class": "Chef::Role",
+  "name": "x",
+  "description": "",
+  "override_attributes": {
+  },
+  "run_list": [
+
+  ]
+}
+EOM
+        it 'knife download / does not change anything' do
+          knife('download /').should_succeed ''
+          knife('diff --name-status /').should_succeed ''
+        end
+      end
+
       context 'as well as one extra copy of each thing' do
         file 'clients/y.json', { 'name' => 'y' }
         file 'cookbooks/x/blah.rb', ''
@@ -337,6 +361,28 @@ Deleted extra entry /data_bags/x/deleted.json (purge is on)
 EOM
         knife('diff --name-status /data_bags').should_succeed ''
       end
+      context 'when cwd is the /data_bags directory' do
+        cwd 'data_bags'
+        it 'knife download fails' do
+          knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
+        end
+        it 'knife download --purge . downloads everything' do
+          knife('download --purge .').should_succeed <<EOM
+Created x/added.json
+Updated x/modified.json
+Deleted extra entry x/deleted.json (purge is on)
+EOM
+          knife('diff --name-status /data_bags').should_succeed ''
+        end
+        it 'knife download --purge * downloads everything' do
+          knife('download --purge *').should_succeed <<EOM
+Created x/added.json
+Updated x/modified.json
+Deleted extra entry x/deleted.json (purge is on)
+EOM
+          knife('diff --name-status /data_bags').should_succeed ''
+        end
+      end
     end
   end
 
@@ -396,8 +442,5 @@ EOM
     end
   end
 
-  # download from a cwd
-  # download with *'s
-  # download with JSON that isn't *really* modified
   # Multiple cookbook versions!!!
 end
