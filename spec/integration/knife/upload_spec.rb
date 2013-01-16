@@ -446,5 +446,63 @@ EOM
     end
   end
 
-  # Multiple cookbook versions!!!!
+  when_the_repository 'has a cookbook' do
+    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+    file 'cookbooks/x/y.rb', 'hi'
+
+    when_the_chef_server 'has a later version for the cookbook' do
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''}
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+
+      it 'knife upload /cookbooks/x uploads the local version' do
+        knife('diff --name-status /cookbooks').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+EOM
+        knife('upload --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+EOM
+      end
+    end
+
+    when_the_chef_server 'has an earlier version for the cookbook' do
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''}
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'y.rb' => 'hi' }
+      it 'knife upload /cookbooks/x uploads the local version' do
+        knife('upload --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+
+    when_the_chef_server 'has a later version for the cookbook, and no current version' do
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+
+      it 'knife upload /cookbooks/x uploads the local version' do
+        knife('diff --name-status /cookbooks').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+EOM
+        knife('upload --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+EOM
+      end
+    end
+
+    when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+
+      it 'knife upload /cookbooks/x uploads the new version' do
+        knife('upload --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+  end
 end
