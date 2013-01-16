@@ -39,7 +39,7 @@ class Chef
             end
           rescue Net::HTTPServerException
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
               raise
             end

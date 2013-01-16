@@ -41,7 +41,7 @@ class Chef
           begin
             @children ||= Dir.entries(file_path).select { |entry| entry != '.' && entry != '..' }.map { |entry| FileSystemEntry.new(entry, self) }
           rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{file_path} not found"
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 
@@ -75,7 +75,7 @@ class Chef
           begin
             File.open(file_path, "rb") {|f| f.read}
           rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{file_path} not found"
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 

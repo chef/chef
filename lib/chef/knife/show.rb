@@ -24,8 +24,8 @@ class Chef
                 value = result.read
                 output "#{result.path_for_printing}:"
                 output(format_for_display(value))
-              rescue Chef::ChefFS::FileSystem::NotFoundError
-                ui.error "#{result.path_for_printing}: No such file or directory"
+              rescue Chef::ChefFS::FileSystem::NotFoundError => e
+                ui.error "#{e.entry.path_for_printing}: No such file or directory"
               end
             end
           end
