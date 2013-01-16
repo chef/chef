@@ -118,14 +118,14 @@ class Chef
         # file_contents.  This is used for knife upload /cookbooks/cookbookname.
         def create_child(name, file_contents)
           raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
-          raise OperationNotAllowedError.new(:create_child), "#{path_for_printing} cannot have a child created under it."
+          raise OperationNotAllowedError.new(:create_child, self)
         end
 
         # Delete this item, possibly recursively.  Entries MUST NOT delete a
         # directory unless recurse is true.
         def delete(recurse)
           raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
-          raise OperationNotAllowedError.new(:delete), "#{path_for_printing} cannot be deleted."
+          raise OperationNotAllowedError.new(:delete, self)
         end
 
         # Ask whether this entry is a directory.  If not, it is a file.
@@ -160,13 +160,13 @@ class Chef
         # Read the contents of this file entry.
         def read
           raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
-          raise OperationNotAllowedError.new(:read), "#{path_for_printing} cannot be read."
+          raise OperationNotAllowedError.new(:read, self)
         end
 
         # Write the contents of this file entry.
         def write(file_contents)
           raise NotFoundError, "Nonexistent #{path_for_printing}" if !exists?
-          raise OperationNotAllowedError.new(:write), "#{path_for_printing} cannot be updated."
+          raise OperationNotAllowedError.new(:write, self)
         end
 
         # Important directory attributes: name, parent, path, root
