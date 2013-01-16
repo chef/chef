@@ -50,25 +50,30 @@ EOM
       directory 'users'
 
       it 'knife delete / fails' do
-        knife('delete /').should_fail "ERROR: / cannot be deleted.\nERROR: / cannot be deleted.\n"
+        knife('delete /').should_fail "ERROR: / (remote) cannot be deleted.\nERROR: / (local) cannot be deleted.\n"
         knife('list -Rf /').should_succeed everything
         knife('list -Rf --local /').should_succeed nothing
       end
 
       it 'knife delete -r /* fails' do
-        knife('delete -r --local-only /*').should_fail <<EOM
-ERROR: / cannot be deleted.
-ERROR: /cookbooks cannot be deleted.
-ERROR: /data_bags cannot be deleted.
-ERROR: /environments cannot be deleted.
-ERROR: /roles cannot be deleted.
+        knife('delete -r /*').should_fail <<EOM
+ERROR: / (remote) cannot be deleted.
+ERROR: / (local) cannot be deleted.
+ERROR: /cookbooks (remote) cannot be deleted.
+ERROR: /cookbooks (local) cannot be deleted.
+ERROR: /data_bags (remote) cannot be deleted.
+ERROR: /data_bags (local) cannot be deleted.
+ERROR: /environments (remote) cannot be deleted.
+ERROR: /environments (local) cannot be deleted.
+ERROR: /roles (remote) cannot be deleted.
+ERROR: /roles (local) cannot be deleted.
 EOM
         knife('list -Rf /').should_succeed everything
         knife('list -Rf --local /').should_succeed nothing
       end
 
       it 'knife delete /cookbooks/x fails' do
-        knife('delete /cookbooks/x').should_fail "ERROR: /cookbooks/x must be deleted recursively!  Pass -r to knife delete.\n"
+        knife('delete /cookbooks/x').should_fail "ERROR: /cookbooks/x (remote) must be deleted recursively!  Pass -r to knife delete.\n"
         knife('list -Rf /').should_succeed everything
         knife('list -Rf --local /').should_succeed nothing
       end
@@ -90,7 +95,7 @@ EOM
       end
 
       it 'knife delete /data_bags/x fails' do
-        knife('delete /data_bags/x').should_fail "ERROR: /data_bags/x must be deleted recursively!  Pass -r to knife delete.\n"
+        knife('delete /data_bags/x').should_fail "ERROR: /data_bags/x (remote) must be deleted recursively!  Pass -r to knife delete.\n"
         knife('list -Rf /').should_succeed everything
         knife('list -Rf --local /').should_succeed nothing
       end
@@ -146,7 +151,7 @@ EOM
       end
 
       it 'knife delete /environments/_default.json fails' do
-        knife('delete /environments/_default.json').should_fail "", :stderr => "ERROR: /environments/_default.json cannot be deleted (default environment cannot be modified).\n"
+        knife('delete /environments/_default.json').should_fail "", :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
         knife('list -Rf /').should_succeed everything
         knife('list -Rf --local /').should_succeed nothing
       end
