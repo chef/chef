@@ -36,7 +36,7 @@ EOM
       end
 
       it 'knife upload --purge deletes everything' do
-        knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARN: The default environment (_default.json) cannot be deleted.  Skipping.\n")
+        knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /cookbooks/x (purge is on)
 Deleted extra entry /data_bags/x (purge is on)
 Deleted extra entry /environments/x.json (purge is on)
@@ -220,10 +220,10 @@ EOM
 
       it 'knife upload --purge deletes nothing' do
         knife('upload --purge /').should_fail <<EOM
-ERROR: remote/cookbooks cannot be deleted.
-ERROR: remote/data_bags cannot be deleted.
-ERROR: remote/environments cannot be deleted.
-ERROR: remote/roles cannot be deleted.
+ERROR: /cookbooks cannot be deleted.
+ERROR: /data_bags cannot be deleted.
+ERROR: /environments cannot be deleted.
+ERROR: /roles cannot be deleted.
 EOM
         knife('diff --name-status /').should_succeed <<EOM
 D\t/cookbooks
@@ -358,9 +358,9 @@ EOM
       file 'cookbooks/x/metadata.rb', 'version  "1.0.0"'
       file 'cookbooks/x/y.rb', 'hi'
       it 'knife upload of any individual file fails' do
-        knife('upload /cookbooks/x/metadata.rb').should_fail "ERROR: remote/cookbooks/x/metadata.rb cannot be updated.\n"
-        knife('upload /cookbooks/x/y.rb').should_fail "ERROR: remote/cookbooks/x cannot have a child created under it.\n"
-        knife('upload --purge /cookbooks/x/z.rb').should_fail "ERROR: remote/cookbooks/x/z.rb cannot be deleted.\n"
+        knife('upload /cookbooks/x/metadata.rb').should_fail "ERROR: /cookbooks/x/metadata.rb cannot be updated.\n"
+        knife('upload /cookbooks/x/y.rb').should_fail "ERROR: /cookbooks/x cannot have a child created under it.\n"
+        knife('upload --purge /cookbooks/x/z.rb').should_fail "ERROR: /cookbooks/x/z.rb cannot be deleted.\n"
       end
       # TODO this is a bit of an inconsistency: if we didn't specify --purge,
       # technically we shouldn't have deleted missing files.  But ... cookbooks

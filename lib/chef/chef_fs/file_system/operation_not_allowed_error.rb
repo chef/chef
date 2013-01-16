@@ -22,8 +22,30 @@ class Chef
   module ChefFS
     module FileSystem
       class OperationNotAllowedError < FileSystemError
-        def initialize(operation, cause = nil)
+        def initialize(operation, entry, cause = nil)
           super(cause)
+          @operation = operation
+          @entry = entry
+        end
+
+        attr_reader :operation
+        attr_reader :entry
+
+        def reason
+          case operation
+          when :delete
+            "cannot be deleted"
+          when :write
+            "cannot be updated"
+          when :create_child
+            "cannot have a child created under it"
+          when :read
+            "cannot be read"
+          end
+        end
+
+        def message
+          "#{entry.path_for_printing} #{reason}"
         end
       end
     end

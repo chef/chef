@@ -9,18 +9,17 @@ class Chef
       common_options
 
       option :recurse,
+        :short => '-r',
         :long => '--[no-]recurse',
         :boolean => true,
         :default => false,
         :description => "Delete directories recursively."
       option :remote_only,
-        :short => '-R',
         :long => '--remote-only',
         :boolean => true,
         :default => false,
         :description => "Only delete the remote copy (leave the local copy)."
       option :local_only,
-        :short => '-L',
         :long => '--local-only',
         :boolean => true,
         :default => false,
@@ -34,41 +33,65 @@ class Chef
         end
 
         # Get the matches (recursively)
+        succeeded = true
         if config[:remote_only]
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|
-              delete_result(result)
+              if !delete_result(result)
+                succeeded = false
+              end
             end
           end
         elsif config[:local_only]
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list(local_fs, pattern) do |result|
-              delete_result(result)
+              if !delete_result(result)
+                succeeded = false
+              end
             end
           end
         else
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list_pairs(pattern, chef_fs, local_fs) do |chef_result, local_result|
-              delete_result(chef_result, local_result)
+              if !delete_result(chef_result, local_result)
+                succeeded = false
+              end
             end
           end
+        end
+
+        if !succeeded
+          exit 1
         end
       end
 
       def delete_result(*results)
         deleted_any = false
+        found_any = false
+        errors = false
         results.each do |result|
           begin
             result.delete(config[:recurse])
             deleted_any = true
+            found_any = true
           rescue Chef::ChefFS::FileSystem::NotFoundError
+          rescue Chef::ChefFS::FileSystem::MustDeleteRecursivelyError => e
+            ui.error "#{format_path(e.entry.path)} must be deleted recursively!  Pass -r to knife delete."
+            found_any = true
+            errors = true
+          rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
+            ui.error "#{format_path(e.entry.path)} #{e.reason}."
+            found_any = true
+            errors = true
           end
         end
         if deleted_any
           output("Deleted #{format_path(results[0].path)}")
-        else
+        elsif !found_any
           ui.error "#{format_path(results[0].path)}: No such file or directory"
+          errors = true
         end
+        !errors
       end
     end
   end
