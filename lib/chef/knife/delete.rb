@@ -33,65 +33,71 @@ class Chef
         end
 
         # Get the matches (recursively)
-        succeeded = true
+        error = false
         if config[:remote_only]
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|
-              if !delete_result(result)
-                succeeded = false
+              if delete_result(result)
+                error = true
               end
             end
           end
         elsif config[:local_only]
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list(local_fs, pattern) do |result|
-              if !delete_result(result)
-                succeeded = false
+              if delete_result(result)
+                error = true
               end
             end
           end
         else
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list_pairs(pattern, chef_fs, local_fs) do |chef_result, local_result|
-              if !delete_result(chef_result, local_result)
-                succeeded = false
+              if delete_result(chef_result, local_result)
+                error = true
               end
             end
           end
         end
 
-        if !succeeded
+        if error
           exit 1
         end
+      end
+
+      def format_path_with_root(entry)
+        root = entry.root == chef_fs ? " (remote)" : " (local)"
+        "#{format_path(entry.path)}#{root}"
       end
 
       def delete_result(*results)
         deleted_any = false
         found_any = false
-        errors = false
+        error = false
         results.each do |result|
           begin
             result.delete(config[:recurse])
             deleted_any = true
             found_any = true
           rescue Chef::ChefFS::FileSystem::NotFoundError
+            # This is not an error unless *all* of them were not found
           rescue Chef::ChefFS::FileSystem::MustDeleteRecursivelyError => e
-            ui.error "#{format_path(e.entry.path)} must be deleted recursively!  Pass -r to knife delete."
+            ui.error "#{format_path_with_root(e.entry)} must be deleted recursively!  Pass -r to knife delete."
             found_any = true
-            errors = true
+            error = true
           rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
-            ui.error "#{format_path(e.entry.path)} #{e.reason}."
+            ui.error "#{format_path_with_root(e.entry)} #{e.reason}."
             found_any = true
-            errors = true
+            error = true
           end
         end
         if deleted_any
           output("Deleted #{format_path(results[0].path)}")
         elsif !found_any
           ui.error "#{format_path(results[0].path)}: No such file or directory"
-          errors = true
+          error = true
         end
-        !errors
+        error
       end
     end
   end
