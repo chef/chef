@@ -62,15 +62,10 @@ class Chef
 
         def delete(recurse)
           if dir?
-            if recurse
-              FileUtils.rm_rf(file_path)
-            else
-              begin
-                Dir.rmdir(file_path)
-              rescue Errno::ENOTEMPTY
-                raise MustDeleteRecursivelyError.new(self, $!)
-              end
+            if !recurse
+              raise MustDeleteRecursivelyError.new(self, $!)
             end
+            FileUtils.rm_rf(file_path)
           else
             File.delete(file_path)
           end
