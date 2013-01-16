@@ -39,7 +39,13 @@ class Chef
           data = IO.read(config[:input])
         end
         chef_rest = Chef::REST.new(Chef::Config[:chef_server_url])
-        output api_request(chef_rest, config[:method].to_sym, chef_rest.create_url(name_args[0]), {}, data)
+        begin
+          output api_request(chef_rest, config[:method].to_sym, chef_rest.create_url(name_args[0]), {}, data)
+        rescue Net::HTTPServerException => e
+          ui.error "Server responded with error #{e.response.code} \"#{e.response.message}\""
+          ui.error "Error Body: #{e.response.body}" if e.response.body && e.response.body != ''
+          exit 1
+        end
       end
 
       ACCEPT_ENCODING = "Accept-Encoding".freeze
@@ -85,7 +91,6 @@ class Chef
               msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
               Chef::Log.info(msg)
             end
-            output response.body
             response.error!
           end
         end
