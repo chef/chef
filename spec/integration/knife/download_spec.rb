@@ -440,6 +440,55 @@ EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
+
+    when_the_chef_server 'has a later version for the cookbook' do
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''}
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+
+      it 'knife download /cookbooks/x downloads the latest version' do
+        knife('download --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x/metadata.rb
+Created /cookbooks/x/y.rb
+Deleted extra entry /cookbooks/x/z.rb (purge is on)
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+
+    when_the_chef_server 'has an earlier version for the cookbook' do
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''}
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'y.rb' => 'hi' }
+      it 'knife download /cookbooks/x does nothing' do
+        knife('download --purge /cookbooks/x').should_succeed ''
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+
+    when_the_chef_server 'has a later version for the cookbook, and no current version' do
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+
+      it 'knife download /cookbooks/x downloads the latest version' do
+        knife('download --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x/metadata.rb
+Created /cookbooks/x/y.rb
+Deleted extra entry /cookbooks/x/z.rb (purge is on)
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
+
+    when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+
+      it 'knife download /cookbooks/x downloads the old version' do
+        knife('download --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x/metadata.rb
+Created /cookbooks/x/y.rb
+Deleted extra entry /cookbooks/x/z.rb (purge is on)
+EOM
+        knife('diff --name-status /cookbooks').should_succeed ''
+      end
+    end
   end
 
   # Multiple cookbook versions!!!
