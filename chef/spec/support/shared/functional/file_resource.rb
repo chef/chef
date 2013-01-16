@@ -87,6 +87,9 @@ shared_examples_for "a file resource" do
   end
 
   context "when the target file does not exist" do
+
+    it_behaves_like "a securable resource"   
+    
     it "creates the file when the :create action is run" do
       resource.run_action(:create)
       File.should exist(path)
@@ -167,6 +170,24 @@ shared_examples_for "a file resource" do
     end
   end
 
+  it_behaves_like "a file that inherits permissions from a parent directory"
+  
+end
+
+shared_examples_for "a file that inherits permissions from a parent directory" do
+  include_context "use Windows permissions" 
+  context "on Windows", :windows_only do
+    it "has only inherited aces if no explicit aces were specified" do
+      File.exist?(path).should == false
+
+      resource.run_action(:create)
+
+      descriptor.dacl_inherits?.should == true
+      descriptor.dacl.each do | ace |
+        ace.inherited?.should == true
+      end
+    end
+  end
 end
 
 shared_context Chef::Resource::File  do
