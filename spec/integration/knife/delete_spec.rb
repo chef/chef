@@ -86,6 +86,44 @@ EOM
       end
 
       # TODO delete empty data bag (particularly different on local side)
+      context 'with an empty data bag on both' do
+        data_bag 'empty', {}
+        directory 'data_bags/empty'
+        it 'knife delete /data_bags/empty fails but deletes local version' do
+          knife('delete /data_bags/empty').should_fail <<EOM
+ERROR: /data_bags/empty (remote) must be deleted recursively!  Pass -r to knife delete.
+ERROR: /data_bags/empty (local) must be deleted recursively!  Pass -r to knife delete.
+EOM
+          knife('list -Rf /').should_succeed <<EOM
+/cookbooks
+/cookbooks/x
+/cookbooks/x/metadata.rb
+/data_bags
+/data_bags/empty
+/data_bags/x
+/data_bags/x/y.json
+/environments
+/environments/_default.json
+/environments/x.json
+/roles
+/roles/x.json
+EOM
+          knife('list -Rf --local /').should_succeed <<EOM
+/cookbooks
+/cookbooks/x
+/cookbooks/x/metadata.rb
+/data_bags
+/data_bags/empty
+/data_bags/x
+/data_bags/x/y.json
+/environments
+/environments/_default.json
+/environments/x.json
+/roles
+/roles/x.json
+EOM
+        end
+      end
 
       it 'knife delete /data_bags/x fails' do
         knife('delete /data_bags/x').should_fail <<EOM
