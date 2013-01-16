@@ -88,8 +88,8 @@ class Chef
       def add_dir_result(result)
         begin
           children = result.children.sort_by { |child| child.name }
-        rescue Chef::ChefFS::FileSystem::NotFoundError
-          ui.error "#{format_path(result.path)}: No such file or directory"
+        rescue Chef::ChefFS::FileSystem::NotFoundError => e
+          ui.error "#{format_path(e.entry.path)}: No such file or directory"
           return []
         end
 

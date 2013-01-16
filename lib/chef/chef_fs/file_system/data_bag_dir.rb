@@ -36,7 +36,7 @@ class Chef
 
         def read
           # This will only be called if dir? is false, which means exists? is false.
-          raise Chef::ChefFS::FileSystem::NotFoundError, "#{path_for_printing} not found"
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self)
         end
 
         def exists?
@@ -68,7 +68,7 @@ class Chef
             rest.delete_rest(api_path)
           rescue Net::HTTPServerException
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
           end
         end

@@ -22,9 +22,12 @@ class Chef
   module ChefFS
     module FileSystem
       class NotFoundError < FileSystemError
-        def initialize(cause = nil)
+        def initialize(entry, cause = nil)
           super(cause)
+          @entry = entry
         end
+
+        attr_reader :entry
       end
     end
   end
