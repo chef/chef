@@ -95,6 +95,38 @@ EOM
 EOM
       end
 
+      it 'knife delete -r --local-only /cookbooks/x deletes x locally but not remotely' do
+        knife('delete -r --local-only /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
+        knife('list -Rf /').should_succeed everything
+        knife('list -Rf --local /').should_succeed <<EOM
+/cookbooks
+/data_bags
+/data_bags/x
+/data_bags/x/y.json
+/environments
+/environments/_default.json
+/environments/x.json
+/roles
+/roles/x.json
+EOM
+      end
+
+      it 'knife delete -r --remote-only /cookbooks/x deletes x remotely but not locally' do
+        knife('delete -r --remote-only /cookbooks/x').should_succeed "Deleted /cookbooks/x\n"
+        knife('list -Rf /').should_succeed <<EOM
+/cookbooks
+/data_bags
+/data_bags/x
+/data_bags/x/y.json
+/environments
+/environments/_default.json
+/environments/x.json
+/roles
+/roles/x.json
+EOM
+        knife('list -Rf --local /').should_succeed everything
+      end
+
       # TODO delete empty data bag (particularly different on local side)
       context 'with an empty data bag on both' do
         data_bag 'empty', {}
