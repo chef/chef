@@ -104,6 +104,10 @@ EOM
         knife('diff /environments/nonexistent.json').should_fail "ERROR: /environments/nonexistent.json: No such file or directory on remote or local\n"
       end
 
+      it 'knife diff /environments/*.txt reports an error' do
+        knife('diff /environments/*.txt').should_fail "ERROR: /environments/*.txt: No such file or directory on remote or local\n"
+      end
+
       context 'except the role file' do
         file 'roles/x.json', <<EOM
 {
