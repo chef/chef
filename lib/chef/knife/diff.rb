@@ -35,7 +35,7 @@ class Chef
 
         # Get the matches (recursively)
         patterns.each do |pattern|
-          Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry.path) } ) do |diff|
+          Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) } ) do |diff|
             stdout.print diff
           end
         end
