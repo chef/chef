@@ -62,7 +62,8 @@ class Chef
 
         def delete(recurse)
           if !recurse
-            raise Chef::ChefFS::FileSystem::MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
+            raise NotFoundError.new(self) if !exists?
+            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
           end
           begin
             rest.delete_rest(api_path)
