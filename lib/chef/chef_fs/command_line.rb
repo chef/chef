@@ -28,7 +28,9 @@ class Chef
         end
 
         get_content = (output_mode != :name_only && output_mode != :name_status)
+        found_match = false
         diff(pattern, a_root, b_root, recurse_depth, get_content) do |type, old_entry, new_entry, old_value, new_value|
+          found_match = true unless type == :both_nonexistent
           old_path = format_path.call(old_entry)
           new_path = format_path.call(new_entry)
 
@@ -91,21 +93,22 @@ class Chef
               elsif output_mode == :name_status
                 yield "M\t#{new_path}\n"
               end
+            when :both_nonexistent
+            when :added_cannot_upload
+            when :deleted_cannot_download
+            when :same
+              # Skip these silently
             end
           end
         end
+        found_match
       end
 
       def self.diff(pattern, a_root, b_root, recurse_depth, get_content)
-        found_result = false
         Chef::ChefFS::FileSystem.list_pairs(pattern, a_root, b_root) do |a, b|
-          existed = diff_entries(a, b, recurse_depth, get_content) do |diff|
+          diff_entries(a, b, recurse_depth, get_content) do |diff|
             yield diff
           end
-          found_result = true if existed
-        end
-        if !found_result && pattern.exact_path
-          yield "#{pattern}: No such file or directory on remote or local"
         end
       end
 
@@ -148,7 +151,11 @@ class Chef
         else
           are_same, old_value, new_value = Chef::ChefFS::FileSystem.compare(old_entry, new_entry)
           if are_same
-            return old_value != :none
+            if old_value == :none
+              yield [ :both_nonexistent, old_entry, new_entry ]
+            else
+              yield [ :same, old_entry, new_entry ]
+            end
           else
             if old_value == :none
               old_exists = false
@@ -169,10 +176,12 @@ class Chef
             # If one of the files doesn't exist, we only want to print the diff if the
             # other file *could be uploaded/downloaded*.
             if !old_exists && !old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-              return true
+              yield [ :old_cannot_upload, old_entry, new_entry ]
+              return
             end
             if !new_exists && !new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-              return true
+              yield [ :new_cannot_upload, old_entry, new_entry ]
+              return
             end
 
             if get_content
@@ -198,7 +207,6 @@ class Chef
             end
           end
         end
-        return true
       end
 
       private
