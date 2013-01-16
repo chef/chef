@@ -233,6 +233,12 @@ EOM
 EOM
       end
 
+      it 'knife delete /environments/nonexistent.json fails' do
+        knife('delete /environments/nonexistent.json').should_fail "ERROR: /environments/nonexistent.json: No such file or directory\n"
+        knife('list -Rf /').should_succeed everything
+        knife('list -Rf --local /').should_succeed everything
+      end
+
       it 'knife delete / fails' do
         knife('delete /').should_fail <<EOM
 ERROR: / (remote) cannot be deleted.
@@ -372,6 +378,12 @@ ERROR: /environments (local) cannot be deleted.
 ERROR: /roles (remote) cannot be deleted.
 ERROR: /roles (local) cannot be deleted.
 EOM
+        knife('list -Rf /').should_succeed everything
+        knife('list -Rf --local /').should_succeed nothing
+      end
+
+      it 'knife delete /environments/nonexistent.json fails' do
+        knife('delete /environments/nonexistent.json').should_fail "ERROR: /environments/nonexistent.json: No such file or directory\n"
         knife('list -Rf /').should_succeed everything
         knife('list -Rf --local /').should_succeed nothing
       end
