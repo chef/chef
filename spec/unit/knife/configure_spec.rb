@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe Chef::Knife::Configure do
   before do
-    @original_config = Chef::Config.configuration.dup
-
     Chef::Log.logger = Logger.new(StringIO.new)
+
+    @original_config = Chef::Config.configuration.dup
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
@@ -205,12 +205,18 @@ describe Chef::Knife::Configure do
   end
 
   it "creates a new client when given the --initial option" do
-    File.stub!(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
-    File.stub!(:expand_path).with("/home/you/.chef/a-new-user.pem").and_return("/home/you/.chef/a-new-user.pem")
-    File.stub!(:expand_path).with("/etc/chef/validation.pem").and_return("/etc/chef/validation.pem")
-    File.stub!(:expand_path).with("/etc/chef/webui.pem").and_return("/etc/chef/webui.pem")
+    File.should_receive(:expand_path).with("/home/you/.chef/knife.rb").and_return("/home/you/.chef/knife.rb")
+    File.should_receive(:expand_path).with("/home/you/.chef/a-new-user.pem").and_return("/home/you/.chef/a-new-user.pem")
+    File.should_receive(:expand_path).with("/etc/chef/validation.pem").and_return("/etc/chef/validation.pem")
+    File.should_receive(:expand_path).with("/etc/chef/webui.pem").and_return("/etc/chef/webui.pem")
     Chef::Config[:node_name]  = "webmonkey.example.com"
-    client_command = Chef::Knife::ClientCreate.new
+
+
+    client_command_config = {}
+
+    client_command = mock("knife client create command", :config => client_command_config)
+    client_command.should_receive(:name_args=).with(["a-new-user"])
+    client_command.stub!(:name_args).and_return(["a-new-user"])
     client_command.should_receive(:run)
 
     Etc.stub!(:getlogin).and_return("a-new-user")
