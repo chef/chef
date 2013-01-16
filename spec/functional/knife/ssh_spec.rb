@@ -140,7 +140,7 @@ describe Chef::Knife::Ssh do
 
       it "uses the default" do
         @knife.run
-        @knife.config[:ssh_user].should == nil
+        @knife.config[:ssh_user].should == "root"
       end
     end
   end
@@ -194,6 +194,10 @@ describe Chef::Knife::Ssh do
 
   def setup_knife(params=[])
     @knife = Chef::Knife::Ssh.new(params)
+    # We explicitly avoid running #configure_chef, which would read a knife.rb
+    # if available, but #merge_configs (which is called by #configure_chef) is
+    # necessary to have default options merged in.
+    @knife.merge_configs
     @knife.stub!(:ssh_command).and_return { 0 }
     @api = TinyServer::API.instance
     @api.clear
