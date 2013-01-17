@@ -81,9 +81,9 @@ class Chef
         DelayedEvaluator.new(&block)
       end
 
-      def set_or_return(symbol, arg, validation, &block)
+      def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-        if arg == nil && self.instance_variable_defined?(iv_symbol) == true && !block_given?
+        if arg == nil && self.instance_variable_defined?(iv_symbol) == true
           ivar = self.instance_variable_get(iv_symbol)
           if(ivar.is_a?(DelayedEvaluator))
             validate({ symbol => ivar.call }, { symbol => validation })[symbol]
@@ -93,8 +93,6 @@ class Chef
         else
           if(arg.is_a?(DelayedEvaluator))
             val = arg
-          elsif(block_given?)
-            val = DelayedEvaluator.new(&block)
           else
             val = validate({ symbol => arg }, { symbol => validation })[symbol]
           end
