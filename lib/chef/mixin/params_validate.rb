@@ -77,7 +77,7 @@ class Chef
         opts
       end
       
-      def delay_eval(&block)
+      def lazy(&block)
         DelayedEvaluator.new(&block)
       end
 
