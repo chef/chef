@@ -21,9 +21,7 @@ dependencies ["ruby-windows", #includes rubygems
               "ruby-windows-devkit",
               "bundler"]
 
-version begin
-          ENV['CHEF_GIT_REV'] || "10-stable"
-        end
+version ENV['CHEF_GIT_REV'] || "master"
 
 source :git => "git://github.com/opscode/chef"
 
@@ -62,6 +60,30 @@ build do
     end
   end
 
+  # COMPAT HACK :( - Chef 11 finally has the core Chef code in the root of the
+  # project repo. Since the Chef Client pipeline needs to build/test Chef 10.x
+  # and 11 releases our software definition need to handle both cases
+  # gracefully.
+  block do
+    build_commands = self.builder.build_commands
+    chef_root = File.join(self.project_dir, "chef")
+    if File.exists?(chef_root)
+      build_commands.each_index do |i|
+        cmd = build_commands[i].dup
+        if cmd.is_a? Array
+          if cmd.last.is_a? Hash
+            cmd_opts = cmd.pop.dup
+            cmd_opts[:cwd] = chef_root
+            cmd << cmd_opts
+          else
+            cmd << {:cwd => chef_root}
+          end
+          build_commands[i] = cmd
+        end
+      end
+    end
+  end
+
   # symlink required unix tools
   # we need tar for 'knife cookbook site install' to function correctly
   {"tar.exe" => "bsdtar.exe",
@@ -74,8 +96,11 @@ build do
     command "mklink C:\\opscode\\chef\\bin\\#{target} C:\\opscode\\chef\\embedded\\mingw\\bin\\#{to}"
   end
 
-  gem "install ohai --no-rdoc --no-ri -n C:\\opscode\\chef\\bin"
-  gem "install chef --no-rdoc --no-ri -n C:\\opscode\\chef\\bin"
+  rake "gem"
+
+  gem ["install pkg/chef*.gem",
+       "-n #{install_dir}/bin",
+       "--no-rdoc --no-ri"].join(" ")
 
   # gems with precompiled binaries
   gem ["install",
