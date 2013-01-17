@@ -44,6 +44,7 @@ class Chef
               Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
               tempfile.close
               FileUtils.cp(file_cache_location, tempfile.path)
+              enforce_tempfile_inheritance(tempfile.path)
             end
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
           end
@@ -75,6 +76,29 @@ class Chef
       def content_stale?
         ( ! ::File.exist?(@new_resource.path)) || ( ! compare_content)
       end
+
+      protected
+
+      def enforce_tempfile_inheritance(tempfile_path)
+        # On the Windows platform, files in the temp directory
+        # default to not inherit unless the new resource specifies rights of
+        # some sort. Here we ensure that even when no rights are
+        # specified, the dacl's inheritance flag is set. 
+        if Chef::Platform.windows? &&
+            @new_resource.rights.nil? &&
+            @new_resource.group.nil? &&
+            @new_resource.owner.nil? &&
+            @new_resource.deny_rights.nil?
+          
+          securable_tempfile = Chef::ReservedNames::Win32::Security::SecurableObject.new(tempfile_path)
+
+          # No rights were specified, so the dacl will have no explicit aces
+          default_dacl = Chef::ReservedNames::Win32::Security::ACL.create([])
+
+          # In setting this default dacl, set inheritance to true 
+          securable_tempfile.set_dacl(default_dacl, true)
+        end        
+      end      
 
     end
   end
