@@ -154,9 +154,9 @@ class Chef
         if base_path && server_path[0,base_path.length] == base_path
           if server_path == base_path
             return "."
-          elsif server_path[base_path.length] == "/"
+          elsif server_path[base_path.length,1] == "/"
             return server_path[base_path.length + 1, server_path.length - base_path.length - 1]
-          elsif base_path == "/" && server_path[0] == "/"
+          elsif base_path == "/" && server_path[0,1] == "/"
             return server_path[1, server_path.length - 1]
           end
         end
