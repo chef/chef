@@ -17,6 +17,7 @@
 #
 
 require 'chef/chef_fs'
+require 'pathname'
 
 class Chef
   module ChefFS
@@ -68,14 +69,15 @@ class Chef
       # PathUtils.realest_path('/x/*/z') == '/blarghle/*/z'
       # PathUtils.realest_path('/*/y/z') == '/*/y/z'
       def self.realest_path(path)
+        path = Pathname.new(path)
         begin
-          File.realpath(path)
+          path.realpath.to_s
         rescue Errno::ENOENT
-          dirname = File.dirname(path)
+          dirname = path.dirname
           if dirname
-            PathUtils.join(realest_path(dirname), File.basename(path))
+            PathUtils.join(realest_path(dirname), path.basename.to_s)
           else
-            path
+            path.to_s
           end
         end
       end
