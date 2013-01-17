@@ -623,7 +623,7 @@ EOM
     end
   end
 
-  when_the_repository 'has a cookbook', :focus do
+  when_the_repository 'has a cookbook' do
     file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
     file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
 
@@ -671,7 +671,7 @@ EOM
     end
   end
 
-  when_the_repository 'is empty', :focus do
+  when_the_repository 'is empty' do
     when_the_chef_server 'has two versions of a cookbook' do
       cookbook 'x', '2.0.11', { 'metadata.rb' => 'version "2.0.11"' }
       cookbook 'x', '11.0.0', { 'metadata.rb' => 'version "11.0.0"' }
