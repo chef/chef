@@ -33,7 +33,7 @@ class Chef
         end
 
         def children
-          @children ||= rest.get_rest(api_path).map { |key, value| CookbookDir.new(key, self, value) }
+          @children ||= rest.get_rest(api_path).map { |key, value| CookbookDir.new(key, self, value) }.sort_by { |c| c.name }
         end
 
         def create_child_from(other)
