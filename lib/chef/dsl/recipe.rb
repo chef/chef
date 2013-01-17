@@ -61,11 +61,11 @@ class Chef
           # If we have a resource like this one, we want to steal its state
           args << run_context
           resource = resource_class.new(*args)
+          resource.source_line = caller[0]
           resource.load_prior_resource
           resource.cookbook_name = cookbook_name
           resource.recipe_name = @recipe_name
           resource.params = @params
-          resource.source_line = caller[0]
           # Determine whether this resource is being created in the context of an enclosing Provider
           resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
           # Evaluate resource attribute DSL

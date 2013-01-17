@@ -58,9 +58,9 @@ describe 'Chef::ReservedNames::Win32::Security', :windows_only do
   it "should not leak when creating a new ACL and setting it on a file", :volatile do
     securable_object = Security::SecurableObject.new(@monkeyfoo)
     lambda {
-      securable_object.dacl = Security::ACL.create([
-        Chef::ReservedNames::Win32::Security::ACE.access_allowed(Security::SID.Everyone, Chef::ReservedNames::Win32::API::Security::GENERIC_READ),
-        Chef::ReservedNames::Win32::Security::ACE.access_denied(Security::SID.from_account("Users"), Chef::ReservedNames::Win32::API::Security::GENERIC_ALL)
+      securable_object.dacl = Chef::ReservedNames::Win32::Security::ACL.create([
+        Chef::ReservedNames::Win32::Security::ACE.access_allowed(Chef::ReservedNames::Win32::Security::SID.Everyone, Chef::ReservedNames::Win32::API::Security::GENERIC_READ),
+        Chef::ReservedNames::Win32::Security::ACE.access_denied(Chef::ReservedNames::Win32::Security::SID.from_account("Users"), Chef::ReservedNames::Win32::API::Security::GENERIC_ALL)
       ])
       GC.start
     }.should_not leak_memory(:warmup => 50, :iterations => 100)

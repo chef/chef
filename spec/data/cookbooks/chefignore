@@ -4,3 +4,5 @@
 #
 
 recipes/ignoreme.rb
+  # comments can be indented
+ignored

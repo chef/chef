@@ -10,23 +10,15 @@ fi
 apt-get update
 apt-get install -y chef
 
-(
-cat <<'EOP'
+awk NF > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-) > /tmp/validation.pem
-awk NF /tmp/validation.pem > /etc/chef/validation.pem
-rm /tmp/validation.pem
 chmod 0600 /etc/chef/validation.pem
 
 <% if @chef_config[:encrypted_data_bag_secret] -%>
-(
-cat <<'EOP'
+awk NF > /etc/chef/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-) > /tmp/encrypted_data_bag_secret
-awk NF /tmp/encrypted_data_bag_secret > /etc/chef/encrypted_data_bag_secret
-rm /tmp/encrypted_data_bag_secret
 chmod 0600 /etc/chef/encrypted_data_bag_secret
 <% end -%>
 
@@ -35,11 +27,9 @@ chmod 0600 /etc/chef/encrypted_data_bag_secret
 mkdir -p /etc/chef/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-(
-cat <<'EOP'
+cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
 <%= hash.to_json %>
 EOP
-) > /etc/chef/ohai/hints/<%= name %>.json
 <% end -%>
 <% end -%>
 
@@ -56,10 +46,8 @@ echo 'http_proxy  "knife_config[:bootstrap_proxy]"' >> /etc/chef/client.rb
 echo 'https_proxy "knife_config[:bootstrap_proxy]"' >> /etc/chef/client.rb
 <% end -%>
 
-(
-cat <<'EOP'
+cat > /etc/chef/first-boot.json <<'EOP'
 <%= first_boot.to_json %>
 EOP
-) > /etc/chef/first-boot.json
 
 <%= start_chef %>'

@@ -112,6 +112,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         # fake code to run through #recipe_snippet
         source_file = [ "if true", "var = non_existant", "end" ]
         IO.stub!(:readlines).and_return(source_file)
+        File.stub!(:exists?).and_return(true)
       end
 
       it "parses a Windows path" do
@@ -126,6 +127,25 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         @inspector.recipe_snippet.should match(/^# In \/home\/btm/)
+      end
+      
+      context "when the recipe file does not exist" do
+        before do
+          File.stub!(:exists?).and_return(false)
+          IO.stub!(:readlines).and_raise(Errno::ENOENT)
+        end
+
+        it "does not try to parse a recipe in chef-shell/irb (CHEF-3411)" do
+          @resource.source_line = "(irb#1):1:in `irb_binding'"
+          @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
+          @inspector.recipe_snippet.should be_nil
+        end
+  
+        it "does not raise an exception trying to load a non-existant file (CHEF-3411)" do
+          @resource.source_line = "/somewhere/in/space"
+          @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
+          lambda { @inspector.recipe_snippet }.should_not raise_error
+        end
       end
     end
 
