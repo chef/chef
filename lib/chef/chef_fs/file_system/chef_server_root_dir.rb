@@ -77,8 +77,6 @@ class Chef
             result.sort_by { |child| child.name }
           end
         end
-
-        # Yeah, sorry, I'm not putting delete on this thing.
       end
     end
   end
