@@ -136,8 +136,10 @@ class Chef
             return [ !exists?, nil, nil ]
           end
           are_same = true
-          Chef::ChefFS::CommandLine::diff_entries(self, other, nil, :name_only) do
-            are_same = false
+          Chef::ChefFS::CommandLine::diff_entries(self, other, nil, :name_only) do |type, old_entry, new_entry|
+            if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)
+              are_same = false
+            end
           end
           [ are_same, nil, nil ]
         end
