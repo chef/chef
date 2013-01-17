@@ -267,7 +267,7 @@ F
         # to the rescue clause).
         Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
         Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
-        Chef::Log.warn("Current: #{self.source_line}") if self.source_line
+        Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
         prior_resource.instance_variables.each do |iv|
           unless iv.to_sym == :@source_line || iv.to_sym == :@action || iv.to_sym == :@not_if || iv.to_sym == :@only_if
             self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
