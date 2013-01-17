@@ -440,56 +440,61 @@ EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
+  end
+
+  when_the_repository 'has a cookbook' do
+    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+    file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
 
     when_the_chef_server 'has a later version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''}
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
 
       it 'knife download /cookbooks/x downloads the latest version' do
         knife('download --purge /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x/metadata.rb
-Created /cookbooks/x/y.rb
-Deleted extra entry /cookbooks/x/z.rb (purge is on)
+Created /cookbooks/x/onlyin1.0.1.rb
+Deleted extra entry /cookbooks/x/onlyin1.0.0.rb (purge is on)
 EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
 
     when_the_chef_server 'has an earlier version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => ''}
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'y.rb' => 'hi' }
-      it 'knife download /cookbooks/x does nothing' do
-        knife('download --purge /cookbooks/x').should_succeed ''
+      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      it 'knife download /cookbooks/x downloads the updated file' do
+        knife('download --purge /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x/onlyin1.0.0.rb
+EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
 
     when_the_chef_server 'has a later version for the cookbook, and no current version' do
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'y.rb' => 'hi' }
+      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
 
       it 'knife download /cookbooks/x downloads the latest version' do
         knife('download --purge /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x/metadata.rb
-Created /cookbooks/x/y.rb
-Deleted extra entry /cookbooks/x/z.rb (purge is on)
+Created /cookbooks/x/onlyin1.0.1.rb
+Deleted extra entry /cookbooks/x/onlyin1.0.0.rb (purge is on)
 EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
 
     when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'y.rb' => 'hi' }
+      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
 
       it 'knife download /cookbooks/x downloads the old version' do
         knife('download --purge /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x/metadata.rb
-Created /cookbooks/x/y.rb
-Deleted extra entry /cookbooks/x/z.rb (purge is on)
+Created /cookbooks/x/onlyin0.9.9.rb
+Deleted extra entry /cookbooks/x/onlyin1.0.0.rb (purge is on)
 EOM
         knife('diff --name-status /cookbooks').should_succeed ''
       end
     end
   end
-
-  # Multiple cookbook versions!!!
 end
