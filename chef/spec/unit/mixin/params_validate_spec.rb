@@ -380,18 +380,14 @@ describe Chef::Mixin::ParamsValidate do
     end.should raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  it "should create DelayedEvaluator instance when passed a block" do
-    @vo.set_or_return(:delayed, nil, {}) do
-      'test'
-    end
+  it "should create DelayedEvaluator instance when #lazy is used" do
+    @vo.set_or_return(:delayed, @vo.lazy{ 'test' }, {})
     @vo.instance_variable_get(:@delayed).should be_a(Chef::DelayedEvaluator)
   end
 
   it "should execute block on each call when DelayedEvaluator" do
     value = 'fubar'
-    @vo.set_or_return(:test, nil, {}) do
-      value
-    end
+    @vo.set_or_return(:test, @vo.lazy{ value }, {})
     @vo.set_or_return(:test, nil, {}).should == 'fubar'
     value = 'foobar'
     @vo.set_or_return(:test, nil, {}).should == 'foobar'
