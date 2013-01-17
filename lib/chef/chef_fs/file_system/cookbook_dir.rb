@@ -100,6 +100,7 @@ class Chef
                 container.add_child(CookbookFile.new(parts[parts.length-1], container, segment_file))
               end
             end
+            @children = @children.sort_by { |c| c.name }
           end
           @children
         end
