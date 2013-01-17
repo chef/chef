@@ -20,6 +20,6 @@
 
 require 'rubygems'
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-require 'chef/application/recipe'
+require 'chef/application/apply'
 
 Chef::Application::Recipe.new.run
