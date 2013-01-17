@@ -42,12 +42,12 @@ class Chef
         end
 
         def enable_service
-          run_command(:command => "#{default_init_command} enable #{@new_resource.service_name}")
+          run_command(:command => "#{default_init_command} enable -s #{@new_resource.service_name}")
           return service_status.enabled
         end
 
         def disable_service
-          run_command(:command => "#{default_init_command} disable #{@new_resource.service_name}")
+          run_command(:command => "#{default_init_command} disable -s #{@new_resource.service_name}")
           return service_status.enabled
         end
 
