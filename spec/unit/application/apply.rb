@@ -17,7 +17,7 @@
 
 require 'spec_helper'
 
-describe Chef::Application::Recipe do
+describe Chef::Application::Apply do
 
   before do
     @original_config = Chef::Config.configuration

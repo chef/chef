@@ -27,7 +27,7 @@ require 'tempfile'
 require 'chef/providers'
 require 'chef/resources'
 
-class Chef::Application::Recipe < Chef::Application
+class Chef::Application::Apply < Chef::Application
 
   banner "Usage: chef-recipe [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
 
@@ -43,7 +43,7 @@ class Chef::Application::Recipe < Chef::Application
     :long         => "--stdin",
     :description  => "Execute resources read from STDIN",
     :boolean      => true
-    
+
   option :log_level,
     :short        => "-l LEVEL",
     :long         => "--log_level LEVEL",
@@ -59,7 +59,7 @@ class Chef::Application::Recipe < Chef::Application
     :show_options => true,
     :exit         => 0
 
-  
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -116,7 +116,7 @@ class Chef::Application::Recipe < Chef::Application
     @recipe_fh.rewind
     @recipe_filename = @recipe_fh.path
   end
-    
+
   def run_chef_recipe
     if config[:execute]
       @recipe_text = config[:execute]
@@ -148,7 +148,7 @@ class Chef::Application::Recipe < Chef::Application
     rescue Exception => e
       Chef::Application.debug_stacktrace(e)
       Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
-     end
+    end
   end
 
     # Get this party started
@@ -156,5 +156,5 @@ class Chef::Application::Recipe < Chef::Application
     reconfigure
     run_application
   end
-  
+
 end
