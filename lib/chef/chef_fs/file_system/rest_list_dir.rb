@@ -43,7 +43,7 @@ class Chef
 
         def children
           begin
-            @children ||= rest.get_rest(api_path).keys.map do |key|
+            @children ||= rest.get_rest(api_path).keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
           rescue Net::HTTPServerException
