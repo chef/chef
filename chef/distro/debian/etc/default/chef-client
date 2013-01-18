@@ -2,3 +2,4 @@ LOGFILE=/var/log/chef/client.log
 CONFIG=/etc/chef/client.rb
 INTERVAL=1800
 SPLAY=20
+STARTTIME=1
