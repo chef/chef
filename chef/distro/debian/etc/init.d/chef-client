@@ -41,7 +41,7 @@ running_pid() {
   name=$2
   [ -z "$pid" ] && return 1
   [ ! -d /proc/$pid ] &&  return 1
-  cmd=`awk '/Name:/ {print $2}' /proc/$pid/status`
+  cmd=`cat /proc/$pid/cmdline | tr '\000' '\n' | awk 'NR==2'`
   [ "$cmd" != "$name" ] &&  return 1
   return 0
 }
@@ -49,7 +49,7 @@ running_pid() {
 running() {
   [ ! -f "$PIDFILE" ] && return 1
   pid=`cat $PIDFILE`
-  running_pid $pid $NAME || return 1
+  running_pid $pid $DAEMON || return 1
   return 0
 }
 
