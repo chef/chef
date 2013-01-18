@@ -22,6 +22,7 @@ require 'chef/mixin/check_helper'
 require 'chef/dsl/platform_introspection'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
+require 'chef/resource/conditional_action'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
@@ -621,16 +622,12 @@ F
     # "fails" its check. Subsequent conditionals are not evaluated, so in
     # general it's not a good idea to rely on side effects from not_if or
     # only_if commands/blocks being evaluated.
+    #
+    # Also skips conditional checking when the action is :nothing
     def should_skip?(action)
-      if (action == :nothing)
-        events.resource_skipped(self, action, Conditional.not_if('action == :nothing'))
-        Chef::Log.debug("Skipping #{self} due to :nothing action")
-        return true
-      end
+      conditional_action = ConditionalAction.not_if(action, :nothing)
 
-      conditionals = only_if + not_if
-      return false if conditionals.empty?
-
+      conditionals = [ conditional_action ] + only_if + not_if
       conditionals.find do |conditional|
         if conditional.continue?
           false
