@@ -175,8 +175,6 @@ shared_examples_for "a file resource" do
         resource.run_action(:create)
       end
 
-      it_behaves_like "a securable resource"
-      
       it "creates the file when the :create action is run" do
         File.should exist(path)
       end
