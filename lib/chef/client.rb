@@ -411,7 +411,7 @@ class Chef
     end
 
     def do_windows_admin_check
-      if !Chef::Config[:solo] && Chef::Platform.windows?
+      if Chef::Platform.windows?
         Chef::Log.debug("Checking for administrator privilages....")
 
         if !has_admin_privilages?

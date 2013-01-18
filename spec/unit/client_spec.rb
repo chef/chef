@@ -340,22 +340,6 @@ shared_examples_for Chef::Client do
       @client = Chef::Client.new
     end
 
-    context "during a solo run" do
-      before do
-        @original_solo = Chef::Config[:solo]
-        Chef::Config[:solo] = true
-      end
-
-      after do
-        Chef::Config[:solo] = @original_solo
-      end
-
-      it "shouldn't be called" do
-        @client.should_not_receive(:has_admin_privilages?)
-        @client.do_windows_admin_check
-      end
-    end
-
     context "platform is not windows" do
       before do
         Chef::Platform.stub(:windows?).and_return(false)
