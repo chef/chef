@@ -49,7 +49,22 @@ describe Chef::Resource::Template do
     create_resource
   end
 
-  let(:default_mode) { "600" }
+  let(:default_mode) do
+    # TODO: Lots of ugly here :(
+    # RemoteFile uses FileUtils.cp. FileUtils does a copy by opening the
+    # destination file and writing to it. Before 1.9.3, it does not preserve
+    # the mode of the copied file. In 1.9.3 and after, it does. So we have to
+    # figure out what the default mode ought to be via heuristic.
+
+    t = Tempfile.new("get-the-mode")
+    path = t.path
+    path_2 = t.path + "fileutils-mode-test"
+    FileUtils.cp(path, path_2)
+    t.close
+    m = File.stat(path_2).mode
+    (07777 & m).to_s(8)
+  end
+
 
   it_behaves_like "a file resource"
 
