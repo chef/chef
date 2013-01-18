@@ -482,14 +482,20 @@ class Chef
       # Checks if the caller has the admin privilages in their
       # security token
       def self.has_admin_privilages?
-        process_token = open_process_token(Chef::ReservedNames::Win32::Process.get_current_process, TOKEN_READ)
-        elevation_result = FFI::Buffer.new(:ulong)
-        elevation_result_size = FFI::MemoryPointer.new(:uint32)
-        success = GetTokenInformation(process_token.handle.handle, :TokenElevation, elevation_result, 4, elevation_result_size)
+        if Chef::Platform.windows_server_2003?
+          # Admin privilages do not exist on Windows Server 2003
 
-        # Assume process is not elevated if the call fails.
-        # Process is elevated if the result is different than 0.
-        success && (elevation_result.read_ulong != 0)
+          true
+        else
+          process_token = open_process_token(Chef::ReservedNames::Win32::Process.get_current_process, TOKEN_READ)
+          elevation_result = FFI::Buffer.new(:ulong)
+          elevation_result_size = FFI::MemoryPointer.new(:uint32)
+          success = GetTokenInformation(process_token.handle.handle, :TokenElevation, elevation_result, 4, elevation_result_size)
+
+          # Assume process is not elevated if the call fails.
+          # Process is elevated if the result is different than 0.
+          success && (elevation_result.read_ulong != 0)
+        end
       end
     end
   end
