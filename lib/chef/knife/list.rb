@@ -1,5 +1,6 @@
 require 'chef/chef_fs/knife'
 require 'chef/chef_fs/file_system'
+require 'highline'
 
 class Chef
   class Knife
@@ -115,8 +116,7 @@ class Chef
         if config[:one_column] || !stdout.isatty
           columns = 0
         else
-          # TODO: tput cols is not cross platform
-          columns = Integer(`tput cols`)
+          columns = HighLine::SystemExtensions.terminal_size[0]
         end
         current_line = ''
         results.each do |result|
