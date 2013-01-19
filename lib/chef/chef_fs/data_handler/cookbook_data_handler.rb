@@ -21,6 +21,10 @@ class Chef
           })
         end
 
+        def preserve_key(key)
+          return key == 'cookbook_name' || key == 'version'
+        end
+
         def chef_class
           Chef::Cookbook::Metadata
         end

@@ -55,7 +55,9 @@ class Chef
         end
 
         def normalize_value(value)
-          data_handler.minimize(data_handler.normalize(value, parent.name, api_child_name))
+          data_handler.minimize(
+            data_handler.normalize(value, parent.name, api_child_name),
+            parent.name, api_child_name)
         end
       end
     end
