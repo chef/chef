@@ -22,7 +22,7 @@ class Chef
   module ChefFS
     module CommandLine
 
-      def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil)
+      def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil, diff_filter = nil)
         if format_path.nil?
           format_path = proc { |entry| entry.path_for_printing }
         end
@@ -34,71 +34,75 @@ class Chef
           old_path = format_path.call(old_entry)
           new_path = format_path.call(new_entry)
 
-          if get_content && old_value && new_value
-            result = ''
-            result << "diff --knife #{old_path} #{new_path}\n"
-            if old_value == :none
-              result << "new file\n"
-              old_path = "/dev/null"
-              old_value = ''
+          case type
+          when :common_subdirectories
+            if output_mode != :name_only && output_mode != :name_status
+              yield "Common subdirectories: #{new_path}\n"
             end
-            if new_value == :none
+
+          when :directory_to_file
+            next if diff_filter && diff_filter !~ /T/
+            if output_mode == :name_only
+              yield "#{new_path}\n"
+            elsif output_mode == :name_status
+              yield "T\t#{new_path}\n"
+            else
+              yield "File #{old_path} is a directory while file #{new_path} is a regular file\n"
+            end
+
+          when :file_to_directory
+            next if diff_filter && diff_filter !~ /T/
+            if output_mode == :name_only
+              yield "#{new_path}\n"
+            elsif output_mode == :name_status
+              yield "T\t#{new_path}\n"
+            else
+              yield "File #{old_path} is a regular file while file #{new_path} is a directory\n"
+            end
+
+          when :deleted
+            next if diff_filter && diff_filter !~ /D/
+            if output_mode == :name_only
+              yield "#{new_path}\n"
+            elsif output_mode == :name_status
+              yield "D\t#{new_path}\n"
+            else
+              result = "diff --knife #{old_path} #{new_path}\n"
               result << "deleted file\n"
-              new_path = "/dev/null"
-              new_value = ''
+              result << diff_text(old_path, '/dev/null', old_value, '')
+              yield result
             end
-            result << diff_text(old_path, new_path, old_value, new_value)
-            yield result
-          else
-            case type
-            when :common_subdirectories
-              if output_mode != :name_only && output_mode != :name_status
-                yield "Common subdirectories: #{new_path}\n"
-              end
-            when :directory_to_file
-              if output_mode == :name_only
-                yield "#{new_path}\n"
-              elsif output_mode == :name_status
-                yield "T\t#{new_path}\n"
-              else
-                yield "File #{old_path} is a directory while file #{new_path} is a regular file\n"
-              end
-            when :file_to_directory
-              if output_mode == :name_only
-                yield "#{new_path}\n"
-              elsif output_mode == :name_status
-                yield "T\t#{new_path}\n"
-              else
-                yield "File #{old_path} is a regular file while file #{new_path} is a directory\n"
-              end
-            when :deleted
-              if output_mode == :name_only
-                yield "#{new_path}\n"
-              elsif output_mode == :name_status
-                yield "D\t#{new_path}\n"
-              else
-                yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
-              end
-            when :added
-              if output_mode == :name_only
-                yield "#{new_path}\n"
-              elsif output_mode == :name_status
-                yield "A\t#{new_path}\n"
-              else
-                yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"
-              end
-            when :modified
-              if output_mode == :name_only
-                yield "#{new_path}\n"
-              elsif output_mode == :name_status
-                yield "M\t#{new_path}\n"
-              end
-            when :both_nonexistent
-            when :added_cannot_upload
-            when :deleted_cannot_download
-            when :same
-              # Skip these silently
+
+  #            yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
+          when :added
+            next if diff_filter && diff_filter !~ /A/
+            if output_mode == :name_only
+              yield "#{new_path}\n"
+            elsif output_mode == :name_status
+              yield "A\t#{new_path}\n"
+            else
+              result = "diff --knife #{old_path} #{new_path}\n"
+              result << "new file\n"
+              result << diff_text('/dev/null', new_path, '', new_value)
+              yield result
             end
+  #            yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"
+          when :modified
+            next if diff_filter && diff_filter !~ /M/
+            if output_mode == :name_only
+              yield "#{new_path}\n"
+            elsif output_mode == :name_status
+              yield "M\t#{new_path}\n"
+            else
+              result = "diff --knife #{old_path} #{new_path}\n"
+              result << diff_text(old_path, new_path, old_value, new_value)
+              yield result
+            end
+          when :both_nonexistent
+          when :added_cannot_upload
+          when :deleted_cannot_download
+          when :same
+            # Skip these silently
           end
         end
         found_match

@@ -24,6 +24,11 @@ class Chef
         :boolean => true,
         :description => "Only show names and statuses of modified files: Added, Deleted, Modified, and Type Changed."
 
+      option :diff_filter,
+        :long => '--diff-filter=[(A|D|M|T)...[*]]',
+        :description => "Select only files that are Added (A), Deleted (D), Modified (M), or have their type (i.e. regular file, directory) changed (T). Any combination of the filter characters (including none) can be used. When * (All-or-none) is added to the combination, all paths are selected if
+           there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected."
+
       def run
         if config[:name_only]
           output_mode = :name_only
@@ -36,7 +41,7 @@ class Chef
         # Get the matches (recursively)
         error = false
         patterns.each do |pattern|
-          found_match = Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) } ) do |diff|
+          found_match = Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) }, config[:diff_filter] ) do |diff|
             stdout.print diff
           end
           if !found_match

@@ -188,6 +188,13 @@ D\t/cookbooks/x/onlyin1.0.1.rb
 A\t/cookbooks/x/onlyin1.0.0.rb
 EOM
       end
+
+      it 'knife diff --diff-filter=MAT does not show deleted files' do
+        knife('diff --diff-filter=MAT --name-status /cookbooks/x').should_succeed <<EOM
+M\t/cookbooks/x/metadata.rb
+A\t/cookbooks/x/onlyin1.0.0.rb
+EOM
+      end
     end
 
     when_the_chef_server 'has an earlier version for the cookbook' do
