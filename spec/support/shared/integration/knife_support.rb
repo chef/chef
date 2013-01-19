@@ -105,11 +105,16 @@ module KnifeSupport
       else
         stderr_actual.should == expected[:stderr]
       end
+      stdout_actual = @stdout
+      if Chef::Platform.windows?
+        stderr_actual = stderr_actual.gsub("\r\n", "\n")
+        stdout_actual = stdout_actual.gsub("\r\n", "\n")
+      end
       @exit_code.should == expected[:exit_code]
       if expected[:stdout].is_a?(Regexp)
-        @stdout.should =~ expected[:stdout]
+        stdout_actual.should =~ expected[:stdout]
       else
-        @stdout.should == expected[:stdout]
+        stdout_actual.should == expected[:stdout]
       end
     end
   end
