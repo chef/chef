@@ -53,6 +53,23 @@ class Chef
             end
           end
         end
+
+        def compare_to(other)
+          begin
+            other_value_json = other.read
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+            return [ nil, nil, :none ]
+          end
+          begin
+            value = chef_object.to_hash
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+            return [ false, :none, other_value_json ]
+          end
+          value = data_handler.normalize(value, parent.name, api_child_name)
+          other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
+          other_value = data_handler.normalize(other_value, parent.name, api_child_name)
+          [ value == other_value, Chef::JSONCompat.to_json_pretty(value), other_value_json ]
+        end
       end
     end
   end

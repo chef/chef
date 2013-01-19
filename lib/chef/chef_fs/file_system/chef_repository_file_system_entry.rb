@@ -25,9 +25,9 @@ class Chef
       # ChefRepositoryFileSystemEntry works just like FileSystemEntry,
       # except can inflate Chef objects
       class ChefRepositoryFileSystemEntry < FileSystemEntry
-        def initialize(name, parent, file_path = nil, json_class = nil)
+        def initialize(name, parent, file_path = nil, data_handler = nil)
           super(name, parent, file_path)
-          @json_class = json_class
+          @data_handler = data_handler
         end
 
         def chefignore
@@ -38,8 +38,8 @@ class Chef
           parent.ignore_empty_directories?
         end
 
-        def json_class
-          @json_class || parent.json_class
+        def data_handler
+          @data_handler || parent.data_handler
         end
 
         def chef_object
@@ -51,9 +51,7 @@ class Chef
             end
 
             # Otherwise, inflate the file using the chosen JSON class (if any)
-            if json_class
-              return json_class.json_create(JSON.parse(read, :create_additions => false))
-            end
+            return data_handler.chef_object(JSON.parse(read, :create_additions => false))
           rescue
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
           end

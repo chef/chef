@@ -20,11 +20,12 @@ require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
 require 'chef/chef_fs/file_system/multiplexed_dir'
-require 'chef/api_client'
-require 'chef/data_bag_item'
-require 'chef/environment'
-require 'chef/node'
-require 'chef/role'
+require 'chef/chef_fs/data_handler/client_data_handler'
+require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
+require 'chef/chef_fs/data_handler/environment_data_handler'
+require 'chef/chef_fs/data_handler/node_data_handler'
+require 'chef/chef_fs/data_handler/role_data_handler'
+require 'chef/chef_fs/data_handler/user_data_handler'
 
 class Chef
   module ChefFS
@@ -76,23 +77,23 @@ class Chef
           if name == 'cookbooks'
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
           else
-            json_class = case name
+            data_handler = case name
               when 'clients'
-                Chef::ApiClient
+                Chef::ChefFS::DataHandler::ClientDataHandler.new
               when 'data_bags'
-                Chef::DataBagItem
+                Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
               when 'environments'
-                Chef::Environment
+                Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
               when 'nodes'
-                Chef::Node
+                Chef::ChefFS::DataHandler::NodeDataHandler.new
               when 'roles'
-                Chef::Role
+                Chef::ChefFS::DataHandler::RoleDataHandler.new
               when 'users'
-                nil
+                Chef::ChefFS::DataHandler::UserDataHandler.new
               else
                 raise "Unknown top level path #{name}"
               end
-            dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, json_class) }
+            dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, data_handler) }
           end
           MultiplexedDir.new(dirs)
         end

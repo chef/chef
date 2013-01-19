@@ -24,12 +24,14 @@ class Chef
   module ChefFS
     module FileSystem
       class RestListDir < BaseFSDir
-        def initialize(name, parent, api_path = nil)
+        def initialize(name, parent, api_path = nil, data_handler = nil)
           super(name, parent)
           @api_path = api_path || (parent.api_path == "" ? name : "#{parent.api_path}/#{name}")
+          @data_handler = data_handler
         end
 
         attr_reader :api_path
+        attr_reader :data_handler
 
         def child(name)
           result = @children.select { |child| child.name == name }.first if @children
