@@ -107,10 +107,16 @@ class Chef
             return [ false, :none, other_value_json ]
           end
           value = normalize_value(value)
-          other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
+          value_json = Chef::JSONCompat.to_json_pretty(value)
+          begin
+            other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
+          rescue JSON::ParserError => e
+            Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
+            return [ nil, value_json, other_value_json ]
+          end
           other_value = normalize_value(other_value)
           other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
-          [ value == other_value, Chef::JSONCompat.to_json_pretty(value), other_value_json ]
+          [ value == other_value, value_json, other_value_json ]
         end
 
         def rest
