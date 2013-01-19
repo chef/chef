@@ -19,13 +19,14 @@
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_entry'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/data_handler/node_data_handler'
 
 class Chef
   module ChefFS
     module FileSystem
       class NodesDir < RestListDir
         def initialize(parent)
-          super("nodes", parent)
+          super("nodes", parent, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new)
         end
 
         # Override children to respond to environment

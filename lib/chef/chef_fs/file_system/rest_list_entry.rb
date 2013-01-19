@@ -30,11 +30,18 @@ class Chef
           @exists = exists
         end
 
-        def api_path
+        def data_handler
+          parent.data_handler
+        end
+
+        def api_child_name
           if name.length < 5 || name[-5,5] != ".json"
             raise "Invalid name #{path}: must end in .json"
           end
-          api_child_name = name[0,name.length-5]
+          name[0,name.length-5]
+        end
+
+        def api_path
           "#{parent.api_path}/#{api_child_name}"
         end
 
@@ -84,17 +91,19 @@ class Chef
 
         def compare_to(other)
           begin
-            other_value = other.read
+            other_value_json = other.read
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ nil, nil, :none ]
           end
           begin
             value = chef_object.to_hash
           rescue Chef::ChefFS::FileSystem::NotFoundError
-            return [ false, :none, other_value ]
+            return [ false, :none, other_value_json ]
           end
-          are_same = (value == Chef::JSONCompat.from_json(other_value, :create_additions => false))
-          [ are_same, Chef::JSONCompat.to_json_pretty(value), other_value ]
+          value = data_handler.normalize(value, api_child_name)
+          other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
+          other_value = data_handler.normalize(other_value, api_child_name)
+          [ value == other_value, Chef::JSONCompat.to_json_pretty(value), other_value_json ]
         end
 
         def rest
