@@ -157,7 +157,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with simple pattern "a\*\b"' do
+  context 'with simple pattern "a\*\b"', :pending => (Chef::Platform.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('a\*\b') }
     it 'match?' do
       pattern.match?('a*b').should be_true
@@ -264,7 +264,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"' do
+  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', :pending => (Chef::Platform.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('/abc/d[a-z][0-9]f/ghi') }
     it 'match?' do
       pattern.match?('/abc/de1f/ghi').should be_true

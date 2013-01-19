@@ -57,7 +57,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS::windows? ? '[/\\]' : '/'
+        Chef::ChefFS::windows? ? '[\/\\\\]' : '/'
       end
 
       # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
