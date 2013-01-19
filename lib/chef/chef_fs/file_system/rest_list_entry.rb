@@ -89,6 +89,10 @@ class Chef
           end
         end
 
+        def normalize_value(value)
+          data_handler.minimize(data_handler.normalize(value, api_child_name))
+        end
+
         def compare_to(other)
           begin
             other_value_json = other.read
@@ -100,9 +104,10 @@ class Chef
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ false, :none, other_value_json ]
           end
-          value = data_handler.normalize(value, api_child_name)
+          value = normalize_value(value)
           other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
-          other_value = data_handler.normalize(other_value, api_child_name)
+          other_value = normalize_value(other_value)
+          other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
           [ value == other_value, Chef::JSONCompat.to_json_pretty(value), other_value_json ]
         end
 

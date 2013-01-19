@@ -12,10 +12,11 @@ class Chef
           end
           # chef_type and data_bag only come back from PUT and POST, but we'll
           # normalize them in in case someone is comparing with those results.
-          data_bag_item['chef_type'] ||= 'data_bag_item'
-          data_bag_item['data_bag'] ||= data_bag_name
-          data_bag_item['id'] ||= id
-          data_bag_item
+          super(data_bag_item, {
+            'chef_type' => 'data_bag_item',
+            'data_bag' => data_bag_name,
+            'id' => id
+          })
         end
 
         def chef_class
