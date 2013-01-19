@@ -344,7 +344,7 @@ EOM
         end
       end
 
-      when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory' do
+      when_the_repository 'has a cookbooks directory and a symlinked cookbooks directory', :pending => (Chef::Platform.windows?) do
         directory 'cookbooks'
         symlink 'symlinked', 'cookbooks'
 
@@ -379,7 +379,7 @@ EOM
         end
       end
 
-      when_the_repository 'has a real_cookbooks directory and a cookbooks symlink to it' do
+      when_the_repository 'has a real_cookbooks directory and a cookbooks symlink to it', :pending => (Chef::Platform.windows?) do
         directory 'real_cookbooks'
         symlink 'cookbooks', 'real_cookbooks'
 
