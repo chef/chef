@@ -5,7 +5,7 @@ class Chef
         def minimize(object, *keys)
           default_object = default({}, *keys)
           object.each_pair do |key, value|
-            if default_object[key] == key
+            if default_object[key] == value
               object.delete(key)
             end
           end
@@ -14,6 +14,18 @@ class Chef
 
         def default(*keys)
           normalize({}, *keys)
+        end
+
+        def normalize(object, defaults)
+          # Make a normalized result in the specified order for diffing
+          result = {}
+          defaults.each_pair do |key, default|
+            result[key] = object.has_key?(key) ? object[key] : default
+          end
+          object.each_pair do |key, value|
+            result[key] = value if !result.has_key?(key)
+          end
+          result
         end
 
         def normalize_run_list(run_list)
@@ -38,10 +50,6 @@ class Chef
         end
 
         def to_ruby(object)
-          raise NotImplementedError
-        end
-
-        def normalize(object, *keys)
           raise NotImplementedError
         end
 

@@ -6,17 +6,19 @@ class Chef
     module DataHandler
       class NodeDataHandler < DataHandlerBase
         def normalize(node, name)
-          node['name'] ||= name
-          node['json_class'] ||= 'Chef::Node'
-          node['chef_type'] ||= 'node'
-          node['chef_environment'] ||= '_default'
-          node['override'] ||= {}
-          node['normal'] ||= {}
-          node['default'] ||= {}
-          node['automatic'] ||= {}
-          node['run_list'] ||= []
-          node['run_list'] = normalize_run_list(node['run_list'])
-          node
+          result = super(node, {
+            'name' => name,
+            'json_class' => 'Chef::Node',
+            'chef_type' => 'node',
+            'chef_environment' => '_default',
+            'override' => {},
+            'normal' => {},
+            'default' => {},
+            'automatic' => {},
+            'run_list' => []
+          })
+          result['run_list'] = normalize_run_list(result['run_list'])
+          result
         end
 
         def chef_class

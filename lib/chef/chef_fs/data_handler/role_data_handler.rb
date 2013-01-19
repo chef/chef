@@ -6,19 +6,21 @@ class Chef
     module DataHandler
       class RoleDataHandler < DataHandlerBase
         def normalize(role, name)
-          role['name'] ||= name
-          role['description'] ||= ''
-          role['json_class'] ||= 'Chef::Role'
-          role['chef_type'] ||= 'role'
-          role['default_attributes'] ||= {}
-          role['override_attributes'] ||= {}
-          role['run_list'] ||= []
-          role['run_list'] = normalize_run_list(role['run_list'])
-          role['env_run_lists'] ||= {}
-          role['env_run_lists'].each_pair do |env, run_list|
-            role['env_run_lists'][env] = normalize_run_list(run_list)
+          result = super(role, {
+            'name' => name,
+            'description' => '',
+            'json_class' => 'Chef::Role',
+            'chef_type' => 'role',
+            'default_attributes' => {},
+            'override_attributes' => {},
+            'run_list' => [],
+            'env_run_lists' => {}
+          })
+          result['run_list'] = normalize_run_list(result['run_list'])
+          result['env_run_lists'].each_pair do |env, run_list|
+            result['env_run_lists'][env] = normalize_run_list(run_list)
           end
-          role
+          result
         end
 
         def chef_class

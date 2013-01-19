@@ -5,10 +5,10 @@ class Chef
     module DataHandler
       class UserDataHandler < DataHandlerBase
         def self.normalize(user, name)
-          user['name'] ||= name
-          user['admin'] ||= false
-          user['public_key'] ||= PUBLIC_KEY
-          user
+          super(user, {
+            'name' => name,
+            'admin' => false
+          })
         end
 
         # There is no chef_class for users, nor does to_ruby work.
