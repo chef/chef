@@ -222,4 +222,60 @@ EOM
       end
     end
   end
+
+  context 'json diff tests' do
+    when_the_repository 'has an empty environment file' do
+      file 'environments/x.json', {}
+      when_the_chef_server 'has an empty environment' do
+        environment 'x', {}
+        it 'knife diff returns no differences' do
+          knife('diff /environments/x.json').should_succeed ''
+        end
+      end
+      when_the_chef_server 'has an environment with a different value' do
+        environment 'x', { 'description' => 'hi' }
+        it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          knife('diff /environments/x.json').should_succeed(/
+ {
+-  "description": "hi",
+   "name": "x"
+ }
+/)
+        end
+      end
+    end
+
+    when_the_repository 'has an environment file with a value in it' do
+      file 'environments/x.json', { 'description' => 'hi' }
+      when_the_chef_server 'has an environment with the same value' do
+        environment 'x', { 'description' => 'hi' }
+        it 'knife diff returns no differences' do
+          knife('diff /environments/x.json').should_succeed ''
+        end
+      end
+      when_the_chef_server 'has an environment with no value' do
+        environment 'x', {}
+        it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          knife('diff /environments/x.json').should_succeed(/
+ {
+\+  "description": "hi",
+   "name": "x"
+ }
+/)
+        end
+      end
+      when_the_chef_server 'has an environment with a different value' do
+        environment 'x', { 'description' => 'lo' }
+        it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
+          knife('diff /environments/x.json').should_succeed(/
+ {
+-  "description": "lo",
+\+  "description": "hi",
+   "name": "x"
+ }
+/)
+        end
+      end
+    end
+  end
 end
