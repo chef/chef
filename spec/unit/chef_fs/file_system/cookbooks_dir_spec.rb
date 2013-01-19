@@ -565,6 +565,7 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
       nonexistent_child.dir?.should be_false
     end
     it 'read returns NotFoundError' do
+      should_list_cookbooks
       expect { nonexistent_child.read }.to raise_error(Chef::ChefFS::FileSystem::NotFoundError)
     end
   end
