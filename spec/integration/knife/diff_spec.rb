@@ -278,4 +278,14 @@ EOM
       end
     end
   end
+
+  when_the_chef_server 'has an environment' do
+    environment 'x', {}
+    when_the_repository 'has an environment with bad JSON' do
+      file 'environments/x.json', '{'
+      it 'knife diff reports a warning and does a textual diff' do
+        knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n")
+      end
+    end
+  end
 end
