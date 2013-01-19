@@ -111,7 +111,7 @@ class Chef
           begin
             other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
           rescue JSON::ParserError => e
-            Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
+            Chef::Log.error("Parse error reading #{other.path_for_printing} as JSON: #{e}")
             return [ nil, value_json, other_value_json ]
           end
           other_value = normalize_value(other_value)
