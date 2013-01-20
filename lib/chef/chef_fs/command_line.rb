@@ -66,27 +66,29 @@ class Chef
               yield "#{new_path}\n"
             elsif output_mode == :name_status
               yield "D\t#{new_path}\n"
-            else
+            elsif old_value
               result = "diff --knife #{old_path} #{new_path}\n"
               result << "deleted file\n"
               result << diff_text(old_path, '/dev/null', old_value, '')
               yield result
+            else
+              yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
             end
 
-  #            yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
           when :added
             next if diff_filter && diff_filter !~ /A/
             if output_mode == :name_only
               yield "#{new_path}\n"
             elsif output_mode == :name_status
               yield "A\t#{new_path}\n"
-            else
+            elsif new_value
               result = "diff --knife #{old_path} #{new_path}\n"
               result << "new file\n"
               result << diff_text('/dev/null', new_path, '', new_value)
               yield result
+            else
+              yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"
             end
-  #            yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"
           when :modified
             next if diff_filter && diff_filter !~ /M/
             if output_mode == :name_only
