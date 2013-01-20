@@ -5,9 +5,9 @@ class Chef
   module ChefFS
     module DataHandler
       class ClientDataHandler < DataHandlerBase
-        def normalize(client, name)
+        def normalize(client, entry)
           super(client, {
-            'name' => name,
+            'name' => remove_dot_json(entry.name),
             'admin' => false,
             'validator' => false,
             'json_class' => 'Chef::ApiClient',

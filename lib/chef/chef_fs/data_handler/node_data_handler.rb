@@ -5,9 +5,9 @@ class Chef
   module ChefFS
     module DataHandler
       class NodeDataHandler < DataHandlerBase
-        def normalize(node, name)
+        def normalize(node, entry)
           result = super(node, {
-            'name' => name,
+            'name' => remove_dot_json(entry.name),
             'json_class' => 'Chef::Node',
             'chef_type' => 'node',
             'chef_environment' => '_default',
