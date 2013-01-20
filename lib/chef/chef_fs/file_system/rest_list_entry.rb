@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/base_fs_object'
 require 'chef/chef_fs/file_system/not_found_error'
+require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/role'
 require 'chef/node'
 
@@ -115,7 +116,7 @@ class Chef
           begin
             other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
           rescue JSON::ParserError => e
-            Chef::Log.error("Parse error reading #{other.path_for_printing} as JSON: #{e}")
+            Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
             return [ nil, value_json, other_value_json ]
           end
           other_value = minimize_value(other_value)
@@ -129,18 +130,23 @@ class Chef
         end
 
         def write(file_contents)
-          json = Chef::JSONCompat.from_json(file_contents).to_hash
+          begin
+            json = Chef::JSONCompat.from_json(file_contents).to_hash
+          rescue JSON::ParserError => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Parse error reading JSON: #{e}"
+          end
+
           base_name = name[0,name.length-5]
           if json['name'] != base_name
             raise "Name in #{path_for_printing}/#{name} must be '#{base_name}' (is '#{json['name']}')"
           end
           begin
             rest.put_rest(api_path, json)
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e)
             end
           end
         end
