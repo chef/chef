@@ -236,19 +236,6 @@ class Chef
       end
 
       def self.diff_text(old_path, new_path, old_value, new_value)
-        # Reformat JSON for a nicer diff.
-        if old_path =~ /\.json$/
-          begin
-            reformatted_old_value = canonicalize_json(old_value)
-            reformatted_new_value = canonicalize_json(new_value)
-            old_value = reformatted_old_value
-            new_value = reformatted_new_value
-          rescue
-            # If JSON parsing fails, we just won't change any values and fall back
-            # to normal diff.
-          end
-        end
-
         # Copy to tempfiles before diffing
         # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
         begin

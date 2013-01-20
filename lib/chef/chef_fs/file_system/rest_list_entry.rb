@@ -101,12 +101,14 @@ class Chef
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ nil, nil, :none ]
           end
+
           # Grab this value
           begin
             value = chef_object.to_hash
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ false, :none, other_value_json ]
           end
+
           # Minimize (and normalize) both values for easy and beautiful diffs
           value = minimize_value(value)
           value_json = Chef::JSONCompat.to_json_pretty(value)

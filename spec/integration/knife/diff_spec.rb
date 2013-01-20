@@ -244,8 +244,9 @@ EOM
         it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
           knife('diff /environments/x.json').should_succeed(/
  {
--  "description": "hi",
-   "name": "x"
+-  "name": "x",
+-  "description": "hi"
+\+  "name": "x"
  }
 /)
         end
@@ -265,8 +266,9 @@ EOM
         it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
           knife('diff /environments/x.json').should_succeed(/
  {
-\+  "description": "hi",
-   "name": "x"
+-  "name": "x"
+\+  "name": "x",
+\+  "description": "hi"
  }
 /)
         end
@@ -276,9 +278,9 @@ EOM
         it 'knife diff reports the difference', :pending => (RUBY_VERSION < "1.9") do
           knife('diff /environments/x.json').should_succeed(/
  {
--  "description": "lo",
-\+  "description": "hi",
-   "name": "x"
+   "name": "x",
+-  "description": "lo"
+\+  "description": "hi"
  }
 /)
         end
