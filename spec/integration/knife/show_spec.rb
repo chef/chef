@@ -107,13 +107,13 @@ EOM
       'cookbook_versions' => { 'blah' => '= 1.0.0'},
       'override_attributes' => { 'x' => 'y' },
       'description' => 'woo',
-      'name' => 'hi'
+      'name' => 'x'
     }
     it 'knife show shows the attributes in a predetermined order', :pending => (RUBY_VERSION < "1.8") do
       knife('show /environments/x.json').should_succeed <<EOM
 /environments/x.json:
 {
-  "name": "hi",
+  "name": "x",
   "description": "woo",
   "cookbook_versions": {
     "blah": "= 1.0.0"
