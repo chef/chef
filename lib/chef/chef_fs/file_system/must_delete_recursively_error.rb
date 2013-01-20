@@ -23,11 +23,8 @@ class Chef
     module FileSystem
       class MustDeleteRecursivelyError < FileSystemError
         def initialize(entry, cause = nil)
-          super(cause)
-          @entry = entry
+          super(entry, cause)
         end
-
-        attr_reader :entry
       end
     end
   end

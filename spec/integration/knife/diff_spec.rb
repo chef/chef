@@ -292,8 +292,8 @@ EOM
     environment 'x', {}
     when_the_repository 'has an environment with bad JSON' do
       file 'environments/x.json', '{'
-      it 'knife diff reports a warning and does a textual diff' do
-        knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => "ERROR: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n")
+      it 'knife diff reports an error and does a textual diff' do
+        knife('diff /environments/x.json').should_succeed(/-  "name": "x"/, :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n")
       end
     end
   end

@@ -513,4 +513,15 @@ EOM
       end
     end
   end
+
+  when_the_chef_server 'has an environment' do
+    environment 'x', {}
+    when_the_repository 'has an environment with bad JSON' do
+      file 'environments/x.json', '{'
+      it 'knife upload tries and fails' do
+        knife('upload /environments/x.json').should_fail "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\nERROR: /environments/x.json failed to write: Parse error reading JSON: A JSON text must at least contain two octets!\n"
+        knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
+      end
+    end
+  end
 end

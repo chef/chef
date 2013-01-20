@@ -128,4 +128,14 @@ EOM
 EOM
     end
   end
+
+  when_the_repository 'has an environment with bad JSON' do
+    file 'environments/x.json', '{'
+    it 'knife show succeeds' do
+      knife('show --local /environments/x.json').should_succeed <<EOM
+/environments/x.json:
+{
+EOM
+    end
+  end
 end
