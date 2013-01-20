@@ -56,16 +56,7 @@ EOM
         knife('show /environments/x.json').should_succeed <<EOM
 /environments/x.json:
 {
-  "name": "x",
-  "description": "",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
+  "name": "x"
 }
 EOM
       end
@@ -81,19 +72,7 @@ EOM
         knife('show /roles/x.json').should_succeed <<EOM
 /roles/x.json:
 {
-  "name": "x",
-  "description": "",
-  "json_class": "Chef::Role",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  },
-  "chef_type": "role",
-  "run_list": [
-
-  ],
-  "env_run_lists": {
-  }
+  "name": "x"
 }
 EOM
       end

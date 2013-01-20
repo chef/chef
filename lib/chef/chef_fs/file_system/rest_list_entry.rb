@@ -73,7 +73,8 @@ class Chef
         end
 
         def read
-          Chef::JSONCompat.to_json_pretty(chef_object.to_hash)
+          # Minimize the value so the results don't look terrible
+          Chef::JSONCompat.to_json_pretty(minimize_value(chef_object.to_hash))
         end
 
         def chef_object
@@ -89,10 +90,8 @@ class Chef
           end
         end
 
-        def normalize_value(value)
-          data_handler.minimize(
-            data_handler.normalize(value, api_child_name),
-            api_child_name)
+        def minimize_value(value)
+          data_handler.minimize(data_handler.normalize(value, self), self)
         end
 
         def compare_to(other)
@@ -106,7 +105,7 @@ class Chef
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ false, :none, other_value_json ]
           end
-          value = normalize_value(value)
+          value = minimize_value(value)
           value_json = Chef::JSONCompat.to_json_pretty(value)
           begin
             other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
@@ -114,7 +113,7 @@ class Chef
             Chef::Log.error("Parse error reading #{other.path_for_printing} as JSON: #{e}")
             return [ nil, value_json, other_value_json ]
           end
-          other_value = normalize_value(other_value)
+          other_value = minimize_value(other_value)
           other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
           [ value == other_value, value_json, other_value_json ]
         end

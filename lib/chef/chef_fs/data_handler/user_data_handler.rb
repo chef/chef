@@ -4,9 +4,9 @@ class Chef
   module ChefFS
     module DataHandler
       class UserDataHandler < DataHandlerBase
-        def self.normalize(user, name)
+        def normalize(user, entry)
           super(user, {
-            'name' => name,
+            'name' => remove_dot_json(entry.name),
             'admin' => false
           })
         end

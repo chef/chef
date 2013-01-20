@@ -5,7 +5,7 @@ class Chef
   module ChefFS
     module DataHandler
       class DataBagItemDataHandler < DataHandlerBase
-        def normalize(data_bag_item, data_bag_name, id)
+        def normalize(data_bag_item, entry)
           # If it's wrapped with raw_data, unwrap it.
           if data_bag_item['json_class'] == 'Chef::DataBagItem' && data_bag_item['raw_data']
             data_bag_item = data_bag_item['raw_data']
@@ -14,8 +14,8 @@ class Chef
           # normalize them in in case someone is comparing with those results.
           super(data_bag_item, {
             'chef_type' => 'data_bag_item',
-            'data_bag' => data_bag_name,
-            'id' => id
+            'data_bag' => entry.parent.name,
+            'id' => remove_dot_json(entry.name)
           })
         end
 

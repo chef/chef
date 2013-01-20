@@ -95,6 +95,7 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
         'a' => 'b'
       })
       data_bag_item.read.should == '{
+  "id": "aitem",
   "a": "b"
 }'
     end
