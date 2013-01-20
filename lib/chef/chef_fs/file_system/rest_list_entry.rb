@@ -95,16 +95,19 @@ class Chef
         end
 
         def compare_to(other)
+          # Grab the other value
           begin
             other_value_json = other.read
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ nil, nil, :none ]
           end
+          # Grab this value
           begin
             value = chef_object.to_hash
           rescue Chef::ChefFS::FileSystem::NotFoundError
             return [ false, :none, other_value_json ]
           end
+          # Minimize (and normalize) both values for easy and beautiful diffs
           value = minimize_value(value)
           value_json = Chef::JSONCompat.to_json_pretty(value)
           begin
@@ -115,6 +118,7 @@ class Chef
           end
           other_value = minimize_value(other_value)
           other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
+
           [ value == other_value, value_json, other_value_json ]
         end
 

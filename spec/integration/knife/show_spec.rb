@@ -100,4 +100,32 @@ EOM
       end
     end
   end
+
+  when_the_chef_server 'has a hash with multiple keys' do
+    environment 'x', {
+      'default_attributes' => { 'foo' => 'bar' },
+      'cookbook_versions' => { 'blah' => '= 1.0.0'},
+      'override_attributes' => { 'x' => 'y' },
+      'description' => 'woo',
+      'name' => 'hi'
+    }
+    it 'knife show shows the attributes in a predetermined order', :pending => (RUBY_VERSION < "1.8") do
+      knife('show /environments/x.json').should_succeed <<EOM
+/environments/x.json:
+{
+  "name": "hi",
+  "description": "woo",
+  "cookbook_versions": {
+    "blah": "= 1.0.0"
+  },
+  "default_attributes": {
+    "foo": "bar"
+  },
+  "override_attributes": {
+    "x": "y"
+  }
+}
+EOM
+    end
+  end
 end
