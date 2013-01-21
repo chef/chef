@@ -127,11 +127,6 @@ class Chef
       api_client.reregister
     end
 
-    def self.reregister(name)
-      api_client = load(name)
-      api_client.reregister
-    end
-
     def self.list(inflate=false)
       if inflate
         response = Hash.new
