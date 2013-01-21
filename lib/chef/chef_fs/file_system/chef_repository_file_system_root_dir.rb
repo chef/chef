@@ -19,9 +19,9 @@
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
+require 'chef/chef_fs/file_system/chef_repository_file_system_data_bags_dir'
 require 'chef/chef_fs/file_system/multiplexed_dir'
 require 'chef/chef_fs/data_handler/client_data_handler'
-require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
 require 'chef/chef_fs/data_handler/environment_data_handler'
 require 'chef/chef_fs/data_handler/node_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
@@ -76,12 +76,12 @@ class Chef
           end
           if name == 'cookbooks'
             dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
+          elsif name == 'data_bags'
+            dirs = paths.map { |path| ChefRepositoryFileSystemDataBagsDir.new(name, self, path) }
           else
             data_handler = case name
               when 'clients'
                 Chef::ChefFS::DataHandler::ClientDataHandler.new
-              when 'data_bags'
-                Chef::ChefFS::DataHandler::DataBagItemDataHandler.new
               when 'environments'
                 Chef::ChefFS::DataHandler::EnvironmentDataHandler.new
               when 'nodes'
