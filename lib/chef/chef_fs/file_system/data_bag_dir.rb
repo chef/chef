@@ -36,7 +36,7 @@ class Chef
 
         def read
           # This will only be called if dir? is false, which means exists? is false.
-          raise Chef::ChefFS::FileSystem::NotFoundError, "#{path_for_printing} not found"
+          raise Chef::ChefFS::FileSystem::NotFoundError.new(self)
         end
 
         def exists?
@@ -62,13 +62,14 @@ class Chef
 
         def delete(recurse)
           if !recurse
-            raise Chef::ChefFS::FileSystem::MustDeleteRecursivelyError.new, "#{path_for_printing} must be deleted recursively"
+            raise NotFoundError.new(self) if !exists?
+            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
           end
           begin
             rest.delete_rest(api_path)
           rescue Net::HTTPServerException
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             end
           end
         end

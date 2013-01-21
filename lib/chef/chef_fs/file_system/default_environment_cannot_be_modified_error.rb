@@ -16,18 +16,20 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/file_system_error'
+require 'chef/chef_fs/file_system/operation_not_allowed_error'
 
 class Chef
   module ChefFS
     module FileSystem
-      class NotFoundError < FileSystemError
-        def initialize(entry, cause = nil)
-          super(cause)
-          @entry = entry
+      class DefaultEnvironmentCannotBeModifiedError < OperationNotAllowedError
+        def initialize(operation, entry, cause = nil)
+          super(operation, entry, cause)
         end
 
-        attr_reader :entry
+        def reason
+          result = super
+          result + " (default environment cannot be modified)"
+        end
       end
     end
   end

@@ -16,14 +16,85 @@
 # limitations under the License.
 #
 
+require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/chef_repository_file_system_entry'
+require 'chef/chef_fs/file_system/chef_repository_file_system_cookbooks_dir'
+require 'chef/chef_fs/file_system/multiplexed_dir'
+require 'chef/api_client'
+require 'chef/data_bag_item'
+require 'chef/environment'
+require 'chef/node'
+require 'chef/role'
 
 class Chef
   module ChefFS
     module FileSystem
-      class ChefRepositoryFileSystemRootDir < ChefRepositoryFileSystemEntry
-        def initialize(file_path)
-          super("", nil, file_path)
+      class ChefRepositoryFileSystemRootDir < BaseFSDir
+        def initialize(child_paths)
+          super("", nil)
+          @child_paths = child_paths
+        end
+
+        attr_reader :child_paths
+
+        def children
+          @children ||= child_paths.keys.sort.map { |name| make_child_entry(name) }.select { |child| !child.nil? }
+        end
+
+        def can_have_child?(name, is_dir)
+          child_paths.has_key?(name) && is_dir
+        end
+
+        def create_child(name, file_contents = nil)
+          child_paths[name].each do |path|
+            Dir.mkdir(path)
+          end
+          make_child_entry(name)
+        end
+
+        def ignore_empty_directories?
+          false
+        end
+
+        def chefignore
+          nil
+        end
+
+        def json_class
+          nil
+        end
+
+        private
+
+        def make_child_entry(name)
+          paths = child_paths[name].select do |path|
+            File.exists?(path)
+          end
+          if paths.size == 0
+            return nil
+          end
+          if name == 'cookbooks'
+            dirs = paths.map { |path| ChefRepositoryFileSystemCookbooksDir.new(name, self, path) }
+          else
+            json_class = case name
+              when 'clients'
+                Chef::ApiClient
+              when 'data_bags'
+                Chef::DataBagItem
+              when 'environments'
+                Chef::Environment
+              when 'nodes'
+                Chef::Node
+              when 'roles'
+                Chef::Role
+              when 'users'
+                nil
+              else
+                raise "Unknown top level path #{name}"
+              end
+            dirs = paths.map { |path| ChefRepositoryFileSystemEntry.new(name, self, path, json_class) }
+          end
+          MultiplexedDir.new(dirs)
         end
       end
     end

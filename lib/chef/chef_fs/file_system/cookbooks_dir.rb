@@ -33,7 +33,7 @@ class Chef
         end
 
         def children
-          @children ||= rest.get_rest(api_path).map { |key, value| CookbookDir.new(key, self, value) }
+          @children ||= rest.get_rest(api_path).map { |key, value| CookbookDir.new(key, self, value) }.sort_by { |c| c.name }
         end
 
         def create_child_from(other)
@@ -45,8 +45,15 @@ class Chef
           # TODO this only works on the file system.  And it can't be broken into
           # pieces.
           begin
-            uploader = Chef::CookbookUploader.new(other_cookbook_version, other.parent.file_path)
-            uploader.upload_cookbooks
+            uploader = Chef::CookbookUploader.new(other_cookbook_version, other.parent.file_path, :rest => rest)
+            # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
+            old_cookbook_path = Chef::Config.cookbook_path
+            Chef::Config.cookbook_path = other.parent.file_path if !Chef::Config.cookbook_path
+            begin
+              uploader.upload_cookbooks
+            ensure
+              Chef::Config.cookbook_path = old_cookbook_path
+            end
           rescue Net::HTTPServerException => e
             case e.response.code
             when "409"

@@ -30,10 +30,6 @@ class Chef
         def exists?
           false
         end
-
-        def read
-          raise Chef::ChefFS::FileSystem::NotFoundError, "Nonexistent #{path_for_printing}"
-        end
       end
     end
   end

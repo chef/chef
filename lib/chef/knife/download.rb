@@ -40,8 +40,12 @@ class Chef
           exit 1
         end
 
+        error = false
         pattern_args.each do |pattern|
-          Chef::ChefFS::FileSystem.copy_to(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, config)
+          error ||= Chef::ChefFS::FileSystem.copy_to(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, config, ui, proc { |entry| format_path(entry) })
+        end
+        if error
+          exit 1
         end
       end
     end

@@ -21,6 +21,8 @@ require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/cookbooks_dir'
 require 'chef/chef_fs/file_system/data_bags_dir'
 require 'chef/chef_fs/file_system/nodes_dir'
+require 'chef/chef_fs/file_system/environments_dir'
+require 'chef/rest'
 
 class Chef
   module ChefFS
@@ -63,7 +65,7 @@ class Chef
             result = [
               CookbooksDir.new(self),
               DataBagsDir.new(self),
-              RestListDir.new("environments", self),
+              EnvironmentsDir.new(self),
               RestListDir.new("roles", self)
             ]
             if repo_mode == 'everything'
@@ -76,8 +78,6 @@ class Chef
             result.sort_by { |child| child.name }
           end
         end
-
-        # Yeah, sorry, I'm not putting delete on this thing.
       end
     end
   end

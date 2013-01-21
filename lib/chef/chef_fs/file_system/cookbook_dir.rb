@@ -100,6 +100,7 @@ class Chef
                 container.add_child(CookbookFile.new(parts[parts.length-1], container, segment_file))
               end
             end
+            @children = @children.sort_by { |c| c.name }
           end
           @children
         end
@@ -108,9 +109,19 @@ class Chef
           exists?
         end
 
-        def read
-          # This will only be called if dir? is false, which means exists? is false.
-          raise Chef::ChefFS::FileSystem::NotFoundError, path_for_printing
+        def delete(recurse)
+          if recurse
+            begin
+              rest.delete_rest(api_path)
+            rescue Net::HTTPServerException
+              if $!.response.code == "404"
+                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+              end
+            end
+          else
+            raise NotFoundError.new(self) if !exists?
+            raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
+          end
         end
 
         def exists?
@@ -126,8 +137,10 @@ class Chef
             return [ !exists?, nil, nil ]
           end
           are_same = true
-          Chef::ChefFS::CommandLine::diff_entries(self, other, nil, :name_only) do
-            are_same = false
+          Chef::ChefFS::CommandLine::diff_entries(self, other, nil, :name_only) do |type, old_entry, new_entry|
+            if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)
+              are_same = false
+            end
           end
           [ are_same, nil, nil ]
         end
@@ -147,7 +160,7 @@ class Chef
 
           # The negative (not found) response is cached
           if @could_not_get_chef_object
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(@could_not_get_chef_object), "#{path_for_printing} not found"
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
           end
 
           begin
@@ -166,7 +179,7 @@ class Chef
           rescue Net::HTTPServerException
             if $!.response.code == "404"
               @could_not_get_chef_object = $!
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(@could_not_get_chef_object), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
             else
               raise
             end
@@ -176,7 +189,7 @@ class Chef
           rescue Net::HTTPFatalError
             if $!.response.code == "500"
               @could_not_get_chef_object = $!
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(@could_not_get_chef_object), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)
             else
               raise
             end

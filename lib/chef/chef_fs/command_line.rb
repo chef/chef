@@ -21,32 +21,108 @@ require 'chef/chef_fs/file_system'
 class Chef
   module ChefFS
     module CommandLine
-      def self.diff(pattern, a_root, b_root, recurse_depth, output_mode)
-        found_result = false
+
+      def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil)
+        if format_path.nil?
+          format_path = proc { |entry| entry.path_for_printing }
+        end
+
+        get_content = (output_mode != :name_only && output_mode != :name_status)
+        found_match = false
+        diff(pattern, a_root, b_root, recurse_depth, get_content) do |type, old_entry, new_entry, old_value, new_value|
+          found_match = true unless type == :both_nonexistent
+          old_path = format_path.call(old_entry)
+          new_path = format_path.call(new_entry)
+
+          if get_content && old_value && new_value
+            result = ''
+            result << "diff --knife #{old_path} #{new_path}\n"
+            if old_value == :none
+              result << "new file\n"
+              old_path = "/dev/null"
+              old_value = ''
+            end
+            if new_value == :none
+              result << "deleted file\n"
+              new_path = "/dev/null"
+              new_value = ''
+            end
+            result << diff_text(old_path, new_path, old_value, new_value)
+            yield result
+          else
+            case type
+            when :common_subdirectories
+              if output_mode != :name_only && output_mode != :name_status
+                yield "Common subdirectories: #{new_path}\n"
+              end
+            when :directory_to_file
+              if output_mode == :name_only
+                yield "#{new_path}\n"
+              elsif output_mode == :name_status
+                yield "T\t#{new_path}\n"
+              else
+                yield "File #{old_path} is a directory while file #{new_path} is a regular file\n"
+              end
+            when :file_to_directory
+              if output_mode == :name_only
+                yield "#{new_path}\n"
+              elsif output_mode == :name_status
+                yield "T\t#{new_path}\n"
+              else
+                yield "File #{old_path} is a regular file while file #{new_path} is a directory\n"
+              end
+            when :deleted
+              if output_mode == :name_only
+                yield "#{new_path}\n"
+              elsif output_mode == :name_status
+                yield "D\t#{new_path}\n"
+              else
+                yield "Only in #{format_path.call(old_entry.parent)}: #{old_entry.name}\n"
+              end
+            when :added
+              if output_mode == :name_only
+                yield "#{new_path}\n"
+              elsif output_mode == :name_status
+                yield "A\t#{new_path}\n"
+              else
+                yield "Only in #{format_path.call(new_entry.parent)}: #{new_entry.name}\n"
+              end
+            when :modified
+              if output_mode == :name_only
+                yield "#{new_path}\n"
+              elsif output_mode == :name_status
+                yield "M\t#{new_path}\n"
+              end
+            when :both_nonexistent
+            when :added_cannot_upload
+            when :deleted_cannot_download
+            when :same
+              # Skip these silently
+            end
+          end
+        end
+        found_match
+      end
+
+      def self.diff(pattern, a_root, b_root, recurse_depth, get_content)
         Chef::ChefFS::FileSystem.list_pairs(pattern, a_root, b_root) do |a, b|
-          existed = diff_entries(a, b, recurse_depth, output_mode) do |diff|
+          diff_entries(a, b, recurse_depth, get_content) do |diff|
             yield diff
           end
-          found_result = true if existed
-        end
-        if !found_result && pattern.exact_path
-          yield "#{pattern}: No such file or directory on remote or local"
         end
       end
 
       # Diff two known entries (could be files or dirs)
-      def self.diff_entries(old_entry, new_entry, recurse_depth, output_mode)
+      def self.diff_entries(old_entry, new_entry, recurse_depth, get_content)
         # If both are directories
         if old_entry.dir?
           if new_entry.dir?
             if recurse_depth == 0
-              if output_mode != :name_only && output_mode != :name_status
-                yield "Common subdirectories: #{old_entry.path}\n"
-              end
+              yield [ :common_subdirectories, old_entry, new_entry ]
             else
               Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry).each do |old_child,new_child|
                 diff_entries(old_child, new_child,
-                             recurse_depth ? recurse_depth - 1 : nil, output_mode) do |diff|
+                             recurse_depth ? recurse_depth - 1 : nil, get_content) do |diff|
                   yield diff
                 end
               end
@@ -54,52 +130,32 @@ class Chef
 
         # If old is a directory and new is a file
           elsif new_entry.exists?
-            if output_mode == :name_only
-              yield "#{new_entry.path_for_printing}\n"
-            elsif output_mode == :name_status
-              yield "T\t#{new_entry.path_for_printing}\n"
-            else
-              yield "File #{new_entry.path_for_printing} is a directory while file #{new_entry.path_for_printing} is a regular file\n"
-            end
+            yield [ :directory_to_file, old_entry, new_entry ]
 
         # If old is a directory and new does not exist
           elsif new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-            if output_mode == :name_only
-              yield "#{new_entry.path_for_printing}\n"
-            elsif output_mode == :name_status
-              yield "D\t#{new_entry.path_for_printing}\n"
-            else
-              yield "Only in #{old_entry.parent.path_for_printing}: #{old_entry.name}\n"
-            end
+            yield [ :deleted, old_entry, new_entry ]
           end
 
         # If new is a directory and old is a file
         elsif new_entry.dir?
           if old_entry.exists?
-            if output_mode == :name_only
-              yield "#{new_entry.path_for_printing}\n"
-            elsif output_mode == :name_status
-              yield "T\t#{new_entry.path_for_printing}\n"
-            else
-              yield "File #{old_entry.path_for_printing} is a regular file while file #{old_entry.path_for_printing} is a directory\n"
-            end
+            yield [ :file_to_directory, old_entry, new_entry ]
 
         # If new is a directory and old does not exist
           elsif old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-            if output_mode == :name_only
-              yield "#{new_entry.path_for_printing}\n"
-            elsif output_mode == :name_status
-              yield "A\t#{new_entry.path_for_printing}\n"
-            else
-              yield "Only in #{new_entry.parent.path_for_printing}: #{new_entry.name}\n"
-            end
+            yield [ :added, old_entry, new_entry ]
           end
 
         # Neither is a directory, so they are diffable with file diff
         else
           are_same, old_value, new_value = Chef::ChefFS::FileSystem.compare(old_entry, new_entry)
           if are_same
-            return old_value != :none
+            if old_value == :none
+              yield [ :both_nonexistent, old_entry, new_entry ]
+            else
+              yield [ :same, old_entry, new_entry ]
+            end
           else
             if old_value == :none
               old_exists = false
@@ -108,6 +164,7 @@ class Chef
             else
               old_exists = true
             end
+
             if new_value == :none
               new_exists = false
             elsif new_value.nil?
@@ -119,24 +176,16 @@ class Chef
             # If one of the files doesn't exist, we only want to print the diff if the
             # other file *could be uploaded/downloaded*.
             if !old_exists && !old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-              return true
+              yield [ :old_cannot_upload, old_entry, new_entry ]
+              return
             end
             if !new_exists && !new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-              return true
+              yield [ :new_cannot_upload, old_entry, new_entry ]
+              return
             end
 
-            if output_mode == :name_only
-              yield "#{new_entry.path_for_printing}\n"
-            elsif output_mode == :name_status
-              if old_value == :none || (old_value == nil && !old_entry.exists?)
-                yield "A\t#{new_entry.path_for_printing}\n"
-              elsif new_value == :none
-                yield "D\t#{new_entry.path_for_printing}\n"
-              else
-                yield "M\t#{new_entry.path_for_printing}\n"
-              end
-            else
-              # If we haven't read the values yet, get them now.
+            if get_content
+              # If we haven't read the values yet, get them now so that they can be diffed
               begin
                 old_value = old_entry.read if old_value.nil?
               rescue Chef::ChefFS::FileSystem::NotFoundError
@@ -147,27 +196,17 @@ class Chef
               rescue Chef::ChefFS::FileSystem::NotFoundError
                 new_value = :none
               end
+            end
 
-              old_path = old_entry.path_for_printing
-              new_path = new_entry.path_for_printing
-              result = ''
-              result << "diff --knife #{old_path} #{new_path}\n"
-              if old_value == :none
-                result << "new file\n"
-                old_path = "/dev/null"
-                old_value = ''
-              end
-              if new_value == :none
-                result << "deleted file\n"
-                new_path = "/dev/null"
-                new_value = ''
-              end
-              result << diff_text(old_path, new_path, old_value, new_value)
-              yield result
+            if old_value == :none || (old_value == nil && !old_entry.exists?)
+              yield [ :added, old_entry, new_entry, old_value, new_value ]
+            elsif new_value == :none
+              yield [ :deleted, old_entry, new_entry, old_value, new_value ]
+            else
+              yield [ :modified, old_entry, new_entry, old_value, new_value ]
             end
           end
         end
-        return true
       end
 
       private

@@ -29,13 +29,14 @@ class Chef
         end
 
         # Override children to respond to environment
+        # TODO let's not do this mmkay
         def children
           @children ||= begin
             env_api_path = environment ? "environments/#{environment}/#{api_path}" : api_path
-            rest.get_rest(env_api_path).keys.map { |key| RestListEntry.new("#{key}.json", self, true) }
+            rest.get_rest(env_api_path).keys.sort.map { |key| RestListEntry.new("#{key}.json", self, true) }
           rescue Net::HTTPServerException
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
               raise
             end
