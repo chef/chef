@@ -523,5 +523,55 @@ EOM
         knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n", :stderr => "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: A JSON text must at least contain two octets!\n"
       end
     end
+
+    when_the_repository 'has the same environment with the wrong name in the file' do
+      file 'environments/x.json', { 'name' => 'y' }
+      it 'knife upload fails' do
+        knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name in remote/environments/x.json/x.json must be 'x' (is 'y')\n"
+        knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n"
+      end
+    end
+
+    when_the_repository 'has the same environment with no name in the file' do
+      file 'environments/x.json', { 'description' => 'hi' }
+      it 'knife upload succeeds' do
+        knife('upload /environments/x.json').should_succeed "Updated /environments/x.json\n"
+        knife('diff --name-status /environments/x.json').should_succeed ''
+      end
+    end
+  end
+
+  when_the_chef_server 'is empty' do
+    when_the_repository 'has an environment with bad JSON' do
+      file 'environments/x.json', '{'
+      it 'knife upload tries and fails' do
+        knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Parse error reading JSON creating child 'x.json': A JSON text must at least contain two octets!\n"
+        knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
+      end
+    end
+
+    when_the_repository 'has an environment with the wrong name in the file' do
+      file 'environments/x.json', { 'name' => 'y' }
+      it 'knife upload fails' do
+        knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Name in remote/environments/x.json must be 'x' (is 'y')\n"
+        knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
+      end
+    end
+
+    when_the_repository 'has an environment with no name in the file' do
+      file 'environments/x.json', { 'description' => 'hi' }
+      it 'knife upload succeeds' do
+        knife('upload /environments/x.json').should_succeed "Created /environments/x.json\n"
+        knife('diff --name-status /environments/x.json').should_succeed ''
+      end
+    end
+
+    when_the_repository 'has a data bag with no id in the file' do
+      file 'data_bags/bag/x.json', { 'foo' => 'bar' }
+      it 'knife upload succeeds' do
+        knife('upload /data_bags/bag/x.json').should_succeed "Created /data_bags/bag\nCreated /data_bags/bag/x.json\n"
+        knife('diff --name-status /data_bags/bag/x.json').should_succeed ''
+      end
+    end
   end
 end
