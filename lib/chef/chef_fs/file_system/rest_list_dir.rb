@@ -48,11 +48,11 @@ class Chef
             @children ||= rest.get_rest(api_path).keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
-          rescue Net::HTTPServerException
+          rescue Net::HTTPServerException => e
             if $!.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e)
             end
           end
         end

@@ -40,15 +40,21 @@ class Chef
 
         # Get the matches (recursively)
         error = false
-        patterns.each do |pattern|
-          found_match = Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) }, config[:diff_filter] ) do |diff|
-            stdout.print diff
+        begin
+          patterns.each do |pattern|
+            found_match = Chef::ChefFS::CommandLine.diff_print(pattern, chef_fs, local_fs, config[:recurse] ? nil : 1, output_mode, proc { |entry| format_path(entry) }, config[:diff_filter] ) do |diff|
+              stdout.print diff
+            end
+            if !found_match
+              ui.error "#{pattern}: No such file or directory on remote or local"
+              error = true
+            end
           end
-          if !found_match
-            ui.error "#{pattern}: No such file or directory on remote or local"
-            error = true
-          end
+        rescue Chef::ChefFS::FileSystem::OperationFailedError => e
+          ui.error "Failed on #{format_path(e.entry)} in #{e.operation}: #{e.cause}"
+          error = true
         end
+
         if error
           exit 1
         end
