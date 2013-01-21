@@ -507,5 +507,21 @@ EOM
         knife('diff --name-status /environments/x.json').should_succeed ''
       end
     end
+
+    when_the_repository 'has the same environment with the wrong name in the file' do
+      file 'environments/x.json', { 'name' => 'y' }
+      it 'knife download succeeds' do
+        knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n"
+        knife('diff --name-status /environments/x.json').should_succeed ''
+      end
+    end
+
+    when_the_repository 'has the same environment with no name in the file' do
+      file 'environments/x.json', { 'description' => 'hi' }
+      it 'knife download succeeds' do
+        knife('download /environments/x.json').should_succeed "Updated /environments/x.json\n"
+        knife('diff --name-status /environments/x.json').should_succeed ''
+      end
+    end
   end
 end

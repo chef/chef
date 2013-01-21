@@ -57,16 +57,41 @@ class Chef
           end
         end
 
+        def identity_key
+          'name'
+        end
+
         # NOTE if you change this significantly, you will likely need to change
         # DataBagDir.create_child as well.
         def create_child(name, file_contents)
-          json = Chef::JSONCompat.from_json(file_contents).to_hash
-          base_name = name[0,name.length-5]
-          if json.include?('name') && json['name'] != base_name
-            raise "Name in #{path_for_printing}/#{name} must be '#{base_name}' (is '#{json['name']}')"
+          begin
+            object = Chef::JSONCompat.from_json(file_contents).to_hash
+          rescue JSON::ParserError => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Parse error reading JSON creating child '#{name}': #{e}"
           end
-          rest.post_rest(api_path, json)
-          _make_child_entry(name, true)
+
+          result = _make_child_entry(name, true)
+
+          if data_handler
+            object = data_handler.normalize(object, result)
+          end
+
+          base_name = name[0,name.length-5]
+          if object[identity_key] != base_name
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self), "Name in #{path_for_printing}/#{name} must be '#{base_name}' (is '#{object[identity_key]}')"
+          end
+
+          begin
+            rest.post_rest(api_path, object)
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Failure creating '#{name}': #{e.message}"
+            end
+          end
+
+          result
         end
 
         def environment
