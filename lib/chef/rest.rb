@@ -369,7 +369,6 @@ class Chef
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
-      size = 0
 
       inflater = if gzip_disabled?
         NoopInflater.new
@@ -388,7 +387,6 @@ class Chef
 
       response.read_body do |chunk|
         tf.write(inflater.inflate(chunk))
-        size += chunk.size
       end
       tf.close
       tf

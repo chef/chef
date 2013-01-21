@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE" "1" "September 2012" "Chef 11.0.0.alpha" "Chef Manual"
+.TH "KNIFE" "1" "January 2013" "Chef 11.0.0.alpha" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\fR \- Chef Server API client utility
@@ -163,10 +163,7 @@ If the config file exists, knife uses these settings for \fBGENERAL OPTIONS\fR d
 \fBchef_server_url\fR: URL of the Chef server\. Corresponds to the \fB\-s\fR or \fB\-\-server\-url\fR option\. This is requested from the user when running this sub\-command\.
 .
 .IP "\(bu" 4
-\fBcache_type\fR: The type of cache to use\. Default is BasicFile\. This can be any type of Cache that moneta supports: BasicFile, Berkeley, Couch, DataMapper, File, LMC, Memcache, Memory, MongoDB, Redis, Rufus, S3, SDBM, Tyrant, Xattr, YAML\.
-.
-.IP "\(bu" 4
-\fBcache_options\fR: Specifies various options to use for caching\. These options are dependent on the \fBcache_type\fR\.
+\fBsyntax_check_cache_path\fR: Specifies the path to a directory where knife caches information about files that it has syntax checked\.
 .
 .IP "\(bu" 4
 \fBvalidation_client_name\fR: Specifies the name of the client used to validate new clients\.

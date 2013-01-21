@@ -23,7 +23,7 @@ describe Chef::Cookbook::Chefignore do
   end
 
   it "loads the globs in the chefignore file" do
-    @chefignore.ignores.should =~ %w[recipes/ignoreme.rb]
+    @chefignore.ignores.should =~ %w[recipes/ignoreme.rb ignored]
   end
 
   it "removes items from an array that match the ignores" do
@@ -32,6 +32,7 @@ describe Chef::Cookbook::Chefignore do
   end
 
   it "determines if a file is ignored" do
+    @chefignore.ignored?('ignored').should be_true
     @chefignore.ignored?('recipes/ignoreme.rb').should be_true
     @chefignore.ignored?('recipes/dontignoreme.rb').should be_false
   end

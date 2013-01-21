@@ -34,7 +34,8 @@ describe Chef::Provider::Package::Yum do
       :package_available? => true,
       :version_available? => true,
       :allow_multi_install => [ "kernel" ],
-      :package_repository => "base" 
+      :package_repository => "base",
+      :disable_extra_repo_control => true
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -92,6 +93,7 @@ describe Chef::Provider::Package::Yum do
           end
         end
         @yum_cache.stub!(:package_available?).and_return(true)
+        @yum_cache.stub!(:disable_extra_repo_control).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
@@ -125,6 +127,7 @@ describe Chef::Provider::Package::Yum do
           nil
         end
         @yum_cache.stub!(:package_available?).and_return(true)
+        @yum_cache.stub!(:disable_extra_repo_control).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         # annoying side effect of the fun stub'ing above
@@ -155,6 +158,7 @@ describe Chef::Provider::Package::Yum do
           nil
         end
         @yum_cache.stub!(:package_available?).and_return(true)
+        @yum_cache.stub!(:disable_extra_repo_control).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
@@ -189,6 +193,7 @@ describe Chef::Provider::Package::Yum do
           end
         end.and_return("something")
         @yum_cache.stub!(:package_available?).and_return(true)
+        @yum_cache.stub!(:disable_extra_repo_control).and_return(true)
         Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
         @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
         @provider.load_current_resource
@@ -209,6 +214,24 @@ describe Chef::Provider::Package::Yum do
       @provider.load_current_resource
     end
 
+    it "should detect --enablerepo or --disablerepo when passed among options, collect them preserving order and notify the yum cache" do
+      @new_resource.stub!(:options).and_return("--stuff --enablerepo=foo --otherthings --disablerepo=a,b,c  --enablerepo=bar")
+      @yum_cache.should_receive(:enable_extra_repo_control).with("--enablerepo=foo --disablerepo=a,b,c --enablerepo=bar")
+      @provider.load_current_resource
+    end
+
+    it "should let the yum cache know extra repos are disabled if --enablerepo or --disablerepo aren't among options" do
+      @new_resource.stub!(:options).and_return("--stuff --otherthings")
+      @yum_cache.should_receive(:disable_extra_repo_control)
+      @provider.load_current_resource
+    end
+
+    it "should let the yum cache know extra repos are disabled if options aren't set" do
+      @new_resource.stub!(:options).and_return(nil)
+      @yum_cache.should_receive(:disable_extra_repo_control)
+      @provider.load_current_resource
+    end
+
     it "should search provides if package name can't be found then set package_name to match" do
       @yum_cache = mock(
         'Chef::Provider::Yum::YumCache',
@@ -217,7 +240,8 @@ describe Chef::Provider::Package::Yum do
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
-        :version_available? => true
+        :version_available? => true,
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       pkg = Chef::Provider::Package::Yum::RPMPackage.new("test-package", "1.2.4-11.18.el5", "x86_64", [])
@@ -235,7 +259,8 @@ describe Chef::Provider::Package::Yum do
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
-        :version_available? => true
+        :version_available? => true,
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       pkg_x = Chef::Provider::Package::Yum::RPMPackage.new("test-package-x", "1.2.4-11.18.el5", "x86_64", [])
@@ -255,7 +280,8 @@ describe Chef::Provider::Package::Yum do
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
-        :version_available? => true
+        :version_available? => true,
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @yum_cache.should_receive(:packages_from_require).twice.and_return([])
@@ -272,7 +298,8 @@ describe Chef::Provider::Package::Yum do
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
-        :version_available? => true
+        :version_available? => true,
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -295,7 +322,8 @@ describe Chef::Provider::Package::Yum do
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5",
         :package_available? => false,
-        :version_available? => true
+        :version_available? => true,
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @yum_cache.should_receive(:packages_from_require).twice.and_return([])
@@ -363,7 +391,8 @@ describe Chef::Provider::Package::Yum do
         :installed_version => "1.2.4-11.18.el5",
         :candidate_version => "1.2.4-11.18.el5_2.3",
         :package_available? => true,
-        :version_available? => nil
+        :version_available? => nil,
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -380,7 +409,8 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [ "kernel" ]
+        :allow_multi_install => [ "kernel" ],
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -398,7 +428,8 @@ describe Chef::Provider::Package::Yum do
         :package_available? => true,
         :version_available? => true,
         :allow_multi_install => [ "cups" ],
-        :package_repository => "base"
+        :package_repository => "base",
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -420,7 +451,8 @@ describe Chef::Provider::Package::Yum do
         :package_available? => true,
         :version_available? => true,
         :allow_multi_install => [],
-        :package_repository => "base"
+        :package_repository => "base",
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -485,7 +517,8 @@ describe Chef::Provider::Package::Yum do
         :candidate_version => "1.2.4-11.15.el5",
         :package_available? => true,
         :version_available? => true,
-        :allow_multi_install => [ "kernel" ]
+        :allow_multi_install => [ "kernel" ],
+        :disable_extra_repo_control => true
       )
       Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
       @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
@@ -1609,6 +1642,12 @@ EOF
       @yc.refresh
     end
 
+    it "should pass extra_repo_control args to yum-dump.py" do
+      @yc.enable_extra_repo_control("--enablerepo=foo --disablerepo=bar")
+      @yc.should_receive(:popen4).with(%r{^/usr/bin/python .*/yum-dump.py --options --installed-provides --enablerepo=foo --disablerepo=bar$}, :waitlast=>true)
+      @yc.refresh
+    end
+
     it "should warn about invalid data with too many separators" do
       @yc.stub!(:popen4).and_yield(@pid, @stdin, @stdout_bad_separators, @stderr).and_return(@status)
       Chef::Log.should_receive(:warn).exactly(3).times.with(%r{Problem parsing})
@@ -1785,6 +1824,35 @@ EOF
       @yc.package_available?("moo.i386").should be == false
       @yc.package_available?("zisofs-tools.beta").should be == false
       @yc.package_available?("znc-test.test").should be == false
+    end
+  end
+
+  describe "enable_extra_repo_control" do
+    it "should set @extra_repo_control to arg" do
+      @yc.enable_extra_repo_control("--enablerepo=test")
+      @yc.extra_repo_control.should be == "--enablerepo=test"
+    end
+
+    it "should call reload once when set to flag cache for update" do
+      @yc.should_receive(:reload).once
+      @yc.enable_extra_repo_control("--enablerepo=test")
+      @yc.enable_extra_repo_control("--enablerepo=test")
+    end
+  end
+
+  describe "disable_extra_repo_control" do
+    it "should set @extra_repo_control to nil" do
+      @yc.enable_extra_repo_control("--enablerepo=test")
+      @yc.disable_extra_repo_control
+      @yc.extra_repo_control.should be == nil
+    end
+
+    it "should call reload once when cleared to flag cache for update" do
+      @yc.should_receive(:reload).once
+      @yc.enable_extra_repo_control("--enablerepo=test")
+      @yc.should_receive(:reload).once
+      @yc.disable_extra_repo_control
+      @yc.disable_extra_repo_control
     end
   end
 

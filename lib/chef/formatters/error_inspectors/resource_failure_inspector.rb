@@ -56,6 +56,7 @@ class Chef
           return nil if dynamic_resource?
           @snippet ||= begin
             if file = resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
+              return nil unless ::File.exists?(file)
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]
