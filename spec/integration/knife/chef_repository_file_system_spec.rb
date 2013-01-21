@@ -246,4 +246,20 @@ EOM
       end
     end
   end
+
+  when_the_repository 'has a cookbook starting with .' do
+    file 'cookbooks/.svn/metadata.rb', ''
+    file 'cookbooks/a.b/metadata.rb', ''
+    it 'knife list does not show it' do
+      knife('list --local -fp /cookbooks').should_succeed "/cookbooks/a.b/\n"
+    end
+  end
+
+  when_the_repository 'has a data bag starting with .' do
+    file 'data_bags/.svn/x.json', {}
+    file 'data_bags/a.b/x.json', {}
+    it 'knife list does not show it' do
+      knife('list --local -fp /data_bags').should_succeed "/data_bags/a.b/\n"
+    end
+  end
 end
