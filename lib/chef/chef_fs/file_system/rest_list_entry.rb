@@ -82,11 +82,11 @@ class Chef
           begin
             # REST will inflate the Chef object using json_class
             rest.get_rest(api_path)
-          rescue Net::HTTPServerException
+          rescue Net::HTTPServerException => e
             if $!.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e)
             end
           end
         end
