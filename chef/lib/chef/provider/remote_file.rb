@@ -17,10 +17,11 @@
 #
 
 require 'chef/provider/file'
-require 'chef/rest'
+require 'rest_client'
 require 'uri'
 require 'tempfile'
 require 'net/https'
+require 'net/ftp'
 
 class Chef
   class Provider
@@ -37,8 +38,14 @@ class Chef
         if current_resource_matches_target_checksum?
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
-          rest = Chef::REST.new(@new_resource.source, nil, nil, http_client_opts)
-          raw_file = rest.streaming_request(rest.create_url(@new_resource.source), {})
+          uri = URI.parse(@new_resource.source)
+          if URI::HTTP === uri
+            #HTTP or HTTPS
+            raw_file = RestClient::Request.execute(:method => :get, :url => @new_resource.source, :raw_response => true).file
+          else
+            #FTP
+            raw_file = ftp_fetch(uri)
+          end
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
@@ -87,16 +94,6 @@ class Chef
         end
       end
 
-      def source_file(source, current_checksum, &block)
-        if absolute_uri?(source)
-          fetch_from_uri(source, &block)
-        elsif !Chef::Config[:solo]
-          fetch_from_chef_server(source, current_checksum, &block)
-        else
-          fetch_from_local_cookbook(source, &block)
-        end
-      end
-
       def http_client_opts
         opts={}
         # CHEF-3140
@@ -104,23 +101,68 @@ class Chef
         # probably be counter-productive.
         # 2. Some servers are misconfigured so that you GET $URL/file.tgz but
         # they respond with content type of tar and content encoding of gzip,
-        # which tricks Chef::REST into decompressing the response body. In this
-        # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
-        # which is not what you wanted.
+        # which might trick RestClient into decompressing the response body. 
+        # In this case you'd end up with a tar archive (no gzip) named, e.g.,
+        # foo.tgz, which is not what you wanted.
+        #
+        # accept_encoding in rest-client defaults to 'gzip, deflate', override 
+        # with '' to disable
         if @new_resource.path =~ /gz$/ or @new_resource.source =~ /gz$/
-          opts[:disable_gzip] = true
+          opts[:accept_encoding] = ''
         end
         opts
       end
 
       private
 
-      def absolute_uri?(source)
-        URI.parse(source).absolute?
-      rescue URI::InvalidURIError
-        false
-      end
+      def ftp_fetch(uri)
+        # Shamelessly stolen from open-uri
+        # Fetches the file using Net::FTP, returning a Tempfile
+        path = uri.path
+        path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+        directories = path.split(%r{/}, -1)
+        directories.each {|d|
+          d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
+        }
+        unless filename = directories.pop
+          raise ArgumentError, "no filename: #{uri.inspect}"
+        end
+        directories.each {|d|
+          if /[\r\n]/ =~ d
+            raise ArgumentError, "invalid directory: #{d.inspect}"
+          end
+        }
+        if /[\r\n]/ =~ filename
+          raise ArgumentError, "invalid filename: #{filename.inspect}"
+        end 
+        typecode = uri.typecode
+        if typecode && /\A[aid]\z/ !~ typecode
+          raise ArgumentError, "invalid typecode: #{typecode.inspect}"
+        end
 
+        tempfile = Tempfile.new(filename)
+
+        # The access sequence is defined by RFC 1738
+        ftp = Net::FTP.new
+        ftp.connect(uri.hostname, uri.port)
+        ftp.passive = true if !@new_resource.ftp_active_mode
+        # todo: extract user/passwd from .netrc.
+        user = 'anonymous'
+        passwd = nil
+        user, passwd = uri.userinfo.split(/:/) if uri.userinfo
+        ftp.login(user, passwd)
+        directories.each {|cwd|
+          ftp.voidcmd("CWD #{cwd}")
+        }
+        if typecode
+          # xxx: typecode D is not handled.
+          ftp.voidcmd("TYPE #{typecode.upcase}")
+        end
+        ftp.getbinaryfile(filename, tempfile.path)
+        ftp.close
+
+        tempfile
+      end
     end
   end
 end
