@@ -60,7 +60,7 @@ describe Chef::Shell do
       # Windows ruby installs don't (always?) have PTY,
       # so hide the require here
       require 'pty'
-      config = File.expand_path("chef-config.rb", CHEF_SPEC_DATA)
+      config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
       path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
       reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
       read_until(reader, "chef >")
