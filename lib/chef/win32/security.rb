@@ -479,11 +479,11 @@ class Chef
         end
       end
 
-      # Checks if the caller has the admin privilages in their
+      # Checks if the caller has the admin privileges in their
       # security token
-      def self.has_admin_privilages?
+      def self.has_admin_privileges?
         if Chef::Platform.windows_server_2003?
-          # Admin privilages do not exist on Windows Server 2003
+          # Admin privileges do not exist on Windows Server 2003
 
           true
         else

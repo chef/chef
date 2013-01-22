@@ -22,7 +22,7 @@ if Chef::Platform.windows?
 end
 
 describe 'Chef::Win32::Security', :windows_only do
-  it "has_admin_privilages? returns true when running as admin" do
-    Chef::ReservedNames::Win32::Security.has_admin_privilages?.should == true
+  it "has_admin_privileges? returns true when running as admin" do
+    Chef::ReservedNames::Win32::Security.has_admin_privileges?.should == true
   end
 end

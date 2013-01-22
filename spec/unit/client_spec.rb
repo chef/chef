@@ -346,7 +346,7 @@ shared_examples_for Chef::Client do
       end
 
       it "shouldn't be called" do
-        @client.should_not_receive(:has_admin_privilages?)
+        @client.should_not_receive(:has_admin_privileges?)
         @client.do_windows_admin_check
       end
     end
@@ -357,13 +357,13 @@ shared_examples_for Chef::Client do
       end
 
       it "should be called" do
-        @client.should_receive(:has_admin_privilages?)
+        @client.should_receive(:has_admin_privileges?)
         @client.do_windows_admin_check
       end
 
-      context "admin privilages exist" do
+      context "admin privileges exist" do
         before do
-          @client.should_receive(:has_admin_privilages?).and_return(true)
+          @client.should_receive(:has_admin_privileges?).and_return(true)
         end
 
         it "should not log a warning message" do
@@ -378,9 +378,9 @@ shared_examples_for Chef::Client do
         end
       end
 
-      context "admin privilages doesn't exist" do
+      context "admin privileges doesn't exist" do
         before do
-          @client.should_receive(:has_admin_privilages?).and_return(false)
+          @client.should_receive(:has_admin_privileges?).and_return(false)
         end
 
         it "should log a warning message" do

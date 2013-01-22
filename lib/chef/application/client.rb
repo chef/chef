@@ -201,7 +201,7 @@ class Chef::Application::Client < Chef::Application
     option :fatal_windows_admin_check,
       :short        => "-A",
       :long         => "--fatal-windows-admin-check",
-      :description  => "Fail the run when chef-client doesn't have administrator privilages on Windows",
+      :description  => "Fail the run when chef-client doesn't have administrator privileges on Windows",
       :boolean      => true
   end
 

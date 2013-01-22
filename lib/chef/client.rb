@@ -412,10 +412,10 @@ class Chef
 
     def do_windows_admin_check
       if Chef::Platform.windows?
-        Chef::Log.debug("Checking for administrator privilages....")
+        Chef::Log.debug("Checking for administrator privileges....")
 
-        if !has_admin_privilages?
-          message = "chef-client doesn't have administrator privilages on node #{node_name}."
+        if !has_admin_privileges?
+          message = "chef-client doesn't have administrator privileges on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
             Chef::Log.fatal(message)
             Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
@@ -424,7 +424,7 @@ class Chef
             Chef::Log.warn("#{message} This might cause unexpected resource failures.")
           end
         else
-          Chef::Log.debug("chef-client has administrator privilages on node #{node_name}.")
+          Chef::Log.debug("chef-client has administrator privileges on node #{node_name}.")
         end
       end
     end
@@ -540,10 +540,10 @@ class Chef
 
     end
 
-    def has_admin_privilages?
+    def has_admin_privileges?
       require 'chef/win32/security'
 
-      Chef::ReservedNames::Win32::Security.has_admin_privilages?
+      Chef::ReservedNames::Win32::Security.has_admin_privileges?
     end
 
   end
