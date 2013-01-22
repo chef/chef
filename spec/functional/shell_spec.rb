@@ -71,6 +71,7 @@ describe Chef::Shell do
       writer.print("exit\n")
       read_until(reader, "exit")
       read_until(reader, "\n")
+      read_until(reader, "\n")
       writer.close
 
       exitstatus = wait_or_die(pid)
