@@ -52,7 +52,7 @@ describe Chef::Shell do
           STDERR.puts("chef-shell tty did not exit cleanly, killing it")
           Process.kill(:KILL, pid)
         end
-        sleep 0.1
+        sleep 0.01
       end
       exitstatus[1]
     end
@@ -69,7 +69,6 @@ describe Chef::Shell do
       writer.puts('"done"')
       output = read_until(reader, '=> "done"')
       writer.print("exit\n")
-      read_until(reader, "exit")
       read_until(reader, "exit")
       read_until(reader, "\n")
       writer.close
