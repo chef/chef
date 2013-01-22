@@ -81,7 +81,7 @@
            {db_pass, "<%= node['chef_server']['postgresql']['sql_password'] %>"},
            {db_name, "opscode_chef" },
 
-           {prepared_statements, {chef_sql, osc_statements, [pgsql]}},
+           {prepared_statements, {chef_sql, statements, []}},
            {column_transforms,
                               [{<<"created_at">>,
                                 {sqerl_transformers, convert_YMDHMS_tuple_to_datetime}},
