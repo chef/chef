@@ -409,7 +409,8 @@ describe Mixlib::ShellOut do
       context "when no user is set" do
         # Need to adjust the username and domain if running as local system
         # to match how whoami returns the information
-        local_system = (ENV['USERNAME'].downcase == "x3v7-vagrant$")
+
+        let(:local_system) { (ENV['USERNAME'].downcase == "#{ENV['COMPUTERNAME'].downcase}$") }
         let(:domain) { local_system ? 'nt authority' : ENV['COMPUTERNAME'].downcase }
         let(:user) { local_system ? 'system' : ENV['USERNAME'].downcase }
         it "should run as current user" do
