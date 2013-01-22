@@ -26,7 +26,7 @@ require 'chef/chef_fs/command_line'
 # windows match: "--- /dev/null\tTue Oct 16 18:04:34 2012"
 def remove_os_differences(diff)
   diff = diff.gsub(/([+-]{3}.*)\t.*/, '\1 DATE')
-  diff.sub(/^@@ -\d[,\d]? \+\d(,\d)? @@/, 'CONTEXT_LINE_NUMBERS')
+  diff.gsub(/^@@ -\d(,\d)? \+\d(,\d)? @@/, 'CONTEXT_LINE_NUMBERS')
 end
 
 describe 'diff', :uses_diff => true do
@@ -103,7 +103,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/both_dirs/sub_dirs_empty_in_a_filled_in_b/subsub DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +subsub
 ','diff --knife a/both_dirs/sub_dirs_empty_in_b_filled_in_a/subsub b/both_dirs/sub_dirs_empty_in_b_filled_in_a/subsub
 deleted file
@@ -125,7 +125,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/both_dirs/sub_b_only_file DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +sub_b_only_file
 ','diff --knife a/both_files_different b/both_files_different
 --- a/both_files_different DATE
@@ -137,7 +137,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/dirs_empty_in_a_filled_in_b/subsub DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +subsub
 ','diff --knife a/dirs_empty_in_b_filled_in_a/subsub b/dirs_empty_in_b_filled_in_a/subsub
 deleted file
@@ -159,7 +159,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/b_only_file DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +b_only_file
 ' ]
     end
@@ -179,7 +179,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/both_dirs/sub_dirs_empty_in_a_filled_in_b/subsub DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +subsub
 ','diff --knife a/both_dirs/sub_dirs_empty_in_b_filled_in_a/subsub b/both_dirs/sub_dirs_empty_in_b_filled_in_a/subsub
 deleted file
@@ -201,7 +201,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/both_dirs/sub_b_only_file DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +sub_b_only_file
 ' ]
     end
@@ -235,7 +235,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/b_only_file DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +b_only_file
 ' ]
     end
@@ -269,7 +269,7 @@ CONTEXT_LINE_NUMBERS
 new file
 --- /dev/null DATE
 +++ b/b_only_file DATE
-@@ -0,0 +1 @@
+CONTEXT_LINE_NUMBERS
 +b_only_file
 ' ]
     end
