@@ -550,6 +550,10 @@ F
     end
 
     def defined_at
+      # The following regexp should match these two sourceline formats:
+      #   /some/path/to/file.rb:80:in `wombat_tears'
+      #   C:/some/path/to/file.rb:80 in 1`wombat_tears'
+      # extracting the path to the source file and the line number.
       (file, line_no) = source_line.match(/(.*):(\d+):?.*$/).to_a[1,2] if source_line
       if cookbook_name && recipe_name && source_line
         "#{cookbook_name}::#{recipe_name} line #{line_no}"
