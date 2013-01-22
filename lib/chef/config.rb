@@ -334,6 +334,8 @@ class Chef
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
       user_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
       group_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
+
+      fatal_windows_admin_check false
     else
       user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
       group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]

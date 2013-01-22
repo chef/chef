@@ -476,6 +476,15 @@ class Chef
         end
       end
 
+      def windows_server_2003?
+        return false unless windows?
+
+        require 'ruby-wmi'
+
+        host = WMI::Win32_OperatingSystem.find(:first)
+        (host.version && host.version.start_with?("5.2"))
+      end
+
       private
 
         def explicit_provider(platform, version, resource_type)
