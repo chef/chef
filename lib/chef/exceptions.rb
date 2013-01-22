@@ -96,6 +96,7 @@ class Chef
     class Win32APIFunctionNotImplemented < NotImplementedError; end
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
+    class WindowsNotAdmin < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 

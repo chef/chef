@@ -226,6 +226,50 @@ class Chef
              :SidTypeLabel
         ]
 
+        TOKEN_INFORMATION_CLASS = enum :TOKEN_INFORMATION_CLASS, [
+             :TokenUser, 1,
+             :TokenGroups,
+             :TokenPrivileges,
+             :TokenOwner,
+             :TokenPrimaryGroup,
+             :TokenDefaultDacl,
+             :TokenSource,
+             :TokenType,
+             :TokenImpersonationLevel,
+             :TokenStatistics,
+             :TokenRestrictedSids,
+             :TokenSessionId,
+             :TokenGroupsAndPrivileges,
+             :TokenSessionReference,
+             :TokenSandBoxInert,
+             :TokenAuditPolicy,
+             :TokenOrigin,
+             :TokenElevationType,
+             :TokenLinkedToken,
+             :TokenElevation,
+             :TokenHasRestrictions,
+             :TokenAccessInformation,
+             :TokenVirtualizationAllowed,
+             :TokenVirtualizationEnabled,
+             :TokenIntegrityLevel,
+             :TokenUIAccess,
+             :TokenMandatoryPolicy,
+             :TokenLogonSid,
+             :TokenIsAppContainer,
+             :TokenCapabilities,
+             :TokenAppContainerSid,
+             :TokenAppContainerNumber,
+             :TokenUserClaimAttributes,
+             :TokenDeviceClaimAttributes,
+             :TokenRestrictedUserClaimAttributes,
+             :TokenRestrictedDeviceClaimAttributes,
+             :TokenDeviceGroups,
+             :TokenRestrictedDeviceGroups,
+             :TokenSecurityAttributes,
+             :TokenIsRestricted,
+             :MaxTokenInfoClass
+        ]
+
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa379561(v=vs.85).aspx
@@ -334,7 +378,7 @@ class Chef
         safe_attach_function :SetSecurityDescriptorGroup, [ :pointer, :pointer, :BOOL ], :BOOL
         safe_attach_function :SetSecurityDescriptorOwner, [ :pointer, :pointer, :BOOL ], :BOOL
         safe_attach_function :SetSecurityDescriptorSacl, [ :pointer, :BOOL, :pointer, :BOOL ], :BOOL
-
+        safe_attach_function :GetTokenInformation, [ :HANDLE, :TOKEN_INFORMATION_CLASS, :pointer, :DWORD, :PDWORD ], :BOOL
       end
     end
   end
