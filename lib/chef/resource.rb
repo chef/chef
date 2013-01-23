@@ -23,7 +23,7 @@ require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
-require 'chef/resource/conditional_action_nothing'
+require 'chef/resource/conditional_action_not_nothing'
 require 'chef/resource_collection'
 require 'chef/resource_platform_map'
 require 'chef/node'
@@ -676,7 +676,7 @@ F
     #
     # Also skips conditional checking when the action is :nothing
     def should_skip?(action)
-      conditional_action = ConditionalActionNothing.not_if(action)
+      conditional_action = ConditionalActionNotNothing.new(action)
 
       conditionals = [ conditional_action ] + only_if + not_if
       conditionals.find do |conditional|
