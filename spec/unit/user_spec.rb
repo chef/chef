@@ -23,23 +23,23 @@ require 'tempfile'
 
 describe Chef::User do
   before(:each) do
-    @client = Chef::User.new
+    @user = Chef::User.new
   end
 
   describe "initialize" do
     it "should be a Chef::User" do
-      @client.should be_a_kind_of(Chef::User)
+      @user.should be_a_kind_of(Chef::User)
     end
   end
 
   describe "name" do
     it "should let you set the name to a string" do
-      @client.name("ops_master").should == "ops_master"
+      @user.name("ops_master").should == "ops_master"
     end
 
     it "should return the current name" do
-      @client.name "ops_master"
-      @client.name.should == "ops_master"
+      @user.name "ops_master"
+      @user.name.should == "ops_master"
     end
 
     # It is not feasible to check all invalid characters.  Here are a few
@@ -57,68 +57,68 @@ describe Chef::User do
 
 
     it "should not accept spaces" do
-      lambda { @client.name "ops master" }.should raise_error(ArgumentError)
+      lambda { @user.name "ops master" }.should raise_error(ArgumentError)
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
-      lambda { @client.name Hash.new }.should raise_error(ArgumentError)
+      lambda { @user.name Hash.new }.should raise_error(ArgumentError)
     end
   end
 
   describe "admin" do
     it "should let you set the admin bit" do
-      @client.admin(true).should == true
+      @user.admin(true).should == true
     end
 
     it "should return the current admin value" do
-      @client.admin true
-      @client.admin.should == true
+      @user.admin true
+      @user.admin.should == true
     end
 
     it "should default to false" do
-      @client.admin.should == false
+      @user.admin.should == false
     end
 
     it "should throw an ArgumentError if you feed it anything but true or false" do
-      lambda { @client.name Hash.new }.should raise_error(ArgumentError)
+      lambda { @user.name Hash.new }.should raise_error(ArgumentError)
     end
   end
 
   describe "public_key" do
     it "should let you set the public key" do
-      @client.public_key("super public").should == "super public"
+      @user.public_key("super public").should == "super public"
     end
 
     it "should return the current public key" do
-      @client.public_key("super public")
-      @client.public_key.should == "super public"
+      @user.public_key("super public")
+      @user.public_key.should == "super public"
     end
 
     it "should throw an ArgumentError if you feed it something lame" do
-      lambda { @client.public_key Hash.new }.should raise_error(ArgumentError)
+      lambda { @user.public_key Hash.new }.should raise_error(ArgumentError)
     end
   end
 
   describe "private_key" do
     it "should let you set the private key" do
-      @client.private_key("super private").should == "super private"
+      @user.private_key("super private").should == "super private"
     end
 
     it "should return the private key" do
-      @client.private_key("super private")
-      @client.private_key.should == "super private"
+      @user.private_key("super private")
+      @user.private_key.should == "super private"
     end
 
     it "should throw an ArgumentError if you feed it something lame" do
-      lambda { @client.private_key Hash.new }.should raise_error(ArgumentError)
+      lambda { @user.private_key Hash.new }.should raise_error(ArgumentError)
     end
   end
 
   describe "when serializing to JSON" do
     before(:each) do
-      @client.name("black")
-      @client.public_key("crowes")
-      @json = @client.to_json
+      @user.name("black")
+      @user.public_key("crowes")
+      @json = @user.to_json
     end
 
     it "serializes as a JSON object" do
@@ -138,8 +138,8 @@ describe Chef::User do
     end
 
     it "includes the private key when present" do
-      @client.private_key("monkeypants")
-      @client.to_json.should include(%q{"private_key":"monkeypants"})
+      @user.private_key("monkeypants")
+      @user.to_json.should include(%q{"private_key":"monkeypants"})
     end
 
     it "does not include the private key if not present" do
@@ -147,8 +147,8 @@ describe Chef::User do
     end
 
     it "includes the password if present" do
-      @client.password "password"
-      @client.to_json.should include(%q{"password":"password"})
+      @user.password "password"
+      @user.to_json.should include(%q{"password":"password"})
     end
 
     it "does not include the password if not present" do
