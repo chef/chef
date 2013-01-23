@@ -18,17 +18,7 @@
 
 class Chef
   class Resource
-    class ConditionalActionNothing
-
-      # We only create these via the `not_if` constructor,
-      # not the default constructor
-      class << self
-        private :new
-      end
-
-      def self.not_if(current_action)
-        new(current_action)
-      end
+    class ConditionalActionNotNothing
 
       attr_reader :current_action
 
