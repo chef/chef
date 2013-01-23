@@ -19,6 +19,7 @@
 
 require 'chef/mixin/params_validate'
 require 'chef/dsl/platform_introspection'
+require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
@@ -119,6 +120,7 @@ F
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
+    include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
