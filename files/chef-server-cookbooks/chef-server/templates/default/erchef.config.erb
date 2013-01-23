@@ -63,7 +63,9 @@
                   %% nodes running chef-client and knife.
                   {s3_url, "https://<%= node['chef_server']['bookshelf']['vip'] %>"},
                   {s3_platform_bucket_name, "<%= node['chef_server']['erchef']['s3_bucket'] %>"},
-                  {s3_url_ttl, <%= node['chef_server']['erchef']['s3_url_ttl'] %>}
+                  {s3_url_ttl, <%= node['chef_server']['erchef']['s3_url_ttl'] %>},
+                  {s3_parallel_ops_timeout, <%= node['chef_server']['erchef']['s3_parallel_ops_timeout'] %>},
+                  {s3_parallel_ops_fanout, <%= node['chef_server']['erchef']['s3_parallel_ops_fanout'] %>}
                  ]},
   {stats_hero, [
                {udp_socket_pool_size, 1 },
