@@ -23,7 +23,12 @@ class Chef
 
     # DEPRECATED: This is just here for compatibility, use
     # Chef::DSL::IncludeAttribute instead.
-    LanguageIncludeAttribute = Chef::DSL::IncludeAttribute
+
+    deprecate_constant(:LanguageIncludeAttribute, Chef::DSL::IncludeAttribute, <<-EOM)
+Chef::Mixin::LanguageIncludeAttribute is deprecated. Use
+Chef::DSL::IncludeAttribute instead.
+EOM
+
   end
 end
 

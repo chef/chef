@@ -211,3 +211,8 @@ class Chef
     end
   end
 end
+
+# **DEPRECATED**
+# This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
+require 'chef/mixin/language'
+

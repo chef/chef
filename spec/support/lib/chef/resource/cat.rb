@@ -29,12 +29,10 @@ class Chef
       end
       
       def pretty_kitty(arg=nil)
-        set_if_args(@pretty_kitty, arg) do
-          case arg
-          when true, false
-            @pretty_kitty = arg
-          end
+        if arg == true or arg == false
+          @pretty_kitty = arg
         end
+        @pretty_kitty
       end
     end
   end
