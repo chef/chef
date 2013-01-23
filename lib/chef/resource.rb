@@ -18,7 +18,6 @@
 #
 
 require 'chef/mixin/params_validate'
-require 'chef/mixin/check_helper'
 require 'chef/dsl/platform_introspection'
 require 'chef/dsl/registry_helper'
 require 'chef/mixin/convert_to_class_name'
@@ -120,7 +119,6 @@ F
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
-    include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
@@ -324,17 +322,19 @@ F
     end
 
     def name(name=nil)
-      set_if_args(@name, name) do
+      if !name.nil?
         raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
         @name = name
       end
+      @name
     end
 
     def noop(tf=nil)
-      set_if_args(@noop, tf) do
+      if !tf.nil?
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
       end
+      @noop
     end
 
     def ignore_failure(arg=nil)

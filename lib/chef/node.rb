@@ -22,7 +22,6 @@
 require 'forwardable'
 require 'chef/config'
 require 'chef/nil_argument'
-require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/deep_merge'
@@ -57,7 +56,6 @@ class Chef
     include Chef::DSL::IncludeAttribute
     include Chef::DSL::PlatformIntrospection
 
-    include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
 
     # Create a new Chef::Node object.

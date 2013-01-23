@@ -1,5 +1,4 @@
 require 'chef/mixin/shell_out'
-require 'chef/mixin/check_helper'
 require 'chef/mixin/checksum'
 require 'chef/mixin/command'
 require 'chef/mixin/convert_to_class_name'
