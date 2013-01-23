@@ -18,37 +18,13 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::ConditionalAction do
-
-  describe "when created as an `only_if`" do
-    describe "after running the correct action" do
-      before do
-        @action = :nothing
-        @conditional = Chef::Resource::ConditionalAction.only_if(@action, :nothing)
-      end
-
-      it "indicates that resource convergence should continue" do
-        @conditional.continue?.should be_true
-      end
-    end
-
-    describe "after running an incorrect action" do
-      before do
-        @action = :something
-        @conditional = Chef::Resource::ConditionalAction.only_if(@action, :nothing)
-      end
-
-      it "indicates that resource convergence should not continue" do
-        @conditional.continue?.should be_false
-      end
-    end
-  end
+describe Chef::Resource::ConditionalActionNothing do
 
   describe "when created as a `not_if`" do
     describe "after running the correct action" do
       before do
         @action = :nothing
-        @conditional = Chef::Resource::ConditionalAction.not_if(@action, :nothing)
+        @conditional = Chef::Resource::ConditionalActionNothing.not_if(@action)
       end
 
       it "indicates that resource convergence should not continue" do
@@ -59,7 +35,7 @@ describe Chef::Resource::ConditionalAction do
     describe "after running an incorrect action" do
       before do
         @action = :something
-        @conditional = Chef::Resource::ConditionalAction.not_if(@action, :nothing)
+        @conditional = Chef::Resource::ConditionalActionNothing.not_if(@action)
       end
 
       it "indicates that resource convergence should continue" do
