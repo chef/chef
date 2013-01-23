@@ -42,6 +42,20 @@ describe Chef::User do
       @client.name.should == "ops_master"
     end
 
+    # It is not feasible to check all invalid characters.  Here are a few
+    # that we probably care about.
+    it "should not accept invalid characters" do
+      # capital letters
+      lambda { @user.name "Bar" }.should raise_error(ArgumentError)
+      # slashes
+      lambda { @user.name "foo/bar" }.should raise_error(ArgumentError)
+      # ?
+      lambda { @user.name "foo?" }.should raise_error(ArgumentError)
+      # &
+      lambda { @user.name "foo&" }.should raise_error(ArgumentError)
+    end
+
+
     it "should not accept spaces" do
       lambda { @client.name "ops master" }.should raise_error(ArgumentError)
     end

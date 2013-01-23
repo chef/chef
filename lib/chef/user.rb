@@ -38,7 +38,7 @@ class Chef
 
     def name(arg=nil)
       set_or_return(:name, arg,
-                    :regex => /^[\-[:alnum:]_\.]+$/)
+                    :regex => /^[a-z0-9\-_]+$/)
     end
 
     def admin(arg=nil)
