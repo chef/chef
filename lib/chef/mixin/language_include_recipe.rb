@@ -20,7 +20,12 @@ require 'chef/dsl/include_recipe'
 
 class Chef
   module Mixin
-    LanguageIncludeRecipe = Chef::DSL::IncludeRecipe
+
+    deprecate_constant(:LanguageIncludeRecipe, Chef::DSL::IncludeRecipe, <<-EOM)
+Chef::Mixin::LanguageIncludeRecipe is deprecated, use Chef::DSL::Recipe
+instead.
+EOM
+
   end
 end
 

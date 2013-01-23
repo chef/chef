@@ -20,7 +20,6 @@
 require 'chef/resource'
 require 'chef/resource_platform_map'
 require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/language'
 
 class Chef
   module DSL
@@ -82,3 +81,7 @@ class Chef
     end
   end
 end
+
+# **DEPRECATED**
+# This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.
+require 'chef/mixin/recipe_definition_dsl_core'
