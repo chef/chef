@@ -116,6 +116,7 @@ class Chef
             end
           end
           opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
+          opts << " --no-create-home" if ! managing_home_dir?
           opts
         end
 
