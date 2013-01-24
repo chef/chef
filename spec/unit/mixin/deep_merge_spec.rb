@@ -311,4 +311,29 @@ describe Chef::Mixin::DeepMerge do
       lambda {@dm.role_merge(hash_dst, hash_src)}.should raise_error(Chef::Mixin::DeepMerge::InvalidSubtractiveMerge)
     end
   end
+
+  describe "hash-only merging" do
+    it "merges Hashes like normal deep merge" do
+      merge_ee_hash = {"top_level_a" => {"1_deep_a" => "1-a-merge-ee", "1_deep_b" => "1-deep-b-merge-ee"}, "top_level_b" => "top-level-b-merge-ee"}
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => "1-deep-b-merged-onto", "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+
+      merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+
+      merged_result["top_level_b"].should == "top-level-b-merged-onto"
+      merged_result["top_level_a"]["1_deep_a"].should == "1-a-merge-ee"
+      merged_result["top_level_a"]["1_deep_b"].should == "1-deep-b-merged-onto"
+      merged_result["top_level_a"]["1_deep_c"].should == "1-deep-c-merged-onto"
+    end
+
+    it "replaces arrays rather than merging them" do
+      merge_ee_hash = {"top_level_a" => {"1_deep_a" => "1-a-merge-ee", "1_deep_b" => %w[A A A]}, "top_level_b" => "top-level-b-merge-ee"}
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w[B B B], "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+
+      merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+
+      merged_result["top_level_b"].should == "top-level-b-merged-onto"
+      merged_result["top_level_a"]["1_deep_a"].should == "1-a-merge-ee"
+      merged_result["top_level_a"]["1_deep_b"].should == %w[B B B]
+    end
+  end
 end
