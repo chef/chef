@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# ./chef-recipe - Run a single chef recipe, for educational purposes
+# ./chef-apply - Run a single chef recipe
 #
 # Author:: Bryan W. Berry (<bryan.berry@gmail.com>)
 # Copyright:: Copyright (c) 2012 Bryan W. Berry
