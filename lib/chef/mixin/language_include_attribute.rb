@@ -17,6 +17,7 @@
 #
 
 require 'chef/dsl/include_attribute'
+require 'chef/mixin/deprecation'
 
 class Chef
   module Mixin
