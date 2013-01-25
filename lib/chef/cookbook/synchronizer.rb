@@ -56,10 +56,6 @@ class Chef
   # Synchronizes the locally cached copies of cookbooks with the files on the
   # server.
   class CookbookSynchronizer
-    EAGER_SEGMENTS = Chef::CookbookVersion::COOKBOOK_SEGMENTS.dup
-    EAGER_SEGMENTS.delete(:files)
-    EAGER_SEGMENTS.delete(:templates)
-    EAGER_SEGMENTS.freeze
 
     def initialize(cookbooks_by_name, events)
       @cookbooks_by_name, @events = cookbooks_by_name, events
@@ -137,8 +133,16 @@ class Chef
       Chef::Log.debug("Synchronizing cookbook #{cookbook.name}")
 
       # files and templates are lazily loaded, and will be done later.
+      eager_segments = Chef::CookbookVersion::COOKBOOK_SEGMENTS.dup
 
-      EAGER_SEGMENTS.each do |segment|
+      unless Chef::Config[:no_lazy_load] then
+        Chef::Log.debug("Synchronizing files, templates lazily")
+        eager_segments.delete(:files)
+        eager_segments.delete(:templates)
+      end
+
+
+      eager_segments.each do |segment|
         segment_filenames = Array.new
         cookbook.manifest[segment].each do |manifest_record|
 
