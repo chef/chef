@@ -116,13 +116,13 @@ class Chef
             end
           end
           opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
-          opts << " -M" if ! managing_home_dir?
           opts
         end
 
         def useradd_options
           opts = ''
           opts << " -r" if @new_resource.system
+          opts << " -M" if ! managing_home_dir?
           opts
         end
 
