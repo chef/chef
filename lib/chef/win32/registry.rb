@@ -21,6 +21,7 @@ require 'chef/reserved_names'
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   require 'win32/registry'
   require 'ruby-wmi'
+  require 'win32/api'
 end
 
 class Chef
@@ -115,26 +116,33 @@ class Chef
           Chef::Log.debug("Registry key #{key_path}, does not exist, not deleting")
           return true
         end
-        hive, key = get_hive_and_key(key_path)
-        key_parent = key.split("\\")
-        key_to_delete = key_parent.pop
-        key_parent = key_parent.join("\\")
+        #Get the hive(HKLM),
+        #hive_namespace(::Win32::Registry::HKEY_LOCAL_MACHINE)
+        hive = key_path.split("\\").shift #HKLM
+        hive_namespace, key_including_parent = get_hive_and_key(key_path) #::Win32::Registry::HKEY_LOCAL_MACHINE
         if has_subkeys?(key_path)
           if recursive == true
-            hive.open(key_parent, ::Win32::Registry::KEY_WRITE | registry_system_architecture) do |reg|
+            subkeys = get_subkeys(key_path)
+            subkeys.each do |key|
+              keypath_to_check = hive+"\\"+key_including_parent+"\\"+key
               Chef::Log.debug("Deleting registry key #{key_path} recursively")
-              reg.delete_key(key_to_delete,recursive)
+              delete_key(keypath_to_check, true)
             end
+            delete_key_ex(hive_namespace, key_including_parent)
           else
             raise Chef::Exceptions::Win32RegNoRecursive, "Registry key #{key_path} has subkeys, and recursive not specified"
           end
         else
-          hive.open(key_parent, ::Win32::Registry::KEY_WRITE | registry_system_architecture) do |reg|
-            Chef::Log.debug("Deleting registry key #{key_path}")
-            reg.delete_key(key_to_delete)
-          end
+          delete_key_ex(hive_namespace, key_including_parent)
+          return
         end
         true
+      end
+
+      def delete_key_ex(hive, key)
+        regDeleteKeyEx = ::Win32::API.new('RegDeleteKeyEx', 'LPLL', 'L', 'advapi32')
+        hive_num = hive.hkey - (1 << 32)
+        regDeleteKeyEx.call(hive_num, key, ::Win32::Registry::KEY_WRITE | registry_system_architecture, 0)
       end
 
       def key_exists?(key_path)
