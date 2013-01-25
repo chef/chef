@@ -17,7 +17,7 @@
 
 class Chef
   CHEF_ROOT = File.dirname(File.expand_path(File.dirname(__FILE__)))
-  VERSION = '10.18.2'
+  VERSION = '10.18.3'
 end
 
 # NOTE: the Chef::Version class is defined in version_class.rb
