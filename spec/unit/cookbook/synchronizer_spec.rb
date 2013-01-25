@@ -63,6 +63,7 @@ describe Chef::CookbookSynchronizer do
                                    "checksum" => "abc456" }
     @cookbook_a_manifest["attributes"] = [ @cookbook_a_default_attrs ]
     @cookbook_a_manifest["templates"] = [{"path" => "templates/default/apache2.conf.erb", "url" => "http://chef.example.com/ffffff"}]
+    @cookbook_a_manifest["files"] = [{"path" => "files/default/megaman.conf", "url" => "http://chef.example.com/megaman.conf"}]
     @cookbook_a.manifest = @cookbook_a_manifest
     @cookbook_manifest["cookbook_a"] = @cookbook_a
 
@@ -102,7 +103,7 @@ describe Chef::CookbookSynchronizer do
     before do
       # Would rather not stub out methods on the test subject, but setting up
       # the state is a PITA and tests for this behavior are above.
-      @synchronizer.should_receive(:clear_obsoleted_cookbooks)
+      @synchronizer.stub!(:clear_obsoleted_cookbooks)
 
       @server_api = mock("Chef::REST (mock)")
       @file_cache = mock("Chef::FileCache (mock)")
@@ -162,6 +163,53 @@ describe Chef::CookbookSynchronizer do
         @synchronizer.sync_cookbooks
       end
 
+      context "Chef::Config[:no_lazy_load] is true" do
+        before do
+          Chef::Config[:no_lazy_load] = true
+          @synchronizer = Chef::CookbookSynchronizer.new(@cookbook_manifest, @events)
+          @synchronizer.stub!(:server_api).and_return(@server_api)
+          @synchronizer.stub!(:cache).and_return(@file_cache)
+          @synchronizer.stub!(:clear_obsoleted_cookbooks)
+
+          @cookbook_a_file_default_tempfile = mock("Tempfile for cookbook_a megaman.conf file",
+                                                     :path => "/tmp/cookbook_a_file_default_tempfile")
+          @cookbook_a_template_default_tempfile = mock("Tempfile for cookbook_a apache.conf.erb template",
+                                                     :path => "/tmp/cookbook_a_template_default_tempfile")
+        end
+  
+        after do
+          Chef::Config[:no_lazy_load] = false
+        end
+  
+        it "fetches templates and cookbook files" do
+          @file_cache.should_receive(:has_key?).
+            with("cookbooks/cookbook_a/files/default/megaman.conf").
+            and_return(false)
+          @file_cache.should_receive(:has_key?).
+            with("cookbooks/cookbook_a/templates/default/apache2.conf.erb").
+            and_return(false)
+
+          @server_api.should_receive(:get_rest).
+            with('http://chef.example.com/megaman.conf', true).
+            and_return(@cookbook_a_file_default_tempfile)
+          @file_cache.should_receive(:move_to).
+            with("/tmp/cookbook_a_file_default_tempfile", "cookbooks/cookbook_a/files/default/megaman.conf")
+          @file_cache.should_receive(:load).
+            with("cookbooks/cookbook_a/files/default/megaman.conf", false).
+            and_return("/file-cache/cookbooks/cookbook_a/default/megaman.conf")
+
+          @server_api.should_receive(:get_rest).
+            with('http://chef.example.com/ffffff', true).
+            and_return(@cookbook_a_template_default_tempfile)
+          @file_cache.should_receive(:move_to).
+            with("/tmp/cookbook_a_template_default_tempfile", "cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+          @file_cache.should_receive(:load).
+            with("cookbooks/cookbook_a/templates/default/apache2.conf.erb", false).
+            and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
+  
+          @synchronizer.sync_cookbooks
+        end
+      end
     end
 
     context "when the cache contains outdated files" do
