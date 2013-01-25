@@ -230,20 +230,45 @@ class Chef
       "role[#{@name}]"
     end
 
+  def self.findFileInPathSetting(fileName)
+      config_role = Chef::Config[:role_path]
+      #assumption here that's it either a string or an array of strings.  That's 
+      #not that awesome of a one to make, but my ruby-fu is poor
+      role_paths =  config_role.kind_of?(String) ? [config_role] : config_role
+      possibleFilePaths = role_paths.map{|path| File.join(path,fileName)}
+      matchingFiles = possibleFilePaths.find_all{ |f|  File.exists?(f) }
+
+      if(!matchingFiles || matchingFiles.length == 0)
+        return nil
+      elsif(matchingFiles.length > 1)
+          Chef::Log.warning("Found more thane one role file of #{fileName} in #{role_paths}")
+      end
+
+      return matchingFiles.first
+
+    end 
+
     # Load a role from disk - prefers to load the JSON, but will happily load
     # the raw rb files as well.
     def self.from_disk(name, force=nil)
-      js_file = File.join(Chef::Config[:role_path], "#{name}.json")
-      rb_file = File.join(Chef::Config[:role_path], "#{name}.rb")
-
-      if File.exists?(js_file) || force == "json"
-        # from_json returns object.class => json_class in the JSON.
-        Chef::JSONCompat.from_json(IO.read(js_file))
-      elsif File.exists?(rb_file) || force == "ruby"
+      js_file = findFileInPathSetting("#{name}.json")
+      #Not sure how to handle this precisely.  Old code would
+      #load the file even if it didn't exist if force was passed in, I guess counting
+      #on an exception.  Can't figure out where though that would be called.  Nonetheless
+      #we'll just throw errors on the force situations
+      #Need to declare this so it's in scope for the elsif
+      rb_file = nil
+      if(js_file)
+          Chef::JSONCompat.from_json(IO.read(js_file))
+      elsif force == "json"
+         raise Chef::Exceptions::RoleNotFound, "Role '#{name}.json' could not be loaded from disk in paths #{Chef::Config[:role_path]}"
+      elsif (rb_file = findFileInPathSetting("#{name}.rb"))
         role = Chef::Role.new
         role.name(name)
         role.from_file(rb_file)
         role
+      elsif (force == "ruby")
+         raise Chef::Exceptions::RoleNotFound, "Role '#{name}.rb' could not be loaded from disk in paths #{Chef::Config[:role_path]}"
       else
         raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
       end

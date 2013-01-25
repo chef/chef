@@ -246,8 +246,9 @@ describe Chef::Role do
 
   describe "when loading from disk" do
     it "should return a Chef::Role object from JSON" do
-      File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(true)
-      IO.should_receive(:read).with(File.join(Chef::Config[:role_path], 'lolcat.json')).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
+      json_path = File.join(Chef::Config[:role_path], 'lolcat.json')
+      File.should_receive(:exists?).with(json_path).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(json_path).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
       @role.should be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
     end
