@@ -284,9 +284,9 @@ class Chef
 
        def merged_attributes
          @merged_attributes ||= begin
-                                  resolved_attrs = COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-                                    component_value = instance_variable_get(component_ivar)
-                                    Chef::Mixin::DeepMerge.merge(merged, component_value)
+                                  components = [combined_default, @normal, combined_override, @automatic]
+                                  resolved_attrs = components.inject(Mash.new) do |merged, component|
+                                    Chef::Mixin::DeepMerge.hash_only_merge(merged, component)
                                   end
                                   immutablize(resolved_attrs)
                                 end

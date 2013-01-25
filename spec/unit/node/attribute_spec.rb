@@ -284,6 +284,29 @@ describe Chef::Node::Attribute do
       @attributes["override"].should == "cookbook override"
     end
 
+    it "merges arrays within the default precedence" do
+      @attributes.role_default["array"] = %w{role}
+      @attributes.env_default["array"] = %w{env}
+      @attributes["array"].should == %w{env role}
+    end
+
+    it "merges arrays within the override precedence" do
+      @attributes.role_override["array"] = %w{role}
+      @attributes.env_override["array"] = %w{env}
+      @attributes["array"].should == %w{role env}
+    end
+
+    it "does not merge arrays between default and normal" do
+      @attributes.role_default["array"] = %w{role}
+      @attributes.normal["array"] = %w{normal}
+      @attributes["array"].should == %w{normal}
+    end
+
+    it "does not merge arrays between normal and override" do
+      @attributes.normal["array"] = %w{normal}
+      @attributes.role_override["array"] = %w{role}
+      @attributes["array"].should == %w{role}
+    end
   end
 
   describe "when reading combined default or override values" do
