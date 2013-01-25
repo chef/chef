@@ -270,6 +270,17 @@ EOR
       File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(1).times.and_return(false)
       lambda {@role.class.from_disk("lolcat")}.should raise_error(Chef::Exceptions::RoleNotFound)
     end
+
+    it "should allow us to find from multiple role paths" do
+      base_role_path = Chef::Config[:role_path]
+      Chef::Config[:role_path] = ["#{base_role_path}/subdir1", "#{base_role_path}/subdir2"]
+      File.should_receive(:exists?).with(File.join(base_role_path,"subdir1", 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join(base_role_path,"subdir2", 'lolcat.json')).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(File.join(base_role_path,"subdir2","lolcat.json")).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+
+    end
   end
 end
 
