@@ -335,5 +335,17 @@ describe Chef::Mixin::DeepMerge do
       merged_result["top_level_a"]["1_deep_a"].should == "1-a-merge-ee"
       merged_result["top_level_a"]["1_deep_b"].should == %w[B B B]
     end
+
+    it "replaces non-hash items with hashes when there's a conflict" do
+      merge_ee_hash = {"top_level_a" => "top-level-a-mergee", "top_level_b" => "top-level-b-merge-ee"}
+      merge_with_hash = {"top_level_a" => {"1_deep_b" => %w[B B B], "1_deep_c" => "1-deep-c-merged-onto"}, "top_level_b" => "top-level-b-merged-onto" }
+
+      merged_result = @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+
+      merged_result["top_level_a"].should be_a(Hash)
+      merged_result["top_level_a"]["1_deep_a"].should be_nil
+      merged_result["top_level_a"]["1_deep_b"].should == %w[B B B]
+    end
+
   end
 end
