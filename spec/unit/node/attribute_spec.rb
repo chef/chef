@@ -307,6 +307,17 @@ describe Chef::Node::Attribute do
       @attributes.role_override["array"] = %w{role}
       @attributes["array"].should == %w{role}
     end
+
+    it "merges nested hashes between precedence levels" do
+      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
+      @attributes.env_default = {"a" => {"b" => {"default" => "default"}}}
+      @attributes.normal = {"a" => {"b" => {"normal" => "normal"}}}
+      @attributes.override = {"a" => {"override" => "role"}}
+      @attributes.automatic = {"a" => {"automatic" => "auto"}}
+      @attributes["a"].should == {"b"=>{"default"=>"default", "normal"=>"normal"},
+                                  "override"=>"role",
+                                  "automatic"=>"auto"}
+    end
   end
 
   describe "when reading combined default or override values" do
