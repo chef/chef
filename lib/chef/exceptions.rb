@@ -96,6 +96,8 @@ class Chef
     class Win32APIFunctionNotImplemented < NotImplementedError; end
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
+    # Attempting to access a 64-bit only resource on a 32-bit Windows system
+    class Win32ArchitectureIncorrect < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
@@ -130,7 +132,7 @@ class Chef
     class StaleAttributeRead < StandardError; end
 
     #Registry Helper throws the following errors
-    class Win32RegArchitectureIncorrect < RuntimeError; end
+    class Win32RegArchitectureIncorrect < Win32ArchitectureIncorrect; end
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
     class Win32RegValueMissing < RuntimeError; end
