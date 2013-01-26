@@ -159,7 +159,7 @@ describe Chef::Provider::RegistryKey do
     end
   end
 
-  describe "delete_key" do
+  describe "delete_key", :windows_only do
     it "deletes key if it has subkeys and recursive is set to true" do
       @registry.should_receive(:key_exists?).with(key_path).and_return(true)
       @registry.should_receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
