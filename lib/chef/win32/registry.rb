@@ -116,10 +116,11 @@ class Chef
           Chef::Log.debug("Registry key #{key_path}, does not exist, not deleting")
           return true
         end
-        #Get the hive(HKLM),
-        #hive_namespace(::Win32::Registry::HKEY_LOCAL_MACHINE)
-        hive = key_path.split("\\").shift #HKLM
-        hive_namespace, key_including_parent = get_hive_and_key(key_path) #::Win32::Registry::HKEY_LOCAL_MACHINE
+        #key_path is in the form "HKLM\Software\Opscode" for example, extracting
+        #hive = HKLM,
+        #hive_namespace = ::Win32::Registry::HKEY_LOCAL_MACHINE
+        hive = key_path.split("\\").shift
+        hive_namespace, key_including_parent = get_hive_and_key(key_path)
         if has_subkeys?(key_path)
           if recursive == true
             subkeys = get_subkeys(key_path)
@@ -139,6 +140,8 @@ class Chef
         true
       end
 
+      #Using the 'RegDeleteKeyEx' Windows API that correctly supports WOW64 systems (Win2003)
+      #instead of the 'RegDeleteKey'
       def delete_key_ex(hive, key)
         regDeleteKeyEx = ::Win32::API.new('RegDeleteKeyEx', 'LPLL', 'L', 'advapi32')
         hive_num = hive.hkey - (1 << 32)
