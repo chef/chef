@@ -33,25 +33,16 @@ describe Chef::Resource::Batch do
   end  
 
   it "should create a new Chef::Resource::Batch" do
-    @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Batch)
   end
   
-  it "should have a resource name of :batch" do
-    @resource.resource_name.should eql(:batch)
+  context "windowssystemscript" do
+    let(:resource_instance) { @resource }
+    let(:resource_instance_name ) { @resource.command }
+    let(:resource_name) { :batch }
+    let(:interpreter_file_name) { 'cmd.exe' }
+
+    it_should_behave_like "a Windows system script resource"  
   end
   
-  it "should have an interpreter with a file name of cmd.exe" do
-
-
-    # When rspec-mocks 2.11 is released, switch to constant_stubbing
-    # with const_stub below
-    # stub_const("::File::ALT_SEPARATOR",::File::SEPARATOR).
-    # For now, stub out a method that exists just for this purpose
-#    @resource.respond_to?(:windows_separator).should == true
-#    @resource.stub(:windows_separator) { ::File::SEPARATOR }
-    
-    @resource.interpreter.split('\\').pop.casecmp('cmd.exe').should == 0
-  end
-
 end

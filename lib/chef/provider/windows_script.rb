@@ -41,7 +41,7 @@ class Chef
       end
 
       def interpreter_script_path
-        @script_file.path.gsub(::File::SEPARATOR) { | replace | ::File::ALT_SEPARATOR }
+        script_file.path.gsub(::File::SEPARATOR) { | replace | ::File::ALT_SEPARATOR }
       end
     end
   end

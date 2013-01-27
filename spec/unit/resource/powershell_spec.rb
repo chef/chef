@@ -27,26 +27,22 @@ describe Chef::Resource::Powershell do
     node.default["kernel"][:machine] = :x86_64.to_s
 
     run_context = Chef::RunContext.new(node, nil, nil)
-    
-    @resource = Chef::Resource::Batch.new("batch_unit_test", run_context)
-    
-    run_context = Chef::RunContext.new(node, nil, nil)
 
     @resource = Chef::Resource::Powershell.new("powershell_unit_test", run_context)
 
   end  
 
   it "should create a new Chef::Resource::Powershell" do
-    @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Powershell)
   end
   
-  it "should have a resource name of :powershell" do
-    @resource.resource_name.should eql(:powershell)
-  end
-  
-  it "should have an interpreter with a file name of powershell.exe" do
-    @resource.interpreter.split('\\').pop.casecmp('powershell.exe').should == 0
+  context "windowssystemscript" do
+    let(:resource_instance) { @resource }
+    let(:resource_instance_name ) { @resource.command }
+    let(:resource_name) { :powershell }
+    let(:interpreter_file_name) { 'powershell.exe' }
+
+    it_should_behave_like "a Windows system script resource"  
   end
 
 end

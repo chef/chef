@@ -20,50 +20,27 @@
 require 'spec_helper'
 
 describe Chef::Resource::Script do
+  let(:resource_instance_name) { "fakey_fakerton" }  
+  let(:script_resource) { Chef::Resource::Script.new(resource_instance_name) }
+  let(:resource_name) { :script }
 
-  before(:each) do
-    @resource = Chef::Resource::Script.new("fakey_fakerton")
-  end  
-
-  it "should create a new Chef::Resource::Script" do
-    @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::Script)
-  end
-  
-  it "should have a resource name of :script" do
-    @resource.resource_name.should eql(:script)
-  end
-  
-  it "should set command to the argument provided to new" do
-    @resource.command.should eql("fakey_fakerton")
-  end
-  
-  it "should accept a string for the code" do
-    @resource.code "hey jude"
-    @resource.code.should eql("hey jude")
-  end
-  
   it "should accept a string for the interpreter" do
-    @resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
-    @resource.interpreter.should eql("naaaaNaNaNaaNaaNaaNaa")
-  end
-
-  it "should accept a string for the flags" do
-    @resource.flags "-f"
-    @resource.flags.should eql("-f")
+    script_resource.interpreter "naaaaNaNaNaaNaaNaaNaa"
+    script_resource.interpreter.should eql("naaaaNaNaNaaNaaNaaNaa")
   end
 
   describe "when it has interpreter and flags" do
     before do 
-      @resource.command("grep")
-      @resource.interpreter("gcc")
-      @resource.flags("-al")
+      script_resource.command("grep")
+      script_resource.interpreter("gcc")
+      script_resource.flags("-al")
     end
 
-    it "returns the command as its identity" do
-      @resource.identity.should == "grep"
+   it "returns the command as its identity" do
+      script_resource.identity.should == "grep"
     end
   end
-
-
+  
+  it_behaves_like "a script resource"
 end
+
