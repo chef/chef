@@ -27,7 +27,7 @@ class Chef
       end
       
       def flags
-        @new_resource.flags.nil? ? '-ExecutionPolicy RemoteSigned -Command' : new_resource.flags + '-ExecutionPolicy RemoteSigned -Commmand'
+        @new_resource.flags.nil? ? '-ExecutionPolicy RemoteSigned -Command' : @new_resource.flags + '-ExecutionPolicy RemoteSigned -Command'
       end
         
     end

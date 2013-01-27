@@ -63,7 +63,7 @@ class Chef
       protected
 
       def interpreter_script_path
-        @script_file.path
+        script_file.path
       end      
 
     end

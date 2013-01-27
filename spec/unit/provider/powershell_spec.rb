@@ -21,8 +21,12 @@ describe Chef::Provider::Powershell, "action_run" do
 
   before(:each) do
     @node = Chef::Node.new
+
+    @node.default["kernel"] = Hash.new
+    @node.default["kernel"][:machine] = :x86_64.to_s
+    
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Powershell.new('run some powershell code')
+    @new_resource = Chef::Resource::Powershell.new('run some powershell code', @run_context)
 #    @new_resource.code "$| = 1; print 'i like beans'"
 #    @new_resource.interpreter 'perl'
 
