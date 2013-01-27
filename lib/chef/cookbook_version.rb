@@ -51,6 +51,7 @@ class Chef
     attr_accessor :provider_filenames
     attr_accessor :root_filenames
     attr_accessor :name
+    attr_accessor :pathname
     attr_accessor :metadata
     attr_accessor :metadata_filenames
     attr_accessor :status
@@ -194,6 +195,7 @@ class Chef
     # object<Chef::CookbookVersion>:: Duh. :)
     def initialize(name)
       @name = name
+      @pathname = name
       @frozen = false
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
@@ -707,11 +709,11 @@ class Chef
           specificity = "default"
 
           if segment == :root_files
-            matcher = segment_file.match(".+/#{Regexp.escape(name.to_s)}/(.+)")
+            matcher = segment_file.match(".+/#{Regexp.escape(pathname.to_s)}/(.+)")
             file_name = matcher[1]
             path = file_name
           elsif segment == :templates || segment == :files
-            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
+            matcher = segment_file.match("/#{Regexp.escape(pathname.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+?)/(.+))")
             unless matcher
               Chef::Log.debug("Skipping file #{segment_file}, as it isn't in any of the proper directories (platform-version, platform or default)")
               Chef::Log.debug("You probably need to move #{segment_file} into the 'default' sub-directory")
@@ -721,7 +723,7 @@ class Chef
             specificity = matcher[2]
             file_name = matcher[3]
           else
-            matcher = segment_file.match("/#{Regexp.escape(name.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
+            matcher = segment_file.match("/#{Regexp.escape(pathname.to_s)}/(#{Regexp.escape(segment.to_s)}/(.+))")
             path = matcher[1]
             file_name = matcher[2]
           end
