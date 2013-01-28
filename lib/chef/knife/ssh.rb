@@ -237,7 +237,7 @@ class Chef
       end
 
       def get_password
-        @password ||= prompt_for_password
+        @password ||= config[:ssh_password] ? config[:ssh_password] : prompt_for_password
       end
 
       def prompt_for_password(prompt = "Enter your password: ")
