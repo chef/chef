@@ -24,6 +24,7 @@ describe Chef::Knife::UserCreate do
   before(:each) do
     @knife = Chef::Knife::UserCreate.new
     @knife.name_args = [ 'a_user' ]
+    @knife.config[:user_password] = "foobar"
     @user = Chef::User.new
     @user.name "a_user"
     @user_with_private_key = Chef::User.new
@@ -34,7 +35,9 @@ describe Chef::Knife::UserCreate do
     Chef::User.stub!(:from_hash).and_return(@user)
     @knife.stub!(:edit_data).and_return(@user.to_hash)
     @stdout = StringIO.new
+    @stderr = StringIO.new
     @knife.ui.stub!(:stdout).and_return(@stdout)
+    @knife.ui.stub!(:stderr).and_return(@stderr)
   end
 
   it "creates a new user" do
@@ -48,6 +51,12 @@ describe Chef::Knife::UserCreate do
     @knife.config[:user_password] = "a_password"
     @user.should_receive(:password).with("a_password")
     @knife.run
+  end
+
+  it "exits with an error if password is blank" do
+    @knife.config[:user_password] = ''
+    lambda { @knife.run }.should raise_error SystemExit
+    @stderr.string.should match /You must specify a non-blank password/
   end
 
   it "sets the user name" do
