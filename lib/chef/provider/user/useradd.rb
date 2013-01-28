@@ -122,6 +122,7 @@ class Chef
         def useradd_options
           opts = ''
           opts << " -r" if @new_resource.system
+          opts << " -M" if ! managing_home_dir?
           opts
         end
 
