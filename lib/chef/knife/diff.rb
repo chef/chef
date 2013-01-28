@@ -51,7 +51,7 @@ class Chef
             end
           end
         rescue Chef::ChefFS::FileSystem::OperationFailedError => e
-          ui.error "Failed on #{format_path(e.entry)} in #{e.operation}: #{e.cause}"
+          ui.error "Failed on #{format_path(e.entry)} in #{e.operation}: #{e.message}"
           error = true
         end
 
