@@ -234,6 +234,19 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when printing attribute components" do
+
+    it "does not cause a type error" do
+      # See CHEF-3799; IO#puts implicitly calls #to_ary on its argument. This
+      # is expected to raise a NoMethodError or return an Array. `to_ary` is
+      # the "strict" conversion method that should only be implemented by
+      # things that are truly Array-like, so NoMethodError is the right choice.
+      # (cf. there is no Hash#to_ary).
+      lambda { @attributes.default.to_ary }.should raise_error(NoMethodError)
+    end
+
+  end
+
   describe "when fetching values based on precedence" do
     before do
       @attributes.default["default"] = "cookbook default"
