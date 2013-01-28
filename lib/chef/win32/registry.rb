@@ -135,7 +135,7 @@ class Chef
           end
         else
           delete_key_ex(hive_namespace, key_including_parent)
-          return
+          return true
         end
         true
       end
