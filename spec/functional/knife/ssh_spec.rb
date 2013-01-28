@@ -247,6 +247,24 @@ describe Chef::Knife::Ssh do
         @knife.ui.should_receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
         @knife.run
       end
+
+    end
+
+    context "when the gateway requires a password and we provide one" do
+      before do
+        setup_knife(['-G user@ec2.public_hostname', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_gateway] = nil
+        Chef::Config[:knife][:ssh_password] = 'password'
+        @knife.session.stub(:via) do |host, user, options|
+          raise Net::SSH::AuthenticationFailed unless options[:password]
+        end
+      end
+
+      it "should not prompt the user for a password" do
+        @knife.ui.should_not_receive(:ask).with("Enter the password for user@ec2.public_hostname: ")
+        @knife.run
+      end
+
     end
   end
 
