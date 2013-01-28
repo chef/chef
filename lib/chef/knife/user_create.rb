@@ -59,6 +59,12 @@ class Chef
           exit 1
         end
 
+        if config[:user_password].length == 0
+          show_usage
+          ui.fatal("You must specify a non-blank password")
+          exit 1
+        end
+
         user = Chef::User.new
         user.name(@user_name)
         user.admin(config[:admin])
