@@ -241,7 +241,7 @@ class Chef
       if(!matchingFiles || matchingFiles.length == 0)
         return nil
       elsif(matchingFiles.length > 1)
-          Chef::Log.warning("Found more thane one role file of #{fileName} in #{role_paths}")
+          Chef::Log.warn("Found more thane one role file of #{fileName} in #{role_paths}")
       end
 
       return matchingFiles.first
