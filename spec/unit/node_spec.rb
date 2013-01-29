@@ -178,8 +178,16 @@ describe Chef::Node do
       end
 
       it "should allow you to set a value after a set_unless" do
-        # this tests for set_unless_present state bleeding between statements
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
         node.set_unless[:snoopy][:is_a_puppy] = false
+        node.set[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should let you set a value after a 'dangling' set_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.set[:snoopy][:is_a_puppy] = "what"
+        node.set_unless[:snoopy][:is_a_puppy]
         node.set[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
@@ -209,8 +217,16 @@ describe Chef::Node do
       end
 
       it "should allow you to set a value after a default_unless" do
-        # this tests for set_unless_present state bleeding between statements
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
         node.default_unless[:snoopy][:is_a_puppy] = false
+        node.default[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after a 'dangling' default_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.default[:snoopy][:is_a_puppy] = "what"
+        node.default_unless[:snoopy][:is_a_puppy]
         node.default[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
@@ -246,8 +262,16 @@ describe Chef::Node do
       end
 
       it "should allow you to set a value after an override_unless" do
-        # this tests for set_unless_present state bleeding between statements
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
         node.override_unless[:snoopy][:is_a_puppy] = false
+        node.override[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after a 'dangling' override_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.override_unless[:snoopy][:is_a_puppy] = "what"
+        node.override_unless[:snoopy][:is_a_puppy]
         node.override[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
