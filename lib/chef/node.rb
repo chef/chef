@@ -123,6 +123,7 @@ class Chef
     # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
+      attributes.set_unless_value_present = false
       attributes.normal
     end
 
@@ -139,12 +140,14 @@ class Chef
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
+      attributes.set_unless_value_present = false
       attributes.default
     end
 
     # Set a force default attribute. Intermediate mashes will be created by
     # auto-vivify if necessary.
     def default!
+      attributes.set_unless_value_present = false
       attributes.default!
     end
 
@@ -158,12 +161,14 @@ class Chef
     # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
+      attributes.set_unless_value_present = false
       attributes.override
     end
 
     # Set a force override attribute. Intermediate mashes will be created by
     # auto-vivify if needed.
     def override!
+      attributes.set_unless_value_present = false
       attributes.override!
     end
 
