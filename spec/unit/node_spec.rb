@@ -177,6 +177,13 @@ describe Chef::Node do
         node[:snoopy][:is_a_puppy].should == true
       end
 
+      it "should allow you to set a value after a set_unless" do
+        # this tests for set_unless_present state bleeding between statements
+        node.set_unless[:snoopy][:is_a_puppy] = false
+        node.set[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
       it "auto-vivifies attributes created via method syntax" do
         node.set.fuu.bahrr.baz = "qux"
         node.fuu.bahrr.baz.should == "qux"
@@ -198,6 +205,13 @@ describe Chef::Node do
       it "should not allow you to set an attribute with default_unless if it already exists" do
         node.default[:snoopy][:is_a_puppy] = true
         node.default_unless[:snoopy][:is_a_puppy] = false
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after a default_unless" do
+        # this tests for set_unless_present state bleeding between statements
+        node.default_unless[:snoopy][:is_a_puppy] = false
+        node.default[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
 
@@ -228,6 +242,13 @@ describe Chef::Node do
       it "should not allow you to set an attribute with override_unless if it already exists" do
         node.override[:snoopy][:is_a_puppy] = true
         node.override_unless[:snoopy][:is_a_puppy] = false
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after an override_unless" do
+        # this tests for set_unless_present state bleeding between statements
+        node.override_unless[:snoopy][:is_a_puppy] = false
+        node.override[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
 
