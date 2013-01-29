@@ -247,6 +247,37 @@ describe Chef::Node::Attribute do
 
   end
 
+  describe "when debugging attributes" do
+    before do
+      @attributes.default[:foo][:bar] = "default"
+      @attributes.env_default[:foo][:bar] = "env_default"
+      @attributes.role_default[:foo][:bar] = "role_default"
+      @attributes.force_default[:foo][:bar] = "force_default"
+      @attributes.normal[:foo][:bar] = "normal"
+      @attributes.override[:foo][:bar] = "override"
+      @attributes.role_override[:foo][:bar] = "role_override"
+      @attributes.env_override[:foo][:bar] = "env_override"
+      @attributes.force_override[:foo][:bar] = "force_override"
+      @attributes.automatic[:foo][:bar] = "automatic"
+    end
+
+    it "gives the value at each level of precedence for a path spec" do
+      expected = [["set_unless_enabled?", false],
+        ["default", "default"],
+        ["env_default", "env_default"],
+        ["role_default", "role_default"],
+        ["force_default", "force_default"],
+        ["normal", "normal"],
+        ["override", "override"],
+        ["role_override", "role_override"],
+        ["env_override", "env_override"],
+        ["force_override", "force_override"],
+        ["automatic", "automatic"]
+      ]
+      @attributes.debug_value(:foo, :bar).should == expected
+    end
+  end
+
   describe "when fetching values based on precedence" do
     before do
       @attributes.default["default"] = "cookbook default"
