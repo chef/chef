@@ -234,6 +234,19 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when printing attribute components" do
+
+    it "does not cause a type error" do
+      # See CHEF-3799; IO#puts implicitly calls #to_ary on its argument. This
+      # is expected to raise a NoMethodError or return an Array. `to_ary` is
+      # the "strict" conversion method that should only be implemented by
+      # things that are truly Array-like, so NoMethodError is the right choice.
+      # (cf. there is no Hash#to_ary).
+      lambda { @attributes.default.to_ary }.should raise_error(NoMethodError)
+    end
+
+  end
+
   describe "when fetching values based on precedence" do
     before do
       @attributes.default["default"] = "cookbook default"
@@ -284,6 +297,40 @@ describe Chef::Node::Attribute do
       @attributes["override"].should == "cookbook override"
     end
 
+    it "merges arrays within the default precedence" do
+      @attributes.role_default["array"] = %w{role}
+      @attributes.env_default["array"] = %w{env}
+      @attributes["array"].should == %w{env role}
+    end
+
+    it "merges arrays within the override precedence" do
+      @attributes.role_override["array"] = %w{role}
+      @attributes.env_override["array"] = %w{env}
+      @attributes["array"].should == %w{role env}
+    end
+
+    it "does not merge arrays between default and normal" do
+      @attributes.role_default["array"] = %w{role}
+      @attributes.normal["array"] = %w{normal}
+      @attributes["array"].should == %w{normal}
+    end
+
+    it "does not merge arrays between normal and override" do
+      @attributes.normal["array"] = %w{normal}
+      @attributes.role_override["array"] = %w{role}
+      @attributes["array"].should == %w{role}
+    end
+
+    it "merges nested hashes between precedence levels" do
+      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
+      @attributes.env_default = {"a" => {"b" => {"default" => "default"}}}
+      @attributes.normal = {"a" => {"b" => {"normal" => "normal"}}}
+      @attributes.override = {"a" => {"override" => "role"}}
+      @attributes.automatic = {"a" => {"automatic" => "auto"}}
+      @attributes["a"].should == {"b"=>{"default"=>"default", "normal"=>"normal"},
+                                  "override"=>"role",
+                                  "automatic"=>"auto"}
+    end
   end
 
   describe "when reading combined default or override values" do
@@ -1012,7 +1059,7 @@ describe Chef::Node::Attribute do
     end
 
     [
-      :merge,
+      :merge!,
       :update,
       :replace
     ].each do |mutator|
@@ -1036,6 +1083,17 @@ describe Chef::Node::Attribute do
         @attributes.default.send(mutator, &block)
       end
     end
+  end
+
+  describe "when not mutated" do
+
+    it "does not reset the cache when dup'd [CHEF-3680]" do
+      @attributes.default[:foo][:bar] = "set on original"
+      subtree = @attributes[:foo]
+      @attributes.default[:foo].dup[:bar] = "set on dup"
+      subtree[:bar].should == "set on original"
+    end
+
   end
 
   describe "when setting a component attribute to a new value" do
@@ -1072,201 +1130,6 @@ describe Chef::Node::Attribute do
     it "raises an error when using `attr=value`" do
       lambda { @attributes.new_key = "new value" }.should raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
-
-  end
-
-
-  describe "when reading from a stale sub tree" do
-    before do
-      @attributes.default[:sub_tree] = {:key => "old value", :ary => %w[foo bar]}
-      @sub_tree = @attributes[:sub_tree]
-      @sub_array = @attributes[:sub_tree][:ary]
-      @attributes.default[:sub_tree] = {:key => "new value"}
-    end
-
-    it "detects reads from a no-longer-valid merged attributes sub-tree" do
-      lambda { @sub_tree[:key] }.should raise_error(Chef::Exceptions::StaleAttributeRead)
-    end
-
-    it "detects reads from a no-longer-valid array value" do
-      lambda {@sub_array.first}.should raise_error(Chef::Exceptions::StaleAttributeRead)
-    end
-    [
-      :[],
-      :all?,
-      :any?,
-      :assoc,
-      :chunk,
-      :collect,
-      :collect_concat,
-      :count,
-      :cycle,
-      :detect,
-      :drop,
-      :drop_while,
-      :each,
-      :each_cons,
-      :each_entry,
-      :each_key,
-      :each_pair,
-      :each_slice,
-      :each_value,
-      :each_with_index,
-      :each_with_object,
-      :empty?,
-      :entries,
-      :except,
-      :fetch,
-      :find,
-      :find_all,
-      :find_index,
-      :first,
-      :flat_map,
-      :flatten,
-      :grep,
-      :group_by,
-      :has_key?,
-      :has_value?,
-      :include?,
-      :index,
-      :inject,
-      :invert,
-      :key,
-      :key?,
-      :keys,
-      :length,
-      :map,
-      :max,
-      :max_by,
-      :member?,
-      :merge,
-      :min,
-      :min_by,
-      :minmax,
-      :minmax_by,
-      :none?,
-      :one?,
-      :partition,
-      :rassoc,
-      :reduce,
-      :reject,
-      :reverse_each,
-      :select,
-      :size,
-      :slice_before,
-      :sort,
-      :sort_by,
-      :store,
-      :symbolize_keys,
-      :take,
-      :take_while,
-      :to_a,
-      :to_hash,
-      :to_set,
-      :value?,
-      :values,
-      :values_at,
-      :zip
-    ].each do |reader|
-      it "detects dirty reads from a no-longer-valid Mash via Mash##{reader}" do
-        lambda { @sub_tree.send(:reader) }.should raise_error(Chef::Exceptions::StaleAttributeRead)
-      end
-    end
-
-
-    [
-      :&,
-      :*,
-      :+,
-      :-,
-      :[],
-      :all?,
-      :any?,
-      :assoc,
-      :at,
-      :chunk,
-      :collect,
-      :collect_concat,
-      :combination,
-      :compact,
-      :concat,
-      :count,
-      :cycle,
-      :detect,
-      :drop,
-      :drop_while,
-      :each,
-      :each_cons,
-      :each_entry,
-      :each_index,
-      :each_slice,
-      :each_with_index,
-      :each_with_object,
-      :empty?,
-      :entries,
-      :fetch,
-      :find,
-      :find_all,
-      :find_index,
-      :first,
-      :flat_map,
-      :flatten,
-      :grep,
-      :group_by,
-      :include?,
-      :index,
-      :inject,
-      :join,
-      :last,
-      :length,
-      :map,
-      :max,
-      :max_by,
-      :member?,
-      :min,
-      :min_by,
-      :minmax,
-      :minmax_by,
-      :none?,
-      :one?,
-      :pack,
-      :partition,
-      :permutation,
-      :product,
-      :rassoc,
-      :reduce,
-      :reject,
-      :repeated_combination,
-      :repeated_permutation,
-      :reverse,
-      :reverse_each,
-      :rindex,
-      :rotate,
-      :sample,
-      :select,
-      :shelljoin,
-      :shuffle,
-      :size,
-      :slice,
-      :slice_before,
-      :sort,
-      :sort_by,
-      :take,
-      :take_while,
-      :to_a,
-      :to_ary,
-      :to_set,
-      :transpose,
-      :uniq,
-      :values_at,
-      :zip,
-      :|
-    ].each do |reader|
-
-        it "detects dirty reads via Array##{reader}" do
-          lambda {@sub_array.send(reader)}.should raise_error(Chef::Exceptions::StaleAttributeRead)
-        end
-      end
 
   end
 

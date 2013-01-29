@@ -61,7 +61,7 @@ class Chef
       # also invalidate the cached merged_attributes on the root
       # Node::Attribute object.
       MUTATOR_METHODS.each do |mutator|
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
             root.reset_cache
             super
@@ -74,6 +74,10 @@ class Chef
       def initialize(root, data)
         @root = root
         super(data)
+      end
+
+      def dup
+        Array.new(map {|e| e.dup})
       end
 
     end
@@ -115,7 +119,7 @@ class Chef
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
       MUTATOR_METHODS.each do |mutator|
-        class_eval(<<-METHOD_DEFN)
+        class_eval(<<-METHOD_DEFN, __FILE__, __LINE__)
           def #{mutator}(*args, &block)
             root.reset_cache
             super
@@ -150,7 +154,14 @@ class Chef
       alias :attribute? :has_key?
 
       def method_missing(symbol, *args)
-        if args.empty?
+        # Calling `puts arg` implicitly calls #to_ary on `arg`. If `arg` does
+        # not implement #to_ary, ruby recognizes it as a single argument, and
+        # if it returns an Array, then ruby prints each element. If we don't
+        # account for that here, we'll auto-vivify a VividMash for the key
+        # :to_ary which creates an unwanted key and raises a TypeError.
+        if symbol == :to_ary
+          super
+        elsif args.empty?
           self[symbol]
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]
@@ -183,6 +194,10 @@ class Chef
         else
           value
         end
+      end
+
+      def dup
+        Mash.new(self)
       end
 
     end

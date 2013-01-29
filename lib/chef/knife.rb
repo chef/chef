@@ -57,6 +57,11 @@ class Chef
     attr_accessor :name_args
     attr_accessor :ui
 
+    # Configure mixlib-cli to always separate defaults from user-supplied CLI options
+    def self.use_separate_defaults?
+      true
+    end
+
     def self.ui
       @ui ||= Chef::Knife::UI.new(STDOUT, STDERR, STDIN, {})
     end
@@ -226,13 +231,22 @@ class Chef
       exit 10
     end
 
-    @@chef_config_dir = nil
+    def self.working_directory
+      ENV['PWD'] || Dir.pwd
+    end
+
+    def self.reset_config_path!
+      @@chef_config_dir = nil
+    end
+
+    reset_config_path!
+
 
     # search upward from current_dir until .chef directory is found
     def self.chef_config_dir
       if @@chef_config_dir.nil? # share this with subclasses
         @@chef_config_dir = false
-        full_path = Dir.pwd.split(File::SEPARATOR)
+        full_path = working_directory.split(File::SEPARATOR)
         (full_path.length - 1).downto(0) do |i|
           candidate_directory = File.join(full_path[0..i] + [".chef" ])
           if File.exist?(candidate_directory) && File.directory?(candidate_directory)
@@ -283,49 +297,70 @@ class Chef
       exit(1)
     end
 
-    def configure_chef
-      unless config[:config_file]
-        candidate_configs = []
+    # Returns a subset of the Chef::Config[:knife] Hash that is relevant to the
+    # currently executing knife command. This is used by #configure_chef to
+    # apply settings from knife.rb to the +config+ hash.
+    def config_file_settings
+      config_file_settings = {}
+      self.class.options.keys.each do |key|
+        config_file_settings[key] = Chef::Config[:knife][key] if Chef::Config[:knife].has_key?(key)
+      end
+      config_file_settings
+    end
 
-        # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
-        if ENV['KNIFE_HOME']
-          candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
-        end
-        # Look for $PWD/knife.rb
-        if Dir.pwd
-          candidate_configs << File.join(Dir.pwd, 'knife.rb')
-        end
-        # Look for $UPWARD/.chef/knife.rb
-        if self.class.chef_config_dir
-          candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
-        end
-        # Look for $HOME/.chef/knife.rb
-        if ENV['HOME']
-          candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
-        end
+    def locate_config_file
+      candidate_configs = []
 
-        candidate_configs.each do | candidate_config |
-          candidate_config = File.expand_path(candidate_config)
-          if File.exist?(candidate_config)
-            config[:config_file] = candidate_config
-            break
-          end
-        end
+      # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
+      if ENV['KNIFE_HOME']
+        candidate_configs << File.join(ENV['KNIFE_HOME'], 'knife.rb')
+      end
+      # Look for $PWD/knife.rb
+      if Dir.pwd
+        candidate_configs << File.join(Dir.pwd, 'knife.rb')
+      end
+      # Look for $UPWARD/.chef/knife.rb
+      if self.class.chef_config_dir
+        candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
+      end
+      # Look for $HOME/.chef/knife.rb
+      if ENV['HOME']
+        candidate_configs << File.join(ENV['HOME'], '.chef', 'knife.rb')
       end
 
-      # Don't try to load a knife.rb if it doesn't exist.
-      if config[:config_file]
-        read_config_file(config[:config_file])
-      else
-        # ...but do log a message if no config was found.
-        Chef::Config[:color] = config[:color]
-        ui.warn("No knife configuration file found")
+      candidate_configs.each do | candidate_config |
+        candidate_config = File.expand_path(candidate_config)
+        if File.exist?(candidate_config)
+          config[:config_file] = candidate_config
+          break
+        end
       end
+    end
 
+    # Apply Config in this order:
+    # defaults from mixlib-cli
+    # settings from config file, via Chef::Config[:knife]
+    # config from command line
+    def merge_configs
+      # Apply config file settings on top of mixlib-cli defaults
+      combined_config = default_config.merge(config_file_settings)
+      # Apply user-supplied options on top of the above combination
+      combined_config = combined_config.merge(config)
+      # replace the config hash from mixlib-cli with our own.
+      # Need to use the mutate-in-place #replace method instead of assigning to
+      # the instance variable because other code may have a reference to the
+      # original config hash object.
+      config.replace(combined_config)
+    end
+
+    # Catch-all method that does any massaging needed for various config
+    # components, such as expanding file paths and converting verbosity level
+    # into log level.
+    def apply_computed_config
       Chef::Config[:color] = config[:color]
 
       case Chef::Config[:verbosity]
-      when 0
+      when 0, nil
         Chef::Config[:log_level] = :error
       when 1
         Chef::Config[:log_level] = :info
@@ -348,13 +383,30 @@ class Chef
       Chef::Log.init(Chef::Config[:log_location])
       Chef::Log.level(Chef::Config[:log_level] || :error)
 
-      Chef::Log.debug("Using configuration from #{config[:config_file]}")
-      
       if Chef::Config[:node_name] && Chef::Config[:node_name].bytesize > 90
         # node names > 90 bytes only work with authentication protocol >= 1.1
         # see discussion in config.rb.
         Chef::Config[:authentication_protocol_version] = "1.1"
       end
+    end
+
+    def configure_chef
+      unless config[:config_file]
+        locate_config_file
+      end
+
+      # Don't try to load a knife.rb if it doesn't exist.
+      if config[:config_file]
+        Chef::Log.debug("Using configuration from #{config[:config_file]}")
+        read_config_file(config[:config_file])
+      else
+        # ...but do log a message if no config was found.
+        Chef::Config[:color] = config[:color]
+        ui.warn("No knife configuration file found")
+      end
+
+      merge_configs
+      apply_computed_config
     end
 
     def read_config_file(file)

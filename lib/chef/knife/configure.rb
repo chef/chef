@@ -81,8 +81,7 @@ client_key               '#{new_client_key}'
 validation_client_name   '#{validation_client_name}'
 validation_key           '#{validation_key}'
 chef_server_url          '#{chef_server}'
-cache_type               'BasicFile'
-cache_options( :path => '#{File.join(chef_config_path, "checksums")}' )
+syntax_check_cache_path  '#{File.join(chef_config_path, "syntax_check_cache")}'
 EOH
           unless chef_repo.empty?
             f.puts "cookbook_path [ '#{chef_repo}/cookbooks' ]"

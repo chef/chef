@@ -73,6 +73,10 @@ describe Chef::Provider do
     @provider.current_resource.should eql(nil)
   end
 
+  it "should not support whyrun by default" do
+    @provider.send(:whyrun_supported?).should eql(false)
+  end
+
   it "should return true for action_nothing" do
     @provider.action_nothing.should eql(true)
   end

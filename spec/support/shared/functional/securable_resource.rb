@@ -24,45 +24,106 @@
 require 'etc'
 
 shared_context "setup correct permissions" do
-  context "on unix", :unix_only do
-    context "with root", :requires_root do
-      before :each do
-        File.chown(Etc.getpwnam('nobody').uid, 1337, path)
-        File.chmod(0776, path)
-        now = Time.now.to_i
-        File.utime(now - 9000, now - 9000, path)
-      end
-    end
 
-    context "without root", :requires_unprivileged_user do
-      before :each do
-        File.chmod(0776, path)
-        now = Time.now.to_i
-        File.utime(now - 9000, now - 9000, path)
-      end
-    end
+  # I could not get this to work with :requires_unprivileged_user for whatever
+  # reason. The setup when running as root is the same as non-root, except we
+  # also do a chown, so this sets up correct context for either case.
+  before :each, :unix_only do
+    File.chmod(0776, path)
+    now = Time.now.to_i
+    File.utime(now - 9000, now - 9000, path)
+  end
+
+  # Root only context.
+  before :each, :unix_only, :requires_root do
+    File.chown(Etc.getpwnam('nobody').uid, 1337, path)
   end
 
   # FIXME: windows
 end
 
 shared_context "setup broken permissions" do
-  context "on unix", :unix_only do
-    context "with root", :requires_root do
-      before :each do
-        File.chown(0, 0, path)
-        File.chmod(0644, path)
-      end
-    end
-  
-    context "without root", :requires_unprivileged_user do
-      before :each do
-        File.chmod(0644, path)
-      end
-    end
+
+  before :each, :unix_only do
+    File.chmod(0644, path)
+  end
+
+  before :each, :unix_only, :requires_root do
+    File.chown(0, 0, path)
   end
 
   # FIXME: windows
+end
+
+shared_context "use Windows permissions", :windows_only do
+  if windows?
+    SID ||= Chef::ReservedNames::Win32::Security::SID
+    ACE ||= Chef::ReservedNames::Win32::Security::ACE
+  end
+
+  def get_security_descriptor(path)
+    Chef::ReservedNames::Win32::Security.get_named_security_info(path)
+  end
+
+  def explicit_aces
+    descriptor.dacl.select { |ace| ace.explicit? }
+  end
+
+  def extract_ace_properties(aces)
+    hashes = []
+    aces.each do |ace|
+      hashes << { :mask => ace.mask, :type => ace.type, :flags => ace.flags }
+    end
+    hashes
+  end
+
+  # Standard expected rights
+  let(:expected_read_perms) do
+    {
+      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ,
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ,
+    }
+  end
+
+  let(:expected_read_execute_perms) do
+    {
+      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE,
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE
+    }
+  end
+
+  let(:expected_write_perms) do
+    {
+      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
+    }
+  end
+
+  let(:expected_modify_perms) do
+    {
+      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE
+    }
+  end
+
+  let(:expected_full_control_perms) do
+    {
+      :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_ALL,
+      :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS
+    }
+  end
+
+  RSpec::Matchers.define :have_expected_properties do |mask, type, flags|
+    match do |ace|
+      ace.mask == mask
+      ace.type == type
+      ace.flags == flags
+    end
+  end
+
+  def descriptor
+    get_security_descriptor(path)
+  end
 end
 
 shared_examples_for "a securable resource" do
@@ -85,9 +146,10 @@ shared_examples_for "a securable resource" do
         File.lstat(path).uid.should == expected_uid
       end
 
-      it "is marked as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
+
     end
 
     describe "when setting the group", :requires_root do
@@ -100,8 +162,8 @@ shared_examples_for "a securable resource" do
         File.lstat(path).gid.should == expected_gid
       end
 
-      it "is marked as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
 
     end
@@ -119,8 +181,8 @@ shared_examples_for "a securable resource" do
         end
       end
 
-      it "marks the resource as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
     end
 
@@ -137,82 +199,14 @@ shared_examples_for "a securable resource" do
         end
       end
 
-      it "is marked as updated" do
-        resource.should be_updated_by_last_action
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
       end
     end
   end
 
   context "on Windows", :windows_only do
-
-    if windows?
-      SID = Chef::ReservedNames::Win32::Security::SID
-      ACE = Chef::ReservedNames::Win32::Security::ACE
-    end
-
-    def get_security_descriptor(path)
-      Chef::ReservedNames::Win32::Security.get_named_security_info(path)
-    end
-
-    def explicit_aces
-      descriptor.dacl.select { |ace| ace.explicit? }
-    end
-
-    def extract_ace_properties(aces)
-      hashes = []
-        aces.each do |ace|
-          hashes << { :mask => ace.mask, :type => ace.type, :flags => ace.flags }
-        end
-      hashes
-    end
-
-    # Standard expected rights
-    let(:expected_read_perms) do
-      {
-        :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ,
-        :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ,
-      }
-    end
-
-    let(:expected_read_execute_perms) do
-      {
-        :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE,
-        :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE
-      }
-    end
-
-    let(:expected_write_perms) do
-      {
-        :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE,
-        :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
-      }
-    end
-
-    let(:expected_modify_perms) do
-      {
-        :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_READ | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE,
-        :specific => Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE | Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_EXECUTE | Chef::ReservedNames::Win32::API::Security::DELETE
-      }
-    end
-
-    let(:expected_full_control_perms) do
-      {
-        :generic => Chef::ReservedNames::Win32::API::Security::GENERIC_ALL,
-        :specific => Chef::ReservedNames::Win32::API::Security::FILE_ALL_ACCESS
-      }
-    end
-
-    RSpec::Matchers.define :have_expected_properties do |mask, type, flags|
-      match do |ace|
-        ace.mask == mask
-        ace.type == type
-        ace.flags == flags
-      end
-    end
-
-    def descriptor
-      get_security_descriptor(path)
-    end
+    include_context "use Windows permissions"
 
     before(:each) do
       resource.run_action(:delete)
@@ -362,7 +356,7 @@ shared_examples_for "a securable resource" do
 
     context "with a mode attribute" do
       if windows?
-        Security = Chef::ReservedNames::Win32::API::Security
+        Security ||= Chef::ReservedNames::Win32::API::Security
       end
 
       it "respects mode in string form as an octal number" do

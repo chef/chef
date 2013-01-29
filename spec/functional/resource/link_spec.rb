@@ -22,8 +22,10 @@ if windows?
   require 'chef/win32/file' #probably need this in spec_helper
 end
 
-describe Chef::Resource::Link do
+describe Chef::Resource::Link, :not_supported_on_win2k3 do
   let(:file_base) { "file_spec" }
+
+  let(:expect_updated?) {true}
 
   let(:base_dir) do
     if windows?

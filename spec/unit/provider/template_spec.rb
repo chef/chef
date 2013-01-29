@@ -47,16 +47,16 @@ describe Chef::Provider::Template do
                     else
                       Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
                     end
-    group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+    group_struct = mock("Group Ent", :name => "root", :passwd => "x", :gid => 0)
     Etc.stub!(:getpwuid).and_return(passwd_struct)
     Etc.stub!(:getgrgid).and_return(group_struct)
   end
 
   describe "when creating the template" do
 
-    before do 
-
+    before do
     end
+
     after do
       FileUtils.rm(@rendered_file_location) if ::File.exist?(@rendered_file_location)
     end
@@ -115,6 +115,29 @@ describe Chef::Provider::Template do
         IO.read(@rendered_file_location).should == "slappiness is happiness"
         @resource.should be_updated_by_last_action
       end
+
+      context "and no access control settings are set on the resource" do
+        context "on a Unix system" do
+          before do
+            Chef::Platform.stub!(:windows?).and_return(false)
+          end
+
+          it "sets access control metadata on the new resource" do
+            @access_controls.stub!(:requires_changes?).and_return(false)
+            @access_controls.should_receive(:set_all!)
+            @node.normal[:slappiness] = "happiness"
+            @provider.should_receive(:backup)
+            @provider.run_action(:create)
+            IO.read(@rendered_file_location).should == "slappiness is happiness"
+            @resource.should be_updated_by_last_action
+
+            # Veracity of actual data checked in functional tests
+            @resource.owner.should be_a_kind_of(String)
+            @resource.group.should be_a_kind_of(String)
+            @resource.mode.should be_a_kind_of(String)
+          end
+        end
+      end
     end
 
     describe "when the target file has the wrong content" do
@@ -156,7 +179,6 @@ describe Chef::Provider::Template do
 
     describe "when the target has the correct content" do
       before do
-        Chef::ChecksumCache.instance.reset!
         File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
         @access_controls = mock("access controls")

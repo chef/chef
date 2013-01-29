@@ -43,14 +43,15 @@ class Chef
           exit 1
         end
 
-        client = Chef::ApiClient.load(@client_name)
-        key = client.save(new_key=true)
+        client = Chef::ApiClient.reregister(@client_name)
+        Chef::Log.debug("Updated client data: #{client.inspect}")
+        key = client.private_key
         if config[:file]
           File.open(config[:file], "w") do |f|
-            f.print(key['private_key'])
+            f.print(key)
           end
         else
-          ui.msg key['private_key']
+          ui.msg key
         end
       end
     end

@@ -19,6 +19,29 @@
 require 'spec_helper'
 require 'chef/mixin/deprecation'
 
+describe Chef::Mixin do
+  describe "deprecating constants (Class/Module)" do
+    before do
+      Chef::Mixin.deprecate_constant(:DeprecatedClass, Chef::Node, "This is a test deprecation")
+      @log_io = StringIO.new
+      Chef::Log.init(@log_io)
+    end
+
+    it "has a list of deprecated constants" do
+      Chef::Mixin.deprecated_constants.should have_key(:DeprecatedClass)
+    end
+
+    it "returns the replacement when accessing the deprecated constant" do
+      Chef::Mixin::DeprecatedClass.should == Chef::Node
+    end
+
+    it "warns when accessing the deprecated constant" do
+      Chef::Mixin::DeprecatedClass
+      @log_io.string.should include("This is a test deprecation")
+    end
+  end
+end
+
 describe Chef::Mixin::Deprecation::DeprecatedInstanceVariable do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)

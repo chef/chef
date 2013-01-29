@@ -22,7 +22,6 @@
 require 'forwardable'
 require 'chef/config'
 require 'chef/nil_argument'
-require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/deep_merge'
@@ -45,13 +44,18 @@ class Chef
 
     attr_accessor :recipe_list, :run_state, :run_list
 
+    # RunContext will set itself as run_context via this setter when
+    # initialized. This is needed so DSL::IncludeAttribute (in particular,
+    # #include_recipe) can access the run_context to determine if an attributes
+    # file has been seen yet.
+    #--
+    # TODO: This is a pretty ugly way to solve that problem.
     attr_accessor :run_context
 
     include Chef::Mixin::FromFile
     include Chef::DSL::IncludeAttribute
     include Chef::DSL::PlatformIntrospection
 
-    include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
 
     # Create a new Chef::Node object.
@@ -235,7 +239,7 @@ class Chef
     #
     # NOTE: It's used by cookbook authors
     def recipe?(recipe_name)
-      run_list.include?(recipe_name) || self[recipes].include?(recipe_name)
+      run_list.include?(recipe_name) || Array(self[:recipes]).include?(recipe_name)
     end
 
     # Returns true if this Node expects a given role, false if not.

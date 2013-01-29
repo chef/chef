@@ -27,6 +27,8 @@ require 'chef/scan_access_control'
 class Chef
   class Provider
     class Link < Chef::Provider
+
+      include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::ShellOut
       include Chef::Mixin::FileClass
 

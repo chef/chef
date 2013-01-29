@@ -53,80 +53,86 @@ describe Chef::Provider::File do
     @provider.current_resource.content.should eql(nil)
   end
 
-  context "load_current_resource_attrs", :unix_only do
+  describe "examining file security metadata on Unix" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(false)
+    end
     it "should collect the current state of the file on the filesystem and populate current_resource" do
       # test setup
-      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-      ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
-      
+      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+      ::File.should_receive(:stat).exactly(1).times.with(@resource.path).and_return(stat_struct)
+
+      # test execution
+
+      Etc.should_receive(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
+      Etc.should_receive(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+
       # test execution 
       @provider.load_current_resource
-  
+
       # post-condition checks
-      @provider.current_resource.mode.should == 0600
-      @provider.current_resource.owner.should == 0
-      @provider.current_resource.group.should == 0
+      @provider.current_resource.mode.should == "0600"
+      @provider.current_resource.owner.should == "root"
+      @provider.current_resource.group.should == "wheel"
     end
-  
+
     it "should NOT update the new_resource state with the current_resourse state if new_resource state is already specified" do
       # test setup
-      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-      ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
-  
+      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
+      ::File.should_receive(:stat).exactly(1).times.with(@resource.path).and_return(stat_struct)
+
       @provider.new_resource.group(1)
       @provider.new_resource.owner(1)
       @provider.new_resource.mode(0644)
-  
-      # test execution 
+
+      # test execution
       @provider.load_current_resource
-  
+
       # post-condition checks
       @provider.new_resource.group.should == 1
       @provider.new_resource.owner.should == 1
       @provider.new_resource.mode.should == 0644
     end
-  
-    it "should update the new_resource state with the current_resource state if the new_resource state is not specified." do
-      # test setup
-      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-      ::File.should_receive(:stat).exactly(3).with(@resource.path).and_return(stat_struct)
-  
-      @provider.new_resource.group(nil)
-      @provider.new_resource.owner(nil)
-      @provider.new_resource.mode(nil)
-  
-      # test execution 
-      @provider.load_current_resource
-  
-      # post-condition checks
-      @provider.new_resource.group.should eql(@provider.current_resource.group)
-      @provider.new_resource.owner.should eql(@provider.current_resource.owner)
-      @provider.new_resource.mode.should eql(@provider.current_resource.mode)
-    end
-  
-    it "should update the new_resource when attempting to set the new state" do
-      # test setup
-      stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
-      # called once in update_new_file_state and once in checksum
-      ::File.should_receive(:stat).twice.with(@provider.new_resource.path).and_return(stat_struct)  
-      ::File.should_receive(:directory?).once.with(@provider.new_resource.path).and_return(false)
-  
-      @provider.new_resource.group(nil)
-      @provider.new_resource.owner(nil)
-      @provider.new_resource.mode(nil)
-      
-      # test exectution 
-      @provider.update_new_file_state
-  
-      # post-condition checks
-      @provider.new_resource.group.should == 0
-      @provider.new_resource.owner.should == 0
-      @provider.new_resource.mode.should == 0600
+
+    context "when the new_resource does not specify the desired access control" do
+      it "records access control information in the new resource after modifying the file" do
+        # test setup
+        stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000) 
+        # called once in update_new_file_state and once in checksum
+        ::File.should_receive(:stat).once.with(@provider.new_resource.path).and_return(stat_struct)  
+        ::File.should_receive(:directory?).once.with(@provider.new_resource.path).and_return(false)
+
+        Etc.should_receive(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
+        Etc.should_receive(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
+
+        @provider.new_resource.group(nil)
+        @provider.new_resource.owner(nil)
+        @provider.new_resource.mode(nil)
+
+        # test exectution
+        @provider.update_new_file_state
+
+        # post-condition checks
+        @provider.new_resource.group.should == "wheel"
+        @provider.new_resource.owner.should == "root"
+        @provider.new_resource.mode.should == "0600"
+      end
     end
   end
 
-  context "load_current_resource_attrs", :windows_only do
-    pending "CHEF-3557: Fix implicit resource change collection on Windows"
+  describe "when reporting security metadata on windows" do
+
+    it "records the file owner" do
+      pending
+    end
+
+    it "records rights for each user in the ACL" do
+      pending
+    end
+
+    it "records deny_rights for each user in the ACL" do
+      pending
+    end
   end
 
   it "should load a mostly blank current resource if the file specified in new_resource doesn't exist/isn't readable" do
@@ -174,6 +180,8 @@ describe Chef::Provider::File do
     @provider.new_resource.content "foobar"
     @provider.should_receive(:diff_current_from_content).and_return("")
     @provider.should_receive(:backup)
+    # checksum check
+    File.should_receive(:open).with(@provider.new_resource.path, "rb").and_yield(io)
     File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
     @provider.set_content
     io.string.should == "foobar"
@@ -182,7 +190,8 @@ describe Chef::Provider::File do
   it "should not set the content of the file if it already matches the requested content" do
     @provider.load_current_resource
     @provider.new_resource.content IO.read(@resource.path)
-    File.stub!(:open).and_return(1)
+    # Checksum check:
+    File.should_receive(:open).with(@resource.path, "rb").and_yield(StringIO.new(@resource.content))
     File.should_not_receive(:open).with(@provider.new_resource.path, "w")
     lambda { @provider.set_content }.should_not raise_error
     @resource.should_not be_updated_by_last_action
@@ -487,7 +496,7 @@ describe Chef::Provider::File do
     it "should return valid diff output when content does not match the string content provided" do
        Tempfile.open("some-temp") do |file|
          @resource.path file.path
-         @provider = Chef::Provider::File.new(@resource, @run_context) 
+         @provider = Chef::Provider::File.new(@resource, @run_context)
          @provider.load_current_resource
          result = @provider.diff_current_from_content "foo baz"
          # remove the file name info which varies.

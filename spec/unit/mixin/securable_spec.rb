@@ -112,9 +112,11 @@ describe Chef::Mixin::Securable do
         @original_config = Chef::Config.hash_dup
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
-        @securable = Object.new
-        @securable.send(:extend, Chef::Mixin::Securable)
-        @securable.send(:extend, Chef::Mixin::ParamsValidate)
+        SECURABLE_CLASS = Class.new do
+          include Chef::Mixin::Securable
+          include Chef::Mixin::ParamsValidate
+        end
+        @securable = SECURABLE_CLASS.new
       end
     end
 

@@ -14,6 +14,7 @@ group(:development, :test) do
 end
 
 platforms :mswin, :mingw do
+  gem "systemu", "2.2.0"  # CHEF-3718
   gem "ffi", "1.0.9"
   gem "rdp-ruby-wmi", "0.3.1"
   gem "windows-api", "0.4.0"

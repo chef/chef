@@ -22,22 +22,43 @@ require 'chef/cookbook_version'
 require 'chef/node'
 require 'chef/role'
 require 'chef/log'
+require 'chef/recipe'
+require 'chef/run_context/cookbook_compiler'
 
 class Chef
+
   # == Chef::RunContext
   # Value object that loads and tracks the context of a Chef run
   class RunContext
 
-    attr_reader :node, :cookbook_collection, :definitions
+    # Chef::Node object for this run
+    attr_reader :node
 
-    # Needs to be settable so deploy can run a resource_collection independent
-    # of any cookbooks.
-    attr_accessor :resource_collection, :immediate_notification_collection, :delayed_notification_collection
+    # Chef::CookbookCollection for this run
+    attr_reader :cookbook_collection
 
+    # Resource Definitions for this run. Populated when the files in
+    # +definitions/+ are evaluated (this is triggered by #load).
+    attr_reader :definitions
+
+    ###
+    # These need to be settable so deploy can run a resource_collection
+    # independent of any cookbooks via +recipe_eval+
+
+    # The Chef::ResourceCollection for this run. Populated by evaluating
+    # recipes, which is triggered by #load. (See also: CookbookCompiler)
+    attr_accessor :resource_collection
+
+    # A Hash containing the immediate notifications triggered by resources
+    # during the converge phase of the chef run.
+    attr_accessor :immediate_notification_collection
+
+    # A Hash containing the delayed (end of run) notifications triggered by
+    # resources during the converge phase of the chef run.
+    attr_accessor :delayed_notification_collection
+
+    # Event dispatcher for this run.
     attr_reader :events
-
-    attr_reader :loaded_recipes
-    attr_reader :loaded_attributes
 
     # Creates a new Chef::RunContext object and populates its fields. This object gets
     # used by the Chef Server to generate a fully compiled recipe list for a node.
@@ -55,54 +76,19 @@ class Chef
       @loaded_attributes = {}
       @events = events
 
-      @loaded_cookbooks_by_segment = {}
-      CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-        @loaded_cookbooks_by_segment[segment] = {}
-      end
-
       @node.run_context = self
     end
 
+    # Triggers the compile phase of the chef run. Implemented by
+    # Chef::RunContext::CookbookCompiler
     def load(run_list_expansion)
-      load_libraries
-
-      load_lwrps
-      load_attributes_in_run_list_order(run_list_expansion)
-
-      load_resource_definitions
-
-      @events.recipe_load_start(run_list_expansion.recipes.size)
-      run_list_expansion.recipes.each do |recipe|
-        begin
-          include_recipe(recipe)
-        rescue Chef::Exceptions::RecipeNotFound => e
-          @events.recipe_not_found(e)
-          raise
-        rescue Exception => e
-          path = resolve_recipe(recipe)
-          @events.recipe_file_load_failed(path, e)
-          raise
-        end
-      end
-      @events.recipe_load_complete
+      compiler = CookbookCompiler.new(self, run_list_expansion, events)
+      compiler.compile
     end
 
-    def resolve_recipe(recipe_name)
-      cookbook_name, recipe_short_name = Chef::Recipe.parse_recipe_name(recipe_name)
-      cookbook = cookbook_collection[cookbook_name]
-      cookbook.recipe_filenames_by_name[recipe_short_name]
-    end
-
-    def resolve_attribute(cookbook_name, attr_file_name)
-      cookbook = cookbook_collection[cookbook_name]
-      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
-
-      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
-      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
-
-      attribute_filename
-    end
-
+    # Adds an immediate notification to the
+    # +immediate_notification_collection+. The notification should be a
+    # Chef::Resource::Notification or duck type.
     def notifies_immediately(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
@@ -112,6 +98,8 @@ class Chef
       end
     end
 
+    # Adds a delayed notification to the +delayed_notification_collection+. The
+    # notification should be a Chef::Resource::Notification or duck type.
     def notifies_delayed(notification)
       nr = notification.notifying_resource
       if nr.instance_of?(Chef::Resource)
@@ -137,6 +125,7 @@ class Chef
       end
     end
 
+    # Evaluates the recipes +recipe_names+. Used by DSL::IncludeRecipe
     def include_recipe(*recipe_names)
       result_recipes = Array.new
       recipe_names.flatten.each do |recipe_name|
@@ -147,6 +136,7 @@ class Chef
       result_recipes
     end
 
+    # Evaluates the recipe +recipe_name+. Used by DSL::IncludeRecipe
     def load_recipe(recipe_name)
       Chef::Log.debug("Loading Recipe #{recipe_name} via include_recipe")
 
@@ -162,10 +152,45 @@ class Chef
       end
     end
 
+    # Looks up an attribute file given the +cookbook_name+ and
+    # +attr_file_name+. Used by DSL::IncludeAttribute
+    def resolve_attribute(cookbook_name, attr_file_name)
+      cookbook = cookbook_collection[cookbook_name]
+      raise Chef::Exceptions::CookbookNotFound, "could not find cookbook #{cookbook_name} while loading attribute #{name}" unless cookbook
+
+      attribute_filename = cookbook.attribute_filenames_by_short_filename[attr_file_name]
+      raise Chef::Exceptions::AttributeNotFound, "could not find filename for attribute #{attr_file_name} in cookbook #{cookbook_name}" unless attribute_filename
+
+      attribute_filename
+    end
+
+    # An Array of all recipes that have been loaded. This is stored internally
+    # as a Hash, so ordering is not preserved when using ruby 1.8.
+    #
+    # Recipe names are given in fully qualified form, e.g., the recipe "nginx"
+    # will be given as "nginx::default"
+    #
+    # To determine if a particular recipe has been loaded, use #loaded_recipe?
+    def loaded_recipes
+      @loaded_recipes.keys
+    end
+
+    # An Array of all attributes files that have been loaded. Stored internally
+    # using a Hash, so order is not preserved on ruby 1.8.
+    #
+    # Attribute file names are given in fully qualified form, e.g.,
+    # "nginx::default" instead of "nginx".
+    def loaded_attributes
+      @loaded_attributes.keys
+    end
+
     def loaded_fully_qualified_recipe?(cookbook, recipe)
       @loaded_recipes.has_key?("#{cookbook}::#{recipe}")
     end
 
+    # Returns true if +recipe+ has been loaded, false otherwise. Default recipe
+    # names are expanded, so `loaded_recipe?("nginx")` and
+    # `loaded_recipe?("nginx::default")` are valid and give identical results.
     def loaded_recipe?(recipe)
       cookbook, recipe_name = Chef::Recipe.parse_recipe_name(recipe)
       loaded_fully_qualified_recipe?(cookbook, recipe_name)
@@ -179,148 +204,10 @@ class Chef
       @loaded_attributes["#{cookbook}::#{attribute_file}"] = true
     end
 
-    def load_attributes_in_run_list_order(run_list_expansion)
-      @events.attribute_load_start(count_files_by_segment(:attributes))
-      each_cookbook_in_run_list_order(run_list_expansion) do |cookbook|
-        load_attributes_from_cookbook(cookbook)
-      end
-      @events.attribute_load_complete
-    end
-
-    def load_attributes_from_cookbook(cookbook_name)
-      # avoid loading a cookbook again if it's been loaded.
-      return false if @loaded_cookbooks_by_segment[:attributes].key?(cookbook_name)
-      @loaded_cookbooks_by_segment[:attributes][cookbook_name] = true
-      each_cookbook_dep(cookbook_name) do |cookbook_dep|
-        load_attributes_from_cookbook(cookbook_dep)
-      end
-      list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-      if default_file = list_of_attr_files.find {|path| File.basename(path) == "default.rb" }
-        list_of_attr_files.delete(default_file)
-        load_attribute_file(cookbook_name.to_s, default_file)
-      end
-
-      list_of_attr_files.sort.each do |filename|
-        load_attribute_file(cookbook_name.to_s, filename)
-      end
-    end
-
     private
-
-    def each_cookbook_dep(cookbook_name, &block)
-      cookbook = cookbook_collection[cookbook_name]
-      cookbook.metadata.dependencies.keys.sort.each(&block)
-    end
-
-    def each_cookbook_in_run_list_order(run_list_expansion, &block)
-      cookbook_order = run_list_expansion.recipes.map do |recipe|
-        Chef::Recipe.parse_recipe_name(recipe).first
-      end
-      cookbook_order.uniq.each(&block)
-    end
 
     def loaded_recipe(cookbook, recipe)
       @loaded_recipes["#{cookbook}::#{recipe}"] = true
-    end
-
-    def load_libraries
-      @events.library_load_start(count_files_by_segment(:libraries))
-
-      foreach_cookbook_load_segment(:libraries) do |cookbook_name, filename|
-        begin
-          Chef::Log.debug("Loading cookbook #{cookbook_name}'s library file: #{filename}")
-          Kernel.load(filename)
-          @events.library_file_loaded(filename)
-        rescue Exception => e
-          # TODO wrap/munge exception to highlight syntax/name/no method errors.
-          @events.library_file_load_failed(filename, e)
-          raise
-        end
-      end
-
-      @events.library_load_complete
-    end
-
-    def load_lwrps
-      lwrp_file_count = count_files_by_segment(:providers) + count_files_by_segment(:resources)
-      @events.lwrp_load_start(lwrp_file_count)
-      load_lwrp_providers
-      load_lwrp_resources
-      @events.lwrp_load_complete
-    end
-
-    def load_lwrp_providers
-      foreach_cookbook_load_segment(:providers) do |cookbook_name, filename|
-        begin
-          Chef::Log.debug("Loading cookbook #{cookbook_name}'s providers from #{filename}")
-          Chef::Provider.build_from_file(cookbook_name, filename, self)
-          @events.lwrp_file_loaded(filename)
-        rescue Exception => e
-          # TODO: wrap exception with helpful info
-          @events.lwrp_file_load_failed(filename, e)
-          raise
-        end
-      end
-    end
-
-    def load_lwrp_resources
-      foreach_cookbook_load_segment(:resources) do |cookbook_name, filename|
-        begin
-          Chef::Log.debug("Loading cookbook #{cookbook_name}'s resources from #{filename}")
-          Chef::Resource.build_from_file(cookbook_name, filename, self)
-          @events.lwrp_file_loaded(filename)
-        rescue Exception => e
-          @events.lwrp_file_load_failed(filename, e)
-          raise
-        end
-      end
-    end
-
-    def load_attribute_file(cookbook_name, filename)
-      Chef::Log.debug("Node #{@node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-      attr_file_basename = ::File.basename(filename, ".rb")
-      @node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
-    rescue Exception => e
-      @events.attribute_file_load_failed(filename, e)
-      raise
-    end
-
-    def load_resource_definitions
-      @events.definition_load_start(count_files_by_segment(:definitions))
-      foreach_cookbook_load_segment(:definitions) do |cookbook_name, filename|
-        begin
-          Chef::Log.debug("Loading cookbook #{cookbook_name}'s definitions from #{filename}")
-          resourcelist = Chef::ResourceDefinitionList.new
-          resourcelist.from_file(filename)
-          definitions.merge!(resourcelist.defines) do |key, oldval, newval|
-            Chef::Log.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
-            newval
-          end
-          @events.definition_file_loaded(filename)
-        rescue Exception => e
-          @events.definition_file_load_failed(filename, e)
-        end
-      end
-      @events.definition_load_complete
-    end
-
-    def count_files_by_segment(segment)
-      cookbook_collection.inject(0) do |count, ( cookbook_name, cookbook )|
-        count + cookbook.segment_filenames(segment).size
-      end
-    end
-
-    def files_in_cookbook_by_segment(cookbook, segment)
-      cookbook_collection[cookbook].segment_filenames(segment)
-    end
-
-    def foreach_cookbook_load_segment(segment, &block)
-      cookbook_collection.each do |cookbook_name, cookbook|
-        segment_filenames = cookbook.segment_filenames(segment)
-        segment_filenames.each do |segment_filename|
-          block.call(cookbook_name, segment_filename)
-        end
-      end
     end
 
   end

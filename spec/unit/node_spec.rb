@@ -404,6 +404,36 @@ describe Chef::Node do
     end
   end
 
+  describe "when querying for recipes in the run list" do
+    context "when a recipe is in the top level run list" do
+      before do
+        node.run_list << "recipe[nginx::module]"
+      end
+
+      it "finds the recipe" do
+        node.recipe?("nginx::module").should be_true
+      end
+
+      it "does not find a recipe not in the run list" do
+        node.recipe?("nginx::other_module").should be_false
+      end
+    end
+    context "when a recipe is in the expanded run list only" do
+      before do
+        node.run_list << "role[base]"
+        node.automatic_attrs[:recipes] = [ "nginx::module" ]
+      end
+
+      it "finds a recipe in the expanded run list" do
+        node.recipe?("nginx::module").should be_true
+      end
+
+      it "does not find a recipe that's not in the run list" do
+        node.recipe?("nginx::other_module").should be_false
+      end
+    end
+  end
+
   describe "when clearing computed state at the beginning of a run" do
     before do
       node.default[:foo] = "default"

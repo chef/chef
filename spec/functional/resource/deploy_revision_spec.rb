@@ -69,15 +69,19 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
   let(:git_bundle_with_in_repo_callbacks) { File.expand_path("git_bundles/sinatra-test-app-with-callback-files.gitbundle", CHEF_SPEC_DATA) }
 
+  let(:git_bundle_with_in_repo_symlinks) { File.expand_path("git_bundles/sinatra-test-app-with-symlinks.gitbundle", CHEF_SPEC_DATA) }
+
   # This is the fourth version
   let(:latest_rev) { "3eb5ca6c353c83d9179dd3b29347539829b401f3" }
 
   # This is the third version
   let(:previous_rev) { "6d19a6dbecc8e37f5b2277345885c0c783eb8fb1" }
 
-
   # This is the sixth version, it is on the "with-deploy-scripts" branch
   let(:rev_with_in_repo_callbacks) { "2404d015882659754bdb93ad6e4b4d3d02691a82" }
+
+  # This is the fifth version in the "with-symlinks" branch
+  let(:rev_with_in_repo_symlinks) { "5a4748c52aaea8250b4346a9b8ede95ee3755e28" }
 
   # Read values from the +observe_order_file+ and split each line. This way you
   # can see in which order things really happened.
@@ -494,6 +498,18 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     end
   end
 
+  context "when deploying an app with in-repo symlinks" do
+    let(:deploy_with_in_repo_symlinks) do
+      basic_deploy_resource.dup.tap do |r|
+        r.repo git_bundle_with_in_repo_symlinks
+        r.revision rev_with_in_repo_symlinks
+      end
+    end
+
+    it "should not raise an exception calling File.utime on symlinks" do
+      lambda { deploy_with_in_repo_symlinks.run_action(:deploy) }.should_not raise_error
+    end
+  end
 end
 
 

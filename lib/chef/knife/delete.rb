@@ -15,6 +15,12 @@ class Chef
         :description => "Delete directories recursively."
 
       def run
+        if name_args.length == 0
+          show_usage
+          ui.fatal("Must specify at least one argument.  If you want to delete everything in this directory, type \"knife delete --recurse .\"")
+          exit 1
+        end
+
         # Get the matches (recursively)
         pattern_args.each do |pattern|
           Chef::ChefFS::FileSystem.list(chef_fs, pattern) do |result|

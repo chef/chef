@@ -18,7 +18,6 @@
 
 require 'chef/provider'
 require 'chef/mixin/command'
-require 'chef/resource/group'
 require 'etc'
 
 class Chef

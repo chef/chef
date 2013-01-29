@@ -32,7 +32,7 @@ describe Chef::Provider::RemoteDirectory do
     #to not have this line. Only affects updating state fields.
     Chef::Provider::CookbookFile.any_instance.stub(:update_new_file_state)
 
-    @resource = Chef::Resource::RemoteDirectory.new("/tmp/tafty")
+    @resource = Chef::Resource::RemoteDirectory.new(File.join(Dir.tmpdir, "tafty"))
     # in CHEF_SPEC_DATA/cookbooks/openldap/files/default/remotedir
     @resource.source "remotedir"
     @resource.cookbook('openldap')
@@ -82,8 +82,8 @@ describe Chef::Provider::RemoteDirectory do
     end
 
     it "configures access control on intermediate directorys" do
-      directory_resource = @provider.send(:resource_for_directory, "/tmp/intermediate_dir")
-      directory_resource.path.should  == "/tmp/intermediate_dir"
+      directory_resource = @provider.send(:resource_for_directory, File.join(Dir.tmpdir, "intermediate_dir"))
+      directory_resource.path.should  == File.join(Dir.tmpdir, "intermediate_dir")
       directory_resource.mode.should  == "0750"
       directory_resource.group.should == "wheel"
       directory_resource.owner.should == "root"
@@ -181,7 +181,7 @@ describe Chef::Provider::RemoteDirectory do
         ::File.exist?(@destination_dir + '/a/multiply/nested/directory/qux.txt').should be_false
       end
 
-      it "removes directory symlinks properly" do
+      it "removes directory symlinks properly", :not_supported_on_win2k3 do
         symlinked_dir_path = @destination_dir + '/symlinked_dir'
         @provider.action = :create
         @provider.run_action

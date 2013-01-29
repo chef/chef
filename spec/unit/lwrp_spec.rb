@@ -25,23 +25,23 @@ describe "override logging" do
 
   it "should log if attempting to load resource of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-      Chef::Resource.build_from_file("lwrp", file, nil)
+      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
     end
 
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Resource.build_from_file("lwrp", file, nil)
+      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
     end
   end
 
   it "should log if attempting to load provider of same name" do
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-      Chef::Provider.build_from_file("lwrp", file, nil)
+      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
     end
 
     Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
       Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Provider.build_from_file("lwrp", file, nil)
+      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
     end
   end
 
@@ -61,11 +61,11 @@ describe "LWRP" do
 
     before do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, nil)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, nil)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
 
@@ -99,7 +99,7 @@ describe "LWRP" do
       run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @events)
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, run_context)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, run_context)
       end
 
       cls = Chef::Resource.const_get("LwrpNodeattr")
@@ -122,19 +122,19 @@ describe "LWRP" do
 
     before(:each) do
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, @run_context)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-        Chef::Resource.build_from_file("lwrp", file, @run_context)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-        Chef::Provider.build_from_file("lwrp", file, @run_context)
+        Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
       Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
-        Chef::Provider.build_from_file("lwrp", file, @run_context)
+        Chef::Provider::LWRPBase.build_from_file("lwrp", file, @run_context)
       end
 
     end
@@ -224,6 +224,48 @@ describe "LWRP" do
       provider.action_twiddle_thumbs
 
       provider.enclosed_resource.monkey.should == 'bob, the monkey'
+    end
+
+    describe "when using inline compilation" do
+      before do
+        # Behavior in these examples depends on implementation of fixture provider.
+        # See spec/data/lwrp/providers/inline_compiler
+
+        # Side effect of lwrp_inline_compiler provider for testing notifications.
+        $interior_ruby_block_2 = nil
+        # resource type doesn't matter, so make an existing resource type work with provider.
+        @resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+        @resource.allowed_actions << :test
+        @resource.action(:test)
+        @resource.provider(:lwrp_inline_compiler)
+      end
+
+      it "does not add interior resources to the exterior resource collection" do
+        @resource.run_action(:test)
+        @run_context.resource_collection.should be_empty
+      end
+
+      context "when interior resources are updated" do
+        it "processes notifications within the LWRP provider's action" do
+          @resource.run_action(:test)
+          $interior_ruby_block_2.should == "executed"
+        end
+
+        it "marks the parent resource updated" do
+          @resource.run_action(:test)
+          @resource.should be_updated
+          @resource.should be_updated_by_last_action
+        end
+      end
+
+      context "when interior resources are not updated" do
+        it "does not mark the parent resource updated" do
+          @resource.run_action(:no_updates)
+          @resource.should_not be_updated
+          @resource.should_not be_updated_by_last_action
+        end
+      end
+
     end
 
   end
