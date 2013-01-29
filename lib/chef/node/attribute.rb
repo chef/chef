@@ -220,6 +220,7 @@ class Chef
          @merged_attributes = nil
          @combined_default  = nil
          @combined_override = nil
+         @set_unless_present = false
        end
 
        alias :reset :reset_cache
