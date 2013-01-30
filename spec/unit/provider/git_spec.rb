@@ -91,9 +91,19 @@ describe Chef::Provider::Git do
 
     it "converts resource.revision from a tag to a SHA" do
       @resource.revision "v1.0"
-      @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
+                 "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n")
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("503c22a5e41f5ae3193460cca044ed1435029f53")
+    end
+
+    it "converts resource.revision from an annotated tag to the tagged SHA (not SHA of tag)" do
+      @resource.revision "v1.0"
+      @stdout = ("d03c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n" +
+                 "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0\n" +
+                 "663c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/v1.0^{}\n")
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0*", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.target_revision.should eql("663c22a5e41f5ae3193460cca044ed1435029f53")
     end
 
     it "raises an invalid remote reference error if you try to deploy from ``origin'' and assertions are run" do
@@ -119,9 +129,9 @@ describe Chef::Provider::Git do
     end
 
     it "does not raise an error when the revision is valid and assertions are run." do 
-      @resource.revision "v1.0"
+      @resource.revision "0.8-alpha"
       @stdout = "503c22a5e41f5ae3193460cca044ed1435029f53\trefs/heads/0.8-alpha\n"
-      @provider.should_receive(:shell_out!).with(@git_ls_remote + "v1.0", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "0.8-alpha*", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.action = :checkout
       ::File.stub!(:directory?).with("/my/deploy").and_return(true)
       @provider.define_resource_requirements 
@@ -146,7 +156,7 @@ b7d19519a1c15f1c1a324e2683bd728b6198ce5a\trefs/tags/0.7.8^{}
 ebc1b392fe7e8f0fbabc305c299b4d365d2b4d9b\trefs/tags/chef-server-package
 SHAS
       @resource.revision ''
-      @provider.should_receive(:shell_out!).with(@git_ls_remote, {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
+      @provider.should_receive(:shell_out!).with(@git_ls_remote + "HEAD", {:log_tag=>"git[web2.0 app]", :log_level=>:debug}).and_return(mock("ShellOut result", :stdout => @stdout))
       @provider.target_revision.should eql("28af684d8460ba4793eda3e7ac238c864a5d029a")
     end
   end
