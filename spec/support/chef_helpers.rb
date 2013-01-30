@@ -32,7 +32,7 @@ end
 # From Ruby 1.9.2+
 # Here for backwards compatibility with Ruby 1.8.7
 # http://rubydoc.info/stdlib/tmpdir/1.9.2/Dir/Tmpname
-def make_tmpname(prefix_suffix, n)
+def make_tmpname(prefix_suffix, n = nil)
   case prefix_suffix
   when String
     prefix = prefix_suffix

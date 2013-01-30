@@ -36,10 +36,10 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
   end
 
   let(:to) do
-    File.join(base_dir, make_tmpname("to_spec", nil))
+    File.join(base_dir, make_tmpname("to_spec"))
   end
   let(:target_file) do
-    File.join(base_dir, make_tmpname("from_spec", nil))
+    File.join(base_dir, make_tmpname("from_spec"))
   end
 
   after(:each) do
@@ -270,7 +270,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         end
         context 'pointing somewhere else' do
           before(:each) do
-            @other_target = File.join(base_dir, make_tmpname('other_spec', nil))
+            @other_target = File.join(base_dir, make_tmpname('other_spec'))
             File.open(@other_target, 'w') { |file| file.write('eek') }
             symlink(@other_target, target_file)
             symlink?(target_file).should be_true
@@ -288,7 +288,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         end
         context 'pointing nowhere' do
           before(:each) do
-            nonexistent = File.join(base_dir, make_tmpname('nonexistent_spec', nil))
+            nonexistent = File.join(base_dir, make_tmpname('nonexistent_spec'))
             symlink(nonexistent, target_file)
             symlink?(target_file).should be_true
             readlink(target_file).should == nonexistent
@@ -354,7 +354,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     context "when the link destination is a symbolic link" do
       context 'to a file that exists' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
+          @other_target = File.join(base_dir, make_tmpname("other_spec"))
           File.open(@other_target, "w") { |file| file.write("eek") }
           symlink(@other_target, to)
           symlink?(to).should be_true
@@ -370,7 +370,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
       context 'to a file that does not exist' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
+          @other_target = File.join(base_dir, make_tmpname("other_spec"))
           symlink(@other_target, to)
           symlink?(to).should be_true
           readlink(to).should == @other_target
@@ -394,7 +394,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     }.each do |prefix, desc|
       context desc do
         let(:to) { "#{prefix}#{File.basename(absolute_to)}" }
-        let(:absolute_to) { File.join(base_dir, make_tmpname("to_spec", nil)) }
+        let(:absolute_to) { File.join(base_dir, make_tmpname("to_spec")) }
         before(:each) do
           resource.to(to)
         end
@@ -513,7 +513,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     context "when the link destination is a symbolic link" do
       context 'to a real file' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
+          @other_target = File.join(base_dir, make_tmpname("other_spec"))
           File.open(@other_target, "w") { |file| file.write("eek") }
           symlink(@other_target, to)
           symlink?(to).should be_true
@@ -537,7 +537,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
       context 'to a nonexistent file' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec", nil))
+          @other_target = File.join(base_dir, make_tmpname("other_spec"))
           symlink(@other_target, to)
           symlink?(to).should be_true
           readlink(to).should == @other_target
