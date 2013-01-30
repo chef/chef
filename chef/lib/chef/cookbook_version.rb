@@ -255,8 +255,8 @@ class Chef
     attr_accessor :resource_filenames
     attr_accessor :provider_filenames
     attr_accessor :root_filenames
-    attr_accessor :name
     attr_accessor :pathname
+    attr_accessor :name
     attr_accessor :metadata
     attr_accessor :metadata_filenames
     attr_accessor :status
@@ -403,8 +403,8 @@ class Chef
     # === Returns
     # object<Chef::CookbookVersion>:: Duh. :)
     def initialize(name, couchdb=nil)
-      @name = name
       @pathname = name
+      @name = @pathname
       @frozen = false
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
