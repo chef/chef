@@ -60,7 +60,7 @@ describe Chef::Provider::Template do
     end
 
     it "finds the template file in the coobook cache if it isn't local" do
-      @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/openldap_stuff.conf.erb'
+      @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap1/templates/default/openldap_stuff.conf.erb'
     end
 
     it "finds the template file locally if it is local" do
@@ -80,7 +80,7 @@ describe Chef::Provider::Template do
       @resource.cookbook_name = 'apache2'
       @resource.cookbook('openldap')
       @resource.source "test.erb"
-      @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap/templates/default/test.erb'
+      @provider.template_location.should == CHEF_SPEC_DATA + '/cookbooks/openldap1/templates/default/test.erb'
     end
 
     describe "when the target file does not exist" do

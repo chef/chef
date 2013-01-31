@@ -143,6 +143,7 @@ describe Chef::CookbookVersion do
                   "providers"=>[], 
                   "root_files"=>[], 
                   "cookbook_name"=>"tatft", 
+                  "cookbook_pathname"=>"tatft",
                   "metadata"=>Chef::Cookbook::Metadata.new,
                   "version"=>"0.0.0", 
                   "name"=>"tatft-0.0.0"} 
