@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
 require 'chef/provider/service'
 require 'chef/mixin/command'
 
@@ -23,6 +24,7 @@ class Chef
   class Provider
     class Service
       class Solaris < Chef::Provider::Service
+        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context=nil)
           super
@@ -42,23 +44,22 @@ class Chef
         end
 
         def enable_service
-          run_command(:command => "#{default_init_command} enable #{@new_resource.service_name}")
-          return service_status.enabled
+          shell_out!("#{default_init_command} enable -s #{@new_resource.service_name}")
         end
 
         def disable_service
-          run_command(:command => "#{default_init_command} disable #{@new_resource.service_name}")
-          return service_status.enabled
+          shell_out!("#{default_init_command} disable -s #{@new_resource.service_name}")
         end
 
         alias_method :stop_service, :disable_service
         alias_method :start_service, :enable_service
 
         def reload_service
-          run_command(:command => "#{default_init_command} refresh #{@new_resource.service_name}")
+          shell_out!("#{default_init_command} refresh #{@new_resource.service_name}")
         end
 
         def restart_service
+          ## svcadm restart doesn't supports sync(-s) option
           disable_service
           return enable_service
         end
