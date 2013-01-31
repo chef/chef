@@ -12,17 +12,12 @@
          {error_logger_mf_maxfiles, 5}           % 5 files max
         ]},
 
- %% bookshelf_store Config
- {bookshelf_store, [
-                   ]},
-
- %% bookshelf_wi Config
- {bookshelf_wi, [{ip, "<%= @listen %>"},
-                 {port, <%= @port %>},
-                 {keys, {"<%= @access_key_id %>",
-                         "<%= @secret_access_key %>"}},
-                 {disk_store, "<%= @data_dir %>"},
-                 {stream_download, <%= @stream_download %>},
-                 {log_dir, "<%= @log_directory %>"}
-                ]}
+ {bookshelf, [{ip, "<%= @listen %>"},
+              {port, <%= @port %>},
+              {keys, {"<%= @access_key_id %>",
+                      "<%= @secret_access_key %>"}},
+              {disk_store, "<%= @data_dir %>"},
+              {stream_download, <%= @stream_download %>},
+              {log_dir, "<%= @log_directory %>"}
+             ]}
 ].
