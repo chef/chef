@@ -82,7 +82,11 @@ cp omnibus.rb.example omnibus.rb
 export PATH=/usr/local/bin:$PATH
 bundle install
 
-bundle exec rake "projects:${project_name}"
+if [ "$RELEASE_BUILD" = "true" ]; then
+  bundle exec omnibus build $project_name --no-timestamp
+else
+  bundle exec omnibus build $project_name
+fi
 
 # Sign the package on some platforms:
 if exists rpm;
