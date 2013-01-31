@@ -29,14 +29,14 @@ class Chef
 
       attr_reader :cookbook_path
 
-      # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
+      # Creates a new SyntaxCheck given the +cookbook_pathname+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
-      def self.for_cookbook(cookbook_name, cookbook_path=nil)
+      def self.for_cookbook(cookbook_pathname, cookbook_path=nil)
         cookbook_path ||= Chef::Config.cookbook_path
         unless cookbook_path
-          raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
+          raise ArgumentError, "Cannot find cookbook #{cookbook_pathname} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
         end
-        new(File.join(cookbook_path, cookbook_name.to_s))
+        new(File.join(cookbook_path, cookbook_pathname.to_s))
       end
 
       # Create a new SyntaxCheck object
