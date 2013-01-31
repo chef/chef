@@ -30,6 +30,11 @@ class Chef
           :long => '--repo-mode MODE',
           :default => "default",
           :description => "Specifies the local repository layout.  Values: default or full"
+
+        option :chef_repo_path,
+          :long => '--chef-repo-path PATH',
+          :default => nil,
+          :description => 'Overrides the location of chef repo. Default is specified by chef_repo_paths in the config'
       end
 
       def chef_fs
@@ -38,16 +43,16 @@ class Chef
 
       def chef_repo_paths
         @chef_repo_paths ||= begin
-          result = config_paths(:chef_repo_path)
-          if result
-            result
-          else
-            if Chef::Config[:cookbook_path]
-              Array(Chef::Config[:cookbook_path]).flatten.map { |path| File.expand_path('..', path) }
-            else
-              nil
-            end
-          end
+                               result = config_paths(:chef_repo_path)
+                               if result
+                                 result
+                               else
+                                 if Chef::Config[:cookbook_path]
+                                   Array(Chef::Config[:cookbook_path]).flatten.map { |path| File.expand_path('..', path) }
+                                 else
+                                   nil
+                                 end
+                               end
         end
       end
 
@@ -79,14 +84,20 @@ class Chef
             object_names = %w(cookbooks data_bags environments roles)
           end
           object_names.each do |object_name|
-            variable_name = "#{object_name[0..-2]}_path" # cookbooks -> cookbook_path
-            paths = config_paths(variable_name.to_sym)
-            if !paths
-              if !chef_repo_paths
-                Chef::Log.error("Must specify either chef_repo_path or #{variable_name} in Chef config file")
-                exit(1)
+            # If --chef-repo-path is passed in the command line, then override *everything*
+            # and assume all the subdirectory is contained in that directory.
+            if config[:chef_repo_path]
+              paths = [ "#{config[:chef_repo_path]}/#{object_name}" ]
+            else
+              variable_name = "#{object_name[0..-2]}_path" # cookbooks -> cookbook_path
+              paths = config_paths(variable_name.to_sym)
+              if !paths
+                if !chef_repo_paths
+                  Chef::Log.error("Must specify either chef_repo_path or #{variable_name} in Chef config file")
+                  exit(1)
+                end
+                paths = chef_repo_paths.map { |path| File.join(path, object_name) }
               end
-              paths = chef_repo_paths.map { |path| File.join(path, object_name) }
             end
             paths = paths.flatten.map { |path| File.expand_path(path) }
             result[object_name] = paths
