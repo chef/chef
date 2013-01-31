@@ -16,7 +16,7 @@
 #
 
 name "chef-solr"
-version "a594a634acd468d59d3929a5289c18cc7421827e"
+version "11.0.0"
 
 dependencies ["rsync", "jre"]
 
