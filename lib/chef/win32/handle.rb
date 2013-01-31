@@ -26,6 +26,10 @@ class Chef
     class Handle
       extend Chef::ReservedNames::Win32::API::Process
 
+      # See http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx
+      # The handle value returned by the GetCurrentProcess function is the pseudo handle (HANDLE)-1 (which is 0xFFFFFFFF)
+      CURRENT_PROCESS_HANDLE = 4294967295
+      
       def initialize(handle)
         @handle = handle
         ObjectSpace.define_finalizer(self, Handle.close_handle_finalizer(handle))
@@ -34,7 +38,10 @@ class Chef
       attr_reader :handle
 
       def self.close_handle_finalizer(handle)
-        proc { close_handle(handle) }
+        # According to http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx, it is not necessary
+        # to close the pseudo handle returned by the GetCurrentProcess function.  The docs also say that it doesn't hurt to call
+        # CloseHandle on it. However, doing so from inside of Ruby always seems to produce an invalid handle error.
+        proc { close_handle(handle) unless handle == CURRENT_PROCESS_HANDLE }
       end
 
       def self.close_handle(handle)
