@@ -89,14 +89,14 @@ describe Chef::Provider::Service::Solaris do
         @current_resource.enabled(true)
       end
 
-      it "should call svcadm enable chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable chef"})
+      it "should call svcadm enable -s chef" do
+        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable -s chef"})
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.enable_service.should be_true
       end
 
-      it "should call svcadm enable chef for start_service" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable chef"})
+      it "should call svcadm enable -s chef for start_service" do
+        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable -s chef"})
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.start_service.should be_true
       end
@@ -110,14 +110,14 @@ describe Chef::Provider::Service::Solaris do
         @current_resource.enabled(false)
       end
 
-      it "should call svcadm disable chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable chef"})
+      it "should call svcadm disable -s chef" do
+        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable -s chef"})
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.disable_service.should be_false
       end
 
-      it "should call svcadm disable chef for stop_service" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable chef"})
+      it "should call svcadm disable -s chef for stop_service" do
+        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable -s chef"})
         @provider.should_receive(:service_status).and_return(@current_resource)
         @provider.stop_service.should be_false
       end
