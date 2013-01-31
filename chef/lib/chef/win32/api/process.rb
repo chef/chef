@@ -33,6 +33,7 @@ class Chef
         safe_attach_function :GetCurrentProcess, [], :HANDLE
         safe_attach_function :GetProcessHandleCount, [ :HANDLE, :LPDWORD ], :BOOL
         safe_attach_function :GetProcessId, [ :HANDLE ], :DWORD
+        safe_attach_function :CloseHandle, [ :HANDLE ], :BOOL
 
       end
     end
