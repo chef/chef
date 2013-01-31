@@ -16,7 +16,7 @@
 #
 
 name "chef-expander"
-version "14b11a96da1273b362f39ab11c411470688a8bd6"
+version "11.0.0"
 
 dependencies ["ruby", "bundler", "rsync"]
 
