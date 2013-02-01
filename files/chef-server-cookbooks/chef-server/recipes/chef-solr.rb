@@ -88,7 +88,33 @@ template File.join(solr_home_dir, "conf", "solrconfig.xml") do
   notifies :restart, 'service[chef-solr]' if should_notify
 end
 
-node.default['chef_server']['chef-solr']['command'] =  "java -Xmx#{node['chef_server']['chef-solr']['heap_size']} -Xms#{node['chef_server']['chef-solr']['heap_size']}"
+# Compute some sane JVM tunings. The user can still override these computed
+# defaults using /etc/chef-server/chef-server.rb
+solr_mem = if node['chef_server']['chef-solr']['heap_size']
+              node['chef_server']['chef-solr']['heap_size']
+           else
+             node[:memory][:total] =~ /^(\d+)kB/
+             memory_total_in_kb = $1.to_i
+             solr_mem = (memory_total_in_kb - 600000) / 1024
+             # cap default solr memory at 6G
+             if solr_mem > 6144
+               solr_mem = 6144
+             end
+             solr_mem
+           end
+new_size = node['chef_server']['chef-solr']['new_size'] || (solr_mem / 10)
+
+java_opts = node['chef_server']['chef-solr']['java_opts']
+java_opts << " -XX:NewSize=#{new_size}M" unless java_opts =~ /NewSize/
+java_opts << " -XX:+UseConcMarkSweepGC" unless java_opts =~ /UseConcMarkSweepGC/
+java_opts << " -XX:+UseParNewGC" unless java_opts =~ /UseParNewGC/
+
+# Save the values back onto the node attributes
+node.default['chef_server']['chef-solr']['heap_size'] = solr_mem
+node.default['chef_server']['chef-solr']['new_size'] = new_size
+
+node.default['chef_server']['chef-solr']['command'] =  "java -Xmx#{solr_mem}M -Xms#{solr_mem}M"
+node.default['chef_server']['chef-solr']['command'] << "#{java_opts}"
 node.default['chef_server']['chef-solr']['command'] << " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8086 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 node.default['chef_server']['chef-solr']['command'] << " -Dsolr.data.dir=#{solr_data_dir}"
 node.default['chef_server']['chef-solr']['command'] << " -Dsolr.solr.home=#{solr_home_dir}"

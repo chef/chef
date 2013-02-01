@@ -59,15 +59,10 @@ default['chef_server']['chef-solr']['ha'] = false
 default['chef_server']['chef-solr']['dir'] = "/var/opt/chef-server/chef-solr"
 default['chef_server']['chef-solr']['data_dir'] = "/var/opt/chef-server/chef-solr/data"
 default['chef_server']['chef-solr']['log_directory'] = "/var/log/chef-server/chef-solr"
-
-# node[:memory][:total] =~ /^(\d+)kB/
-# memory_total_in_kb = $1.to_i
-# solr_mem = (memory_total_in_kb - 600000) / 1024
-# # cap solr memory at 6G
-# if solr_mem > 6144
-#   solr_mem = 6144
-# end
-default['chef_server']['chef-solr']['heap_size'] = "256M"
+# defaults for heap size and new generation size are computed in the chef-solr
+# recipe based on node memory
+default['chef_server']['chef-solr']['heap_size'] = nil
+default['chef_server']['chef-solr']['new_size'] = nil
 default['chef_server']['chef-solr']['java_opts'] = ""
 default['chef_server']['chef-solr']['url'] = "http://localhost:8983"
 default['chef_server']['chef-solr']['ip_address'] = '127.0.0.1'
