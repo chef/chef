@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: dab59e91b9064aa0c8be36388f4000dc517fdcb6
+  revision: 03ea6aab5a1adf7f9a36cd2dafa9d897f381c068
   branch: master
   specs:
-    omnibus (0.5)
+    omnibus (0.5.1)
       fpm (= 0.3.11)
       mixlib-shellout (~> 1.0)
       ohai (>= 0.6.12)
