@@ -1041,7 +1041,6 @@ class Chef
       end
 
       manifest[:cookbook_name] = name.to_s
-      manifest[:cookbook_pathname] = pathname.to_s
       manifest[:metadata] = metadata
       manifest[:version] = metadata.version
       manifest[:name] = full_name

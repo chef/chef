@@ -32,7 +32,7 @@ class Chef
     class FileSystemFileVendor < FileVendor
 
       def initialize(manifest, *repo_paths)
-        @cookbook_pathname = manifest[:cookbook_pathname]
+        @cookbook_name = manifest[:cookbook_name]
         @repo_paths = repo_paths.flatten
         raise ArgumentError, "You must specify at least one repo path" if @repo_paths.empty?
       end
@@ -41,12 +41,15 @@ class Chef
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        location = @repo_paths.inject(nil) do |memo, basepath|
-          candidate_location = File.join(basepath, @cookbook_pathname, filename)
-          memo = candidate_location if File.exist?(candidate_location)
-          memo
+        cookbooks = Chef::CookbookLoader.new(@repo_paths)
+        if cookbooks.has_key?(@cookbook_name)
+          location = @repo_paths.inject(nil) do |memo, basepath|
+            candidate_location = File.join(basepath, cookbooks[@cookbook_name].pathname.to_s, filename)
+            memo = candidate_location if File.exist?(candidate_location)
+            memo
+          end
         end
-        raise "File #{filename} does not exist for cookbook #{@cookbook_pathname}" unless location
+        raise "File #{filename} does not exist for cookbook #{@cookbook_name}" unless location
 
         location
       end
