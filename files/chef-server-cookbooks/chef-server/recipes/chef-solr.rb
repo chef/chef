@@ -94,13 +94,11 @@ solr_mem = if node['chef_server']['chef-solr']['heap_size']
               node['chef_server']['chef-solr']['heap_size']
            else
              node[:memory][:total] =~ /^(\d+)kB/
-             memory_total_in_kb = $1.to_i
-             solr_mem = (memory_total_in_kb - 600000) / 1024
-             # cap default solr memory at 6G
-             if solr_mem > 6144
-               solr_mem = 6144
-             end
-             solr_mem
+             memory_total_in_mb = $1.to_i / 1024
+             # Total heap size for solr is the smaller of:
+             #    25% of total system memory
+             #    1024 MB
+             [(memory_total_in_mb / 4), 1024].min
            end
 new_size = node['chef_server']['chef-solr']['new_size'] || (solr_mem / 10)
 
