@@ -225,6 +225,7 @@ class Chef
             # ignore trailing slash
             Regexp.escape(device_real)+"/?"
           elsif ::File.symlink?(device_real)
+            # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
             "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.readlink(device_real))})"
           else
             Regexp.escape(device_real)
