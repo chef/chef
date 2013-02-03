@@ -43,11 +43,8 @@ class Chef
       def get_filename(filename)
         cookbooks = Chef::CookbookLoader.new(@repo_paths)
         if cookbooks.has_key?(@cookbook_name)
-          location = @repo_paths.inject(nil) do |memo, basepath|
-            candidate_location = File.join(basepath, cookbooks[@cookbook_name].pathname.to_s, filename)
-            memo = candidate_location if File.exist?(candidate_location)
-            memo
-          end
+          location = File.join(cookbooks[@cookbook_name].root_dir, filename)
+          location = nil unless File.exist?(location)
         end
         raise "File #{filename} does not exist for cookbook #{@cookbook_name}" unless location
 
