@@ -118,6 +118,16 @@ describe Chef::Resource::Scm do
     @resource.enable_submodules.should be_false
   end
 
+  it "takes a boolean for #enable_checkout" do
+    @resource.enable_checkout true
+    @resource.enable_checkout.should be_true
+    lambda {@resource.enable_checkout "lolz"}.should raise_error(ArgumentError)
+  end
+
+  it "defaults to enabling checkout" do
+    @resource.enable_checkout.should be_true
+  end
+
   it "takes a string for the remote" do
     @resource.remote "opscode"
     @resource.remote.should eql("opscode")
