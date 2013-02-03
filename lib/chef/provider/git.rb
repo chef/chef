@@ -75,7 +75,9 @@ class Chef
       def action_checkout
         if target_dir_non_existent_or_empty?
           clone
-          checkout
+          if @new_resource.enable_checkout
+            checkout
+          end
           enable_submodules
           add_remotes
         else
@@ -152,12 +154,10 @@ class Chef
       def checkout
         sha_ref = target_revision
 
-        if @new_resource.enable_checkout
-          converge_by("checkout ref #{sha_ref} branch #{@new_resource.revision}") do
-            # checkout into a local branch rather than a detached HEAD
-            shell_out!("git checkout -b #{@new_resource.checkout_branch} #{sha_ref}", run_options(:cwd => @new_resource.destination))
-            Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} onto: #{@new_resource.checkout_branch} reference: #{sha_ref}"
-          end
+        converge_by("checkout ref #{sha_ref} branch #{@new_resource.revision}") do
+          # checkout into a local branch rather than a detached HEAD
+          shell_out!("git checkout -b #{@new_resource.checkout_branch} #{sha_ref}", run_options(:cwd => @new_resource.destination))
+          Chef::Log.info "#{@new_resource} checked out branch: #{@new_resource.revision} onto: #{@new_resource.checkout_branch} reference: #{sha_ref}"
         end
       end
 
