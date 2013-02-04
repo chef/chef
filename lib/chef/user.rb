@@ -111,6 +111,7 @@ class Chef
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       reregistered_self = r.put_rest("users/#{name}", { :name => name, :admin => admin, :private_key => true })
       private_key(reregistered_self["private_key"])
+      self
     end
 
     def to_s
