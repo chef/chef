@@ -68,8 +68,8 @@ class Chef
           Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
         end
 
-        cookbook = cookbook_version
-        @cookbook_name = cookbook.name.to_s unless cookbook.nil?
+        metadata = @metadata.is_a?(Metadata) ? @metadata : metadata(nil)
+        @cookbook_name = metadata.name.to_sym unless metadata.name.empty?
 
         @cookbook_settings
       end
@@ -93,7 +93,7 @@ class Chef
         end
 
         raise "Cookbook metadata is missing required 'name' value" unless cookbook_version.metadata.name
-        cookbook_version.name = cookbook_version.metadata.name.to_sym unless cookbook_version.nil?
+        cookbook_version.name = cookbook_version.metadata.name.to_sym
 
         cookbook_version
       end
