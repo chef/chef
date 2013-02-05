@@ -23,10 +23,7 @@ require 'chef/api_client/registration'
 
 describe Chef::ApiClient::Registration do
   let(:key_location) do
-    path = nil
-    Tempfile.open("client-registration-key") {|f| path = f.path }
-    File.unlink(path)
-    path
+    make_tmpname("client-registration-key")
   end
 
   let(:registration) { Chef::ApiClient::Registration.new("silent-bob", key_location) }

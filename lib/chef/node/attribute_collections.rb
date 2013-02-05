@@ -154,7 +154,14 @@ class Chef
       alias :attribute? :has_key?
 
       def method_missing(symbol, *args)
-        if args.empty?
+        # Calling `puts arg` implicitly calls #to_ary on `arg`. If `arg` does
+        # not implement #to_ary, ruby recognizes it as a single argument, and
+        # if it returns an Array, then ruby prints each element. If we don't
+        # account for that here, we'll auto-vivify a VividMash for the key
+        # :to_ary which creates an unwanted key and raises a TypeError.
+        if symbol == :to_ary
+          super
+        elsif args.empty?
           self[symbol]
         elsif symbol.to_s =~ /=$/
           key_to_set = symbol.to_s[/^(.+)=$/, 1]

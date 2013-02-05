@@ -234,6 +234,50 @@ describe Chef::Node::Attribute do
     end
   end
 
+  describe "when printing attribute components" do
+
+    it "does not cause a type error" do
+      # See CHEF-3799; IO#puts implicitly calls #to_ary on its argument. This
+      # is expected to raise a NoMethodError or return an Array. `to_ary` is
+      # the "strict" conversion method that should only be implemented by
+      # things that are truly Array-like, so NoMethodError is the right choice.
+      # (cf. there is no Hash#to_ary).
+      lambda { @attributes.default.to_ary }.should raise_error(NoMethodError)
+    end
+
+  end
+
+  describe "when debugging attributes" do
+    before do
+      @attributes.default[:foo][:bar] = "default"
+      @attributes.env_default[:foo][:bar] = "env_default"
+      @attributes.role_default[:foo][:bar] = "role_default"
+      @attributes.force_default[:foo][:bar] = "force_default"
+      @attributes.normal[:foo][:bar] = "normal"
+      @attributes.override[:foo][:bar] = "override"
+      @attributes.role_override[:foo][:bar] = "role_override"
+      @attributes.env_override[:foo][:bar] = "env_override"
+      @attributes.force_override[:foo][:bar] = "force_override"
+      @attributes.automatic[:foo][:bar] = "automatic"
+    end
+
+    it "gives the value at each level of precedence for a path spec" do
+      expected = [["set_unless_enabled?", false],
+        ["default", "default"],
+        ["env_default", "env_default"],
+        ["role_default", "role_default"],
+        ["force_default", "force_default"],
+        ["normal", "normal"],
+        ["override", "override"],
+        ["role_override", "role_override"],
+        ["env_override", "env_override"],
+        ["force_override", "force_override"],
+        ["automatic", "automatic"]
+      ]
+      @attributes.debug_value(:foo, :bar).should == expected
+    end
+  end
+
   describe "when fetching values based on precedence" do
     before do
       @attributes.default["default"] = "cookbook default"
@@ -284,6 +328,40 @@ describe Chef::Node::Attribute do
       @attributes["override"].should == "cookbook override"
     end
 
+    it "merges arrays within the default precedence" do
+      @attributes.role_default["array"] = %w{role}
+      @attributes.env_default["array"] = %w{env}
+      @attributes["array"].should == %w{env role}
+    end
+
+    it "merges arrays within the override precedence" do
+      @attributes.role_override["array"] = %w{role}
+      @attributes.env_override["array"] = %w{env}
+      @attributes["array"].should == %w{role env}
+    end
+
+    it "does not merge arrays between default and normal" do
+      @attributes.role_default["array"] = %w{role}
+      @attributes.normal["array"] = %w{normal}
+      @attributes["array"].should == %w{normal}
+    end
+
+    it "does not merge arrays between normal and override" do
+      @attributes.normal["array"] = %w{normal}
+      @attributes.role_override["array"] = %w{role}
+      @attributes["array"].should == %w{role}
+    end
+
+    it "merges nested hashes between precedence levels" do
+      @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
+      @attributes.env_default = {"a" => {"b" => {"default" => "default"}}}
+      @attributes.normal = {"a" => {"b" => {"normal" => "normal"}}}
+      @attributes.override = {"a" => {"override" => "role"}}
+      @attributes.automatic = {"a" => {"automatic" => "auto"}}
+      @attributes["a"].should == {"b"=>{"default"=>"default", "normal"=>"normal"},
+                                  "override"=>"role",
+                                  "automatic"=>"auto"}
+    end
   end
 
   describe "when reading combined default or override values" do

@@ -159,13 +159,16 @@ describe Chef::Provider::RegistryKey do
     end
   end
 
-  describe "delete_key" do
+  describe "delete_key", :windows_only do
     it "deletes key if it has subkeys and recursive is set to true" do
       @registry.should_receive(:key_exists?).with(key_path).and_return(true)
       @registry.should_receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
       @registry.should_receive(:has_subkeys?).with(key_path).and_return(true)
-      @hive_mock.should_receive(:open).with(key_parent, ::Win32::Registry::KEY_WRITE | @registry.registry_system_architecture).and_yield(@reg_mock)
-      @reg_mock.should_receive(:delete_key).with(key_to_delete, true)
+      @registry.should_receive(:get_subkeys).with(key_path).and_return([sub_key])
+      @registry.should_receive(:key_exists?).with(key_path+"\\"+sub_key).and_return(true)
+      @registry.should_receive(:get_hive_and_key).with(key_path+"\\"+sub_key).and_return([@hive_mock, key+"\\"+sub_key])
+      @registry.should_receive(:has_subkeys?).with(key_path+"\\"+sub_key).and_return(false)
+      @registry.should_receive(:delete_key_ex).twice
       @registry.delete_key(key_path, true)
     end
 
@@ -180,8 +183,7 @@ describe Chef::Provider::RegistryKey do
       @registry.should_receive(:key_exists?).with(key_path).and_return(true)
       @registry.should_receive(:get_hive_and_key).with(key_path).and_return([@hive_mock, key])
       @registry.should_receive(:has_subkeys?).with(key_path).and_return(false)
-      @hive_mock.should_receive(:open).with(key_parent, ::Win32::Registry::KEY_WRITE | @registry.registry_system_architecture).and_yield(@reg_mock)
-      @reg_mock.should_receive(:delete_key).with(key_to_delete)
+      @registry.should_receive(:delete_key_ex)
       @registry.delete_key(key_path, true)
     end
   end

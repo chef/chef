@@ -18,8 +18,8 @@
 #
 
 require 'chef/mixin/params_validate'
-require 'chef/mixin/check_helper'
 require 'chef/dsl/platform_introspection'
+require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
@@ -120,7 +120,7 @@ F
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
-    include Chef::Mixin::CheckHelper
+    include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
@@ -324,17 +324,19 @@ F
     end
 
     def name(name=nil)
-      set_if_args(@name, name) do
+      if !name.nil?
         raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
         @name = name
       end
+      @name
     end
 
     def noop(tf=nil)
-      set_if_args(@noop, tf) do
+      if !tf.nil?
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
       end
+      @noop
     end
 
     def ignore_failure(arg=nil)
@@ -536,10 +538,14 @@ F
     end
 
     def defined_at
+      # The following regexp should match these two sourceline formats:
+      #   /some/path/to/file.rb:80:in `wombat_tears'
+      #   C:/some/path/to/file.rb:80 in 1`wombat_tears'
+      # extracting the path to the source file and the line number.
+      (file, line_no) = source_line.match(/(.*):(\d+):?.*$/).to_a[1,2] if source_line
       if cookbook_name && recipe_name && source_line
-        "#{cookbook_name}::#{recipe_name} line #{source_line.split(':')[1]}"
+        "#{cookbook_name}::#{recipe_name} line #{line_no}"
       elsif source_line
-        file, line_no = source_line.split(':')
         "#{file} line #{line_no}"
       else
         "dynamically defined"

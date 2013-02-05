@@ -273,6 +273,29 @@ describe Chef::Resource do
     end
   end
 
+  describe "defined_at" do
+    it "should correctly parse source_line on unix-like operating systems" do
+      @resource.source_line = "/some/path/to/file.rb:80:in `wombat_tears'"
+      @resource.defined_at.should == "/some/path/to/file.rb line 80"
+    end
+
+    it "should correctly parse source_line on Windows" do
+      @resource.source_line = "C:/some/path/to/file.rb:80 in 1`wombat_tears'"
+      @resource.defined_at.should == "C:/some/path/to/file.rb line 80"
+    end
+
+    it "should include the cookbook and recipe when it knows it" do
+      @resource.source_line = "/some/path/to/file.rb:80:in `wombat_tears'"
+      @resource.recipe_name = "wombats"
+      @resource.cookbook_name = "animals"
+      @resource.defined_at.should == "animals::wombats line 80"
+    end
+
+    it "should recognize dynamically defined resources" do
+      @resource.defined_at.should == "dynamically defined"
+    end
+  end
+
   describe "to_s" do
     it "should become a string like resource_name[name]" do
       zm = Chef::Resource::ZenMaster.new("coffee")

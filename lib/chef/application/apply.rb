@@ -29,7 +29,7 @@ require 'chef/resources'
 
 class Chef::Application::Apply < Chef::Application
 
-  banner "Usage: chef-recipe [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
+  banner "Usage: chef-apply [RECIPE_FILE] [-e RECIPE_TEXT] [-s]"
 
 
   option :execute,
@@ -104,7 +104,7 @@ class Chef::Application::Apply < Chef::Application
                   else
                     Chef::RunContext.new(@chef_client.node, {}, @chef_client.events)
                   end
-    recipe = Chef::Recipe.new("(chef-recipe cookbook)", "(chef-recipe recipe)", run_context)
+    recipe = Chef::Recipe.new("(chef-apply cookbook)", "(chef-apply recipe)", run_context)
     [recipe, run_context]
   end
 

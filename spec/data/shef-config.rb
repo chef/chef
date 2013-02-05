@@ -6,4 +6,5 @@ Ohai::Config[:disabled_plugins] << "linux::cpu" << "linux::memory" << "ec2" << "
 Ohai::Config[:disabled_plugins] << "solaris2::cpu" << "solaris2::dmi" << "solaris2::filesystem" << "solaris2::kernel"
 Ohai::Config[:disabled_plugins] << "solaris2::virtualization" << "solaris2::zpools"
 Ohai::Config[:disabled_plugins] << 'c' << 'php' << 'mono' << 'groovy' << 'lua' << 'erlang'
+Ohai::Config[:disabled_plugins] << "kernel" << "linux::filesystem" << "ruby"
 
