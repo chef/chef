@@ -34,6 +34,7 @@ class Chef
         @action = "create"
         @source = ::File.basename(name)
         @cookbook = nil
+        @ftp_active_mode = false
         @provider = Chef::Provider::RemoteFile
       end
 
@@ -58,6 +59,14 @@ class Chef
           :checksum,
           args,
           :kind_of => String
+        )
+      end
+
+      def ftp_active_mode(args=nil)
+        set_or_return(
+          :ftp_active_mode,
+          args,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
