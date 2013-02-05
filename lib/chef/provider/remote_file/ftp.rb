@@ -19,10 +19,11 @@
 require 'uri'
 require 'tempfile'
 require 'net/ftp'
+require 'chef/provider/remote_file'
  
 class Chef
 	class Provider
-		class RemoteFile < Chef::Provider::File
+		class RemoteFile
 			class FTP
 
 				# Fetches the file at uri using Net::FTP, returning a Tempfile

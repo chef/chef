@@ -19,7 +19,6 @@
 
 require 'chef/provider/file'
 require 'rest_client'
-require 'chef/provider/remote_file/ftp'
 require 'uri'
 require 'tempfile'
 
