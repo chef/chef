@@ -226,4 +226,29 @@ SVC_LIST
       end
     end
   end
+
+  context "loading #{described_class}" do
+
+    describe "with HOME defined" do
+      it "expands PLIST_DIRS with ~/Library/LaunchAgents" do
+        old_plist_dirs = []
+        described_class.initialize_plist_dirs(old_plist_dirs)
+        old_plist_dirs.should contain("~/Library/LaunchAgents")
+      end
+    end
+
+    describe "without HOME defined" do
+      before do
+        File.stub!(:expand_path).and_raise(AttributeError)
+      end
+
+      it "doesn't modify the PLIST_DIRS" do
+        old_plist_dirs = []
+        described_class.initialize_plist_dirs(old_plist_dirs)
+        old_plist_dirs.should == []
+      end
+    end
+
+  end
+  
 end

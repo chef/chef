@@ -29,12 +29,15 @@ class Chef
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
 
-        def initialize(new_resource, run_context)
-          super
-          if Process.uid != 0
-            PLIST_DIRS << "~/Library/LaunchAgents"
+        def self.initialize_plist_dirs(dir_list)
+          begin
+            ::File.expand_path("~")
+            dir_list << "~/Library/LaunchAgents"
+          rescue ArgumentError
           end
         end
+
+        initialize_plist_dirs(PLIST_DIRS)
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
