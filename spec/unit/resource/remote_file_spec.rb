@@ -64,7 +64,7 @@ describe Chef::Resource::RemoteFile do
       lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
-    it "should raise and exception when source is an empty array" do
+    it "should raise an exception when source is an empty array" do
       lambda { @resource.source([]) }.should raise_error(ArgumentError)
     end
 
@@ -80,7 +80,18 @@ describe Chef::Resource::RemoteFile do
       @resource.checksum.should == nil
     end
   end
-  
+
+  describe "ftp_active_mode" do
+    it "should accept a boolean for the ftp_active_mode object" do
+      @resource.ftp_active_mode true
+      @resource.ftp_active_mode.should be_true
+    end
+
+    it "should default to false" do
+      @resource.ftp_active_mode.should be_false
+    end
+  end
+
   describe "when it has group, mode, owner, source, and checksum" do
     before do 
       if Chef::Platform.windows?
@@ -119,5 +130,4 @@ describe Chef::Resource::RemoteFile do
       end
     end
   end
- 
 end
