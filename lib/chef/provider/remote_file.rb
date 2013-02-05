@@ -19,10 +19,9 @@
 
 require 'chef/provider/file'
 require 'rest_client'
+require 'chef/provider/remote_file/ftp'
 require 'uri'
 require 'tempfile'
-require 'net/https'
-require 'net/ftp'
 
 class Chef
   class Provider
@@ -48,11 +47,16 @@ class Chef
             if URI::HTTP === uri
               #HTTP or HTTPS
               raw_file = RestClient::Request.execute(:method => :get, :url => source, :raw_response => true).file
-            else
+            elsif URI::FTP === uri
               #FTP
-              raw_file = ftp_fetch(uri)
+              raw_file = FTP::fetch(uri, @new_resource.ftp_active_mode)
+            elsif uri.scheme == "file"
+              #local/network file
+              raw_file = ::File.new(uri.path, "r")
+            else
+              raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
             end
-          rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Net::HTTPFatalError => e
+          rescue => e
             Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}")
             if source = sources.shift
               Chef::Log.debug("#{@new_resource} trying to download from another mirror")
@@ -71,12 +75,20 @@ class Chef
               backup_new_resource
               FileUtils.cp raw_file.path, @new_resource.path
               Chef::Log.info "#{@new_resource} updated"
-              raw_file.close!
+              if raw_file.is_a? Tempfile
+                raw_file.close!
+              else
+                raw_file.close
+              end
             end
             # whyrun mode cleanup - the temp file will never be used,
             # so close/unlink it here. 
             if whyrun_mode?
-              raw_file.close!
+              if raw_file.is_a? Tempfile
+                raw_file.close!
+              else
+                raw_file.close
+              end
             end
           end
         end
@@ -108,57 +120,6 @@ class Chef
           Chef::Log.debug "#{@new_resource} checksum changed from #{@current_resource.checksum} to #{@new_resource.checksum}"
           backup @new_resource.path
         end
-      end
-
-      private
-
-      def ftp_fetch(uri)
-        # Shamelessly stolen from open-uri
-        # Fetches the file using Net::FTP, returning a Tempfile
-        path = uri.path
-        path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
-        directories = path.split(%r{/}, -1)
-        directories.each {|d|
-          d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
-        }
-        unless filename = directories.pop
-          raise ArgumentError, "no filename: #{uri.inspect}"
-        end
-        directories.each {|d|
-          if /[\r\n]/ =~ d
-            raise ArgumentError, "invalid directory: #{d.inspect}"
-          end
-        }
-        if /[\r\n]/ =~ filename
-          raise ArgumentError, "invalid filename: #{filename.inspect}"
-        end 
-        typecode = uri.typecode
-        if typecode && /\A[aid]\z/ !~ typecode
-          raise ArgumentError, "invalid typecode: #{typecode.inspect}"
-        end
-
-        tempfile = Tempfile.new(filename)
-
-        # The access sequence is defined by RFC 1738
-        ftp = Net::FTP.new
-        ftp.connect(uri.hostname, uri.port)
-        ftp.passive = true if !@new_resource.ftp_active_mode
-        # todo: extract user/passwd from .netrc.
-        user = 'anonymous'
-        passwd = nil
-        user, passwd = uri.userinfo.split(/:/) if uri.userinfo
-        ftp.login(user, passwd)
-        directories.each {|cwd|
-          ftp.voidcmd("CWD #{cwd}")
-        }
-        if typecode
-          # xxx: typecode D is not handled.
-          ftp.voidcmd("TYPE #{typecode.upcase}")
-        end
-        ftp.getbinaryfile(filename, tempfile.path)
-        ftp.close
-
-        tempfile
       end
     end
   end
