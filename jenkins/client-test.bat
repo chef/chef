@@ -31,7 +31,7 @@ IF EXIST .\src\chef\chef (
 rem # install all of the development gems
 mkdir .\bundle
 set PATH=C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;%PATH%
-call bundle install --without server --path bundle || GOTO :error
+call bundle install --without server --without docgen --path bundle || GOTO :error
 
 rem # run the tests -- exclude spec/stress on windows
 call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
