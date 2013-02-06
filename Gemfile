@@ -5,6 +5,11 @@ gemspec
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 gem "ronn"
 
+# Newer rdiscount doesn't compile on windows, and this gemfile is used in Ci
+# pipeline for build/test on all platforms. Pin rdiscount to known good
+# version. (CHEF-3840)
+gem "rdiscount", "~> 1.6.8"
+
 group(:development, :test) do
   gem 'rack', "~> 1.5.1"
 
