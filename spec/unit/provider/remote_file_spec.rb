@@ -64,7 +64,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     end
 
     before do
-      @resource.source("http://localhost:9000/seattle.txt")
+      @resource.source("http://opscode.com/seattle.txt")
     end
 
     describe "and the target location's enclosing directory does not exist" do
@@ -121,7 +121,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "does not download the file" do
-          RestClient::Request.should_not_receive(:execute).with("http://localhost:9000/seattle.txt").and_return(@tempfile)
+          RestClient::Request.should_not_receive(:execute).with("http://opscode.com/seattle.txt").and_return(@tempfile)
           @provider.run_action(:create)
         end
 
@@ -138,7 +138,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "should not download the file if the checksum is a partial match from the beginning" do
-          @rawresp.should_not_receive(:fetch).with("http://localhost:9000/seattle.txt").and_return(@tempfile)
+          @rawresp.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
           @provider.run_action(:create)
         end
 
@@ -152,7 +152,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       describe "and the existing file doesn't match the given checksum" do
         it "downloads the file" do
           @resource.checksum("this hash doesn't match")
-          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://localhost:9000/seattle.txt", :raw_response => true).and_return(@rawresp)
+          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -160,7 +160,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         it "does not consider the checksum a match if the matching string is offset" do
           # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
           @resource.checksum("fd012fd")
-          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://localhost:9000/seattle.txt", :raw_response => true).and_return(@rawresp)
+          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -171,7 +171,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     describe "and the resource doesn't specify a checksum" do
       it "should download the file from the remote URL" do
         @resource.checksum(nil)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://localhost:9000/seattle.txt", :raw_response => true).and_return(@rawresp)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
         @provider.run_action(:create)
       end
     end
@@ -188,7 +188,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     context "and the target file is a tarball" do
       before do
         @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.tar.gz")))
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://localhost:9000/seattle.txt", :raw_response => true).and_return(@rawresp)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
       end
 
       it "disables gzip in the http client" do
@@ -205,6 +205,34 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
       it "disables gzip in the http client" do
         @provider.action_create
+      end
+    end
+
+    context "and the uri scheme is ftp" do
+      before do
+        @resource.source("ftp://opscode.com/seattle.txt")
+      end
+
+      it "should fetch with ftp in passive mode" do
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false).and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+
+      it "should fetch with ftp in active mode" do
+        @resource.ftp_active_mode true
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true).and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+    end
+
+    context "and the uri scheme is file" do
+      before do
+        @resource.source("file:///nyan_cat.png")
+      end
+
+      it "should load the local file" do
+        File.should_receive(:new).with("/nyan_cat.png", "r").and_return(File.open(File.join(CHEF_SPEC_DATA, "remote_file", "nyan_cat.png"), "r"))
+        @provider.run_action(:create)
       end
     end
 
@@ -314,9 +342,6 @@ describe Chef::Provider::RemoteFile, "action_create" do
         @provider.should_receive(:set_all_access_controls).and_return(true)
         @provider.run_action(:create)
       end
-
-
     end
-
   end
 end
