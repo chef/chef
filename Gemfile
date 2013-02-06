@@ -3,7 +3,10 @@ source :rubygems
 gemspec
 
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
-gem "ronn"
+
+group(:docgen) do
+  gem "ronn"
+end
 
 group(:development, :test) do
   gem 'rack', "~> 1.5.1"
