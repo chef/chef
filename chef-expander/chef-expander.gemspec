@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "mixlib-log", ">= 1.2.0"
   s.add_dependency "amqp", "~> 0.6.7"
-  s.add_dependency "eventmachine", '~> 0.12.10'
+  s.add_dependency "eventmachine", '~> 1.0.0'
   s.add_dependency "em-http-request", "~> 1.0.3"
   s.add_dependency 'yajl-ruby', "~> 1.0"
   s.add_dependency 'uuidtools', "~> 2.1.1"
