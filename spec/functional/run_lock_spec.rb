@@ -51,7 +51,12 @@ describe Chef::RunLock do
     # Side channel via a pipe allows child processes to send errors to the parent
 
     # Don't lazy create the pipe or else we might not share it with subprocesses
-    let!(:error_pipe) { IO.pipe }
+    let!(:error_pipe) do
+      r,w = IO.pipe
+      w.sync = true
+      [r,w]
+    end
+
     let(:error_read) { error_pipe[0] }
     let(:error_write) { error_pipe[1] }
 
@@ -89,7 +94,11 @@ describe Chef::RunLock do
     # Interprocess synchronization via a pipe. This allows us to control the
     # state of the processes competing over the lock without relying on sleep.
 
-    let!(:sync_pipe) { IO.pipe }
+    let!(:sync_pipe) do
+      r,w = IO.pipe
+      w.sync = true
+      [r,w]
+    end
     let(:sync_read) { sync_pipe[0] }
     let(:sync_write) { sync_pipe[1] }
 
@@ -119,7 +128,11 @@ describe Chef::RunLock do
     # IPC to record test results in a pipe. Tests can read pipe contents to
     # check that operations occur in the expected order.
 
-    let!(:results_pipe) { IO.pipe }
+    let!(:results_pipe) do
+      r,w = IO.pipe
+      w.sync = true
+      [r,w]
+    end
     let(:results_read) { results_pipe[0] }
     let(:results_write) { results_pipe[1] }
 
