@@ -114,6 +114,8 @@ describe Chef::RunLock do
         # timeout reading from the sync pipe.
         send_side_channel_error("Error syncing processes in run lock test (timeout)")
         exit!(1)
+      else
+        sync_read.getc
       end
     end
 
@@ -184,9 +186,9 @@ describe Chef::RunLock do
       wait_on_lock
 
       p2 = fork do
+        record "p2 requesting lock"
         # inform process p1 that we're trying to get the lock
         sync_send
-        record "p2 requesting lock"
         run_lock.acquire
         record "p2 has lock"
         run_lock.release
