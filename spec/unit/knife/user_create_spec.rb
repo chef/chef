@@ -66,7 +66,7 @@ describe Chef::Knife::UserCreate do
 
   it "sets the public key if given" do
     @knife.config[:user_key] = "/a/filename"
-    File.stub(:read).with("/a/filename").and_return("a_key")
+    File.stub(:read).with(File.expand_path("/a/filename")).and_return("a_key")
     @user.should_receive(:public_key).with("a_key")
     @knife.run
   end
