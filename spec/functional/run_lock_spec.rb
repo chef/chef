@@ -186,7 +186,6 @@ describe Chef::RunLock do
       wait_on_lock
 
       p2 = fork do
-        record "p2 requesting lock"
         # inform process p1 that we're trying to get the lock
         sync_send
         run_lock.acquire
@@ -202,7 +201,6 @@ describe Chef::RunLock do
 
       expected=<<-E
 p1 has lock
-p2 requesting lock
 p1 releasing lock
 p2 has lock
 E
