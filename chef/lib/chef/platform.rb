@@ -336,6 +336,9 @@ class Chef
           name_sym = name.to_sym
         end
 
+        # Convert >2-part numeric version number to 2-part version number expected by map
+        version = version[/^\d+\.\d+/] || version
+
         if platforms.has_key?(name_sym)
           if platforms[name_sym].has_key?(version)
             Chef::Log.debug("Platform #{name.to_s} version #{version} found")
