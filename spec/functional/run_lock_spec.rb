@@ -34,6 +34,8 @@ describe Chef::RunLock do
     let(:file_cache_path){ "/var/chef/cache" }
     let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
+    # make sure to start with a clean slate.
+    before(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
     after(:each){ FileUtils.rm_r(random_temp_root) }
 
     def wait_on_lock
@@ -110,6 +112,7 @@ describe Chef::RunLock do
     # process that is waiting on the sync signal
     def sync_send
       sync_write.putc("!")
+      sync_write.flush
     end
 
     ##
@@ -130,9 +133,11 @@ describe Chef::RunLock do
     # read or write call, so don't put too much data in.
     def record(message)
       results_write.puts(message)
+      results_write.flush
     end
 
     def results
+      results_write.flush
       results_write.close
       message = results_read.read
       results_read.close
