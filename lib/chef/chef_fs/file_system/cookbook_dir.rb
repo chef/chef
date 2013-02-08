@@ -27,12 +27,14 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbookDir < BaseFSDir
-        def initialize(name, parent, versions = nil)
+        def initialize(name, parent, options = {})
           super(name, parent)
-          @versions = versions
+          @versions_map  = options[:versions_map]
+          @cookbook_name = options[:cookbook_name]
+          @version       = options[:version] || "_latest"
         end
 
-        attr_reader :versions
+        attr_reader :versions_map, :cookbook_name, :version
 
         COOKBOOK_SEGMENT_INFO = {
           :attributes => { :ruby_only => true },
@@ -46,12 +48,16 @@ class Chef
           :root_files => { }
         }
 
+        # See Erchef code
+        # https://github.com/opscode/chef_objects/blob/968a63344d38fd507f6ace05f73d53e9cd7fb043/src/chef_regex.erl#L94
+        VALID_VERSIONED_COOKBOOK_NAME = /^([.a-zA-Z0-9_-]+)-(\d+\.\d+\.\d+)$/
+
         def add_child(child)
           @children << child
         end
 
         def api_path
-          "#{parent.api_path}/#{name}/_latest"
+          "#{parent.api_path}/#{cookbook_name}/#{version}"
         end
 
         def child(name)
@@ -68,11 +74,9 @@ class Chef
 
         def can_have_child?(name, is_dir)
           # A cookbook's root may not have directories unless they are segment directories
-          if is_dir
-            return name != 'root_files' &&
-                   COOKBOOK_SEGMENT_INFO.keys.any? { |segment| segment.to_s == name }
-          end
-          true
+          return false if !is_dir
+          return false if Chef::Config[:versioned_cookbooks] && name !~ VALID_VERSIONED_COOKBOOK_NAME
+          return true
         end
 
         def children
@@ -124,12 +128,18 @@ class Chef
           end
         end
 
+        # In versioned cookbook mode, actually check if the version exists
+        # Probably want to cache this.
         def exists?
-          if !@versions
-            child = parent.children.select { |child| child.name == name }.first
-            @versions = child.versions if child
+          return true if @versions_map
+          unless @versions_map
+            child = parent.child(name)
+            if child
+              @versions_map = child.versions_map
+              @version = child.version
+            end
           end
-          !!@versions
+          !!@versions_map
         end
 
         def compare_to(other)

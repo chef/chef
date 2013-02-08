@@ -28,12 +28,38 @@ class Chef
         end
 
         def child(name)
-          result = @children.select { |child| child.name == name }.first if @children
-          result || CookbookDir.new(name, self)
+          result = self.children.select { |child| child.name == name }.first if @children
+          return result if result
+          if Chef::Config[:versioned_cookbooks]
+            raise "Cookbook name #{name} not valid: must be name-version" if name !~ Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
+            CookbookDir.new(name, self, :cookbook_name => $1, :version => $2)
+          else
+            CookbookDir.new(name, self, :cookbook_name => name, :version => '_latest')
+          end
         end
 
         def children
-          @children ||= rest.get_rest(api_path).map { |key, value| CookbookDir.new(key, self, value) }.sort_by { |c| c.name }
+          return @children if @children
+          _to_cookbook_dir = if Chef::Config[:versioned_cookbooks]
+                               proc do |cookbook_name, value|
+                                 value['versions'].map do |cookbook_version|
+                                   CookbookDir.new "#{cookbook_name}-#{cookbook_version['version']}", self,
+                                     :versions_map  => value,
+                                     :version       => cookbook_version['version'],
+                                     :cookbook_name => cookbook_name
+                                 end
+                               end
+                             else
+                               proc do |key, value|
+                                 CookbookDir.new(cookbook_name, self, :versions_map => value, :cookbook_name => key, :version => '_latest' )
+                               end
+                             end
+          _api_path = if Chef::Config[:versioned_cookbooks]
+                        "#{api_path}/?num_versions=all"
+                      else
+                        api_path
+                      end
+          @children = rest.get_rest(_api_path).map(&_to_cookbook_dir).flatten.sort_by { |c| c.name }
         end
 
         def create_child_from(other)
