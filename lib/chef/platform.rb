@@ -19,6 +19,7 @@
 require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
+require 'chef/version_constraint'
 
 # This file depends on nearly every provider in chef, but requiring them
 # directly causes circular requires resulting in uninitialized constant errors.
@@ -336,14 +337,16 @@ class Chef
         end
 
         if platforms.has_key?(name_sym)
-          if platforms[name_sym].has_key?(version)
-            Chef::Log.debug("Platform #{name.to_s} version #{version} found")
-            if platforms[name_sym].has_key?(:default)
-              provider_map.merge!(platforms[name_sym][:default])
-            end
-            provider_map.merge!(platforms[name_sym][version])
-          elsif platforms[name_sym].has_key?(:default)
+          platform_versions = platforms[name_sym].select {|k, v| k != :default }
+          if platforms[name_sym].has_key?(:default)
             provider_map.merge!(platforms[name_sym][:default])
+          end
+          platform_versions.each do |platform_version, provider|
+            version_constraint = Chef::VersionConstraint.new(platform_version)
+            if version_constraint.include?(version)
+              Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+              provider_map.merge!(provider)
+            end
           end
         else
           Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")
