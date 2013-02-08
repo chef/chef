@@ -21,7 +21,7 @@ require 'chef/provider/ifconfig'
 class Chef
   class Provider
     class Ifconfig
-      class Redhat < Chef::Ifconfig
+      class Redhat < Chef::Provider::Ifconfig
 
         def generate_config
           b = binding

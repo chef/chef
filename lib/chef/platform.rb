@@ -30,6 +30,7 @@ require 'chef/provider/group'
 require 'chef/provider/mount'
 require 'chef/provider/service'
 require 'chef/provider/package'
+require 'chef/provider/ifconfig'
 
 
 class Chef
