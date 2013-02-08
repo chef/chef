@@ -80,6 +80,9 @@ class Chef
               :service => Chef::Provider::Service::Debian,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
+            },
+            '>= 11.10' => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :linaro   => {
@@ -115,6 +118,9 @@ class Chef
             },
             ">= 6.0" => {
               :service => Chef::Provider::Service::Insserv
+            },
+            ">= 7.0" => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :xenserver   => {
