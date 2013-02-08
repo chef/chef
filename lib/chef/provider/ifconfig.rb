@@ -21,6 +21,7 @@ require 'chef/mixin/command'
 require 'chef/provider'
 require 'chef/exceptions'
 require 'erb'
+require 'chef/platform'
 
 #  Recipe example:
 #
