@@ -116,3 +116,5 @@ require 'chef/provider/cookbook_file/content'
 require 'chef/provider/template/content'
 
 require 'chef/provider/ifconfig/redhat'
+require 'chef/provider/ifconfig/debian'
+
