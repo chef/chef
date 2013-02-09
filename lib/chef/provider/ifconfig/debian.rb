@@ -41,6 +41,9 @@ iface <%= @new_resource.device %> inet static
     <% if @new_resource.mask %>netmask <%= @new_resource.mask %><% end %>
     <% if @new_resource.network %>network <%= @new_resource.network %><% end %>
     <% if @new_resource.bcast %>broadcast <%= @new_resource.bcast %><% end %>
+    <% if @new_resource.metric %>metric <%= @new_resource.metric %><% end %>
+    <% if @new_resource.hwaddr %>hwaddress <%= @new_resource.hwaddr %><% end %>
+    <% if @new_resource.mtu %>mtu <%= @new_resource.mtu %><% end %>
 <% end %>
 <% end %>
           }
