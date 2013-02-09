@@ -52,8 +52,8 @@ describe Chef::Provider::Ifconfig::Redhat do
 
       @provider.run_action(:add)
       config_file.string.should match(/^\s*DEVICE=eth0\s*$/)
-      config_file.string.should match(/^\s*IPADDR=10.0.0.1\s*$/)
-      config_file.string.should match(/^\s*NETMASK=255.255.254.0\s*$/)
+      config_file.string.should match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
+      config_file.string.should match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
      end
   end
 
