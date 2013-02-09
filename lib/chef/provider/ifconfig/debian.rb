@@ -70,7 +70,7 @@ iface <%= @new_resource.device %> inet static
         def check_interfaces_config
           Dir.mkdir('/etc/network/interfaces.d') unless ::File.directory?('/etc/network/interfaces.d')
           conf = Chef::Util::FileEdit.new('/etc/network/interfaces')
-          conf.insert_line_if_no_match('^\s*source\s+interfaces[.]d/[*]\s*(?:#.*)?$', 'source interfaces.d/*')
+          conf.insert_line_if_no_match('^\s*source\s+interfaces[.]d/[*]\s*$', 'source interfaces.d/*')
           conf.write_file
         end
   
