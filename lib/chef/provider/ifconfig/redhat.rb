@@ -34,6 +34,9 @@ class Chef
 <% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
 <% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
 <% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
+<% if @new_resource.hwaddr %>HWADDR=<%= @new_resource.hwaddr %><% end %>
+<% if @new_resource.metric %>METRIC=<%= @new_resource.metric %><% end %>
+<% if @new_resource.mtu %>MTU=<%= @new_resource.mtu %><% end %>
           }
           template = ::ERB.new(content)
           network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
