@@ -26,14 +26,14 @@ class Chef
         def generate_config
           b = binding
           content = %{
-  <% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
-  <% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
-  <% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
-  <% if @new_resource.target %>IPADDR=<%= @new_resource.target %><% end %>
-  <% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
-  <% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
-  <% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
-  <% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
+<% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
+<% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
+<% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
+<% if @new_resource.target %>IPADDR=<%= @new_resource.target %><% end %>
+<% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
+<% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
+<% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
+<% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
           }
           template = ::ERB.new(content)
           network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
