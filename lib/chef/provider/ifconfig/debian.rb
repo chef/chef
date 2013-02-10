@@ -64,7 +64,7 @@ iface <%= @new_resource.device %> inet static
             conf.write_file
           end
         end
-  
+
       end
     end
   end
