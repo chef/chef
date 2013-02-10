@@ -34,6 +34,10 @@ describe Chef::Version do
     a.should == @v123
   end
   
+  it "should transform 1 to 1.0.0" do
+    Chef::Version.new("1").to_s.should == "1.0.0"
+  end
+
   it "should transform 1.2 to 1.2.0" do
     Chef::Version.new("1.2").to_s.should == "1.2.0"
   end
@@ -53,7 +57,7 @@ describe Chef::Version do
   end
 
   describe "when given bogus input" do
-    bad_versions = ["1.2.3.4", "1.2.a4", "1", "a", "1.2 3", "1.2 a",
+    bad_versions = ["1.2.3.4", "1.2.a4", "a", "1.2 3", "1.2 a",
                     "1 2 3", "1-2-3", "1_2_3", "1.2_3", "1.2-3"]
     the_error = Chef::Exceptions::InvalidCookbookVersion
     bad_versions.each do |v|
