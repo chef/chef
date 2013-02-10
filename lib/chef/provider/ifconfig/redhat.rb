@@ -23,9 +23,9 @@ class Chef
     class Ifconfig
       class Redhat < Chef::Provider::Ifconfig
 
-        def generate_config
-          b = binding
-          content = %{
+        def initialize(new_resource, run_context)
+          super(new_resource, run_context)
+          @config_template = %{
 <% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
 <% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
 <% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
@@ -38,27 +38,9 @@ class Chef
 <% if @new_resource.metric %>METRIC=<%= @new_resource.metric %><% end %>
 <% if @new_resource.mtu %>MTU=<%= @new_resource.mtu %><% end %>
           }
-          template = ::ERB.new(content)
-          network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          converge_by ("generate configuration file : #{network_file_name}") do
-            network_file = ::File.new(network_file_name, "w")
-            network_file.puts(template.result(b))
-            network_file.close
-          end
-          Chef::Log.info("#{@new_resource} created configuration file")
+          @config_path = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
         end
-  
-        def delete_config
-          require 'fileutils'
-          ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          if ::File.exist?(ifcfg_file)
-            converge_by ("delete the #{ifcfg_file}") do
-              FileUtils.rm_f(ifcfg_file, :verbose => false)
-            end
-          end
-          Chef::Log.info("#{@new_resource} deleted configuration file")
-        end
-  
+
       end
     end
   end
