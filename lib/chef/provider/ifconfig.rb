@@ -49,15 +49,6 @@ class Chef
         @config_path = nil
       end
 
-      attr_accessor :config_template
-      attr_accessor :config_path
-
-      def initialize(new_resource, run_context)
-        super(new_resource, run_context)
-        @config_template = nil
-        @config_path = nil
-      end
-
       def whyrun_supported?
         true
       end
