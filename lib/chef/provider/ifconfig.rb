@@ -199,8 +199,8 @@ class Chef
       end
 
       def delete_config
-        require 'fileutils'
         return unless can_generate_config?
+        require 'fileutils'
         if ::File.exist?(@config_path)
           converge_by ("delete the #{@config_path}") do
             FileUtils.rm_f(@config_path, :verbose => false)
