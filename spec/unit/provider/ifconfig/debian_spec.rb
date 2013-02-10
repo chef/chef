@@ -43,7 +43,7 @@ describe Chef::Provider::Ifconfig::Debian do
     @config_filename_ifaces = "/etc/network/interfaces"
     @config_filename_ifcfg = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
   end
-  
+
   describe "generate_config for action_add" do
    before do
     @config_file_ifaces = StringIO.new
@@ -53,13 +53,13 @@ describe Chef::Provider::Ifconfig::Debian do
     File.should_receive(:open).with(@config_filename_ifaces, "w").and_yield(@config_file_ifaces)
     File.should_receive(:new).with(@config_filename_ifcfg, "w").and_return(@config_file_ifcfg)
    end
-     
+
    it "should create network-scripts directory" do
     File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(false)
     Dir.should_receive(:mkdir).with(File.dirname(@config_filename_ifcfg))
     @provider.run_action(:add)
    end
-    
+
    it "should write configure network-scripts directory" do
     File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(true)
     @provider.run_action(:add)
