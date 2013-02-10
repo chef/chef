@@ -24,10 +24,9 @@ class Chef
     class Ifconfig
       class Debian < Chef::Provider::Ifconfig
 
-        def generate_config
-          check_interfaces_config
-          b = binding
-          content = %{
+        def initialize(new_resource, run_context)
+          super(new_resource, run_context)
+          @config_template = %{
 <% if @new_resource.device %>
 <% if @new_resource.onboot == "yes" %>auto <%= @new_resource.device %><% end %>
 <% case @new_resource.bootproto
@@ -47,28 +46,15 @@ iface <%= @new_resource.device %> inet static
 <% end %>
 <% end %>
           }
-          template = ::ERB.new(content)
-          network_file_name = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
-          converge_by ("generate configuration file : #{network_file_name}") do
-            network_file = ::File.new(network_file_name, "w")
-            network_file.puts(template.result(b))
-            network_file.close
-          end
-          Chef::Log.info("#{@new_resource} created configuration file")
-        end
-  
-        def delete_config
-          require 'fileutils'
-          ifcfg_file = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
-          if ::File.exist?(ifcfg_file)
-            converge_by ("delete the #{ifcfg_file}") do
-              FileUtils.rm_f(ifcfg_file, :verbose => false)
-            end
-          end
-          Chef::Log.info("#{@new_resource} deleted configuration file")
+          @config_path = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
         end
 
-        private
+        def generate_config
+          super
+          check_interfaces_config
+        end
+
+        protected
 
         def check_interfaces_config
           converge_by ('modify configuration file : /etc/network/interfaces') do
