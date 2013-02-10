@@ -50,8 +50,8 @@ iface <%= @new_resource.device %> inet static
         end
 
         def generate_config
-          super
           check_interfaces_config
+          super
         end
 
         protected
