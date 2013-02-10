@@ -54,7 +54,7 @@ describe Chef::Provider::Ifconfig::Debian do
     File.should_receive(:new).with(@config_filename_ifcfg, "w").and_return(@config_file_ifcfg)
    end
      
-   it "should write create network-scripts directory" do
+   it "should create network-scripts directory" do
     File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(false)
     Dir.should_receive(:mkdir).with(File.dirname(@config_filename_ifcfg))
     @provider.run_action(:add)
