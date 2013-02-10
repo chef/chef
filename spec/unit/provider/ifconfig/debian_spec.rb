@@ -37,40 +37,50 @@ describe Chef::Provider::Ifconfig::Debian do
     status = mock("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
+    @provider.stub!(:load_current_resource)
+    @provider.stub!(:run_command)
+
+    @config_filename_ifaces = "/etc/network/interfaces"
+    @config_filename_ifcfg = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
   end
   
   describe "generate_config for action_add" do
-     
-   it "should write network-script" do
-    @provider.stub!(:load_current_resource)
-    @provider.stub!(:run_command)
-    config_filename_ifaces = "/etc/network/interfaces"
-    config_filename_ifcfg = "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
-    config_file_ifaces = StringIO.new
-    config_file_ifcfg = StringIO.new
-    File.should_receive(:directory?).with(File.dirname(config_filename_ifcfg)).and_return(true)
+   before do
+    @config_file_ifaces = StringIO.new
+    @config_file_ifcfg = StringIO.new
     FileUtils.should_receive(:cp)
-    File.should_receive(:new).with(config_filename_ifaces).and_return(StringIO.new)
-    File.should_receive(:open).with(config_filename_ifaces, "w").and_yield(config_file_ifaces)
-    File.should_receive(:new).with(config_filename_ifcfg, "w").and_return(config_file_ifcfg)
-
+    File.should_receive(:new).with(@config_filename_ifaces).and_return(StringIO.new)
+    File.should_receive(:open).with(@config_filename_ifaces, "w").and_yield(@config_file_ifaces)
+    File.should_receive(:new).with(@config_filename_ifcfg, "w").and_return(@config_file_ifcfg)
+   end
+     
+   it "should write create network-scripts directory" do
+    File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(false)
+    Dir.should_receive(:mkdir).with(File.dirname(@config_filename_ifcfg))
     @provider.run_action(:add)
-    config_file_ifaces.string.should match(/^\s*source\s+interfaces[.]d\/[*]\s*$/)
-    config_file_ifcfg.string.should match(/^iface eth0 inet static\s*$/)
-    config_file_ifcfg.string.should match(/^\s+address 10\.0\.0\.1\s*$/)
-    config_file_ifcfg.string.should match(/^\s+netmask 255\.255\.254\.0\s*$/)
+   end
+    
+   it "should write configure network-scripts directory" do
+    File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(true)
+    @provider.run_action(:add)
+    @config_file_ifaces.string.should match(/^\s*source\s+interfaces[.]d\/[*]\s*$/)
+   end
+
+   it "should write a network-script" do
+    File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(true)
+    @provider.run_action(:add)
+    @config_file_ifcfg.string.should match(/^iface eth0 inet static\s*$/)
+    @config_file_ifcfg.string.should match(/^\s+address 10\.0\.0\.1\s*$/)
+    @config_file_ifcfg.string.should match(/^\s+netmask 255\.255\.254\.0\s*$/)
    end
   end
 
   describe "delete_config for action_delete" do
 
     it "should delete network-script if it exists" do
-      @current_resource.device "eth0"
-      @provider.stub!(:load_current_resource)
-      @provider.stub!(:run_command)
-      config_filename =  "/etc/network/interfaces.d/ifcfg-#{@new_resource.device}"
-      File.should_receive(:exist?).with(config_filename).and_return(true)
-      FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)
+      @current_resource.device @new_resource.device
+      File.should_receive(:exist?).with(@config_filename_ifcfg).and_return(true)
+      FileUtils.should_receive(:rm_f).with(@config_filename_ifcfg, :verbose => false)
 
       @provider.run_action(:delete)
     end
