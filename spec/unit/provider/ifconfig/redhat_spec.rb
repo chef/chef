@@ -40,11 +40,10 @@ describe Chef::Provider::Ifconfig::Redhat do
     
  end
   
-  describe Chef::Provider::Ifconfig::Redhat, "generate_config for action_add" do
+  describe "generate_config for action_add" do
      
      it "should write network-script for centos" do
       @provider.stub!(:load_current_resource)
-      @node.automatic_attrs[:platform] = "centos"
       @provider.stub!(:run_command)
       config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
       config_file = StringIO.new
@@ -57,11 +56,10 @@ describe Chef::Provider::Ifconfig::Redhat do
      end
   end
 
-  describe Chef::Provider::Ifconfig::Redhat, "delete_config for action_delete" do
+  describe "delete_config for action_delete" do
 
     it "should delete network-script if it exists for centos" do
-      @node.automatic_attrs[:platform] = "centos"
-      @current_resource.device "eth0"
+      @current_resource.device @new_resource.device
       @provider.stub!(:load_current_resource)
       @provider.stub!(:run_command)
       config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
