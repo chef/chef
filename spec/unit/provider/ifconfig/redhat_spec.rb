@@ -37,11 +37,10 @@ describe Chef::Provider::Ifconfig::Redhat do
     status = mock("Status", :exitstatus => 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
-    
  end
-  
+
   describe "generate_config for action_add" do
-     
+
      it "should write network-script for centos" do
       @provider.stub!(:load_current_resource)
       @provider.stub!(:run_command)
