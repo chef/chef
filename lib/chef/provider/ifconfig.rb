@@ -40,6 +40,24 @@ class Chef
     class Ifconfig < Chef::Provider
       include Chef::Mixin::Command
 
+      attr_accessor :config_template
+      attr_accessor :config_path
+
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context)
+        @config_template = nil
+        @config_path = nil
+      end
+
+      attr_accessor :config_template
+      attr_accessor :config_path
+
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context)
+        @config_template = nil
+        @config_path = nil
+      end
+
       def whyrun_supported?
         true
       end
@@ -164,10 +182,31 @@ class Chef
         end
       end
 
+      def can_generate_config?
+        ! @config_template.nil? and ! @config_path.nil?
+      end
+
       def generate_config
+        return unless can_generate_config?
+        b = binding
+        template = ::ERB.new(@config_template)
+        converge_by ("generate configuration file : #{@config_path}") do
+          network_file = ::File.new(@config_path, "w")
+          network_file.puts(template.result(b))
+          network_file.close
+        end
+        Chef::Log.info("#{@new_resource} created configuration file")
       end
 
       def delete_config
+        require 'fileutils'
+        return unless can_generate_config?
+        if ::File.exist?(@config_path)
+          converge_by ("delete the #{@config_path}") do
+            FileUtils.rm_f(@config_path, :verbose => false)
+          end
+        end
+        Chef::Log.info("#{@new_resource} deleted configuration file")
       end
 
     end
