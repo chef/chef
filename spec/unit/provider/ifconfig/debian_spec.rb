@@ -63,7 +63,7 @@ describe Chef::Provider::Ifconfig::Debian do
    it "should write configure network-scripts directory" do
     File.should_receive(:directory?).with(File.dirname(@config_filename_ifcfg)).and_return(true)
     @provider.run_action(:add)
-    @config_file_ifaces.string.should match(/^\s*source\s+interfaces[.]d\/[*]\s*$/)
+    @config_file_ifaces.string.should match(/^\s*source\s+\/etc\/network\/interfaces[.]d\/[*]\s*$/)
    end
 
    it "should write a network-script" do
