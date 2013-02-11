@@ -85,7 +85,7 @@ describe Chef::Platform do
     pmap[:file].should eql("darwinian")
   end
   
-  it "should allow you to look up a platform by name and version using \"greater than\" style comparators" do
+  it "should allow you to look up a platform by name and version using \"greater than\" style operators" do
     pmap = Chef::Platform.find("Darwin", "11.1.0")
     pmap.should be_a_kind_of(Hash)
     pmap[:file].should eql("new_darwinian")
