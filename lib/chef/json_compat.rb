@@ -26,6 +26,17 @@ class Chef
 
     JSON_CLASS = "json_class".freeze
 
+    CHEF_APICLIENT          = "Chef::ApiClient".freeze
+    CHEF_COOKBOOKVERSION    = "Chef::CookbookVersion".freeze
+    CHEF_DATABAG            = "Chef::DataBag".freeze
+    CHEF_DATABAGITEM        = "Chef::DataBagItem".freeze
+    CHEF_ENVIRONMENT        = "Chef::Environment".freeze
+    CHEF_NODE               = "Chef::Node".freeze
+    CHEF_ROLE               = "Chef::Role".freeze
+    CHEF_SANDBOX            = "Chef::Sandbox".freeze
+    CHEF_RESOURCE           = "Chef::Resource".freeze
+    CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
+
     class <<self
       # See CHEF-1292/PL-538. Increase the max nesting for JSON, which defaults
       # to 19, and isn't enough for some (for example, a Node within a Node)
@@ -81,27 +92,28 @@ class Chef
         ::JSON.pretty_generate(obj, opts_add_max_nesting(opts))
       end
 
+
       def class_for_json_class(json_class)
         case json_class
-        when "Chef::ApiClient"
+        when CHEF_APICLIENT
           Chef::ApiClient
-        when "Chef::CookbookVersion"
+        when CHEF_COOKBOOKVERSION
           Chef::CookbookVersion
-        when "Chef::DataBag"
+        when CHEF_DATABAG
           Chef::DataBag
-        when "Chef::DataBagItem"
+        when CHEF_DATABAGITEM
           Chef::DataBagItem
-        when "Chef::Environment"
+        when CHEF_ENVIRONMENT
           Chef::Environment
-        when "Chef::Node"
+        when CHEF_NODE
           Chef::Node
-        when "Chef::Role"
+        when CHEF_ROLE
           Chef::Role
-        when "Chef::Sandbox"
+        when CHEF_SANDBOX
           false
-        when "Chef::Resource"
+        when CHEF_RESOURCE
           false
-        when "Chef::ResourceCollection"
+        when CHEF_RESOURCECOLLECTION
           Chef::ResourceCollection
         else
           raise ArgumentError, "Unsupported `json_class` type '#{json_class}'"
