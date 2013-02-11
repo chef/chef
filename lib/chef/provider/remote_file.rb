@@ -101,7 +101,12 @@ class Chef
         rescue ArgumentError => e
           raise e
         rescue => e
-          Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}")
+          if e.is_a?(RestClient::Exception)
+            error = "\nRequest returned #{e.message}\nresponse: #{e.response}"
+          else
+            error = e.to_s
+          end
+          Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}: #{error}")
           if source = sources.shift
             Chef::Log.debug("#{@new_resource} trying to download from another mirror")
             retry
