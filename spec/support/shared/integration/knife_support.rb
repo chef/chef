@@ -4,6 +4,7 @@ require 'logger'
 require 'chef/log'
 
 module KnifeSupport
+  DEBUG = ENV['DEBUG']
   def knife(*args, &block)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
@@ -21,6 +22,7 @@ module KnifeSupport
     old_loggers = Chef::Log.loggers
     old_log_level = Chef::Log.level
     begin
+      puts "knife: #{args.join(' ')}" if DEBUG
       subcommand_class = Chef::Knife.subcommand_class_from(args)
       subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
       instance = subcommand_class.new(args)
@@ -29,12 +31,12 @@ module KnifeSupport
       instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
 
       # Don't print stuff
-      Chef::Config[:verbosity] = 0
+      Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
       instance.configure_chef
       logger = Logger.new(stderr)
       logger.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg}\n" }
       Chef::Log.use_log_devices([logger])
-      Chef::Log.level = :warn
+      Chef::Log.level = ( DEBUG ? :debug : :warn )
       Chef::Log::Formatter.show_time = false
       instance.run
 

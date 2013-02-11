@@ -30,14 +30,24 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
     },
     'everything')
   }
-  let(:cookbooks_dir) { root_dir.child('cookbooks') }
-  let(:should_list_cookbooks) do
-    @rest.should_receive(:get_rest).with('cookbooks').once.and_return(
+
+  let(:cookbook_response) do
       {
-        "achild" => "http://opscode.com/achild",
-        "bchild" => "http://opscode.com/bchild"
-      })
+        "achild" => {
+          "url" => "http://example.com/cookbooks/achild",
+          'versions' => [
+            { "version" => '2.0.0', 'url' => 'http://example.com/cookbooks/achild/2.0.0' },
+            { "version" => '1.0.0', 'url' => 'http://example.com/cookbooks/achild/2.0.0' }, ] },
+        "bchild" => {
+          "url" => "http://example.com/cookbokks/bchild",
+          'versions' => [ { "version" => '1.0.0', 'url' => 'http://example.com/cookbooks/achild/2.0.0' }, ] },
+
+      }
   end
+
+  let(:cookbooks_dir) { root_dir.child('cookbooks') }
+  let(:should_list_cookbooks) { @rest.should_receive(:get_rest).with('cookbooks').once.and_return(cookbook_response) }
+
   before(:each) do
     @rest = double("rest")
     Chef::REST.stub(:new).with('url','username','key') { @rest }
