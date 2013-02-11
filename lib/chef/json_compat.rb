@@ -114,6 +114,8 @@ class Chef
           false
         when CHEF_RESOURCECOLLECTION
           Chef::ResourceCollection
+        when /^Chef::Resource/
+          false
         else
           raise ArgumentError, "Unsupported `json_class` type '#{json_class}'"
         end
