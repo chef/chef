@@ -77,11 +77,10 @@ class Chef
       end
 
       def map_hash_to_rb_obj(json_hash)
-        mapped_hash = {}
         json_hash.each do |key, value|
-          mapped_hash[key] = map_to_rb_obj(value)
+          json_hash[key] = map_to_rb_obj(value)
         end
-        mapped_hash
+        json_hash
       end
 
       def to_json(obj, opts = nil)
