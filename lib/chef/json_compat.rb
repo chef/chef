@@ -111,11 +111,11 @@ class Chef
         when CHEF_SANDBOX
           false
         when CHEF_RESOURCE
-          false
+          Chef::Resource
         when CHEF_RESOURCECOLLECTION
           Chef::ResourceCollection
         when /^Chef::Resource/
-          false
+          Chef::Resource.find_subclass_by_name(json_class)
         else
           raise ArgumentError, "Unsupported `json_class` type '#{json_class}'"
         end

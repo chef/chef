@@ -129,6 +129,18 @@ F
 
     extend Chef::Mixin::ConvertToClassName
 
+    def self.resource_classes
+      @resource_classes ||= []
+    end
+
+    def self.inherited(subclass)
+      resource_classes << subclass
+    end
+
+    def self.find_subclass_by_name(class_name)
+      resource_classes.first {|c| c.name == class_name }
+    end
+
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
     # of the system, such as file permissions or ownership. In general, state
