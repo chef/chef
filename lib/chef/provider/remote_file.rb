@@ -102,7 +102,7 @@ class Chef
           raise e
         rescue => e
           if e.is_a?(RestClient::Exception)
-            error = "\nRequest returned #{e.message}\nresponse: #{e.response}"
+            error = "Request returned #{e.message}"
           else
             error = e.to_s
           end
