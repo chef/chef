@@ -27,50 +27,61 @@ class Chef
       class FTP
 
         # Fetches the file at uri using Net::FTP, returning a Tempfile
-        # Taken from open-uri
         def self.fetch(uri, ftp_active_mode)
-          path = uri.path
-          path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
-          directories = path.split(%r{/}, -1)
-          directories.each {|d|
+          self.new(uri, ftp_active_mode).fetch()
+        end
+
+        # Parse the uri into instance variables
+        def initialize(uri, ftp_active_mode)
+          @path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+          @directories = @path.split(%r{/}, -1)
+          @directories.each {|d|
             d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
           }
-          unless filename = directories.pop
+          unless @filename = @directories.pop
             raise ArgumentError, "no filename: #{uri.inspect}"
           end
-          if filename.length == 0 || filename.end_with?( "/" )
+          if @filename.length == 0 || @filename.end_with?( "/" )
             raise ArgumentError, "no filename: #{uri.inspect}"
           end
-          typecode = uri.typecode
+          @typecode = uri.typecode
           # Only support ascii and binary types
-          if typecode && /\A[ai]\z/ !~ typecode
-            raise ArgumentError, "invalid typecode: #{typecode.inspect}"
+          if @typecode && /\A[ai]\z/ !~ @typecode
+            raise ArgumentError, "invalid typecode: #{@typecode.inspect}"
           end
+          @ftp_active_mode = ftp_active_mode
+          @hostname = uri.hostname
+          @port = uri.port
+          if uri.userinfo
+            @user = URI.unescape(uri.user)
+            @pass = URI.unescape(uri.password)
+          else
+            @user = 'anonymous'
+            @pass = nil
+          end
+        end
 
-          tempfile = Tempfile.new(filename)
+        # Fetches using Net::FTP, returns a Tempfile with the content
+        def fetch()
+          tempfile = Tempfile.new(@filename)
 
           # The access sequence is defined by RFC 1738
           ftp = Net::FTP.new
-          ftp.connect(uri.hostname, uri.port)
-          ftp.passive = !ftp_active_mode
-          user = 'anonymous'
-          passwd = nil
-          if uri.userinfo
-            user = URI.unescape(uri.user)
-            passwd = URI.unescape(uri.password)
-          end
-          ftp.login(user, passwd)
-          directories.each {|cwd|
+          ftp.connect(@hostname, @port)
+          ftp.passive = !@ftp_active_mode
+          ftp.login(@user, @pass)
+          @directories.each do |cwd|
             ftp.voidcmd("CWD #{cwd}")
-          }
-          if typecode
-            ftp.voidcmd("TYPE #{typecode.upcase}")
           end
-          ftp.getbinaryfile(filename, tempfile.path)
+          if @typecode
+            ftp.voidcmd("TYPE #{@typecode.upcase}")
+          end
+          ftp.getbinaryfile(@filename, tempfile.path)
           ftp.close
 
           tempfile
         end
+
       end
     end
   end
