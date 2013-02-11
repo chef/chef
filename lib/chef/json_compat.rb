@@ -52,6 +52,11 @@ class Chef
       # Just call the JSON gem's parse method with a modified :max_nesting field
       def from_json(source, opts = {})
         obj = ::Yajl::Parser.parse(source)
+
+        # The old default in the json gem (which we are mimicing because we
+        # sadly rely on this misfeature) is to "create additions" i.e., convert
+        # JSON objects into ruby objects. Explicit :create_additions => false
+        # is required to turn it off.
         if opts[:create_additions].nil? || opts[:create_additions]
           map_to_rb_obj(obj)
         else
@@ -59,6 +64,8 @@ class Chef
         end
       end
 
+      # Look at an object that's a basic type (from json parse) and convert it
+      # to an instance of Chef classes if desired.
       def map_to_rb_obj(json_obj)
         res = case json_obj
         when Hash

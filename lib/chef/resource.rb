@@ -129,14 +129,19 @@ F
 
     extend Chef::Mixin::ConvertToClassName
 
+    # Track all subclasses of Resource. This is used so names can be looked up
+    # when attempting to deserialize from JSON. (See: json_compat)
     def self.resource_classes
       @resource_classes ||= []
     end
 
+    # Callback when subclass is defined. Adds subclass to list of subclasses.
     def self.inherited(subclass)
       resource_classes << subclass
     end
 
+    # Look up a subclass by +class_name+ which should be a string that matches
+    # `Subclass.name`
     def self.find_subclass_by_name(class_name)
       resource_classes.first {|c| c.name == class_name }
     end
