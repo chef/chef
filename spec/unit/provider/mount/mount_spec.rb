@@ -221,8 +221,8 @@ describe Chef::Provider::Mount::Mount do
       target = "/dev/mapper/target"
       options = "rw,noexec,noauto"
 
-      ::File.stub!(:symlink?).with("#{@new_resource.device}").and_return(true)
-      ::File.stub!(:readlink).with("#{@new_resource.device}").and_return(target)
+      ::File.stub!(:symlink?).with(@new_resource.device).and_return(true)
+      ::File.stub!(:readlink).with(@new_resource.device).and_return(target)
 
       fstab = "#{@new_resource.device} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
       ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
@@ -234,8 +234,8 @@ describe Chef::Provider::Mount::Mount do
       target = "/dev/mapper/target"
       options = "rw,noexec,noauto"
 
-      ::File.stub!(:symlink?).with("#{@new_resource.device}").and_return(true)
-      ::File.stub!(:readlink).with("#{@new_resource.device}").and_return(target)
+      ::File.stub!(:symlink?).with(@new_resource.device).and_return(true)
+      ::File.stub!(:readlink).with(@new_resource.device).and_return(target)
 
       fstab = "#{target} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
       ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
