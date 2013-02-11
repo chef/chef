@@ -27,7 +27,7 @@ class Chef
           super(new_resource, run_context)
           @config_template = %{
 <% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
-<% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
+<% if @new_resource.onboot == "yes" %>ONBOOT=<%= @new_resource.onboot %><% end %>
 <% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
 <% if @new_resource.target %>IPADDR=<%= @new_resource.target %><% end %>
 <% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
