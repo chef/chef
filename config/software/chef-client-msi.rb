@@ -25,7 +25,7 @@ build do
   block do
     src_dir = self.project_dir
 
-    shell = Mixlib::ShellOut.new("heat.exe dir \"#{install_dir}\" -nologo -srd -gg -cg ChefClientDir -dr CHEFLOCATION -var var.ChefClientSourceDir -out ChefClient-Files.wxs", :cwd => src_dir)
+    shell = Mixlib::ShellOut.new("heat.exe dir \"#{install_dir}\" -nologo -srd -gg -cg ChefClientDir -dr CHEFLOCATION -var var.ChefClientSourceDir -out chef-client-Files.wxs", :cwd => src_dir)
     shell.run_command
     shell.error!
   end
@@ -34,7 +34,7 @@ build do
   block do
     require 'erb'
 
-    File.open("#{project_dir}\\templates\\ChefClient-Config.wxi.erb") { |file|
+    File.open("#{project_dir}\\templates\\chef-client-Config.wxi.erb") { |file|
       # build_version looks something like this:
       # dev builds => 0.10.8-299-g360818f
       # rel builds => 0.10.8-299
@@ -58,7 +58,7 @@ build do
   command "IF exist #{install_dir}\\msi-tmp (echo msi-tmp is found on the system) ELSE (mkdir #{install_dir}\\msi-tmp && echo msi-tmp directory is created.) "
 
   # Copy the localization file into the temporary file directory for packaging
-  command "xcopy ChefClient-en-us.wxl #{install_dir}\\msi-tmp /Y", :cwd => source[:path]
+  command "xcopy chef-client-en-us.wxl #{install_dir}\\msi-tmp /Y", :cwd => source[:path]
 
   # Copy the asset files into the temporary file directory for packaging
   command "xcopy assets #{install_dir}\\msi-tmp\\assets /I /Y", :cwd => source[:path]
@@ -67,7 +67,7 @@ build do
   block do
     src_dir = self.project_dir
     
-    shell = Mixlib::ShellOut.new("candle.exe -nologo -out #{install_dir}\\msi-tmp\\ -dChefClientSourceDir=\"#{install_dir}\" ChefClient-Files.wxs ChefClient.wxs", :cwd => src_dir)
+    shell = Mixlib::ShellOut.new("candle.exe -nologo -out #{install_dir}\\msi-tmp\\ -dChefClientSourceDir=\"#{install_dir}\" chef-client-Files.wxs chef-client.wxs", :cwd => src_dir)
     shell.run_command
     shell.error!
   end
