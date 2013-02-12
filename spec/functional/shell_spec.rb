@@ -33,8 +33,9 @@ describe Chef::Shell do
         begin
           buffer << io.read_nonblock(1)
         rescue Errno::EWOULDBLOCK, Errno::EAGAIN, Errno::EIO, EOFError
+          sleep 0.01
         end
-        if Time.new - start > 15
+        if Time.new - start > 30
           STDERR.puts "did not read expected value `#{expected_value}' within 15s"
           STDERR.puts "Buffer so far: `#{buffer}'"
           break
@@ -51,7 +52,7 @@ describe Chef::Shell do
           STDERR.puts("chef-shell tty did not exit cleanly, killing it")
           Process.kill(:KILL, pid)
         end
-        sleep 0.1
+        sleep 0.01
       end
       exitstatus[1]
     end
@@ -60,7 +61,7 @@ describe Chef::Shell do
       # Windows ruby installs don't (always?) have PTY,
       # so hide the require here
       require 'pty'
-      config = File.expand_path("chef-config.rb", CHEF_SPEC_DATA)
+      config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
       path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
       reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
       read_until(reader, "chef >")
@@ -69,7 +70,7 @@ describe Chef::Shell do
       output = read_until(reader, '=> "done"')
       writer.print("exit\n")
       read_until(reader, "exit")
-      read_until(reader, "exit")
+      read_until(reader, "\n")
       read_until(reader, "\n")
       writer.close
 

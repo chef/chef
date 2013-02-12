@@ -59,9 +59,17 @@ class Chef
         )
       end
 
-      # TODO should this be separated into different files?
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
+      #==WindowsMacros
+      # Defines methods for adding attributes to a chef resource to describe
+      # Windows file security metadata.
+      #
+      # This module is meant to be used to extend a class (instead of
+      # `include`-ing). A class is automatically extended with this module when
+      # it includes WindowsSecurableAttributes.
+      # --
+      # TODO should this be separated into different files?
+      module WindowsMacros
         # === rights_attribute
         # "meta-method" for dynamically creating rights attributes on resources.
         #
@@ -99,7 +107,7 @@ class Chef
         # * `:applies_to_self` (optional): Boolean
         # * `:one_level_deep` (optional): Boolean
         #
-        def self.rights_attribute(name)
+        def rights_attribute(name)
 
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
@@ -160,10 +168,13 @@ class Chef
             )
           end
         end
+      end
 
-        # create a default 'rights' attribute
-        rights_attribute(:rights)
-        rights_attribute(:deny_rights)
+      #==WindowsSecurableAttributes
+      # Defines #inherits to describe Windows file security ACLs on the
+      # including class
+      module WindowsSecurableAttributes
+
 
         def inherits(arg=nil)
           set_or_return(
@@ -172,8 +183,22 @@ class Chef
             :kind_of => [ TrueClass, FalseClass ]
           )
         end
+      end
 
-      end # Windows-specific
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        include WindowsSecurableAttributes
+      end
+
+      # Callback that fires when included; will extend the including class
+      # with WindowsMacros and define #rights and #deny_rights on it.
+      def self.included(including_class)
+        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+          including_class.extend(WindowsMacros)
+          # create a default 'rights' attribute
+          including_class.rights_attribute(:rights)
+          including_class.rights_attribute(:deny_rights)
+        end
+      end
 
     end
   end

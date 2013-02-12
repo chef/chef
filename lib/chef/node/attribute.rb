@@ -209,6 +209,34 @@ class Chef
          @combined_default = nil
        end
 
+       # Debug what's going on with an attribute. +args+ is a path spec to the
+       # attribute you're interested in. For example, to debug where the value
+       # of `node[:network][:default_interface]` is coming from, use:
+       #   debug_value(:network, :default_interface).
+       # The return value is an Array of Arrays. The first element is
+       # `["set_unless_enabled?", Boolean]`, which describes whether the
+       # attribute collection is in "set_unless" mode. The rest of the Arrays
+       # are pairs of `["precedence_level", value]`, where precedence level is
+       # the component, such as role default, normal, etc. and value is the
+       # attribute value set at that precedence level. If there is no value at
+       # that precedence level, +value+ will be the symbol +:not_present+.
+       def debug_value(*args)
+         components = COMPONENTS.map do |component|
+           ivar = instance_variable_get(component)
+           value = args.inject(ivar) do |so_far, key|
+             if so_far == :not_present
+               :not_present
+             elsif so_far.has_key?(key)
+               so_far[key]
+             else
+               :not_present
+             end
+           end
+           [component.to_s.sub(/^@/,""), value]
+         end
+         [["set_unless_enabled?", @set_unless_present]] + components
+       end
+
        # Enables or disables `||=`-like attribute setting. See, e.g., Node#set_unless
        def set_unless_value_present=(setting)
          @set_unless_present = setting
@@ -220,6 +248,7 @@ class Chef
          @merged_attributes = nil
          @combined_default  = nil
          @combined_override = nil
+         @set_unless_present = false
        end
 
        alias :reset :reset_cache
@@ -284,32 +313,20 @@ class Chef
 
        def merged_attributes
          @merged_attributes ||= begin
-                                  resolved_attrs = COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-                                    component_value = instance_variable_get(component_ivar)
-                                    Chef::Mixin::DeepMerge.merge(merged, component_value)
+                                  components = [merge_defaults, @normal, merge_overrides, @automatic]
+                                  resolved_attrs = components.inject(Mash.new) do |merged, component|
+                                    Chef::Mixin::DeepMerge.hash_only_merge(merged, component)
                                   end
                                   immutablize(resolved_attrs)
                                 end
        end
 
        def combined_override
-         @combined_override ||= begin
-                                  resolved_attrs = OVERRIDE_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-                                    component_value = instance_variable_get(component_ivar)
-                                    Chef::Mixin::DeepMerge.merge(merged, component_value)
-                                  end
-                                  immutablize(resolved_attrs)
-                                end
+         @combined_override ||= immutablize(merge_overrides)
        end
 
        def combined_default
-         @combined_default ||= begin
-                                  resolved_attrs = DEFAULT_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
-                                    component_value = instance_variable_get(component_ivar)
-                                    Chef::Mixin::DeepMerge.merge(merged, component_value)
-                                  end
-                                  immutablize(resolved_attrs)
-                                end
+         @combined_default ||= immutablize(merge_defaults)
        end
 
        def [](key)
@@ -357,6 +374,23 @@ class Chef
        def set_unless?
          @set_unless_present
        end
+
+       private
+
+       def merge_defaults
+         DEFAULT_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
+           component_value = instance_variable_get(component_ivar)
+           Chef::Mixin::DeepMerge.merge(merged, component_value)
+         end
+       end
+
+       def merge_overrides
+         OVERRIDE_COMPONENTS.inject(Mash.new) do |merged, component_ivar|
+           component_value = instance_variable_get(component_ivar)
+           Chef::Mixin::DeepMerge.merge(merged, component_value)
+         end
+       end
+
 
     end
 

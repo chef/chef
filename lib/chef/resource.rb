@@ -18,8 +18,8 @@
 #
 
 require 'chef/mixin/params_validate'
-require 'chef/mixin/check_helper'
 require 'chef/dsl/platform_introspection'
+require 'chef/dsl/data_query'
 require 'chef/dsl/registry_helper'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/resource/conditional'
@@ -120,7 +120,7 @@ F
     FORBIDDEN_IVARS = [:@run_context, :@node, :@not_if, :@only_if, :@enclosing_provider]
     HIDDEN_IVARS = [:@allowed_actions, :@resource_name, :@source_line, :@run_context, :@name, :@node, :@not_if, :@only_if, :@elapsed_time, :@enclosing_provider]
 
-    include Chef::Mixin::CheckHelper
+    include Chef::DSL::DataQuery
     include Chef::Mixin::ParamsValidate
     include Chef::DSL::PlatformIntrospection
     include Chef::DSL::RegistryHelper
@@ -128,6 +128,23 @@ F
     include Chef::Mixin::Deprecation
 
     extend Chef::Mixin::ConvertToClassName
+
+    # Track all subclasses of Resource. This is used so names can be looked up
+    # when attempting to deserialize from JSON. (See: json_compat)
+    def self.resource_classes
+      @resource_classes ||= []
+    end
+
+    # Callback when subclass is defined. Adds subclass to list of subclasses.
+    def self.inherited(subclass)
+      resource_classes << subclass
+    end
+
+    # Look up a subclass by +class_name+ which should be a string that matches
+    # `Subclass.name`
+    def self.find_subclass_by_name(class_name)
+      resource_classes.first {|c| c.name == class_name }
+    end
 
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
@@ -266,9 +283,13 @@ F
     def load_prior_resource
       begin
         prior_resource = run_context.resource_collection.lookup(self.to_s)
-        Chef::Log.debug("Setting #{self.to_s} to the state of the prior #{self.to_s}")
+        # if we get here, there is a prior resource (otherwise we'd have jumped
+        # to the rescue clause).
+        Chef::Log.warn("Cloning resource attributes for #{self.to_s} from prior resource (CHEF-3694)")
+        Chef::Log.warn("Previous #{prior_resource}: #{prior_resource.source_line}") if prior_resource.source_line
+        Chef::Log.warn("Current  #{self}: #{self.source_line}") if self.source_line
         prior_resource.instance_variables.each do |iv|
-          unless iv.to_sym == :@source_line || iv.to_sym == :@action
+          unless iv.to_sym == :@source_line || iv.to_sym == :@action || iv.to_sym == :@not_if || iv.to_sym == :@only_if
             self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
           end
         end
@@ -320,17 +341,19 @@ F
     end
 
     def name(name=nil)
-      set_if_args(@name, name) do
+      if !name.nil?
         raise ArgumentError, "name must be a string!" unless name.kind_of?(String)
         @name = name
       end
+      @name
     end
 
     def noop(tf=nil)
-      set_if_args(@noop, tf) do
+      if !tf.nil?
         raise ArgumentError, "noop must be true or false!" unless tf == true || tf == false
         @noop = tf
       end
+      @noop
     end
 
     def ignore_failure(arg=nil)
@@ -532,10 +555,14 @@ F
     end
 
     def defined_at
+      # The following regexp should match these two sourceline formats:
+      #   /some/path/to/file.rb:80:in `wombat_tears'
+      #   C:/some/path/to/file.rb:80 in 1`wombat_tears'
+      # extracting the path to the source file and the line number.
+      (file, line_no) = source_line.match(/(.*):(\d+):?.*$/).to_a[1,2] if source_line
       if cookbook_name && recipe_name && source_line
-        "#{cookbook_name}::#{recipe_name} line #{source_line.split(':')[1]}"
+        "#{cookbook_name}::#{recipe_name} line #{line_no}"
       elsif source_line
-        file, line_no = source_line.split(':')
         "#{file} line #{line_no}"
       else
         "dynamically defined"

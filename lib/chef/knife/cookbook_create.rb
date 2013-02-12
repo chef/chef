@@ -73,10 +73,10 @@ class Chef
         email = config[:cookbook_email] || "YOUR_EMAIL"
         license = ((config[:cookbook_license] != "false") && config[:cookbook_license]) || "none"
         readme_format = ((config[:readme_format] != "false") && config[:readme_format]) || "md"
-        create_cookbook(cookbook_path,cookbook_name, copyright, license)
-        create_readme(cookbook_path,cookbook_name,readme_format)
-        create_changelog(cookbook_path,cookbook_name)
-        create_metadata(cookbook_path,cookbook_name, copyright, email, license,readme_format)
+        create_cookbook(cookbook_path, cookbook_name, copyright, license)
+        create_readme(cookbook_path, cookbook_name, readme_format)
+        create_changelog(cookbook_path, cookbook_name)
+        create_metadata(cookbook_path, cookbook_name, copyright, email, license, readme_format)
       end
 
       def create_cookbook(dir, cookbook_name, copyright, license)
@@ -193,7 +193,7 @@ This file is used to list changes made in each version of #{cookbook_name}.
 
 * Initial release of #{cookbook_name}
 
-- - - 
+- - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
 
 The [Github Flavored Markdown page](http://github.github.com/github-flavored-markdown/) describes the differences between markdown on github and standard markdown.
@@ -202,54 +202,203 @@ EOH
         end
       end
 
-      def create_readme(dir, cookbook_name,readme_format)
+      def create_readme(dir, cookbook_name, readme_format)
         msg("** Creating README for cookbook: #{cookbook_name}")
         unless File.exists?(File.join(dir, cookbook_name, "README.#{readme_format}"))
           open(File.join(dir, cookbook_name, "README.#{readme_format}"), "w") do |file|
             case readme_format
             when "rdoc"
               file.puts <<-EOH
-= DESCRIPTION:
+= #{cookbook_name} Cookbook
+TODO: Enter the cookbook description here.
 
-= REQUIREMENTS:
+e.g.
+This cookbook makes your favorite breakfast sandwhich.
 
-= ATTRIBUTES:
+== Requirements
+TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
 
-= USAGE:
+e.g.
+==== packages
+- +toaster+ - #{cookbook_name} needs toaster to brown your bagel.
 
+== Attributes
+TODO: List you cookbook attributes here.
+
+e.g.
+==== #{cookbook_name}::default
+<table>
+  <tr>
+    <th>Key</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td><tt>['#{cookbook_name}']['bacon']</tt></td>
+    <td>Boolean</td>
+    <td>whether to include bacon</td>
+    <td><tt>true</tt></td>
+  </tr>
+</table>
+
+== Usage
+==== #{cookbook_name}::default
+TODO: Write usage instructions for each cookbook.
+
+e.g.
+Just include +#{cookbook_name}+ in your node's +run_list+:
+
+    {
+      "name":"my_node",
+      "run_list": [
+        "recipe[#{cookbook_name}]"
+      ]
+    }
+
+== Contributing
+TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+
+e.g.
+1. Fork the repository on Github
+2. Create a named feature branch (like `add_component_x`)
+3. Write you change
+4. Write tests for your change (if applicable)
+5. Run the tests, ensuring they all pass
+6. Submit a Pull Request using Github
+
+== License and Authors
+Authors: TODO: List authors
 EOH
             when "md","mkd","txt"
               file.puts <<-EOH
-Description
-===========
+#{cookbook_name} Cookbook
+#{'='*"#{cookbook_name} Cookbook".length}
+TODO: Enter the cookbook description here.
+
+e.g.
+This cookbook makes your favorite breakfast sandwhich.
 
 Requirements
-============
+------------
+TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
+
+e.g.
+#### packages
+- `toaster` - #{cookbook_name} needs toaster to brown your bagel.
 
 Attributes
-==========
+----------
+TODO: List you cookbook attributes here.
+
+e.g.
+#### #{cookbook_name}::default
+<table>
+  <tr>
+    <th>Key</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td><tt>['#{cookbook_name}']['bacon']</tt></td>
+    <td>Boolean</td>
+    <td>whether to include bacon</td>
+    <td><tt>true</tt></td>
+  </tr>
+</table>
 
 Usage
-=====
+-----
+#### #{cookbook_name}::default
+TODO: Write usage instructions for each cookbook.
 
+e.g.
+Just include `#{cookbook_name}` in your node's `run_list`:
+
+```json
+{
+  "name":"my_node",
+  "run_list": [
+    "recipe[#{cookbook_name}]"
+  ]
+}
+```
+
+Contributing
+------------
+TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+
+e.g.
+1. Fork the repository on Github
+2. Create a named feature branch (like `add_component_x`)
+3. Write you change
+4. Write tests for your change (if applicable)
+5. Run the tests, ensuring they all pass
+6. Submit a Pull Request using Github
+
+License and Authors
+-------------------
+Authors: TODO: List authors
 EOH
             else
               file.puts <<-EOH
-Description
+#{cookbook_name} Cookbook
+#{'='*"#{cookbook_name} Cookbook".length}
+  TODO: Enter the cookbook description here.
+
+  e.g.
+  This cookbook makes your favorite breakfast sandwhich.
 
 Requirements
+  TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
+
+  e.g.
+  toaster         #{cookbook_name} needs toaster to brown your bagel.
 
 Attributes
+  TODO: List you cookbook attributes here.
+
+  #{cookbook_name}
+  Key                                   Type        Description                           Default
+  ['#{cookbook_name}']['bacon']         Boolean     whether to include bacon              true
 
 Usage
+  #{cookbook_name}
+  TODO: Write usage instructions for each cookbook.
 
+  e.g.
+  Just include `#{cookbook_name}` in your node's `run_list`:
+
+  [code]
+  {
+    "name":"my_node",
+    "run_list": [
+      "recipe[#{cookbook_name}]"
+    ]
+  }
+  [/code]
+
+Contributing
+  TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
+
+  e.g.
+  1. Fork the repository on Github
+  2. Create a named feature branch (like `add_component_x`)
+  3. Write you change
+  4. Write tests for your change (if applicable)
+  5. Run the tests, ensuring they all pass
+  6. Submit a Pull Request using Github
+
+License and Authors
+  Authors: TODO: List authors
 EOH
             end
           end
         end
       end
 
-      def create_metadata(dir, cookbook_name, copyright, email, license,readme_format)
+      def create_metadata(dir, cookbook_name, copyright, email, license, readme_format)
         msg("** Creating metadata for cookbook: #{cookbook_name}")
 
         license_name = case license
@@ -271,12 +420,13 @@ EOH
               long_description = "long_description IO.read(File.join(File.dirname(__FILE__), 'README.#{readme_format}'))"
             end
             file.puts <<-EOH
-maintainer       "#{copyright}"
-maintainer_email "#{email}"
-license          "#{license_name}"
-description      "Installs/Configures #{cookbook_name}"
+name             '#{cookbook_name}'
+maintainer       '#{copyright}'
+maintainer_email '#{email}'
+license          '#{license_name}'
+description      'Installs/Configures #{cookbook_name}'
 #{long_description}
-version          "0.1.0"
+version          '0.1.0'
 EOH
           end
         end

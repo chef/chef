@@ -107,6 +107,14 @@ def setup(yb, options):
     elif YUM_MAJOR == 2:
       yb.conf.setConfigOption('cache', options.cache)
 
+  # Handle repo toggle via id or glob exactly like yum
+  for opt, repos in options.repo_control:
+      for repo in repos:
+        if opt == '--enablerepo':
+            yb.repos.enableRepo(repo)
+        elif opt == '--disablerepo':
+            yb.repos.disableRepo(repo)
+
   return 0
 
 def dump_packages(yb, list, output_provides):
@@ -239,6 +247,12 @@ def yum_dump(options):
       print >> sys.stderr, "yum-dump Unlock Error: %s" % e
       return 200
 
+# Preserve order of enable/disable repo args like yum does
+def gather_repo_opts(option, opt, value, parser):
+  if getattr(parser.values, option.dest, None) is None: 
+    setattr(parser.values, option.dest, []) 
+  getattr(parser.values, option.dest).append((opt, value.split(',')))
+
 def main():
   usage = "Usage: %prog [options]\n" + \
           "Output a list of installed, available and re-installable packages via yum"
@@ -261,6 +275,12 @@ def main():
   parser.add_option("-a", "--available",
                     action="store_const", const="available", dest="package_list", default="all",
                     help="output only available and re-installable packages")
+  parser.add_option("--enablerepo",
+                    action="callback",  callback=gather_repo_opts, type="string", dest="repo_control", default=[],
+                    help="enable disabled repositories by id or glob")
+  parser.add_option("--disablerepo",
+                    action="callback",  callback=gather_repo_opts, type="string", dest="repo_control", default=[],
+                    help="disable repositories by id or glob")
 
   (options, args) = parser.parse_args()
 

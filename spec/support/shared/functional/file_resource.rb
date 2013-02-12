@@ -143,8 +143,18 @@ shared_examples_for "a file with the correct content" do
 end
 
 shared_examples_for "a file resource" do
+  before do
+    Chef::Log.level = :info
+  end
    # note the stripping of the drive letter from the tmpdir on windows
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
+
+  # Most tests update the resource, but a few do not. We need to test that the
+  # resource is marked updated or not correctly, but the test contexts are
+  # composed between correct/incorrect content and correct/incorrect
+  # permissions. We override this "let" definition in the context where content
+  # and permissions are correct.
+  let(:expect_updated?) { true }
 
   def binread(file)
     content = File.open(file, "rb") do |f|
@@ -239,7 +249,7 @@ shared_examples_for "a file resource" do
       include_context "setup broken permissions"
 
       it_behaves_like "a file with the wrong content"
-  
+
       it_behaves_like "a securable resource"
     end
   end
@@ -255,6 +265,11 @@ shared_examples_for "a file resource" do
     end
 
     describe "and the target file has the correct permissions" do
+
+      # When permissions and content are correct, chef should do nothing and
+      # the resource should not be marked updated.
+      let(:expect_updated?) { false }
+
       include_context "setup correct permissions"
 
       it_behaves_like "a file with the correct content"
@@ -271,11 +286,29 @@ shared_examples_for "a file resource" do
     end
   end
 
+  it_behaves_like "a file that inherits permissions from a parent directory"
+  
+end
+
+shared_examples_for "a file that inherits permissions from a parent directory" do
+  include_context "use Windows permissions"
+  context "on Windows", :windows_only do
+    it "has only inherited aces if no explicit aces were specified" do
+      File.exist?(path).should == false
+
+      resource.run_action(:create)
+
+      descriptor.dacl_inherits?.should == true
+      descriptor.dacl.each do | ace |
+        ace.inherited?.should == true
+      end
+    end
+  end
 end
 
 shared_context Chef::Resource::File  do
   let(:path) do
-    File.join(Dir.tmpdir, make_tmpname(file_base, nil))
+    File.join(Dir.tmpdir, make_tmpname(file_base))
   end
 
   after(:each) do

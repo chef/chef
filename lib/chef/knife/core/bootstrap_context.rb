@@ -47,11 +47,11 @@ class Chef
         end
 
         def validation_key
-          IO.read(@chef_config[:validation_key])
+          IO.read(File.expand_path(@chef_config[:validation_key]))
         end
 
         def encrypted_data_bag_secret
-          IO.read(@chef_config[:encrypted_data_bag_secret])
+          IO.read(File.expand_path(@chef_config[:encrypted_data_bag_secret]))
         end
 
         def config_content

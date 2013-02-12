@@ -23,6 +23,11 @@ describe Chef::Application::Knife do
 
   before(:all) do
     class NoopKnifeCommand < Chef::Knife
+      option :opt_with_default,
+        :short => "-D VALUE",
+        :long => "-optwithdefault VALUE",
+        :default => "default-value"
+
       def run
       end
     end

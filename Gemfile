@@ -3,10 +3,13 @@ source :rubygems
 gemspec
 
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
-gem "ronn"
+
+group(:docgen) do
+  gem "ronn"
+end
 
 group(:development, :test) do
-  gem 'rack'
+  gem 'rack', "~> 1.5.1"
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd)/)
 #  gem 'awesome_print'

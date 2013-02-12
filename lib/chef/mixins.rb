@@ -1,5 +1,4 @@
 require 'chef/mixin/shell_out'
-require 'chef/mixin/check_helper'
 require 'chef/mixin/checksum'
 require 'chef/mixin/command'
 require 'chef/mixin/convert_to_class_name'
@@ -12,3 +11,4 @@ require 'chef/mixin/path_sanity'
 require 'chef/mixin/template'
 require 'chef/mixin/securable'
 require 'chef/mixin/xml_escape'
+

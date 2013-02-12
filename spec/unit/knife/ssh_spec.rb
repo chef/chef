@@ -34,6 +34,7 @@ describe Chef::Knife::Ssh do
 
   before do
     @knife = Chef::Knife::Ssh.new
+    @knife.merge_configs
     @knife.config[:attribute] = "fqdn"
     @node_foo = Chef::Node.new
     @node_foo.automatic_attrs[:fqdn] = "foo.example.org"

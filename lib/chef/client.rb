@@ -129,9 +129,9 @@ class Chef
     #--
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
-
     attr_reader :run_status
-
+    attr_reader :events
+    
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs
@@ -410,6 +410,25 @@ class Chef
       raise
     end
 
+    def do_windows_admin_check
+      if Chef::Platform.windows?
+        Chef::Log.debug("Checking for administrator privileges....")
+
+        if !has_admin_privileges?
+          message = "chef-client doesn't have administrator privileges on node #{node_name}."
+          if Chef::Config[:fatal_windows_admin_check]
+            Chef::Log.fatal(message)
+            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
+            raise Chef::Exceptions::WindowsNotAdmin, message
+          else
+            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
+          end
+        else
+          Chef::Log.debug("chef-client has administrator privileges on node #{node_name}.")
+        end
+      end
+    end
+
     private
 
     # Do a full run for this Chef::Client.  Calls:
@@ -442,6 +461,8 @@ class Chef
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
+
+        do_windows_admin_check
 
         run_context = setup_run_context
 
@@ -518,6 +539,13 @@ class Chef
       end
 
     end
+
+    def has_admin_privileges?
+      require 'chef/win32/security'
+
+      Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
   end
 end
 
