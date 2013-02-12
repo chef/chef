@@ -34,6 +34,8 @@ describe Chef::RunLock do
     let(:file_cache_path){ "/var/chef/cache" }
     let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
+    # make sure to start with a clean slate.
+    before(:each){ FileUtils.rm_r(random_temp_root) if File.exist?(random_temp_root) }
     after(:each){ FileUtils.rm_r(random_temp_root) }
 
     def wait_on_lock
@@ -49,7 +51,12 @@ describe Chef::RunLock do
     # Side channel via a pipe allows child processes to send errors to the parent
 
     # Don't lazy create the pipe or else we might not share it with subprocesses
-    let!(:error_pipe) { IO.pipe }
+    let!(:error_pipe) do
+      r,w = IO.pipe
+      w.sync = true
+      [r,w]
+    end
+
     let(:error_read) { error_pipe[0] }
     let(:error_write) { error_pipe[1] }
 
@@ -87,7 +94,11 @@ describe Chef::RunLock do
     # Interprocess synchronization via a pipe. This allows us to control the
     # state of the processes competing over the lock without relying on sleep.
 
-    let!(:sync_pipe) { IO.pipe }
+    let!(:sync_pipe) do
+      r,w = IO.pipe
+      w.sync = true
+      [r,w]
+    end
     let(:sync_read) { sync_pipe[0] }
     let(:sync_write) { sync_pipe[1] }
 
@@ -103,6 +114,8 @@ describe Chef::RunLock do
         # timeout reading from the sync pipe.
         send_side_channel_error("Error syncing processes in run lock test (timeout)")
         exit!(1)
+      else
+        sync_read.getc
       end
     end
 
@@ -110,13 +123,18 @@ describe Chef::RunLock do
     # process that is waiting on the sync signal
     def sync_send
       sync_write.putc("!")
+      sync_write.flush
     end
 
     ##
     # IPC to record test results in a pipe. Tests can read pipe contents to
     # check that operations occur in the expected order.
 
-    let!(:results_pipe) { IO.pipe }
+    let!(:results_pipe) do
+      r,w = IO.pipe
+      w.sync = true
+      [r,w]
+    end
     let(:results_read) { results_pipe[0] }
     let(:results_write) { results_pipe[1] }
 
@@ -130,9 +148,11 @@ describe Chef::RunLock do
     # read or write call, so don't put too much data in.
     def record(message)
       results_write.puts(message)
+      results_write.flush
     end
 
     def results
+      results_write.flush
       results_write.close
       message = results_read.read
       results_read.close
@@ -168,7 +188,6 @@ describe Chef::RunLock do
       p2 = fork do
         # inform process p1 that we're trying to get the lock
         sync_send
-        record "p2 requesting lock"
         run_lock.acquire
         record "p2 has lock"
         run_lock.release
@@ -182,7 +201,6 @@ describe Chef::RunLock do
 
       expected=<<-E
 p1 has lock
-p2 requesting lock
 p1 releasing lock
 p2 has lock
 E
