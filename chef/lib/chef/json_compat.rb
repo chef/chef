@@ -54,6 +54,10 @@ class Chef
       def from_json(source, opts = {})
         obj = ::Yajl::Parser.parse(source)
 
+        unless obj.kind_of?(Hash) || obj.kind_of?(Array)
+          raise JSON::ParserError, "Top level JSON object must be a Hash or Array (actual: #{obj.class})"
+        end
+
         # The old default in the json gem (which we are mimicing because we
         # sadly rely on this misfeature) is to "create additions" i.e., convert
         # JSON objects into ruby objects. Explicit :create_additions => false
@@ -63,6 +67,8 @@ class Chef
         else
           obj
         end
+      rescue Yajl::ParseError => e
+        raise JSON::ParserError, e.message
       end
 
       # Look at an object that's a basic type (from json parse) and convert it
@@ -127,7 +133,7 @@ class Chef
         when /^Chef::Resource/
           Chef::Resource.find_subclass_by_name(json_class)
         else
-          raise ArgumentError, "Unsupported `json_class` type '#{json_class}'"
+          raise JSON::ParserError, "Unsupported `json_class` type '#{json_class}'"
         end
       end
 
