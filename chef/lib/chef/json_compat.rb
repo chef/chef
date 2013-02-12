@@ -37,6 +37,7 @@ class Chef
     CHEF_RESOURCE           = "Chef::Resource".freeze
     CHEF_RESOURCECOLLECTION = "Chef::ResourceCollection".freeze
     CHEF_WEBUIUSER          = "Chef::WebUIUser".freeze
+    CHEF_OPENIDREGISTRAION  = "Chef::OpenIDRegistration".freeze
 
     class <<self
       # See CHEF-1292/PL-538. Increase the max nesting for JSON, which defaults
@@ -130,6 +131,8 @@ class Chef
           Chef::ResourceCollection
         when CHEF_WEBUIUSER
           Chef::WebUIUser
+        when CHEF_OPENIDREGISTRAION
+          Chef::OpenIDRegistration
         when /^Chef::Resource/
           Chef::Resource.find_subclass_by_name(json_class)
         else
