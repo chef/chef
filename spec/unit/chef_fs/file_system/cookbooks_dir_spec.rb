@@ -190,66 +190,56 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
     end
     # TODO test empty parts, cross-contamination (root_files named templates/x.txt, libraries named recipes/blah.txt)
     context 'with a full directory structure' do
-      def json_file(path, checksum)
-        filename = Chef::ChefFS::PathUtils.split(path)[-1]
+
+      let(:manifest) do
         {
-          :name => filename,
+          :attributes  => json_files('attributes'),
+          :definitions => json_files('definitions'),
+          :files       => json_files('files'),
+          :libraries   => json_files('libraries'),
+          :providers   => json_files('providers'),
+          :recipes     => json_files('recipes'),
+          :resources   => json_files('resources'),
+          :templates   => json_files('templates'),
+          :root_files  => root_files.map { |f| json_file(f, file_checksums[f]) }
+        }
+      end
+
+      def json_file(path, checksum)
+        {
+          :name => basename(path),
           :url => "cookbook_file:#{path}",
           :checksum => checksum,
           :path => path,
           :specificity => "default"
         }
       end
-      def json_files(cookbook_dir)
-        result = []
-        files.each do |filename|
-          if filename =~ /^#{cookbook_dir}\//
-            result << json_file(filename, file_checksums[filename])
-          end
-        end
-        result
+
+      def json_files(segment)
+        files.
+          select { |f| /^#{segment}\//.match(f) }.
+          map    { |f| json_file(f, file_checksums[f]) }
       end
-      let(:files) {
-        result = []
-        %w(attributes definitions files libraries providers recipes resources templates).each do |segment|
-          result << "#{segment}/a.rb"
-          result << "#{segment}/b.txt"
-          result << "#{segment}/subdir/a.rb"
-          result << "#{segment}/subdir/b.txt"
-        end
-        result << 'a.rb'
-        result << 'b.txt'
-        result << 'subdir/a.rb'
-        result << 'subdir/b.txt'
-        result << 'root_files'
-        result
-      }
-      let(:file_checksums) {
-        result = {}
-        files.each_with_index do |file, i|
-          result[file] = i.to_s(16)
-        end
-        result
-      }
+
+      def basename(path)
+        Chef::ChefFS::PathUtils.split(path)[-1]
+      end
+
+      let(:segments) { %w(attributes definitions files libraries providers recipes resources templates) }
+      let(:some_filenames) { %w(a.rb b.txt subdir/a.rb subdir/b.txt) }
+      let(:root_files) { ['root_files'] + some_filenames }
+
+      # Generate a sample cookbook
+      let(:files) { [root_files, segment_files].flatten }
+      let(:segment_files) { segments.map { |s| some_filenames.map { |f| "#{s}/#{f}" } } }
+
+      # Make a hash where { filename => checksum }
+      let(:file_checksums) { Hash[*(files.each_with_index.map(&filename_with_checksum).flatten)] }
+      let(:filename_with_checksum) { lambda { |f, i| [f, i.to_s(16)] } }
+
       let(:should_get_cookbook) do
         cookbook = double('cookbook')
-        cookbook.should_receive(:manifest).and_return({
-          :attributes => json_files('attributes'),
-          :definitions => json_files('definitions'),
-          :files => json_files('files'),
-          :libraries => json_files('libraries'),
-          :providers => json_files('providers'),
-          :recipes => json_files('recipes'),
-          :resources => json_files('resources'),
-          :templates => json_files('templates'),
-          :root_files => [
-            json_file('a.rb', file_checksums['a.rb']),
-            json_file('b.txt', file_checksums['b.txt']),
-            json_file('subdir/a.rb', file_checksums['subdir/a.rb']),
-            json_file('subdir/b.txt', file_checksums['subdir/b.txt']),
-            json_file('root_files', file_checksums['root_files'])
-          ]
-        })
+        cookbook.should_receive(:manifest).and_return(manifest)
         @rest.should_receive(:get_rest).with("cookbooks/#{cookbook_dir_name}/_latest").once.and_return(cookbook)
       end
 
