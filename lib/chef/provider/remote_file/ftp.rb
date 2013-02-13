@@ -58,10 +58,10 @@ class Chef
             d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
           }
           unless filename = directories.pop
-            raise ArgumentError, "no filename: #{uri.inspect}"
+            raise ArgumentError, "no filename: #{path.inspect}"
           end
           if filename.length == 0 || filename.end_with?( "/" )
-            raise ArgumentError, "no filename: #{uri.inspect}"
+            raise ArgumentError, "no filename: #{path.inspect}"
           end
           return directories, filename
         end
