@@ -52,6 +52,13 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
   let(:rest)  { double 'rest' }
   before(:each) { Chef::REST.stub(:new).with('url','username','key') { rest } }
 
+  def self.with_versioned_cookbooks
+    before(:each) { Chef::Config[:versioned_cookbooks] = true }
+    after(:each)  { Chef::Config[:versioned_cookbooks] = false }
+
+    let(:api_url) { 'cookbooks/?num_versions=all' }
+  end
+
   it 'has / as parent' do
     cookbooks_dir.parent.should == root_dir
   end
@@ -82,11 +89,34 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
   end
 
   describe '#can_have_child?' do
-    it 'can have directories as children' do
-      cookbooks_dir.can_have_child?('blah', true).should be_true
+    subject { cookbooks_dir.can_have_child? cookbook_name, is_dir? }
+
+    let(:cookbook_name) { 'blah' }
+    let(:is_dir?)       { true }
+
+    # /cookbooks should contain only directories
+    context 'when child is a directory' do
+      let(:is_dir?) { true }
+      it { should be_true }
     end
-    it 'cannot have files as children' do
-      cookbooks_dir.can_have_child?('blah', false).should be_false
+
+    context 'when child is a file' do
+      let(:is_dir?) { false }
+      it { should be_false }
+    end
+
+    context 'with versioned cookbooks' do
+      with_versioned_cookbooks
+
+      context 'when name conforms to <cookbook_name>-<verson>' do
+        let(:cookbook_name) { 'apt-1.8.4' }
+        it { should be_true }
+      end
+
+      context 'when name does not conform to <cookbook_name>-<version>' do
+        let(:cookbook_name) { 'apt' }
+        it { should be_false }
+      end
     end
   end
 
@@ -99,10 +129,7 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
     let(:versions)       { subject.map(&:version) }
 
     context 'with versioned cookbooks' do
-      before(:each) { Chef::Config[:versioned_cookbooks] = true }
-      after(:each)  { Chef::Config[:versioned_cookbooks] = false }
-
-      let(:api_url) { 'cookbooks/?num_versions=all' }
+      with_versioned_cookbooks
 
       it 'should return all versions of cookbooks in <cookbook_name>-<version> format' do
         entity_names.should include('achild-2.0.0')
