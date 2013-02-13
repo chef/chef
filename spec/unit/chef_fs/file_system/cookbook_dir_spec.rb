@@ -544,4 +544,39 @@ describe Chef::ChefFS::FileSystem::CookbookDir do
       expect { nonexistent_child.read }.to raise_error(Chef::ChefFS::FileSystem::NotFoundError)
     end
   end
+
+  describe 'VALID_VERSIONED_COOKBOOK_NAME' do
+    subject { valid_versioned_cookbook_name.match(cookbook_name) }
+    let(:valid_versioned_cookbook_name) { Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME }
+
+    def self.should_accept(_cookbook_name)
+      context "with a cookbook name of '#{_cookbook_name}'" do
+        let(:cookbook_name) { _cookbook_name }
+        it 'should accept' do
+          should_not be_nil
+        end
+      end
+    end
+
+    def self.should_reject(_cookbook_name)
+      context "with a cookbook name of '#{_cookbook_name}'" do
+        let(:cookbook_name) { _cookbook_name }
+        it 'should reject' do
+          should be_nil
+        end
+      end
+    end
+
+    should_accept 'apt-1.8.4'
+    should_accept 'APT-1.8.4'
+    should_accept 'apt-100.83.4'
+    should_accept 'apt-2.0.0-1.8.4'
+    should_accept 'apt---1.8.4'
+
+    should_reject 'apt'
+    should_reject 'apt-1'
+    should_reject 'apt-1.2'
+    should_reject 'apt-1.2.x'
+
+  end
 end
