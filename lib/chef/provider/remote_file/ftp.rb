@@ -33,17 +33,7 @@ class Chef
 
         # Parse the uri into instance variables
         def initialize(uri, ftp_active_mode)
-          @path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
-          @directories = @path.split(%r{/}, -1)
-          @directories.each {|d|
-            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
-          }
-          unless @filename = @directories.pop
-            raise ArgumentError, "no filename: #{uri.inspect}"
-          end
-          if @filename.length == 0 || @filename.end_with?( "/" )
-            raise ArgumentError, "no filename: #{uri.inspect}"
-          end
+          @directories, @filename = parse_path(uri.path)
           @typecode = uri.typecode
           # Only support ascii and binary types
           if @typecode && /\A[ai]\z/ !~ @typecode
@@ -59,6 +49,21 @@ class Chef
             @user = 'anonymous'
             @pass = nil
           end
+        end
+
+        def parse_path(path)
+          path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+          directories = path.split(%r{/}, -1)
+          directories.each {|d|
+            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
+          }
+          unless filename = directories.pop
+            raise ArgumentError, "no filename: #{uri.inspect}"
+          end
+          if filename.length == 0 || filename.end_with?( "/" )
+            raise ArgumentError, "no filename: #{uri.inspect}"
+          end
+          return directories, filename
         end
 
         # Fetches using Net::FTP, returns a Tempfile with the content

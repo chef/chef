@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
+# Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -40,12 +40,12 @@ class Chef
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
           sources = @new_resource.source
-          raw_file = try_multiple_sources(sources)
+          raw_file, raw_file_source = try_multiple_sources(sources)
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
             description = [] 
-            description << "copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
+            description << "copy file downloaded from #{raw_file_source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
             converge_by(description) do
               backup_new_resource
@@ -94,6 +94,7 @@ class Chef
 
       # Given an array of source uris, iterate through them until one does not fail
       def try_multiple_sources(sources)
+        sources = sources.dup
         source = sources.shift
         begin
           uri = URI.parse(source)
@@ -117,8 +118,7 @@ class Chef
         if uri.userinfo
           uri.password = "********"
         end
-        @new_resource.source uri.to_s
-        raw_file
+        return raw_file, uri.to_s
       end
 
       # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
