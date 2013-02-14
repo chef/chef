@@ -7,13 +7,7 @@ describe 'knife download' do
   include KnifeSupport
 
   when_the_chef_server "has one of each thing" do
-    client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-    data_bag 'x', { 'y' => '{}' }
-    environment 'x', '{}'
-    node 'x', '{}'
-    role 'x', '{}'
-    user 'x', '{}'
+    one_of_each_resource_in_chef_server
 
     when_the_repository 'has only top-level directories' do
       directory 'clients'
@@ -36,69 +30,10 @@ Created /roles/x.json
 EOM
         knife('diff --name-status /').should_succeed ''
       end
-    end
+    end # when the repository has only top-level directories
 
-    when_the_repository 'has an identical copy of each thing' do
-      file 'clients/x.json', <<EOM
-{}
-EOM
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-      file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-      file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-      file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-      file 'nodes/x.json', <<EOM
-{}
-EOM
-      file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-      file 'users/x.json', <<EOM
-{}
-EOM
+    when_the_repository 'has an identical copy of each resource' do
+      one_of_each_resource_in_repository
 
       it 'knife download makes no changes' do
         knife('download /').should_succeed ''
@@ -109,9 +44,11 @@ EOM
         knife('download --purge /').should_succeed ''
         knife('diff --name-status /').should_succeed ''
       end
+    end # when the repository has an identical copy of each resource
 
-      context 'except the role file' do
-        file 'roles/x.json', <<EOM
+    when_the_repository 'has a different role file' do
+      one_of_each_resource_in_repository
+      file 'roles/x.json', <<EOM
 {
   "chef_type": "role",
   "default_attributes": {
@@ -128,14 +65,15 @@ EOM
   ]
 }
 EOM
-        it 'knife download changes the role' do
-          knife('download /').should_succeed "Updated /roles/x.json\n"
-          knife('diff --name-status /').should_succeed ''
-        end
+      it 'knife download changes the role' do
+        knife('download /').should_succeed "Updated /roles/x.json\n"
+        knife('diff --name-status /').should_succeed ''
       end
+    end # when the repository has a different role file
 
-      context 'except the role file is textually different, but not ACTUALLY different' do
-        file 'roles/x.json', <<EOM
+    when_the_repository 'has a semantically equivalent role file' do
+      one_of_each_resource_in_repository
+      file 'roles/x.json', <<EOM
 {
   "chef_type": "role",
   "default_attributes": {
@@ -152,17 +90,18 @@ EOM
   ]
 }
 EOM
-        it 'knife download / does not change anything' do
-          knife('download /').should_succeed ''
-          knife('diff --name-status /').should_succeed ''
-        end
+      it 'knife download / does not change anything' do
+        knife('download /').should_succeed ''
+        knife('diff --name-status /').should_succeed ''
       end
+    end
 
-      context 'as well as one extra copy of each thing' do
-        file 'clients/y.json', { 'name' => 'y' }
-        file 'cookbooks/x/blah.rb', ''
-        file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/z.json', <<EOM
+    when_the_repository 'has resources not present in the server' do
+      one_of_each_resource_in_repository
+      file 'clients/y.json', { 'name' => 'y' }
+      file 'cookbooks/x/blah.rb', ''
+      file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
+      file 'data_bags/x/z.json', <<EOM
 {
   "id": "z"
 }
@@ -229,8 +168,7 @@ Deleted extra entry /roles/y.json (purge is on)
 EOM
           knife('diff --name-status /').should_succeed ''
         end
-      end
-    end
+    end # when the repository has resources not present in the server
 
     when_the_repository 'is empty' do
       it 'knife download creates the extra files' do
@@ -256,8 +194,8 @@ EOM
           knife('download').should_fail "FATAL: Must specify at least one argument.  If you want to download everything in this directory, type \"knife download .\"\n", :stdout => /USAGE/
         end
       end
-    end
-  end
+    end # when the repository is empty
+  end # when the chef server has one of each resource
 
   # Test download of an item when the other end doesn't even have the container
   when_the_repository 'is empty' do
