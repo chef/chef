@@ -32,7 +32,7 @@ class Chef
         super
         @resource_name = :remote_file
         @action = "create"
-        @source = nil
+        @source = []
         @ftp_active_mode = false
         @provider = Chef::Provider::RemoteFile
       end
