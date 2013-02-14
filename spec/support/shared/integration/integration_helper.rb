@@ -27,6 +27,27 @@ require 'spec_helper'
 module IntegrationSupport
   include ChefZero::RSpec
 
+  def with_versioned_cookbooks(&block)
+    context 'with versioned cookbooks' do
+      before(:each) { Chef::Config.versioned_cookbooks = true }
+      after(:each)  { Chef::Config.versioned_cookbooks = false }
+      instance_eval(&block)
+    end
+  end
+
+  def without_versioned_cookbooks(&block)
+    context 'with versioned cookbooks' do
+      # Just make sure this goes back to default
+      before(:each) { Chef::Config.versioned_cookbooks = false }
+      instance_eval(&block)
+    end
+  end
+
+  def with_all_types_of_repository_layouts(&block)
+    without_versioned_cookbooks(&block)
+    with_versioned_cookbooks(&block)
+  end
+
   def when_the_repository(description, *args, &block)
     context "When the local repository #{description}", *args do
       before :each do
