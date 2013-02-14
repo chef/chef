@@ -6,13 +6,7 @@ describe 'knife diff' do
   include KnifeSupport
 
   when_the_chef_server "has one of each thing" do
-    client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-    data_bag 'x', { 'y' => '{}' }
-    environment 'x', '{}'
-    node 'x', '{}'
-    role 'x', '{}'
-    user 'x', '{}'
+    one_of_each_resource_in_chef_server
 
     when_the_repository 'has only top-level directories' do
       directory 'clients'
@@ -34,67 +28,8 @@ EOM
       end
     end
 
-    when_the_repository 'has an identical copy of each thing' do
-      file 'clients/x.json', <<EOM
-{}
-EOM
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-      file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-      file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-      file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-      file 'nodes/x.json', <<EOM
-{}
-EOM
-      file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-      file 'users/x.json', <<EOM
-{}
-EOM
+    when_the_repository 'has an identical copy of each resource' do
+      one_of_each_resource_in_repository
 
       it 'knife diff reports no differences' do
         knife('diff /').should_succeed ''
@@ -107,33 +42,36 @@ EOM
       it 'knife diff /environments/*.txt reports an error' do
         knife('diff /environments/*.txt').should_fail "ERROR: /environments/*.txt: No such file or directory on remote or local\n"
       end
+    end # when the repository has an identical copy of each resource
 
-      context 'except the role file' do
-        file 'roles/x.json', <<EOM
+    when_the_repository 'has a different role file' do
+      one_of_each_resource_in_repository
+      file 'roles/x.json', <<EOM
 {
   "foo": "bar"
 }
 EOM
-        it 'knife diff reports the role as different' do
-          knife('diff --name-status /').should_succeed <<EOM
+      it 'knife diff reports the role as different' do
+        knife('diff --name-status /').should_succeed <<EOM
 M\t/roles/x.json
 EOM
-        end
       end
+    end # when the repository has a different role file
 
-      context 'as well as one extra copy of each thing' do
-        file 'clients/y.json', {}
-        file 'cookbooks/x/blah.rb', ''
-        file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/z.json', {}
-        file 'data_bags/y/zz.json', {}
-        file 'environments/y.json', {}
-        file 'nodes/y.json', {}
-        file 'roles/y.json', {}
-        file 'users/y.json', {}
+    when_the_repository 'has resources not present in the server' do
+      one_of_each_resource_in_repository
+      file 'clients/y.json', {}
+      file 'cookbooks/x/blah.rb', ''
+      file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
+      file 'data_bags/x/z.json', {}
+      file 'data_bags/y/zz.json', {}
+      file 'environments/y.json', {}
+      file 'nodes/y.json', {}
+      file 'roles/y.json', {}
+      file 'users/y.json', {}
 
-        it 'knife diff reports the new files as added' do
-          knife('diff --name-status /').should_succeed <<EOM
+      it 'knife diff reports the new files as added' do
+        knife('diff --name-status /').should_succeed <<EOM
 A\t/cookbooks/x/blah.rb
 A\t/cookbooks/y
 A\t/data_bags/x/z.json
@@ -141,25 +79,24 @@ A\t/data_bags/y
 A\t/environments/y.json
 A\t/roles/y.json
 EOM
-        end
-
-        context 'when cwd is the data_bags directory' do
-          cwd 'data_bags'
-          it 'knife diff reports different data bags' do
-            knife('diff --name-status').should_succeed <<EOM
-A\tx/z.json
-A\ty
-EOM
-          end
-          it 'knife diff * reports different data bags' do
-            knife('diff --name-status *').should_succeed <<EOM
-A\tx/z.json
-A\ty
-EOM
-          end
-        end
       end
-    end
+
+      context 'when cwd is the data_bags directory' do
+        cwd 'data_bags'
+        it 'knife diff reports different data bags' do
+          knife('diff --name-status').should_succeed <<EOM
+A\tx/z.json
+A\ty
+EOM
+          end
+        it 'knife diff * reports different data bags' do
+          knife('diff --name-status *').should_succeed <<EOM
+A\tx/z.json
+A\ty
+EOM
+        end
+      end # when cwd is the data_bags directory
+    end # when the repository has resources not present in the server
 
     when_the_repository 'is empty' do
       it 'knife diff reports everything as deleted' do
