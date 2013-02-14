@@ -24,29 +24,56 @@ describe 'knife upload' do
       directory 'roles'
       directory 'users'
 
-      it 'knife upload does nothing' do
-        knife('upload /').should_succeed ''
-        knife('diff --name-status /').should_succeed <<EOM
+      without_versioned_cookbooks do
+        it 'knife upload does nothing' do
+          knife('upload /').should_succeed ''
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/cookbooks/x
 D\t/data_bags/x
 D\t/environments/_default.json
 D\t/environments/x.json
 D\t/roles/x.json
 EOM
-      end
+        end
 
-      it 'knife upload --purge deletes everything' do
-        knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+        it 'knife upload --purge deletes everything' do
+          knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /cookbooks/x (purge is on)
 Deleted extra entry /data_bags/x (purge is on)
 Deleted extra entry /environments/x.json (purge is on)
 Deleted extra entry /roles/x.json (purge is on)
 EOM
-        knife('diff --name-status /').should_succeed <<EOM
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
 EOM
+        end
       end
-    end
+
+      with_versioned_cookbooks do
+        it 'knife upload does nothing' do
+          knife('upload /').should_succeed ''
+          knife('diff --name-status /').should_succeed <<EOM
+D\t/cookbooks/x-1.0.0
+D\t/data_bags/x
+D\t/environments/_default.json
+D\t/environments/x.json
+D\t/roles/x.json
+EOM
+        end
+
+        it 'knife upload --purge deletes everything' do
+          knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+Deleted extra entry /cookbooks/x-1.0.0 (purge is on)
+Deleted extra entry /data_bags/x (purge is on)
+Deleted extra entry /environments/x.json (purge is on)
+Deleted extra entry /roles/x.json (purge is on)
+EOM
+          knife('diff --name-status /').should_succeed <<EOM
+D\t/environments/_default.json
+EOM
+        end
+      end
+    end # when the repository has only top-level directories
 
     when_the_repository 'has an identical copy of each thing' do
       file 'clients/x.json', <<EOM
@@ -228,42 +255,44 @@ Created /roles/y.json
 EOM
           knife('diff --name-status /').should_succeed ''
         end
-      end
-    end
+      end # when repository has an extra copy of each thing
+    end # when the repository has an identical copy of each thing
 
     when_the_repository 'is empty' do
-      it 'knife upload does nothing' do
-        knife('upload /').should_succeed ''
-        knife('diff --name-status /').should_succeed <<EOM
+      with_all_types_of_repository_layouts do
+        it 'knife upload does nothing' do
+          knife('upload /').should_succeed ''
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
 D\t/roles
 EOM
-      end
+        end
 
-      it 'knife upload --purge deletes nothing' do
-        knife('upload --purge /').should_fail <<EOM
+        it 'knife upload --purge deletes nothing' do
+          knife('upload --purge /').should_fail <<EOM
 ERROR: /cookbooks cannot be deleted.
 ERROR: /data_bags cannot be deleted.
 ERROR: /environments cannot be deleted.
 ERROR: /roles cannot be deleted.
 EOM
-        knife('diff --name-status /').should_succeed <<EOM
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
 D\t/roles
 EOM
-      end
-
-      context 'when current directory is top level' do
-        cwd '.'
-        it 'knife upload with no parameters reports an error' do
-          knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
         end
-      end
-    end
+
+        context 'when current directory is top level' do
+          cwd '.'
+          it 'knife upload with no parameters reports an error' do
+            knife('upload').should_fail "FATAL: Must specify at least one argument.  If you want to upload everything in this directory, type \"knife upload .\"\n", :stdout => /USAGE/
+          end
+        end # when current directory is top level
+      end # with all types of repository layouts
+    end # when the directory is empty
   end
 
   # Test upload of an item when the other end doesn't even have the container
