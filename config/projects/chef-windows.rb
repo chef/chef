@@ -20,6 +20,7 @@ name "chef-windows"
 install_path    "c:\\opscode\\chef"
 build_version   Omnibus::BuildVersion.full
 build_iteration 4
+package_name    "chef-client"
 
 dependencies ["ruby-windows",
               "ruby-windows-devkit",
