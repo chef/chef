@@ -254,7 +254,16 @@ default['chef_server']['postgresql']['md5_auth_cidr_addresses'] = [ ]
 default['chef_server']['postgresql']['trust_auth_cidr_addresses'] = [ '127.0.0.1/32', '::1/128' ]
 default['chef_server']['postgresql']['shmmax'] = kernel['machine'] =~ /x86_64/ ? 17179869184 : 4294967295
 default['chef_server']['postgresql']['shmall'] = kernel['machine'] =~ /x86_64/ ? 4194304 : 1048575
-default['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+
+# Resolves CHEF-3889
+if (node['memory']['total'].to_i / 4) > ((node['chef_server']['postgresql']['shmmax'].to_i / 1024) - 2097152)
+  # guard against setting shared_buffers > shmmax on hosts with installed RAM > 64GB
+  # use 2GB less than shmmax as the default for these large memory machines
+  default['chef_server']['postgresql']['shared_buffers'] = "14336MB"
+else
+  default['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+end
+
 default['chef_server']['postgresql']['work_mem'] = "8MB"
 default['chef_server']['postgresql']['effective_cache_size'] = "#{(node['memory']['total'].to_i / 2) / (1024)}MB"
 default['chef_server']['postgresql']['checkpoint_segments'] = 10
