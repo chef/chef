@@ -31,7 +31,7 @@ module IntegrationSupport
   # Common layouts
   def one_of_each_resource_in_chef_server
     client 'x', '{}'
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
+    cookbook 'x', '1.0.0', { 'metadata.rb' => ['name "x"', 'version "1.0.0"'].join("\n") }
     data_bag 'x', { 'y' => '{}' }
     environment 'x', '{}'
     node 'x', '{}'
@@ -43,10 +43,10 @@ module IntegrationSupport
     file 'clients/x.json', <<EOM
 {}
 EOM
-    if options[:versioned_cookbooks]
-      file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
+    if metadata[:versioned_cookbooks]
+      file 'cookbooks/x-1.0.0/metadata.rb', ['name "x"', 'version "1.0.0"'].join("\n")
     else
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', [ 'name "x"', 'version "1.0.0"'].join("\n")
     end
 
     file 'data_bags/x/y.json', <<EOM
@@ -105,6 +105,62 @@ EOM
     file 'users/x.json', <<EOM
 {}
 EOM
+  end
+
+  def extra_resources_in_repository
+      # Extra files not found in the standard resource set
+      file 'clients/y.json', { 'name' => 'y' }
+      if metadata[:versioned_cookbooks]
+        file 'cookbooks/x-1.0.0/blah.rb', ''
+        file 'cookbooks/x-2.0.0/metadata.rb', ['name "x"', 'version "2.0.0"'].join("\n")
+        file 'cookbooks/y-1.0.0/metadata.rb', ['name "y"', 'version "1.0.0"'].join("\n")
+      else
+        file 'cookbooks/x/blah.rb', ''
+        file 'cookbooks/y/metadata.rb', ['name "y"', 'version "1.0.0"'].join("\n")
+      end
+      file 'data_bags/x/z.json', <<EOM
+{
+  "id": "z"
+}
+EOM
+      file 'data_bags/y/zz.json', <<EOM
+{
+  "id": "zz"
+}
+EOM
+      file 'environments/y.json', <<EOM
+{
+  "chef_type": "environment",
+  "cookbook_versions": {
+  },
+  "default_attributes": {
+  },
+  "description": "",
+  "json_class": "Chef::Environment",
+  "name": "y",
+  "override_attributes": {
+  }
+}
+EOM
+      file 'nodes/y.json', { 'name' => 'y' }
+      file 'roles/y.json', <<EOM
+{
+  "chef_type": "role",
+  "default_attributes": {
+  },
+  "description": "",
+  "env_run_lists": {
+  },
+  "json_class": "Chef::Role",
+  "name": "y",
+  "override_attributes": {
+  },
+  "run_list": [
+
+  ]
+}
+EOM
+      file 'users/y.json', { 'name' => 'y' }
   end
 
 
@@ -211,18 +267,20 @@ EOM
 
   # Versioned cookbooks
 
-  def with_versioned_cookbooks(&block)
-    context 'with versioned cookbooks' do
-      before(:each) { Chef::Config.versioned_cookbooks = true }
-      after(:each)  { Chef::Config.versioned_cookbooks = false }
+  def with_versioned_cookbooks(_metadata = {}, &block)
+    _m = { :versioned_cookbooks => true }.merge(_metadata)
+    context 'with versioned cookbooks', _m do
+      before(:each) { Chef::Config[:versioned_cookbooks] = true }
+      after(:each)  { Chef::Config[:versioned_cookbooks] = false }
       instance_eval(&block)
     end
   end
 
-  def without_versioned_cookbooks(&block)
-    context 'with versioned cookbooks' do
+  def without_versioned_cookbooks(_metadata = {}, &block)
+    _m = { :versioned_cookbooks => false }.merge(_metadata)
+    context 'with versioned cookbooks', _m do
       # Just make sure this goes back to default
-      before(:each) { Chef::Config.versioned_cookbooks = false }
+      before(:each) { Chef::Config[:versioned_cookbooks] = false }
       instance_eval(&block)
     end
   end
