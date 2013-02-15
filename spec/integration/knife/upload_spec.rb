@@ -2,9 +2,15 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/upload'
 require 'chef/knife/diff'
 
+# TMP
+require 'chef/knife/cookbook_list'
+
 describe 'knife upload' do
   extend IntegrationSupport
   include KnifeSupport
+
+  # TODO: Put this in common
+  let(:versioned_cookbooks?) { self.class.metadata[:versioned_cookbooks] }
 
   when_the_chef_server "has one of each thing" do
     one_of_each_resource_in_chef_server
@@ -70,22 +76,27 @@ EOM
     end # when the repository has only top-level directories
 
     when_the_repository 'matches the resources on the server' do
-      one_of_each_resource_in_repository
+      with_all_types_of_repository_layouts do
+        one_of_each_resource_in_repository
 
-      it 'knife upload makes no changes' do
-        knife('upload /cookbooks/x').should_succeed ''
-        knife('diff --name-status /').should_succeed ''
-      end
+        let(:cookbook_name)        { versioned_cookbooks? ? 'x-1.0.0' : 'x' }
 
-      it 'knife upload --purge makes no changes' do
-        knife('upload --purge /').should_succeed ''
-        knife('diff --name-status /').should_succeed ''
-      end
+        it 'knife upload makes no changes' do
+          knife("upload /cookbooks/#{cookbook_name}").should_succeed ''
+          knife('diff --name-status /').should_succeed ''
+        end
+
+        it 'knife upload --purge makes no changes' do
+          knife('upload --purge /').should_succeed ''
+          knife('diff --name-status /').should_succeed ''
+        end
+      end # with all types of repository layouts
     end # when the repository matches the resources on the server
 
     when_the_repository 'has a different role file' do
-      one_of_each_resource_in_repository
-      file 'roles/x.json', <<EOM
+      with_all_types_of_repository_layouts do
+        one_of_each_resource_in_repository
+        file 'roles/x.json', <<EOM
 {
   "chef_type": "role",
   "default_attributes": {
@@ -102,15 +113,17 @@ EOM
   ]
 }
 EOM
-      it 'knife upload changes the role' do
-        knife('upload /').should_succeed "Updated /roles/x.json\n"
-        knife('diff --name-status /').should_succeed ''
-      end
+        it 'knife upload changes the role' do
+          knife('upload /').should_succeed "Updated /roles/x.json\n"
+          knife('diff --name-status /').should_succeed ''
+        end
+      end # with all types of repository layouts
     end # when the repository has a different role file
 
     when_the_repository 'has a semantically equivalent role file' do
-      one_of_each_resource_in_repository
-      file 'roles/x.json', <<EOM
+      with_all_types_of_repository_layouts do
+        one_of_each_resource_in_repository
+        file 'roles/x.json', <<EOM
 {
   "chef_type": "role",
   "default_attributes": {
@@ -127,63 +140,20 @@ EOM
   ]
 }
 EOM
-      it 'knife upload / does not change anything' do
-        knife('upload /').should_succeed ''
-        knife('diff --name-status /').should_succeed ''
-      end
+        it 'knife upload / does not change anything' do
+          knife('upload /').should_succeed ''
+          knife('diff --name-status /').should_succeed ''
+        end
+      end # with all types of repository layouts
     end # when the repository has a semantically equivalent role file
 
     when_the_repository 'has resources not present in the server' do
-      one_of_each_resource_in_repository
-      file 'clients/y.json', { 'name' => 'y' }
-      file 'cookbooks/x/blah.rb', ''
-      file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
-      file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
-      file 'data_bags/y/zz.json', <<EOM
-{
-  "id": "zz"
-}
-EOM
-      file 'environments/y.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "y",
-  "override_attributes": {
-  }
-}
-EOM
-      file 'nodes/y.json', { 'name' => 'y' }
-      file 'roles/y.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "y",
-  "override_attributes": {
-  },
-  "run_list": [
+      without_versioned_cookbooks do
+        one_of_each_resource_in_repository
+        extra_resources_in_repository
 
-  ]
-}
-EOM
-      file 'users/y.json', { 'name' => 'y' }
-
-      it 'knife upload adds the new files' do
-        knife('upload /').should_succeed <<EOM
+        it 'knife upload adds the new files' do
+          knife('upload /').should_succeed <<EOM
 Updated /cookbooks/x
 Created /cookbooks/y
 Created /data_bags/x/z.json
@@ -192,8 +162,30 @@ Created /data_bags/y/zz.json
 Created /environments/y.json
 Created /roles/y.json
 EOM
-        knife('diff --name-status /').should_succeed ''
-      end
+          knife('diff --name-status /').should_succeed ''
+        end
+      end # without versioned cookbooks
+
+      with_versioned_cookbooks do
+        one_of_each_resource_in_repository
+        extra_resources_in_repository
+
+        it 'knife upload adds the new files' do
+          knife('upload /').should_succeed <<EOM
+Updated /cookbooks/x-1.0.0
+Created /cookbooks/x-2.0.0
+Created /cookbooks/y-1.0.0
+Created /data_bags/x/z.json
+Created /data_bags/y
+Created /data_bags/y/zz.json
+Created /environments/y.json
+Created /roles/y.json
+EOM
+
+          knife('cookbook list --all')
+          knife('diff --name-status /').should_succeed ''
+        end
+      end # with versioned cookbooks
     end # when the repository has resources not present in the server
 
     when_the_repository 'is empty' do
@@ -366,9 +358,9 @@ EOM
   # upload of a file is designed not to work at present.  Make sure that is the
   # case.
   when_the_chef_server 'has a cookbook' do
-    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => '' }
+    cookbook 'x', '1.0.0', { 'metadata.rb' => ['name "x"', 'version "1.0.0"'].join("\n"), 'z.rb' => '' }
     when_the_repository 'has a modified, extra and missing file for the cookbook' do
-      file 'cookbooks/x/metadata.rb', 'version  "1.0.0"'
+      file 'cookbooks/x/metadata.rb', ['name "x"', 'version  "1.0.0"'].join("\n")
       file 'cookbooks/x/y.rb', 'hi'
       it 'knife upload of any individual file fails' do
         knife('upload /cookbooks/x/metadata.rb').should_fail "ERROR: /cookbooks/x/metadata.rb cannot be updated.\n"
@@ -392,7 +384,7 @@ EOM
       end
     end
     when_the_repository 'has a missing file for the cookbook' do
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', ['name "x"', 'version "1.0.0"'].join("\n")
       it 'knife upload of the cookbook succeeds' do
         knife('upload /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x
@@ -401,7 +393,7 @@ EOM
       end
     end
     when_the_repository 'has an extra file for the cookbook' do
-      file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+      file 'cookbooks/x/metadata.rb', ['name "x"', 'version "1.0.0"'].join("\n")
       file 'cookbooks/x/z.rb', ''
       file 'cookbooks/x/blah.rb', ''
       it 'knife upload of the cookbook succeeds' do
@@ -414,12 +406,12 @@ EOM
   end
 
   when_the_repository 'has a cookbook' do
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+    file 'cookbooks/x/metadata.rb', ['name "x"', 'version "1.0.0"'].join("\n")
     file 'cookbooks/x/onlyin1.0.0.rb', 'old_text'
 
     when_the_chef_server 'has a later version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+      cookbook 'x', '1.0.0', { 'metadata.rb' => ['name "x"', 'version "1.0.0"'].join("\n"), 'onlyin1.0.0.rb' => '' }
+      cookbook 'x', '1.0.1', { 'metadata.rb' => ['name "x"', 'version "1.0.1"'].join("\n"), 'onlyin1.0.1.rb' => 'hi' }
 
       it 'knife upload /cookbooks/x uploads the local version' do
         knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -439,8 +431,8 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      cookbook 'x', '1.0.0', { 'metadata.rb' => ['name "x"', 'version "1.0.0"'].join("\n"), 'onlyin1.0.0.rb' => ''}
+      cookbook 'x', '0.9.9', { 'metadata.rb' => ['name "x"', 'version "0.9.9"'].join("\n"), 'onlyin0.9.9.rb' => 'hi' }
       it 'knife upload /cookbooks/x uploads the local version' do
         knife('upload --purge /cookbooks/x').should_succeed <<EOM
 Updated /cookbooks/x
@@ -450,7 +442,7 @@ EOM
     end
 
     when_the_chef_server 'has a later version for the cookbook, and no current version' do
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => 'hi' }
+      cookbook 'x', '1.0.1', { 'metadata.rb' => ['name "x"', 'version "1.0.1"'].join("\n"), 'onlyin1.0.1.rb' => 'hi' }
 
       it 'knife upload /cookbooks/x uploads the local version' do
         knife('diff --name-status /cookbooks').should_succeed <<EOM
@@ -470,7 +462,7 @@ EOM
     end
 
     when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => 'hi' }
+      cookbook 'x', '0.9.9', { 'metadata.rb' => ['name "x"', 'version "0.9.9"'].join("\n"), 'onlyin0.9.9.rb' => 'hi' }
 
       it 'knife upload /cookbooks/x uploads the new version' do
         knife('upload --purge /cookbooks/x').should_succeed <<EOM
