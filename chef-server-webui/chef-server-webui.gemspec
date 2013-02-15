@@ -20,6 +20,9 @@ Gem::Specification.new do |s|
   s.add_dependency "merb-haml", "~> 1.1.0"
   s.add_dependency "merb-param-protection", "~> 1.1.0"
 
+  # CHEF-3888: We should be safe, also we don't actually directly use rack
+  s.add_dependency "rack", ">= 1.4.5"
+
   %w{thin haml ruby-openid coderay}.each { |g| s.add_dependency g}
 
   s.bindir       = "bin"
