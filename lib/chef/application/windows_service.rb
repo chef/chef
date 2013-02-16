@@ -56,58 +56,54 @@ class Chef
         :description  => "Set the number of seconds to wait between chef-client runs",
         :proc         => lambda { |s| s.to_i }
 
-      option :override_runlist,
-        :short        => "-o RunlistItem,RunlistItem...",
-        :long         => "--override-runlist RunlistItem,RunlistItem...",
-        :description  => "Replace current run list with specified items",
-        :proc         => lambda{|items|
-          items = items.split(',')
-          items.compact.map{|item|
-            Chef::RunList::RunListItem.new(item)
-          }
-        }
-
       def service_init
+        @service_action_mutex = Mutex.new
+        @service_signal = ConditionVariable.new
+
         reconfigure
         Chef::Log.info("Chef Client Service initialized")
       end
 
       def service_main(*startup_parameters)
+        timeout = 0
 
-        while running?
-          if state == RUNNING
+        while running? do
+          # Grab the service_action_mutex to make a chef-client run
+          @service_action_mutex.synchronize do
             begin
+              Chef::Log.info("Next chef-client run will happen in #{timeout} seconds")
+              @service_signal.wait(@service_action_mutex, timeout)
+
+              # Continue only if service is RUNNING
+              next if state != RUNNING
+
               # Reconfigure each time through to pick up any changes in the client file
               Chef::Log.info("Reconfiguring with startup parameters")
               reconfigure(startup_parameters)
+              timeout = Chef::Config[:interval]
+
+              # Honor splay sleep config
 
               splay = rand Chef::Config[:splay]
               Chef::Log.debug("Splay sleep #{splay} seconds")
               sleep splay
 
-              # If we've stopped, then bail out now, instead of going on to run Chef
+              # run chef-client only if service is in RUNNING state
               next if state != RUNNING
 
               run_chef_client
-
-              Chef::Log.debug("Sleeping for #{Chef::Config[:interval]} seconds")
-              client_sleep Chef::Config[:interval]
-            rescue Chef::Application::Wakeup => e
-              Chef::Log.debug("Received Wakeup signal.  Starting run.")
-              next
             rescue SystemExit => e
-              raise
+              # Do not raise any of the errors here in order to
+              # prevent service crash
+              Chef::Log.error("#{e.class}: #{e}")
             rescue Exception => e
               Chef::Log.error("#{e.class}: #{e}")
               Chef::Application.debug_stacktrace(e)
-              Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
-              client_sleep Chef::Config[:interval]
-              retry
             end
-          else # PAUSED or IDLE
-            sleep 5
           end
         end
+
+        Chef::Log.debug("Exiting service...")
       end
 
       ################################################################################
@@ -115,19 +111,45 @@ class Chef
       ################################################################################
 
       def service_stop
-        Chef::Log.info("SERVICE_CONTROL_STOP received, stopping")
+        Chef::Log.info("STOP request from operating system.")
+        if @service_action_mutex.try_lock
+          @service_signal.signal
+          @service_action_mutex.unlock
+          Chef::Log.info("Service is stopping....")
+        else
+          Chef::Log.info("Currently a chef-client run is happening.")
+          Chef::Log.info("Service will stop once it's completed.")
+        end
       end
 
       def service_pause
-        Chef::Log.info("SERVICE_CONTROL_PAUSE received, pausing")
+        Chef::Log.info("PAUSE request from operating system.")
+
+        # We don't need to wake up the service_main if it's waiting
+        # since this is a PAUSE signal.
+
+        if @service_action_mutex.locked?
+          Chef::Log.info("Currently a chef-client run is happening.")
+          Chef::Log.info("Service will pause once it's completed.")
+        else
+          Chef::Log.info("Service is pausing....")
+        end
       end
 
       def service_resume
-        Chef::Log.info("SERVICE_CONTROL_CONTINUE received, resuming")
+        # We don't need to wake up the service_main if it's waiting
+        # since this is a RESUME signal.
+
+        Chef::Log.info("RESUME signal received from the OS.")
+        Chef::Log.info("Service is resuming....")
       end
 
       def service_shutdown
-        Chef::Log.info("SERVICE_CONTROL_SHUTDOWN received, shutting down")
+        Chef::Log.info("SHUTDOWN signal received from the OS.")
+
+        # Treat shutdown similar to stop.
+
+        service_stop
       end
 
       ################################################################################
@@ -205,20 +227,6 @@ class Chef
         end
       end
 
-      # Since we need to be able to respond to signals between Chef runs, we need to periodically
-      # wake up to see if we're still in the running state.  The method returns when it has slept
-      # for +sec+ seconds (but at least +10+ seconds), or when the service
-      # is no client_sleep in the +RUNNING+ state, whichever comes first.
-      def client_sleep(sec)
-        chunk_length = 10
-        chunks = sec / chunk_length
-        chunks = 1 if chunks < 1
-        (1..chunks).each do
-          return unless state == RUNNING
-          sleep chunk_length
-        end
-      end
-      
     end
   end
 end
