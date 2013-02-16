@@ -91,6 +91,7 @@ class Chef
               # run chef-client only if service is in RUNNING state
               next if state != RUNNING
 
+              Chef::Log.info("Chef-Client service is starting a chef-client run...")
               run_chef_client
             rescue SystemExit => e
               # Do not raise any of the errors here in order to
