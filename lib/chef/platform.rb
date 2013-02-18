@@ -350,10 +350,14 @@ class Chef
             provider_map.merge!(platforms[name_sym][:default])
           end
           platform_versions.each do |platform_version, provider|
-            version_constraint = Chef::VersionConstraint.new(platform_version)
-            if version_constraint.include?(version)
-              Chef::Log.debug("Platform #{name.to_s} version #{version} found")
-              provider_map.merge!(provider)
+            begin
+              version_constraint = Chef::VersionConstraint.new(platform_version)
+              if version_constraint.include?(version)
+                Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+                provider_map.merge!(provider)
+              end
+            rescue Chef::Exceptions::InvalidCookbookVersion
+              Chef::Log.debug("Chef::Version::Comparable does not know how to parse the platform version")
             end
           end
         else

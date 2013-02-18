@@ -144,6 +144,10 @@ describe Chef::Platform do
     Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
   end
 
+  it "should not throw an exception when the platform version has an unknown format" do
+    Chef::Platform.find_provider(:darwin, "bad-version", :file).should eql("old school")
+  end
+
   it "should prefer an explicit provider" do
     kitty = Chef::Resource::Cat.new("loulou")    
     kitty.stub!(:provider).and_return(Chef::Provider::File)
