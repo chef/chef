@@ -51,21 +51,6 @@ class Chef
           end
         end
 
-        def parse_path(path)
-          path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
-          directories = path.split(%r{/}, -1)
-          directories.each {|d|
-            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
-          }
-          unless filename = directories.pop
-            raise ArgumentError, "no filename: #{path.inspect}"
-          end
-          if filename.length == 0 || filename.end_with?( "/" )
-            raise ArgumentError, "no filename: #{path.inspect}"
-          end
-          return directories, filename
-        end
-
         # Fetches using Net::FTP, returns a Tempfile with the content
         def fetch()
           tempfile = Tempfile.new(@filename)
@@ -85,6 +70,23 @@ class Chef
           ftp.close
 
           tempfile
+        end
+
+				private
+
+        def parse_path(path)
+          path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+          directories = path.split(%r{/}, -1)
+          directories.each {|d|
+            d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
+          }
+          unless filename = directories.pop
+            raise ArgumentError, "no filename: #{path.inspect}"
+          end
+          if filename.length == 0 || filename.end_with?( "/" )
+            raise ArgumentError, "no filename: #{path.inspect}"
+          end
+          return directories, filename
         end
 
       end
