@@ -36,22 +36,22 @@ describe Chef::Provider::RemoteFile::FTP, "fetch" do
   describe "when parsing the uri" do
     it "throws an argument exception when no path is given" do
       @uri.path = ""
-      lambda { Chef::Provider::RemoteFile::FTP.fetch(@uri, false).close! }.should raise_error(ArgumentError)
+      lambda { Chef::Provider::RemoteFile::FTP.new(@uri, false) }.should raise_error(ArgumentError)
     end
 
     it "throws an argument exception when only a / is given" do
       @uri.path = "/"
-      lambda { Chef::Provider::RemoteFile::FTP.fetch(@uri, false).close! }.should raise_error(ArgumentError)
+      lambda { Chef::Provider::RemoteFile::FTP.new(@uri, false) }.should raise_error(ArgumentError)
     end
 
     it "throws an argument exception when no filename is given" do
       @uri.path = "/the/whole/path/"
-      lambda { Chef::Provider::RemoteFile::FTP.fetch(@uri, false).close! }.should raise_error(ArgumentError)
+      lambda { Chef::Provider::RemoteFile::FTP.new(@uri, false) }.should raise_error(ArgumentError)
     end
 
     it "throws an argument exception when the typecode is invalid" do
       @uri.typecode = "d"
-      lambda { Chef::Provider::RemoteFile::FTP.fetch(@uri, false).close! }.should raise_error(ArgumentError)
+      lambda { Chef::Provider::RemoteFile::FTP.new(@uri, false) }.should raise_error(ArgumentError)
     end
   end
 
