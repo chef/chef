@@ -42,7 +42,7 @@ describe Chef::Resource::RemoteFile do
 
   describe "source" do
     it "does not have a default value for 'source'" do
-      @resource.source.should be_nil
+      @resource.source.should eql([])
     end
 
     it "should accept a URI for the remote file source" do
