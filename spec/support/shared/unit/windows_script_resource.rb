@@ -21,7 +21,7 @@ require 'spec_helper'
 require 'support/shared/unit/execute_resource'
 require 'support/shared/unit/script_resource'
 
-shared_examples_for "a Windows system script resource" do
+shared_examples_for "a Windows script resource" do
   before(:each) do
     node = Chef::Node.new
 
@@ -34,15 +34,11 @@ shared_examples_for "a Windows system script resource" do
 
   end  
 
-  it "should be a kind of Chef::Resource::WindowsSystemScript" do
+  it "should be a kind of Chef::Resource::WindowsScript" do
     @resource.should be_a_kind_of(Chef::Resource)
-    @resource.should be_a_kind_of(Chef::Resource::WindowsSystemScript)
+    @resource.should be_a_kind_of(Chef::Resource::WindowsScript)
   end
 
-  it "should have an interpreter with a file name of cmd.exe" do
-    @resource.interpreter.split('\\').pop.casecmp(interpreter_file_name).should == 0
-  end  
-  
   context "script" do
     let(:script_resource) { resource_instance }    
     it_should_behave_like "a script resource"  

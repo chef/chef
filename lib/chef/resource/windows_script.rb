@@ -21,9 +21,20 @@ require 'chef/mixin/windows_architecture_helper'
 
 class Chef
   class Resource
-    class WindowsSystemScript < Chef::Resource::Script
+    class WindowsScript < Chef::Resource::Script
+
+      protected
+
+      def initialize(name, run_context=nil, resource_name, interpreter_command)
+        super(name, run_context)
+        @interpreter = interpreter_command        
+        @resource_name = resource_name
+      end
+
       include Chef::Mixin::WindowsArchitectureHelper
 
+      public
+      
       def architecture(arg=nil)
         assert_architecture_compatible!(arg) if ! arg.nil?
         result = set_or_return(
@@ -32,33 +43,18 @@ class Chef
           :kind_of => Symbol
         )
       end
-
-      def interpreter
-        target_architecture = architecture.nil? ? node_windows_architecture(node) : architecture
-        path_prefix = (target_architecture == :x86_64) ? INTERPRETER_64_BIT_PATH_PREFIX : INTERPRETER_32_BIT_PATH_PREFIX
-        interpreter_path = "#{path_prefix}\\#{@interpreter_relative_path}"
-      end
       
-      INTERPRETER_64_BIT_PATH_PREFIX = "#{ENV['systemroot']}\\sysnative"
-      INTERPRETER_32_BIT_PATH_PREFIX = "#{ENV['systemroot']}\\system32"
-
-      def initialize(name, run_context=nil, resource_name, interpreter_relative_path)
-        super(name, run_context)
-        @resource_name = resource_name
-        @interpreter_relative_path = interpreter_relative_path
-        init_arch = node_windows_architecture(node)
-      end
-
       protected
+
+      def assert_architecture_compatible!(desired_architecture)
+        if ! node_supports_windows_architecture?(node, desired_architecture)
+          raise Chef::Exceptions::Win32ArchitectureIncorrect,
+          "cannot execute script with requested architecture '#{desired_architecture.to_s}' on a system with architecture '#{node_windows_architecture(node)}'"
+        end
+      end
 
       def node
         run_context && run_context.node
-      end
-      
-      def assert_architecture_compatible!(desired_architecture)
-        if ! node_supports_windows_architecture?(node, desired_architecture)
-          raise Chef::Exceptions::Win32ArchitectureIncorrect, "cannot execute script with requested architecture '#{desired_architecture.to_s}' on a system with architecture '#{node_windows_architecture(node)}'"
-        end
       end
       
     end
