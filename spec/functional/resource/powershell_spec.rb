@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'functional/resource/batch_spec.rb'
 
 describe Chef::Resource::WindowsScript::Powershell, :windows_only do
   let(:script_content) { "whoami" }
@@ -27,5 +28,5 @@ describe Chef::Resource::WindowsScript::Powershell, :windows_only do
     r
   end
 
-  it_behaves_like "a functional Windows script resource"
+  it_behaves_like "a functional batch script resource"
 end
