@@ -29,7 +29,7 @@ class Chef
 
         set_owner_and_group
 
-        @new_resource.command("\"#{@new_resource.interpreter}\" #{@new_resource.flags} \"#{script_file.path}\"")
+        @new_resource.command("\"#{interpreter}\" #{flags} \"#{script_file.path}\"")
         super
         converge_by(nil) do
           # ensure script is unlinked at end of converge!
@@ -52,6 +52,13 @@ class Chef
         @script_file && @script_file.close!
       end
 
+      def interpreter
+        @new_resource.interpreter
+      end
+
+      def flags
+        @new_resource.flags
+      end
     end
   end
 end
