@@ -17,22 +17,15 @@
 #
 
 require 'spec_helper'
-describe Chef::Provider::Powershell, "action_run" do
 
-  before(:each) do
-    @node = Chef::Node.new
+describe Chef::Resource::WindowsScript::Powershell, :windows_only do
+  let(:script_content) { "whoami" }
 
-    @node.default["kernel"] = Hash.new
-    @node.default["kernel"][:machine] = :x86_64.to_s
-    
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Powershell.new('run some powershell code', @run_context)
-
-    @provider = Chef::Provider::Powershell.new(@new_resource, @run_context)
+  let!(:resource) do
+    r = Chef::Resource::WindowsScript::Powershell.new("Powershell resource functional test", run_context)
+    r.code(script_content)
+    r
   end
 
-  it "should set the -command flag as the last flag" do
-    @provider.flags.split(' ').pop.should == "-Command"
-  end
-
+  it_behaves_like "a functional Windows script resource"
 end

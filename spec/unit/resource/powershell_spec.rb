@@ -36,13 +36,13 @@ describe Chef::Resource::Powershell do
     @resource.should be_a_kind_of(Chef::Resource::Powershell)
   end
   
-  context "windowssystemscript" do
+  context "windowsscript" do
     let(:resource_instance) { @resource }
     let(:resource_instance_name ) { @resource.command }
     let(:resource_name) { :powershell }
     let(:interpreter_file_name) { 'powershell.exe' }
 
-    it_should_behave_like "a Windows system script resource"  
+    it_should_behave_like "a Windows script resource"  
   end
 
 end

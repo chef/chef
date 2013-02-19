@@ -16,12 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/resource/windows_system_script'
-require 'chef/mixin/windows_architecture_helper'
+require 'chef/resource/windows_script'
 
 class Chef
   class Resource
-    class Batch < Chef::Resource::WindowsSystemScript
+    class Batch < Chef::Resource::WindowsScript
       
       def initialize(name, run_context=nil)
         super(name, run_context, :batch, "cmd.exe")

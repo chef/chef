@@ -16,15 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/resource/script'
-require 'chef/mixin/windows_architecture_helper'
+require 'chef/resource/windows_script'
 
 class Chef
   class Resource
-    class Powershell < Chef::Resource::WindowsSystemScript
+    class Powershell < Chef::Resource::WindowsScript
 
       def initialize(name, run_context=nil)
-        super(name, run_context, :powershell, "WindowsPowerShell\\v1.0\\powershell.exe")
+        super(name, run_context, :powershell, "powershell.exe")
       end
       
     end

@@ -36,13 +36,13 @@ describe Chef::Resource::Batch do
     @resource.should be_a_kind_of(Chef::Resource::Batch)
   end
   
-  context "windowssystemscript" do
+  context "windows script" do
     let(:resource_instance) { @resource }
     let(:resource_instance_name ) { @resource.command }
     let(:resource_name) { :batch }
     let(:interpreter_file_name) { 'cmd.exe' }
 
-    it_should_behave_like "a Windows system script resource"  
+    it_should_behave_like "a Windows script resource"  
   end
   
 end
