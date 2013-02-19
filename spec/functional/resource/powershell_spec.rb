@@ -28,5 +28,13 @@ describe Chef::Resource::WindowsScript::Powershell, :windows_only do
     r
   end
 
-  it_behaves_like "a functional batch script resource"
+  include_context Chef::Resource::WindowsScript    
+  
+  context "when the run action is invoked on Windows" do
+    it "executes the script code" do
+      resource.code(script_content + " > #{script_output_path}")
+      resource.returns(0)
+      resource.run_action(:run)
+    end
+  end  
 end

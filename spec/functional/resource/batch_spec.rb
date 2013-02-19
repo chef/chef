@@ -59,16 +59,12 @@ describe Chef::Resource::WindowsScript::Batch, :windows_only do
     Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", run_context)
   end
 
-  shared_examples_for "a functional batch script resource", :windows_only do
+  context "when the run action is invoked on Windows" do
     include_context Chef::Resource::WindowsScript    
-    context "when a Windows script resource run action is invoked " do     
-      it "executes the script code" do
-        resource.code(script_content + " > #{script_output_path}")
-        resource.returns(0)
-        resource.run_action(:run)
-      end
+    it "executes the script code" do
+      resource.code(script_content + " > #{script_output_path}")
+      resource.returns(0)
+      resource.run_action(:run)
     end
   end  
-
-  it_behaves_like "a functional batch script resource"
 end
