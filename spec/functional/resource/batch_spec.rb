@@ -1,15 +1,14 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Tyler Cloke (<tyler@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Adam Edwards (<adamed@opscode.com>)
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
+# 
 #     http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +18,12 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::Execute do
-  let(:resource_instance_name) { "some command" }
-  let(:execute_resource) { Chef::Resource::Execute.new(resource_instance_name) }
-  it_behaves_like "an execute resource"
+describe Chef::Resource::WindowsScript::Batch, :windows_only do
+  let(:script_content) { "whoami" }
+
+  let!(:resource) do
+    Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", run_context)
+  end
+
+  it_behaves_like "a functional Windows script resource"
 end
