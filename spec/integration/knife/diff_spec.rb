@@ -17,52 +17,67 @@ describe 'knife diff' do
       directory 'roles'
       directory 'users'
 
-      it 'knife diff reports everything as deleted' do
-        knife('diff --name-status /').should_succeed <<EOM
+      without_versioned_cookbooks do
+        it 'knife diff reports everything as deleted' do
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/cookbooks/x
 D\t/data_bags/x
 D\t/environments/_default.json
 D\t/environments/x.json
 D\t/roles/x.json
 EOM
-      end
+        end
+      end # without versioned cookbooks
+
+      with_versioned_cookbooks do
+        it 'knife diff reports everything as deleted' do
+          knife('diff --name-status /').should_succeed <<EOM
+D\t/cookbooks/x-1.0.0
+D\t/data_bags/x
+D\t/environments/_default.json
+D\t/environments/x.json
+D\t/roles/x.json
+EOM
+        end
+      end # with versioned cookbooks
     end
 
     when_the_repository 'has an identical copy of each resource' do
-      one_of_each_resource_in_repository
+      with_all_types_of_repository_layouts do
+        one_of_each_resource_in_repository
 
-      it 'knife diff reports no differences' do
-        knife('diff /').should_succeed ''
-      end
+        it 'knife diff reports no differences' do
+          knife('diff /').should_succeed ''
+        end
 
-      it 'knife diff /environments/nonexistent.json reports an error' do
-        knife('diff /environments/nonexistent.json').should_fail "ERROR: /environments/nonexistent.json: No such file or directory on remote or local\n"
-      end
+        it 'knife diff /environments/nonexistent.json reports an error' do
+          knife('diff /environments/nonexistent.json').should_fail "ERROR: /environments/nonexistent.json: No such file or directory on remote or local\n"
+        end
 
-      it 'knife diff /environments/*.txt reports an error' do
-        knife('diff /environments/*.txt').should_fail "ERROR: /environments/*.txt: No such file or directory on remote or local\n"
-      end
+        it 'knife diff /environments/*.txt reports an error' do
+          knife('diff /environments/*.txt').should_fail "ERROR: /environments/*.txt: No such file or directory on remote or local\n"
+        end
+      end # with all types of repository layouts
     end # when the repository has an identical copy of each resource
 
     when_the_repository 'has a different role file' do
-      one_of_each_resource_in_repository
-      file 'roles/x.json', <<EOM
+      with_all_types_of_repository_layouts do
+        one_of_each_resource_in_repository
+        file 'roles/x.json', <<EOM
 {
   "foo": "bar"
 }
 EOM
-      it 'knife diff reports the role as different' do
-        knife('diff --name-status /').should_succeed <<EOM
+        it 'knife diff reports the role as different' do
+          knife('diff --name-status /').should_succeed <<EOM
 M\t/roles/x.json
 EOM
-      end
+        end
+      end # with all types of repository layouts
     end # when the repository has a different role file
 
     when_the_repository 'has resources not present in the server' do
-      one_of_each_resource_in_repository
       file 'clients/y.json', {}
-      file 'cookbooks/x/blah.rb', ''
-      file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
       file 'data_bags/x/z.json', {}
       file 'data_bags/y/zz.json', {}
       file 'environments/y.json', {}
@@ -70,8 +85,13 @@ EOM
       file 'roles/y.json', {}
       file 'users/y.json', {}
 
-      it 'knife diff reports the new files as added' do
-        knife('diff --name-status /').should_succeed <<EOM
+      without_versioned_cookbooks do
+        one_of_each_resource_in_repository
+        file 'cookbooks/x/blah.rb', ''
+        file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
+
+        it 'knife diff reports the new files as added' do
+          knife('diff --name-status /').should_succeed <<EOM
 A\t/cookbooks/x/blah.rb
 A\t/cookbooks/y
 A\t/data_bags/x/z.json
@@ -79,23 +99,57 @@ A\t/data_bags/y
 A\t/environments/y.json
 A\t/roles/y.json
 EOM
-      end
+        end
 
-      context 'when cwd is the data_bags directory' do
-        cwd 'data_bags'
-        it 'knife diff reports different data bags' do
-          knife('diff --name-status').should_succeed <<EOM
+        context 'when cwd is the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife diff reports different data bags' do
+            knife('diff --name-status').should_succeed <<EOM
+A\tx/z.json
+A\ty
+EOM
+            end
+          it 'knife diff * reports different data bags' do
+            knife('diff --name-status *').should_succeed <<EOM
 A\tx/z.json
 A\ty
 EOM
           end
-        it 'knife diff * reports different data bags' do
-          knife('diff --name-status *').should_succeed <<EOM
+        end # when cwd is the data_bags directory
+      end # without versioned cookbooks
+
+      with_versioned_cookbooks do
+        one_of_each_resource_in_repository
+        file 'cookbooks/x-1.0.0/blah.rb', ''
+        file 'cookbooks/y-1.0.0/metadata.rb', ['name "y"', 'version "1.0.0"'].join("\n")
+
+        it 'knife diff reports the new files as added' do
+          knife('diff --name-status /').should_succeed <<EOM
+A\t/cookbooks/x-1.0.0/blah.rb
+A\t/cookbooks/y-1.0.0
+A\t/data_bags/x/z.json
+A\t/data_bags/y
+A\t/environments/y.json
+A\t/roles/y.json
+EOM
+        end
+
+        context 'when cwd is the data_bags directory' do
+          cwd 'data_bags'
+          it 'knife diff reports different data bags' do
+            knife('diff --name-status').should_succeed <<EOM
 A\tx/z.json
 A\ty
 EOM
-        end
-      end # when cwd is the data_bags directory
+            end
+          it 'knife diff * reports different data bags' do
+            knife('diff --name-status *').should_succeed <<EOM
+A\tx/z.json
+A\ty
+EOM
+          end
+        end # when cwd is the data_bags directory
+      end # with versioned cookbooks
     end # when the repository has resources not present in the server
 
     when_the_repository 'is empty' do
@@ -111,60 +165,128 @@ EOM
   end
 
   when_the_repository 'has a cookbook' do
-    file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/x/onlyin1.0.0.rb', ''
+    # TODO: make this DSL lazy-eval so we don't have to do stuff like this
+    def self.repository_has_a_cookbook
+      if metadata[:versioned_cookbooks]
+        file 'cookbooks/x-1.0.0/metadata.rb', ['name "x"', 'version "1.0.0"']
+        file 'cookbooks/x-1.0.0/onlyin1.0.0.rb', ''
+      else
+        file 'cookbooks/x/metadata.rb', ['name "x"', 'version "1.0.0"']
+        file 'cookbooks/x/onlyin1.0.0.rb', ''
+      end
+    end
 
     when_the_chef_server 'has a later version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => ''}
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+      cookbook 'x', '1.0.0', { 'metadata.rb' => ['name "x"', 'version "1.0.0"'].join("\n"), 'onlyin1.0.0.rb' => ''}
+      cookbook 'x', '1.0.1', { 'metadata.rb' => ['name "x"', 'version "1.0.1"'].join("\n"), 'onlyin1.0.1.rb' => '' }
 
-      it 'knife diff /cookbooks/x shows differences' do
-        knife('diff --name-status /cookbooks/x').should_succeed <<EOM
+      without_versioned_cookbooks do
+        repository_has_a_cookbook
+
+        it 'knife diff /cookbooks/x shows differences' do
+          knife('diff --name-status /cookbooks/x').should_succeed <<EOM
 M\t/cookbooks/x/metadata.rb
 D\t/cookbooks/x/onlyin1.0.1.rb
 A\t/cookbooks/x/onlyin1.0.0.rb
 EOM
-      end
+        end
 
-      it 'knife diff --diff-filter=MAT does not show deleted files' do
-        knife('diff --diff-filter=MAT --name-status /cookbooks/x').should_succeed <<EOM
+        it 'knife diff --diff-filter=MAT does not show deleted files' do
+          knife('diff --diff-filter=MAT --name-status /cookbooks/x').should_succeed <<EOM
 M\t/cookbooks/x/metadata.rb
 A\t/cookbooks/x/onlyin1.0.0.rb
 EOM
-      end
-    end
+        end
+      end # without versioned cookbooks
+
+      with_versioned_cookbooks do
+        repository_has_a_cookbook
+
+        it 'knife diff /cookbooks shows differences' do
+          knife('diff --name-status /cookbooks').should_succeed <<EOM
+D\t/cookbooks/x-1.0.1
+EOM
+        end
+
+        it 'knife diff --diff-filter=MAT does not show deleted files' do
+          # No difference
+          knife('diff --diff-filter=MAT --name-status /cookbooks').should_succeed ''
+        end
+      end # withversioned cookbooks
+    end # when the chef server has a later version for the cookbook
 
     when_the_chef_server 'has an earlier version for the cookbook' do
-      cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'onlyin1.0.0.rb' => '' }
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
-      it 'knife diff /cookbooks/x shows no differences' do
-        knife('diff --name-status /cookbooks/x').should_succeed ''
+      cookbook 'x', '1.0.0', { 'metadata.rb' => ['name "x"', 'version "1.0.0"'].join("\n"), 'onlyin1.0.0.rb' => '' }
+      cookbook 'x', '0.9.9', { 'metadata.rb' => ['name "x"', 'version "0.9.9"'].join("\n"), 'onlyin0.9.9.rb' => '' }
+
+      without_versioned_cookbooks do
+        repository_has_a_cookbook
+        it 'knife diff /cookbooks/x shows no differences' do
+          knife('diff --name-status /cookbooks/x').should_succeed ''
+        end
+      end
+
+      with_versioned_cookbooks do
+        repository_has_a_cookbook
+        it 'knife diff /cookbooks shows no differences' do
+          knife('diff --name-status /cookbooks').should_succeed <<EOM
+D\t/cookbooks/x-0.9.9
+EOM
+        end
       end
     end
 
     when_the_chef_server 'has a later version for the cookbook, and no current version' do
-      cookbook 'x', '1.0.1', { 'metadata.rb' => 'version "1.0.1"', 'onlyin1.0.1.rb' => '' }
+      cookbook 'x', '1.0.1', { 'metadata.rb' => ['name "x"', 'version "1.0.1"'].join("\n"), 'onlyin1.0.1.rb' => '' }
 
-      it 'knife diff /cookbooks/x shows the differences' do
-        knife('diff --name-status /cookbooks/x').should_succeed <<EOM
+      without_versioned_cookbooks do
+        repository_has_a_cookbook
+        it 'knife diff /cookbooks/x shows the differences' do
+          knife('diff --name-status /cookbooks/x').should_succeed <<EOM
 M\t/cookbooks/x/metadata.rb
 D\t/cookbooks/x/onlyin1.0.1.rb
 A\t/cookbooks/x/onlyin1.0.0.rb
 EOM
+        end
+      end
+
+      with_versioned_cookbooks do
+        repository_has_a_cookbook
+        it 'knife diff /cookbooks shows the differences' do
+          knife('diff --name-status /cookbooks').should_succeed <<EOM
+D\t/cookbooks/x-1.0.1
+A\t/cookbooks/x-1.0.0
+EOM
+        end
       end
     end
 
     when_the_chef_server 'has an earlier version for the cookbook, and no current version' do
-      cookbook 'x', '0.9.9', { 'metadata.rb' => 'version "0.9.9"', 'onlyin0.9.9.rb' => '' }
+      cookbook 'x', '0.9.9', { 'metadata.rb' => ['name "x"', 'version "0.9.9"'].join("\n"), 'onlyin0.9.9.rb' => '' }
 
-      it 'knife diff /cookbooks/x shows the differences' do
-        knife('diff --name-status /cookbooks/x').should_succeed <<EOM
+      without_versioned_cookbooks do
+        repository_has_a_cookbook
+
+        it 'knife diff /cookbooks/x shows the differences' do
+          knife('diff --name-status /cookbooks/x').should_succeed <<EOM
 M\t/cookbooks/x/metadata.rb
 D\t/cookbooks/x/onlyin0.9.9.rb
 A\t/cookbooks/x/onlyin1.0.0.rb
 EOM
+        end
       end
-    end
+
+      with_versioned_cookbooks do
+        repository_has_a_cookbook
+
+        it 'knife diff /cookbooks shows the differences' do
+          knife('diff --name-status /cookbooks').should_succeed <<EOM
+D\t/cookbooks/x-0.9.9
+A\t/cookbooks/x-1.0.0
+EOM
+        end
+      end
+    end # when the chef server has an earlier version for the cookbook and no current version
   end
 
   context 'json diff tests' do
