@@ -191,16 +191,52 @@ class Chef
         Chef::Config[:interval] ||= 1800
       end
 
-      # Lifted from Chef::Application and Chef::Application::Client
-      # MUST BE RUN AFTER configuration has been parsed!
-      def configure_logging
-        # Implementation from Chef::Application
-        Chef::Log.init(Chef::Config[:log_location])
-        Chef::Log.level = Chef::Config[:log_level]
+      # Lifted from application.rb
+      # See application.rb for related comments.
 
-        # Implementation from Chef::Application::Client
-        Mixlib::Authentication::Log.use_log_devices( Chef::Log )
-        Ohai::Log.use_log_devices( Chef::Log )
+      def configure_logging
+        Chef::Log.init(Chef::Config[:log_location])
+        if want_additional_logger?
+          configure_stdout_logger
+        end
+        Chef::Log.level = resolve_log_level
+      end
+
+      def configure_stdout_logger
+        stdout_logger = Logger.new(STDOUT)
+        STDOUT.sync = true
+        stdout_logger.formatter = Chef::Log.logger.formatter
+        Chef::Log.loggers <<  stdout_logger
+      end
+
+      # Based on config and whether or not STDOUT is a tty, should we setup a
+      # secondary logger for stdout?
+      def want_additional_logger?
+        ( Chef::Config[:log_location] != STDOUT ) && STDOUT.tty? && (!Chef::Config[:daemonize]) && (Chef::Config[:force_logger])
+      end
+
+      # Use of output formatters is assumed if `force_formatter` is set or if
+      # `force_logger` is not set and STDOUT is to a console (tty)
+      def using_output_formatter?
+        Chef::Config[:force_formatter] || (!Chef::Config[:force_logger] && STDOUT.tty?)
+      end
+
+      def auto_log_level?
+        Chef::Config[:log_level] == :auto
+      end
+
+      # if log_level is `:auto`, convert it to :warn (when using output formatter)
+      # or :info (no output formatter). See also +using_output_formatter?+
+      def resolve_log_level
+        if auto_log_level?
+          if using_output_formatter?
+            :warn
+          else
+            :info
+          end
+        else
+          Chef::Config[:log_level]
+        end
       end
 
       def configure_chef(startup_parameters)
