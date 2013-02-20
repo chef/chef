@@ -16,9 +16,9 @@ describe 'knife deps' do
     when_the_repository 'has a role with a default run_list' do
       file 'roles/starring.json', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       file 'roles/minor.json', {}
-      file 'cookbooks/quiche/metadata.rb', ''
+      file 'cookbooks/quiche/metadata.rb', 'name "quiche"'
       file 'cookbooks/quiche/recipes/default.rb', ''
-      file 'cookbooks/soup/metadata.rb', ''
+      file 'cookbooks/soup/metadata.rb', 'name "soup"'
       file 'cookbooks/soup/recipes/chicken.rb', ''
       it 'knife deps reports all dependencies' do
         knife('deps /roles/starring.json').should_succeed <<EOM
@@ -33,9 +33,9 @@ EOM
     when_the_repository 'has a role with an env_run_list' do
       file 'roles/starring.json', { 'env_run_lists' => { 'desert' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) } }
       file 'roles/minor.json', {}
-      file 'cookbooks/quiche/metadata.rb', ''
+      file 'cookbooks/quiche/metadata.rb', 'name "quiche"'
       file 'cookbooks/quiche/recipes/default.rb', ''
-      file 'cookbooks/soup/metadata.rb', ''
+      file 'cookbooks/soup/metadata.rb', 'name "soup"'
       file 'cookbooks/soup/recipes/chicken.rb', ''
       it 'knife deps reports all dependencies' do
         knife('deps /roles/starring.json').should_succeed <<EOM
@@ -62,9 +62,9 @@ EOM
     end
     when_the_repository 'has a node with roles and recipes in its run_list' do
       file 'roles/minor.json', {}
-      file 'cookbooks/quiche/metadata.rb', ''
+      file 'cookbooks/quiche/metadata.rb', 'name "quiche"'
       file 'cookbooks/quiche/recipes/default.rb', ''
-      file 'cookbooks/soup/metadata.rb', ''
+      file 'cookbooks/soup/metadata.rb', 'name "soup"'
       file 'cookbooks/soup/recipes/chicken.rb', ''
       file 'nodes/mort.json', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       it 'knife deps reports just the node' do
@@ -77,15 +77,15 @@ EOM
       end
     end
     when_the_repository 'has a cookbook with no dependencies' do
-      file 'cookbooks/quiche/metadata.rb', ''
+      file 'cookbooks/quiche/metadata.rb', 'name "quiche"'
       file 'cookbooks/quiche/recipes/default.rb', ''
       it 'knife deps reports just the cookbook' do
         knife('deps /cookbooks/quiche').should_succeed "/cookbooks/quiche\n"
       end
     end
     when_the_repository 'has a cookbook with dependencies' do
-      file 'cookbooks/kettle/metadata.rb', ''
-      file 'cookbooks/quiche/metadata.rb', 'depends "kettle"'
+      file 'cookbooks/kettle/metadata.rb', 'name "kettle"'
+      file 'cookbooks/quiche/metadata.rb', ['name "quiche"', 'depends "kettle"'].join("\n")
       file 'cookbooks/quiche/recipes/default.rb', ''
       it 'knife deps reports just the cookbook' do
         knife('deps /cookbooks/quiche').should_succeed "/cookbooks/kettle\n/cookbooks/quiche\n"
@@ -106,9 +106,9 @@ EOM
     when_the_repository 'has a deep dependency tree' do
       file 'roles/starring.json', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       file 'roles/minor.json', {}
-      file 'cookbooks/quiche/metadata.rb', ''
+      file 'cookbooks/quiche/metadata.rb', 'name "quiche"'
       file 'cookbooks/quiche/recipes/default.rb', ''
-      file 'cookbooks/soup/metadata.rb', ''
+      file 'cookbooks/soup/metadata.rb', 'name "soup"'
       file 'cookbooks/soup/recipes/chicken.rb', ''
       file 'environments/desert.json', {}
       file 'nodes/mort.json', { 'chef_environment' => 'desert', 'run_list' => [ 'role[starring]' ] }
@@ -171,10 +171,10 @@ EOM
 
     context 'circular dependencies' do
       when_the_repository 'has cookbooks with circular dependencies' do
-        file 'cookbooks/foo/metadata.rb', 'depends "bar"'
-        file 'cookbooks/bar/metadata.rb', 'depends "baz"'
-        file 'cookbooks/baz/metadata.rb', 'depends "foo"'
-        file 'cookbooks/self/metadata.rb', 'depends "self"'
+        file 'cookbooks/foo/metadata.rb', ['name "foo"', 'depends "bar"'].join("\n")
+        file 'cookbooks/bar/metadata.rb', ['name "bar"', 'depends "baz"'].join("\n")
+        file 'cookbooks/baz/metadata.rb', ['name "baz"', 'depends "foo"'].join("\n")
+        file 'cookbooks/self/metadata.rb', ['name "self"', 'depends "self"'].join("\n")
         it 'knife deps prints each once' do
           knife('deps /cookbooks/foo /cookbooks/self').should_succeed <<EOM
 /cookbooks/baz
@@ -312,7 +312,7 @@ EOM
         end
       end
       when_the_repository 'has a cookbook' do
-        file 'cookbooks/blah/metadata.rb', ''
+        file 'cookbooks/blah/metadata.rb', 'name "blah"'
         it 'knife deps on a cookbook file shows no dependencies' do
           knife('deps /cookbooks/blah/metadata.rb').should_succeed(
             "/cookbooks/blah/metadata.rb\n"
@@ -333,8 +333,8 @@ EOM
     when_the_chef_server 'has a role with a default run_list' do
       role 'starring', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       role 'minor', {}
-      cookbook 'quiche', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
-      cookbook 'soup', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'chicken.rb' => '' } }
+      cookbook 'quiche', '1.0.0', { 'metadata.rb' => ['name "quiche"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'default.rb' => '' } }
+      cookbook 'soup', '1.0.0', { 'metadata.rb' =>   ['name "soup"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'chicken.rb' => '' } }
       it 'knife deps reports all dependencies' do
         knife('deps --remote /roles/starring.json').should_succeed <<EOM
 /roles/minor.json
@@ -348,8 +348,8 @@ EOM
     when_the_chef_server 'has a role with an env_run_list' do
       role 'starring', { 'env_run_lists' => { 'desert' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) } }
       role 'minor', {}
-      cookbook 'quiche', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
-      cookbook 'soup', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'chicken.rb' => '' } }
+      cookbook 'quiche', '1.0.0', { 'metadata.rb' => ['name "quiche"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'default.rb' => '' } }
+      cookbook 'soup', '1.0.0', { 'metadata.rb' =>   ['name "soup"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'chicken.rb' => '' } }
       it 'knife deps reports all dependencies' do
         knife('deps --remote /roles/starring.json').should_succeed <<EOM
 /roles/minor.json
@@ -375,8 +375,8 @@ EOM
     end
     when_the_chef_server 'has a node with roles and recipes in its run_list' do
       role 'minor', {}
-      cookbook 'quiche', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
-      cookbook 'soup', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'chicken.rb' => '' } }
+      cookbook 'quiche', '1.0.0', { 'metadata.rb' => ['name "quiche"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'default.rb' => '' } }
+      cookbook 'soup', '1.0.0', { 'metadata.rb' =>   ['name "soup"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'chicken.rb' => '' } }
       node 'mort', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       it 'knife deps reports just the node' do
         knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed <<EOM
@@ -388,14 +388,14 @@ EOM
       end
     end
     when_the_chef_server 'has a cookbook with no dependencies' do
-      cookbook 'quiche', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
+      cookbook 'quiche', '1.0.0', { 'metadata.rb' => ['name "quiche"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'default.rb' => '' } }
       it 'knife deps reports just the cookbook' do
         knife('deps --remote /cookbooks/quiche').should_succeed "/cookbooks/quiche\n"
       end
     end
     when_the_chef_server 'has a cookbook with dependencies' do
-      cookbook 'kettle', '1.0.0', { 'metadata.rb' => '' }
-      cookbook 'quiche', '1.0.0', { 'metadata.rb' => 'depends "kettle"', 'recipes' => { 'default.rb' => '' } }
+      cookbook 'kettle', '1.0.0', { 'metadata.rb' => ['name "kettle"', 'version "1.0.0"'].join("\n") }
+      cookbook 'quiche', '1.0.0', { 'metadata.rb' => ['name "quiche"', 'depends "kettle"'].join("\n"), 'recipes' => { 'default.rb' => '' } }
       it 'knife deps reports just the cookbook' do
         knife('deps --remote /cookbooks/quiche').should_succeed "/cookbooks/kettle\n/cookbooks/quiche\n"
       end
@@ -415,8 +415,8 @@ EOM
     when_the_chef_server 'has a deep dependency tree' do
       role 'starring', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       role 'minor', {}
-      cookbook 'quiche', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'default.rb' => '' } }
-      cookbook 'soup', '1.0.0', { 'metadata.rb' => '', 'recipes' => { 'chicken.rb' => '' } }
+      cookbook 'quiche', '1.0.0', { 'metadata.rb' => ['name "quiche"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'default.rb' => '' } }
+      cookbook 'soup', '1.0.0', { 'metadata.rb' =>   ['name "soup"', 'version "1.0.0"'].join("\n"), 'recipes' => { 'chicken.rb' => '' } }
       environment 'desert', {}
       node 'mort', { 'chef_environment' => 'desert', 'run_list' => [ 'role[starring]' ] }
       node 'bart', { 'run_list' => [ 'role[minor]' ] }
@@ -478,10 +478,10 @@ EOM
 
     context 'circular dependencies' do
       when_the_chef_server 'has cookbooks with circular dependencies' do
-        cookbook 'foo', '1.0.0', { 'metadata.rb' => 'depends "bar"' }
-        cookbook 'bar', '1.0.0', { 'metadata.rb' => 'depends "baz"' }
-        cookbook 'baz', '1.0.0', { 'metadata.rb' => 'depends "foo"' }
-        cookbook 'self', '1.0.0', { 'metadata.rb' => 'depends "self"' }
+        cookbook 'foo', '1.0.0', { 'metadata.rb'  => ['name "foo"', 'depends "bar"'].join("\n") }
+        cookbook 'bar', '1.0.0', { 'metadata.rb'  => ['name "bar"', 'depends "baz"'].join("\n") }
+        cookbook 'baz', '1.0.0', { 'metadata.rb'  => ['name "baz"', 'depends "foo"'].join("\n") }
+        cookbook 'self', '1.0.0', { 'metadata.rb' => ['name "self"', 'depends "self"'].join("\n") }
         it 'knife deps prints each once' do
           knife('deps --remote /cookbooks/foo /cookbooks/self').should_succeed <<EOM
 /cookbooks/baz
@@ -615,7 +615,7 @@ EOM
         end
       end
       when_the_chef_server 'has a cookbook' do
-        cookbook 'blah', '1.0.0', { 'metadata.rb' => '' }
+        cookbook 'blah', '1.0.0', { 'metadata.rb' => 'name "blah"' }
         it 'knife deps on a cookbook file shows no dependencies' do
           knife('deps --remote /cookbooks/blah/metadata.rb').should_succeed(
             "/cookbooks/blah/metadata.rb\n"
