@@ -209,11 +209,15 @@ EOM
         dir = File.dirname(filename)
         FileUtils.mkdir_p(dir) unless dir == '.'
         File.open(filename, 'w') do |file|
-          if contents.is_a? Hash
-            file.write(JSON.pretty_generate(contents))
-          else
-            file.write(contents)
-          end
+          raw = case contents
+                when Hash
+                  JSON.pretty_generate(contents)
+                when Array
+                  contents.join("\n")
+                else
+                  contents
+                end
+          file.write(raw)
         end
       end
 
