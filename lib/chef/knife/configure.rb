@@ -59,6 +59,10 @@ class Chef
         :long => "--validation-key PATH",
         :description => "The location of the location of the validation key (usually a file named validation.pem)"
 
+      option :user_password,
+        :long => "--user-password PASSWORD",
+        :description => "The password for creating a client user"
+
       def configure_chef
         # We are just faking out the system so that you can do this without a key specified
         Chef::Config[:node_name] = 'woot'
