@@ -136,6 +136,18 @@ class Chef
 
       private
 
+      # Initializes Chef::Client instance and runs it
+      def run_chef_client
+        @chef_client = Chef::Client.new(
+          @chef_client_json,
+          :override_runlist => config[:override_runlist]
+        )
+        @chef_client_json = nil
+
+        @chef_client.run
+        @chef_client = nil
+      end
+
       def apply_config(config_file_path)
         Chef::Config.from_file(config_file_path)
         Chef::Config.merge!(config)
