@@ -65,7 +65,9 @@ class Chef
       end
 
       def service_main(*startup_parameters)
-        timeout = 0
+        # Chef::Config is initialized during service_init
+        # Set the initial timeout to splay sleep time
+        timeout = rand Chef::Config[:splay]
 
         while running? do
           # Grab the service_action_mutex to make a chef-client run
@@ -83,10 +85,7 @@ class Chef
               timeout = Chef::Config[:interval]
 
               # Honor splay sleep config
-
-              splay = rand Chef::Config[:splay]
-              Chef::Log.debug("Splay sleep #{splay} seconds")
-              sleep splay
+              timeout += rand Chef::Config[:splay]
 
               # run chef-client only if service is in RUNNING state
               next if state != RUNNING
