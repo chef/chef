@@ -85,7 +85,7 @@ class Chef
           end
 
           line_parts = Array.new
-          line_parts << @ui.color(text, color) + " ago" << node.name
+          line_parts << @ui.color(text, color) + " ago" << node['name']
           line_parts << fqdn if fqdn
           line_parts << ipaddress if ipaddress
           line_parts << run_list if run_list
