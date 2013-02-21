@@ -112,7 +112,7 @@ class Chef
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
             },
-            "6.0" => {
+            ">= 6.0" => {
               :service => Chef::Provider::Service::Insserv
             }
           },
@@ -263,13 +263,7 @@ class Chef
               :cron => Chef::Provider::Cron::Solaris,
               :group => Chef::Provider::Group::Usermod
             },
-            "5.9" => {
-              :service => Chef::Provider::Service::Solaris,
-              :package => Chef::Provider::Package::Solaris,
-              :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
-            },
-            "5.10" => {
+            ">= 5.9" => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
