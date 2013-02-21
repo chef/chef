@@ -60,8 +60,12 @@ class ArtifactCollection
     JSON.parse(platform_map_json)
   end
 
+  def platform_name_map_path
+    File.expand_path("../#{project}-platform-names.json", __FILE__)
+  end
+
   def platform_name_map_json
-    IO.read(File.expand_path("../#{project}-platform-names.json", __FILE__))
+    IO.read(platform_name_map_path)
   end
 
   def platform_name_map
@@ -180,9 +184,10 @@ class ShipIt
 
     metadata = {}
     artifacts.each do |artifact|
-      artifact.add_to_release_manifest(metadata)
+      artifact.add_to_release_manifest!(metadata)
       upload_package(artifact.path, artifact.relpath)
     end
+    upload_platform_name_map(artifact_collection.platform_name_map_path)
     upload_manifest(metadata)
   end
 
@@ -232,6 +237,10 @@ class ShipIt
     exit 1
   end
 
+  def shellout_opts
+    {:timeout => 1200, :live_stream => STDOUT}
+  end
+
   def upload_package(local_path, s3_path)
     s3_cmd = ["s3cmd",
               "put",
@@ -256,7 +265,9 @@ class ShipIt
     shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
     shell.run_command
     shell.error!
+  end
 
+  def upload_platform_name_map(platform_names_file)
     s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-names.json"
     puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
     s3_cmd = ["s3cmd",
