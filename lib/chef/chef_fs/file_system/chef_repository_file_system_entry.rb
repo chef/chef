@@ -1,5 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@opscode.com>)
+# Author:: Ho-Sheng Hsiao (<hosh@opscode.com>)
 # Copyright:: Copyright (c) 2012 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -58,13 +59,11 @@ class Chef
               # as the directory name, with the version tag.
               if Chef::Config[:versioned_cookbooks]
 
-                name_match = Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(File.basename(file_path))
-                fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z" if name_match.nil?
-
-                canonical_cookbook_name = name_match[1]
+                _canonical_name = canonical_cookbook_name(File.basename(file_path))
+                fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless _canonical_name
 
                 # Warning, leaky abstraction
-                loader.instance_variable_set(:@cookbook_name, canonical_cookbook_name)
+                loader.instance_variable_set(:@cookbook_name, _canonical_name)
               end
 
               loader.load_cookbooks
@@ -77,6 +76,16 @@ class Chef
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
           end
           nil
+        end
+
+        def self.canonical_cookbook_name(entry_name)
+          name_match = Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
+          return nil if name_match.nil?
+          return name_match[1]
+        end
+
+        def canonical_cookbook_name(entry_name)
+          self.class.canonical_cookbook_name(entry_name)
         end
 
         def children
