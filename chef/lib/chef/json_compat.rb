@@ -27,6 +27,7 @@ class Chef
     JSON_CLASS = "json_class".freeze
 
     CHEF_APICLIENT          = "Chef::ApiClient".freeze
+    CHEF_CHECKSUM           = "Chef::Checksum".freeze
     CHEF_COOKBOOKVERSION    = "Chef::CookbookVersion".freeze
     CHEF_DATABAG            = "Chef::DataBag".freeze
     CHEF_DATABAGITEM        = "Chef::DataBagItem".freeze
@@ -124,6 +125,8 @@ class Chef
           Chef::Role
         when CHEF_SANDBOX
           Chef::Sandbox
+        when CHEF_CHECKSUM
+          Chef::Checksum
         when CHEF_RESOURCE
           Chef::Resource
         when CHEF_RESOURCECOLLECTION
