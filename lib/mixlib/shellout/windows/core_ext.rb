@@ -266,7 +266,10 @@ module Process
 
       # If running in the service windows station must do a log on to get
       # to the interactive desktop.  Running process user account must have
-      # the 'Replace a process level token' permission
+      # the 'Replace a process level token' permission.  This is necessary as
+      # the logon (which happens with CreateProcessWithLogon) must have an 
+      # interactive windows station to attach to, which is created with the 
+      # LogonUser cann with the LOGON32_LOGON_INTERACTIVE flag.
       if winsta_name =~ /^Service-0x0-.*$/i
         token = FFI::MemoryPointer.new(:ulong)
 
