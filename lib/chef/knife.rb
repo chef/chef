@@ -201,12 +201,18 @@ class Chef
       subcommand_class || subcommand_not_found!(args)
     end
 
+    def self.dependency_loaders
+      @dependency_loaders ||= []
+    end
+
     def self.deps(&block)
-      @dependency_loader = block
+      dependency_loaders << block
     end
 
     def self.load_deps
-      @dependency_loader && @dependency_loader.call
+      dependency_loaders.each do |dep_loader|
+        dep_loader.call
+      end
     end
 
     private
