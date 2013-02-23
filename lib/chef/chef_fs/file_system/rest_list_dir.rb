@@ -65,7 +65,8 @@ class Chef
         # DataBagDir.create_child as well.
         def create_child(name, file_contents)
           begin
-            object = Chef::JSONCompat.from_json(file_contents).to_hash
+            #object = Chef::JSONCompat.from_json(file_contents).to_hash
+            object = JSON.parse(file_contents, :create_additions => false)
           rescue JSON::ParserError => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Parse error reading JSON creating child '#{name}': #{e}"
           end

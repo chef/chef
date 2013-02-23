@@ -114,7 +114,8 @@ class Chef
           value = minimize_value(value)
           value_json = Chef::JSONCompat.to_json_pretty(value)
           begin
-            other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
+            #other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
+            other_value = JSON.parse(other_value_json, :create_additions => false)
           rescue JSON::ParserError => e
             Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
             return [ nil, value_json, other_value_json ]
@@ -131,7 +132,8 @@ class Chef
 
         def write(file_contents)
           begin
-            object = Chef::JSONCompat.from_json(file_contents).to_hash
+            #object = Chef::JSONCompat.from_json(file_contents).to_hash
+            object = JSON.parse(file_contents, :create_additions => false)
           rescue JSON::ParserError => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Parse error reading JSON: #{e}"
           end
