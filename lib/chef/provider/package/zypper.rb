@@ -84,50 +84,53 @@ class Chef
           `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
         end
 
-        def install_package(name, version)
+        def install_package(name, version, gpgcheck=true)
+          gpgcheck = gpgcheck ? "" : "--no-gpg-checks"
           if zypper_version < 1.0
             run_command(
               :command => "zypper install -y #{name}"
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l  #{name}=#{version}"
+              :command => "zypper -n #{gpgcheck} install -l  #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l  #{name}"
+              :command => "zypper -n #{gpgcheck} install -l  #{name}"
             )
           end
         end
 
-        def upgrade_package(name, version)
+        def upgrade_package(name, version, gpgcheck=true)
+          gpgcheck = gpgcheck ? "" : "--no-gpg-checks"
           if zypper_version < 1.0
             run_command(
               :command => "zypper install -y #{name}"
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l #{name}=#{version}"
+              :command => "zypper -n #{gpgcheck} install -l #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l #{name}"
+              :command => "zypper -n #{gpgcheck} install -l #{name}"
             )
           end
         end
 
-        def remove_package(name, version)
+        def remove_package(name, version, gpgcheck=true)
+          gpgcheck = gpgcheck ? "" : "--no-gpg-checks"
           if zypper_version < 1.0
             run_command(
               :command => "zypper remove -y #{name}"
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks remove  #{name}=#{version}"
+              :command => "zypper -n #{gpgcheck} remove  #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks remove  #{name}"
+              :command => "zypper -n #{gpgcheck} remove  #{name}"
             )
           end
             
