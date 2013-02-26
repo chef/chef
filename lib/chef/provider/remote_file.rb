@@ -138,50 +138,23 @@ class Chef
           if_modified_since ||= @current_resource.last_modified
           if_none_match ||= @current_resource.etag
         end
-        target_matched = false
-        raw_file = nil
-        last_modified = nil
-        etag = nil
         if URI::HTTP === uri
           #HTTP or HTTPS
-          begin
-            headers = Hash.new
-            if if_none_match
-              headers[:if_none_match] = "\"#{if_none_match}\""
-            elsif if_modified_since
-              headers[:if_modified_since] = if_modified_since.strftime("%a, %d %b %Y %H:%M:%S %Z")
-            end
-            rest = RestClient::Request.execute(:method => :get, :url => uri.to_s, :headers => headers, :raw_response => true)
-            raw_file = rest.file
-            if rest.headers.include?(:last_modified)
-              last_modified = Time.parse(rest.headers[:last_modified])
-            end
-            if rest.headers.include?(:etag)
-              etag = rest.headers[:etag]
-            end
-          rescue RestClient::Exception => e
-            if e.http_code == 304
-              target_matched = true
-            else
-              raise e
-            end
-          end
+          raw_file, last_modified, etag, target_matched = http_fetch(uri, if_modified_since, if_none_match)
         elsif URI::FTP === uri
           #FTP
           raw_file, last_modified = FTP::fetch_if_modified(uri, @new_resource.ftp_active_mode, if_modified_since)
-          if last_modified && if_modified_since && last_modified <= if_modified_since
-            target_matched = true
-          end
+          etag = nil
+          target_matched = last_modified && if_modified_since && last_modified.to_i <= if_modified_since.to_i
         elsif uri.scheme == "file"
           #local/network file
           last_modified = ::File.mtime(uri.path)
+          etag = nil
           raw_file = ::File.new(uri.path, "r")
           def raw_file.close!
             self.close
           end
-          if last_modified && if_modified_since && last_modified.to_i <= if_modified_since.to_i
-            target_matched = true
-          end
+          target_mathed = last_modified && if_modified_since && last_modified.to_i <= if_modified_since.to_i
         else
           raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
         end
@@ -191,6 +164,35 @@ class Chef
           save_fileinfo(uri)
         end
         return raw_file, target_matched
+      end
+
+      def http_fetch(uri, if_modified_since, if_none_match)
+        last_modified = nil
+        etag = nil
+        target_matched = false
+        begin
+          headers = Hash.new
+          if if_none_match
+            headers[:if_none_match] = "\"#{if_none_match}\""
+          elsif if_modified_since
+            headers[:if_modified_since] = if_modified_since.strftime("%a, %d %b %Y %H:%M:%S %Z")
+          end
+          rest = RestClient::Request.execute(:method => :get, :url => uri.to_s, :headers => headers, :raw_response => true)
+          raw_file = rest.file
+          if rest.headers.include?(:last_modified)
+            last_modified = Time.parse(rest.headers[:last_modified])
+          end
+          if rest.headers.include?(:etag)
+            etag = rest.headers[:etag]
+          end
+        rescue RestClient::Exception => e
+          if e.http_code == 304
+            target_matched = true
+          else
+            raise e
+          end
+        end
+        return raw_file, last_modified, etag, target_matched
       end
 
       def load_fileinfo
