@@ -214,12 +214,16 @@ class ShipIt
     artifacts = artifact_collection.artifacts
 
     metadata = {}
+    v2_metadata = {}
+
     artifacts.each do |artifact|
       artifact.add_to_release_manifest!(metadata)
+      artifact.add_to_v2_release_manifest!(v2_metadata)
       upload_package(artifact.path, artifact.relpath)
     end
     upload_platform_name_map(artifact_collection.platform_name_map_path)
     upload_manifest(metadata)
+    upload_v2_manifest(v2_metadata) if upload_v2_manifest?
   end
 
   def option_parser
@@ -238,6 +242,14 @@ class ShipIt
         options[:bucket] = bucket
       end
 
+      opts.on("-M", "--metadata-bucket S3_BUCKET_NAME", "the name of the S3 bucket for v2 metadata") do |bucket|
+        options[:metadata_bucket] = bucket
+      end
+
+      opts.on("-m", "--metadata-s3-config S3_CMD_CONFIG_FILE", "path to the s3cmd config file for the v2 metadata AWS account") do |config_path|
+        options[:metadata_s3_config_file] = config_path
+      end
+
       opts.on("--ignore-missing-packages",
               "indicates the release should continue if any build packages are missing") do |missing|
         options[:ignore_missing_packages] = missing
@@ -253,6 +265,15 @@ class ShipIt
       # this file should be the same across all platforms so grab the first one
       build_version_file = Dir['**/pkg/BUILD_VERSION'].first
       options[:version] = IO.read(build_version_file).chomp if build_version_file
+    end
+
+    # metadata bucket and config file must be configured together
+    if (options[:metadata_bucket].nil? ^ options[:metadata_s3_config_file].nil?)
+      puts "You must specify *both* metadata-bucket and metadata-s3-config to upload v2 metadata"
+      puts "If you don't want to upload v2 metadata, don't specify either of these options"
+      puts ""
+      puts option_parser
+      exit 1
     end
 
     required = [:project, :version, :bucket]
@@ -298,6 +319,21 @@ class ShipIt
     shell.error!
   end
 
+  def upload_v2_manifest(manifest)
+    File.open("v2-release-manifest.json", "w") {|f| f.puts JSON.pretty_generate(manifest)}
+
+    s3_location = "s3://#{options[:metadata_bucket]}/#{options[:project]}-release-manifest/#{options[:version]}.json"
+    puts "UPLOAD: v2-release-manifest.json -> #{s3_location}"
+    s3_cmd = ["s3cmd",
+              "-c #{options[:metadata_s3_config_file]}",
+              "put",
+              "v2-release-manifest.json",
+              s3_location].join(" ")
+    shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
+    shell.run_command
+    shell.error!
+  end
+
   def upload_platform_name_map(platform_names_file)
     s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-names.json"
     puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
@@ -308,6 +344,10 @@ class ShipIt
     shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
     shell.run_command
     shell.error!
+  end
+
+  def upload_v2_manifest?
+    !options[:metadata_bucket].nil?
   end
 end
 
