@@ -28,7 +28,24 @@ class Chef
 
         # Fetches the file at uri using Net::FTP, returning a Tempfile
         def self.fetch(uri, ftp_active_mode)
-          self.new(uri, ftp_active_mode).fetch()
+          ftp = self.new(uri, ftp_active_mode)
+          ftp.connect
+          tempfile = ftp.fetch
+          ftp.disconnect
+          tempfile
+        end
+
+        def self.fetch_if_modified(uri, ftp_active_mode, last_modified)
+          ftp = self.new(uri, ftp_active_mode)
+          ftp.connect
+          mtime = ftp.mtime
+          if mtime && last_modified && mtime.to_i <= last_modified.to_i
+            tempfile = nil
+          else
+            tempfile = ftp.fetch
+          end
+          ftp.disconnect
+          return tempfile, mtime
         end
 
         # Parse the uri into instance variables
@@ -42,6 +59,7 @@ class Chef
           @ftp_active_mode = ftp_active_mode
           @hostname = uri.hostname
           @port = uri.port
+          @ftp = Net::FTP.new
           if uri.userinfo
             @user = URI.unescape(uri.user)
             @pass = URI.unescape(uri.password)
@@ -51,28 +69,35 @@ class Chef
           end
         end
 
-        # Fetches using Net::FTP, returns a Tempfile with the content
-        def fetch()
-          tempfile = Tempfile.new(@filename)
-
+        def connect
           # The access sequence is defined by RFC 1738
-          ftp = Net::FTP.new
-          ftp.connect(@hostname, @port)
-          ftp.passive = !@ftp_active_mode
-          ftp.login(@user, @pass)
+          @ftp.connect(@hostname, @port)
+          @ftp.passive = !@ftp_active_mode
+          @ftp.login(@user, @pass)
           @directories.each do |cwd|
-            ftp.voidcmd("CWD #{cwd}")
+            @ftp.voidcmd("CWD #{cwd}")
           end
-          if @typecode
-            ftp.voidcmd("TYPE #{@typecode.upcase}")
-          end
-          ftp.getbinaryfile(@filename, tempfile.path)
-          ftp.close
+        end
 
+        def disconnect
+          @ftp.close
+        end
+
+        def mtime
+          @ftp.mtime(@filename)
+        end
+
+        # Fetches using Net::FTP, returns a Tempfile with the content
+        def fetch
+          tempfile = Tempfile.new(@filename)
+          if @typecode
+            @ftp.voidcmd("TYPE #{@typecode.upcase}")
+          end
+          @ftp.getbinaryfile(@filename, tempfile.path)
           tempfile
         end
 
-				private
+        private
 
         def parse_path(path)
           path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.

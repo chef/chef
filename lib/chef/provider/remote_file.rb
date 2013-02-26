@@ -30,6 +30,12 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
+        fileinfo = load_fileinfo
+        if fileinfo["src"]
+          @current_resource.etag fileinfo["etag"]
+          @current_resource.last_modified fileinfo["last_modified"]
+          @current_resource.source fileinfo["src"]
+        end
         super
       end
 
@@ -40,10 +46,13 @@ class Chef
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
           sources = @new_resource.source
-          raw_file, raw_file_source = try_multiple_sources(sources)
-          if matches_current_checksum?(raw_file)
-            Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
+          raw_file, raw_file_source, target_matched = try_multiple_sources(sources)
+          if target_matched
+            Chef::Log.info("#{@new_resource} matched #{raw_file_source}, not updating")
+          elsif matches_current_checksum?(raw_file)
+            Chef::Log.info("#{@new_resource} downloaded from #{raw_file_source}, checksums match, not updating")
           else
+            Chef::Log.info("#{@new_resource} downloaded from #{raw_file_source}")
             description = [] 
             description << "copy file downloaded from #{raw_file_source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
@@ -98,7 +107,7 @@ class Chef
         source = sources.shift
         begin
           uri = URI.parse(source)
-          raw_file = grab_file_from_uri(uri)
+          raw_file, target_matched = grab_file_from_uri(uri)
         rescue ArgumentError => e
           raise e
         rescue => e
@@ -107,9 +116,9 @@ class Chef
           else
             error = e.to_s
           end
-          Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}: #{error}")
+          Chef::Log.info("#{@new_resource} cannot be downloaded from #{source}: #{error}")
           if source = sources.shift
-            Chef::Log.debug("#{@new_resource} trying to download from another mirror")
+            Chef::Log.info("#{@new_resource} trying to download from another mirror")
             retry
           else
             raise e
@@ -118,29 +127,91 @@ class Chef
         if uri.userinfo
           uri.password = "********"
         end
-        return raw_file, uri.to_s
+        return raw_file, uri.to_s, target_matched
       end
 
       # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
       def grab_file_from_uri(uri)
+        if_modified_since = @new_resource.last_modified
+        if_none_match = @new_resource.etag
+        if uri == @current_resource.source[0]
+          if_modified_since ||= @current_resource.last_modified
+          if_none_match ||= @current_resource.etag
+        end
+        target_matched = false
+        raw_file = nil
+        last_modified = nil
+        etag = nil
         if URI::HTTP === uri
           #HTTP or HTTPS
-          raw_file = RestClient::Request.execute(:method => :get, :url => uri.to_s, :raw_response => true).file
+          begin
+            headers = Hash.new
+            if if_none_match
+              headers[:if_none_match] = "\"#{if_none_match}\""
+            elsif if_modified_since
+              headers[:if_modified_since] = if_modified_since.strftime("%a, %d %b %Y %H:%M:%S %Z")
+            end
+            rest = RestClient::Request.execute(:method => :get, :url => uri.to_s, :headers => headers, :raw_response => true)
+            raw_file = rest.file
+            if rest.headers.include?(:last_modified)
+              last_modified = Time.parse(rest.headers[:last_modified])
+            end
+            if rest.headers.include?(:etag)
+              etag = rest.headers[:etag]
+            end
+          rescue RestClient::Exception => e
+            if e.http_code == 304
+              target_matched = true
+            else
+              raise e
+            end
+          end
         elsif URI::FTP === uri
           #FTP
-          raw_file = FTP::fetch(uri, @new_resource.ftp_active_mode)
+          raw_file, last_modified = FTP::fetch_if_modified(uri, @new_resource.ftp_active_mode, if_modified_since)
+          if last_modified && if_modified_since && last_modified <= if_modified_since
+            target_matched = true
+          end
         elsif uri.scheme == "file"
           #local/network file
+          last_modified = ::File.mtime(uri.path)
           raw_file = ::File.new(uri.path, "r")
           def raw_file.close!
             self.close
           end
+          if last_modified && if_modified_since && last_modified.to_i <= if_modified_since.to_i
+            target_matched = true
+          end
         else
           raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
         end
-        raw_file
+        unless target_matched
+          @new_resource.etag etag unless @new_resource.etag
+          @new_resource.last_modified last_modified unless @new_resource.last_modified
+          save_fileinfo(uri)
+        end
+        return raw_file, target_matched
       end
 
+      def load_fileinfo
+        begin
+          Chef::JSONCompat.from_json(Chef::FileCache.load("remote_file/#{new_resource.name}"))
+        rescue Chef::Exceptions::FileNotFound
+          cache = Hash.new
+          cache["etag"] = nil
+          cache["last_modified"] = nil
+          cache["src"] = nil
+          cache
+        end
+      end
+
+      def save_fileinfo(uri)
+        cache = Hash.new
+        cache["etag"] = @new_resource.etag
+        cache["last_modified"] = @new_resource.last_modified
+        cache["src"] = uri
+        Chef::FileCache.store("remote_file/#{new_resource.name}", cache.to_json)
+      end
     end
   end
 end

@@ -46,7 +46,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
   describe "when fetching the file from the remote" do
     before(:each) do
       @tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
-      @rawresp = RestClient::RawResponse.new(@tempfile, nil, nil)
+      @rawresp = RestClient::RawResponse.new(@tempfile, Hash.new, nil)
 
       RestClient::Request.stub!(:execute).and_return(@rawresp)
       @resource.cookbook_name = "monkey"
@@ -79,14 +79,14 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
     shared_examples_for "source specified with multiple URIs" do
       it "should try to download the next URI when the first one fails" do
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://foo", :raw_response => true).once.and_raise(SocketError)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://bar", :raw_response => true).once.and_return(@rawresp)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://foo", :headers => {}, :raw_response => true).once.and_raise(SocketError)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://bar", :headers => {}, :raw_response => true).once.and_return(@rawresp)
         @provider.run_action(:create)
       end
 
       it "should raise an exception when all the URIs fail" do
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://foo", :raw_response => true).once.and_raise(SocketError)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://bar", :raw_response => true).once.and_raise(SocketError)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://foo", :headers => {}, :raw_response => true).once.and_raise(SocketError)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://bar", :headers => {}, :raw_response => true).once.and_raise(SocketError)
         lambda { @provider.run_action(:create) }.should raise_error(SocketError)
       end
 
@@ -121,7 +121,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "does not download the file" do
-          RestClient::Request.should_not_receive(:execute).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          RestClient::Request.should_not_receive(:execute)
           @provider.run_action(:create)
         end
 
@@ -138,7 +138,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "should not download the file if the checksum is a partial match from the beginning" do
-          @rawresp.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          RestClient::Request.should_not_receive(:execute)
           @provider.run_action(:create)
         end
 
@@ -152,7 +152,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       describe "and the existing file doesn't match the given checksum" do
         it "downloads the file" do
           @resource.checksum("this hash doesn't match")
-          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
+          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -160,7 +160,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         it "does not consider the checksum a match if the matching string is offset" do
           # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
           @resource.checksum("fd012fd")
-          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
+          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -171,7 +171,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     describe "and the resource doesn't specify a checksum" do
       it "should download the file from the remote URL" do
         @resource.checksum(nil)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
         @provider.run_action(:create)
       end
     end
@@ -188,7 +188,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     context "and the target file is a tarball" do
       before do
         @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.tar.gz")))
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :raw_response => true).and_return(@rawresp)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
       end
 
       it "disables gzip in the http client" do
@@ -200,7 +200,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     context "and the source appears to be a tarball" do
       before do
         @resource.source("http://example.com/tarball.tgz")
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://example.com/tarball.tgz", :raw_response => true).and_return(@rawresp)
+        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://example.com/tarball.tgz", :headers => {}, :raw_response => true).and_return(@rawresp)
       end
 
       it "disables gzip in the http client" do
@@ -214,13 +214,13 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should fetch with ftp in passive mode" do
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false).and_return(@tempfile)
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch_if_modified).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
 
       it "should fetch with ftp in active mode" do
         @resource.ftp_active_mode true
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true).and_return(@tempfile)
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch_if_modified).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end
@@ -231,6 +231,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should load the local file" do
+        File.should_receive(:mtime).with("/nyan_cat.png").and_return(Time.now)
         File.should_receive(:new).with("/nyan_cat.png", "r").and_return(File.open(File.join(CHEF_SPEC_DATA, "remote_file", "nyan_cat.png"), "r"))
         @provider.run_action(:create)
       end
