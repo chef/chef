@@ -25,7 +25,7 @@ class Chef
 
       protected
 
-      def initialize(name, run_context=nil, resource_name, interpreter_command)
+      def initialize(name, run_context, resource_name, interpreter_command)
         super(name, run_context)
         @interpreter = interpreter_command        
         @resource_name = resource_name
