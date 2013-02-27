@@ -122,7 +122,7 @@ class Chef::Application
   # that a user has configured a log_location in client.rb, but is running
   # chef-client by hand to troubleshoot a problem.
   def configure_logging
-    Chef::Log.init(Chef::Config[:log_location])
+    Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
     if want_additional_logger?
       configure_stdout_logger
     end
@@ -130,7 +130,7 @@ class Chef::Application
   end
 
   def configure_stdout_logger
-    stdout_logger = Logger.new(STDOUT)
+    stdout_logger = MonoLogger.new(STDOUT)
     STDOUT.sync = true
     stdout_logger.formatter = Chef::Log.logger.formatter
     Chef::Log.loggers <<  stdout_logger

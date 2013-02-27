@@ -17,6 +17,7 @@
 #
 
 require 'chef'
+require 'chef/monologger'
 require 'chef/application'
 require 'chef/client'
 require 'chef/config'
@@ -194,7 +195,7 @@ class Chef
       # See application.rb for related comments.
 
       def configure_logging
-        Chef::Log.init(Chef::Config[:log_location])
+        Chef::Log.init(MonoLogger.new(Chef::Config[:log_location]))
         if want_additional_logger?
           configure_stdout_logger
         end
@@ -202,7 +203,7 @@ class Chef
       end
 
       def configure_stdout_logger
-        stdout_logger = Logger.new(STDOUT)
+        stdout_logger = MonoLogger.new(STDOUT)
         STDOUT.sync = true
         stdout_logger.formatter = Chef::Log.logger.formatter
         Chef::Log.loggers <<  stdout_logger
