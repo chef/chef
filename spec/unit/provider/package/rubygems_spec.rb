@@ -95,6 +95,18 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should == Gem::Version.new('1.3.0')
   end
 
+  it "finds a matching gem candidate version on rubygems 2.0.0+" do
+    dep = Gem::Dependency.new('rspec', '>= 0')
+    dep_installer = Gem::DependencyInstaller.new
+    @gem_env.stub!(:dependency_installer).and_return(dep_installer)
+    best_gem = mock("best gem match", :spec => gemspec("rspec", Gem::Version.new("1.3.0")), :source => "https://rubygems.org")
+    available_set = mock("Gem::AvailableSet test double")
+    available_set.should_receive(:pick_best!)
+    available_set.should_receive(:set).and_return([best_gem])
+    dep_installer.should_receive(:find_gems_with_sources).with(dep).and_return(available_set)
+    @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should == Gem::Version.new('1.3.0')
+  end
+
   it "gives the candidate version as nil if none is found" do
     dep = Gem::Dependency.new('rspec', '>= 0')
     latest = []

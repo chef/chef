@@ -31,7 +31,14 @@ require 'rubygems/version'
 require 'rubygems/dependency'
 require 'rubygems/spec_fetcher'
 require 'rubygems/platform'
-require 'rubygems/format'
+
+# Compatibility note: Rubygems 2.0 removes rubygems/format in favor of
+# rubygems/package.
+begin
+  require 'rubygems/format'
+rescue LoadError
+  require 'rubygems/package'
+end
 require 'rubygems/dependency_installer'
 require 'rubygems/uninstaller'
 require 'rubygems/specification'
@@ -106,6 +113,22 @@ class Chef
           end
 
           ##
+          # Extracts the gemspec from a (on-disk) gem package.
+          # === Returns
+          # Gem::Specification
+          #
+          #--
+          # Compatibility note: Rubygems 1.x uses Gem::Format, 2.0 moved this
+          # code into Gem::Package.
+          def spec_from_file(file)
+            if defined?(Gem::Format)
+              Gem::Format.from_file_by_path(source).spec
+            else
+              Gem::Package.new(file).spec
+            end
+          end
+
+          ##
           # Determines the candidate version for a gem from a .gem file on disk
           # and checks if it matches the version contraints in +gem_dependency+
           # === Returns
@@ -114,7 +137,7 @@ class Chef
           # nil           returns nil if the gem on disk doesn't match the
           #               version constraints for +gem_dependency+
           def candidate_version_from_file(gem_dependency, source)
-            spec = Gem::Format.from_file_by_path(source).spec
+            spec = spec_from_file(source)
             if spec.satisfies_requirement?(gem_dependency)
               logger.debug {"#{@new_resource} found candidate gem version #{spec.version} from local gem package #{source}"}
               spec.version
@@ -142,17 +165,26 @@ class Chef
           # Find the newest gem version available from Gem.sources that satisfies
           # the constraints of +gem_dependency+
           def find_newest_remote_version(gem_dependency, *sources)
-            # DependencyInstaller sorts the results such that the last one is
-            # always the one it considers best.
-            spec_with_source = dependency_installer.find_gems_with_sources(gem_dependency).last
+            available_gems = dependency_installer.find_gems_with_sources(gem_dependency)
+            spec, source = if available_gems.respond_to?(:last)
+              # DependencyInstaller sorts the results such that the last one is
+              # always the one it considers best.
+              spec_with_source = available_gems.last
+              spec_with_source && spec_with_source
+            else
+              # Rubygems 2.0 returns a Gem::Available set, which is a
+              # collection of AvailableSet::Tuple structs
+              available_gems.pick_best!
+              best_gem = available_gems.set.first
+              best_gem && [best_gem.spec, best_gem.source]
+            end
 
-            spec = spec_with_source && spec_with_source[0]
-            version = spec && spec_with_source[0].version
+            version = spec && spec.version
             if version
-              logger.debug { "#{@new_resource} found gem #{spec.name} version #{version} for platform #{spec.platform} from #{spec_with_source[1]}" }
+              logger.debug { "#{@new_resource} found gem #{spec.name} version #{version} for platform #{spec.platform} from #{source}" }
               version
             else
-              source_list = sources.compact.empty? ? "[#{Gem.sources.join(', ')}]" : "[#{sources.join(', ')}]"
+              source_list = sources.compact.empty? ? "[#{Gem.sources.to_a.join(', ')}]" : "[#{sources.join(', ')}]"
               logger.warn { "#{@new_resource} failed to find gem #{gem_dependency} from #{source_list}" }
               nil
             end
