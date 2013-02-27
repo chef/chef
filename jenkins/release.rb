@@ -31,9 +31,10 @@
 # tests, run rspec with this file as the argument, e.g.,
 # `rspec -cfs release.rb`.
 
+require 'optparse'
+require 'digest'
 require 'rubygems'
 require 'json'
-require 'optparse'
 require 'mixlib/shellout'
 
 # Represnts the collection of artifacts on disk that we plan to upload. Handles
@@ -134,6 +135,35 @@ class Artifact
     release_manifest
   end
 
+  # Adds the package to +release_manifest+, which is a Hash. The result is in this form:
+  #   "el" => {
+  #     "5" => {
+  #       "x86_64" => {
+  #         "11.4.0-1" => {
+  #           "relpath" => "/el/5/x86_64/demoproject-11.4.0-1.el5.x86_64.rpm",
+  #           "md5" => "123f00d...",
+  #           "sha256" => 456beef..."
+  #         }
+  #       }
+  #     }
+  #   }
+  # This method mutates the argument (hence the `!` at the end). The updated
+  # release manifest is returned.
+  def add_to_v2_release_manifest!(release_manifest)
+    platforms.each do |distro, version, arch|
+      pkg_info = {
+        "relpath" => relpath,
+        "md5" => md5,
+        "sha256" => sha256
+      }
+
+      release_manifest[distro] ||= {}
+      release_manifest[distro][version] ||= {}
+      release_manifest[distro][version][arch] = { build_version => pkg_info  }
+    end
+    release_manifest
+  end
+
   def build_platform
     platforms.first
   end
@@ -148,23 +178,23 @@ class Artifact
   end
 
   def md5
-    digest(Digest::MD5)
+    @md5 ||= digest(Digest::MD5)
   end
 
-  def sha256_file
-    digest(Digest::SHA256)
+  def sha256
+    @sha256 ||= digest(Digest::SHA256)
   end
 
   private
 
   def digest(digest_class)
+    digest = digest_class.new
     File.open(path) do |io|
-      digest = digest_class.new
       while chunk = io.read(1024 * 8)
         digest.update(chunk)
       end
-      digest.hexdigest
     end
+    digest.hexdigest
   end
 end
 
@@ -184,12 +214,16 @@ class ShipIt
     artifacts = artifact_collection.artifacts
 
     metadata = {}
+    v2_metadata = {}
+
     artifacts.each do |artifact|
       artifact.add_to_release_manifest!(metadata)
+      artifact.add_to_v2_release_manifest!(v2_metadata)
       upload_package(artifact.path, artifact.relpath)
     end
     upload_platform_name_map(artifact_collection.platform_name_map_path)
     upload_manifest(metadata)
+    upload_v2_manifest(v2_metadata) if upload_v2_manifest?
   end
 
   def option_parser
@@ -208,6 +242,14 @@ class ShipIt
         options[:bucket] = bucket
       end
 
+      opts.on("-M", "--metadata-bucket S3_BUCKET_NAME", "the name of the S3 bucket for v2 metadata") do |bucket|
+        options[:metadata_bucket] = bucket
+      end
+
+      opts.on("-m", "--metadata-s3-config S3_CMD_CONFIG_FILE", "path to the s3cmd config file for the v2 metadata AWS account") do |config_path|
+        options[:metadata_s3_config_file] = config_path
+      end
+
       opts.on("--ignore-missing-packages",
               "indicates the release should continue if any build packages are missing") do |missing|
         options[:ignore_missing_packages] = missing
@@ -223,6 +265,15 @@ class ShipIt
       # this file should be the same across all platforms so grab the first one
       build_version_file = Dir['**/pkg/BUILD_VERSION'].first
       options[:version] = IO.read(build_version_file).chomp if build_version_file
+    end
+
+    # metadata bucket and config file must be configured together
+    if (options[:metadata_bucket].nil? ^ options[:metadata_s3_config_file].nil?)
+      puts "You must specify *both* metadata-bucket and metadata-s3-config to upload v2 metadata"
+      puts "If you don't want to upload v2 metadata, don't specify either of these options"
+      puts ""
+      puts option_parser
+      exit 1
     end
 
     required = [:project, :version, :bucket]
@@ -268,6 +319,21 @@ class ShipIt
     shell.error!
   end
 
+  def upload_v2_manifest(manifest)
+    File.open("v2-release-manifest.json", "w") {|f| f.puts JSON.pretty_generate(manifest)}
+
+    s3_location = "s3://#{options[:metadata_bucket]}/#{options[:project]}-release-manifest/#{options[:version]}.json"
+    puts "UPLOAD: v2-release-manifest.json -> #{s3_location}"
+    s3_cmd = ["s3cmd",
+              "-c #{options[:metadata_s3_config_file]}",
+              "put",
+              "v2-release-manifest.json",
+              s3_location].join(" ")
+    shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
+    shell.run_command
+    shell.error!
+  end
+
   def upload_platform_name_map(platform_names_file)
     s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-names.json"
     puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
@@ -278,6 +344,10 @@ class ShipIt
     shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
     shell.run_command
     shell.error!
+  end
+
+  def upload_v2_manifest?
+    !options[:metadata_bucket].nil?
   end
 end
 
@@ -334,7 +404,7 @@ E
     "el" : "Enterprise Linux",
     "debian" : "Debian",
     "mac_os_x" : "OS X",
-    "ubuntu" : "Ubuntu", 
+    "ubuntu" : "Ubuntu",
     "solaris2" : "Solaris",
     "sles" : "SUSE Enterprise",
     "suse" : "openSUSE",
@@ -445,6 +515,12 @@ E
 
     let(:path) { "build_os=centos-5,machine_architecture=x86,role=oss-builder/pkg/demoproject-11.4.0-1.el5.x86_64.rpm" }
 
+    let(:content) { StringIO.new("this is the package content\n") }
+
+    let(:md5) { "d41d8cd98f00b204e9800998ecf8427e" }
+
+    let(:sha256) { "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+
     let(:platforms) { [ [ "el", "5", "x86_64" ], [ "sles","11.2","x86_64" ] ] }
 
     let(:artifact) { Artifact.new(path, platforms, { :version => "11.4.0-1" }) }
@@ -455,6 +531,16 @@ E
 
     it "has a list of platforms the package supports" do
       artifact.platforms.should == platforms
+    end
+
+    it "generates a MD5 of an artifact" do
+      File.should_receive(:open).with(path).and_return(content)
+      artifact.md5.should == md5
+    end
+
+    it "generates a SHA256 of an artifact" do
+      File.should_receive(:open).with(path).and_return(content)
+      artifact.sha256.should == sha256
     end
 
     it "adds the package to a release manifest" do
@@ -469,6 +555,32 @@ E
 
       manifest = artifact.add_to_release_manifest!({})
       manifest.should == expected
+    end
+
+    it "adds the package to a v2 release manifest" do
+      File.should_receive(:open).with(path).twice.and_return(content)
+      expected = {
+        "el" => {
+          "5" => { "x86_64" => { "11.4.0-1" => {
+            "relpath" => "/el/5/x86_64/demoproject-11.4.0-1.el5.x86_64.rpm",
+            "md5" => md5,
+            "sha256" => sha256
+              }
+            }
+          }
+        },
+        "sles" => {
+          "11.2" => { "x86_64" => { "11.4.0-1" => {
+            "relpath" => "/el/5/x86_64/demoproject-11.4.0-1.el5.x86_64.rpm",
+            "md5" => md5,
+            "sha256" => sha256
+              }
+            }
+          }
+        }
+      }
+      v2_manifest = artifact.add_to_v2_release_manifest!({})
+      v2_manifest.should == expected
     end
 
   end
