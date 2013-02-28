@@ -39,6 +39,15 @@ describe Mash do
     @orig[:z].should == [1,2,3] 
   end
 
+  it "should duplicate a nested mash to a new mash" do
+    data = {:x=>"one", :y=>"two", :z=>Mash.new({:a=>[1,2,3]})}
+    @orig = Mash.new(data)
+    @copy = @orig.dup
+    @copy.to_hash.should == Mash.new(data).to_hash
+    @copy[:z][:a] << 4
+    @orig[:z][:a].should == [1,2,3] 
+  end
+
   it "should convert an immutable nested mash to a new mutable hash" do
     data = {'x'=>"one", 'y'=>"two", 'z'=>{'a'=>[1,2,3]}}
     immutable_data = {'x'=>"one", 'y'=>"two", 'z'=>Chef::Node::ImmutableMash.new({'a'=>[1,2,3]})}
