@@ -106,7 +106,8 @@ class Chef
           end
           result
         end
-      end
+
+      end # class DataHandlerBase
     end
   end
 end

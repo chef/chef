@@ -2,9 +2,6 @@ require 'support/shared/integration/integration_helper'
 require 'chef/knife/upload'
 require 'chef/knife/diff'
 
-# TMP
-require 'chef/knife/cookbook_list'
-
 describe 'knife upload' do
   extend IntegrationSupport
   include KnifeSupport
@@ -182,7 +179,6 @@ Created /environments/y.json
 Created /roles/y.json
 EOM
 
-          knife('cookbook list --all')
           knife('diff --name-status /').should_succeed ''
         end
       end # with versioned cookbooks
