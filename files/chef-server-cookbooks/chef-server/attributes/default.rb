@@ -129,7 +129,6 @@ default['chef_server']['erchef']['s3_url_ttl'] = 900
 default['chef_server']['erchef']['s3_parallel_ops_timeout'] = 5000
 default['chef_server']['erchef']['s3_parallel_ops_fanout'] = 20
 default['chef_server']['erchef']['proxy_user'] = "pivotal"
-default['chef_server']['erchef']['url'] = "http://127.0.0.1:8000"
 default['chef_server']['erchef']['validation_client_name'] = "chef-validator"
 default['chef_server']['erchef']['umask'] = "0022"
 default['chef_server']['erchef']['web_ui_client_name'] = "chef-webui"
