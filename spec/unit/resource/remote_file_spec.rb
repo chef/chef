@@ -112,7 +112,7 @@ describe Chef::Resource::RemoteFile do
     it "should parse a date string for the last_modified object" do
       time = Time.now
       @resource.last_modified time.to_s
-      @resource.last_modified.should == time.gmtime
+      @resource.last_modified.to_i.should eql(time.to_i)
     end
 
     it "should default to nil" do
@@ -122,7 +122,7 @@ describe Chef::Resource::RemoteFile do
     it "should accept a Time" do
       time = Time.now
       @resource.last_modified time
-      @resource.last_modified.should == time.gmtime
+      @resource.last_modified.to_i.should eql(time.to_i)
     end
   end
 

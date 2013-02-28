@@ -214,13 +214,13 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should fetch with ftp in passive mode" do
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch_if_modified).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), nil, false, nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
 
       it "should fetch with ftp in active mode" do
         @resource.ftp_active_mode true
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch_if_modified).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), nil, true, nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end
@@ -231,8 +231,13 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should load the local file" do
-        File.should_receive(:mtime).with("/nyan_cat.png").and_return(Time.now)
-        File.should_receive(:new).with("/nyan_cat.png", "r").and_return(File.open(File.join(CHEF_SPEC_DATA, "remote_file", "nyan_cat.png"), "r"))
+        file = mock(File, { })
+        File.stub!(:new).and_return(file)
+        file.stub!(:close!)
+				file.stub!(:mtime)
+				file.stub!(:path).and_return(File.join(CHEF_SPEC_DATA, "remote_file", "nyan_cat.png"))
+        File.should_receive(:new).with("/nyan_cat.png").and_return(file)
+				file.should_receive(:mtime).and_return(Time.now)
         @provider.run_action(:create)
       end
     end
