@@ -186,6 +186,19 @@ class Mash < Hash
     Hash.new(default).merge(self)
   end
 
+  # @return [Hash] The mash as a Hash with string keys, recursively copied to restore mutability 
+  def to_hash_deep
+    h = Hash.new
+    each_pair do |k,v|
+      if v.respond_to?(:to_hash_deep)
+        h[k] = v.to_hash_deep
+      else
+        h[k] = v                 
+      end                      
+    end 
+    h   
+  end 
+
   # @return [Mash] Convert a Hash into a Mash
   # The input Hash's default value is maintained
   def self.from_hash(hash)
