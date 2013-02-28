@@ -48,6 +48,7 @@ class Chef
         @overwrite = true
         @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
+        @type = "files"
         @provider = Chef::Provider::RemoteDirectory
       end
 
@@ -116,6 +117,14 @@ class Chef
       def cookbook(args=nil)
         set_or_return(
           :cookbook,
+          args,
+          :kind_of => String
+        )
+      end 
+
+      def type(args=nil)
+        set_or_return(
+          :type,
           args,
           :kind_of => String
         )
