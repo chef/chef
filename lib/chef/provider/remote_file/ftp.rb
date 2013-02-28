@@ -43,7 +43,7 @@ class Chef
 
         # Parse the uri into instance variables
         def initialize(uri, proxy_uri, ftp_active_mode)
-          ENV[SOCKS_SERVER] = proxy_uri.to_s
+          ENV['SOCKS_SERVER'] = proxy_uri.to_s
           @directories, @filename = parse_path(uri.path)
           @typecode = uri.typecode
           # Only support ascii and binary types

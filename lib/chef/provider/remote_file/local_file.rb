@@ -41,11 +41,6 @@ class Chef
           close
         end
 
-        # Parse the uri into instance variables
-        def initialize(uri, mode="r")
-          super(uri.path, mode)
-        end
-
       end
     end
   end

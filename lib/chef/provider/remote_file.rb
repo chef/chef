@@ -136,7 +136,11 @@ class Chef
       def grab_file_from_uri(uri)
         if_modified_since = @new_resource.last_modified
         if_none_match = @new_resource.etag
-        if uri.to_s == @current_resource.source[0]
+        uri_dup = uri.dup
+        if uri_dup.userinfo
+          uri_dup.password = "********"
+        end
+        if uri_dup.to_s == @current_resource.source[0]
           if_modified_since ||= @current_resource.last_modified
           if_none_match ||= @current_resource.etag
         end
