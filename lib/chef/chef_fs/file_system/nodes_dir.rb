@@ -29,20 +29,14 @@ class Chef
           super("nodes", parent, nil, Chef::ChefFS::DataHandler::NodeDataHandler.new)
         end
 
-        # Override children to respond to environment
-        # TODO let's not do this mmkay
-        def children
-          @children ||= begin
-            env_api_path = environment ? "environments/#{environment}/#{api_path}" : api_path
-            rest.get_rest(env_api_path).keys.sort.map { |key| RestListEntry.new("#{key}.json", self, true) }
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            else
-              raise
-            end
-          end
-      end
+        # Override to respond to environment
+        def chef_collection
+          rest.get_rest(env_api_path)
+        end
+
+        def env_api_path
+          environment ? "environments/#{environment}/#{api_path}" : api_path
+        end
       end
     end
   end

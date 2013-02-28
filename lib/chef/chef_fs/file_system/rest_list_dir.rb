@@ -45,7 +45,7 @@ class Chef
 
         def children
           begin
-            @children ||= rest.get_rest(api_path).keys.sort.map do |key|
+            @children ||= chef_collection.keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
           rescue Net::HTTPServerException => e
@@ -55,6 +55,10 @@ class Chef
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e)
             end
           end
+        end
+
+        def chef_collection
+          rest.get_rest(api_path)
         end
 
         def identity_key

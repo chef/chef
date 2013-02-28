@@ -28,46 +28,59 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
       :client_key => 'key'
     }, 'everything')
   }
-  let(:data_bags_dir) { root_dir.child('data_bags') }
-  let(:should_list_data_bags) do
-    @rest.should_receive(:get_rest).with('data').once.and_return(
-      {
-        "achild" => "http://opscode.com/achild",
-        "bchild" => "http://opscode.com/bchild"
-      })
-  end
-  before(:each) do
-    @rest = double("rest")
-    Chef::REST.stub(:new).with('url','username','key') { @rest }
+
+  let(:data_bags_dir) do
+    root_dir.child('data_bags').tap do |artifact|
+      artifact.stub(:chef_collection).and_return(chef_collection)
+    end
   end
 
-  it 'has / as parent' do
-    data_bags_dir.parent.should == root_dir
+  let(:should_list_data_bags) { }  # noop. Remove before committing
+
+  let(:chef_collection) do
+    {
+      "achild" => "http://opscode.com/achild",
+      "bchild" => "http://opscode.com/bchild"
+    }
   end
-  it 'is a directory' do
-    data_bags_dir.dir?.should be_true
+
+  let(:item_collection) do
+    {
+      "aitem" => "http://opscode.com/achild",
+      "bitem" => "http://opscode.com/bchild"
+    }
   end
-  it 'exists' do
-    data_bags_dir.exists?.should be_true
-  end
-  it 'has name data_bags' do
-    data_bags_dir.name.should == 'data_bags'
-  end
-  it 'has path /data_bags' do
-    data_bags_dir.path.should == '/data_bags'
-  end
-  it 'has path_for_printing remote/data_bags' do
-    data_bags_dir.path_for_printing.should == 'remote/data_bags'
-  end
-  it 'has correct children' do
-    should_list_data_bags
-    data_bags_dir.children.map { |child| child.name }.should =~ %w(achild bchild)
-  end
-  it 'can have directories as children' do
-    data_bags_dir.can_have_child?('blah', true).should be_true
-  end
-  it 'cannot have files as children' do
-    data_bags_dir.can_have_child?('blah', false).should be_false
+
+  context 'code contract' do
+
+    it 'has / as parent' do
+      data_bags_dir.parent.should == root_dir
+    end
+    it 'is a directory' do
+      data_bags_dir.dir?.should be_true
+    end
+    it 'exists' do
+      data_bags_dir.exists?.should be_true
+    end
+    it 'has name data_bags' do
+      data_bags_dir.name.should == 'data_bags'
+    end
+    it 'has path /data_bags' do
+      data_bags_dir.path.should == '/data_bags'
+    end
+    it 'has path_for_printing remote/data_bags' do
+      data_bags_dir.path_for_printing.should == 'remote/data_bags'
+    end
+    it 'has correct children' do
+      should_list_data_bags
+      data_bags_dir.children.map { |child| child.name }.should =~ %w(achild bchild)
+    end
+    it 'can have directories as children' do
+      data_bags_dir.can_have_child?('blah', true).should be_true
+    end
+    it 'cannot have files as children' do
+      data_bags_dir.can_have_child?('blah', false).should be_false
+    end
   end
 
   shared_examples_for 'a data bag item' do
@@ -90,11 +103,14 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
     it 'has correct path_for_printing' do
       data_bag_item.path_for_printing.should == "remote/data_bags/#{data_bag_dir_name}/#{data_bag_item_name}"
     end
+
     it 'reads correctly' do
-      @rest.should_receive(:get_rest).with("data/#{data_bag_dir_name}/#{data_bag_item_short_name}").once.and_return({
-        'a' => 'b'
-      })
-      data_bag_item.read.should == '{
+      data_bag_item.should_receive(:raw_request).
+        with("data/#{data_bag_dir_name}/#{data_bag_item_short_name}").
+        once.and_return({'a' => 'b'}.to_json)
+
+      data_bag_item.read.should ==
+'{
   "id": "aitem",
   "a": "b"
 }'
@@ -102,13 +118,8 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
   end
 
   shared_examples_for 'a data bag' do
-    let(:should_list_data_bag_items) do
-      @rest.should_receive(:get_rest).with("data/#{data_bag_dir_name}").once.and_return(
-      {
-        "aitem" => "http://opscode.com/achild",
-        "bitem" => "http://opscode.com/bchild"
-      })
-    end
+    let(:should_list_data_bag_items) { data_bag_dir.should_receive(:chef_collection).once.and_return(item_collection) }
+
     it 'has /data as a parent' do
       data_bag_dir.parent.should == data_bags_dir
     end
@@ -174,7 +185,11 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
         nonexistent_child.dir?.should be_false
       end
       it 'read returns NotFoundError' do
-        @rest.should_receive(:get_rest).with("data/#{data_bag_dir_name}/blah").once.and_raise(Net::HTTPServerException.new(nil,Net::HTTPResponse.new(nil,'404',nil)))
+        nonexistent_child.should_receive(:raw_request).
+          with("data/#{data_bag_dir_name}/blah").
+          once.
+          and_raise(Net::HTTPServerException.new(nil,Net::HTTPResponse.new(nil,'404',nil)))
+
         expect { nonexistent_child.read }.to raise_error(Chef::ChefFS::FileSystem::NotFoundError)
       end
     end
@@ -182,7 +197,6 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
 
   context 'achild from data_bags.children' do
     let(:data_bag_dir) do
-      should_list_data_bags
       data_bags_dir.children.select { |child| child.name == 'achild' }.first
     end
     let(:data_bag_dir_name) { 'achild' }

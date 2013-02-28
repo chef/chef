@@ -20,6 +20,24 @@ require 'spec_helper'
 require 'chef/chef_fs/file_system/chef_server_root_dir'
 
 describe Chef::ChefFS::FileSystem::ChefServerRootDir do
+
+  let(:should_receive_children) { endpoint.should_receive(:chef_collection).once.and_return(chef_collection) }
+  let(:should_receive_read) { endpoint_leaf.should_receive(:chef_hash).once.and_return(chef_hash) }
+  let(:should_throw_404) do
+    nonexistent_child.should_receive(:raw_request).
+      with("#{endpoint_name}/blah").
+      once.and_raise(Net::HTTPServerException.new(nil,Net::HTTPResponse.new(nil,'404',nil)))
+  end
+
+  let(:chef_collection) do
+    {
+      "achild" => "http://opscode.com/achild",
+      "bchild" => "http://opscode.com/bchild"
+    }
+  end
+
+  let(:chef_hash) { { 'a' => 'b' } }
+
   shared_examples 'a json endpoint dir leaf' do
     it 'parent is endpoint' do
       endpoint_leaf.parent.should == endpoint
@@ -41,16 +59,14 @@ describe Chef::ChefFS::FileSystem::ChefServerRootDir do
       endpoint_leaf.exists?.should be_true
     end
     it 'read returns content' do
-      @rest.should_receive(:get_rest).with("#{endpoint_name}/#{endpoint_leaf_name}").once.and_return(
-        {
-          'a' => 'b'
-        })
+      should_receive_read
       endpoint_leaf.read.should == '{
   "name": "achild",
   "a": "b"
 }'
     end
   end
+
 
   shared_examples 'a json rest endpoint dir' do
     it 'parent is root' do
@@ -81,17 +97,13 @@ describe Chef::ChefFS::FileSystem::ChefServerRootDir do
       endpoint.can_have_child?('blah', true).should be_false
       endpoint.can_have_child?('blah.json', true).should be_false
     end
-    let(:should_receive_children) {
-      @rest.should_receive(:get_rest).with(endpoint_name).once.and_return(
-        {
-          "achild" => "http://opscode.com/achild",
-          "bchild" => "http://opscode.com/bchild"
-        })
-    }
+
+
     it 'has correct children' do
       should_receive_children
       endpoint.children.map { |child| child.name }.should =~ %w(achild.json bchild.json)
     end
+
     context 'achild in endpoint.children' do
       let(:endpoint_leaf_name) { 'achild' }
       let(:endpoint_leaf) do
@@ -121,7 +133,7 @@ describe Chef::ChefFS::FileSystem::ChefServerRootDir do
         nonexistent_child.dir?.should be_false
       end
       it 'read returns NotFoundError' do
-        @rest.should_receive(:get_rest).with("#{endpoint_name}/blah").once.and_raise(Net::HTTPServerException.new(nil,Net::HTTPResponse.new(nil,'404',nil)))
+        should_throw_404
         expect { nonexistent_child.read }.to raise_error(Chef::ChefFS::FileSystem::NotFoundError)
       end
     end
@@ -135,10 +147,12 @@ describe Chef::ChefFS::FileSystem::ChefServerRootDir do
       :client_key => 'key'
     }, 'everything')
   }
+
   before(:each) do
     @rest = double("rest")
     Chef::REST.stub(:new).with('url','username','key') { @rest }
   end
+
   context 'the root directory' do
     it 'has no parent' do
       root_dir.parent.should == nil
