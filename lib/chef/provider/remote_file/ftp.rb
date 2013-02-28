@@ -26,30 +26,24 @@ class Chef
     class RemoteFile
       class FTP
 
-        # Fetches the file at uri using Net::FTP, returning a Tempfile
-        def self.fetch(uri, ftp_active_mode)
-          ftp = self.new(uri, ftp_active_mode)
-          ftp.connect
-          tempfile = ftp.fetch
-          ftp.disconnect
-          tempfile
-        end
-
-        def self.fetch_if_modified(uri, ftp_active_mode, last_modified)
-          ftp = self.new(uri, ftp_active_mode)
+        def self.fetch(uri, proxy_uri, ftp_active_mode, last_modified)
+          ftp = self.new(uri, proxy_uri, ftp_active_mode)
           ftp.connect
           mtime = ftp.mtime
           if mtime && last_modified && mtime.to_i <= last_modified.to_i
             tempfile = nil
+            target_matched = true
           else
             tempfile = ftp.fetch
+            target_matched = false
           end
           ftp.disconnect
-          return tempfile, mtime
+          return tempfile, mtime, target_matched
         end
 
         # Parse the uri into instance variables
-        def initialize(uri, ftp_active_mode)
+        def initialize(uri, proxy_uri, ftp_active_mode)
+          ENV[SOCKS_SERVER] = proxy_uri.to_s
           @directories, @filename = parse_path(uri.path)
           @typecode = uri.typecode
           # Only support ascii and binary types

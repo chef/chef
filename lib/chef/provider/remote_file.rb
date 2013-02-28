@@ -30,13 +30,13 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
+        super
         fileinfo = load_fileinfo
-        if fileinfo["src"]
+        if fileinfo && fileinfo["checksum"] == @current_resource.checksum
           @current_resource.etag fileinfo["etag"]
           @current_resource.last_modified fileinfo["last_modified"]
           @current_resource.source fileinfo["src"]
         end
-        super
       end
 
       def action_create
@@ -51,6 +51,7 @@ class Chef
             Chef::Log.info("#{@new_resource} matched #{raw_file_source}, not updating")
           elsif matches_current_checksum?(raw_file)
             Chef::Log.info("#{@new_resource} downloaded from #{raw_file_source}, checksums match, not updating")
+            raw_file.close!
           else
             Chef::Log.info("#{@new_resource} downloaded from #{raw_file_source}")
             description = [] 
@@ -61,6 +62,7 @@ class Chef
               FileUtils.cp raw_file.path, @new_resource.path
               Chef::Log.info "#{@new_resource} updated"
               raw_file.close!
+              save_fileinfo(raw_file_source)
             end
             # whyrun mode cleanup - the temp file will never be used,
             # so close/unlink it here. 
@@ -79,9 +81,9 @@ class Chef
 
       def matches_current_checksum?(candidate_file)
         Chef::Log.debug "#{@new_resource} checking for file existence of #{@new_resource.path}"
+        @new_resource.checksum(checksum(candidate_file.path))
         if ::File.exists?(@new_resource.path)
           Chef::Log.debug "#{@new_resource} file exists at #{@new_resource.path}"
-          @new_resource.checksum(checksum(candidate_file.path))
           Chef::Log.debug "#{@new_resource} target checksum: #{@current_resource.checksum}"
           Chef::Log.debug "#{@new_resource} source checksum: #{@new_resource.checksum}"
 
@@ -134,84 +136,60 @@ class Chef
       def grab_file_from_uri(uri)
         if_modified_since = @new_resource.last_modified
         if_none_match = @new_resource.etag
-        if uri == @current_resource.source[0]
+        if uri.to_s == @current_resource.source[0]
           if_modified_since ||= @current_resource.last_modified
           if_none_match ||= @current_resource.etag
         end
         if URI::HTTP === uri
           #HTTP or HTTPS
-          raw_file, last_modified, etag, target_matched = http_fetch(uri, if_modified_since, if_none_match)
+          raw_file, mtime, etag, target_matched = HTTP::fetch(uri, proxy_uri(uri), if_modified_since, if_none_match)
         elsif URI::FTP === uri
           #FTP
-          raw_file, last_modified = FTP::fetch_if_modified(uri, @new_resource.ftp_active_mode, if_modified_since)
+          raw_file, mtime, target_matched = FTP::fetch(uri, proxy_uri(uri), @new_resource.ftp_active_mode, if_modified_since)
           etag = nil
-          target_matched = last_modified && if_modified_since && last_modified.to_i <= if_modified_since.to_i
         elsif uri.scheme == "file"
           #local/network file
-          last_modified = ::File.mtime(uri.path)
+          raw_file, mtime, target_matched = LocalFile::fetch(uri, if_modified_since)
           etag = nil
-          raw_file = ::File.new(uri.path, "r")
-          def raw_file.close!
-            self.close
-          end
-          target_mathed = last_modified && if_modified_since && last_modified.to_i <= if_modified_since.to_i
         else
           raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
         end
         unless target_matched
           @new_resource.etag etag unless @new_resource.etag
-          @new_resource.last_modified last_modified unless @new_resource.last_modified
-          save_fileinfo(uri)
+          @new_resource.last_modified mtime unless @new_resource.last_modified
         end
         return raw_file, target_matched
       end
 
-      def http_fetch(uri, if_modified_since, if_none_match)
-        last_modified = nil
-        etag = nil
-        target_matched = false
-        begin
-          headers = Hash.new
-          if if_none_match
-            headers[:if_none_match] = "\"#{if_none_match}\""
-          elsif if_modified_since
-            headers[:if_modified_since] = if_modified_since.strftime("%a, %d %b %Y %H:%M:%S %Z")
-          end
-          rest = RestClient::Request.execute(:method => :get, :url => uri.to_s, :headers => headers, :raw_response => true)
-          raw_file = rest.file
-          if rest.headers.include?(:last_modified)
-            last_modified = Time.parse(rest.headers[:last_modified])
-          end
-          if rest.headers.include?(:etag)
-            etag = rest.headers[:etag]
-          end
-        rescue RestClient::Exception => e
-          if e.http_code == 304
-            target_matched = true
-          else
-            raise e
-          end
+      #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
+      def proxy_uri(uri)
+        proxy = Chef::Config["#{uri.scheme}_proxy"]
+        proxy = URI.parse(proxy) if String === proxy
+        if Chef::Config["#{uri.scheme}_proxy_user"]
+          proxy.user = Chef::Config["#{uri.scheme}_proxy_user"]
         end
-        return raw_file, last_modified, etag, target_matched
+        if Chef::Config["#{uri.scheme}_proxy_pass"]
+          proxy.password = Chef::Config["#{uri.scheme}_proxy_pass"]
+        end
+        excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
+        excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
+        return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
       end
 
       def load_fileinfo
         begin
           Chef::JSONCompat.from_json(Chef::FileCache.load("remote_file/#{new_resource.name}"))
         rescue Chef::Exceptions::FileNotFound
-          cache = Hash.new
-          cache["etag"] = nil
-          cache["last_modified"] = nil
-          cache["src"] = nil
-          cache
+          nil
         end
       end
 
-      def save_fileinfo(uri)
+      def save_fileinfo(source)
         cache = Hash.new
         cache["etag"] = @new_resource.etag
         cache["last_modified"] = @new_resource.last_modified
-        cache["src"] = uri
+        cache["src"] = source
+        cache["checksum"] = @new_resource.checksum
         Chef::FileCache.store("remote_file/#{new_resource.name}", cache.to_json)
       end
     end
