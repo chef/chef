@@ -115,6 +115,11 @@ module ChefServer
       ChefServer["lb"]["web_ui_fqdn"] ||= ChefServer['api_fqdn']
       ChefServer["nginx"]["server_name"] ||= ChefServer['api_fqdn']
       ChefServer["nginx"]["url"] ||= "https://#{ChefServer['api_fqdn']}"
+      # append the ssl_port to the nginx url if one was configured
+      if ChefServer["nginx"]["ssl_port"]
+        ChefServer["nginx"]["url"] << ":#{ChefServer["nginx"]["ssl_port"]}"
+      end
+      ChefServer["bookshelf"]["url"] ||= ChefServer["nginx"]["url"]
     end
 
     def generate_config(node_name)

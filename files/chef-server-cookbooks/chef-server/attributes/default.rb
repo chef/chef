@@ -98,6 +98,7 @@ default['chef_server']['bookshelf']['log_directory'] = "/var/log/chef-server/boo
 default['chef_server']['bookshelf']['svlogd_size'] = 1000000
 default['chef_server']['bookshelf']['svlogd_num'] = 10
 default['chef_server']['bookshelf']['vip'] = node['fqdn']
+default['chef_server']['bookshelf']['url'] = "https://#{node['fqdn']}"
 default['chef_server']['bookshelf']['listen'] = '127.0.0.1'
 default['chef_server']['bookshelf']['port'] = 4321
 default['chef_server']['bookshelf']['stream_download'] = true
