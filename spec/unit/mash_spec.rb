@@ -18,6 +18,7 @@
 
 require 'spec_helper'
 require 'chef/mash'
+require 'chef/node/immutable_collections'
 
 describe Mash do
   it "should duplicate a simple key/value mash to a new mash" do
@@ -38,13 +39,16 @@ describe Mash do
     @orig[:z].should == [1,2,3] 
   end
 
-  it "should duplicate a nested mash to a new mash" do
-    data = {:x=>"one", :y=>"two", :z=>Mash.new({:a=>[1,2,3]})}
-    @orig = Mash.new(data)
-    @copy = @orig.dup
-    @copy.to_hash.should == Mash.new(data).to_hash
-    @copy[:z][:a] << 4
-    @orig[:z][:a].should == [1,2,3] 
+  it "should convert an immutable nested mash to a new mutable hash" do
+    data = {'x'=>"one", 'y'=>"two", 'z'=>{'a'=>[1,2,3]}}
+    immutable_data = {'x'=>"one", 'y'=>"two", 'z'=>Chef::Node::ImmutableMash.new({'a'=>[1,2,3]})}
+    @orig = Chef::Node::ImmutableMash.new(data)
+    @copy = @orig.to_hash_deep
+    @copy.should be_a(Hash)
+    @copy['z'].should be_a(Hash)
+    @copy.should == data
+    @copy['z']['a'] = [2,3,4]
+    @copy.should_not == data
   end
 
   # add more!
