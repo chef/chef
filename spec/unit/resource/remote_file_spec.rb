@@ -92,6 +92,40 @@ describe Chef::Resource::RemoteFile do
     end
   end
 
+  describe "etag" do
+    it "should accept a string for the etag object" do
+      @resource.etag "asdf"
+      @resource.etag.should eql("asdf")
+    end
+
+    it "should default to nil" do
+      @resource.etag.should == nil
+    end
+
+    it "should strip extra quotes and data" do
+      @resource.etag 'W/"asdf"'
+      @resource.etag.should eql("asdf")
+    end
+  end
+
+  describe "last_modified" do
+    it "should parse a date string for the last_modified object" do
+      time = Time.now
+      @resource.last_modified time.to_s
+      @resource.last_modified.should == time.gmtime
+    end
+
+    it "should default to nil" do
+      @resource.last_modified.should == nil
+    end
+
+    it "should accept a Time" do
+      time = Time.now
+      @resource.last_modified time
+      @resource.last_modified.should == time.gmtime
+    end
+  end
+
   describe "when it has group, mode, owner, source, and checksum" do
     before do 
       if Chef::Platform.windows?
