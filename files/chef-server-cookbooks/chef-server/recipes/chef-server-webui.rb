@@ -104,8 +104,11 @@ link "/opt/chef-server/embedded/service/chef-server-webui/config.ru" do
   to config_ru
 end
 
+unicorn_listen = node['chef_server']['chef-server-webui']['listen']
+unicorn_listen << ":#{node['chef_server']['chef-server-webui']['port']}"
+
 unicorn_config File.join(chef_server_webui_etc_dir, "unicorn.rb") do
-  listen node['chef_server']['chef-server-webui']['listen'] => {
+  listen unicorn_listen => {
     :backlog => node['chef_server']['chef-server-webui']['backlog'],
     :tcp_nodelay => node['chef_server']['chef-server-webui']['tcp_nodelay']
   }
