@@ -64,7 +64,6 @@ default['chef_server']['chef-solr']['log_directory'] = "/var/log/chef-server/che
 default['chef_server']['chef-solr']['heap_size'] = nil
 default['chef_server']['chef-solr']['new_size'] = nil
 default['chef_server']['chef-solr']['java_opts'] = ""
-default['chef_server']['chef-solr']['url'] = "http://localhost:8983"
 default['chef_server']['chef-solr']['ip_address'] = '127.0.0.1'
 default['chef_server']['chef-solr']['vip'] = '127.0.0.1'
 default['chef_server']['chef-solr']['port'] = 8983
