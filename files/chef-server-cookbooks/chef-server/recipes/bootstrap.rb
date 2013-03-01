@@ -18,8 +18,11 @@
 bootstrap_status_file = "/var/opt/chef-server/bootstrapped"
 erchef_dir = "/opt/chef-server/embedded/service/erchef"
 
+erchef_status_url = "http://#{node['chef_server']['erchef']['listen']}"
+erchef_status_url << ":#{node['chef_server']['erchef']['port']}/_status"
+
 execute "verify-system-status" do
-  command "curl -sf http://localhost:8000/_status"
+  command "curl -sf #{erchef_status_url}"
   retries 20
   not_if { File.exists?(bootstrap_status_file) }
 end

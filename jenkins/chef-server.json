@@ -1,19 +1,19 @@
 {
-    "build_os=centos-5,machine_architecture=x64,role=oss-builder": [
+    "build_os=centos-5.5,machine_architecture=x86_64,project=chef-server,role=builder": [
         [
             "el",
             "5",
             "x86_64"
         ]
     ],
-    "build_os=centos-6,machine_architecture=x64,role=oss-builder": [
+    "build_os=centos-6.2,machine_architecture=x86_64,project=chef-server,role=builder": [
         [
             "el",
             "6",
             "x86_64"
         ]
     ],
-    "build_os=ubuntu-10-04,machine_architecture=x64,role=oss-builder": [
+    "build_os=ubuntu-10.04,machine_architecture=x86_64,project=chef-server,role=builder": [
         [
             "ubuntu",
             "10.04",
@@ -25,7 +25,7 @@
             "x86_64"
         ]
     ],
-    "build_os=ubuntu-11-04,machine_architecture=x64,role=oss-builder": [
+    "build_os=ubuntu-11.04,machine_architecture=x86_64,project=chef-server,role=builder": [
         [
             "ubuntu",
             "11.04",
@@ -37,7 +37,7 @@
             "x86_64"
         ]
     ],
-    "build_os=ubuntu-12-04,machine_architecture=x64,role=oss-builder": [
+    "build_os=ubuntu-12.04,machine_architecture=x86_64,project=chef-server,role=builder": [
         [
             "ubuntu",
             "12.04",

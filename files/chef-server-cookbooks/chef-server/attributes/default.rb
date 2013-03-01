@@ -64,7 +64,6 @@ default['chef_server']['chef-solr']['log_directory'] = "/var/log/chef-server/che
 default['chef_server']['chef-solr']['heap_size'] = nil
 default['chef_server']['chef-solr']['new_size'] = nil
 default['chef_server']['chef-solr']['java_opts'] = ""
-default['chef_server']['chef-solr']['url'] = "http://localhost:8983"
 default['chef_server']['chef-solr']['ip_address'] = '127.0.0.1'
 default['chef_server']['chef-solr']['vip'] = '127.0.0.1'
 default['chef_server']['chef-solr']['port'] = 8983
@@ -98,6 +97,7 @@ default['chef_server']['bookshelf']['log_directory'] = "/var/log/chef-server/boo
 default['chef_server']['bookshelf']['svlogd_size'] = 1000000
 default['chef_server']['bookshelf']['svlogd_num'] = 10
 default['chef_server']['bookshelf']['vip'] = node['fqdn']
+default['chef_server']['bookshelf']['url'] = "https://#{node['fqdn']}"
 default['chef_server']['bookshelf']['listen'] = '127.0.0.1'
 default['chef_server']['bookshelf']['port'] = 4321
 default['chef_server']['bookshelf']['stream_download'] = true
@@ -128,7 +128,6 @@ default['chef_server']['erchef']['s3_url_ttl'] = 900
 default['chef_server']['erchef']['s3_parallel_ops_timeout'] = 5000
 default['chef_server']['erchef']['s3_parallel_ops_fanout'] = 20
 default['chef_server']['erchef']['proxy_user'] = "pivotal"
-default['chef_server']['erchef']['url'] = "http://127.0.0.1:8000"
 default['chef_server']['erchef']['validation_client_name'] = "chef-validator"
 default['chef_server']['erchef']['umask'] = "0022"
 default['chef_server']['erchef']['web_ui_client_name'] = "chef-webui"
@@ -142,8 +141,7 @@ default['chef_server']['chef-server-webui']['ha'] = false
 default['chef_server']['chef-server-webui']['dir'] = "/var/opt/chef-server/chef-server-webui"
 default['chef_server']['chef-server-webui']['log_directory'] = "/var/log/chef-server/chef-server-webui"
 default['chef_server']['chef-server-webui']['environment'] = 'chefserver'
-default['chef_server']['chef-server-webui']['url'] = "http://127.0.0.1:9462"
-default['chef_server']['chef-server-webui']['listen'] = '127.0.0.1:9462'
+default['chef_server']['chef-server-webui']['listen'] = '127.0.0.1'
 default['chef_server']['chef-server-webui']['vip'] = '127.0.0.1'
 default['chef_server']['chef-server-webui']['port'] = 9462
 default['chef_server']['chef-server-webui']['backlog'] = 1024
@@ -256,7 +254,16 @@ default['chef_server']['postgresql']['md5_auth_cidr_addresses'] = [ ]
 default['chef_server']['postgresql']['trust_auth_cidr_addresses'] = [ '127.0.0.1/32', '::1/128' ]
 default['chef_server']['postgresql']['shmmax'] = kernel['machine'] =~ /x86_64/ ? 17179869184 : 4294967295
 default['chef_server']['postgresql']['shmall'] = kernel['machine'] =~ /x86_64/ ? 4194304 : 1048575
-default['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+
+# Resolves CHEF-3889
+if (node['memory']['total'].to_i / 4) > ((node['chef_server']['postgresql']['shmmax'].to_i / 1024) - 2097152)
+  # guard against setting shared_buffers > shmmax on hosts with installed RAM > 64GB
+  # use 2GB less than shmmax as the default for these large memory machines
+  default['chef_server']['postgresql']['shared_buffers'] = "14336MB"
+else
+  default['chef_server']['postgresql']['shared_buffers'] = "#{(node['memory']['total'].to_i / 4) / (1024)}MB"
+end
+
 default['chef_server']['postgresql']['work_mem'] = "8MB"
 default['chef_server']['postgresql']['effective_cache_size'] = "#{(node['memory']['total'].to_i / 2) / (1024)}MB"
 default['chef_server']['postgresql']['checkpoint_segments'] = 10
