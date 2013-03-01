@@ -32,13 +32,11 @@ class Chef
           mtime = ftp.mtime
           if mtime && last_modified && mtime.to_i <= last_modified.to_i
             tempfile = nil
-            target_matched = true
           else
             tempfile = ftp.fetch
-            target_matched = false
           end
           ftp.disconnect
-          return tempfile, mtime, target_matched
+          return tempfile, mtime
         end
 
         # Parse the uri into instance variables

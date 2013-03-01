@@ -46,8 +46,7 @@ class Chef
         def execute
           begin
             rest = RestClient::Request.execute(:method => :get, :url => @uri.to_s, :headers => @headers, :raw_response => true)
-            raw_file = rest.file
-						target_matched = false
+            tempfile = rest.file
             if rest.headers.include?(:last_modified)
               mtime = Time.parse(rest.headers[:last_modified])
 						elsif rest.headers.include?(:date)
@@ -62,12 +61,12 @@ class Chef
             end
           rescue RestClient::Exception => e
             if e.http_code == 304
-              target_matched = true
+              tempfile = nil
             else
               raise e
             end
           end
-          return raw_file, mtime, etag, target_matched
+          return tempfile, mtime, etag
         end
 
       end

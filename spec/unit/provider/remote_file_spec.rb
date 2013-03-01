@@ -230,14 +230,8 @@ describe Chef::Provider::RemoteFile, "action_create" do
         @resource.source("file:///nyan_cat.png")
       end
 
-      it "should load the local file" do
-        file = mock(File, { })
-        File.stub!(:new).and_return(file)
-        file.stub!(:close!)
-				file.stub!(:mtime)
-				file.stub!(:path).and_return(File.join(CHEF_SPEC_DATA, "remote_file", "nyan_cat.png"))
-        File.should_receive(:new).with("/nyan_cat.png").and_return(file)
-				file.should_receive(:mtime).and_return(Time.now)
+      it "should fetch the local file" do
+        Chef::Provider::RemoteFile::LocalFile.should_receive(:fetch).with(URI.parse("file:///nyan_cat.png"), nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end

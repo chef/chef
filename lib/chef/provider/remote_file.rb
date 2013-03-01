@@ -46,8 +46,8 @@ class Chef
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
           sources = @new_resource.source
-          raw_file, raw_file_source, target_matched = try_multiple_sources(sources)
-          if target_matched
+          raw_file, raw_file_source = try_multiple_sources(sources)
+          if raw_file.nil?
             Chef::Log.info("#{@new_resource} matched #{raw_file_source}, not updating")
           elsif matches_current_checksum?(raw_file)
             Chef::Log.info("#{@new_resource} downloaded from #{raw_file_source}, checksums match, not updating")
@@ -109,7 +109,7 @@ class Chef
         source = sources.shift
         begin
           uri = URI.parse(source)
-          raw_file, target_matched = grab_file_from_uri(uri)
+          raw_file = grab_file_from_uri(uri)
         rescue ArgumentError => e
           raise e
         rescue => e
@@ -129,7 +129,7 @@ class Chef
         if uri.userinfo
           uri.password = "********"
         end
-        return raw_file, uri.to_s, target_matched
+        return raw_file, uri.to_s
       end
 
       # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
@@ -146,23 +146,23 @@ class Chef
         end
         if URI::HTTP === uri
           #HTTP or HTTPS
-          raw_file, mtime, etag, target_matched = HTTP::fetch(uri, proxy_uri(uri), if_modified_since, if_none_match)
+          raw_file, mtime, etag = HTTP::fetch(uri, proxy_uri(uri), if_modified_since, if_none_match)
         elsif URI::FTP === uri
           #FTP
-          raw_file, mtime, target_matched = FTP::fetch(uri, proxy_uri(uri), @new_resource.ftp_active_mode, if_modified_since)
+          raw_file, mtime = FTP::fetch(uri, proxy_uri(uri), @new_resource.ftp_active_mode, if_modified_since)
           etag = nil
         elsif uri.scheme == "file"
           #local/network file
-          raw_file, mtime, target_matched = LocalFile::fetch(uri, if_modified_since)
+          raw_file, mtime = LocalFile::fetch(uri, if_modified_since)
           etag = nil
         else
           raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
         end
-        unless target_matched
+        unless raw_file.nil?
           @new_resource.etag etag unless @new_resource.etag
           @new_resource.last_modified mtime unless @new_resource.last_modified
         end
-        return raw_file, target_matched
+        return raw_file
       end
 
       #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb

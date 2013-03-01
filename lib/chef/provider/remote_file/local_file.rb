@@ -23,22 +23,20 @@ require 'chef/provider/remote_file'
 class Chef
   class Provider
     class RemoteFile
-      class LocalFile < ::File
+      class LocalFile
 
         # Fetches the file at uri, returning a Tempfile-like File handle
         def self.fetch(uri, if_modified_since)
-          raw_file = LocalFile.new(uri.path)
-					mtime = raw_file.mtime
-          target_matched = mtime && if_modified_since && mtime.to_i <= if_modified_since.to_i
-					if target_matched
-						raw_file.close
-						raw_file = nil
-					end
-          return raw_file, mtime, target_matched
-        end
-
-        def close!
-          close
+          mtime = ::File.mtime(uri.path)
+          if mtime && if_modified_since && mtime.to_i <= if_modified_since.to_i
+            tempfile = nil
+          else
+            tempfile = Tempfile.new(File.basename(uri.path))
+            Chef::Log.debug("#{@new_resource} staging #{uri.path} to #{tempfile.path}")
+            FileUtils.cp(uri.path, tempfile.path)
+            tempfile
+          end
+          return tempfile, mtime
         end
 
       end
