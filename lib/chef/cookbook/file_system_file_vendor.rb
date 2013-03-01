@@ -41,10 +41,10 @@ class Chef
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        location = @repo_paths.inject(nil) do |memo, basepath|
-          candidate_location = File.join(basepath, @cookbook_name, filename)
-          memo = candidate_location if File.exist?(candidate_location)
-          memo
+        cookbooks = Chef::CookbookLoader.new(@repo_paths).load_cookbooks
+        if cookbooks.has_key?(@cookbook_name)
+          location = File.join(cookbooks[@cookbook_name].root_dir, filename)
+          location = nil unless File.exist?(location)
         end
         raise "File #{filename} does not exist for cookbook #{@cookbook_name}" unless location
 
