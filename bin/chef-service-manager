@@ -24,7 +24,13 @@ require 'chef'
 require 'chef/application/windows_service_manager'
 
 if Chef::Platform.windows?
-  Chef::Application::WindowsServiceManager.new.run
+  chef_client_service = {
+    :service_name => "chef-client",
+    :service_display_name => "Chef Client Service",
+    :service_description => "Runs Opscode Chef Client on regular, configurable intervals.",
+    :service_file_path => File.expand_path(File.join(File.dirname(__FILE__), '../lib/chef/application/windows_service.rb'))
+  }
+  Chef::Application::WindowsServiceManager.new(chef_client_service).run
 else
   puts "chef-service-manager is only available on Windows platforms."
 end
