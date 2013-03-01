@@ -23,6 +23,12 @@ require 'mixlib/cli'
 class Chef
   class Application
     class WindowsServiceManager
+      #
+      # This class is used to create and manage a windows service.
+      # Service should be created using Daemon class from
+      # win32/service gem.
+      # For an example see: Chef::Application::WindowsService
+      #
       include Mixlib::CLI
 
       option :action,
@@ -57,14 +63,24 @@ class Chef
         # anti-pattern :(
         super()
 
+        raise ArgumentError, "Service definition is not provided" if service_options.nil?
+
+        required_options = [:service_name, :service_display_name, :service_name, :service_description, :service_file_path]
+
+        required_options.each do |req_option|
+          if !service_options.has_key?(req_option)
+            raise ArgumentError, "Service definition doesn't contain required option #{req_option}"
+          end
+        end
+
         @service_name = service_options[:service_name]
         @service_display_name = service_options[:service_display_name]
         @service_description = service_options[:service_description]
         @service_file_path = service_options[:service_file_path]
       end
 
-      def run
-        parse_options
+      def run(params = ARGV)
+        parse_options(params)
 
         case config[:action]
         when 'install'
@@ -137,7 +153,8 @@ class Chef
             puts "Service '#{@service_name}' is already '#{desired_state}'."
           end
         else
-          puts "Cannot '#{action}' service '#{@service_name}', service does not exist."
+          puts "Cannot '#{action}' service '#{@service_name}'"
+          puts "Service #{@service_name} doesn't exist on the system."
         end
       end
 
@@ -153,6 +170,7 @@ class Chef
           sleep 1
         end
       end
+
     end
   end
 end
