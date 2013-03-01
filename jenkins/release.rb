@@ -327,6 +327,7 @@ class ShipIt
     s3_cmd = ["s3cmd",
               "-c #{options[:metadata_s3_config_file]}",
               "put",
+              "--acl-public",
               "v2-release-manifest.json",
               s3_location].join(" ")
     shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
