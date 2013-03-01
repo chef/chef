@@ -1,6 +1,6 @@
 # Chef
 
-* Documentation: [http://wiki.opscode.com/display/chef/Home/](http://wiki.opscode.com/display/chef/Home/)
+* Documentation: [http://docs.opscode.com](http://docs.opscode.com)
 * Source: [http://github.com/opscode/chef/tree/master](http://github.com/opscode/chef/tree/master)
 * Tickets/Issues: [http://tickets.opscode.com](http://tickets.opscode.com)
 * IRC: `#chef` and `#chef-hacking` on Freenode

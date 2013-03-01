@@ -101,7 +101,7 @@ class Chef
         end
 
         Dir.glob(File.join(Chef::Config[:data_bag_path], "#{name}", "*.json")).inject({}) do |bag, f|
-          item = JSON.parse(IO.read(f))
+          item = Chef::JSONCompat.from_json(IO.read(f))
           bag[item['id']] = item
           bag
         end

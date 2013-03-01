@@ -110,7 +110,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
   describe "when it finishes downloading" do
     it "should return a tempfile" do
-      ftpfile, mtime, target_matched = Chef::Provider::RemoteFile::FTP.fetch(@uri, nil, false, nil)
+      ftpfile, mtime = Chef::Provider::RemoteFile::FTP.fetch(@uri, nil, false, nil)
       ftpfile.should equal @tempfile
       ftpfile.close!
     end

@@ -49,7 +49,7 @@ class Chef
             raise ArgumentError, "invalid typecode: #{@typecode.inspect}"
           end
           @ftp_active_mode = ftp_active_mode
-          @hostname = uri.hostname
+          @hostname = uri.host
           @port = uri.port
           @ftp = Net::FTP.new
           if uri.userinfo
