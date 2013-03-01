@@ -107,10 +107,10 @@ class Chef
               ::Dir.mkdir(@new_resource.path)
             end
             Chef::Log.info("#{@new_resource} created directory #{@new_resource.path}")
+            update_new_file_state
           end 
         end
         set_all_access_controls
-        update_new_file_state
       end
 
       def action_delete
