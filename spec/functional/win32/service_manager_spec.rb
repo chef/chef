@@ -33,6 +33,43 @@ require 'chef/application/windows_service_manager'
 
 describe "Chef::Application::WindowsServiceManager", :windows_only do
 
+  # Some helper methods.
+
+  def test_service_exists?
+    ::Win32::Service.exists?("spec-service")
+  end
+
+  def test_service_state
+    ::Win32::Service.status("spec-service").current_state
+  end
+
+  def service_manager
+    Chef::Application::WindowsServiceManager.new(test_service)
+  end
+
+  def cleanup
+    # Uninstall if the test service is installed.
+    if test_service_exists?
+
+      # We can only uninstall when the service is stopped.
+      if test_service_state != "stopped"
+        ::Win32::Service.send("stop", "spec-service")
+        while test_service_state != "stopped"
+          sleep 1
+        end
+      end
+
+      ::Win32::Service.delete("spec-service")
+    end
+
+    # Delete the test_service_file if it exists
+    if File.exists?(test_service_file)
+      File.delete(test_service_file)
+    end
+
+  end
+
+
   # Definition for the test-service
 
   let(:test_service) {
@@ -226,39 +263,5 @@ describe "Chef::Application::WindowsServiceManager", :windows_only do
         end
       end
     end
-  end
-
-  def test_service_exists?
-    ::Win32::Service.exists?("spec-service")
-  end
-
-  def test_service_state
-    ::Win32::Service.status("spec-service").current_state
-  end
-
-  def service_manager
-    Chef::Application::WindowsServiceManager.new(test_service)
-  end
-
-  def cleanup
-    # Uninstall if the test service is installed.
-    if test_service_exists?
-
-      # We can only uninstall when the service is stopped.
-      if test_service_state != "stopped"
-        ::Win32::Service.send("stop", "spec-service")
-        while test_service_state != "stopped"
-          sleep 1
-        end
-      end
-
-      ::Win32::Service.delete("spec-service")
-    end
-
-    # Delete the test_service_file if it exists
-    if File.exists?(test_service_file)
-      File.delete(test_service_file)
-    end
-
   end
 end

@@ -22,13 +22,16 @@ require 'mixlib/cli'
 
 class Chef
   class Application
+    #
+    # This class is used to create and manage a windows service.
+    # Service should be created using Daemon class from
+    # win32/service gem.
+    # For an example see: Chef::Application::WindowsService
+    #
+    # Outside programs are expected to use this class to manage
+    # windows services.
+    #
     class WindowsServiceManager
-      #
-      # This class is used to create and manage a windows service.
-      # Service should be created using Daemon class from
-      # win32/service gem.
-      # For an example see: Chef::Application::WindowsService
-      #
       include Mixlib::CLI
 
       option :action,
