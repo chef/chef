@@ -101,7 +101,5 @@ require 'chef/provider/mount/windows'
 require 'chef/provider/deploy/revision'
 require 'chef/provider/deploy/timestamped'
 
-require 'chef/provider/remote_file/ftp'
-
 require "chef/provider/lwrp_base"
 require 'chef/provider/registry_key'

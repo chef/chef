@@ -1,5 +1,4 @@
 #
-# Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
@@ -18,9 +17,10 @@
 #
 
 require 'chef/provider/file'
-require 'rest_client'
+require 'chef/rest'
 require 'uri'
 require 'tempfile'
+require 'net/https'
 
 class Chef
   class Provider
@@ -40,12 +40,24 @@ class Chef
           Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
         else
           sources = @new_resource.source
-          raw_file, raw_file_source = try_multiple_sources(sources)
+          source = sources.shift
+          begin
+            rest = Chef::REST.new(source, nil, nil, http_client_opts(source))
+            raw_file = rest.streaming_request(rest.create_url(source), {})
+          rescue SocketError, Errno::ECONNREFUSED, Timeout::Error, Net::HTTPFatalError => e
+            Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}")
+            if source = sources.shift
+              Chef::Log.debug("#{@new_resource} trying to download from another mirror")
+              retry
+            else
+              raise e
+            end
+          end
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
             description = [] 
-            description << "copy file downloaded from #{raw_file_source} into #{@new_resource.path}"
+            description << "copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
             converge_by(description) do
               backup_new_resource
@@ -90,55 +102,38 @@ class Chef
         end
       end
 
-      private
-
-      # Given an array of source uris, iterate through them until one does not fail
-      def try_multiple_sources(sources)
-        sources = sources.dup
-        source = sources.shift
-        begin
-          uri = URI.parse(source)
-          raw_file = grab_file_from_uri(uri)
-        rescue ArgumentError => e
-          raise e
-        rescue => e
-          if e.is_a?(RestClient::Exception)
-            error = "Request returned #{e.message}"
-          else
-            error = e.to_s
-          end
-          Chef::Log.debug("#{@new_resource} cannot be downloaded from #{source}: #{error}")
-          if source = sources.shift
-            Chef::Log.debug("#{@new_resource} trying to download from another mirror")
-            retry
-          else
-            raise e
-          end
+      def source_file(source, current_checksum, &block)
+        if absolute_uri?(source)
+          fetch_from_uri(source, &block)
+        elsif !Chef::Config[:solo]
+          fetch_from_chef_server(source, current_checksum, &block)
+        else
+          fetch_from_local_cookbook(source, &block)
         end
-        if uri.userinfo
-          uri.password = "********"
-        end
-        return raw_file, uri.to_s
       end
 
-      # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
-      def grab_file_from_uri(uri)
-        if URI::HTTP === uri
-          #HTTP or HTTPS
-          raw_file = RestClient::Request.execute(:method => :get, :url => uri.to_s, :raw_response => true).file
-        elsif URI::FTP === uri
-          #FTP
-          raw_file = FTP::fetch(uri, @new_resource.ftp_active_mode)
-        elsif uri.scheme == "file"
-          #local/network file
-          raw_file = ::File.new(uri.path, "r")
-          def raw_file.close!
-            self.close
-          end
-        else
-          raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
+      def http_client_opts(source)
+        opts={}
+        # CHEF-3140
+        # 1. If it's already compressed, trying to compress it more will
+        # probably be counter-productive.
+        # 2. Some servers are misconfigured so that you GET $URL/file.tgz but
+        # they respond with content type of tar and content encoding of gzip,
+        # which tricks Chef::REST into decompressing the response body. In this
+        # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
+        # which is not what you wanted.
+        if @new_resource.path =~ /gz$/ or source =~ /gz$/
+          opts[:disable_gzip] = true
         end
-        raw_file
+        opts
+      end
+
+      private
+
+      def absolute_uri?(source)
+        URI.parse(source).absolute?
+      rescue URI::InvalidURIError
+        false
       end
 
     end

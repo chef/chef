@@ -23,6 +23,14 @@ describe Chef::Resource::RemoteFile do
   include_context Chef::Resource::File
 
   let(:file_base) { "remote_file_spec" }
+  let(:source) { 'http://localhost:9000/nyan_cat.png' }
+  let(:expected_content) do
+    content = File.open(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png'), "rb") do |f|
+      f.read
+    end
+    content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
+    content
+  end
 
   def create_resource
     node = Chef::Node.new
@@ -63,44 +71,13 @@ describe Chef::Resource::RemoteFile do
         f.read
       end
     }
-    @api.get("/nyan_cat.png.gz", 200, nil, { 'Content-Type' => 'application/gzip', 'Content-Encoding' => 'gzip' } ) {
-      File.open(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png.gz'), "rb") do |f|
-        f.read
-      end
-    }
   end
 
   after(:all) do
     @server.stop
   end
 
-  context "when using normal encoding" do
-    let(:source) { 'http://localhost:9000/nyan_cat.png' }
-    let(:expected_content) do
-      content = File.open(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png'), "rb") do |f|
-        f.read
-      end
-      content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
-      content
-    end
+  it_behaves_like "a file resource"
 
-    it_behaves_like "a file resource"
-
-    it_behaves_like "a securable resource with reporting"
-  end
-
-  context "when using gzip encoding" do
-    let(:source) { 'http://localhost:9000/nyan_cat.png.gz' }
-    let(:expected_content) do
-      content = File.open(File.join(CHEF_SPEC_DATA, 'remote_file', 'nyan_cat.png.gz'), "rb") do |f|
-        f.read
-      end
-      content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
-      content
-    end
-
-    it_behaves_like "a file resource"
-
-    it_behaves_like "a securable resource with reporting"
-  end
+  it_behaves_like "a securable resource with reporting"
 end

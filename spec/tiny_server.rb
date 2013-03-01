@@ -127,20 +127,20 @@ module TinyServer
       @routes = {GET => [], PUT => [], POST => [], DELETE => []}
     end
 
-    def get(path, response_code, data=nil, headers=nil, &block)
-      @routes[GET] << Route.new(path, Response.new(response_code, data, headers, &block))
+    def get(path, response_code, data=nil, &block)
+      @routes[GET] << Route.new(path, Response.new(response_code,data, &block))
     end
 
-    def put(path, response_code, data=nil, headers=nil, &block)
-      @routes[PUT] << Route.new(path, Response.new(response_code, data, headers, &block))
+    def put(path, response_code, data=nil, &block)
+      @routes[PUT] << Route.new(path, Response.new(response_code,data, &block))
     end
 
-    def post(path, response_code, data=nil, headers=nil, &block)
-      @routes[POST] << Route.new(path, Response.new(response_code, data, headers, &block))
+    def post(path, response_code, data=nil, &block)
+      @routes[POST] << Route.new(path, Response.new(response_code,data, &block))
     end
 
-    def delete(path, response_code, data=nil, headers=nil, &block)
-      @routes[DELETE] << Route.new(path, Response.new(response_code, data, headers, &block))
+    def delete(path, response_code, data=nil, &block)
+      @routes[DELETE] << Route.new(path, Response.new(response_code,data, &block))
     end
 
     def call(env)
@@ -183,15 +183,14 @@ module TinyServer
   class Response
     HEADERS = {'Content-Type' => 'application/json'}
 
-    def initialize(response_code=200, data=nil, headers=nil, &block)
+    def initialize(response_code=200,data=nil, &block)
       @response_code, @data = response_code, data
-      @response_headers = headers ? HEADERS.merge(headers) : HEADERS
       @block = block_given? ? block : nil
     end
 
     def call
       data = @data || @block.call
-      [@response_code, @response_headers, Array(data)]
+      [@response_code, HEADERS, Array(data)]
     end
 
     def to_s
