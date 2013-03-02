@@ -31,7 +31,7 @@ class Chef
           if mtime && if_modified_since && mtime.to_i <= if_modified_since.to_i
             tempfile = nil
           else
-            tempfile = Tempfile.new(File.basename(uri.path))
+            tempfile = Tempfile.new(::File.basename(uri.path))
             Chef::Log.debug("#{@new_resource} staging #{uri.path} to #{tempfile.path}")
             FileUtils.cp(uri.path, tempfile.path)
             tempfile

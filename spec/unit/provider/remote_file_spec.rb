@@ -46,9 +46,11 @@ describe Chef::Provider::RemoteFile, "action_create" do
   describe "when fetching the file from the remote" do
     before(:each) do
       @tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
-      @rawresp = RestClient::RawResponse.new(@tempfile, Hash.new, nil)
 
-      RestClient::Request.stub!(:execute).and_return(@rawresp)
+      @rest = mock(Chef::REST, { })
+      Chef::REST.stub!(:new).and_return(@rest)
+      @rest.stub!(:streaming_request).and_return(@tempfile)
+      @rest.stub!(:last_response).and_return({})
       @resource.cookbook_name = "monkey"
 
       @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
@@ -79,19 +81,19 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
     shared_examples_for "source specified with multiple URIs" do
       it "should try to download the next URI when the first one fails" do
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://foo", :headers => {}, :raw_response => true).once.and_raise(SocketError)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://bar", :headers => {}, :raw_response => true).once.and_return(@rawresp)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://foo"), {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://bar"), {}).once.and_return(@tempfile)
         @provider.run_action(:create)
       end
 
       it "should raise an exception when all the URIs fail" do
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://foo", :headers => {}, :raw_response => true).once.and_raise(SocketError)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://bar", :headers => {}, :raw_response => true).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://foo"), {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://bar"), {}).once.and_raise(SocketError)
         lambda { @provider.run_action(:create) }.should raise_error(SocketError)
       end
 
       it "should download from only one URI when the first one works" do
-        RestClient::Request.should_receive(:execute).once.and_return(@rawresp)
+        @rest.should_receive(:streaming_request).once.and_return(@tempfile)
         @provider.run_action(:create)
       end
 
@@ -121,7 +123,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "does not download the file" do
-          RestClient::Request.should_not_receive(:execute)
+          @rest.should_not_receive(:fetch)
           @provider.run_action(:create)
         end
 
@@ -138,7 +140,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "should not download the file if the checksum is a partial match from the beginning" do
-          RestClient::Request.should_not_receive(:execute)
+          @rest.should_not_receive(:fetch)
           @provider.run_action(:create)
         end
 
@@ -152,7 +154,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       describe "and the existing file doesn't match the given checksum" do
         it "downloads the file" do
           @resource.checksum("this hash doesn't match")
-          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
+          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -160,7 +162,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         it "does not consider the checksum a match if the matching string is offset" do
           # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
           @resource.checksum("fd012fd")
-          RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
+          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -171,7 +173,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     describe "and the resource doesn't specify a checksum" do
       it "should download the file from the remote URL" do
         @resource.checksum(nil)
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end
@@ -185,22 +187,10 @@ describe Chef::Provider::RemoteFile, "action_create" do
     # detect when users are fetching gzipped files and turn off gzip in
     # Chef::REST.
 
-    context "and the target file is a tarball" do
-      before do
-        @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.tar.gz")))
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://opscode.com/seattle.txt", :headers => {}, :raw_response => true).and_return(@rawresp)
-      end
-
-      it "disables gzip in the http client" do
-        @provider.action_create
-      end
-
-    end
-
     context "and the source appears to be a tarball" do
       before do
         @resource.source("http://example.com/tarball.tgz")
-        RestClient::Request.should_receive(:execute).with(:method => :get, :url => "http://example.com/tarball.tgz", :headers => {}, :raw_response => true).and_return(@rawresp)
+        Chef::REST.should_receive(:new).with(URI.parse("http://example.com/tarball.tgz"), nil, nil, :disable_gzip => true).and_return(@rest)
       end
 
       it "disables gzip in the http client" do
@@ -239,14 +229,14 @@ describe Chef::Provider::RemoteFile, "action_create" do
     it "should raise an exception if it's any other kind of retriable response than 304" do
       r = Net::HTTPMovedPermanently.new("one", "two", "three")
       e = Net::HTTPRetriableError.new("301", r)
-      RestClient::Request.stub!(:execute).and_raise(e)
+      @rest.stub!(:streaming_request).and_raise(e)
       lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPRetriableError)
     end
 
     it "should raise an exception if anything else happens" do
       r = Net::HTTPBadRequest.new("one", "two", "three")
       e = Net::HTTPServerException.new("fake exception", r)
-      RestClient::Request.stub!(:execute).and_raise(e)
+      @rest.stub!(:streaming_request).and_raise(e)
       lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPServerException)
     end
 
@@ -342,6 +332,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         @provider.should_receive(:set_all_access_controls).and_return(true)
         @provider.run_action(:create)
       end
+
     end
   end
 end

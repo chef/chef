@@ -18,7 +18,6 @@
 #
 
 require 'chef/provider/file'
-require 'rest_client'
 require 'uri'
 require 'tempfile'
 
@@ -110,15 +109,8 @@ class Chef
         begin
           uri = URI.parse(source)
           raw_file = grab_file_from_uri(uri)
-        rescue ArgumentError => e
-          raise e
-        rescue => e
-          if e.is_a?(RestClient::Exception)
-            error = "Request returned #{e.message}"
-          else
-            error = e.to_s
-          end
-          Chef::Log.info("#{@new_resource} cannot be downloaded from #{source}: #{error}")
+        rescue SocketError, Errno::ECONNREFUSED, Errno::ENOENT, Errno::EACCES, Timeout::Error, Net::HTTPFatalError, Net::FTPError => e
+          Chef::Log.warn("#{@new_resource} cannot be downloaded from #{source}: #{e.to_s}")
           if source = sources.shift
             Chef::Log.info("#{@new_resource} trying to download from another mirror")
             retry
@@ -146,7 +138,7 @@ class Chef
         end
         if URI::HTTP === uri
           #HTTP or HTTPS
-          raw_file, mtime, etag = HTTP::fetch(uri, proxy_uri(uri), if_modified_since, if_none_match)
+          raw_file, mtime, etag = HTTP::fetch(uri, if_modified_since, if_none_match)
         elsif URI::FTP === uri
           #FTP
           raw_file, mtime = FTP::fetch(uri, proxy_uri(uri), @new_resource.ftp_active_mode, if_modified_since)
