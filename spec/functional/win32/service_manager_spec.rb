@@ -17,7 +17,9 @@
 #
 
 require 'spec_helper'
-require 'chef/application/windows_service_manager'
+if Chef::Platform.windows?
+  require 'chef/application/windows_service_manager'
+end
 
 #
 # ATTENTION:
@@ -77,7 +79,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only do
       :service_name => "spec-service",
       :service_display_name => "Spec Test Service",
       :service_description => "Service for testing Chef::Application::WindowsServiceManager.",
-      :service_file_path => File.expand_path(File.join(File.dirname(__FILE__), '../../support/lib/spec_service.rb'))
+      :service_file_path => File.expand_path(File.join(File.dirname(__FILE__), '../../support/platforms/win32/spec_service.rb'))
     }
   }
 
