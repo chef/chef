@@ -32,6 +32,9 @@ class Chef
             tempfile = nil
           else
             tempfile = Tempfile.new(::File.basename(uri.path))
+            if Chef::Platform.windows?
+              tempfile.binmode #required for binary files on Windows platforms
+            end
             Chef::Log.debug("#{@new_resource} staging #{uri.path} to #{tempfile.path}")
             FileUtils.cp(uri.path, tempfile.path)
             tempfile

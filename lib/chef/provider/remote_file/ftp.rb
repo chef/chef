@@ -82,6 +82,9 @@ class Chef
         # Fetches using Net::FTP, returns a Tempfile with the content
         def fetch
           tempfile = Tempfile.new(@filename)
+          if Chef::Platform.windows?
+            tempfile.binmode #required for binary files on Windows platforms
+          end
           if @typecode
             @ftp.voidcmd("TYPE #{@typecode.upcase}")
           end
