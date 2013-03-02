@@ -161,7 +161,10 @@ define :runit_service, :directory => nil, :only_if => false, :finish_script => f
     ruby_block "supervise_#{params[:name]}_sleep" do
       block do
         Chef::Log.debug("Waiting until named pipe #{sv_dir_name}/supervise/ok exists.")
-        (1..10).each {|i| sleep 1 unless ::FileTest.pipe?("#{sv_dir_name}/supervise/ok") }
+        until ::FileTest.pipe?("#{sv_dir_name}/supervise/ok") do
+          sleep 1
+          Chef::Log.debug(".")
+        end
       end
       not_if { FileTest.pipe?("#{sv_dir_name}/supervise/ok") }
     end
