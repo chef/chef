@@ -131,7 +131,7 @@ describe Chef::Config do
       end
 
       it "should not generate and store a chef server cookie id" do
-        Chef::FileCache.should_not_receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
+        Chef::FileCache.should_not_receive(:store).with("chef_server_cookie_id", /\w{40}/)
         Chef::Config.manage_secret_key
       end
     end
@@ -167,7 +167,7 @@ describe Chef::Config do
 
   describe "class method: openid_providers=" do
     it "should not log an appropriate deprecation info message" do
-      Chef::Log.should_not_receive(:info).with("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers").and_return(true)
+      Chef::Log.should_not_receive(:info).with("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers")
       Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
     end
 
