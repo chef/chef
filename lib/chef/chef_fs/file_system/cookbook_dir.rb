@@ -29,12 +29,12 @@ class Chef
       class CookbookDir < BaseFSDir
         def initialize(name, parent, options = {})
           super(name, parent)
-          @versions_map  = options[:versions_map]
+          @existance     = options[:existance]
           @cookbook_name = options[:cookbook_name]
           @version       = options[:version] || "_latest"
         end
 
-        attr_reader :versions_map, :cookbook_name, :version
+        attr_reader :existance, :cookbook_name, :version
 
         COOKBOOK_SEGMENT_INFO = {
           :attributes => { :ruby_only => true },
@@ -130,13 +130,13 @@ class Chef
         # In versioned cookbook mode, actually check if the version exists
         # Probably want to cache this.
         def exists?
-          return true if @versions_map
+          return @existance unless @existance.nil?
           child = parent.child(name, :force => true)
           if child
-            @versions_map = child.versions_map
+            @existance = child.existance
             @version = child.version
           end
-          !!@versions_map
+          !!@existance
         end
 
         def compare_to(other)

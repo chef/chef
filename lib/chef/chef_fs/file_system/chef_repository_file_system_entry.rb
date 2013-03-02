@@ -47,22 +47,14 @@ class Chef
           begin
             if parent.path == '/cookbooks'
               loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
-              # KLUDGE: CODE SMELL
-              # This is a hack to make upload work properly. However, it indicates that
-              # versioned_cookbook options should be a global property of knife, and knife
-              # should not derive the cookbook name from the base path if this is on. In fact
-              # the cookbook may have to derive its name from the metadata instead.
-              #
-              # Berkshelf actually uses its own custom loader. It's something to consider
-              #
-              # If CHEF-3307 is merged in, there needs to be a check to make sure that metadata cookbook name is the same
-              # as the directory name, with the version tag.
+              # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
+              # want to spend a lot of time adding code to the main Chef libraries
               if Chef::Config[:versioned_cookbooks]
 
                 _canonical_name = canonical_cookbook_name(File.basename(file_path))
                 fail "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z"  unless _canonical_name
 
-                # Warning, leaky abstraction
+                # KLUDGE: We shouldn't have to use instance_variable_set
                 loader.instance_variable_set(:@cookbook_name, _canonical_name)
               end
 
@@ -78,6 +70,7 @@ class Chef
           nil
         end
 
+        # Exposed as a class method so that it can be used elsewhere
         def self.canonical_cookbook_name(entry_name)
           name_match = Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME.match(entry_name)
           return nil if name_match.nil?
