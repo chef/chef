@@ -26,8 +26,8 @@ class Chef
     class RemoteFile
       class FTP
 
-        def self.fetch(uri, proxy_uri, ftp_active_mode, last_modified)
-          ftp = self.new(uri, proxy_uri, ftp_active_mode)
+        def self.fetch(uri, ftp_active_mode, last_modified)
+          ftp = self.new(uri, ftp_active_mode)
           ftp.connect
           mtime = ftp.mtime
           if mtime && last_modified && mtime.to_i <= last_modified.to_i
@@ -40,8 +40,8 @@ class Chef
         end
 
         # Parse the uri into instance variables
-        def initialize(uri, proxy_uri, ftp_active_mode)
-          ENV['SOCKS_SERVER'] = proxy_uri.to_s
+        def initialize(uri, ftp_active_mode)
+          ENV['SOCKS_SERVER'] = proxy_uri(uri).to_s
           @directories, @filename = parse_path(uri.path)
           @typecode = uri.typecode
           # Only support ascii and binary types
@@ -90,6 +90,21 @@ class Chef
         end
 
         private
+
+        #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
+        def proxy_uri(uri)
+          proxy = Chef::Config["#{uri.scheme}_proxy"]
+          proxy = URI.parse(proxy) if String === proxy
+          if Chef::Config["#{uri.scheme}_proxy_user"]
+            proxy.user = Chef::Config["#{uri.scheme}_proxy_user"]
+          end
+          if Chef::Config["#{uri.scheme}_proxy_pass"]
+            proxy.password = Chef::Config["#{uri.scheme}_proxy_pass"]
+          end
+          excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
+          excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
+          return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
+        end
 
         def parse_path(path)
           path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.

@@ -141,7 +141,7 @@ class Chef
           raw_file, mtime, etag = HTTP::fetch(uri, if_modified_since, if_none_match)
         elsif URI::FTP === uri
           #FTP
-          raw_file, mtime = FTP::fetch(uri, proxy_uri(uri), @new_resource.ftp_active_mode, if_modified_since)
+          raw_file, mtime = FTP::fetch(uri, @new_resource.ftp_active_mode, if_modified_since)
           etag = nil
         elsif uri.scheme == "file"
           #local/network file
@@ -155,21 +155,6 @@ class Chef
           @new_resource.last_modified mtime unless @new_resource.last_modified
         end
         return raw_file
-      end
-
-      #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
-      def proxy_uri(uri)
-        proxy = Chef::Config["#{uri.scheme}_proxy"]
-        proxy = URI.parse(proxy) if String === proxy
-        if Chef::Config["#{uri.scheme}_proxy_user"]
-          proxy.user = Chef::Config["#{uri.scheme}_proxy_user"]
-        end
-        if Chef::Config["#{uri.scheme}_proxy_pass"]
-          proxy.password = Chef::Config["#{uri.scheme}_proxy_pass"]
-        end
-        excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
-        excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
-        return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
       end
 
       def load_fileinfo
