@@ -41,76 +41,52 @@ class Chef
         end
 
         def children
-          return @children if @children
-          _to_cookbook_dir = if Chef::Config[:versioned_cookbooks]
-                               proc do |cookbook_name, value|
-                                 value['versions'].map do |cookbook_version|
-                                   CookbookDir.new "#{cookbook_name}-#{cookbook_version['version']}", self,
-                                     :versions_map  => value,
-                                     :version       => cookbook_version['version'],
-                                     :cookbook_name => cookbook_name
-                                 end
-                               end
-                             else
-                               proc do |cookbook_name, value|
-                                 CookbookDir.new(cookbook_name, self, :versions_map => value, :cookbook_name => cookbook_name, :version => '_latest' )
-                               end
-                             end
-          _api_path = if Chef::Config[:versioned_cookbooks]
-                        "#{api_path}/?num_versions=all"
-                      else
-                        api_path
-                      end
-          @children = rest.get_rest(_api_path).map(&_to_cookbook_dir).flatten.sort_by { |c| c.name }
+          @children ||= Chef::Config[:versioned_cookbooks] ? versioned_children : unversioned_children
+        end
+
+        def versioned_children
+            rest.
+              get_rest("#{api_path}/?num_versions=all").
+              map { |name, info| api_to_versioned_cookbook_dirs(name, info) }.
+              flatten.sort_by(&:name)
+        end
+
+        def unversioned_children
+            rest.
+              get_rest(api_path).
+              map { |name, info| api_to_unversioned_cookbook_dir(name, info) }.
+              sort_by(&:name)
+        end
+
+        # Expands out API cookbook to an array of CookbookDir for each version
+        def api_to_versioned_cookbook_dirs(cookbook_name, api_cookbook)
+          api_cookbook['versions'].map do |cookbook_version|
+            CookbookDir.new "#{cookbook_name}-#{cookbook_version['version']}", self,
+            :existance     => true,
+            :version       => cookbook_version['version'],
+            :cookbook_name => cookbook_name
+          end
+        end
+
+        # Expands out API cookbook to a single CookbookDir
+        def api_to_unversioned_cookbook_dir(cookbook_name, api_cookbook)
+          CookbookDir.new(cookbook_name, self, :existance => api_cookbook.any?, :cookbook_name => cookbook_name, :version => '_latest' )
         end
 
         def create_child_from(other)
           upload_cookbook_from(other)
         end
 
-
         def upload_cookbook_from(other)
-          other_cookbook_version = other.chef_object
-          # TODO this only works on the file system.  And it can't be broken into
-          # pieces.
-          begin
-            if Chef::Config[:versioned_cookbooks]
-              cookbook_name = Chef::ChefFS::FileSystem::ChefRepositoryFileSystemEntry.canonical_cookbook_name(other.name)
-
-              # TODO: Find some better way to express this
-              # We want to symlink a cookbook with a non-versioend cookbook name in a temporary
-              # directory, and then upload it. This allows us to use Chef 10-stable and 11-stable.
-              proxy_cookbook_path = make_proxy_cookbook_dir(cookbook_name, other.file_path )
-              proxy_loader = Chef::Cookbook::CookbookVersionLoader.new("#{proxy_cookbook_path}/#{cookbook_name}", other.parent.chefignore)
-              proxy_loader.load_cookbooks
-              uploader = Chef::CookbookUploader.new(proxy_loader.cookbook_version, proxy_cookbook_path, :rest => rest)
-              actual_cookbook_path = proxy_cookbook_path
-            else
-              uploader = Chef::CookbookUploader.new(other_cookbook_version, other.parent.file_path, :rest => rest)
-              actual_cookbook_path = other.parent.file_path
-            end
-            # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
-            old_cookbook_path = Chef::Config.cookbook_path
-            Chef::Config.cookbook_path = actual_cookbook_path if !Chef::Config.cookbook_path
-            begin
-              if uploader.respond_to?(:upload_cookbook)
-                uploader.upload_cookbook
-              else
-                uploader.upload_cookbooks
-              end
-            ensure
-              FileUtils.remove_entry_secure proxy_cookbook_path if Chef::Config[:versioned_cookbooks]
-              Chef::Config.cookbook_path = old_cookbook_path
-            end
-          rescue Net::HTTPServerException => e
-            case e.response.code
-            when "409"
-              ui.error "Version #{other_cookbook_version.version} of cookbook #{other_cookbook_version.name} is frozen. Use --force to override."
-              Chef::Log.debug(e)
-              raise Exceptions::CookbookFrozen
-            else
-              raise
-            end
+          Chef::Config[:versioned_cookbooks] ? upload_versioned_cookbook(other) : upload_unversioned_cookbook(other)
+        rescue Net::HTTPServerException => e
+          case e.response.code
+          when "409"
+            ui.error "Version #{other_cookbook_version.version} of cookbook #{other_cookbook_version.name} is frozen. Use --force to override."
+            Chef::Log.debug(e)
+            raise Exceptions::CookbookFrozen
+          else
+            raise
           end
         end
 
@@ -118,12 +94,51 @@ class Chef
         # Cookbook Version uploader also requires a lot of refactoring
         # to make this work. So instead, we make a temporary cookbook
         # symlinking back to real cookbook, and upload the proxy.
-        #
-        # This will create a temporary dir, symlink, and return the temporary
-        # dir
-        def make_proxy_cookbook_dir(cookbook_name, cookbook_path)
-          Dir.mktmpdir.tap do |dir|
-            File.symlink cookbook_path, "#{dir}/#{cookbook_name}"
+        def upload_versioned_cookbook(other)
+          cookbook_name = Chef::ChefFS::FileSystem::ChefRepositoryFileSystemEntry.canonical_cookbook_name(other.name)
+
+          Dir.mktmpdir do |temp_cookbooks_path|
+            proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
+
+            # Make a symlink
+            File.symlink other.file_path, proxy_cookbook_path
+
+            # Instantiate a proxy loader using the temporary symlink
+            proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.parent.chefignore)
+            proxy_loader.load_cookbooks
+
+            # Instantiate a new uploader based on the proxy loader
+            uploader = Chef::CookbookUploader.new(proxy_loader.cookbook_version, proxy_cookbook_path, :rest => rest)
+
+            with_actual_cookbooks_dir(temp_cookbooks_path) do
+              upload_cookbook!(uploader)
+            end
+          end
+        end
+
+        def upload_unversioned_cookbook(other)
+          uploader = Chef::CookbookUploader.new(other.chef_object, other.parent.file_path, :rest => rest)
+
+          with_actual_cookbooks_dir(other.parent.file_path) do
+            upload_cookbook!(uploader)
+          end
+        end
+
+        # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
+        def with_actual_cookbooks_dir(actual_cookbook_path)
+          old_cookbook_path = Chef::Config.cookbook_path
+          Chef::Config.cookbook_path = actual_cookbook_path if !Chef::Config.cookbook_path
+
+          yield
+        ensure
+          Chef::Config.cookbook_path = old_cookbook_path
+        end
+
+        def upload_cookbook!(uploader)
+          if uploader.respond_to?(:upload_cookbook)
+            uploader.upload_cookbook
+          else
+            uploader.upload_cookbooks
           end
         end
 
