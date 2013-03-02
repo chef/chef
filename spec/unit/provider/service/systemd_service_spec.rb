@@ -135,7 +135,7 @@ describe Chef::Provider::Service::Systemd do
 
     it "should not call '/bin/systemctl start service_name' if it is already running" do
       @current_resource.stub!(:running).and_return(true)
-      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/bin/systemctl start #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/bin/systemctl start #{@new_resource.service_name}"})
       @provider.start_service
     end
 
@@ -180,7 +180,7 @@ describe Chef::Provider::Service::Systemd do
 
     it "should not call '/bin/systemctl stop service_name' if it is already stopped" do
       @current_resource.stub!(:running).and_return(false)
-      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/bin/systemctl stop #{@new_resource.service_name}"}).and_return(0)
+      @provider.should_not_receive(:run_command_with_systems_locale).with({:command => "/bin/systemctl stop #{@new_resource.service_name}"})
       @provider.stop_service
     end
   end
