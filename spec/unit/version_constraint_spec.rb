@@ -23,7 +23,7 @@ describe Chef::VersionConstraint do
     bad_version = ["> >", ">= 1.2.z", "> 1.2.3 < 5.0", "> 1.2.3, < 5.0"]
     bad_op = ["<3.0.1", ">$ 1.2.3", "! 3.4"]
     o_error = Chef::Exceptions::InvalidVersionConstraint
-    v_error = Chef::Exceptions::InvalidCookbookVersion
+    v_error = Chef::Exceptions::InvalidVersion
     bad_version.each do |s|
       it "should raise #{v_error} when given #{s}" do
         lambda { Chef::VersionConstraint.new s }.should raise_error(v_error)

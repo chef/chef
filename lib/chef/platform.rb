@@ -345,7 +345,7 @@ class Chef
           end
           platform_versions.each do |platform_version, provider|
             begin
-              version_constraint = Chef::VersionConstraint.new(platform_version)
+              version_constraint = Chef::VersionConstraint::Cookbook.new(platform_version)
               if version_constraint.include?(version)
                 Chef::Log.debug("Platform #{name.to_s} version #{version} found")
                 provider_map.merge!(provider)

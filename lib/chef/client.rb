@@ -292,7 +292,7 @@ class Chef
       #
       # Convert @expanded_run_list, which is an
       # Array of Hashes of the form
-      #   {:name => NAME, :version_constraint => Chef::VersionConstraint },
+      #   {:name => NAME, :version_constraint => Chef::VersionConstraint::Cookbook },
       # into @expanded_run_list_with_versions, an
       # Array of Strings of the form
       #   "#{NAME}@#{VERSION}"
