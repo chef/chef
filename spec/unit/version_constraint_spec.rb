@@ -59,6 +59,11 @@ describe Chef::VersionConstraint do
     Chef::VersionConstraint.new(nil).to_s.should == ">= 0.0.0"
   end
 
+  it "should work with Chef::Version classes" do
+    vc = Chef::VersionConstraint.new("1.0")
+    vc.version.should be_an_instance_of(Chef::Version)
+  end
+
   describe "include?" do
     describe "handles various input data types" do
       before do
