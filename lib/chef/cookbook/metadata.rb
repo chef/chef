@@ -209,7 +209,7 @@ class Chef
       # version<String>:: Returns the current version
       def version(arg=nil)
         if arg
-          @version = Chef::Version.new(arg)
+          @version = Chef::Version::Cookbook.new(arg)
         end
 
         @version.to_s
@@ -516,7 +516,7 @@ OBSOLETED
       end
 
       def validate_version_constraint(caller_name, dep_name, constraint_str)
-        Chef::VersionConstraint.new(constraint_str)
+        Chef::VersionConstraint::Cookbook.new(constraint_str)
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
 

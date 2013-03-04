@@ -107,6 +107,7 @@ class Chef
     class CookbookVersionConflict < ArgumentError ; end
 
     # does not follow X.Y.Z format. ArgumentError?
+    class InvalidVersion < ArgumentError; end
     class InvalidCookbookVersion < ArgumentError; end
 
     # version constraint should be a string or array, or it doesn't

@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require 'chef/version_class'
+require 'chef/version/cookbook'
 require 'chef/version_constraint'
 
 # Why does this class exist?
@@ -31,7 +31,7 @@ class Chef
 
       def add_recipe(name, version=nil)
         if version && @versions.has_key?(name)
-          unless Chef::Version.new(@versions[name]) == Chef::Version.new(version)
+          unless Chef::Version::Cookbook.new(@versions[name]) == Chef::Version::Cookbook.new(version)
             raise Chef::Exceptions::CookbookVersionConflict, "Run list requires #{name} at versions #{@versions[name]} and #{version}"
           end
         end
@@ -44,10 +44,10 @@ class Chef
       end
 
       # Return an Array of Hashes, each of the form:
-      #  {:name => RECIPE_NAME, :version_constraint => Chef::VersionConstraint }
+      #  {:name => RECIPE_NAME, :version_constraint => Chef::VersionConstraint::Cookbook }
       def with_version_constraints
         self.map do |recipe_name|
-          constraint = Chef::VersionConstraint.new(@versions[recipe_name])
+          constraint = Chef::VersionConstraint::Cookbook.new(@versions[recipe_name])
           { :name => recipe_name, :version_constraint => constraint }
         end
       end

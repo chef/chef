@@ -51,7 +51,7 @@ class Chef
       other.is_a?(Version) && self == other
     end
 
-    private
+    protected
 
     def parse(str="")
       @major, @minor, @patch =
@@ -63,8 +63,8 @@ class Chef
         when /^(\d+)$/
           [ $1.to_i, 0, 0 ]
         else
-          msg = "'#{str.to_s}' does not match 'x.y.z' or 'x.y'"
-          raise Chef::Exceptions::InvalidCookbookVersion.new( msg )
+          msg = "'#{str.to_s}' does not match 'x.y.z', 'x.y' or 'x'"
+          raise Chef::Exceptions::InvalidVersion.new( msg )
         end
     end
 
