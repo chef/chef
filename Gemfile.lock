@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 6fa5ab234f31fd2438bf2a00644039941fc725f5
+  revision: 809ea1afcce67e1148c1bf0822d40a7ef12c380e
   branch: master
   specs:
     omnibus (0.5.3)
@@ -8,12 +8,12 @@ GIT
       mixlib-shellout (~> 1.0)
       ohai (>= 0.6.12)
       rake (>= 0.9)
-      thor (= 0.17.0)
+      thor (>= 0.16.0)
       uber-s3
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 280ba8579ba883c853136c884423622337242689
+  revision: 71372908ac1e2633cf08c1b32056de6ec3502289
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -32,7 +32,7 @@ GEM
     ipaddress (0.8.0)
     json (1.5.4)
     log4r (1.1.10)
-    mime-types (1.19)
+    mime-types (1.21)
     mixlib-cli (1.3.0)
     mixlib-config (1.1.2)
     mixlib-log (1.4.1)
