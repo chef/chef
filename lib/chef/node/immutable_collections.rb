@@ -89,6 +89,18 @@ class Chef
         Array.new(map {|e| e.dup })
       end
 
+      def to_a
+        a = Array.new
+        each do |v|
+          if v.kind_of?(Chef::Node::ImmutableArray)
+            a.push v.to_a
+          else
+            a.push v
+          end
+        end
+        a
+      end
+
     end
 
     # == ImmutableMash
@@ -178,6 +190,18 @@ class Chef
 
       def dup
         Mash.new(self)
+      end
+
+      def to_hash
+        h = Hash.new
+        each_pair do |k,v|
+          if v.kind_of?(Chef::Node::ImmutableMash)
+            h[k] = v.to_hash
+          else
+            h[k] = v
+          end
+        end
+        h
       end
 
     end
