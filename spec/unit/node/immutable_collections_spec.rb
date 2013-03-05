@@ -54,6 +54,17 @@ describe Chef::Node::ImmutableMash do
     @immutable_mash[:top_level_4][:level2].should be_a(Chef::Node::ImmutableMash)
   end
 
+  it "converts an immutable nested mash to a new mutable hash" do
+    orig = Mash.new(@data_in)
+    copy = orig.dup
+    copy = copy.to_hash
+    copy.should be_a(Hash)
+    copy['top_level_4']['level2'].should be_a(Hash)
+    copy.should == orig
+    copy['top_level_4']['level2'] = "A different value."
+    copy.should_not == orig
+   end
+
 
   [
     :[]=,
@@ -87,6 +98,7 @@ describe Chef::Node::ImmutableArray do
 
   before do
     @immutable_array = Chef::Node::ImmutableArray.new(%w[foo bar baz] + Array(1..3) + [nil, true, false, [ "el", 0, nil ] ])
+    @immutable_nested_array = Chef::Node::ImmutableArray.new(["level1",@immutable_array])
   end
 
   ##
@@ -139,5 +151,16 @@ describe Chef::Node::ImmutableArray do
     mutable[0] = :value
     mutable[0].should == :value
   end
+
+  it "converts an immutable nested array to a new mutable array" do
+    copy = @immutable_nested_array.dup
+    copy = copy.to_a
+    copy.should be_a(Array)
+    copy[1].should be_a(Array)
+    copy.should == @immutable_nested_array
+    copy[0] = "A different value."
+    copy.should_not == @immutable_nested_array
+   end
+
 end
 
