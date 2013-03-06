@@ -275,7 +275,11 @@ class Chef
               response_body
             end
           elsif redirect_location = redirected_to(response)
-            follow_redirect {api_request(:GET, create_url(redirect_location))}
+            if [:GET, :HEAD].include?(method)
+              follow_redirect {api_request(method, create_url(redirect_location))}
+            else
+              raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
+            end
           else
             # have to decompress the body before making an exception for it. But the body could be nil.
             response.body.replace(decompress_body(response)) if response.body.respond_to?(:replace)

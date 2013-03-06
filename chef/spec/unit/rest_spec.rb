@@ -437,8 +437,12 @@ describe Chef::REST do
           @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
 
           lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+
+          [:PUT, :POST, :DELETE].each do |method|
+            lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exceptions::InvalidRedirect)
+          end
         end
-       end
+      end
 
       it "should show the JSON error message on an unsuccessful request" do
         http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
