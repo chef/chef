@@ -62,7 +62,7 @@ class Chef
         def api_to_versioned_cookbook_dirs(cookbook_name, api_cookbook)
           api_cookbook['versions'].map do |cookbook_version|
             CookbookDir.new "#{cookbook_name}-#{cookbook_version['version']}", self,
-            :existance     => true,
+            :existence     => true,
             :version       => cookbook_version['version'],
             :cookbook_name => cookbook_name
           end
@@ -70,7 +70,7 @@ class Chef
 
         # Expands out API cookbook to a single CookbookDir
         def api_to_unversioned_cookbook_dir(cookbook_name, api_cookbook)
-          CookbookDir.new(cookbook_name, self, :existance => api_cookbook.any?, :cookbook_name => cookbook_name, :version => '_latest' )
+          CookbookDir.new(cookbook_name, self, :existence => api_cookbook.any?, :cookbook_name => cookbook_name, :version => '_latest' )
         end
 
         def create_child_from(other)
