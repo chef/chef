@@ -42,12 +42,12 @@ class Chef
                                  end)
 
 
-        files_to_transfer.each do |cookbook_file_relative_path|
-          create_cookbook_file(cookbook_file_relative_path)
+        files_to_transfer.each do |file_relative_path|
+          create_file(file_relative_path)
           # the file is removed from the purge list
-          files_to_purge.delete(::File.join(@new_resource.path, cookbook_file_relative_path))
+          files_to_purge.delete(::File.join(@new_resource.path, file_relative_path))
           # parent directories are also removed from the purge list
-          directories=::File.dirname(::File.join(@new_resource.path, cookbook_file_relative_path)).split(::File::SEPARATOR)
+          directories=::File.dirname(::File.join(@new_resource.path, file_relative_path)).split(::File::SEPARATOR)
           for i in 0..directories.length-1
             files_to_purge.delete(::File.join(directories[0..i]))
           end
@@ -93,7 +93,7 @@ class Chef
 
       def files_to_transfer
         cookbook = run_context.cookbook_collection[resource_cookbook]
-        files = cookbook.relative_filenames_in_preferred_directory(node, :files, @new_resource.source)
+        files = cookbook.relative_filenames_in_preferred_directory(node, @new_resource.type, @new_resource.source)
         files.sort.reverse
       end
 
@@ -111,12 +111,12 @@ class Chef
         @new_resource.cookbook || @new_resource.cookbook_name
       end
 
-      def create_cookbook_file(cookbook_file_relative_path)
-        full_path = ::File.join(@new_resource.path, cookbook_file_relative_path)
+      def create_file(file_relative_path)
+        full_path = ::File.join(@new_resource.path, file_relative_path)
 
         ensure_directory_exists(::File.dirname(full_path))
 
-        file_to_fetch = cookbook_file_resource(full_path, cookbook_file_relative_path)
+        file_to_fetch = file_resource(full_path, file_relative_path)
         if @new_resource.overwrite
           file_to_fetch.run_action(:create)
         else
@@ -125,21 +125,25 @@ class Chef
         @new_resource.updated_by_last_action(true) if file_to_fetch.updated?
       end
 
-      def cookbook_file_resource(target_path, relative_source_path)
-        cookbook_file = Chef::Resource::CookbookFile.new(target_path, run_context)
-        cookbook_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
-        cookbook_file.source(::File.join(@new_resource.source, relative_source_path))
+      def file_resource(target_path, relative_source_path)
+        if @new_resource.type == "templates"
+          file = Chef::Resource::Template.new(target_path, run_context)
+        else
+          file = Chef::Resource::CookbookFile.new(target_path, run_context)
+        end
+        file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
+        file.source(::File.join(@new_resource.source, relative_source_path))
         if Chef::Platform.windows? && @new_resource.files_rights
           @new_resource.files_rights.each_pair do |permission, *args|
-            cookbook_file.rights(permission, *args)
+            file.rights(permission, *args)
           end
         end
-        cookbook_file.mode(@new_resource.files_mode)    if @new_resource.files_mode
-        cookbook_file.group(@new_resource.files_group)  if @new_resource.files_group
-        cookbook_file.owner(@new_resource.files_owner)  if @new_resource.files_owner
-        cookbook_file.backup(@new_resource.files_backup) if @new_resource.files_backup
+        file.mode(@new_resource.files_mode)    if @new_resource.files_mode
+        file.group(@new_resource.files_group)  if @new_resource.files_group
+        file.owner(@new_resource.files_owner)  if @new_resource.files_owner
+        file.backup(@new_resource.files_backup) if @new_resource.files_backup
 
-        cookbook_file
+        file
       end
 
       def ensure_directory_exists(path)
