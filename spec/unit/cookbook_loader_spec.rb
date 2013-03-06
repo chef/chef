@@ -173,7 +173,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should emit deprecation warning if name is not in metadata" do
-        Chef::Log.should_receive(:warn).exactly(6).with("Inferred cookbook names are deprecated, please set a name in metadata")
+        Chef::Log.should_receive(:warn).exactly(6).with(/Inferring cookbook name from directory name \([^)]+\) is deprecated, please set a name in the metadata./)
         @cookbook_loader.load_cookbooks
       end
     end # load_cookbooks
