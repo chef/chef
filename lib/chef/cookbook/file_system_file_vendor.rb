@@ -37,11 +37,14 @@ class Chef
         raise ArgumentError, "You must specify at least one repo path" if @repo_paths.empty?
       end
 
+      def cookbooks
+        @cookbooks ||= Chef::CookbookLoader.new(@repo_paths).load_cookbooks
+      end
+
       # Implements abstract base's requirement. It looks in the
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        cookbooks = Chef::CookbookLoader.new(@repo_paths).load_cookbooks
         if cookbooks.has_key?(@cookbook_name)
           location = File.join(cookbooks[@cookbook_name].root_dir, filename)
           location = nil unless File.exist?(location)
