@@ -107,7 +107,7 @@ class Chef
             raise RuntimeError, "Invalid metadata file: #{metadata_file} for cookbook: #{cookbook_version}"
           end
         end
-        Chef::Log.warn "Inferred cookbook names are deprecated, please set a name in metadata" unless @metadata.name
+        Chef::Log.warn "Inferring cookbook name from directory name (#@cookbook_pathname) is deprecated, please set a name in the metadata." unless @metadata.name
         @metadata
       end
 
