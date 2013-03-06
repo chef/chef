@@ -51,7 +51,6 @@ class Chef
     attr_accessor :provider_filenames
     attr_accessor :root_filenames
     attr_accessor :pathname
-    attr_accessor :name
     attr_accessor :metadata
     attr_accessor :metadata_filenames
     attr_accessor :status
@@ -84,9 +83,8 @@ class Chef
     #
     # === Returns
     # object<Chef::CookbookVersion>:: Duh. :)
-    def initialize(name)
-      @pathname = name
-      @name = @pathname
+    def initialize(pathname)
+      @pathname = pathname
       @frozen = false
       @attribute_filenames = Array.new
       @definition_filenames = Array.new
@@ -104,6 +102,10 @@ class Chef
       @manifest = nil
       @file_vendor = nil
       @metadata = Chef::Cookbook::Metadata.new
+    end
+
+    def name
+      metadata.name || @pathname
     end
 
     def version
