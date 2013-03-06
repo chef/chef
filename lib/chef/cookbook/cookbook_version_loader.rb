@@ -19,16 +19,13 @@ class Chef
 
 
       attr_reader :cookbook_pathname
-      attr_reader :cookbook_name
       attr_reader :cookbook_settings
       attr_reader :metadata_filenames
 
       def initialize(path, chefignore=nil)
         @cookbook_path = File.expand_path( path )
         @cookbook_pathname = File.basename( path )
-        @cookbook_name = @cookbook_pathname
         @chefignore = chefignore
-        @metadata = Hash.new
         @relative_path = /#{Regexp.escape(@cookbook_path)}\/(.+)$/
         @cookbook_settings = {
           :attribute_filenames  => {},
@@ -66,12 +63,13 @@ class Chef
 
         if empty?
           Chef::Log.warn "found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
-        else
-          metadata = @metadata.is_a?(Metadata) ? @metadata : metadata(nil)
-          @cookbook_name = metadata.name.to_sym unless metadata.name.nil?
         end
 
         @cookbook_settings
+      end
+
+      def cookbook_name
+        metadata.name || @cookbook_pathname
       end
 
       def cookbook_version
@@ -89,13 +87,16 @@ class Chef
           c.provider_filenames   = cookbook_settings[:provider_filenames].values
           c.root_filenames       = cookbook_settings[:root_filenames].values
           c.metadata_filenames   = @metadata_filenames
-          c.metadata             = metadata(c)
-          c.name                 = c.metadata.name.to_sym
+          c.metadata             = load_metadata(c)
         end
       end
 
+      def metadata
+        @metadata ||= load_metadata(nil)
+      end
+
       # Generates the Cookbook::Metadata object
-      def metadata(cookbook_version)
+      def load_metadata(cookbook_version)
         @metadata = Chef::Cookbook::Metadata.new(cookbook_version)
         @metadata_filenames.each do |metadata_file|
           case metadata_file
@@ -158,18 +159,18 @@ class Chef
 
       def apply_ruby_metadata(file)
         begin
-          @metadata.from_file(file)
+          metadata.from_file(file)
         rescue JSON::ParserError
-          Chef::Log.error("Error evaluating metadata.rb for #@cookbook_name in " + file)
+          Chef::Log.error("Error evaluating metadata.rb for #{cookbook_name} in " + file)
           raise
         end
       end
 
       def apply_json_metadata(file)
         begin
-          @metadata.from_json(IO.read(file))
+          metadata.from_json(IO.read(file))
         rescue JSON::ParserError
-          Chef::Log.error("Couldn't parse cookbook metadata JSON for #@cookbook_name in " + file)
+          Chef::Log.error("Couldn't parse cookbook metadata JSON for #{cookbook_name} in " + file)
           raise
         end
       end
