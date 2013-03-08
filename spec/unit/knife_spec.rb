@@ -99,6 +99,9 @@ describe Chef::Knife do
       Chef::Knife.subcommands_by_category['cookbook site'].should include('test_explicit_category')
     end
 
+    it "has empty dependency_loader list by default" do
+      KnifeSpecs::TestNameMapping.dependency_loaders.should be_empty
+    end
   end
 
   describe "after loading all subcommands" do
@@ -180,6 +183,21 @@ describe Chef::Knife do
       lambda {Chef::Knife.run(%w{fuuu uuuu fuuuu})}.should raise_error(SystemExit) { |e| e.status.should_not == 0 }
     end
 
+    it "loads lazy dependencies" do
+      command = Chef::Knife.run(%w{test yourself})
+      KnifeSpecs::TestYourself.test_deps_loaded.should be_true
+    end
+
+    it "loads lazy dependencies from multiple deps calls" do
+      other_deps_loaded = false
+      KnifeSpecs::TestYourself.class_eval do
+        deps { other_deps_loaded = true }
+      end
+      command = Chef::Knife.run(%w{test yourself})
+      KnifeSpecs::TestYourself.test_deps_loaded.should be_true
+      other_deps_loaded.should be_true
+    end
+
     describe "merging configuration options" do
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
@@ -228,6 +246,9 @@ describe Chef::Knife do
       @knife.name_args.should == %w{with some args}
     end
 
+    it "does not have lazy dependencies loaded" do
+      @knife.class.test_deps_loaded.should_not be_true
+    end
   end
 
   describe "when formatting exceptions" do
