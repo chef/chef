@@ -29,48 +29,33 @@ class Chef
           super("cookbooks", parent)
         end
 
-        def child(name, options = {})
-          result = self.children.select { |child| child.name == name }.first if @children || options[:force]
-          return result if result
-          if Chef::Config[:versioned_cookbooks]
-            raise "Cookbook name #{name} not valid: must be name-version" if name !~ Chef::ChefFS::FileSystem::CookbookDir::VALID_VERSIONED_COOKBOOK_NAME
-            CookbookDir.new(name, self, :cookbook_name => $1, :version => $2)
+        def child(name)
+          if @children
+            result = self.children.select { |child| child.name == name }.first
+            if result
+              result
+            else
+              NonexistentFSObject.new(name, self)
+            end
           else
-            CookbookDir.new(name, self, :cookbook_name => name, :version => '_latest')
+            CookbookDir.new(name, self)
           end
         end
 
         def children
-          @children ||= Chef::Config[:versioned_cookbooks] ? versioned_children : unversioned_children
-        end
-
-        def versioned_children
-            rest.
-              get_rest("#{api_path}/?num_versions=all").
-              map { |name, info| api_to_versioned_cookbook_dirs(name, info) }.
-              flatten.sort_by(&:name)
-        end
-
-        def unversioned_children
-            rest.
-              get_rest(api_path).
-              map { |name, info| api_to_unversioned_cookbook_dir(name, info) }.
-              sort_by(&:name)
-        end
-
-        # Expands out API cookbook to an array of CookbookDir for each version
-        def api_to_versioned_cookbook_dirs(cookbook_name, api_cookbook)
-          api_cookbook['versions'].map do |cookbook_version|
-            CookbookDir.new "#{cookbook_name}-#{cookbook_version['version']}", self,
-            :existence     => true,
-            :version       => cookbook_version['version'],
-            :cookbook_name => cookbook_name
+          @children ||= begin
+            if Chef::Config[:versioned_cookbooks]
+              result = []
+              rest.get_rest("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
+                cookbooks['versions'].each do |cookbook_version|
+                  result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
+                end
+              end
+            else
+              result = rest.get_rest(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+            end
+            result.sort_by(&:name)
           end
-        end
-
-        # Expands out API cookbook to a single CookbookDir
-        def api_to_unversioned_cookbook_dir(cookbook_name, api_cookbook)
-          CookbookDir.new(cookbook_name, self, :existence => api_cookbook.any?, :cookbook_name => cookbook_name, :version => '_latest' )
         end
 
         def create_child_from(other)

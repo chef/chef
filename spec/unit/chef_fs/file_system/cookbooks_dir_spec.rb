@@ -155,8 +155,8 @@ describe Chef::ChefFS::FileSystem::CookbooksDir do
         entity_names.should include('bchild')
       end
 
-      it "should return cookbooks '_latest' for version numbers" do
-        versions.should include('_latest')
+      it "should return nil for version numbers" do
+        versions.should == [ nil, nil ]
         versions.uniq.size.should eql 1
       end
     end
