@@ -204,13 +204,13 @@ describe Chef::Provider::RemoteFile, "action_create" do
       end
 
       it "should fetch with ftp in passive mode" do
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), nil, false, nil).and_return(@tempfile)
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
 
       it "should fetch with ftp in active mode" do
         @resource.ftp_active_mode true
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), nil, true, nil).and_return(@tempfile)
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end

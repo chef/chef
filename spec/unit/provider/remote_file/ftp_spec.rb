@@ -59,44 +59,44 @@ describe Chef::Provider::RemoteFile::FTP do
   describe "when connecting to the remote" do
     it "should connect to the host from the uri on the default port 21" do
       @ftp.should_receive(:connect).with("opscode.com", 21)
-      Chef::Provider::RemoteFile::FTP.new(@uri, nil, false).connect
+      Chef::Provider::RemoteFile::FTP.new(@uri, false).connect
     end
 
     it "should connect on an alternate port when one is provided" do
       @ftp.should_receive(:connect).with("opscode.com", 8021)
-      Chef::Provider::RemoteFile::FTP.new(URI.parse("ftp://opscode.com:8021/seattle.txt"), nil, false).connect
+      Chef::Provider::RemoteFile::FTP.new(URI.parse("ftp://opscode.com:8021/seattle.txt"), false).connect
     end
 
     it "should set passive true when ftp_active_mode is false" do
       @ftp.should_receive(:passive=).with(true)
-      Chef::Provider::RemoteFile::FTP.new(@uri, nil, false).connect
+      Chef::Provider::RemoteFile::FTP.new(@uri, false).connect
     end
 
     it "should set passive false when ftp_active_mode is false" do
       @ftp.should_receive(:passive=).with(false)
-      Chef::Provider::RemoteFile::FTP.new(@uri, nil, true).connect
+      Chef::Provider::RemoteFile::FTP.new(@uri, true).connect
     end
 
     it "should use anonymous ftp when no userinfo is provided" do
       @ftp.should_receive(:login).with("anonymous", nil)
-      Chef::Provider::RemoteFile::FTP.new(@uri, nil, false).connect
+      Chef::Provider::RemoteFile::FTP.new(@uri, false).connect
     end
 
     it "should use authenticated ftp when userinfo is provided" do
       @ftp.should_receive(:login).with("the_user", "the_password")
-      Chef::Provider::RemoteFile::FTP.new(URI.parse("ftp://the_user:the_password@opscode.com/seattle.txt"), nil, false).connect
+      Chef::Provider::RemoteFile::FTP.new(URI.parse("ftp://the_user:the_password@opscode.com/seattle.txt"), false).connect
     end
 
     it "should accept ascii for the typecode" do
       @uri.typecode = "a"
       @ftp.should_receive(:voidcmd).with("TYPE A").once
-      Chef::Provider::RemoteFile::FTP.fetch(@uri, nil, false, nil)
+      Chef::Provider::RemoteFile::FTP.fetch(@uri, false, nil)
     end
 
     it "should accept image for the typecode" do
       @uri.typecode = "i"
       @ftp.should_receive(:voidcmd).with("TYPE I").once
-      Chef::Provider::RemoteFile::FTP.fetch(@uri, nil, false, nil)
+      Chef::Provider::RemoteFile::FTP.fetch(@uri, false, nil)
     end
 
     it "should fetch the file from the correct path" do
@@ -104,13 +104,13 @@ describe Chef::Provider::RemoteFile::FTP do
       @ftp.should_receive(:voidcmd).with("CWD whole").once
       @ftp.should_receive(:voidcmd).with("CWD path").once
       @ftp.should_receive(:getbinaryfile).with("seattle.txt", @tempfile.path)
-      Chef::Provider::RemoteFile::FTP.fetch(URI.parse("ftp://opscode.com/the/whole/path/seattle.txt"), nil, false, nil)
+      Chef::Provider::RemoteFile::FTP.fetch(URI.parse("ftp://opscode.com/the/whole/path/seattle.txt"), false, nil)
     end
   end
 
   describe "when it finishes downloading" do
     it "should return a tempfile" do
-      ftpfile, mtime = Chef::Provider::RemoteFile::FTP.fetch(@uri, nil, false, nil)
+      ftpfile, mtime = Chef::Provider::RemoteFile::FTP.fetch(@uri, false, nil)
       ftpfile.should equal @tempfile
       ftpfile.close!
     end
