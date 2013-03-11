@@ -223,7 +223,10 @@ class ShipIt
     end
     upload_platform_name_map(artifact_collection.platform_name_map_path)
     upload_manifest(metadata)
-    upload_v2_manifest(v2_metadata) if upload_v2_manifest?
+    if upload_v2_manifest?
+      upload_v2_platform_name_map(artifact_collection.platform_name_map_path)
+      upload_v2_manifest(v2_metadata)
+    end
   end
 
   def option_parser
@@ -329,6 +332,20 @@ class ShipIt
               "put",
               "--acl-public",
               "v2-release-manifest.json",
+              s3_location].join(" ")
+    shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
+    shell.run_command
+    shell.error!
+  end
+
+  def upload_v2_platform_name_map(platform_names_file)
+    s3_location = "s3://#{options[:metadata_bucket]}/#{options[:project]}-release-manifest/#{options[:project]}-platform-names.json"
+    puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
+    s3_cmd = ["s3cmd",
+              "-c #{options[:metadata_s3_config_file]}",
+              "put",
+              "--acl-public",
+              platform_names_file,
               s3_location].join(" ")
     shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
     shell.run_command
