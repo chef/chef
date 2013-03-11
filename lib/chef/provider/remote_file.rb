@@ -138,14 +138,14 @@ class Chef
         end
         if URI::HTTP === uri
           #HTTP or HTTPS
-          raw_file, mtime, etag = HTTP::fetch(uri, if_modified_since, if_none_match)
+          raw_file, mtime, etag = RemoteFile::HTTP.fetch(uri, if_modified_since, if_none_match)
         elsif URI::FTP === uri
           #FTP
-          raw_file, mtime = FTP::fetch(uri, @new_resource.ftp_active_mode, if_modified_since)
+          raw_file, mtime = RemoteFile::FTP.fetch(uri, @new_resource.ftp_active_mode, if_modified_since)
           etag = nil
         elsif uri.scheme == "file"
           #local/network file
-          raw_file, mtime = LocalFile::fetch(uri, if_modified_since)
+          raw_file, mtime = RemoteFile::LocalFile.fetch(uri, if_modified_since)
           etag = nil
         else
           raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
