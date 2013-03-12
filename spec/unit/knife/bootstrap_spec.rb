@@ -147,26 +147,50 @@ describe Chef::Knife::Bootstrap do
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
-  
+
       it "configures the hostname" do
         @knife_ssh.name_args.first.should == "foo.example.com"
       end
-  
+
       it "configures the ssh user" do
         @knife_ssh.config[:ssh_user].should == 'rooty'
       end
-  
+
       it "configures the ssh password" do
         @knife_ssh.config[:ssh_password].should == 'open_sesame'
       end
-  
+
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '4001'
       end
-  
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
       end
+    end
+
+    before do
+      @knife.config[:distro] = "ubuntu"
+      @knife.config[:ssh_password] = "password"
+      @knife.stub(:read_template).and_return(IO.read(@knife.find_template).chomp)
+    end
+
+    it "use_sudo_password contains description and long params for help" do
+      @knife.options.should have_key(:use_sudo_password) \
+        and @knife.options[:use_sudo_password][:description].to_s.should_not == ''\
+        and @knife.options[:use_sudo_password][:long].to_s.should_not == ''
+    end
+
+    it "should enable password to sudo from stdin for knife ssh bootstrap" do
+      @knife.config[:use_sudo] = true
+      @knife.config[:use_sudo_password] = true
+      @knife.ssh_command.include?("echo #{@knife.config[:ssh_password]} | sudo -S").should == true
+    end
+
+    it "should not enable password to sudo from stdin for knife ssh bootstrap" do
+      @knife.config[:use_sudo] = false
+      @knife.config[:use_sudo_password] = true
+      @knife.ssh_command.include?("echo #{@knife.config[:ssh_password]} | sudo -S").should == false
     end
 
     context "from the knife config file" do
@@ -185,19 +209,19 @@ describe Chef::Knife::Bootstrap do
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
-  
+
       it "configures the ssh user" do
         @knife_ssh.config[:ssh_user].should == 'curiosity'
       end
-  
+
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '2430'
       end
-  
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
       end
-  
+
       it "configures the ssh gateway" do
         @knife_ssh.config[:ssh_gateway].should == 'towel.blinkenlights.nl'
       end
