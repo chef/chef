@@ -94,6 +94,11 @@ class Chef
         :description => "Execute the bootstrap via sudo",
         :boolean => true
 
+      option :use_sudo_password,
+        :long => "--use-sudo-password",
+        :description => "Execute the bootstrap via sudo with password",
+        :boolean => false
+
       option :template_file,
         :long => "--template-file TEMPLATE",
         :description => "Full path to location of template to use",
@@ -170,7 +175,7 @@ class Chef
         @node_name = Array(@name_args).first
         # back compat--templates may use this setting:
         config[:server_name] = @node_name
-        
+
         $stdout.sync = true
 
         ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
@@ -222,7 +227,7 @@ class Chef
         command = render_template(read_template)
 
         if config[:use_sudo]
-          command = "sudo #{command}"
+          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
         end
 
         command
