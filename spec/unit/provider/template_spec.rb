@@ -21,7 +21,9 @@ require 'etc'
 require 'ostruct'
 
 describe Chef::Provider::Template do
-  before(:each) do
+  let(:generated_string){ "# generated from openldap/templates/default/openldap_stuff.conf.erb" }
+
+  before do
     @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
     Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
@@ -53,10 +55,6 @@ describe Chef::Provider::Template do
   end
 
   describe "when creating the template" do
-
-    before do
-    end
-
     after do
       FileUtils.rm(@rendered_file_location) if ::File.exist?(@rendered_file_location)
     end
@@ -92,7 +90,7 @@ describe Chef::Provider::Template do
         @node.normal[:slappiness] = "a warm gun"
         @provider.should_receive(:backup)
         @provider.run_action(:create)
-        IO.read(@rendered_file_location).should == "slappiness is a warm gun"
+        IO.read(@rendered_file_location).should include "slappiness is a warm gun"
         @resource.should be_updated_by_last_action
       end
 
@@ -112,7 +110,7 @@ describe Chef::Provider::Template do
         @node.normal[:slappiness] = "happiness"
         @provider.should_receive(:backup)
         @provider.run_action(:create_if_missing)
-        IO.read(@rendered_file_location).should == "slappiness is happiness"
+        IO.read(@rendered_file_location).should include "slappiness is happiness"
         @resource.should be_updated_by_last_action
       end
 
@@ -128,7 +126,7 @@ describe Chef::Provider::Template do
             @node.normal[:slappiness] = "happiness"
             @provider.should_receive(:backup)
             @provider.run_action(:create)
-            IO.read(@rendered_file_location).should == "slappiness is happiness"
+            IO.read(@rendered_file_location).should include "slappiness is happiness"
             @resource.should be_updated_by_last_action
 
             # Veracity of actual data checked in functional tests
@@ -143,15 +141,21 @@ describe Chef::Provider::Template do
     describe "when the target file has the wrong content" do
       before do
         File.open(@rendered_file_location, "w+") { |f| f.print "blargh" }
+        @access_controls.stub!(:requires_changes?).and_return(false)
+        @access_controls.stub!(:set_all!)
+      end
+
+      it "sets template location" do
+        @provider.run_action(:create)
+        IO.read(@rendered_file_location).should include(generated_string)
       end
 
       it "overwrites the file with the updated content when the create action is run" do
         @node.normal[:slappiness] = "a warm gun"
-        @access_controls.stub!(:requires_changes?).and_return(false)
         @access_controls.should_receive(:set_all!)
         @provider.should_receive(:backup)
         @provider.run_action(:create)
-        IO.read(@rendered_file_location).should == "slappiness is a warm gun"
+        IO.read(@rendered_file_location).should include "slappiness is a warm gun"
         @resource.should be_updated_by_last_action
       end
 
@@ -167,7 +171,6 @@ describe Chef::Provider::Template do
       end
 
       it "doesn't overwrite the file when the create if missing action is run" do
-        @access_controls.stub!(:requires_changes?).and_return(false)
         @access_controls.should_not_receive(:set_all!)
         @node.normal[:slappiness] = "a warm gun"
         @provider.should_not_receive(:backup)
@@ -179,7 +182,7 @@ describe Chef::Provider::Template do
 
     describe "when the target has the correct content" do
       before do
-        File.open(@rendered_file_location, "w") { |f| f.print "slappiness is a warm gun" }
+        File.open(@rendered_file_location, "w") { |f| f.print "#{generated_string}\nslappiness is a warm gun" }
         @current_resource.checksum('4ff94a87794ed9aefe88e734df5a66fc8727a179e9496cbd88e3b5ec762a5ee9')
         @access_controls = mock("access controls")
         @provider.stub!(:access_controls).and_return(@access_controls)

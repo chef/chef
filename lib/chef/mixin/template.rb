@@ -30,6 +30,10 @@ class Chef
                 "include a node variable if you plan to use it."
         end
 
+        def template_location
+          @template_location[%r{[^/]+/templates/.*}] if @template_location
+        end
+
         #
         # Takes the name of the partial, plus a hash of options. Returns a
         # string that contains the result of the evaluation of the partial.
