@@ -105,7 +105,7 @@ class Chef
         @op = $1
         raw_version = $2
         @version = self.class::VERSION_CLASS.new(raw_version)
-        if raw_version.split('.').size == 2
+        if raw_version.split('.').size <= 2
           @missing_patch_level = true
         end
       else

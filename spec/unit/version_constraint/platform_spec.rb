@@ -29,6 +29,18 @@ describe Chef::VersionConstraint::Platform do
     vc = Chef::VersionConstraint::Platform.new("1.0")
     vc.version.should be_an_instance_of(Chef::Version::Platform)
   end
-  
+
+  describe "include?" do
+
+    it "pessimistic ~> x" do
+      vc = Chef::VersionConstraint::Platform.new "~> 1"
+      vc.should include "1.3.3"
+      vc.should include "1.4"
+
+      vc.should_not include "2.2"
+      vc.should_not include "0.3.0"
+    end
+
+  end
 end
 
