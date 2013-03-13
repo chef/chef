@@ -18,20 +18,23 @@ require 'chef/version_class'
 
 class Chef
   class Version
-    class Cookbook < Chef::Version
+    class Platform < Chef::Version
 
       protected
 
-      def parse(str='')
-        msg = "'#{str.to_s}' does not match 'x.y.z' or 'x.y'"
-        begin
-          super
-        rescue Chef::Exceptions::InvalidVersion => e
-          raise Chef::Exceptions::InvalidCookbookVersion.new( msg )
-        end
-        if str.to_s =~ /^(\d+)$/
-          raise Chef::Exceptions::InvalidCookbookVersion.new( msg )
-        end
+      def parse(str="")
+        @major, @minor, @patch =
+          case str.to_s
+          when /^(\d+)\.(\d+)\.(\d+)$/
+            [ $1.to_i, $2.to_i, $3.to_i ]
+          when /^(\d+)\.(\d+)$/
+            [ $1.to_i, $2.to_i, 0 ]
+          when /^(\d+)$/
+            [ $1.to_i, 0, 0 ]
+          else
+            msg = "'#{str.to_s}' does not match 'x.y.z', 'x.y' or 'x'"
+            raise Chef::Exceptions::InvalidPlatformVersion.new( msg )
+          end
       end
 
     end

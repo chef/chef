@@ -22,7 +22,7 @@ require 'chef/config'
 require 'chef/mash'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
-require 'chef/version_constraint/cookbook'
+require 'chef/version_constraint'
 
 class Chef
   class Environment
@@ -276,7 +276,7 @@ class Chef
 
     def self.validate_cookbook_version(version)
       begin
-        Chef::VersionConstraint::Cookbook.new version
+        Chef::VersionConstraint.new version
         true
       rescue ArgumentError
         false
