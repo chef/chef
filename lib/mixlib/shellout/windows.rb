@@ -37,8 +37,8 @@ module Mixlib
 
       # Option validation that is windows specific
       def validate_options(opts)
-        if opts["user"]
-          unless opts["password"] && opts["domain"]
+        if opts[:user]
+          unless opts[:password] && opts[:domain]
             raise InvalidCommandOption, "You must supply both a username and password when supplying a user in windows"
           end
         end
