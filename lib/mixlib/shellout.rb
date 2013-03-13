@@ -296,8 +296,12 @@ module Mixlib
           raise InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
         end
       end
+
+      validate_options(opts)
     end
 
-
+    def validate_options(opts)
+      super
+    end
   end
 end
