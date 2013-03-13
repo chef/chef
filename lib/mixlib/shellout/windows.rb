@@ -38,7 +38,7 @@ module Mixlib
       # Option validation that is windows specific
       def validate_options(opts)
         if opts[:user]
-          unless opts[:password] && opts[:domain]
+          unless opts[:password]
             raise InvalidCommandOption, "You must supply both a username and password when supplying a user in windows"
           end
         end
@@ -75,7 +75,8 @@ module Mixlib
             :close_handles => false
           }
           create_process_args[:cwd] = cwd if cwd
-          create_process_args[:domain] = domain if domain
+          # default to local account database if domain is not specified
+          create_process_args[:domain] = domain.nil? ? "." : domain
           create_process_args[:with_logon] = with_logon if with_logon
           create_process_args[:password] = password if password
 
