@@ -19,7 +19,7 @@
 require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
-require 'chef/version_constraint'
+require 'chef/version_constraint/platform'
 
 # This file depends on nearly every provider in chef, but requiring them
 # directly causes circular requires resulting in uninitialized constant errors.
@@ -337,12 +337,12 @@ class Chef
           end
           platform_versions.each do |platform_version, provider|
             begin
-              version_constraint = Chef::VersionConstraint::Cookbook.new(platform_version)
+              version_constraint = Chef::VersionConstraint::Platform.new(platform_version)
               if version_constraint.include?(version)
                 Chef::Log.debug("Platform #{name.to_s} version #{version} found")
                 provider_map.merge!(provider)
               end
-            rescue Chef::Exceptions::InvalidCookbookVersion
+            rescue Chef::Exceptions::InvalidPlatformVersion
               Chef::Log.debug("Chef::Version::Comparable does not know how to parse the platform version: #{version}")
             end
           end

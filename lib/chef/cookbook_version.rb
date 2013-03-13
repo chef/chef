@@ -25,7 +25,7 @@ require 'chef/resource_definition_list'
 require 'chef/recipe'
 require 'chef/cookbook/file_vendor'
 require 'chef/cookbook/metadata'
-require 'chef/version/cookbook'
+require 'chef/version_class'
 
 class Chef
 
@@ -669,9 +669,9 @@ class Chef
     def <=>(o)
       raise Chef::Exceptions::CookbookVersionNameMismatch if self.name != o.name
       # FIXME: can we change the interface to the Metadata class such
-      # that metadata.version returns a Chef::Version::Cookbook instance
-      # instead of a string?
-      Chef::Version.new(self.version) <=> Chef::Version::Cookbook.new(o.version)
+      # that metadata.version returns a Chef::Version instance instead
+      # of a string?
+      Chef::Version.new(self.version) <=> Chef::Version.new(o.version)
     end
 
     private

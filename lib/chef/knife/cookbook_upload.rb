@@ -274,7 +274,7 @@ WARNING
           versions = @server_side_cookbooks[cookbook_name]['versions'].collect {|versions| versions["version"]}
           Log.debug "Versions of cookbook '#{cookbook_name}' returned by the server: #{versions.join(", ")}"
           @server_side_cookbooks[cookbook_name]["versions"].each do |versions_hash|
-            if Chef::VersionConstraint::Cookbook.new(version).include?(versions_hash["version"])
+            if Chef::VersionConstraint.new(version).include?(versions_hash["version"])
               Log.debug "Matched cookbook '#{cookbook_name}' with constraint '#{version}' to cookbook version '#{versions_hash['version']}' on the server"
               return true
             end
@@ -284,7 +284,7 @@ WARNING
       end
 
       def check_uploading_cookbooks(cookbook_name, version)
-        if (! cookbooks_to_upload[cookbook_name].nil?) && Chef::VersionConstraint::Cookbook.new(version).include?(cookbooks_to_upload[cookbook_name].version)
+        if (! cookbooks_to_upload[cookbook_name].nil?) && Chef::VersionConstraint.new(version).include?(cookbooks_to_upload[cookbook_name].version)
           Log.debug "Matched cookbook '#{cookbook_name}' with constraint '#{version}' to a local cookbook."
           return true
         end

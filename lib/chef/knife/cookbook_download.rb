@@ -98,7 +98,7 @@ class Chef
         if available_versions.size == 1
           @version = available_versions.first
         elsif config[:latest]
-          @version = available_versions.map { |v| Chef::Version::Cookbook.new(v) }.sort.last
+          @version = available_versions.map { |v| Chef::Version.new(v) }.sort.last
         else
           ask_which_version
         end
@@ -107,7 +107,7 @@ class Chef
       def available_versions
         @available_versions ||= begin
           versions = Chef::CookbookVersion.available_versions(@cookbook_name).map do |version|
-            Chef::Version::Cookbook.new(version)
+            Chef::Version.new(version)
           end
           versions.sort!
           versions
