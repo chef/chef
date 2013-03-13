@@ -1,5 +1,6 @@
 require 'json'
 require 'chef/chef_fs/data_handler/data_handler_base'
+require 'chef/chef_fs/file_system/base_fs_object'
 
 class Chef
   class Knife
