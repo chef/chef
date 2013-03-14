@@ -28,6 +28,7 @@ require 'chef/chef_fs/data_handler/role_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
 require 'chef/chef_fs/data_handler/group_data_handler'
 require 'chef/chef_fs/data_handler/container_data_handler'
+require 'chef/chef_fs/data_handler/acl_data_handler'
 
 class Chef
   module ChefFS
@@ -96,6 +97,8 @@ class Chef
                 Chef::ChefFS::DataHandler::GroupDataHandler.new
               when 'containers'
                 Chef::ChefFS::DataHandler::ContainerDataHandler.new
+              when 'acls'
+                Chef::ChefFS::DataHandler::AclDataHandler.new
               else
                 raise "Unknown top level path #{name}"
               end
