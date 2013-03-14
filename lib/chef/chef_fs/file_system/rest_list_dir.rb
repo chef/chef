@@ -45,7 +45,7 @@ class Chef
 
         def children
           begin
-            @children ||= chef_collection.keys.sort.map do |key|
+            @children ||= rest.get_rest(api_path).keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
           rescue Net::HTTPServerException => e
@@ -57,16 +57,10 @@ class Chef
           end
         end
 
-        def chef_collection
-          rest.get_rest(api_path)
-        end
-
         def identity_key
           'name'
         end
 
-        # NOTE if you change this significantly, you will likely need to change
-        # DataBagDir.create_child as well.
         def create_child(name, file_contents)
           begin
             object = JSON.parse(file_contents, :create_additions => false)
