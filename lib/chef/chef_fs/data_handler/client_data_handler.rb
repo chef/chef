@@ -6,13 +6,17 @@ class Chef
     module DataHandler
       class ClientDataHandler < DataHandlerBase
         def normalize(client, entry)
-          super(client, {
+          result = super(client, {
             'name' => remove_dot_json(entry.name),
+            'clientname' => remove_dot_json(entry.name),
+            'orgname' => entry.org,
             'admin' => false,
             'validator' => false,
-            'json_class' => 'Chef::ApiClient',
             'chef_type' => 'client'
           })
+          # You can NOT send json_class, or it will fail
+          result.delete('json_class')
+          result
         end
 
         def preserve_key(key)
