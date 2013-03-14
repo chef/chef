@@ -26,18 +26,19 @@ require 'chef/rest'
 require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
+require 'chef/chef_fs/data_handler/group_data_handler'
 
 class Chef
   module ChefFS
     module FileSystem
       class ChefServerRootDir < BaseFSDir
-        def initialize(root_name, chef_config, repo_mode)
+        def initialize(root_name, chef_config)
           super("", nil)
           @chef_server_url = chef_config[:chef_server_url]
           @chef_username = chef_config[:node_name]
           @chef_private_key = chef_config[:client_key]
           @environment = chef_config[:environment]
-          @repo_mode = repo_mode
+          @repo_mode = chef_config[:repo_mode]
           @root_name = root_name
         end
 
@@ -63,6 +64,14 @@ class Chef
           is_dir && children.any? { |child| child.name == name }
         end
 
+        def org
+          @org ||= if URI.parse(chef_server_url).path =~ /^\/+organizations\/+([^\/]+)$/
+            $1
+          else
+            nil
+          end
+        end
+
         def children
           @children ||= begin
             result = [
@@ -76,6 +85,12 @@ class Chef
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
                 NodesDir.new(self),
                 RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
+              ]
+            elsif repo_mode == 'hosted_everything'
+              result += [
+                RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
+                RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
+                NodesDir.new(self)
               ]
             end
             result.sort_by { |child| child.name }

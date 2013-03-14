@@ -7,7 +7,12 @@ class Chef
         def normalize(user, entry)
           super(user, {
             'name' => remove_dot_json(entry.name),
-            'admin' => false
+            'admin' => false,
+            'json_class' => 'Chef::WebUIUser',
+            'chef_type' => 'webui_user',
+            'salt' => nil,
+            'password' => nil,
+            'openid' => nil
           })
         end
 
