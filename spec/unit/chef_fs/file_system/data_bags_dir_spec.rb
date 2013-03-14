@@ -25,8 +25,9 @@ describe Chef::ChefFS::FileSystem::DataBagsDir do
     {
       :chef_server_url => 'url',
       :node_name => 'username',
-      :client_key => 'key'
-    }, 'everything')
+      :client_key => 'key',
+      :repo_mode => 'everything'
+    })
   }
 
   let(:data_bags_dir) do
