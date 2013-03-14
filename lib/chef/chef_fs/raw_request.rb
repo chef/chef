@@ -1,6 +1,10 @@
 class Chef
   module ChefFS
     module RawRequest
+      def self.raw_json(chef_rest, api_path)
+        JSON.parse(raw_request(chef_rest, api_path), :create_additions => false)
+      end
+
       def self.raw_request(chef_rest, api_path)
         api_request(chef_rest, :GET, chef_rest.create_url(api_path), {}, false)
       end

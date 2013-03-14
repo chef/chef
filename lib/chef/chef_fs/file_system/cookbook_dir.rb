@@ -186,7 +186,7 @@ class Chef
             old_retry_count = Chef::Config[:http_retry_count]
             begin
               Chef::Config[:http_retry_count] = 0
-              @chef_object ||= rest.get_rest(api_path)
+              @chef_object ||= Chef::CookbookVersion.json_create(Chef::ChefFS::RawRequest.raw_json(rest, api_path))
             ensure
               Chef::Config[:http_retry_count] = old_retry_count
             end

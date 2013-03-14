@@ -45,7 +45,7 @@ class Chef
 
         def children
           begin
-            @children ||= rest.get_rest(api_path).keys.sort.map do |key|
+            @children ||= Chef::ChefFS::RawRequest.raw_json(rest, api_path).keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
           rescue Net::HTTPServerException => e
