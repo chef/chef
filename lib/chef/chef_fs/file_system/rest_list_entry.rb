@@ -100,7 +100,7 @@ class Chef
             if $!.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e)
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
             end
           end
         end
@@ -167,7 +167,7 @@ class Chef
             if e.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e)
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
             end
           end
         end
