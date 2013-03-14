@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/rest_list_dir'
 require 'chef/chef_fs/file_system/cookbook_dir'
+require 'chef/chef_fs/raw_request'
 
 require 'tmpdir'
 
@@ -46,13 +47,13 @@ class Chef
           @children ||= begin
             if Chef::Config[:versioned_cookbooks]
               result = []
-              rest.get_rest("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
+              Chef::ChefFS::RawRequest.raw_json(rest, "#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
                   result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
                 end
               end
             else
-              result = rest.get_rest(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+              result = Chef::ChefFS::RawRequest.raw_json(rest, api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
             end
             result.sort_by(&:name)
           end
