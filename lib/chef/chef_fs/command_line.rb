@@ -17,19 +17,21 @@
 #
 
 require 'chef/chef_fs/file_system'
+require 'chef/chef_fs/file_system/operation_failed_error'
+require 'chef/chef_fs/file_system/operation_not_allowed_error'
 
 class Chef
   module ChefFS
     module CommandLine
 
-      def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil, diff_filter = nil)
+      def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil, diff_filter = nil, ui = nil)
         if format_path.nil?
           format_path = proc { |entry| entry.path_for_printing }
         end
 
         get_content = (output_mode != :name_only && output_mode != :name_status)
         found_match = false
-        diff(pattern, a_root, b_root, recurse_depth, get_content) do |type, old_entry, new_entry, old_value, new_value|
+        diff(pattern, a_root, b_root, recurse_depth, get_content) do |type, old_entry, new_entry, old_value, new_value, error|
           found_match = true unless type == :both_nonexistent
           old_path = format_path.call(old_entry)
           new_path = format_path.call(new_entry)
@@ -105,9 +107,22 @@ class Chef
           when :deleted_cannot_download
           when :same
             # Skip these silently
+          when :error
+            if error.is_a?(Chef::ChefFS::FileSystem::OperationFailedError)
+              ui.error "#{format_path.call(error.entry)} failed to #{error.operation}: #{error.message}" if ui
+              error = true
+            elsif error.is_a?(Chef::ChefFS::FileSystem::OperationNotAllowedError)
+              ui.error "#{format_path.call(error.entry)} #{error.reason}." if ui
+            else
+              raise error
+            end
           end
         end
-        found_match
+        if !found_match
+          ui.error "#{pattern}: No such file or directory on remote or local" if ui
+          error = true
+        end
+        error
       end
 
       def self.diff(pattern, a_root, b_root, recurse_depth, get_content)
@@ -120,98 +135,102 @@ class Chef
 
       # Diff two known entries (could be files or dirs)
       def self.diff_entries(old_entry, new_entry, recurse_depth, get_content)
-        # If both are directories
-        if old_entry.dir?
-          if new_entry.dir?
-            if recurse_depth == 0
-              yield [ :common_subdirectories, old_entry, new_entry ]
-            else
-              Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry).each do |old_child,new_child|
-                diff_entries(old_child, new_child,
-                             recurse_depth ? recurse_depth - 1 : nil, get_content) do |diff|
-                  yield diff
+        begin
+          # If both are directories
+          if old_entry.dir?
+            if new_entry.dir?
+              if recurse_depth == 0
+                yield [ :common_subdirectories, old_entry, new_entry ]
+              else
+                Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry).each do |old_child,new_child|
+                  diff_entries(old_child, new_child,
+                               recurse_depth ? recurse_depth - 1 : nil, get_content) do |diff|
+                    yield diff
+                  end
                 end
               end
+
+          # If old is a directory and new is a file
+            elsif new_entry.exists?
+              yield [ :directory_to_file, old_entry, new_entry ]
+
+          # If old is a directory and new does not exist
+            elsif new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
+              yield [ :deleted, old_entry, new_entry ]
             end
 
-        # If old is a directory and new is a file
-          elsif new_entry.exists?
-            yield [ :directory_to_file, old_entry, new_entry ]
+          # If new is a directory and old is a file
+          elsif new_entry.dir?
+            if old_entry.exists?
+              yield [ :file_to_directory, old_entry, new_entry ]
 
-        # If old is a directory and new does not exist
-          elsif new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-            yield [ :deleted, old_entry, new_entry ]
-          end
-
-        # If new is a directory and old is a file
-        elsif new_entry.dir?
-          if old_entry.exists?
-            yield [ :file_to_directory, old_entry, new_entry ]
-
-        # If new is a directory and old does not exist
-          elsif old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-            yield [ :added, old_entry, new_entry ]
-          end
-
-        # Neither is a directory, so they are diffable with file diff
-        else
-          are_same, old_value, new_value = Chef::ChefFS::FileSystem.compare(old_entry, new_entry)
-          if are_same
-            if old_value == :none
-              yield [ :both_nonexistent, old_entry, new_entry ]
-            else
-              yield [ :same, old_entry, new_entry ]
+          # If new is a directory and old does not exist
+            elsif old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
+              yield [ :added, old_entry, new_entry ]
             end
+
+          # Neither is a directory, so they are diffable with file diff
           else
-            if old_value == :none
-              old_exists = false
-            elsif old_value.nil?
-              old_exists = old_entry.exists?
-            else
-              old_exists = true
-            end
-
-            if new_value == :none
-              new_exists = false
-            elsif new_value.nil?
-              new_exists = new_entry.exists?
-            else
-              new_exists = true
-            end
-
-            # If one of the files doesn't exist, we only want to print the diff if the
-            # other file *could be uploaded/downloaded*.
-            if !old_exists && !old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
-              yield [ :old_cannot_upload, old_entry, new_entry ]
-              return
-            end
-            if !new_exists && !new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
-              yield [ :new_cannot_upload, old_entry, new_entry ]
-              return
-            end
-
-            if get_content
-              # If we haven't read the values yet, get them now so that they can be diffed
-              begin
-                old_value = old_entry.read if old_value.nil?
-              rescue Chef::ChefFS::FileSystem::NotFoundError
-                old_value = :none
+            are_same, old_value, new_value = Chef::ChefFS::FileSystem.compare(old_entry, new_entry)
+            if are_same
+              if old_value == :none
+                yield [ :both_nonexistent, old_entry, new_entry ]
+              else
+                yield [ :same, old_entry, new_entry ]
               end
-              begin
-                new_value = new_entry.read if new_value.nil?
-              rescue Chef::ChefFS::FileSystem::NotFoundError
-                new_value = :none
-              end
-            end
-
-            if old_value == :none || (old_value == nil && !old_entry.exists?)
-              yield [ :added, old_entry, new_entry, old_value, new_value ]
-            elsif new_value == :none
-              yield [ :deleted, old_entry, new_entry, old_value, new_value ]
             else
-              yield [ :modified, old_entry, new_entry, old_value, new_value ]
+              if old_value == :none
+                old_exists = false
+              elsif old_value.nil?
+                old_exists = old_entry.exists?
+              else
+                old_exists = true
+              end
+
+              if new_value == :none
+                new_exists = false
+              elsif new_value.nil?
+                new_exists = new_entry.exists?
+              else
+                new_exists = true
+              end
+
+              # If one of the files doesn't exist, we only want to print the diff if the
+              # other file *could be uploaded/downloaded*.
+              if !old_exists && !old_entry.parent.can_have_child?(new_entry.name, new_entry.dir?)
+                yield [ :old_cannot_upload, old_entry, new_entry ]
+                return
+              end
+              if !new_exists && !new_entry.parent.can_have_child?(old_entry.name, old_entry.dir?)
+                yield [ :new_cannot_upload, old_entry, new_entry ]
+                return
+              end
+
+              if get_content
+                # If we haven't read the values yet, get them now so that they can be diffed
+                begin
+                  old_value = old_entry.read if old_value.nil?
+                rescue Chef::ChefFS::FileSystem::NotFoundError
+                  old_value = :none
+                end
+                begin
+                  new_value = new_entry.read if new_value.nil?
+                rescue Chef::ChefFS::FileSystem::NotFoundError
+                  new_value = :none
+                end
+              end
+
+              if old_value == :none || (old_value == nil && !old_entry.exists?)
+                yield [ :added, old_entry, new_entry, old_value, new_value ]
+              elsif new_value == :none
+                yield [ :deleted, old_entry, new_entry, old_value, new_value ]
+              else
+                yield [ :modified, old_entry, new_entry, old_value, new_value ]
+              end
             end
           end
+        rescue Chef::ChefFS::FileSystem::FileSystemError => e
+          yield [ :error, old_entry, new_entry, nil, nil, e ]
         end
       end
 
