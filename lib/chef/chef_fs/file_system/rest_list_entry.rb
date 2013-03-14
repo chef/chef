@@ -19,6 +19,7 @@
 require 'chef/chef_fs/file_system/base_fs_object'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/operation_failed_error'
+require 'chef/chef_fs/raw_request'
 require 'chef/role'
 require 'chef/node'
 
@@ -78,18 +79,17 @@ class Chef
         end
 
         def read
-          # Minimize the value so the results don't look terrible
-          Chef::JSONCompat.to_json_pretty(minimize_value(chef_hash))
-        end
-
-        def chef_hash
-          JSON.parse(raw_request(api_path), :create_additions => false)
-        rescue Net::HTTPServerException => e
-          if $!.response.code == "404"
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-          else
-            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
+          begin
+            json = Chef::ChefFS::RawRequest.raw_request(rest, api_path)
+          rescue Net::HTTPServerException => e
+            if $!.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
+            end
           end
+          # Minimize the value (get rid of defaults) so the results don't look terrible
+          Chef::JSONCompat.to_json_pretty(minimize_value(JSON.parse(json, :create_additions => false)))
         end
 
         def chef_object
