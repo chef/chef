@@ -25,6 +25,8 @@ class Chef
   module ChefFS
     module FileSystem
       class AclEntry < RestListEntry
+        PERMISSIONS = %w(create read update delete grant)
+
         def api_path
           "#{super}/_acl"
         end
@@ -33,8 +35,20 @@ class Chef
           raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:delete, self, e), "ACLs cannot be deleted."
         end
 
-        def write(recurse)
-          raise Chef::ChefFS::FileSystem::OperationNotAllowedError.new(:write, self, e), "ACLs are not (yet) supported."
+        def write(file_contents)
+          # ACL writes are fun.
+          acls = data_handler.normalize(JSON.parse(file_contents, :create_additions => false), self)
+          PERMISSIONS.each do |permission|
+            begin
+              rest.put_rest("#{api_path}/#{permission}", { permission => acls[permission] })
+            rescue Net::HTTPServerException => e
+              if e.response.code == "404"
+                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+              else
+                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "HTTP error writing: #{e}"
+              end
+            end
+          end
         end
       end
     end
