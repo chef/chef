@@ -144,8 +144,9 @@ describe Chef::ChefFS::FileSystem::ChefServerRootDir do
     {
       :chef_server_url => 'url',
       :node_name => 'username',
-      :client_key => 'key'
-    }, 'everything')
+      :client_key => 'key',
+      :repo_mode => 'everything'
+    })
   }
 
   before(:each) do
