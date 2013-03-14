@@ -28,13 +28,13 @@ gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
 
-awk NF > /etc/chef/validation.pem <<'EOP'
+cat > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
 chmod 0600 /etc/chef/validation.pem
 
 <% if encrypted_data_bag_secret -%>
-awk NF > /etc/chef/encrypted_data_bag_secret <<'EOP'
+cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
 chmod 0600 /etc/chef/encrypted_data_bag_secret
