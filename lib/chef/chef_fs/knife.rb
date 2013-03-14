@@ -40,7 +40,7 @@ class Chef
         Chef::Config[:repo_mode] = config[:repo_mode] if config[:repo_mode]
 
         # --chef-repo-path overrides all other paths
-        path_variables = %w(client_path cookbook_path data_bag_path environment_path group_path node_path role_path user_path)
+        path_variables = %w(client_path cookbook_path container_path data_bag_path environment_path group_path node_path role_path user_path)
         if config[:chef_repo_path]
           Chef::Config[:chef_repo_path] = config[:chef_repo_path]
           path_variables.each do |variable_name|
@@ -95,7 +95,7 @@ class Chef
           when 'everything'
             object_names = %w(clients cookbooks data_bags environments nodes roles users)
           when 'hosted_everything'
-            object_names = %w(clients cookbooks data_bags environments groups nodes roles)
+            object_names = %w(clients cookbooks containers data_bags environments groups nodes roles)
           else
             object_names = %w(cookbooks data_bags environments roles)
           end
