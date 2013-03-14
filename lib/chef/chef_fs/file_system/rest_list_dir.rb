@@ -98,6 +98,10 @@ class Chef
           result
         end
 
+        def org
+          parent.org
+        end
+
         def environment
           parent.environment
         end
