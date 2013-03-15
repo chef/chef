@@ -149,7 +149,7 @@ class Chef
           end
 
           if data_handler
-            object = data_handler.normalize(object, self)
+            object = data_handler.normalize_for_put(object, self)
           end
 
           base_name = name[0,name.length-5]
