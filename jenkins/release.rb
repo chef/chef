@@ -204,7 +204,7 @@ class ShipIt
 
   def initialize(argv=[])
     @argv = argv
-    @options = {}
+    @options = {:package_s3_config_file => "~/.s3cfg"}
   end
 
   def release_it
@@ -245,6 +245,10 @@ class ShipIt
         options[:bucket] = bucket
       end
 
+      opts.on("-c", "--package-s3-config S3_CMD_CONFIG_FILE", "path to the s3cmd config file for packages bucket") do |config|
+        options[:package_s3_config_file] = config
+      end
+
       opts.on("-M", "--metadata-bucket S3_BUCKET_NAME", "the name of the S3 bucket for v2 metadata") do |bucket|
         options[:metadata_bucket] = bucket
       end
@@ -271,6 +275,8 @@ class ShipIt
     end
 
     # metadata bucket and config file must be configured together
+    # TODO: these will be non-optional when we complete the transition from v1
+    # to v2 metadata.
     if (options[:metadata_bucket].nil? ^ options[:metadata_s3_config_file].nil?)
       puts "You must specify *both* metadata-bucket and metadata-s3-config to upload v2 metadata"
       puts "If you don't want to upload v2 metadata, don't specify either of these options"
@@ -298,6 +304,7 @@ class ShipIt
 
   def upload_package(local_path, s3_path)
     s3_cmd = ["s3cmd",
+              "-c #{options[:package_s3_config_file]}",
               "put",
               "--progress",
               "--acl-public",
@@ -352,10 +359,12 @@ class ShipIt
     shell.error!
   end
 
+  # Legacy v1 platform name map. This can be removed when v2 goes live.
   def upload_platform_name_map(platform_names_file)
     s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-names.json"
     puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
     s3_cmd = ["s3cmd",
+              "-c #{options[:package_s3_config_file]}",
               "put",
               platform_names_file,
               s3_location].join(" ")
