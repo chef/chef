@@ -53,7 +53,7 @@ class Chef
             raw_file.close!
           else
             Chef::Log.info("#{@new_resource} downloaded from #{raw_file_source}")
-            description = [] 
+            description = []
             description << "copy file downloaded from #{raw_file_source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
             converge_by(description) do
@@ -64,7 +64,7 @@ class Chef
               save_fileinfo(raw_file_source)
             end
             # whyrun mode cleanup - the temp file will never be used,
-            # so close/unlink it here. 
+            # so close/unlink it here.
             if whyrun_mode?
               raw_file.close!
             end
@@ -171,7 +171,8 @@ class Chef
         cache["last_modified"] = @new_resource.last_modified
         cache["src"] = source
         cache["checksum"] = @new_resource.checksum
-        Chef::FileCache.store("remote_file/#{new_resource.name}", cache.to_json)
+        cache_path = new_resource.name.sub(/^([A-Za-z]:)/, "")  # strip drive letter on Windows
+        Chef::FileCache.store("remote_file/#{cache_path}", cache.to_json)
       end
     end
   end
