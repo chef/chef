@@ -19,18 +19,15 @@
 
 require 'chef/provider/template_finder'
 require 'chef/provider/file'
-require 'chef/mixin/template'
-require 'chef/mixin/checksum'
-require 'chef/file_access_control'
 
 class Chef
   class Provider
-
     class Template < Chef::Provider::File
 
-      include Chef::Mixin::EnforceOwnershipAndPermissions
-      include Chef::Mixin::Checksum
-      include Chef::Mixin::Template
+      def initialize(new_resource, run_context)
+        @content_class = Chef::Provider::File::Content::Template
+        super
+      end
 
       def load_current_resource
         @current_resource = Chef::Resource::Template.new(@new_resource.name)
@@ -40,81 +37,15 @@ class Chef
       def define_resource_requirements
         super
 
-        requirements.assert(:create, :create_if_missing) do |a| 
-          a.assertion { ::File::exist?(template_location) } 
-          a.failure_message "Template source #{template_location} could not be found."
-          a.whyrun "Template source #{template_location} does not exist. Assuming it would have been created."
+        requirements.assert(:create, :create_if_missing) do |a|
+          a.assertion { ::File::exist?(content.template_location) }
+          a.failure_message "Template source #{content.template_location} could not be found."
+          a.whyrun "Template source #{content.template_location} does not exist. Assuming it would have been created."
           a.block_action!
         end
-      end
-
-      def action_create
-        render_with_context(template_location) do |rendered_template|
-          rendered(rendered_template)
-          if file_already_exists? && content_matches?
-            Chef::Log.debug("#{@new_resource} content has not changed.")
-            set_all_access_controls
-            update_new_file_state(@new_resource.path)
-          else
-            description = []
-            action_message = if file_already_exists?
-              "update #{@current_resource} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(@new_resource.checksum)}"
-            else
-              "create #{@new_resource}"
-            end
-            description << action_message
-            description << diff_current(rendered_template.path)
-            converge_by(description) do
-              backup
-              FileUtils.cp(rendered_template.path, @new_resource.path)
-              Chef::Log.info("#{@new_resource} updated content")
-              access_controls.set_all!
-              update_new_file_state(@new_resource.path)
-            end
-          end
-        end
-      end
-
-      def template_finder
-        @template_finder ||= begin
-          TemplateFinder.new(run_context, cookbook_name, node)
-        end
-      end
-
-      def template_location
-        @template_file_cache_location ||= begin
-          template_finder.find(@new_resource.source, :local => @new_resource.local, :cookbook => @new_resource.cookbook)
-        end
-      end
-
-      def resource_cookbook
-        @new_resource.cookbook || @new_resource.cookbook_name
-      end
-
-      def rendered(rendered_template)
-        @new_resource.checksum(checksum(rendered_template.path))
-        Chef::Log.debug("Current content's checksum:  #{@current_resource.checksum}")
-        Chef::Log.debug("Rendered content's checksum: #{@new_resource.checksum}")
-      end
-
-      def content_matches?
-        @current_resource.checksum == @new_resource.checksum
-      end
-
-      private
-
-      def file_already_exists?
-        ::File.exist?(@new_resource.path)
-      end
-
-      def render_with_context(template_location, &block)
-        context = {}
-        context.merge!(@new_resource.variables)
-        context[:node] = node
-        context[:template_finder] = template_finder
-        render_template(IO.read(template_location), context, &block)
       end
 
     end
   end
 end
+

@@ -32,7 +32,7 @@ describe Chef::Resource::CookbookFile do
     content
   end
 
-  let(:default_mode) { "600" }
+  let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
   it_behaves_like "a securable resource with reporting"
 

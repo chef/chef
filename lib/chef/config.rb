@@ -344,5 +344,19 @@ class Chef
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
     user_home(ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+
+    # selinux command to restore file contexts
+    selinux_restorecon_command "/sbin/restorecon -R"
+    # guess if you're running selinux or not -- override this if it guesses wrong
+    selinux_enabled  system( "/usr/sbin/selinuxenabled" )
+
+    # set this to something like Chef::Provider::File::Deploy::CpUnix if you want to override behavior globally
+    file_deployment_strategy nil
+
+    # do we create /tmp or %TEMP% files, or do we create temp files in the destination directory of the file?
+    #  - on windows this avoids issues with permission inheritance with the %TEMP% directory (do not set this to false)
+    #  - on unix this creates temp files like /etc/.sudoers.X-Y-Z and may create noise and make for itchy neckbeards
+    #  - with selinux and other ACLs approaches it may still be useful or to avoid copying across filesystems
+    file_deployment_uses_destdir ( RUBY_PLATFORM =~ /mswin|mingw|windows/ )
   end
 end

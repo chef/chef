@@ -27,24 +27,16 @@ class Chef
   class Provider
     class Directory < Chef::Provider::File
 
-      include Chef::Mixin::EnforceOwnershipAndPermissions
-
       def whyrun_supported?
         true
       end
 
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(@new_resource.name)
-        @current_resource.path(@new_resource.path)
-        setup_acl
-
-        @current_resource
+        super
       end
 
       def define_resource_requirements
-        # this must be evaluated before whyrun messages are printed
-        access_controls.requires_changes?
-
         requirements.assert(:create) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
@@ -61,8 +53,8 @@ class Chef
               # find the lowest-level directory in @new_resource.path that already exists
               # make sure we have write permissions to that directory
               is_parent_writable = lambda do |base_dir|
-                base_dir = ::File.dirname(base_dir) 
-                if ::File.exist?(base_dir) 
+                base_dir = ::File.dirname(base_dir)
+                if ::File.exist?(base_dir)
                   ::File.writable?(base_dir)
                 else
                   is_parent_writable.call(base_dir)
@@ -72,27 +64,27 @@ class Chef
             else
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
-              if !whyrun_mode? || ::File.exist?(parent_directory) 
+              if !whyrun_mode? || ::File.exist?(parent_directory)
                 ::File.writable?(parent_directory)
               else
                 true
               end
             end
           end
-          a.failure_message(Chef::Exceptions::InsufficientPermissions, 
+          a.failure_message(Chef::Exceptions::InsufficientPermissions,
             "Cannot create #{@new_resource} at #{@new_resource.path} due to insufficient permissions")
         end
 
-        requirements.assert(:delete) do |a| 
-          a.assertion do 
+        requirements.assert(:delete) do |a|
+          a.assertion do
             if ::File.exist?(@new_resource.path)
-              ::File.directory?(@new_resource.path) && ::File.writable?(@new_resource.path) 
+              ::File.directory?(@new_resource.path) && ::File.writable?(@new_resource.path)
             else
               true
             end
           end
           a.failure_message(RuntimeError, "Cannot delete #{@new_resource} at #{@new_resource.path}!")
-          # No why-run handling here: 
+          # No why-run handling here:
           #  * if we don't have permissions, this is unlikely to be changed earlier in the run
           #  * if the target is a file (not a dir), there's no reasonable path by which this would have been changed
         end
@@ -100,17 +92,17 @@ class Chef
 
       def action_create
         unless ::File.exist?(@new_resource.path)
-          converge_by("create new directory #{@new_resource.path}") do 
+          converge_by("create new directory #{@new_resource.path}") do
             if @new_resource.recursive == true
               ::FileUtils.mkdir_p(@new_resource.path)
             else
               ::Dir.mkdir(@new_resource.path)
             end
             Chef::Log.info("#{@new_resource} created directory #{@new_resource.path}")
-          end 
+          end
         end
-        set_all_access_controls
-        update_new_file_state
+        do_acl_changes
+        load_resource_attributes_from_file(@new_resource)
       end
 
       def action_delete

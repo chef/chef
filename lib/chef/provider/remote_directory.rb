@@ -31,7 +31,6 @@ class Chef
   class Provider
     class RemoteDirectory < Chef::Provider::Directory
 
-      include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::FileClass
 
       def action_create
@@ -67,7 +66,7 @@ class Chef
         if @new_resource.purge
           unmanaged_files.sort.reverse.each do |f|
             # file_class comes from Chef::Mixin::FileClass
-            if ::File.directory?(f) && !Chef::Platform.windows? && !file_class.symlink?(f.dup) 
+            if ::File.directory?(f) && !Chef::Platform.windows? && !file_class.symlink?(f.dup)
               # Linux treats directory symlinks as files
               # Remove a directory as a directory when not on windows if it is not a symlink
               purge_directory(f)

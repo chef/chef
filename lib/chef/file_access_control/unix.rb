@@ -59,8 +59,10 @@ class Chef
         uid_from_resource(current_resource)
       end
 
+      # target_uid.nil? means the new_resource.owner is nil and the requesting owner doesn't care
+      # current_uid.nil? means the file does not exist
       def should_update_owner?
-        !target_uid.nil? && target_uid != current_uid
+        !target_uid.nil? && ( current_uid.nil? || target_uid != current_uid )
       end
 
       def set_owner!
@@ -103,7 +105,7 @@ class Chef
       end
 
       def should_update_group?
-        !target_gid.nil? && target_gid != current_gid
+        !target_gid.nil? && ( current_gid.nil? || target_gid != current_gid )
       end
 
       def set_group!
@@ -136,7 +138,7 @@ class Chef
       end
 
       def should_update_mode?
-        !target_mode.nil? && current_mode != target_mode 
+        !target_mode.nil? && ( current_mode.nil? || current_mode != target_mode )
       end
 
       def set_mode!
@@ -192,7 +194,7 @@ class Chef
         end
       end
 
-      def uid_from_resource(resource) 
+      def uid_from_resource(resource)
         return nil if resource == nil or resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )

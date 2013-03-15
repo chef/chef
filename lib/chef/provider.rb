@@ -103,7 +103,7 @@ class Chef
       define_resource_requirements
       process_resource_requirements
 
-      # user-defined providers including LWRPs may 
+      # user-defined providers including LWRPs may
       # not include whyrun support - if they don't support it
       # we can't execute any actions while we're running in
       # whyrun mode. Instead we 'fake' whyrun by documenting that
@@ -133,7 +133,7 @@ class Chef
         events.resource_up_to_date(@new_resource, @action)
       else
         events.resource_updated(@new_resource, @action)
-        new_resource.updated_by_last_action(true) 
+        new_resource.updated_by_last_action(true)
       end
     end
 
@@ -141,16 +141,15 @@ class Chef
       @requirements ||= ResourceRequirements.new(@new_resource, run_context)
     end
 
+    def converge_by(descriptions, &block)
+      converge_actions.add_action(descriptions, &block)
+    end
+
     protected
 
     def converge_actions
       @converge_actions ||= ConvergeActions.new(@new_resource, run_context, @action)
     end
-
-    def converge_by(descriptions, &block)
-      converge_actions.add_action(descriptions, &block)
-    end
-
 
     def recipe_eval(&block)
       # This block has new resource definitions within it, which

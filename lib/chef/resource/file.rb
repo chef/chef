@@ -46,6 +46,13 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
+        @deployment_strategy = Chef::Config[:file_deployment_strategy]
+        @deployment_strategy ||= if Chef::Platform.windows?
+                                   Chef::Provider::File::Deploy::MvWindows
+                                 else
+                                   Chef::Provider::File::Deploy::MvUnix
+                                 end
+
         @diff = nil
       end
 
@@ -81,7 +88,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def diff(arg=nil)
         set_or_return(
           :diff,
@@ -90,6 +97,18 @@ class Chef
         )
       end
 
+      def deployment_strategy(arg=nil)
+        klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
+                  lookup_provider_constant(arg)
+                else
+                  arg
+                end
+        set_or_return(
+          :deployment_strategy,
+          klass,
+          :kind_of => [ Class ]
+        )
+      end
 
     end
   end

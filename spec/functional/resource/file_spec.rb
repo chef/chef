@@ -58,6 +58,22 @@ describe Chef::Resource::File do
 
   it_behaves_like "a securable resource with reporting"
 
+  describe "when running action :create without content" do
+    before do
+      resource_without_content.run_action(:create)
+    end
+
+    context "and the target file does not exist" do
+      it "creates the file" do
+        File.should exist(path)
+      end
+
+      it "is marked updated by last action" do
+        resource_without_content.should be_updated_by_last_action
+      end
+    end
+  end
+
   describe "when running action :touch" do
     context "and the target file does not exist" do
       before do

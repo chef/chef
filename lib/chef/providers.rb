@@ -107,3 +107,13 @@ require 'chef/provider/remote_file/local_file'
 
 require "chef/provider/lwrp_base"
 require 'chef/provider/registry_key'
+
+require 'chef/provider/file/content'
+require 'chef/provider/file/content/file'
+require 'chef/provider/file/content/remote_file'
+require 'chef/provider/file/content/cookbook_file'
+require 'chef/provider/file/content/template'
+require 'chef/provider/file/deploy/cp_unix'
+require 'chef/provider/file/deploy/mv_unix'
+require 'chef/provider/file/deploy/mv_windows'
+
