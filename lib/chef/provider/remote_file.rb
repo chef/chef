@@ -128,6 +128,7 @@ class Chef
       def grab_file_from_uri(uri)
         if_modified_since = @new_resource.last_modified
         if_none_match = @new_resource.etag
+        # The current resource's source uri was saved with a masked password
         uri_dup = uri.dup
         if uri_dup.userinfo
           uri_dup.password = "********"
