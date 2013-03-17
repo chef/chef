@@ -134,7 +134,7 @@ describe Chef::Knife::Bootstrap do
     @knife.name_args.first.should == "barf"
   end
 
-  describe "when configuring the underlying knife ssh command"
+  describe "when configuring the underlying knife ssh command" do
     context "from the command line" do
       before do
         @knife.name_args = ["foo.example.com"]
@@ -229,29 +229,30 @@ describe Chef::Knife::Bootstrap do
       it "configures the host key verify mode" do
         @knife_ssh.config[:host_key_verify].should == true
       end
-  end
-
-  describe "when falling back to password auth when host key auth fails" do
-    before do
-      @knife.name_args = ["foo.example.com"]
-      @knife.config[:ssh_user]      = "rooty"
-      @knife.config[:identity_file] = "~/.ssh/me.rsa"
-      @knife.stub!(:read_template).and_return("")
-      @knife_ssh = @knife.knife_ssh
     end
 
-    it "prompts the user for a password " do
-      @knife.stub!(:knife_ssh).and_return(@knife_ssh)
-      @knife_ssh.stub!(:get_password).and_return('typed_in_password')
-      alternate_knife_ssh = @knife.knife_ssh_with_password_auth
-      alternate_knife_ssh.config[:ssh_password].should == 'typed_in_password'
-    end
+    describe "when falling back to password auth when host key auth fails" do
+      before do
+        @knife.name_args = ["foo.example.com"]
+        @knife.config[:ssh_user]      = "rooty"
+        @knife.config[:identity_file] = "~/.ssh/me.rsa"
+        @knife.stub!(:read_template).and_return("")
+        @knife_ssh = @knife.knife_ssh
+      end
 
-    it "configures knife not to use the identity file that didn't work previously" do
-      @knife.stub!(:knife_ssh).and_return(@knife_ssh)
-      @knife_ssh.stub!(:get_password).and_return('typed_in_password')
-      alternate_knife_ssh = @knife.knife_ssh_with_password_auth
-      alternate_knife_ssh.config[:identity_file].should be_nil
+      it "prompts the user for a password " do
+        @knife.stub!(:knife_ssh).and_return(@knife_ssh)
+        @knife_ssh.stub!(:get_password).and_return('typed_in_password')
+        alternate_knife_ssh = @knife.knife_ssh_with_password_auth
+        alternate_knife_ssh.config[:ssh_password].should == 'typed_in_password'
+      end
+
+      it "configures knife not to use the identity file that didn't work previously" do
+        @knife.stub!(:knife_ssh).and_return(@knife_ssh)
+        @knife_ssh.stub!(:get_password).and_return('typed_in_password')
+        alternate_knife_ssh = @knife.knife_ssh_with_password_auth
+        alternate_knife_ssh.config[:identity_file].should be_nil
+      end
     end
   end
 
