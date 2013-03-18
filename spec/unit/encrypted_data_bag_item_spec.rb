@@ -19,7 +19,7 @@
 require 'spec_helper'
 require 'chef/encrypted_data_bag_item'
 
-module Version1Encryptor
+module Version0Encryptor
   def self.encrypt_value(plaintext_data, key)
     data = plaintext_data.to_yaml
 
@@ -116,7 +116,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
   context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value" do
     let(:encrypted_value) do
-      Version1Encryptor.encrypt_value(plaintext_data, encryption_key)
+      Version0Encryptor.encrypt_value(plaintext_data, encryption_key)
     end
 
     it "selects the correct strategy for version 0" do
