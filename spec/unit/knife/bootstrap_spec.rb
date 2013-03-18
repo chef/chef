@@ -339,6 +339,17 @@ describe Chef::Knife::Bootstrap do
       @knife.run
     end
 
+    context "Chef::Config[:encrypted_data_bag_secret] is set" do
+      let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
+      before { Chef::Config[:encrypted_data_bag_secret] = secret_file }
+
+      it "warns the configuration option is deprecated" do
+        @knife_ssh.should_receive(:run)
+        @knife.ui.should_receive(:warn).at_least(3).times
+        @knife.run
+      end
+    end
+
   end
 
 end
