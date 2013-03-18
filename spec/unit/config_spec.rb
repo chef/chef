@@ -50,7 +50,7 @@ describe Chef::Config do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
     end
-    
+
     it_behaves_like "server URL"
   end
 
@@ -58,7 +58,7 @@ describe Chef::Config do
     before do
       Chef::Config.chef_server_url = " https://junglist.gen.nz"
     end
-    
+
     it_behaves_like "server URL"
   end
 

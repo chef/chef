@@ -199,23 +199,23 @@ describe Chef::Knife::Bootstrap do
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
-  
+
       it "configures the hostname" do
         @knife_ssh.name_args.first.should == "foo.example.com"
       end
-  
+
       it "configures the ssh user" do
         @knife_ssh.config[:ssh_user].should == 'rooty'
       end
-  
+
       it "configures the ssh password" do
         @knife_ssh.config[:ssh_password].should == 'open_sesame'
       end
-  
+
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '4001'
       end
-  
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
       end
@@ -237,19 +237,19 @@ describe Chef::Knife::Bootstrap do
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
-  
+
       it "configures the ssh user" do
         @knife_ssh.config[:ssh_user].should == 'curiosity'
       end
-  
+
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '2430'
       end
-  
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
       end
-  
+
       it "configures the ssh gateway" do
         @knife_ssh.config[:ssh_gateway].should == 'towel.blinkenlights.nl'
       end
