@@ -131,16 +131,12 @@ end
 
 describe Chef::EncryptedDataBagItem do
   subject { described_class }
-  let(:encrypted_data_bag_item) do
-    subject.new(encoded_data, secret)
-  end
-  let(:plaintext_data) do
-    {
+  let(:encrypted_data_bag_item) { subject.new(encoded_data, secret) }
+  let(:plaintext_data) {{
       "id" => "item_name",
       "greeting" => "hello",
       "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true }}
-    }
-  end
+  }}
   let(:secret) { "abc123SECRET" }
   let(:encoded_data) { subject.encrypt_data_bag_item(plaintext_data, secret) }
 
@@ -221,10 +217,6 @@ describe Chef::EncryptedDataBagItem do
     context "path argument is nil" do
       let(:path) { nil }
       let(:stubbed_path) { "/etc/chef/encrypted_data_bag_secret" }
-
-      it "reads from the default path" do
-        loaded_secret.should eq secret
-      end
 
       it "reads from Chef::Config[:encrypted_data_bag_secret]" do
         Chef::Config[:encrypted_data_bag_secret] = stubbed_path
