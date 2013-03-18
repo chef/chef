@@ -42,7 +42,7 @@ describe Chef::Resource::RemoteFile do
 
   describe "source" do
     it "does not have a default value for 'source'" do
-      @resource.source.should be_nil
+      @resource.source.should eql([])
     end
 
     it "should accept a URI for the remote file source" do
@@ -64,7 +64,7 @@ describe Chef::Resource::RemoteFile do
       lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
-    it "should raise and exception when source is an empty array" do
+    it "should raise an exception when source is an empty array" do
       lambda { @resource.source([]) }.should raise_error(ArgumentError)
     end
 
@@ -80,7 +80,52 @@ describe Chef::Resource::RemoteFile do
       @resource.checksum.should == nil
     end
   end
-  
+
+  describe "ftp_active_mode" do
+    it "should accept a boolean for the ftp_active_mode object" do
+      @resource.ftp_active_mode true
+      @resource.ftp_active_mode.should be_true
+    end
+
+    it "should default to false" do
+      @resource.ftp_active_mode.should be_false
+    end
+  end
+
+  describe "etag" do
+    it "should accept a string for the etag object" do
+      @resource.etag "asdf"
+      @resource.etag.should eql("asdf")
+    end
+
+    it "should default to nil" do
+      @resource.etag.should == nil
+    end
+
+    it "should strip extra quotes and data" do
+      @resource.etag 'W/"asdf"'
+      @resource.etag.should eql("asdf")
+    end
+  end
+
+  describe "last_modified" do
+    it "should parse a date string for the last_modified object" do
+      time = Time.now
+      @resource.last_modified time.to_s
+      @resource.last_modified.to_i.should eql(time.to_i)
+    end
+
+    it "should default to nil" do
+      @resource.last_modified.should == nil
+    end
+
+    it "should accept a Time" do
+      time = Time.now
+      @resource.last_modified time
+      @resource.last_modified.to_i.should eql(time.to_i)
+    end
+  end
+
   describe "when it has group, mode, owner, source, and checksum" do
     before do 
       if Chef::Platform.windows?
@@ -119,5 +164,4 @@ describe Chef::Resource::RemoteFile do
       end
     end
   end
- 
 end

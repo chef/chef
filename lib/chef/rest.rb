@@ -84,6 +84,10 @@ class Chef
       @raw_key
     end
 
+    def last_response
+      @last_response
+    end
+
     # Send an HTTP GET request to the path
     #
     # Using this method to +fetch+ a file is considered deprecated.
@@ -164,6 +168,7 @@ class Chef
       retriable_rest_request(method, url, body, headers) do |rest_request|
         begin
           response = rest_request.call {|r| r.read_body}
+          @last_response = response
 
           Chef::Log.debug("---- HTTP Status and Header Data: ----")
           Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
@@ -252,6 +257,7 @@ class Chef
               tempfile = stream_to_tempfile(url, r)
             end
           end
+          @last_response = response
           if response.kind_of?(Net::HTTPSuccess)
             tempfile
           elsif redirect_location = redirected_to(response)

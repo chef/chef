@@ -50,7 +50,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       @rest = mock(Chef::REST, { })
       Chef::REST.stub!(:new).and_return(@rest)
       @rest.stub!(:streaming_request).and_return(@tempfile)
-      @rest.stub!(:create_url) { |url| url } 
+      @rest.stub!(:last_response).and_return({})
       @resource.cookbook_name = "monkey"
 
       @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
@@ -81,14 +81,14 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
     shared_examples_for "source specified with multiple URIs" do
       it "should try to download the next URI when the first one fails" do
-        @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
-        @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_return(@tempfile)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://foo"), {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://bar"), {}).once.and_return(@tempfile)
         @provider.run_action(:create)
       end
 
       it "should raise an exception when all the URIs fail" do
-        @rest.should_receive(:streaming_request).with("http://foo", {}).once.and_raise(SocketError)
-        @rest.should_receive(:streaming_request).with("http://bar", {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://foo"), {}).once.and_raise(SocketError)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://bar"), {}).once.and_raise(SocketError)
         lambda { @provider.run_action(:create) }.should raise_error(SocketError)
       end
 
@@ -123,7 +123,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "does not download the file" do
-          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @rest.should_not_receive(:fetch)
           @provider.run_action(:create)
         end
 
@@ -140,7 +140,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "should not download the file if the checksum is a partial match from the beginning" do
-          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @rest.should_not_receive(:fetch)
           @provider.run_action(:create)
         end
 
@@ -154,7 +154,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
       describe "and the existing file doesn't match the given checksum" do
         it "downloads the file" do
           @resource.checksum("this hash doesn't match")
-          @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
+          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -162,7 +162,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         it "does not consider the checksum a match if the matching string is offset" do
           # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
           @resource.checksum("fd012fd")
-          @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
+          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
           @provider.stub!(:update_new_file_state)
           @provider.run_action(:create)
         end
@@ -173,7 +173,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     describe "and the resource doesn't specify a checksum" do
       it "should download the file from the remote URL" do
         @resource.checksum(nil)
-        @rest.should_receive(:streaming_request).with("http://opscode.com/seattle.txt", {}).and_return(@tempfile)
+        @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
         @provider.run_action(:create)
       end
     end
@@ -187,26 +187,42 @@ describe Chef::Provider::RemoteFile, "action_create" do
     # detect when users are fetching gzipped files and turn off gzip in
     # Chef::REST.
 
-    context "and the target file is a tarball" do
-      before do
-        @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.tar.gz")))
-        Chef::REST.should_receive(:new).with("http://opscode.com/seattle.txt", nil, nil, :disable_gzip => true).and_return(@rest)
-      end
-
-      it "disables gzip in the http client" do
-        @provider.action_create
-      end
-
-    end
-
     context "and the source appears to be a tarball" do
       before do
         @resource.source("http://example.com/tarball.tgz")
-        Chef::REST.should_receive(:new).with("http://example.com/tarball.tgz", nil, nil, :disable_gzip => true).and_return(@rest)
+        Chef::REST.should_receive(:new).with(URI.parse("http://example.com/tarball.tgz"), nil, nil, :disable_gzip => true).and_return(@rest)
       end
 
       it "disables gzip in the http client" do
         @provider.action_create
+      end
+    end
+
+    context "and the uri scheme is ftp" do
+      before do
+        @resource.source("ftp://opscode.com/seattle.txt")
+      end
+
+      it "should fetch with ftp in passive mode" do
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+
+      it "should fetch with ftp in active mode" do
+        @resource.ftp_active_mode true
+        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
+        @provider.run_action(:create)
+      end
+    end
+
+    context "and the uri scheme is file" do
+      before do
+        @resource.source("file:///nyan_cat.png")
+      end
+
+      it "should fetch the local file" do
+        Chef::Provider::RemoteFile::LocalFile.should_receive(:fetch).with(URI.parse("file:///nyan_cat.png"), nil).and_return(@tempfile)
+        @provider.run_action(:create)
       end
     end
 
@@ -317,8 +333,6 @@ describe Chef::Provider::RemoteFile, "action_create" do
         @provider.run_action(:create)
       end
 
-
     end
-
   end
 end

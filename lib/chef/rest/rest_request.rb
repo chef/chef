@@ -220,7 +220,11 @@ class Chef
 
         @http_request.body = request_body if (request_body && @http_request.request_body_permitted?)
         # Optionally handle HTTP Basic Authentication
-        @http_request.basic_auth(url.user, url.password) if url.user
+        if url.user
+          user = URI.unescape(url.user)
+          password = URI.unescape(url.password) if url.password
+          @http_request.basic_auth(user, password)
+        end
         @http_request[USER_AGENT] = self.class.user_agent
       end
 
