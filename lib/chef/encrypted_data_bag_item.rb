@@ -309,7 +309,7 @@ class Chef::EncryptedDataBagItem
                  raise ArgumentError, "Remote key not found at '#{path}'"
                end
              else
-               if !File.exists?(path)
+               if !File.exist?(path)
                  raise Errno::ENOENT, "file not found '#{path}'"
                end
                IO.read(path).strip
