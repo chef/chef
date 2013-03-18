@@ -128,10 +128,62 @@ describe Chef::Knife::Bootstrap do
     @knife.render_template(template_string).should match /\{\"foo\":\"bar\"\}/
   end
 
-
   it "should take the node name from ARGV" do
     @knife.name_args = ['barf']
     @knife.name_args.first.should == "barf"
+  end
+
+  describe "specifying the encrypted data bag secret key" do
+    subject(:knife) { described_class.new }
+    let(:secret) { "supersekret" }
+    let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
+    let(:options) { [] }
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "secret.erb")) }
+    let(:rendered_template) do
+      knife.instance_variable_set("@template_file", template_file)
+      knife.parse_options(options)
+      template_string = knife.read_template
+      knife.render_template(template_string)
+    end
+
+    context "via --secret" do
+      let(:options){ ["--secret", secret] }
+
+      it "creates a secret file" do
+        rendered_template.should match(%r{#{secret}})
+      end
+
+      it "renders the client.rb with an encrypted_data_bag_secret entry" do
+        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
+      end
+    end
+
+    context "via --secret-file" do
+      let(:options) { ["--secret-file", secret_file] }
+      let(:secret) { IO.read(secret_file) }
+
+      it "creates a secret file" do
+        rendered_template.should match(%r{#{secret}})
+      end
+
+      it "renders the client.rb with an encrypted_data_bag_secret entry" do
+        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
+      end
+    end
+
+    context "via Chef::Config[:encrypted_data_bag_secret]" do
+      before(:each) { Chef::Config[:encrypted_data_bag_secret] = secret_file }
+      let(:secret) { IO.read(secret_file) }
+
+      it "creates a secret file" do
+        rendered_template.should match(%r{#{secret}})
+      end
+
+      it "renders the client.rb with an encrypted_data_bag_secret entry" do
+        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
+      end
+      after(:each) { Chef::Config.configuration = @original_config }
+    end
   end
 
   describe "when configuring the underlying knife ssh command" do

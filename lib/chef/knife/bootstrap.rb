@@ -132,6 +132,15 @@ class Chef
           name, path = h.split("=")
           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
 
+      option :secret,
+        :short => "-s SECRET",
+        :long  => "--secret ",
+        :description => "The secret key to use to encrypt data bag item values"
+
+      option :secret_file,
+        :long => "--secret-file SECRET_FILE",
+        :description => "A file containing the secret key to use to encrypt data bag item values"
+
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
         if config[:template_file]
