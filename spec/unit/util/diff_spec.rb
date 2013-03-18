@@ -45,11 +45,13 @@ describe Chef::Util::Diff, :uses_diff => true do
   end
 
   it "should raise an exception if the old_file does not exist" do
+    old_tempfile.close
     old_tempfile.unlink
     expect { differ.diff(old_file, new_file) }.to raise_error
   end
 
   it "should raise an exception if the new_file does not exist" do
+    new_tempfile.close
     new_tempfile.unlink
     expect { differ.diff(old_file, new_file) }.to raise_error
   end
