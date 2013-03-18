@@ -61,7 +61,9 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        load_resource_attributes_from_file(@current_resource)
+        if ::File.exists?(@current_resource.path)
+          load_resource_attributes_from_file(@current_resource)
+        end
         @current_resource
       end
 
@@ -219,9 +221,6 @@ class Chef
         checksum.slice(0,6)
       end
 
-      # if you are using a tempfile before creating, you must
-      # override the default with the tempfile, since the
-      # file at @new_resource.path will not be updated on converge
       def load_resource_attributes_from_file(resource)
         if resource.respond_to?(:checksum)
           if ::File.exists?(resource.path) && !::File.directory?(resource.path)
@@ -237,7 +236,6 @@ class Chef
           # Windows.
           return
         end
-
         acl_scanner = ScanAccessControl.new(@new_resource, resource)
         acl_scanner.set_all!
       end
