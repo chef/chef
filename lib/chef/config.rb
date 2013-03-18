@@ -270,6 +270,17 @@ class Chef
     # `node_name` of the client.
     client_key platform_specific_path("/etc/chef/client.pem")
 
+    # This secret is used to decrypt encrypted data bag items.
+    encrypted_data_bag_secret platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+
+    # We have to check for the existence of the default file before setting it
+    # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
+    # bootstrap templates to determine if the local secret should be uploaded to
+    # node being bootstrapped. This should be removed in Chef 12.
+    unless File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
+      encrypted_data_bag_secret(nil)
+    end
+
     # If there is no file in the location given by `client_key`, chef-client
     # will temporarily use the "validator" identity to generate one. If the
     # `client_key` is not present and the `validation_key` is also not present,

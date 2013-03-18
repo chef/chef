@@ -48,7 +48,6 @@ require 'open-uri'
 # such nodes in the infrastructure.
 #
 class Chef::EncryptedDataBagItem
-  DEFAULT_SECRET_FILE = "/etc/chef/encrypted_data_bag_secret"
   ALGORITHM = 'aes-256-cbc'
 
   class UnsupportedEncryptedDataBagItemFormat < StandardError
@@ -297,7 +296,7 @@ class Chef::EncryptedDataBagItem
   end
 
   def self.load_secret(path=nil)
-    path = path || Chef::Config[:encrypted_data_bag_secret] || DEFAULT_SECRET_FILE
+    path ||= Chef::Config[:encrypted_data_bag_secret]
     secret = case path
              when /^\w+:\/\//
                # We have a remote key

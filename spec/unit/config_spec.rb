@@ -261,6 +261,33 @@ describe Chef::Config do
     end
   end
 
+  describe "Chef::Config[:encrypted_data_bag_secret]" do
+    db_secret_default_path = "/etc/chef/encrypted_data_bag_secret"
+    let(:db_secret_default_path){ db_secret_default_path }
+
+    before do
+      File.stub(:exist?).with(db_secret_default_path).and_return(secret_exists)
+      # ugh...the only way to properly test this since the conditional
+      # is evaluated at file load/require time.
+      $LOADED_FEATURES.delete_if{|f| f =~ /chef\/config\.rb/}
+      require 'chef/config'
+    end
+
+    context "#{db_secret_default_path} exists" do
+      let(:secret_exists) { true }
+      it "sets the value to #{db_secret_default_path}" do
+        Chef::Config[:encrypted_data_bag_secret].should eq db_secret_default_path
+      end
+    end
+
+    context "#{db_secret_default_path} does not exist" do
+      let(:secret_exists) { false }
+      it "sets the value to nil" do
+        Chef::Config[:encrypted_data_bag_secret].should be_nil
+      end
+    end
+  end
+
   after(:each) do
     Chef::Config.configuration = @original_config
   end
