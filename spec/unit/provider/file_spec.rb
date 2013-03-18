@@ -103,7 +103,7 @@ describe Chef::Provider::File do
 
     context "when running load_current_resource and the file exists" do
       before do
-        File.should_receive(:exist?).with(resource_path).at_least(:once).and_return(true)
+        setup_normal_file
         provider.load_current_resource
       end
 
@@ -126,7 +126,7 @@ describe Chef::Provider::File do
 
     context "when running load_current_resource and the file does not exist" do
       before do
-        File.should_receive(:exist?).with(resource_path).at_least(:once).and_return(false)
+        setup_missing_file
         provider.load_current_resource
       end
 
@@ -152,8 +152,8 @@ describe Chef::Provider::File do
         # fake that we're on unix even if we're on windows
         Chef::Platform.stub!(:windows?).and_return(false)
         # mock up the filesystem to behave like unix
+        setup_normal_file
         stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-        File.should_receive(:exist?).with(resource_path).at_least(:once).and_return(true)
         File.should_receive(:stat).with(resource.path).at_least(:once).and_return(stat_struct)
         Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
         Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
@@ -226,7 +226,7 @@ describe Chef::Provider::File do
       before do
         # fake that we're on unix even if we're on windows
         Chef::Platform.stub!(:windows?).and_return(false)
-        File.should_receive(:exist?).with(resource_path).at_least(:once).and_return(false)
+        setup_missing_file
       end
 
       context "when the new_resource does not specify any state" do
@@ -276,6 +276,7 @@ describe Chef::Provider::File do
       # fake that we're on unix even if we're on windows
       Chef::Platform.stub!(:windows?).and_return(false)
       # mock up the filesystem to behave like unix
+      setup_normal_file
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
       File.stub!(:stat).with(resource.path).and_return(stat_struct)
       Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
@@ -345,7 +346,7 @@ describe Chef::Provider::File do
       provider.should_receive(:do_create_file)
       provider.should_receive(:do_contents_changes)
       provider.should_receive(:do_acl_changes)
-      provider.should_receive(:load_resource_attributes_from_file).twice # current_resource + new_resource
+      provider.should_receive(:load_resource_attributes_from_file)
       provider.run_action(:create)
     end
 
