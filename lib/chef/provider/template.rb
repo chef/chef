@@ -25,7 +25,7 @@ class Chef
     class Template < Chef::Provider::File
 
       def initialize(new_resource, run_context)
-        @content_class = Chef::Provider::File::Content::Template
+        @content_class = Chef::Provider::Template::Content
         super
       end
 

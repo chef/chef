@@ -23,7 +23,7 @@ class Chef
     class CookbookFile < Chef::Provider::File
 
       def initialize(new_resource, run_context)
-        @content_class = Chef::Provider::File::Content::CookbookFile
+        @content_class = Chef::Provider::CookbookFile::Content
         super
       end
 

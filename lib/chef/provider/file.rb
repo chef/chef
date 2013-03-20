@@ -47,7 +47,7 @@ class Chef
       attr_reader :deployment_strategy
 
       def initialize(new_resource, run_context)
-        @content_class ||= Chef::Provider::File::Content::File
+        @content_class ||= Chef::Provider::File::Content
         @deployment_strategy = new_resource.deployment_strategy.new() if new_resource.respond_to?(:deployment_strategy)
         super
       end

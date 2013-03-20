@@ -62,7 +62,7 @@ describe Chef::Mixin::Template, "render_template" do
       @resource.cookbook_name = 'openldap'
       @current_resource = @resource.dup
 
-      @content_provider = Chef::Provider::File::Content::Template.new(@resource, @current_resource, @run_context)
+      @content_provider = Chef::Provider::Template::Content.new(@resource, @current_resource, @run_context)
 
       @template_context = {}
       @template_context[:node] = @node

@@ -20,17 +20,27 @@ require 'chef/provider/file_content_base'
 
 class Chef
   class Provider
-    class File
+    class CookbookFile
       class Content < Chef::Provider::FileContentBase
+
+        private
+
         def file_for_provider
-          if @new_resource.content
-            tempfile = Tempfile.open(tempfile_basename, tempfile_dirname)
-            tempfile.write(@new_resource.content)
-            tempfile.close
-            tempfile
-          else
+          cookbook = run_context.cookbook_collection[resource_cookbook]
+          file_cache_location = cookbook.preferred_filename_on_disk_location(run_context.node, :files, @new_resource.source, @new_resource.path)
+          if file_cache_location.nil?
             nil
+          else
+            tempfile = Tempfile.open(tempfile_basename, tempfile_dirname)
+            tempfile.close
+            Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
+            FileUtils.cp(file_cache_location, tempfile.path)
+            tempfile
           end
+        end
+
+        def resource_cookbook
+          @new_resource.cookbook || @new_resource.cookbook_name
         end
       end
     end
