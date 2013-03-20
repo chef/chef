@@ -248,8 +248,14 @@ class Chef
           ui.warn "* " * 40
           ui.warn(<<-WARNING)
 Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
-entry in 'knife.rb' is deprecated. Please use the '--secret' or '--secret-file'
-options of this command instead.
+entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
+can supress this warning and still distribute the secret key to all bootstrapped
+machines by adding the following to your 'knife.rb' file:
+
+  knife[:secret_file] = "/path/to/your/secret"
+
+If you would like to selectively distribute a secret key during bootstrap
+please use the '--secret' or '--secret-file' options of this command instead.
 
 #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
 behavior will be removed and any 'encrypted_data_bag_secret' entries in
