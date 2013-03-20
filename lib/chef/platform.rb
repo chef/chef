@@ -115,6 +115,14 @@ class Chef
               :service => Chef::Provider::Service::Insserv
             }
           },
+          :xcp   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
           :xenserver   => {
             :default => {
               :service => Chef::Provider::Service::Redhat,
