@@ -33,14 +33,6 @@ class Chef
               nil
             end
           end
-
-          private
-
-          def tempfile_basename
-            basename = ::File.basename(@new_resource.name)
-            basename.insert 0, "." unless Chef::Platform.windows?  # dotfile if we're not on windows
-            basename
-          end
         end
       end
     end
