@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Copyright:: Copyright (c) 2008-2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,42 +16,60 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 require 'stringio'
 require 'spec_helper'
 require 'etc'
 require 'ostruct'
+require 'support/shared/unit/provider/file'
+
 
 describe Chef::Provider::Template do
-  before(:each) do
-    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
-    @node = Chef::Node.new
-    cl = Chef::CookbookLoader.new(@cookbook_repo)
-    cl.load_cookbooks
-    @cookbook_collection = Chef::CookbookCollection.new(cl)
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-
-    @rendered_file_location = Dir.tmpdir + '/openldap_stuff.conf'
-
-    @resource = Chef::Resource::Template.new(@rendered_file_location)
-    @resource.cookbook_name = 'openldap'
-
-    @provider = Chef::Provider::Template.new(@resource, @run_context)
-    @current_resource = @resource.dup
-    @provider.current_resource = @current_resource
-    @access_controls = mock("access controls")
-    @provider.stub!(:access_controls).and_return(@access_controls)
-    passwd_struct = if windows?
-                      Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
-                    else
-                      Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
-                    end
-    group_struct = mock("Group Ent", :name => "root", :passwd => "x", :gid => 0)
-    Etc.stub!(:getpwuid).and_return(passwd_struct)
-    Etc.stub!(:getgrgid).and_return(group_struct)
+  let(:resource) do
+    resource = Chef::Resource::Template.new("seattle", @run_context)
+    resource.path(resource_path)
+    resource
   end
+
+  let(:content) do
+    content = mock('Chef::Provider::File::Content::Template', :template_location => "/foo/bar/baz")
+    File.stub(:exists?).with("/foo/bar/baz").and_return(true)
+    content
+  end
+
+  it_behaves_like Chef::Provider::File
+
+#  before(:each) do
+#    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+#    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
+#
+#    @node = Chef::Node.new
+#    cl = Chef::CookbookLoader.new(@cookbook_repo)
+#    cl.load_cookbooks
+#    @cookbook_collection = Chef::CookbookCollection.new(cl)
+#    @events = Chef::EventDispatch::Dispatcher.new
+#    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+#
+#    @rendered_file_location = Dir.tmpdir + '/openldap_stuff.conf'
+#
+#    @resource = Chef::Resource::Template.new(@rendered_file_location)
+#    @resource.cookbook_name = 'openldap'
+#
+#    @provider = Chef::Provider::Template.new(@resource, @run_context)
+#    @current_resource = @resource.dup
+#    @provider.current_resource = @current_resource
+#    @access_controls = mock("access controls")
+#    @provider.stub!(:access_controls).and_return(@access_controls)
+#    passwd_struct = if windows?
+#                      Struct::Passwd.new("root", "x", 0, 0, "/root", "/bin/bash")
+#                    else
+#                      Struct::Passwd.new("root", "x", 0, 0, "root", "/root", "/bin/bash")
+#                    end
+#    group_struct = mock("Group Ent", :name => "root", :passwd => "x", :gid => 0)
+#    Etc.stub!(:getpwuid).and_return(passwd_struct)
+#    Etc.stub!(:getgrgid).and_return(group_struct)
+#  end
 
   describe "when creating the template" do
 
@@ -71,9 +90,9 @@ describe Chef::Provider::Template do
       @provider.template_location.should == '/tmp/its_on_disk.erb'
     end
 
-    it "stops executing when the local template source can't be found" do 
+    it "stops executing when the local template source can't be found" do
       @access_controls.stub!(:requires_changes?).and_return(false)
-      @resource.source "invalid.erb" 
+      @resource.source "invalid.erb"
       @resource.local true
       lambda { @provider.run_action(:create) } .should raise_error Chef::Mixin::WhyRun::ResourceRequirements::Assertion::AssertionFailure
     end

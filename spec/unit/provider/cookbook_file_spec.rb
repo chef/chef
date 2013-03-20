@@ -1,6 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Copyright:: Copyright (c) 2009-2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,30 +20,46 @@
 require 'spec_helper'
 require 'ostruct'
 
+require 'support/shared/unit/provider/file'
+
 describe Chef::Provider::CookbookFile do
-  before do
-    Chef::FileAccessControl.any_instance.stub(:set_all)
-    Chef::FileAccessControl.any_instance.stub(:modified?).and_return(true)
-    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
-    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
 
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    cl = Chef::CookbookLoader.new(@cookbook_repo)
-    cl.load_cookbooks
-    @cookbook_collection = Chef::CookbookCollection.new(cl)
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-
-    @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl', @run_context)
-    @new_resource.cookbook_name = 'apache2'
-    @provider = Chef::Provider::CookbookFile.new(@new_resource, @run_context)
-
-    @file_content=<<-EXPECTED
-# apache2_module_conf_generate.pl
-# this is just here for show.
-EXPECTED
-
+  let(:resource) do
+    resource = Chef::Resource::CookbookFile.new("seattle", @run_context)
+    resource.path(resource_path)
+    resource.cookbook_name = 'apache2'
+    resource
   end
+
+  let(:content) do
+    content = mock('Chef::Provider::File::Content::CookbookFile')
+  end
+
+  it_behaves_like Chef::Provider::File
+
+#  before do
+#    Chef::FileAccessControl.any_instance.stub(:set_all)
+#    Chef::FileAccessControl.any_instance.stub(:modified?).and_return(true)
+#    @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
+#    Chef::Cookbook::FileVendor.on_create { |manifest| Chef::Cookbook::FileSystemFileVendor.new(manifest, @cookbook_repo) }
+#
+#    @node = Chef::Node.new
+#    @events = Chef::EventDispatch::Dispatcher.new
+#    cl = Chef::CookbookLoader.new(@cookbook_repo)
+#    cl.load_cookbooks
+#    @cookbook_collection = Chef::CookbookCollection.new(cl)
+#    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+#
+#    @new_resource = Chef::Resource::CookbookFile.new('apache2_module_conf_generate.pl', @run_context)
+#    @new_resource.cookbook_name = 'apache2'
+#    @provider = Chef::Provider::CookbookFile.new(@new_resource, @run_context)
+#
+#    @file_content=<<-EXPECTED
+## apache2_module_conf_generate.pl
+## this is just here for show.
+#EXPECTED
+#
+#  end
 
   it "prefers the explicit cookbook name on the resource to the implicit one" do
     @new_resource.cookbook('nginx')
@@ -139,7 +156,7 @@ EXPECTED
 
     it "stages the cookbook to a temporary file" do
       # prevents file backups where we might not have write access
-      @provider.should_receive(:backup_new_resource) 
+      @provider.should_receive(:backup_new_resource)
       @new_resource.path(@install_to)
       @provider.should_receive(:deploy_tempfile)
       @provider.run_action(:create)

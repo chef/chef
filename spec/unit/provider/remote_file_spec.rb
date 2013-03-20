@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Lamont Granquist (<lamont@opscode.com>)
+# Copyright:: Copyright (c) 2008-2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +19,42 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::RemoteFile, "action_create" do
-  before(:each) do
-    @resource = Chef::Resource::RemoteFile.new("seattle")
-    @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.txt")))
-    @resource.source("http://foo")
-    @node = Chef::Node.new
-    @node.name "latte"
+require 'support/shared/unit/provider/file'
 
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
 
-    @provider = Chef::Provider::RemoteFile.new(@resource, @run_context)
-    #To prevent the current_resource.checksum from being overridden.
-    @provider.stub!(:load_current_resource)
+describe Chef::Provider::RemoteFile do
+  let(:resource) do
+    resource = Chef::Resource::RemoteFile.new("seattle", @run_context)
+    resource.path(resource_path)
+    resource.source("http://foo")
+    resource
   end
+
+  before(:each) do
+    ::File.stub!(:exists?).with("#{Chef::Config[:file_cache_path]}/remote_file/#{resource.name}").and_return(false)
+  end
+
+  let(:content) do
+    content = mock('Chef::Provider::File::Content::RemoteFile')
+  end
+
+  it_behaves_like Chef::Provider::File
+
+#describe Chef::Provider::RemoteFile, "action_create" do
+#  before(:each) do
+#    @resource = Chef::Resource::RemoteFile.new("seattle")
+#    @resource.path(File.expand_path(File.join(CHEF_SPEC_DATA, "seattle.txt")))
+#    @resource.source("http://foo")
+#    @node = Chef::Node.new
+#    @node.name "latte"
+#
+#    @events = Chef::EventDispatch::Dispatcher.new
+#    @run_context = Chef::RunContext.new(@node, {}, @events)
+#
+#    @provider = Chef::Provider::RemoteFile.new(@resource, @run_context)
+#    #To prevent the current_resource.checksum from being overridden.
+#    @provider.stub!(:load_current_resource)
+#  end
 
   describe "when checking if the file is at the target version" do
     it "considers the current file to be at the target version if it exists and matches the user-provided checksum" do
@@ -286,7 +308,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
 
       describe "and create_if_missing is invoked" do
         it "should take no action" do
-          @provider.should_not_receive(:action_create) 
+          @provider.should_not_receive(:action_create)
           @provider.run_action(:create_if_missing)
         end
       end
