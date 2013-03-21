@@ -129,6 +129,12 @@ class Chef::Application::Solo < Chef::Application
       :description => "Pull down a remote gzipped tarball of recipes and untar it to the cookbook cache.",
       :proc => nil
 
+  option :strip_components,
+      :short => "-S COUNT",
+      :long => "--strip-components COUNT",
+      :description => "Stripe leading paths from recipes tarball.",
+      :proc => nil
+
   option :version,
     :short        => "-v",
     :long         => "--version",
@@ -206,8 +212,10 @@ class Chef::Application::Solo < Chef::Application
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
       target_file = File.join(recipes_path, 'recipes.tgz')
+      
+      strip_path = Chef::Config[:strip_components] ? "--strip-components=#{Chef::Config[:strip_components]}" : ''
 
-      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
+      Chef::Log.debug "Creating path #{recipes_path} to extract recipes into "
       FileUtils.mkdir_p recipes_path
       path = File.join(recipes_path, 'recipes.tgz')
       File.open(path, 'wb') do |f|
@@ -215,7 +223,7 @@ class Chef::Application::Solo < Chef::Application
           f.write(r.read)
         end
       end
-      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
+      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path} #{strip_path}")
     end
   end
 
