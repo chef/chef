@@ -96,10 +96,10 @@ describe Chef::Provider::Directory do
     @directory.new_resource.should be_updated
   end
 
-  it "should raise an exception if the parent directory does not exist and recursive is false" do 
+  it "should raise an exception if the parent directory does not exist and recursive is false" do
     @new_resource.path "/tmp/some/dir"
     @new_resource.recursive false
-    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist) 
+    lambda { @directory.run_action(:create) }.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
   end
 
   # Unix only for now. While file security attribute reporting for windows is
@@ -115,7 +115,7 @@ describe Chef::Provider::Directory do
     File.should_receive(:writable?).with('/path').ordered.and_return(true)
     File.should_receive(:exist?).with(@new_resource.path).ordered.and_return(false)
 
-    FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true) 
+    FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true)
     @directory.should_receive(:set_all_access_controls)
     @directory.stub!(:update_new_file_state)
     @directory.run_action(:create)

@@ -28,8 +28,8 @@ class Chef
 
         def template_location
           @template_file_cache_location ||= begin
-                                              template_finder.find(@new_resource.source, :local => @new_resource.local, :cookbook => @new_resource.cookbook)
-                                            end
+            template_finder.find(@new_resource.source, :local => @new_resource.local, :cookbook => @new_resource.cookbook)
+          end
         end
 
         private
@@ -46,8 +46,8 @@ class Chef
 
         def template_finder
           @template_finder ||= begin
-                                 TemplateFinder.new(run_context, @new_resource.cookbook_name, @run_context.node)
-                               end
+            TemplateFinder.new(run_context, @new_resource.cookbook_name, @run_context.node)
+          end
         end
       end
     end
