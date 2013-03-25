@@ -15,6 +15,8 @@ class Chef
             })
           result.keys.each do |key|
             result[key] = super(result[key], { 'actors' => [], 'groups' => [] })
+            result[key]['actors'] = result[key]['actors'].sort
+            result[key]['groups'] = result[key]['groups'].sort
           end
           result
         end
