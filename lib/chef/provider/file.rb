@@ -122,21 +122,27 @@ class Chef
       # deprecated methods to support
 
       def set_content
+        Chef::Log.warn("The method Chef::Provider::File#set_content is deprecated and will be removed in Chef 12")
       end
 
       def compare_content
+        Chef::Log.warn("The method Chef::Provider::File#compare_content is deprecated and will be removed in Chef 12")
       end
 
       def diff_current
+        Chef::Log.warn("The method Chef::Provider::File#diff_current is deprecated and will be removed in Chef 12")
       end
 
       def diff_current_from_content
+        Chef::Log.warn("The method Chef::Provider::File#diff_current_from_content is deprecated and will be removed in Chef 12")
       end
 
       def is_binary?(path)
+        Chef::Log.warn("The method Chef::Provider::File#is_binary? is deprecated and will be removed in Chef 12")
       end
 
       def update_new_file_state
+        Chef::Log.warn("The method Chef::Provider::File#update_new_file_state is deprecated and will be removed in Chef 12")
       end
 
       def whyrun_mode?
@@ -178,6 +184,12 @@ class Chef
         @diff ||= Chef::Util::Diff.new
       end
 
+      def update_file_contents
+        backup unless file_created?
+        deployment_strategy.deploy(tempfile.path, @new_resource.path)
+        Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
+      end
+
       def do_contents_changes
         # a nil tempfile is okay, means the resource has no content or no new content
         return if tempfile.nil?
@@ -191,9 +203,7 @@ class Chef
           description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
           description << diff.for_output
           converge_by(description) do
-            backup unless file_created?
-            deployment_strategy.deploy(tempfile.path, @new_resource.path)
-            Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
+            update_file_contents
           end
         end
         # unlink necessary to clean up in why-run mode

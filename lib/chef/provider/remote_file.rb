@@ -41,10 +41,14 @@ class Chef
 
       def action_create
         super
-        save_fileinfo(@content.raw_file_source)
       end
 
       private
+
+      def update_file_contents
+        super
+        save_fileinfo(@content.raw_file_source)
+      end
 
       def load_fileinfo
         begin
@@ -55,15 +59,13 @@ class Chef
       end
 
       def save_fileinfo(source)
-        converge_by("update saved etag/last_modified information on file") do
-          cache = Hash.new
-          cache["etag"] = @new_resource.etag
-          cache["last_modified"] = @new_resource.last_modified
-          cache["src"] = source
-          cache["checksum"] = @new_resource.checksum
-          cache_path = new_resource.name.sub(/^([A-Za-z]:)/, "")  # strip drive letter on Windows
-          Chef::FileCache.store("remote_file/#{cache_path}", cache.to_json)
-        end
+        cache = Hash.new
+        cache["etag"] = @new_resource.etag
+        cache["last_modified"] = @new_resource.last_modified
+        cache["src"] = source
+        cache["checksum"] = @new_resource.checksum
+        cache_path = new_resource.name.sub(/^([A-Za-z]:)/, "")  # strip drive letter on Windows
+        Chef::FileCache.store("remote_file/#{cache_path}", cache.to_json)
       end
     end
   end
