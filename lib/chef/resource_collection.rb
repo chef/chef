@@ -52,6 +52,7 @@ class Chef
         @resources << a
         @resources_by_name[a.to_s] = @resources.length - 1
       end
+      self
     end
 
     # 'push' is an alias method to <<
