@@ -69,8 +69,8 @@ class Chef
 
         # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
         def grab_file_from_uri(uri)
-          if_modified_since = @new_resource.last_modified
-          if_none_match = @new_resource.etag
+          if_modified_since = @new_resource.use_last_modified ? @new_resource.last_modified : false
+          if_none_match = @new_resource.use_etag ? @new_resource.etag : false
           uri_dup = uri.dup
           if uri_dup.userinfo
             uri_dup.password = "********"

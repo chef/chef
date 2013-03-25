@@ -35,6 +35,8 @@ class Chef
         @source = []
         @etag = nil
         @last_modified = nil
+        @use_etag = true
+        @use_last_modified = true
         @ftp_active_mode = false
         @provider = Chef::Provider::RemoteFile
       end
@@ -69,6 +71,14 @@ class Chef
         )
       end
 
+      def use_etag(args=nil)
+        set_or_return(
+          :use_etags,
+          args,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
       def last_modified(args=nil)
         if args.is_a?(String)
           args = Time.parse(args).gmtime
@@ -79,6 +89,14 @@ class Chef
           :last_modified,
           args,
           :kind_of => Time
+        )
+      end
+
+      def use_last_modified(args=nil)
+        set_or_return(
+          :use_last_modified,
+          args,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
