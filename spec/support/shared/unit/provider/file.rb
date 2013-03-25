@@ -361,6 +361,8 @@ shared_examples_for Chef::Provider::File do
     context "do_contents_changes" do
       context "when there is content to deploy" do
         before do
+          setup_normal_file
+          provider.load_current_resource
           tempfile = double('Tempfile', :path => "/tmp/foo-bar-baz")
           content.stub!(:tempfile).and_return(tempfile)
           File.should_receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)

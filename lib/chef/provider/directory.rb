@@ -54,7 +54,7 @@ class Chef
               # make sure we have write permissions to that directory
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
-                if ::File.exist?(base_dir)
+                if ::File.exists?(base_dir)
                   ::File.writable?(base_dir)
                 else
                   is_parent_writable.call(base_dir)
@@ -64,7 +64,7 @@ class Chef
             else
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
-              if !whyrun_mode? || ::File.exist?(parent_directory)
+              if !whyrun_mode? || ::File.exists?(parent_directory)
                 ::File.writable?(parent_directory)
               else
                 true
@@ -77,7 +77,7 @@ class Chef
 
         requirements.assert(:delete) do |a|
           a.assertion do
-            if ::File.exist?(@new_resource.path)
+            if ::File.exists?(@new_resource.path)
               ::File.directory?(@new_resource.path) && ::File.writable?(@new_resource.path)
             else
               true
@@ -91,7 +91,7 @@ class Chef
       end
 
       def action_create
-        unless ::File.exist?(@new_resource.path)
+        unless ::File.exists?(@new_resource.path)
           converge_by("create new directory #{@new_resource.path}") do
             if @new_resource.recursive == true
               ::FileUtils.mkdir_p(@new_resource.path)
@@ -106,7 +106,7 @@ class Chef
       end
 
       def action_delete
-        if ::File.exist?(@new_resource.path)
+        if ::File.exists?(@new_resource.path)
           converge_by("delete existing directory #{@new_resource.path}") do
             if @new_resource.recursive == true
               FileUtils.rm_rf(@new_resource.path)
