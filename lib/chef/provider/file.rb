@@ -240,12 +240,6 @@ class Chef
           end
         end
 
-        if Chef::Platform.windows?
-          # TODO: To work around CHEF-3554, add support for Windows
-          # equivalent, or implicit resource reporting won't work for
-          # Windows.
-          return
-        end
         acl_scanner = ScanAccessControl.new(@new_resource, resource)
         acl_scanner.set_all!
       end
