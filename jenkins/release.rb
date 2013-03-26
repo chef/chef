@@ -213,20 +213,14 @@ class ShipIt
     artifact_collection = ArtifactCollection.new(options[:project], options)
     artifacts = artifact_collection.artifacts
 
-    metadata = {}
     v2_metadata = {}
 
     artifacts.each do |artifact|
-      artifact.add_to_release_manifest!(metadata)
       artifact.add_to_v2_release_manifest!(v2_metadata)
       upload_package(artifact.path, artifact.relpath)
     end
-    upload_platform_name_map(artifact_collection.platform_name_map_path)
-    upload_manifest(metadata)
-    if upload_v2_manifest?
-      upload_v2_platform_name_map(artifact_collection.platform_name_map_path)
-      upload_v2_manifest(v2_metadata)
-    end
+    upload_v2_platform_name_map(artifact_collection.platform_name_map_path)
+    upload_v2_manifest(v2_metadata)
   end
 
   def option_parser
@@ -274,18 +268,7 @@ class ShipIt
       options[:version] = IO.read(build_version_file).chomp if build_version_file
     end
 
-    # metadata bucket and config file must be configured together
-    # TODO: these will be non-optional when we complete the transition from v1
-    # to v2 metadata.
-    if (options[:metadata_bucket].nil? ^ options[:metadata_s3_config_file].nil?)
-      puts "You must specify *both* metadata-bucket and metadata-s3-config to upload v2 metadata"
-      puts "If you don't want to upload v2 metadata, don't specify either of these options"
-      puts ""
-      puts option_parser
-      exit 1
-    end
-
-    required = [:project, :version, :bucket]
+    required = [:project, :version, :bucket, :metadata_bucket, :metadata_s3_config_file]
     missing = required.select {|param| options[param].nil?}
     if !missing.empty?
       puts "Missing required options: #{missing.join(', ')}"
@@ -315,20 +298,6 @@ class ShipIt
     shell.error!
   end
 
-  def upload_manifest(manifest)
-    File.open("platform-support.json", "w") {|f| f.puts JSON.pretty_generate(manifest)}
-
-    s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:version]}.json"
-    puts "UPLOAD: platform-support.json -> #{s3_location}"
-    s3_cmd = ["s3cmd",
-              "put",
-              "platform-support.json",
-              s3_location].join(" ")
-    shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
-    shell.run_command
-    shell.error!
-  end
-
   def upload_v2_manifest(manifest)
     File.open("v2-release-manifest.json", "w") {|f| f.puts JSON.pretty_generate(manifest)}
 
@@ -352,20 +321,6 @@ class ShipIt
               "-c #{options[:metadata_s3_config_file]}",
               "put",
               "--acl-public",
-              platform_names_file,
-              s3_location].join(" ")
-    shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
-    shell.run_command
-    shell.error!
-  end
-
-  # Legacy v1 platform name map. This can be removed when v2 goes live.
-  def upload_platform_name_map(platform_names_file)
-    s3_location = "s3://#{options[:bucket]}/#{options[:project]}-platform-support/#{options[:project]}-platform-names.json"
-    puts "UPLOAD: #{options[:project]}-platform-names.json -> #{s3_location}"
-    s3_cmd = ["s3cmd",
-              "-c #{options[:package_s3_config_file]}",
-              "put",
               platform_names_file,
               s3_location].join(" ")
     shell = Mixlib::ShellOut.new(s3_cmd, shellout_opts)
