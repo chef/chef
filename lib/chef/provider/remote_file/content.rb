@@ -21,6 +21,7 @@ require 'rest_client'
 require 'uri'
 require 'tempfile'
 require 'chef/provider/file_content_base'
+require 'chef/provider/remote_file/util'
 
 class Chef
   class Provider
@@ -61,10 +62,7 @@ class Chef
               raise e
             end
           end
-          if uri.userinfo
-            uri.password = "********"
-          end
-          return raw_file, uri.to_s
+          return raw_file, Chef::Provider::RemoteFile::Util.uri_for_cache(uri)
         end
 
         # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)

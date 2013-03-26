@@ -21,15 +21,20 @@ class Chef
   class Provider
     class RemoteFile
       class Util
+        def self.uri_for_cache(uri)
+          sanitized_uri(uri).to_s
+        end
+
         def self.uri_matches?(u1, u2)
-          # we store passwords commented out, so we cannot use passwords in
-          # the comparision between two uris
+          # we store sanitiszed uris, so have to compare sanitized uris
           return false if u1.nil? || u2.nil?
-          u1_dup = u1.dup
-          u1_dup.password = "********" if u1_dup.userinfo
-          u2_dup = u2.dup
-          u2_dup.password = "********" if u2_dup.userinfo
-          u1_dup == u2_dup
+          sanitized_uri(u1) == sanitized_uri(u2)
+        end
+
+        def self.sanitized_uri(uri)
+          uri_dup = uri.dup
+          uri_dup.password = "********" if uri_dup.userinfo
+          uri_dup
         end
       end
     end

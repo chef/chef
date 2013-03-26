@@ -20,6 +20,7 @@ require 'uri'
 require 'tempfile'
 require 'net/ftp'
 require 'chef/provider/remote_file'
+require 'chef/provider/remote_file/util'
 
 class Chef
   class Provider
@@ -31,7 +32,7 @@ class Chef
           @hostname = uri.host
           @port = uri.port
           @directories, @filename = parse_path(uri.path)
-          if current_resource.source && Util.uri_matches?(uri, current_resource.source[0])
+          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches?(uri, current_resource.source[0])
             if current_resource.use_last_modified && current_resource.last_modified
               @last_modified = current_resource.last_modified
             end
