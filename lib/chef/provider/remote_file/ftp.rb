@@ -26,32 +26,21 @@ class Chef
     class RemoteFile
       class FTP
 
-        def self.fetch(uri, ftp_active_mode, last_modified)
-          ftp = self.new(uri, ftp_active_mode)
-          ftp.connect
-          mtime = ftp.mtime
-          if mtime && last_modified && mtime.to_i <= last_modified.to_i
-            tempfile = nil
-          else
-            tempfile = ftp.fetch
-          end
-          ftp.disconnect
-          return tempfile, mtime
-        end
-
-        # Parse the uri into instance variables
-        def initialize(uri, ftp_active_mode)
-          ENV['SOCKS_SERVER'] = proxy_uri(uri).to_s
+        def initialize(uri, new_resource, current_resource)
+          @ftp_active_mode = new_resource.ftp_active_mode
+          @hostname = uri.host
+          @port = uri.port
           @directories, @filename = parse_path(uri.path)
-          @typecode = uri.typecode
+          if current_resource.source && Util.uri_matches?(uri, current_resource.source[0])
+            if current_resource.use_last_modified && current_resource.last_modified
+              @last_modified = current_resource.last_modified
+            end
+          end
           # Only support ascii and binary types
+          @typecode = uri.typecode
           if @typecode && /\A[ai]\z/ !~ @typecode
             raise ArgumentError, "invalid typecode: #{@typecode.inspect}"
           end
-          @ftp_active_mode = ftp_active_mode
-          @hostname = uri.host
-          @port = uri.port
-          @ftp = Net::FTP.new
           if uri.userinfo
             @user = URI.unescape(uri.user)
             @pass = URI.unescape(uri.password)
@@ -59,40 +48,60 @@ class Chef
             @user = 'anonymous'
             @pass = nil
           end
+          @uri = uri
         end
+
+        def fetch
+          saved_socks_env = ENV['SOCKS_SERVER']
+          begin
+            ENV['SOCKS_SERVER'] = proxy_uri(uri).to_s
+            connect
+            mtime = ftp.mtime(@filename)
+            tempfile = if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
+                         nil
+                       else
+                         get
+                       end
+            disconnect
+            @result = Result(tempfile, mtime, nil)
+          ensure
+            ENV['SOCKS_SERVER'] = saved_socks_server
+          end
+          return @result
+        end
+
+        def ftp
+          @ftp ||= Net::FTP.new
+        end
+
+        private
 
         def connect
           # The access sequence is defined by RFC 1738
-          @ftp.connect(@hostname, @port)
-          @ftp.passive = !@ftp_active_mode
-          @ftp.login(@user, @pass)
+          ftp.connect(@hostname, @port)
+          ftp.passive = !@ftp_active_mode
+          ftp.login(@user, @pass)
           @directories.each do |cwd|
-            @ftp.voidcmd("CWD #{cwd}")
+            ftp.voidcmd("CWD #{cwd}")
           end
         end
 
         def disconnect
-          @ftp.close
-        end
-
-        def mtime
-          @ftp.mtime(@filename)
+          ftp.close
         end
 
         # Fetches using Net::FTP, returns a Tempfile with the content
-        def fetch
+        def get
           tempfile = Tempfile.new(@filename)
           if Chef::Platform.windows?
             tempfile.binmode #required for binary files on Windows platforms
           end
           if @typecode
-            @ftp.voidcmd("TYPE #{@typecode.upcase}")
+            ftp.voidcmd("TYPE #{@typecode.upcase}")
           end
-          @ftp.getbinaryfile(@filename, tempfile.path)
+          ftp.getbinaryfile(@filename, tempfile.path)
           tempfile
         end
-
-        private
 
         #adapted from buildr/lib/buildr/core/transports.rb via chef/rest/rest_client.rb
         def proxy_uri(uri)

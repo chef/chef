@@ -1,5 +1,6 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
+# Author:: Lamont Granquist (<lamont@opscode.com>)
 # Copyright:: Copyright (c) 2013 Jesse Campbell
 # License:: Apache License, Version 2.0
 #
@@ -20,30 +21,28 @@ require 'uri'
 require 'tempfile'
 require 'chef/rest'
 require 'chef/provider/remote_file'
+require 'chef/provider/remote_file/util'
 
 class Chef
   class Provider
     class RemoteFile
       class HTTP
 
-        # Fetches the file at uri, returning a Tempfile-like File handle
-        def self.fetch(uri, if_modified_since, if_none_match)
-          request = HTTP.new(uri, if_modified_since, if_none_match)
-          request.execute
-        end
-
         # Parse the uri into instance variables
-        def initialize(uri, if_modified_since, if_none_match)
+        def initialize(uri, new_resource, current_resource)
           @headers = Hash.new
-          if if_none_match
-            @headers['if-none-match'] = "\"#{if_none_match}\""
-          elsif if_modified_since
-            @headers['if-modified-since'] = if_modified_since.strftime("%a, %d %b %Y %H:%M:%S %Z")
+          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches?(uri, current_resource.source[0])
+            if current_resource.use_etag && current_resource.etag
+              @headers['if-none-match'] = "\"#{current_resource.etag}\""
+            end
+            if current_resource.use_last_modified && current_resource.last_modified
+              @headers['if-modified-since'] = current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
+            end
           end
           @uri = uri
         end
 
-        def execute
+        def fetch
           begin
             rest = Chef::REST.new(@uri, nil, nil, http_client_opts)
             tempfile = rest.streaming_request(@uri, @headers)
@@ -66,7 +65,7 @@ class Chef
               raise e
             end
           end
-          return tempfile, mtime, etag
+          return Result.new(tempfile, etag, mtime)
         end
 
         private

@@ -25,18 +25,27 @@ class Chef
     class RemoteFile
       class LocalFile
 
+        def initialize(uri, new_resource, current_resource)
+          if current_resource.source && Util.uri_matches?(uri, current_resource.source[0])
+            if current_resource.use_last_modified && current_resource.last_modified
+              @last_modified = current_resource.last_modified
+            end
+          end
+          @uri = uri
+        end
+
         # Fetches the file at uri, returning a Tempfile-like File handle
-        def self.fetch(uri, if_modified_since)
-          mtime = ::File.mtime(uri.path)
-          if mtime && if_modified_since && mtime.to_i <= if_modified_since.to_i
+        def fetch
+          mtime = ::File.mtime(@uri.path)
+          if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
             tempfile = nil
           else
-            tempfile = Tempfile.new(::File.basename(uri.path))
+            tempfile = Tempfile.new(::File.basename(@uri.path))
             if Chef::Platform.windows?
               tempfile.binmode #required for binary files on Windows platforms
             end
-            Chef::Log.debug("#{@new_resource} staging #{uri.path} to #{tempfile.path}")
-            FileUtils.cp(uri.path, tempfile.path)
+            Chef::Log.debug("#{@new_resource} staging #{@uri.path} to #{tempfile.path}")
+            FileUtils.cp(@uri.path, tempfile.path)
             tempfile
           end
           return tempfile, mtime

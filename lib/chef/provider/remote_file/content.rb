@@ -69,33 +69,12 @@ class Chef
 
         # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
         def grab_file_from_uri(uri)
-          if_modified_since = @new_resource.use_last_modified ? @new_resource.last_modified : false
-          if_none_match = @new_resource.use_etag ? @new_resource.etag : false
-          uri_dup = uri.dup
-          if uri_dup.userinfo
-            uri_dup.password = "********"
+          result = Chef::Provider::RemoteFile::Fetcher.for_resource(uri, @new_resource, @current_resource).fetch
+          unless result.raw_file.nil?
+            @new_resource.etag result.etag
+            @new_resource.last_modified result.mtime
           end
-          if @current_resource.source && ( uri_dup.to_s == @current_resource.source[0] )
-            if_modified_since ||= @current_resource.last_modified
-            if_none_match ||= @current_resource.etag
-          end
-          case uri.scheme
-          when "http", "https"
-            raw_file, mtime, etag = Chef::Provider::RemoteFile::HTTP.fetch(uri, if_modified_since, if_none_match)
-          when "ftp"
-            raw_file, mtime = Chef::Provider::RemoteFile::FTP.fetch(uri, @new_resource.ftp_active_mode, if_modified_since)
-            etag = nil
-          when "file"
-            raw_file, mtime = Chef::Provider::RemoteFile::LocalFile.fetch(uri, if_modified_since)
-            etag = nil
-          else
-            raise ArgumentError, "Invalid uri. Only http(s), ftp, and file are currently supported"
-          end
-          unless raw_file.nil?
-            @new_resource.etag etag unless @new_resource.etag
-            @new_resource.last_modified mtime unless @new_resource.last_modified
-          end
-          return raw_file
+          result.raw_file
         end
 
         def current_resource_matches_target_checksum?
