@@ -39,6 +39,9 @@ module Mixlib
 
     # User the command will run as. Normally set via options passed to new
     attr_accessor :user
+    attr_accessor :domain
+    attr_accessor :password
+    attr_accessor :with_logon
 
     # Group the command will run as. Normally set via options passed to new
     attr_accessor :group
@@ -261,8 +264,13 @@ module Mixlib
         case option.to_s
         when 'cwd'
           self.cwd = setting
+        when 'domain'
+          self.domain = setting
+        when 'password'
+          self.password = setting
         when 'user'
           self.user = setting
+          self.with_logon = setting
         when 'group'
           self.group = setting
         when 'umask'
@@ -288,8 +296,12 @@ module Mixlib
           raise InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
         end
       end
+
+      validate_options(opts)
     end
 
-
+    def validate_options(opts)
+      super
+    end
   end
 end

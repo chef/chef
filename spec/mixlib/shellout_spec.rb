@@ -31,6 +31,9 @@ describe Mixlib::ShellOut do
     context 'with default settings' do
       its(:cwd) { should be_nil }
       its(:user) { should be_nil }
+      its(:with_logon) { should be_nil }
+      its(:domain) { should be_nil }
+      its(:password) { should be_nil }
       its(:group) { should be_nil }
       its(:umask) { should be_nil }
       its(:timeout) { should eql(600) }
@@ -76,7 +79,33 @@ describe Mixlib::ShellOut do
             shell_cmd.uid.should eql(expected_uid)
           end
         end
+      end
 
+      context 'when setting with_logon' do
+        let(:accessor) { :with_logon }
+        let(:value) { 'root' }
+
+        it "should set the with_logon" do
+          should eql(value)
+        end
+      end
+
+      context 'when setting domain' do
+        let(:accessor) { :domain }
+        let(:value) { 'localhost' }
+
+        it "should set the domain" do
+          should eql(value)
+        end
+      end
+
+      context 'when setting password' do
+        let(:accessor) { :password }
+        let(:value) { 'vagrant' }
+
+        it "should set the password" do
+          should eql(value)
+        end
       end
 
       context 'when setting group' do
@@ -174,12 +203,15 @@ describe Mixlib::ShellOut do
 
     context "with options hash" do
       let(:cmd) { 'brew install couchdb' }
-      let(:options) { { :cwd => cwd, :user => user, :group => group, :umask => umask,
-        :timeout => timeout, :environment => environment, :returns => valid_exit_codes,
+      let(:options) { { :cwd => cwd, :user => user, :domain => domain, :password => password, :group => group, 
+        :umask => umask, :timeout => timeout, :environment => environment, :returns => valid_exit_codes,
         :live_stream => stream, :input => input } }
 
       let(:cwd) { '/tmp' }
       let(:user) { 'toor' }
+      let(:with_logon) { user }
+      let(:domain) { 'localhost' }
+      let(:password) { 'vagrant' }
       let(:group) { 'wheel' }
       let(:umask) { '2222' }
       let(:timeout) { 5 }
@@ -194,6 +226,18 @@ describe Mixlib::ShellOut do
 
       it "should set the user" do
         shell_cmd.user.should eql(user)
+      end
+
+      it "should set the with_logon" do
+        shell_cmd.with_logon.should eql(with_logon)
+      end
+
+      it "should set the domain" do
+        shell_cmd.domain.should eql(domain)
+      end
+
+      it "should set the password" do
+        shell_cmd.password.should eql(password)
       end
 
       it "should set the group" do
@@ -357,6 +401,33 @@ describe Mixlib::ShellOut do
         end
       end
     end
+
+    context "when running under Windows", :windows_only do
+      let(:cmd) { 'whoami.exe' }
+      let(:running_user) { shell_cmd.run_command.stdout.strip.downcase }
+
+      context "when no user is set" do
+        # Need to adjust the username and domain if running as local system
+        # to match how whoami returns the information
+
+        let(:local_system) { (ENV['USERNAME'].downcase == "#{ENV['COMPUTERNAME'].downcase}$") }
+        let(:domain) { local_system ? 'nt authority' : ENV['COMPUTERNAME'].downcase }
+        let(:user) { local_system ? 'system' : ENV['USERNAME'].downcase }
+        it "should run as current user" do
+          running_user.should eql("#{domain}\\#{user}")
+        end
+      end
+
+      context "when user is set to Administrator" do
+        let(:user) { 'administrator' }
+        let(:domain) { ENV['COMPUTERNAME'].downcase }
+        let(:options) { { :domain => domain, :user => user, :password => 'vagrant' } }
+  
+        it "should run as Administrator" do
+          running_user.should eql("#{domain}\\#{user}")
+        end
+      end
+    end      
 
     context "with a live stream" do
       let(:stream) { StringIO.new }

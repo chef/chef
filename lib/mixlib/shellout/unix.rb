@@ -20,6 +20,11 @@ module Mixlib
   class ShellOut
     module Unix
 
+      # Option validation that is unix specific
+      def validate_options(opts)
+        # No options to validate, raise exceptions here if needed
+      end
+
       # Run the command, writing the command's standard out and standard error
       # to +stdout+ and +stderr+, and saving its exit status object to +status+
       # === Returns

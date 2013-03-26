@@ -36,6 +36,12 @@ Invoke crontab to edit user cron:
       crontab = Mixlib::ShellOut.new("crontab -l -u #{@new_resource.user}", :input => crontab_lines.join("\n"))
       crontab.run_command
 
+## Windows Impersonation Example
+Invoke crontab to edit user cron:
+
+      whomai = Mixlib::ShellOut.new("whoami.exe", :user => "username", :domain => "DOMAIN", :password => "password")
+      whoami.run_command      
+
 ## Platform Support
 Mixlib::ShellOut does a standard fork/exec on Unix, and uses the Win32
 API on Windows. There is not currently support for JRuby.

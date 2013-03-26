@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'Mixlib::ShellOut::Windows', :windows_only do
-
+ 
   describe 'Utils' do
     describe '.should_run_under_cmd?' do
       subject { Mixlib::ShellOut::Windows::Utils.should_run_under_cmd?(command) }
