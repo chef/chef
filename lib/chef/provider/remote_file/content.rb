@@ -75,7 +75,7 @@ class Chef
           if uri_dup.userinfo
             uri_dup.password = "********"
           end
-          if uri_dup.to_s == @current_resource.source[0]
+          if @current_resource.source && ( uri_dup.to_s == @current_resource.source[0] )
             if_modified_since ||= @current_resource.last_modified
             if_none_match ||= @current_resource.etag
           end
