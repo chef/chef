@@ -27,7 +27,7 @@ class Chef
       class LocalFile
 
         def initialize(uri, new_resource, current_resource)
-          if current_resource.source && Util.uri_matches?(uri, current_resource.source[0])
+          if current_resource.source && Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.use_last_modified && current_resource.last_modified
               @last_modified = current_resource.last_modified
             end
