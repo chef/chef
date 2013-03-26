@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-require 'rest_client'
 require 'uri'
 require 'tempfile'
 require 'chef/provider/file_content_base'

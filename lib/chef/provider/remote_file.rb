@@ -47,7 +47,7 @@ class Chef
 
       def update_file_contents
         super
-        save_fileinfo(@content.raw_file_source)
+        save_fileinfo
       end
 
       def load_fileinfo
@@ -62,7 +62,7 @@ class Chef
         cache = Hash.new
         cache["etag"] = @new_resource.etag
         cache["last_modified"] = @new_resource.last_modified
-        cache["src"] = source
+        cache["src"] = @content.raw_file_source
         cache["checksum"] = @new_resource.checksum
         cache_path = new_resource.name.sub(/^([A-Za-z]:)/, "")  # strip drive letter on Windows
         Chef::FileCache.store("remote_file/#{cache_path}", cache.to_json)
