@@ -19,6 +19,7 @@
 require 'uri'
 require 'tempfile'
 require 'chef/provider/remote_file'
+require 'chef/provider/remote_file/result'
 
 class Chef
   class Provider
@@ -48,7 +49,7 @@ class Chef
             FileUtils.cp(@uri.path, tempfile.path)
             tempfile
           end
-          return tempfile, mtime
+          return Chef::Provider::RemoteFile::Result.new(tempfile, nil, mtime)
         end
 
       end

@@ -25,10 +25,10 @@ class Chef
           sanitized_uri(uri).to_s
         end
 
-        def self.uri_matches?(u1, u2)
+        def self.uri_matches_string?(u1, u2)
           # we store sanitiszed uris, so have to compare sanitized uris
           return false if u1.nil? || u2.nil?
-          sanitized_uri(u1) == sanitized_uri(u2)
+          sanitized_uri(u1) == u2
         end
 
         def self.sanitized_uri(uri)

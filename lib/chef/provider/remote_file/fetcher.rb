@@ -30,7 +30,7 @@ class Chef
           when "ftp"
             Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
           when "file"
-            Chef::Provider::RemoteFile::Localfile.new(uri, new_resource, current_resource)
+            Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource)
           else
             raise ArgumentError, "Invalid uri, Only http(s), ftp, and file are currently supported"
           end

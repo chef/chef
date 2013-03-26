@@ -21,6 +21,7 @@ require 'tempfile'
 require 'net/ftp'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/util'
+require 'chef/provider/remote_file/result'
 
 class Chef
   class Provider
@@ -32,7 +33,7 @@ class Chef
           @hostname = uri.host
           @port = uri.port
           @directories, @filename = parse_path(uri.path)
-          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches?(uri, current_resource.source[0])
+          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.use_last_modified && current_resource.last_modified
               @last_modified = current_resource.last_modified
             end
@@ -55,7 +56,7 @@ class Chef
         def fetch
           saved_socks_env = ENV['SOCKS_SERVER']
           begin
-            ENV['SOCKS_SERVER'] = proxy_uri(uri).to_s
+            ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
             connect
             mtime = ftp.mtime(@filename)
             tempfile = if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
@@ -64,9 +65,9 @@ class Chef
                          get
                        end
             disconnect
-            @result = Result(tempfile, mtime, nil)
+            @result = Chef::Provider::RemoteFile::Result.new(tempfile, nil, mtime)
           ensure
-            ENV['SOCKS_SERVER'] = saved_socks_server
+            ENV['SOCKS_SERVER'] = saved_socks_env
           end
           return @result
         end

@@ -22,6 +22,7 @@ require 'tempfile'
 require 'chef/rest'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/util'
+require 'chef/provider/remote_file/result'
 
 class Chef
   class Provider
@@ -31,7 +32,7 @@ class Chef
         # Parse the uri into instance variables
         def initialize(uri, new_resource, current_resource)
           @headers = Hash.new
-          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches?(uri, current_resource.source[0])
+          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.use_etag && current_resource.etag
               @headers['if-none-match'] = "\"#{current_resource.etag}\""
             end
@@ -65,7 +66,7 @@ class Chef
               raise e
             end
           end
-          return Result.new(tempfile, etag, mtime)
+          return Chef::Provider::RemoteFile::Result.new(tempfile, etag, mtime)
         end
 
         private
