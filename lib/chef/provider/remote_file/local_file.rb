@@ -26,9 +26,9 @@ class Chef
       class LocalFile
 
         # Fetches the file at uri, returning a Tempfile-like File handle
-        def self.fetch(uri, if_modified_since)
+        def self.fetch(uri, last_modified)
           mtime = ::File.mtime(uri.path)
-          if mtime && if_modified_since && mtime.to_i <= if_modified_since.to_i
+          if mtime && last_modified && mtime.to_i <= last_modified.to_i
             tempfile = nil
           else
             tempfile = Tempfile.new(::File.basename(uri.path))
