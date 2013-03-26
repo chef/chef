@@ -47,7 +47,11 @@ class Chef
 
       def update_file_contents
         super
-        save_fileinfo(@content.raw_file_source)
+        unless fileinfo_matches?
+          converge_by("update fileinfo cache for #{@new_resource.path}") do
+            save_fileinfo
+          end
+        end
       end
 
       def load_fileinfo
@@ -58,11 +62,15 @@ class Chef
         end
       end
 
-      def save_fileinfo(source)
+      def fileinfo_matches?
+        @current_resource.etag == @new_resource.etag && @current_resource.last_modified == @new_resource.last_modified && @current_resource.checksum == @new_resource.checksum && @current_resource.source && @current_resource.source[0] == @content.raw_file_source
+      end
+
+      def save_fileinfo
         cache = Hash.new
         cache["etag"] = @new_resource.etag
         cache["last_modified"] = @new_resource.last_modified
-        cache["src"] = source
+        cache["src"] = @content.raw_file_source
         cache["checksum"] = @new_resource.checksum
         cache_path = new_resource.name.sub(/^([A-Za-z]:)/, "")  # strip drive letter on Windows
         Chef::FileCache.store("remote_file/#{cache_path}", cache.to_json)

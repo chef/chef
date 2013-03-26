@@ -27,18 +27,18 @@ class Chef
       class HTTP
 
         # Fetches the file at uri, returning a Tempfile-like File handle
-        def self.fetch(uri, if_modified_since, if_none_match)
-          request = HTTP.new(uri, if_modified_since, if_none_match)
+        def self.fetch(uri, last_modified, etag)
+          request = HTTP.new(uri, last_modified, etag)
           request.execute
         end
 
         # Parse the uri into instance variables
-        def initialize(uri, if_modified_since, if_none_match)
+        def initialize(uri, last_modified, etag)
           @headers = Hash.new
-          if if_none_match
-            @headers['if-none-match'] = "\"#{if_none_match}\""
-          elsif if_modified_since
-            @headers['if-modified-since'] = if_modified_since.strftime("%a, %d %b %Y %H:%M:%S %Z")
+          if etag
+            @headers['if-none-match'] = "\"#{etag}\""
+          elsif last_modified
+            @headers['if-modified-since'] = last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
           end
           @uri = uri
         end
