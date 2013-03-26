@@ -79,15 +79,13 @@ class Chef
             if_modified_since ||= @current_resource.last_modified
             if_none_match ||= @current_resource.etag
           end
-          if URI::HTTP === uri
-            #HTTP or HTTPS
+          case uri.scheme
+          when "http", "https"
             raw_file, mtime, etag = Chef::Provider::RemoteFile::HTTP.fetch(uri, if_modified_since, if_none_match)
-          elsif URI::FTP === uri
-            #FTP
+          when "ftp"
             raw_file, mtime = Chef::Provider::RemoteFile::FTP.fetch(uri, @new_resource.ftp_active_mode, if_modified_since)
             etag = nil
-          elsif uri.scheme == "file"
-            #local/network file
+          when "file"
             raw_file, mtime = Chef::Provider::RemoteFile::LocalFile.fetch(uri, if_modified_since)
             etag = nil
           else
