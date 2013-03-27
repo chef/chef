@@ -33,13 +33,13 @@ class Chef
         def initialize(uri, new_resource, current_resource)
           @headers = Hash.new
           if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
-            if current_resource.use_etag && current_resource.etag
+            if current_resource.use_etag && current_resource.etag && current_resource.etag != ""
               @headers['if-none-match'] = "\"#{current_resource.etag}\""
-              Chef::Log.debug("set if-none-match header to #{current_resource.etag}")
+              Chef::Log.debug("set if-none-match header to '#{current_resource.etag}'")
             end
             if current_resource.use_last_modified && current_resource.last_modified
               @headers['if-modified-since'] = current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
-              Chef::Log.debug("set if-modified-since header to #{@headers['if-modified-since']}")
+              Chef::Log.debug("set if-modified-since header to '#{@headers['if-modified-since']}'")
             end
           end
           @uri = uri

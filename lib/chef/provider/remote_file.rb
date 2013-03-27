@@ -39,7 +39,8 @@ class Chef
             @current_resource.source fileinfo["src"]
             Chef::Log.debug("loaded etag %s, last_modified %s, source %s from file metadata cache" % [fileinfo["etag"], fileinfo["last_modified"], fileinfo["src"]])
           else
-            Chef::Log.debug("current resource checksum '#{@current_resource.checksum}' does not match cached checksum '#{fileinfo['checksum']}', not loading metadata...")
+            Chef::Log.debug("current resource checksum '#{@current_resource.checksum}' does not match cached checksum '#{fileinfo['checksum']}', removing metadata...")
+            FileUtils.rm_f("#{Chef::Config[:file_cache_path]}/remote_file/#{new_resource.name}")
           end
         else
           Chef::Log.debug("no cached file information found")
@@ -52,9 +53,12 @@ class Chef
 
       private
 
-      def update_file_contents
+      def do_contents_changes
         super
-        save_fileinfo(@content.raw_file_source)
+        converge_by("updating etags and last_modified file metadata cache") do
+          @new_resource.checksum(checksum(@new_resource.path)) unless @new_resource.checksum
+          save_fileinfo(@content.raw_file_source)
+        end
       end
 
       def fileinfo
