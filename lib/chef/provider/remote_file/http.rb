@@ -35,9 +35,11 @@ class Chef
           if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.use_etag && current_resource.etag
               @headers['if-none-match'] = "\"#{current_resource.etag}\""
+              Chef::Log.debug("set if-none-match header to #{current_resource.etag}")
             end
             if current_resource.use_last_modified && current_resource.last_modified
               @headers['if-modified-since'] = current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
+              Chef::Log.debug("set if-modified-since header to #{@headers['if-modified-since']}")
             end
           end
           @uri = uri
@@ -49,18 +51,24 @@ class Chef
             tempfile = rest.streaming_request(@uri, @headers)
             if rest.last_response['last_modified']
               mtime = Time.parse(rest.last_response['last_modified'])
+              Chef::Log.debug("found last_modified header on response set to #{mtime}")
             elsif rest.last_response['date']
               mtime = Time.parse(rest.last_response['date'])
+              Chef::Log.debug("found date header on response set to #{mtime}")
             else
               mtime = Time.now
+              Chef::Log.debug("returning current time #{mtime} as last_modified time")
             end
             if rest.last_response['etag']
               etag = rest.last_response['etag']
+              Chef::Log.debug("found etag header on response set to #{etag}")
             else
               etag = nil
+              Chef::Log.debug("did not find an etag header on response")
             end
           rescue Net::HTTPRetriableError => e
             if e.response.is_a? Net::HTTPNotModified
+              Chef::Log.debug("got 304 HTTPNotModified response")
               tempfile = nil
             else
               raise e
@@ -82,6 +90,7 @@ class Chef
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
           if @uri.to_s =~ /gz$/
+            Chef::Log.debug("turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
           end
           opts

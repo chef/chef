@@ -61,7 +61,10 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path)
+        if ::File.exists?(@current_resource.path) && !::File.directory?(@current_resource.path)
+          if @action != :create_if_missing
+            @current_resource.checksum(checksum(@current_resource.path))
+          end
           load_resource_attributes_from_file(@current_resource)
         end
         @current_resource
@@ -188,6 +191,7 @@ class Chef
         backup unless file_created?
         deployment_strategy.deploy(tempfile.path, @new_resource.path)
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
+        @new_resource.checksum(@new_resource.path) # for reporting
       end
 
       def do_contents_changes
@@ -232,13 +236,6 @@ class Chef
       end
 
       def load_resource_attributes_from_file(resource)
-        if resource.respond_to?(:checksum)
-          if ::File.exists?(resource.path) && !::File.directory?(resource.path)
-            if @action != :create_if_missing # XXX: don't we break current_resource semantics by skipping this?
-              resource.checksum(checksum(resource.path))
-            end
-          end
-        end
 
         if Chef::Platform.windows?
           # TODO: To work around CHEF-3554, add support for Windows
