@@ -17,11 +17,9 @@
 #
 
 #
-# PURPOSE: this strategy is atomic, does not mutate file modes, and supports selinux
+# PURPOSE: this strategy is atomic, attempts to preserve file modes, and supports selinux
 #
-# Note the FileUtils.mv does not have a preserve flag, and the preserve behavior of it is different
-# on different rubies (1.8.7 vs 1.9.x) so we are explicit about making certain the tempfile metadata
-# is not deployed (technically implementing preserve = false ourselves).
+# NOTE: there is no a preserve flag to FileUtils.mv, and the complexity here is probably why
 #
 
 class Chef
@@ -30,6 +28,8 @@ class Chef
       class Deploy
         class MvUnix
           def create(file)
+            # this is very simple, but it ensures that ownership and file modes take
+            # good defaults, in particular mode needs to obey umask on create
             Chef::Log.debug("touching #{file} to create it")
             FileUtils.touch(file)
           end
@@ -40,11 +40,35 @@ class Chef
             mode = ::File.stat(dst).mode & 07777
             uid  = ::File.stat(dst).uid
             gid  = ::File.stat(dst).gid
-            Chef::Log.debug("applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
-            ::File.chmod(mode, src)
-            ::File.chown(uid, gid, src)
+
             Chef::Log.debug("moving temporary file #{src} into place at #{dst}")
             FileUtils.mv(src, dst)
+
+            Chef::Log.debug("applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
+
+            # i own the inode, so should be able to at least chmod it
+            ::File.chmod(mode, dst)
+
+            # we may be running as non-root in which case because we are doing an mv we cannot preserve
+            # the file modes.  after the mv we have a different inode and if we don't have rights to
+            # chown/chgrp on the inode then we can't fix the ownership.
+            #
+            # in the case where i'm running chef-solo on my homedir as myself and some root-shell
+            # work has caused dotfiles of mine to change to root-owned, i'm fine with this not being
+            # exceptional, and i think most use cases will consider this to not be exceptional, and
+            # the right thing is to fix the ownership of the file to the user running the commmand
+            # (which requires write perms to the directory, or mv will have already thrown an exception)
+            begin
+              ::File.chown(uid, nil, dst)
+            rescue Errno::EPERM
+              Chef::Log.warn("Could not set uid = #{uid} on #{dst}, file modes not preserved")
+            end
+            begin
+              ::File.chown(nil, gid, dst)
+            rescue Errno::EPERM
+              Chef::Log.warn("Could not set gid = #{gid} on #{dst}, file modes not preserved")
+            end
+
 
             # handle selinux if we need to run restorecon
             if Chef::Config[:selinux_enabled]
