@@ -285,11 +285,19 @@ class ShipIt
     {:timeout => 1200, :live_stream => STDOUT}
   end
 
+  def progress
+    if STDOUT.tty?
+      "--progress"
+    else
+      "--no-progress"
+    end
+  end
+
   def upload_package(local_path, s3_path)
     s3_cmd = ["s3cmd",
               "-c #{options[:package_s3_config_file]}",
               "put",
-              "--progress",
+              progress,
               "--acl-public",
               local_path,
               "s3://#{options[:bucket]}#{s3_path}"].join(" ")
