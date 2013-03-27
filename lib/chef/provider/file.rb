@@ -148,11 +148,6 @@ class Chef
         Chef::Log.warn("The method Chef::Provider::File#update_new_file_state is deprecated and will be removed in Chef 12")
       end
 
-      def whyrun_mode?
-        Chef::Log.warn("The method Chef::Provider::File#whyrun_mode? is deprecated and will be removed in Chef 12")
-        Chef::Config[:why_run]
-      end
-
       private
 
       def content
