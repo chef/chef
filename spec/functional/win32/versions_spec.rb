@@ -24,8 +24,8 @@ end
 
 describe "Chef::ReservedNames::Win32::Version", :windows_only do
   before do
-    @host = WMI::Win32_OperatingSystem.find(:first)
-    @current_os_version = @host.version
+    host = WMI::Win32_OperatingSystem.find(:first)
+    @current_os_version = host.caption
     @version = Chef::ReservedNames::Win32::Version.new
   end
   context "Windows Operating System version" do
