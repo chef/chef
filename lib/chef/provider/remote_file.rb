@@ -39,7 +39,7 @@ class Chef
             @current_resource.source fileinfo["src"]
             Chef::Log.debug("loaded etag %s, last_modified %s, source %s from file metadata cache" % [fileinfo["etag"], fileinfo["last_modified"], fileinfo["src"]])
           else
-            Chef::Log.debug("checksum of current resource does not match cached checksum, not loading metadata...")
+            Chef::Log.debug("current resource checksum '#{@current_resource.checksum}' does not match cached checksum '#{fileinfo['checksum']}', not loading metadata...")
           end
         else
           Chef::Log.debug("no cached file information found")
