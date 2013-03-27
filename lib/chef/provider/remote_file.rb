@@ -55,7 +55,8 @@ class Chef
 
       def do_contents_changes
         super
-        converge_by("updating etags and last_modified file metadata cache") do
+        return if tempfile.nil?  # we 304'd, so have no etags or last-modified
+        unless whyrun_mode?
           @new_resource.checksum(checksum(@new_resource.path)) unless @new_resource.checksum
           save_fileinfo(@content.raw_file_source)
         end
