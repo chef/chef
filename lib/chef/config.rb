@@ -203,7 +203,7 @@ class Chef
     verbose_logging true
     node_name nil
     node_path "/var/chef/node"
-    diff_disable            false
+    diff_disabled           false
     diff_filesize_threshold 10000000
     diff_output_threshold   1000000
 

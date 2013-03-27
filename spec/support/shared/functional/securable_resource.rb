@@ -127,6 +127,9 @@ shared_context "use Windows permissions", :windows_only do
 end
 
 shared_examples_for "a securable resource" do
+
+  include_context "diff disabled"
+
   context "on Unix", :unix_only do
     let(:expected_user_name) { 'nobody' }
     let(:expected_uid) { Etc.getpwnam(expected_user_name).uid }
