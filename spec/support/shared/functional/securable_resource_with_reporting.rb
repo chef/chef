@@ -1,6 +1,8 @@
 
 shared_examples_for "a securable resource with reporting" do
 
+  include_context "diff disabled"
+
   let(:current_resource) do
     provider = resource.provider_for_action(resource.action)
     provider.load_current_resource

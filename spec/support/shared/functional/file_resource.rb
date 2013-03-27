@@ -25,6 +25,8 @@ shared_examples_for "a file with the wrong content" do
     sha256_checksum(path).should == @expected_checksum
   end
 
+  include_context "diff disabled"
+
   context "when running action :create" do
     context "with backups enabled" do
       before do
@@ -96,6 +98,8 @@ shared_examples_for "a file with the correct content" do
     sha256_checksum(path).should == @expected_checksum
   end
 
+  include_context "diff disabled"
+
   describe "when running action :create" do
     before do
       resource.run_action(:create)
@@ -143,9 +147,13 @@ shared_examples_for "a file with the correct content" do
 end
 
 shared_examples_for "a file resource" do
+
+  include_context "diff disabled"
+
   before do
     Chef::Log.level = :info
   end
+
    # note the stripping of the drive letter from the tmpdir on windows
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
@@ -291,6 +299,7 @@ shared_examples_for "a file resource" do
 end
 
 shared_examples_for "a file that inherits permissions from a parent directory" do
+  include_context "diff disabled"
   include_context "use Windows permissions"
   context "on Windows", :windows_only do
     it "has only inherited aces if no explicit aces were specified" do
