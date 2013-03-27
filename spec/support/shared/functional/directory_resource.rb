@@ -18,6 +18,8 @@
 
 shared_examples_for "a directory resource" do
 
+  include_context "diff disabled"
+
   let(:expect_updated?) {true}
 
   context "when the target directory does not exist" do
