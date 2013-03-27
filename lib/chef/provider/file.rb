@@ -186,7 +186,7 @@ class Chef
         backup unless file_created?
         deployment_strategy.deploy(tempfile.path, @new_resource.path)
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
-        @new_resource.checksum(@new_resource.path) # for reporting
+        @new_resource.checksum(checksum(@new_resource.path)) # for reporting
       end
 
       def do_contents_changes
