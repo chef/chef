@@ -24,6 +24,7 @@ class Chef
         @new_resource = new_resource
         @current_resource = current_resource
         @run_context = run_context
+        @tempfile_loaded = false
       end
 
       def run_context
@@ -39,7 +40,13 @@ class Chef
       end
 
       def tempfile
-        @tempfile ||= file_for_provider
+        # tempfile may be nil, so we cannot use ||= here
+        if @tempfile_loaded
+          @tempfile
+        else
+          @tempfile_loaded = true
+          @tempfile = file_for_provider
+        end
       end
 
       private
