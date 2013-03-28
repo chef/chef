@@ -33,13 +33,25 @@ class Chef
         def initialize(uri, new_resource, current_resource)
           @headers = Hash.new
           if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
-            if current_resource.use_etag && current_resource.etag && current_resource.etag != ""
-              @headers['if-none-match'] = "\"#{current_resource.etag}\""
-              Chef::Log.debug("set if-none-match header to '#{current_resource.etag}'")
+            if current_resource.etag && ( current_resource.etag != "" )
+              if new_resource.use_etag
+                @headers['if-none-match'] = "\"#{current_resource.etag}\""
+                Chef::Log.debug("set if-none-match header to '#{current_resource.etag}'")
+              else
+                Chef::Log.debug("stash has etags but resource has use_etag set to false, not sending if-none-match header")
+              end
+            else
+              Chef::Log.debug("no etag headers in file information stash, not sending if-none-match header")
             end
-            if current_resource.use_last_modified && current_resource.last_modified
-              @headers['if-modified-since'] = current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
-              Chef::Log.debug("set if-modified-since header to '#{@headers['if-modified-since']}'")
+            if current_resource.last_modified
+              if new_resource.use_last_modified
+                @headers['if-modified-since'] = current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
+                Chef::Log.debug("set if-modified-since header to '#{@headers['if-modified-since']}'")
+              else
+                Chef::Log.debug("stash has last-modified but resource has use_last_modified set to false, not sending if-modified-since header")
+              end
+            else
+              Chef::Log.debug("no last-modified headers in file information stash, not sending if-modified-since header")
             end
           end
           @uri = uri
