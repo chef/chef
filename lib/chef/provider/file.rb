@@ -61,8 +61,8 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @new_resource.path.gsub!(/\\/, "/") # for Windows
         @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path) && !::File.directory?(@current_resource.path)
-          if @action != :create_if_missing
+        if ::File.exists?(@current_resource.path)
+          if @action != :create_if_missing && @current_resource.respond_to?(:checksum) && ::File.file?(@current_resource.path)
             @current_resource.checksum(checksum(@current_resource.path))
           end
           load_resource_attributes_from_file(@current_resource)
