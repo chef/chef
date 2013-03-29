@@ -61,3 +61,18 @@ def has_diff?
     false
   end
 end
+
+# This is a helper to determine if the ruby in the PATH contains
+# win32/service gem. windows_service_manager tests create a windows
+# service that starts with the system ruby and requires this gem.
+def system_windows_service_gem?
+  if defined?(Bundler)
+    Bundler.with_clean_env do
+      # This returns true if the gem can be loaded
+      system "ruby -e 'require \"win32/daemon\"'"
+    end
+  else
+    # This returns true if the gem can be loaded
+    system "ruby -e 'require \"win32/daemon\"'"
+  end
+end
