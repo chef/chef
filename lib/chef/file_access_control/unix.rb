@@ -43,6 +43,11 @@ class Chef
         should_update_mode? || should_update_owner? || should_update_group?
       end
 
+      def define_resource_requirements
+        uid_from_resource(resource)
+        gid_from_resource(resource)
+      end
+
       def describe_changes
         changes = []
         changes << "change mode from '#{mode_to_s(current_mode)}' to '#{mode_to_s(target_mode)}'" if should_update_mode?
@@ -59,10 +64,25 @@ class Chef
         uid_from_resource(current_resource)
       end
 
-      # target_uid.nil? means the new_resource.owner is nil and the requesting owner doesn't care
-      # current_uid.nil? means the file does not exist
       def should_update_owner?
-        !target_uid.nil? && ( current_uid.nil? || target_uid != current_uid )
+        if target_uid.nil?
+          # the user has not specified a permission on the new resource, so we never manage it with FAC
+          Chef::Log.debug("found target_uid == nil, so no owner was specified on resource, not managing owner")
+          return false
+        end
+        if current_uid.nil?
+          # the user has specified a permission, and we are creating a file, so always enforce permissions
+          Chef::Log.debug("found current_uid == nil, so we are creating a new file, updating owner")
+          return true
+        end
+        if target_uid != current_uid
+          # the user has specified a permission, and it does not match the file, so fix the permission
+          Chef::Log.debug("found target_uid != current_uid, updating owner")
+          return true
+        end
+        Chef::Log.debug("found target_uid == current_uid, not updating owner")
+        # the user has specified a permission, but it matches the file, so behave idempotently
+        return false
       end
 
       def set_owner!
@@ -85,7 +105,7 @@ class Chef
         gid_from_resource(current_resource)
       end
 
-      def gid_from_resource(resource)
+      def gid_from_resource(resource)  # XXX:  masking instance variable
         return nil if resource == nil or resource.group.nil?
         if resource.group.kind_of?(String)
           diminished_radix_complement( Etc.getgrnam(resource.group).gid )
@@ -105,7 +125,24 @@ class Chef
       end
 
       def should_update_group?
-        !target_gid.nil? && ( current_gid.nil? || target_gid != current_gid )
+        if target_gid.nil?
+          # the user has not specified a permission on the new resource, so we never manage it with FAC
+          Chef::Log.debug("found target_gid == nil, so no group was specified on resource, not managing group")
+          return false
+        end
+        if current_gid.nil?
+          # the user has specified a permission, and we are creating a file, so always enforce permissions
+          Chef::Log.debug("found current_gid == nil, so we are creating a new file, updating group")
+          return true
+        end
+        if target_gid != current_gid
+          # the user has specified a permission, and it does not match the file, so fix the permission
+          Chef::Log.debug("found target_gid != current_gid, updating group")
+          return true
+        end
+        Chef::Log.debug("found target_gid == current_gid, not updating group")
+        # the user has specified a permission, but it matches the file, so behave idempotently
+        return false
       end
 
       def set_group!
@@ -138,7 +175,24 @@ class Chef
       end
 
       def should_update_mode?
-        !target_mode.nil? && ( current_mode.nil? || current_mode != target_mode )
+        if target_mode.nil?
+          # the user has not specified a permission on the new resource, so we never manage it with FAC
+          Chef::Log.debug("found target_mode == nil, so no mode was specified on resource, not managing mode")
+          return false
+        end
+        if current_mode.nil?
+          # the user has specified a permission, and we are creating a file, so always enforce permissions
+          Chef::Log.debug("found current_mode == nil, so we are creating a new file, updating mode")
+          return true
+        end
+        if target_mode != current_mode
+          # the user has specified a permission, and it does not match the file, so fix the permission
+          Chef::Log.debug("found target_mode != current_mode, updating mode")
+          return true
+        end
+        Chef::Log.debug("found target_mode == current_mode, not updating mode")
+        # the user has specified a permission, but it matches the file, so behave idempotently
+        return false
       end
 
       def set_mode!
@@ -194,7 +248,7 @@ class Chef
         end
       end
 
-      def uid_from_resource(resource)
+      def uid_from_resource(resource)  # XXX: masking instance variable
         return nil if resource == nil or resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )

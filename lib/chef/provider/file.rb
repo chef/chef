@@ -71,6 +71,8 @@ class Chef
       end
 
       def define_resource_requirements
+        # deep inside FAC we have to assert requirements, so call FACs hook to set that up
+        access_controls.define_resource_requirements
         # Make sure the parent directory exists, otherwise fail.  For why-run assume it would have been created.
         requirements.assert(:create, :create_if_missing, :touch) do |a|
           parent_directory = ::File.dirname(@new_resource.path)
