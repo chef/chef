@@ -33,13 +33,27 @@ class Chef
         @diff.join("\\n")
       end
 
+      def use_tempfile_if_missing(file)
+        tempfile = nil
+        unless File.exists?(file)
+          Chef::Log.debug("file #{file} does not exist to diff against, using empty tempfile")
+          tempfile = Tempfile.new("chef-diff")
+          file = tempfile.path
+        end
+        yield file
+        unless tempfile.nil?
+          tempfile.close
+          tempfile.unlink
+        end
+      end
+
       def diff(old_file, new_file)
-        # indicates calling code bug: caller is reponsible for making certain both
-        # files exist
-        raise "old file #{old_file} does not exist" unless File.exists?(old_file)
-        raise "new file #{new_file} does not exist" unless File.exists?(new_file)
-        @error = catch (:nodiff) do
-          do_diff(old_file, new_file)
+        use_tempfile_if_missing(old_file) do |old_file|
+          use_tempfile_if_missing(new_file) do |new_file|
+            @error = catch (:nodiff) do
+              do_diff(old_file, new_file)
+            end
+          end
         end
       end
 
@@ -63,6 +77,7 @@ class Chef
 
         begin
           # -u: Unified diff format
+          Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
           result = shell_out("diff -u #{old_file} #{new_file}")
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that

@@ -44,16 +44,16 @@ describe Chef::Util::Diff, :uses_diff => true do
     expect(differ).to be_a_kind_of(Chef::Util::Diff)
   end
 
-  it "should raise an exception if the old_file does not exist" do
+  it "produces a diff even if the old_file does not exist" do
     old_tempfile.close
     old_tempfile.unlink
-    expect { differ.diff(old_file, new_file) }.to raise_error
+    expect(differ.for_output).to eql(["(no diff)"])
   end
 
-  it "should raise an exception if the new_file does not exist" do
+  it "produces a diff even if the new_file does not exist" do
     new_tempfile.close
     new_tempfile.unlink
-    expect { differ.diff(old_file, new_file) }.to raise_error
+    expect(differ.for_output).to eql(["(no diff)"])
   end
 
   describe "when the two files exist with no content" do
