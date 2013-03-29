@@ -371,7 +371,7 @@ shared_examples_for Chef::Provider::File do
 
         context "when the contents have changed" do
           let (:tempfile_path) { "/tmp/foo-bar-baz" }
-          let (:tempfile_md5) { "71f3811d0472fbef15d90a779615b254" }
+          let (:tempfile_sha256) { "42971f0ddce0cb20cf7660a123ffa1a1543beb2f1e7cd9d65858764a27f3201d" }
           let (:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
             provider.stub!(:contents_changed?).and_return(true)
@@ -379,7 +379,8 @@ shared_examples_for Chef::Provider::File do
                                   :for_reporting => diff_for_reporting )
             diff.stub!(:diff).with(resource_path, tempfile_path).and_return(true)
             provider.should_receive(:diff).at_least(:once).and_return(diff)
-            provider.should_receive(:checksum).with(tempfile_path).and_return(tempfile_md5)
+            provider.should_receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
+            provider.should_receive(:checksum).with(resource_path).and_return(tempfile_sha256)
             provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, resource_path)
           end
           context "when the file was created" do
