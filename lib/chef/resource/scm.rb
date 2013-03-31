@@ -36,6 +36,7 @@ class Chef
         @remote = "origin"
         @ssh_wrapper = nil
         @depth = nil
+        @clean = false
         @allowed_actions.push(:checkout, :export, :sync, :diff, :log)
         @action = [:sync]
       end
@@ -119,6 +120,14 @@ class Chef
           :depth,
           arg,
           :kind_of => Integer
+        )
+      end
+
+      def clean(arg=nil)
+        set_or_return(
+            :clean,
+            arg,
+            :kind_of => [TrueClass, FalseClass]
         )
       end
 
