@@ -204,6 +204,11 @@ class Chef::Application::Client < Chef::Application
       :description  => "Fail the run when chef-client doesn't have administrator privileges on Windows",
       :boolean      => true
   end
+  
+  option :default_exception_handlers,
+    :long         => "--[no-]default-exception-handlers",
+    :description  => "Add default exception handler - ErrorReport",
+    :boolean      => true
 
   attr_reader :chef_client_json
 
@@ -217,9 +222,9 @@ class Chef::Application::Client < Chef::Application
     super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-    unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
+    if Chef::Config[:exception_handlers].none? {|h| Chef::Handler::ErrorReport === h}
       Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
-    end
+    end if Chef::Config[:default_exception_handlers]
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
