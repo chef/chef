@@ -97,6 +97,8 @@ class Chef
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
     class WindowsNotAdmin < RuntimeError; end
+    # Attempting to access a 64-bit only resource on a 32-bit Windows system
+    class Win32ArchitectureIncorrect < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
@@ -131,7 +133,7 @@ class Chef
     class StaleAttributeRead < StandardError; end
 
     #Registry Helper throws the following errors
-    class Win32RegArchitectureIncorrect < RuntimeError; end
+    class Win32RegArchitectureIncorrect < Win32ArchitectureIncorrect; end
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
     class Win32RegValueMissing < RuntimeError; end
@@ -270,6 +272,12 @@ class Chef
       end
 
     end # CookbookVersionSelection
+
+    # When the server sends a redirect, RFC 2616 states a user-agent should
+    # not follow it with a method other than GET or HEAD, unless a specific
+    # action is taken by the user. A redirect received as response to a
+    # non-GET and non-HEAD request will thus raise an InvalidRedirect.
+    class InvalidRedirect < StandardError; end
 
   end
 end

@@ -1,8 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: AJ Christensen (<@aj@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Copyright:: Copyright (c) 2008 Opscode, Inc.
+# Author:: Chirag Jog (<chirag@clogeny.com>)
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,24 +14,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-require 'logger'
-require 'chef/monologger'
-require 'mixlib/log'
-
-class Chef
-  class Log
-    extend Mixlib::Log
-
-    # Force initialization of the primary log device (@logger)
-    init(MonoLogger.new(STDOUT))
-
-    class Formatter
-      def self.show_time=(*args)
-        Mixlib::Log::Formatter.show_time = *args
-      end
-    end
-
-  end
+require 'spec_helper'
+if Chef::Platform.windows?
+  require 'chef/win32/version'
+  require 'ruby-wmi'
 end
 
+describe "Chef::ReservedNames::Win32::Version", :windows_only do
+  before do
+    host = WMI::Win32_OperatingSystem.find(:first)
+    @current_os_version = host.caption
+    @version = Chef::ReservedNames::Win32::Version.new
+  end
+  context "Windows Operating System version" do
+    it "should match the version from WMI" do
+      @current_os_version.include?(@version.marketing_name).should == true
+    end
+  end
+end
