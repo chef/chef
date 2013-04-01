@@ -32,6 +32,20 @@ describe Chef::Provider::File do
     content = mock('Chef::Provider::File::Content::File')
   end
 
+  let(:node) { double('Chef::Node') }
+  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
+  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:enclosing_directory) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates")) }
+  let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
+
+  # Subject
+
+  let(:provider) do
+    provider = described_class.new(resource, run_context)
+    provider.stub!(:content).and_return(content)
+    provider
+  end
+
   it_behaves_like Chef::Provider::File
 end
 
