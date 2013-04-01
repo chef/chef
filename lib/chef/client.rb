@@ -442,20 +442,20 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
-      run_context = nil
-      @events.run_start(Chef::VERSION)
-      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
-      enforce_path_sanity
-      run_ohai
-      @events.ohai_completed(node)
-      register unless Chef::Config[:solo]
-
-      load_node
-
-      begin
+      begin        
         runlock = RunLock.new(Chef::Config)
         runlock.acquire
-        
+      
+        run_context = nil
+        @events.run_start(Chef::VERSION)
+        Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        enforce_path_sanity
+        run_ohai
+        @events.ohai_completed(node)
+        register unless Chef::Config[:solo]
+
+        load_node
+
         build_node
 
         run_status.start_clock
