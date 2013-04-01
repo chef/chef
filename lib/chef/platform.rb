@@ -19,6 +19,7 @@
 require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
+require 'chef/version_constraint'
 
 # This file depends on nearly every provider in chef, but requiring them
 # directly causes circular requires resulting in uninitialized constant errors.
@@ -29,6 +30,7 @@ require 'chef/provider/group'
 require 'chef/provider/mount'
 require 'chef/provider/service'
 require 'chef/provider/package'
+require 'chef/provider/ifconfig'
 
 
 class Chef
@@ -70,6 +72,9 @@ class Chef
               :service => Chef::Provider::Service::Debian,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
+            },
+            '>= 11.10' => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :gcel   => {
@@ -111,8 +116,11 @@ class Chef
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
             },
-            "6.0" => {
+            ">= 6.0" => {
               :service => Chef::Provider::Service::Insserv
+            },
+            ">= 7.0" => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :xenserver   => {
@@ -128,7 +136,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :amazon   => {
@@ -152,7 +161,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :suse     => {
@@ -176,7 +186,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :gentoo   => {
@@ -344,14 +355,20 @@ class Chef
         end
 
         if platforms.has_key?(name_sym)
-          if platforms[name_sym].has_key?(version)
-            Chef::Log.debug("Platform #{name.to_s} version #{version} found")
-            if platforms[name_sym].has_key?(:default)
-              provider_map.merge!(platforms[name_sym][:default])
-            end
-            provider_map.merge!(platforms[name_sym][version])
-          elsif platforms[name_sym].has_key?(:default)
+          platform_versions = platforms[name_sym].select {|k, v| k != :default }
+          if platforms[name_sym].has_key?(:default)
             provider_map.merge!(platforms[name_sym][:default])
+          end
+          platform_versions.each do |platform_version, provider|
+            begin
+              version_constraint = Chef::VersionConstraint.new(platform_version)
+              if version_constraint.include?(version)
+                Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+                provider_map.merge!(provider)
+              end
+            rescue Chef::Exceptions::InvalidCookbookVersion
+              Chef::Log.debug("Chef::Version::Comparable does not know how to parse the platform version")
+            end
           end
         else
           Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")
