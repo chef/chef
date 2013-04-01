@@ -442,9 +442,6 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
-      runlock = RunLock.new(Chef::Config)
-      runlock.acquire
-
       run_context = nil
       @events.run_start(Chef::VERSION)
       Chef::Log.info("*** Chef #{Chef::VERSION} ***")
@@ -456,6 +453,9 @@ class Chef
       load_node
 
       begin
+        runlock = RunLock.new(Chef::Config)
+        runlock.acquire
+        
         build_node
 
         run_status.start_clock
