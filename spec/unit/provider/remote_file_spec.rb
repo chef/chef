@@ -38,6 +38,20 @@ describe Chef::Provider::RemoteFile do
     content = mock('Chef::Provider::File::Content::RemoteFile')
   end
 
+  let(:node) { double('Chef::Node') }
+  let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
+  let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
+  let(:enclosing_directory) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates")) }
+  let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
+
+  # Subject
+
+  let(:provider) do
+    provider = described_class.new(resource, run_context)
+    provider.stub!(:content).and_return(content)
+    provider
+  end
+
   it_behaves_like Chef::Provider::File
 
 #describe Chef::Provider::RemoteFile, "action_create" do
@@ -56,85 +70,38 @@ describe Chef::Provider::RemoteFile do
 #    @provider.stub!(:load_current_resource)
 #  end
 
-  describe "when checking if the file is at the target version" do
-    it "considers the current file to be at the target version if it exists and matches the user-provided checksum" do
-      @provider.current_resource = @resource.dup
-      @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      @provider.current_resource_matches_target_checksum?.should be_true
-    end
-  end
+  # FIXME: move to content
+#  describe "when checking if the file is at the target version" do
+#    it "considers the current file to be at the target version if it exists and matches the user-provided checksum" do
+#      provider.current_resource = resource.dup
+#      resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+#      provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+#      provider.current_resource_matches_target_checksum?.should be_true
+#    end
+#  end
 
   describe "when fetching the file from the remote" do
     before(:each) do
-      @tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
+      #@tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
 
-      @rest = mock(Chef::REST, { })
-      Chef::REST.stub!(:new).and_return(@rest)
-      @rest.stub!(:streaming_request).and_return(@tempfile)
-      @rest.stub!(:last_response).and_return({})
-      @resource.cookbook_name = "monkey"
+      #@rest = mock(Chef::REST, { })
+      #Chef::REST.stub!(:new).and_return(@rest)
+      #@rest.stub!(:streaming_request).and_return(@tempfile)
+      #@rest.stub!(:last_response).and_return({})
+      resource.cookbook_name = "monkey"
+      resource.source("http://opscode.com/seattle.txt")
 
-      @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      @provider.current_resource = @resource.clone
-      @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      File.stub!(:exists?).and_return(true)
-      FileUtils.stub!(:cp).and_return(true)
-      Chef::Platform.stub!(:find_platform_and_version).and_return([ :mac_os_x, "10.5.1" ])
+      provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      provider.current_resource = resource.clone
+      provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+      #File.stub!(:exists?).and_return(true)
+      #FileUtils.stub!(:cp).and_return(true)
+      #Chef::Platform.stub!(:find_platform_and_version).and_return([ :mac_os_x, "10.5.1" ])
+      setup_normal_file
     end
 
     after do
-      @tempfile.close!
-    end
-
-    before do
-      @resource.source("http://opscode.com/seattle.txt")
-    end
-
-    describe "and the target location's enclosing directory does not exist" do
-      before do
-        @resource.path("/tmp/this/path/does/not/exist/file.txt")
-      end
-
-      it "raises a specific error describing the problem" do
-        lambda {@provider.run_action(:create)}.should raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-      end
-    end
-
-    shared_examples_for "source specified with multiple URIs" do
-      it "should try to download the next URI when the first one fails" do
-        @rest.should_receive(:streaming_request).with(URI.parse("http://foo"), {}).once.and_raise(SocketError)
-        @rest.should_receive(:streaming_request).with(URI.parse("http://bar"), {}).once.and_return(@tempfile)
-        @provider.run_action(:create)
-      end
-
-      it "should raise an exception when all the URIs fail" do
-        @rest.should_receive(:streaming_request).with(URI.parse("http://foo"), {}).once.and_raise(SocketError)
-        @rest.should_receive(:streaming_request).with(URI.parse("http://bar"), {}).once.and_raise(SocketError)
-        lambda { @provider.run_action(:create) }.should raise_error(SocketError)
-      end
-
-      it "should download from only one URI when the first one works" do
-        @rest.should_receive(:streaming_request).once.and_return(@tempfile)
-        @provider.run_action(:create)
-      end
-
-    end
-
-    describe "and the source specifies multiple URIs using multiple arguments" do
-      it_should_behave_like "source specified with multiple URIs"
-
-      before(:each) do
-        @resource.source("http://foo", "http://bar")
-      end
-    end
-
-    describe "and the source specifies multiple URIs using an array" do
-      it_should_behave_like "source specified with multiple URIs"
-
-      before(:each) do
-        @resource.source([ "http://foo", "http://bar" ])
-      end
+      #@tempfile.close!
     end
 
     describe "and the resource specifies a checksum" do
@@ -262,11 +229,6 @@ describe Chef::Provider::RemoteFile do
       lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPServerException)
     end
 
-    it "should checksum the raw file" do
-      @provider.should_receive(:checksum).with(@tempfile.path).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      @provider.run_action(:create)
-    end
-
     describe "when the target file does not exist" do
       before do
         ::File.stub!(:exists?).with(@resource.path).and_return(false)
@@ -284,13 +246,6 @@ describe Chef::Provider::RemoteFile do
         @provider.run_action(:create)
         @resource.should be_updated
       end
-
-      describe "and create_if_missing is invoked" do
-        it "should invoke action_create" do
-          @provider.should_receive(:action_create)
-          @provider.run_action(:create_if_missing)
-        end
-      end
     end
 
     describe "when the target file already exists" do
@@ -304,13 +259,6 @@ describe Chef::Provider::RemoteFile do
          "+bar foo"
         ])
         @provider.stub!(:get_from_server).and_return(@tempfile)
-      end
-
-      describe "and create_if_missing is invoked" do
-        it "should take no action" do
-          @provider.should_not_receive(:action_create)
-          @provider.run_action(:create_if_missing)
-        end
       end
 
       describe "and the file downloaded from the remote is identical to the current" do
