@@ -25,7 +25,7 @@ describe Chef::Provider::RemoteFile::FTP do
     @ftp.stub!(:connect)
     @ftp.stub!(:login)
     @ftp.stub!(:voidcmd)
-		@ftp.stub!(:mtime).and_return(Time.now)
+    @ftp.stub!(:mtime).and_return(Time.now)
     @ftp.stub!(:getbinaryfile)
     @ftp.stub!(:close)
     @ftp.stub!(:passive=)
