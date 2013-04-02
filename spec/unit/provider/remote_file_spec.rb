@@ -49,6 +49,7 @@ describe Chef::Provider::RemoteFile do
   let(:provider) do
     provider = described_class.new(resource, run_context)
     provider.stub!(:content).and_return(content)
+    provider.stub!(:update_new_resource_checksum).and_return(nil) # XXX: otherwise it doesn't behave like a File provider
     provider
   end
 

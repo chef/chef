@@ -55,6 +55,10 @@ class Chef
 
       def do_contents_changes
         super
+        update_new_resource_checksum
+      end
+
+      def update_new_resource_checksum
         return if tempfile.nil?  # we 304'd, so have no etags or last-modified
         unless whyrun_mode?
           @new_resource.checksum(checksum(@new_resource.path)) unless @new_resource.checksum
