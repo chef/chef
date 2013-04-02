@@ -165,8 +165,10 @@ case "$1" in
   restart|force-reload)
     log_daemon_msg "Restarting $DESC" "$NAME"
     errcode=0
-    stop_server || errcode=$?
-    [ -n "$DIETIME" ] && sleep $DIETIME
+    if running ; then
+      stop_server || errcode=$?
+      [ -n "$DIETIME" ] && sleep $DIETIME
+    fi
     start_server || errcode=$?
     [ -n "$STARTTIME" ] && sleep $STARTTIME
     running || errcode=$?
