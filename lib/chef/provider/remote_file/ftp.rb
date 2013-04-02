@@ -28,6 +28,8 @@ class Chef
     class RemoteFile
       class FTP
 
+        attr_reader :ftp_active_mode
+
         def initialize(uri, new_resource, current_resource)
           @ftp_active_mode = new_resource.ftp_active_mode
           @hostname = uri.host
