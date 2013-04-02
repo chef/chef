@@ -98,7 +98,7 @@ class Chef
       @pending_update  = nil
       @status = "success"
       @exception = nil
-      @run_id = nil
+      @run_id = UUIDTools::UUID.random_create.to_s # Ensure the uuid is a string so the json encoding never tries to encode the uuid object
       @rest_client = rest_client
       @node = nil
       @error_descriptions = {}
@@ -109,21 +109,28 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
-          #run_uri = URI.parse(server_response["uri"])
-          #@run_id = ::File.basename(run_uri.path)
-          #Chef::Log.info("Chef server generated run history id: #{@run_id}")
-          @run_id = UUIDTools::UUID.random_create
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin, :run_id => @run_id})
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+          message = "Reporting error beginning run. URL: #{resource_history_url} "
           if !e.response || e.response.code.to_s != "404"
+            code = if e.response.code
+                     e.response.code
+                   else
+                     "Exception Code Empty"
+                   end
+            exception = "Exception: #{code} "
             if Chef::Config[:enable_reporting_url_fatals]
-              Chef::Log.error("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
+              reporting_status = "Reporting fatals enabled. Aborting run. "
+              Chef::Log.error(message + exception + reporting_status)
               raise
             else
-              Chef::Log.info("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), disabling reporting for this run.")
+              reporting_status = "Disabling reporting for run."
+              Chef::Log.info(message + exception + reporting_status)
             end
           else
-            Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported on server.")
+            reason = "Received 404. "
+            reporting_status = "Disabling reporting for run."
+            Chef::Log.debug(message + reason + reporting_status)
           end
           @reporting_enabled = false
         end
@@ -203,7 +210,7 @@ class Chef
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
     end
-    
+
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"

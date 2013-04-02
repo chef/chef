@@ -38,6 +38,7 @@ describe Chef::ResourceReporter do
     @rest_client = mock("Chef::REST (mock)")
     @rest_client.stub!(:post_rest).and_return(true)
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
+    @run_id = @resource_reporter.run_id
     @new_resource      = Chef::Resource::File.new("/tmp/a-file.txt")
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
@@ -80,9 +81,9 @@ describe Chef::ResourceReporter do
 
   context "when chef fails" do
     before do
-      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/ABC123");
+      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
       @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"});
+      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
       @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
     end
@@ -248,9 +249,9 @@ describe Chef::ResourceReporter do
   describe "when generating a report for the server" do
 
     before do
-      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/ABC123");
+      @rest_client.stub!(:create_url).and_return("reports/nodes/spitfire/runs/#{@run_id}");
       @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"});
+      @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
       @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
     end
@@ -411,7 +412,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id}).
           and_raise(@error)
       end
 
@@ -439,7 +440,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id}).
           and_raise(@error)
       end
 
@@ -468,7 +469,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id}).
           and_raise(@error)
       end
 
@@ -486,16 +487,16 @@ describe Chef::ResourceReporter do
 
     context "after creating the run history document" do
       before do
-        response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/ABC123"}
+        response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/@run_id"}
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin}).
+          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id}).
           and_return(response)
 
         @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       end
 
       it "creates a run document on the server at the start of the run" do
-        @resource_reporter.run_id.should == "ABC123"
+        @resource_reporter.run_id.should == @run_id
       end
 
       it "updates the run document with resource updates at the end of the run" do
@@ -510,7 +511,7 @@ describe Chef::ResourceReporter do
         response = {"result"=>"ok"}
 
         @rest_client.should_receive(:create_url).
-          with("reports/nodes/spitfire/runs/ABC123").
+          with("reports/nodes/spitfire/runs/#{@run_id}").
           ordered.
           and_return(post_url)
         @rest_client.should_receive(:raw_http_request).ordered do |method, url, headers, data|
