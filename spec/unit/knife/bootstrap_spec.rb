@@ -143,6 +143,7 @@ describe Chef::Knife::Bootstrap do
         @knife.config[:ssh_password]  = "open_sesame"
         Chef::Config[:knife][:ssh_user] = nil
         Chef::Config[:knife][:ssh_port] = nil
+        @knife.config[:forward_agent] = true
         @knife.config[:identity_file] = "~/.ssh/me.rsa"
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
@@ -164,6 +165,10 @@ describe Chef::Knife::Bootstrap do
         @knife_ssh.config[:ssh_port].should == '4001'
       end
   
+      it "configures the ssh agent forwarding" do
+        @knife_ssh.config[:forward_agent].should == true
+      end
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
       end
@@ -175,10 +180,12 @@ describe Chef::Knife::Bootstrap do
         @knife.config[:ssh_user] = nil
         @knife.config[:ssh_port] = nil
         @knife.config[:ssh_gateway] = nil
+        @knife.config[:forward_agent] = nil
         @knife.config[:identity_file] = nil
         @knife.config[:host_key_verify] = nil
         Chef::Config[:knife][:ssh_user] = "curiosity"
         Chef::Config[:knife][:ssh_port] = "2430"
+        Chef::Config[:knife][:forward_agent] = true
         Chef::Config[:knife][:identity_file] = "~/.ssh/you.rsa"
         Chef::Config[:knife][:ssh_gateway] = "towel.blinkenlights.nl"
         Chef::Config[:knife][:host_key_verify] = true
@@ -194,6 +201,10 @@ describe Chef::Knife::Bootstrap do
         @knife_ssh.config[:ssh_port].should == '2430'
       end
   
+      it "configures the ssh agent forwarding" do
+        @knife_ssh.config[:forward_agent].should == true
+      end
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
       end
