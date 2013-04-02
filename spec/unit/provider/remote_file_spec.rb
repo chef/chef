@@ -70,7 +70,7 @@ describe Chef::Provider::RemoteFile do
 #    @provider.stub!(:load_current_resource)
 #  end
 
-  # FIXME: move to content
+  # XXX: move to content???
 #  describe "when checking if the file is at the target version" do
 #    it "considers the current file to be at the target version if it exists and matches the user-provided checksum" do
 #      provider.current_resource = resource.dup
@@ -80,229 +80,161 @@ describe Chef::Provider::RemoteFile do
 #    end
 #  end
 
-  describe "when fetching the file from the remote" do
-    before(:each) do
-      #@tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
-
-      #@rest = mock(Chef::REST, { })
-      #Chef::REST.stub!(:new).and_return(@rest)
-      #@rest.stub!(:streaming_request).and_return(@tempfile)
-      #@rest.stub!(:last_response).and_return({})
-      resource.cookbook_name = "monkey"
-      resource.source("http://opscode.com/seattle.txt")
-
-      provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      provider.current_resource = resource.clone
-      provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-      #File.stub!(:exists?).and_return(true)
-      #FileUtils.stub!(:cp).and_return(true)
-      #Chef::Platform.stub!(:find_platform_and_version).and_return([ :mac_os_x, "10.5.1" ])
-      setup_normal_file
-    end
-
-    after do
-      #@tempfile.close!
-    end
-
-    describe "and the resource specifies a checksum" do
-
-      describe "and the existing file matches the checksum exactly" do
-        before do
-          @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-        end
-
-        it "does not download the file" do
-          @rest.should_not_receive(:fetch)
-          @provider.run_action(:create)
-        end
-
-        it "does not update the resource" do
-          @provider.run_action(:create)
-          @provider.new_resource.should_not be_updated
-        end
-
-      end
-
-      describe "and the existing file matches the given partial checksum" do
-        before do
-          @resource.checksum("0fd012fd")
-        end
-
-        it "should not download the file if the checksum is a partial match from the beginning" do
-          @rest.should_not_receive(:fetch)
-          @provider.run_action(:create)
-        end
-
-        it "does not update the resource" do
-          @provider.run_action(:create)
-          @provider.new_resource.should_not be_updated
-        end
-
-      end
-
-      describe "and the existing file doesn't match the given checksum" do
-        it "downloads the file" do
-          @resource.checksum("this hash doesn't match")
-          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
-          @provider.stub!(:update_new_file_state)
-          @provider.run_action(:create)
-        end
-
-        it "does not consider the checksum a match if the matching string is offset" do
-          # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
-          @resource.checksum("fd012fd")
-          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
-          @provider.stub!(:update_new_file_state)
-          @provider.run_action(:create)
-        end
-      end
-
-    end
-
-    describe "and the resource doesn't specify a checksum" do
-      it "should download the file from the remote URL" do
-        @resource.checksum(nil)
-        @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
-        @provider.run_action(:create)
-      end
-    end
-
-    # CHEF-3140
-    # Some servers return tarballs as content type tar and encoding gzip, which
-    # is totally wrong. When this happens and gzip isn't disabled, Chef::REST
-    # will decompress the file for you, which is not at all what you expected
-    # to happen (you end up with an uncomressed tar archive instead of the
-    # gzipped tar archive you expected). To work around this behavior, we
-    # detect when users are fetching gzipped files and turn off gzip in
-    # Chef::REST.
-
-    context "and the source appears to be a tarball" do
-      before do
-        @resource.source("http://example.com/tarball.tgz")
-        Chef::REST.should_receive(:new).with(URI.parse("http://example.com/tarball.tgz"), nil, nil, :disable_gzip => true).and_return(@rest)
-      end
-
-      it "disables gzip in the http client" do
-        @provider.action_create
-      end
-    end
-
-    context "and the uri scheme is ftp" do
-      before do
-        @resource.source("ftp://opscode.com/seattle.txt")
-      end
-
-      it "should fetch with ftp in passive mode" do
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
-        @provider.run_action(:create)
-      end
-
-      it "should fetch with ftp in active mode" do
-        @resource.ftp_active_mode true
-        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
-        @provider.run_action(:create)
-      end
-    end
-
-    context "and the uri scheme is file" do
-      before do
-        @resource.source("file:///nyan_cat.png")
-      end
-
-      it "should fetch the local file" do
-        Chef::Provider::RemoteFile::LocalFile.should_receive(:fetch).with(URI.parse("file:///nyan_cat.png"), nil).and_return(@tempfile)
-        @provider.run_action(:create)
-      end
-    end
-
-    it "should raise an exception if it's any other kind of retriable response than 304" do
-      r = Net::HTTPMovedPermanently.new("one", "two", "three")
-      e = Net::HTTPRetriableError.new("301", r)
-      @rest.stub!(:streaming_request).and_raise(e)
-      lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPRetriableError)
-    end
-
-    it "should raise an exception if anything else happens" do
-      r = Net::HTTPBadRequest.new("one", "two", "three")
-      e = Net::HTTPServerException.new("fake exception", r)
-      @rest.stub!(:streaming_request).and_raise(e)
-      lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPServerException)
-    end
-
-    describe "when the target file does not exist" do
-      before do
-        ::File.stub!(:exists?).with(@resource.path).and_return(false)
-        @provider.stub!(:get_from_server).and_return(@tempfile)
-      end
-
-      it "should copy the raw file to the new resource" do
-        FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)
-        @provider.stub!(:update_new_file_state)
-        @provider.run_action(:create)
-      end
-
-      it "should set the new resource to updated" do
-        @provider.stub!(:update_new_file_state)
-        @provider.run_action(:create)
-        @resource.should be_updated
-      end
-    end
-
-    describe "when the target file already exists" do
-      before do
-        ::File.stub!(:exists?).with(@resource.path).and_return(true)
-        @provider.stub!(:diff_current).and_return([
-         "--- /tmp/foo  2012-08-30 21:28:17.632782551 +0000",
-         "+++ /tmp/bar 2012-08-30 21:28:20.816975437 +0000",
-         "@@ -1 +1 @@",
-         "-foo bar",
-         "+bar foo"
-        ])
-        @provider.stub!(:get_from_server).and_return(@tempfile)
-      end
-
-      describe "and the file downloaded from the remote is identical to the current" do
-        it "shouldn't backup the original file" do
-          @provider.should_not_receive(:backup).with(@resource.path)
-          @provider.run_action(:create)
-        end
-
-        it "doesn't mark the resource as updated" do
-          @provider.run_action(:create)
-          @provider.new_resource.should_not be_updated
-        end
-      end
-
-      describe "and the checksum doesn't match" do
-        before do
-          sha2_256 = "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa-NO_MATCHY"
-          @provider.current_resource.checksum(sha2_256)
-        end
-
-        it "should backup the original file" do
-          @provider.stub!(:update_new_file_state)
-          @provider.should_receive(:backup).with(@resource.path).and_return(true)
-          @provider.run_action(:create)
-        end
-
-        it "should copy the raw file to the new resource" do
-          @provider.stub!(:update_new_file_state)
-          FileUtils.should_receive(:cp).with(@tempfile.path, @resource.path).and_return(true)
-          @provider.run_action(:create)
-        end
-
-        it "should set the new resource to updated" do
-          @provider.stub!(:update_new_file_state)
-          @provider.run_action(:create)
-          @resource.should be_updated
-        end
-      end
-
-      it "should set permissions" do
-        @provider.should_receive(:set_all_access_controls).and_return(true)
-        @provider.run_action(:create)
-      end
-
-    end
-  end
+#  describe "when fetching the file from the remote" do
+#    before(:each) do
+#      #@tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
+#
+#      #@rest = mock(Chef::REST, { })
+#      #Chef::REST.stub!(:new).and_return(@rest)
+#      #@rest.stub!(:streaming_request).and_return(@tempfile)
+#      #@rest.stub!(:last_response).and_return({})
+#      resource.cookbook_name = "monkey"
+#      resource.source("http://opscode.com/seattle.txt")
+#
+#      provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+#      provider.current_resource = resource.clone
+#      provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+#      #File.stub!(:exists?).and_return(true)
+#      #FileUtils.stub!(:cp).and_return(true)
+#      #Chef::Platform.stub!(:find_platform_and_version).and_return([ :mac_os_x, "10.5.1" ])
+#      setup_normal_file
+#    end
+#
+#    after do
+#      #@tempfile.close!
+#    end
+#
+#    # XXX: move to content
+#
+#    describe "and the resource specifies a checksum" do
+#
+#      describe "and the existing file matches the checksum exactly" do
+#        before do
+#          @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+#        end
+#
+#        it "does not download the file" do
+#          @rest.should_not_receive(:fetch)
+#          @provider.run_action(:create)
+#        end
+#
+#        it "does not update the resource" do
+#          @provider.run_action(:create)
+#          @provider.new_resource.should_not be_updated
+#        end
+#
+#      end
+#
+#      describe "and the existing file matches the given partial checksum" do
+#        before do
+#          @resource.checksum("0fd012fd")
+#        end
+#
+#        it "should not download the file if the checksum is a partial match from the beginning" do
+#          @rest.should_not_receive(:fetch)
+#          @provider.run_action(:create)
+#        end
+#
+#        it "does not update the resource" do
+#          @provider.run_action(:create)
+#          @provider.new_resource.should_not be_updated
+#        end
+#
+#      end
+#
+#      describe "and the existing file doesn't match the given checksum" do
+#        it "downloads the file" do
+#          @resource.checksum("this hash doesn't match")
+#          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
+#          @provider.stub!(:update_new_file_state)
+#          @provider.run_action(:create)
+#        end
+#
+#        it "does not consider the checksum a match if the matching string is offset" do
+#          # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
+#          @resource.checksum("fd012fd")
+#          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
+#          @provider.stub!(:update_new_file_state)
+#          @provider.run_action(:create)
+#        end
+#      end
+#
+#    end
+#
+#    describe "and the resource doesn't specify a checksum" do
+#      it "should download the file from the remote URL" do
+#        @resource.checksum(nil)
+#        @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
+#        @provider.run_action(:create)
+#      end
+#    end
+#
+#    # XXX: move to http
+#
+#    # CHEF-3140
+#    # Some servers return tarballs as content type tar and encoding gzip, which
+#    # is totally wrong. When this happens and gzip isn't disabled, Chef::REST
+#    # will decompress the file for you, which is not at all what you expected
+#    # to happen (you end up with an uncomressed tar archive instead of the
+#    # gzipped tar archive you expected). To work around this behavior, we
+#    # detect when users are fetching gzipped files and turn off gzip in
+#    # Chef::REST.
+#
+#    context "and the source appears to be a tarball" do
+#      before do
+#        @resource.source("http://example.com/tarball.tgz")
+#        Chef::REST.should_receive(:new).with(URI.parse("http://example.com/tarball.tgz"), nil, nil, :disable_gzip => true).and_return(@rest)
+#      end
+#
+#      it "disables gzip in the http client" do
+#        @provider.action_create
+#      end
+#    end
+#
+#    # XXX: move to ftp
+#    context "and the uri scheme is ftp" do
+#      before do
+#        @resource.source("ftp://opscode.com/seattle.txt")
+#      end
+#
+#      it "should fetch with ftp in passive mode" do
+#        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
+#        @provider.run_action(:create)
+#      end
+#
+#      it "should fetch with ftp in active mode" do
+#        @resource.ftp_active_mode true
+#        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
+#        @provider.run_action(:create)
+#      end
+#    end
+#
+#    # XXX: move to file
+#    context "and the uri scheme is file" do
+#      before do
+#        @resource.source("file:///nyan_cat.png")
+#      end
+#
+#      it "should fetch the local file" do
+#        Chef::Provider::RemoteFile::LocalFile.should_receive(:fetch).with(URI.parse("file:///nyan_cat.png"), nil).and_return(@tempfile)
+#        @provider.run_action(:create)
+#      end
+#    end
+#
+#    # XXX: move to http
+#    it "should raise an exception if it's any other kind of retriable response than 304" do
+#      r = Net::HTTPMovedPermanently.new("one", "two", "three")
+#      e = Net::HTTPRetriableError.new("301", r)
+#      @rest.stub!(:streaming_request).and_raise(e)
+#      lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPRetriableError)
+#    end
+#
+#    it "should raise an exception if anything else happens" do
+#      r = Net::HTTPBadRequest.new("one", "two", "three")
+#      e = Net::HTTPServerException.new("fake exception", r)
+#      @rest.stub!(:streaming_request).and_raise(e)
+#      lambda { @provider.run_action(:create) }.should raise_error(Net::HTTPServerException)
+#    end
+#
+#  end
 end
