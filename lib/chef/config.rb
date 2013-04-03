@@ -297,6 +297,12 @@ class Chef
     signing_ca_domain "opensource.opscode.com"
     signing_ca_email "opensource-cert@opscode.com"
 
+    # Zypper package provider gpg checks. Set to true to enable package
+    # gpg signature checking. This will be default in the
+    # future. Setting to false disables the warnings.
+    # Leaving this set to nil or false is a security hazard!
+    zypper_check_gpg nil
+
     # Report Handlers
     report_handlers []
 
