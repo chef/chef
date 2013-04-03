@@ -168,31 +168,31 @@ describe Chef::Knife::Bootstrap do
         @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
       end
     end
+    context "validating use_sudo_password" do
+      before do
+        @knife.config[:distro] = "ubuntu"
+        @knife.config[:ssh_password] = "password"
+        @knife.stub(:read_template).and_return(IO.read(@knife.find_template).chomp)
+      end
 
-    before do
-      @knife.config[:distro] = "ubuntu"
-      @knife.config[:ssh_password] = "password"
-      @knife.stub(:read_template).and_return(IO.read(@knife.find_template).chomp)
+      it "use_sudo_password contains description and long params for help" do
+        @knife.options.should have_key(:use_sudo_password) \
+          and @knife.options[:use_sudo_password][:description].to_s.should_not == ''\
+          and @knife.options[:use_sudo_password][:long].to_s.should_not == ''
+      end
+
+      it "uses the password from --ssh-password for sudo when --sudo-use-password is set" do
+        @knife.config[:use_sudo] = true
+        @knife.config[:use_sudo_password] = true
+        @knife.ssh_command.should include("echo #{@knife.config[:ssh_password]} | sudo -S")
+      end
+
+      it "should not honor --use-sudo-password when --use-sudo is not set" do
+        @knife.config[:use_sudo] = false
+        @knife.config[:use_sudo_password] = true
+        @knife.ssh_command.should_not include("echo #{@knife.config[:ssh_password]} | sudo -S")
+      end
     end
-
-    it "use_sudo_password contains description and long params for help" do
-      @knife.options.should have_key(:use_sudo_password) \
-        and @knife.options[:use_sudo_password][:description].to_s.should_not == ''\
-        and @knife.options[:use_sudo_password][:long].to_s.should_not == ''
-    end
-
-    it "uses the password from --ssh-password for sudo when --sudo-use-password is set" do
-      @knife.config[:use_sudo] = true
-      @knife.config[:use_sudo_password] = true
-      @knife.ssh_command.should include("echo #{@knife.config[:ssh_password]} | sudo -S")
-    end
-
-    it "should not honor --use-sudo-password when --use-sudo is not set" do
-      @knife.config[:use_sudo] = false
-      @knife.config[:use_sudo_password] = true
-      @knife.ssh_command.should_not include("echo #{@knife.config[:ssh_password]} | sudo -S")
-    end
-
     context "from the knife config file" do
       before do
         @knife.name_args = ["config.example.com"]
