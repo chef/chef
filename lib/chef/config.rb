@@ -20,6 +20,7 @@
 
 require 'chef/log'
 require 'mixlib/config'
+require 'chef/util/selinux'
 
 class Chef
   class Config
@@ -348,7 +349,7 @@ class Chef
     # selinux command to restore file contexts
     selinux_restorecon_command "/sbin/restorecon -R"
     # guess if you're running selinux or not -- override this if it guesses wrong
-    selinux_enabled  system( "/usr/sbin/selinuxenabled" )
+    selinux_enabled  Chef::Util::Selinux.new.selinuxenabled?
 
     # set this to something like Chef::Provider::File::Deploy::CpUnix if you want to override behavior globally
     file_deployment_strategy nil

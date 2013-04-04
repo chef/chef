@@ -68,14 +68,6 @@ class Chef
             rescue Errno::EPERM
               Chef::Log.warn("Could not set gid = #{gid} on #{dst}, file modes not preserved")
             end
-
-
-            # handle selinux if we need to run restorecon
-            if Chef::Config[:selinux_enabled]
-              Chef::Log.debug("selinux is enabled, fixing selinux permissions")
-              cmd = "#{Chef::Config[:selinux_restorecon_comand]} #{dst}"
-              shell_out!(cmd)
-            end
           end
         end
       end

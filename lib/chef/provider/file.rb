@@ -25,6 +25,7 @@ require 'etc'
 require 'fileutils'
 require 'chef/scan_access_control'
 require 'chef/mixin/checksum'
+require 'chef/mixin/shell_out'
 require 'chef/util/backup'
 require 'chef/util/diff'
 
@@ -43,6 +44,7 @@ class Chef
     class File < Chef::Provider
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::Checksum
+      include Chef::Mixin::ShellOut
 
       attr_reader :deployment_strategy
 
@@ -94,6 +96,7 @@ class Chef
         do_create_file
         do_contents_changes
         do_acl_changes
+        do_selinux
         load_resource_attributes_from_file(@new_resource)
       end
 
@@ -209,6 +212,18 @@ class Chef
         end
         # unlink necessary to clean up in why-run mode
         tempfile.unlink
+      end
+
+      # this might be made into some kind of generic platform-dependent post-converge hook for
+      # file-like resources, but for now we only have the single selinux use case.
+      def do_selinux(command_args = nil)
+        if Chef::Config[:selinux_enabled] && resource_updated?
+          cmd = "#{Chef::Config[:selinux_restorecon_command]} #{command_args} #{@new_resource.path}"
+          converge_by("fix selinux context with #{cmd}") do
+            Chef::Log.debug("running #{cmd}")
+            shell_out!(cmd)
+          end
+        end
       end
 
       def do_acl_changes

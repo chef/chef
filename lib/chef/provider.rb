@@ -128,8 +128,16 @@ class Chef
       requirements.run(@action)
     end
 
+    def resource_updated?
+      !converge_actions.empty? || @new_resource.updated_by_last_action?
+    end
+
+    def resource_up_to_date?
+      !resource_updated?
+    end
+
     def set_updated_status
-      if converge_actions.empty? && !@new_resource.updated_by_last_action?
+      if resource_up_to_date?
         events.resource_up_to_date(@new_resource, @action)
       else
         events.resource_updated(@new_resource, @action)
