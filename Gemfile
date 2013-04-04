@@ -1,4 +1,4 @@
-source :rubygems
+source "https://rubygems.org"
 
 omnibus_ruby_local_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "omnibus-ruby"))
 omnibus_software_local_path = File.expand_path(File.join(File.dirname(__FILE__), "..", "omnibus-software"))
