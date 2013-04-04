@@ -114,11 +114,19 @@ module ChefServer
       ChefServer["lb"]["api_fqdn"] ||= ChefServer['api_fqdn']
       ChefServer["lb"]["web_ui_fqdn"] ||= ChefServer['api_fqdn']
       ChefServer["nginx"]["server_name"] ||= ChefServer['api_fqdn']
-      ChefServer["nginx"]["url"] ||= "https://#{ChefServer['api_fqdn']}"
-      # append the ssl_port to the nginx url if one was configured
-      if ChefServer["nginx"]["ssl_port"]
-        ChefServer["nginx"]["url"] << ":#{ChefServer["nginx"]["ssl_port"]}"
+
+      # If the user manually set an Nginx URL in the config file all bets are
+      # off...we just cross our fingers and hope they constructed the URL
+      # correctly! We may want to remove this 'private' config value from the
+      # documenation.
+      if ChefServer["nginx"]["url"].nil?
+        ChefServer["nginx"]["url"] = "https://#{ChefServer['api_fqdn']}"
+        if ChefServer["nginx"]["ssl_port"]
+          ChefServer["nginx"]["url"] << ":#{ChefServer["nginx"]["ssl_port"]}"
+        end
       end
+
+      # The external bookshelf URL should match the external lb
       ChefServer["bookshelf"]["url"] ||= ChefServer["nginx"]["url"]
     end
 
