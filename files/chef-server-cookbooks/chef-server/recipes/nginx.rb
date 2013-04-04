@@ -100,13 +100,42 @@ remote_directory nginx_html_dir do
 end
 
 nginx_config = File.join(nginx_etc_dir, "nginx.conf")
+nginx_vars = node['chef_server']['nginx'].to_hash.merge({
+  :chef_https_config => File.join(nginx_etc_dir, "chef_https_lb.conf"),
+  :chef_http_config => File.join(nginx_etc_dir, "chef_http_lb.conf")
+})
+
+# We will always render an HTTP and HTTPS config for the Chef API but the HTTP
+# config file will only be active if the user set `nginx['enable_non_ssl']` to
+# true. Default behavior is to redirect all HTTP requests to HTTPS.
+["https", "http"].each do |server_proto|
+  config_key = "chef_#{server_proto}_config".to_sym
+  lb_config = nginx_vars[config_key]
+
+  server_port = (server_proto == 'https') ?
+                 nginx_vars['ssl_port'] :
+                 nginx_vars['non_ssl_port']
+
+  template lb_config do
+    source "nginx_chef_api_lb.conf.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+    variables(nginx_vars.merge({
+      :server_proto => server_proto,
+      :server_port => server_port
+    }))
+    notifies :restart, 'service[nginx]' if OmnibusHelper.should_notify?("nginx")
+  end
+
+end
 
 template nginx_config do
   source "nginx.conf.erb"
   owner "root"
   group "root"
   mode "0644"
-  variables(node['chef_server']['nginx'].to_hash)
+  variables nginx_vars
   notifies :restart, 'service[nginx]' if OmnibusHelper.should_notify?("nginx")
 end
 
