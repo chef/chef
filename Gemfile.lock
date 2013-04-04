@@ -13,13 +13,13 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 71372908ac1e2633cf08c1b32056de6ec3502289
+  revision: 62e7e1f9c895cb552e8afc44e92f11be8abc4393
   branch: master
   specs:
     omnibus-software (0.0.1)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     archive-tar-minitar (0.5.2)
     childprocess (0.3.2)
