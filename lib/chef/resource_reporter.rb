@@ -110,7 +110,7 @@ class Chef
         begin
           @run_id = UUIDTools::UUID.random_create
           resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
+          server_response = @rest_client.post(resource_history_url, {"action" => "begin", "run_id" => @run_id})
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           message = "Reporting error beginning run. URL: #{resource_history_url} "
           if !e.response || e.response.code.to_s != "404"
