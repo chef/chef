@@ -181,7 +181,7 @@ describe Chef::Knife::Bootstrap do
           and @knife.options[:use_sudo_password][:long].to_s.should_not == ''
       end
 
-      it "uses the password from --ssh-password for sudo when --sudo-use-password is set" do
+      it "uses the password from --ssh-password for sudo when ---use-sudo-password is set" do
         @knife.config[:use_sudo] = true
         @knife.config[:use_sudo_password] = true
         @knife.ssh_command.should include("echo #{@knife.config[:ssh_password]} | sudo -S")
