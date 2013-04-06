@@ -5,7 +5,7 @@ require 'chef/chef_fs/file_system/not_found_error'
 class Chef
   class Knife
     class Xargs < Chef::ChefFS::Knife
-      banner "knife xargs [PATTERN1 ... PATTERNn]"
+      banner "knife xargs [COMMAND]"
 
       common_options
 
@@ -18,7 +18,7 @@ class Chef
       option :patterns,
         :long => '--pattern [PATTERN]',
         :short => '-p [PATTERN]',
-        :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input)",
+        :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input).  Multiple patterns may be passed in this way.",
         :arg_arity => [1,-1]
 
       option :diff,
@@ -38,6 +38,14 @@ class Chef
         :default => false,
         :description => "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)"
 
+      option :replace_first,
+        :short => '-J replacestr',
+        :description => "String to replace with filenames.  -J will only replace the FIRST occurrence of the replacement string."
+
+      option :replace_all,
+        :short => '-I replacestr',
+        :description => "String to replace with filenames.  -I will replace ALL occurrence of the replacement string."
+
       def run
         error = false
         command = name_args.join(' ')
@@ -54,32 +62,43 @@ class Chef
                 begin
                   tmpfile.write(value)
                   tmpfile.close
-                  puts "#{command} #{format_path(result)}"
-                  # TODO replace tmpfile name in output with real path
-                  system("#{command} #{tmpfile.path}")
 
-                  # Check if it's different
+                  # Determine the command name
+                  if config[:replace_all]
+                    final_command = command.gsub(config[:replace_all], tmpfile.path)
+                  elsif config[:replace_first]
+                    final_command = command.sub(config[:replace_first], tmpfile.path)
+                  else
+                    final_command = "#{command} #{tmpfile.path}"
+                  end
+
+                  # Run the command
+                  output final_command.gsub(tmpfile.path, format_path(result))
+                  command_output = `#{final_command}`
+                  command_output.gsub!(tmpfile.path, format_path(result))
+
+                  # Check if the output is different
                   tmpfile.open
                   new_value = tmpfile.read
                   tmpfile.close
                   if config[:force] || new_value != value
                     if config[:dry_run]
-                      puts "Would update #{format_path(result)}"
+                      output "Would update #{format_path(result)}"
                     else
                       result.write(new_value)
-                      puts "Updated #{format_path(result)}"
+                      output "Updated #{format_path(result)}"
                     end
+                  end
 
-                    if config[:diff]
-                      old_file = Tempfile.open(result.name)
-                      begin
-                        old_file.write(value)
-                        old_file.close
+                  if config[:diff] && new_value != value
+                    old_file = Tempfile.open(result.name)
+                    begin
+                      old_file.write(value)
+                      old_file.close
 
-                        system("diff -u #{old_file.path} #{tmpfile.path}")
-                      ensure
-                        old_file.close!
-                      end
+                      diff = `diff -u #{old_file.path} #{tmpfile.path}`
+                    ensure
+                      old_file.close!
                     end
                   end
                 ensure
