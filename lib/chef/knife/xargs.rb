@@ -50,6 +50,10 @@ class Chef
         :short => '-n MAXARGS',
         :description => "Maximum number of arguments per command line."
 
+      option :max_command_line,
+        :short => '-s LENGTH',
+        :description => "Maximum size of command line, in characters"
+
       def run
         error = false
         # Get the matches (recursively)
@@ -61,16 +65,59 @@ class Chef
               ui.warn "#{format_path(result)}: is a directory.  Will not run #{command} on it."
             else
               files << result
-              if config[:max_arguments_per_command] && files.size >= config[:max_arguments_per_command].to_i
-                error = true if xargs_files(files)
-                files = []
+              ran = false
+
+              # If the command would be bigger than max command line, back it off a bit
+              # and run a slightly smaller command (with one less arg)
+              if config[:max_command_line]
+                command, tempfiles = create_command(files)
+                begin
+                  if command.length > config[:max_command_line].to_i
+                    if files.length > 1
+                      command, tempfiles_minus_one = create_command(files[0..-2])
+                      begin
+                        error = true if xargs_files(command, tempfiles_minus_one)
+                        files = [ files[-1] ]
+                        ran = true
+                      ensure
+                        destroy_tempfiles(tempfiles)
+                      end
+                    else
+                      error = true if xargs_files(command, tempfiles)
+                      files = [ ]
+                      ran = true
+                    end
+                  end
+                ensure
+                  destroy_tempfiles(tempfiles)
+                end
+              end
+
+              # If the command has hit the limit for the # of arguments, run it
+              if !ran && config[:max_arguments_per_command] && files.size >= config[:max_arguments_per_command].to_i
+                command, tempfiles = create_command(files)
+                begin
+                  error = true if xargs_files(command, tempfiles)
+                  files = []
+                  ran = true
+                ensure
+                  destroy_tempfiles(tempfiles)
+                end
               end
             end
           end
         end
+
+        # Any leftovers commands shall be run
         if files.size > 0
-          error = true if xargs_files(files)
+          command, tempfiles = create_command(files)
+          begin
+            error = true if xargs_files(command, tempfiles)
+          ensure
+            destroy_tempfiles(tempfiles)
+          end
         end
+
         if error
           exit 1
         end
@@ -84,80 +131,105 @@ class Chef
         end
       end
 
-      def xargs_files(files)
+      def create_command(files)
         command = name_args.join(' ')
 
+        # Create the (empty) tempfiles
         tempfiles = {}
         begin
-          # Create and fill in the temporary files
+          # Create the temporary files
           files.each do |file|
-            begin
-              value = file.read
-              tempfile = Tempfile.open(file.name)
-              tempfiles[tempfile] = { :file => file, :value => value }
-              tempfile.write(value)
-              tempfile.close
-            rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
-              ui.error "#{format_path(e.entry)}: #{e.reason}."
-              error = true
-            rescue Chef::ChefFS::FileSystem::NotFoundError => e
-              ui.error "#{format_path(e.entry)}: No such file or directory"
-              error = true
-              next
-            end
+            tempfile = Tempfile.new(file.name)
+            tempfiles[tempfile] = { :file => file }
           end
-
-          # Determine the full command
-          paths = tempfiles.keys.map { |tempfile| tempfile.path }.join(' ')
-          if config[:replace_all]
-            final_command = command.gsub(config[:replace_all], paths)
-          elsif config[:replace_first]
-            final_command = command.sub(config[:replace_first], paths)
-          else
-            final_command = "#{command} #{paths}"
-          end
-
-          # Run the command
-          output sub_filenames(final_command, tempfiles)
-          command_output = `#{final_command}`
-          command_output = sub_filenames(command_output, tempfiles)
-
-          # Check if the output is different
-          tempfiles.each_pair do |tempfile, file|
-            # Read the new output
-            new_value = IO.binread(tempfile.path)
-
-            # Upload the output if different
-            if config[:force] || new_value != file[:value]
-              if config[:dry_run]
-                output "Would update #{format_path(file[:file])}"
-              else
-                file[:file].write(new_value)
-                output "Updated #{format_path(file[:file])}"
-              end
-            end
-
-            # Print a diff of what was uploaded
-            if config[:diff] && new_value != file[:value]
-              old_file = Tempfile.open(file[:file].name)
-              begin
-                old_file.write(file[:value])
-                old_file.close
-
-                diff = `diff -u #{old_file.path} #{tempfile.path}`
-                diff.gsub!(old_file.path, "#{file[:file].name} (old)")
-                diff.gsub!(tempfile.path, "#{file[:file].name} (new)")
-                output diff
-              ensure
-                old_file.close!
-              end
-            end
-          end
-
-        ensure
-          # Unlink the files now that we're done with them
-          tempfiles.keys.each { |tempfile| tempfile.close! }
+        rescue
+          destroy_tempfiles(files)
+          raise
         end
+
+        # Create the command
+        paths = tempfiles.keys.map { |tempfile| tempfile.path }.join(' ')
+        if config[:replace_all]
+          final_command = command.gsub(config[:replace_all], paths)
+        elsif config[:replace_first]
+          final_command = command.sub(config[:replace_first], paths)
+        else
+          final_command = "#{command} #{paths}"
+        end
+
+        [final_command, tempfiles]
+      end
+
+      def destroy_tempfiles(tempfiles)
+        # Unlink the files now that we're done with them
+        tempfiles.keys.each { |tempfile| tempfile.close! }
+      end
+
+      def xargs_files(command, tempfiles)
+        error = false
+        # Create the temporary files
+        tempfiles.each_pair do |tempfile, file|
+          begin
+            value = file[:file].read
+            file[:value] = value
+            tempfile.open
+            tempfile.write(value)
+            tempfile.close
+          rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
+            ui.error "#{format_path(e.entry)}: #{e.reason}."
+            error = true
+            tempfile.close!
+            tempfiles.delete(tempfile)
+            next
+          rescue Chef::ChefFS::FileSystem::NotFoundError => e
+            ui.error "#{format_path(e.entry)}: No such file or directory"
+            error = true
+            tempfile.close!
+            tempfiles.delete(tempfile)
+            next
+          end
+        end
+
+        return error if error && tempfiles.size == 0
+
+        # Run the command
+        output sub_filenames(command, tempfiles)
+        command_output = `#{command}`
+        command_output = sub_filenames(command_output, tempfiles)
+
+        # Check if the output is different
+        tempfiles.each_pair do |tempfile, file|
+          # Read the new output
+          new_value = IO.binread(tempfile.path)
+
+          # Upload the output if different
+          if config[:force] || new_value != file[:value]
+            if config[:dry_run]
+              output "Would update #{format_path(file[:file])}"
+            else
+              file[:file].write(new_value)
+              output "Updated #{format_path(file[:file])}"
+            end
+          end
+
+          # Print a diff of what was uploaded
+          if config[:diff] && new_value != file[:value]
+            old_file = Tempfile.open(file[:file].name)
+            begin
+              old_file.write(file[:value])
+              old_file.close
+
+              diff = `diff -u #{old_file.path} #{tempfile.path}`
+              diff.gsub!(old_file.path, "#{format_path(file[:file])} (old)")
+              diff.gsub!(tempfile.path, "#{format_path(file[:file])} (new)")
+              output diff
+            ensure
+              old_file.close!
+            end
+          end
+        end
+
+        error
       end
 
       def sub_filenames(str, tempfiles)
