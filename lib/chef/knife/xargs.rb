@@ -39,18 +39,22 @@ class Chef
         :description => "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)"
 
       option :replace_first,
+        :long => '--replace-first REPLACESTR',
         :short => '-J REPLACESTR',
         :description => "String to replace with filenames.  -J will only replace the FIRST occurrence of the replacement string."
 
       option :replace_all,
+        :long => '--replace REPLACESTR',
         :short => '-I REPLACESTR',
         :description => "String to replace with filenames.  -I will replace ALL occurrence of the replacement string."
 
       option :max_arguments_per_command,
+        :long => '--max-args MAXARGS',
         :short => '-n MAXARGS',
         :description => "Maximum number of arguments per command line."
 
       option :max_command_line,
+        :long => '--max-chars LENGTH',
         :short => '-s LENGTH',
         :description => "Maximum size of command line, in characters"
 
