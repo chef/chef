@@ -62,6 +62,11 @@ class Chef
         :short => '-t',
         :description => "Print command to be run on the command line"
 
+      option :null_separator,
+        :short => '-0',
+        :boolean => true,
+        :description => "Use the NULL character (\0) as a separator, instead of whitespace"
+
       def run
         error = false
         # Get the matches (recursively)
@@ -134,8 +139,11 @@ class Chef
       def get_patterns
         if config[:patterns]
           [ config[:patterns] ].flatten
+        elsif config[:null_separator]
+          stdin.binmode
+          stdin.read.split("\000")
         else
-          stdin.lines.map { |line| line.chomp }
+          stdin.read.split(/\s+/)
         end
       end
 
