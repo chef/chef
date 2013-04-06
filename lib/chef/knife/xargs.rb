@@ -54,6 +54,10 @@ class Chef
         :short => '-s LENGTH',
         :description => "Maximum size of command line, in characters"
 
+      option :verbose_commands,
+        :short => '-t',
+        :description => "Print command to be run on the command line"
+
       def run
         error = false
         # Get the matches (recursively)
@@ -193,9 +197,12 @@ class Chef
         return error if error && tempfiles.size == 0
 
         # Run the command
-        output sub_filenames(command, tempfiles)
+        if config[:verbose_commands] || Chef::Config[:verbosity] && Chef::Config[:verbosity] >= 1
+          output sub_filenames(command, tempfiles)
+        end
         command_output = `#{command}`
         command_output = sub_filenames(command_output, tempfiles)
+        output command_output
 
         # Check if the output is different
         tempfiles.each_pair do |tempfile, file|
