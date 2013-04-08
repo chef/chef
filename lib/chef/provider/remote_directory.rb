@@ -133,10 +133,11 @@ class Chef
             cookbook_file.rights(permission, *args)
           end
         end
-        cookbook_file.mode(@new_resource.files_mode)    if @new_resource.files_mode
-        cookbook_file.group(@new_resource.files_group)  if @new_resource.files_group
-        cookbook_file.owner(@new_resource.files_owner)  if @new_resource.files_owner
-        cookbook_file.backup(@new_resource.files_backup) if @new_resource.files_backup
+        cookbook_file.mode(@new_resource.files_mode)       if @new_resource.files_mode
+        cookbook_file.group(@new_resource.files_group)     if @new_resource.files_group
+        cookbook_file.owner(@new_resource.files_owner)     if @new_resource.files_owner
+        cookbook_file.backup(@new_resource.files_backup)   if @new_resource.files_backup
+        cookbook_file.binmode(@new_resource.files_binmode) if @new_resource.files_binmode
 
         cookbook_file
       end
