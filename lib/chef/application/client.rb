@@ -184,10 +184,10 @@ class Chef::Application::Client < Chef::Application
     :long         => '--why-run',
     :description  => 'Enable whyrun mode',
     :boolean      => true
-  
+
   option :client_fork,
     :short        => "-f",
-    :long         => "--fork",
+    :long         => "--[no-]fork",
     :description  => "Fork client",
     :boolean      => true
 
