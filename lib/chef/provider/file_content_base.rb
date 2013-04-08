@@ -20,23 +20,15 @@ class Chef
   class Provider
     class FileContentBase
 
+      attr_reader :run_context
+      attr_reader :new_resource
+      attr_reader :current_resource
+
       def initialize(new_resource, current_resource, run_context)
         @new_resource = new_resource
         @current_resource = current_resource
         @run_context = run_context
         @tempfile_loaded = false
-      end
-
-      def run_context
-        @run_context
-      end
-
-      def new_resource
-        @new_resource
-      end
-
-      def current_resource
-        @current_resource
       end
 
       def tempfile
