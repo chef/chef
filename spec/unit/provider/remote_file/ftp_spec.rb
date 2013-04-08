@@ -19,6 +19,9 @@
 require 'spec_helper'
 
 describe Chef::Provider::RemoteFile::FTP do
+  let(:enclosing_directory) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates")) }
+  let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
+
   before(:each) do
     @ftp = mock(Net::FTP, { })
     Net::FTP.stub!(:new).and_return(@ftp)
@@ -36,7 +39,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
   describe "when constructing the object" do
     before do
-      @new_resource = mock('Chef::Resource::RemoteFile (new resource)', :ftp_active_mode => false)
+      @new_resource = mock('Chef::Resource::RemoteFile (new resource)', :ftp_active_mode => false, :path => resource_path, :name => "seattle.txt", :binmode => true)
       @current_resource = mock('Chef::Resource::RemoteFile (current resource)', :source => nil)
     end
 
@@ -75,7 +78,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
   describe "when fetching the object" do
     before do
-      @new_resource = mock('Chef::Resource::RemoteFile (new resource)', :ftp_active_mode => false)
+      @new_resource = mock('Chef::Resource::RemoteFile (new resource)', :ftp_active_mode => false, :path => resource_path, :name => "seattle.txt", :binmode => true)
       @current_resource = mock('Chef::Resource::RemoteFile (current resource)', :source => nil)
     end
 
