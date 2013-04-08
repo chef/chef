@@ -17,6 +17,7 @@
 #
 
 require 'chef/provider/file_content_base'
+require 'chef/provider/file/tempfile'
 
 class Chef
   class Provider
@@ -24,7 +25,7 @@ class Chef
       class Content < Chef::Provider::FileContentBase
         def file_for_provider
           if @new_resource.content
-            tempfile = Tempfile.open(tempfile_basename, tempfile_dirname)
+            tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
             tempfile.write(@new_resource.content)
             tempfile.close
             tempfile

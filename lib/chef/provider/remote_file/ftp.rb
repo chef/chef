@@ -22,6 +22,7 @@ require 'net/ftp'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/util'
 require 'chef/provider/remote_file/result'
+require 'chef/provider/file/tempfile'
 
 class Chef
   class Provider
@@ -31,6 +32,7 @@ class Chef
         attr_reader :ftp_active_mode
 
         def initialize(uri, new_resource, current_resource)
+          @new_resource = new_resource
           @ftp_active_mode = new_resource.ftp_active_mode
           @hostname = uri.host
           @port = uri.port
@@ -96,10 +98,7 @@ class Chef
 
         # Fetches using Net::FTP, returns a Tempfile with the content
         def get
-          tempfile = Tempfile.new(@filename)
-          if Chef::Platform.windows?
-            tempfile.binmode #required for binary files on Windows platforms
-          end
+          tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
           if @typecode
             ftp.voidcmd("TYPE #{@typecode.upcase}")
           end

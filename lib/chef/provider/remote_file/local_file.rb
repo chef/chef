@@ -27,6 +27,7 @@ class Chef
       class LocalFile
 
         def initialize(uri, new_resource, current_resource)
+          @new_resource = new_resource
           if current_resource.source && Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.use_last_modified && current_resource.last_modified
               @last_modified = current_resource.last_modified
@@ -41,10 +42,7 @@ class Chef
           if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
             tempfile = nil
           else
-            tempfile = Tempfile.new(::File.basename(@uri.path))
-            if Chef::Platform.windows?
-              tempfile.binmode #required for binary files on Windows platforms
-            end
+            tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
             Chef::Log.debug("#{@new_resource} staging #{@uri.path} to #{tempfile.path}")
             FileUtils.cp(@uri.path, tempfile.path)
             tempfile

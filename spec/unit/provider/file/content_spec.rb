@@ -41,7 +41,7 @@ describe Chef::Provider::File::Content do
   let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
 
   let(:new_resource) do
-    mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
+    mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path, :binmode => true)
   end
 
   let(:run_context) do

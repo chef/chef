@@ -53,6 +53,7 @@ class Chef
                                    Chef::Provider::File::Deploy::MvUnix
                                  end
 
+        @binmode = Platform.windows? ? true : false
         @diff = nil
       end
 
@@ -94,6 +95,14 @@ class Chef
           :diff,
           arg,
           :kind_of => String
+        )
+      end
+
+      def binmode(arg=nil)
+        set_or_return(
+          :diff,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 

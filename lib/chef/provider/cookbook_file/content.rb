@@ -17,6 +17,7 @@
 #
 
 require 'chef/provider/file_content_base'
+require 'chef/provider/file/tempfile'
 
 class Chef
   class Provider
@@ -31,7 +32,7 @@ class Chef
           if file_cache_location.nil?
             nil
           else
-            tempfile = Tempfile.open(tempfile_basename, tempfile_dirname)
+            tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
             tempfile.close
             Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
             FileUtils.cp(file_cache_location, tempfile.path)
