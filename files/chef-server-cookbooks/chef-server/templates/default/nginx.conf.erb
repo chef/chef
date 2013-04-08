@@ -1,16 +1,3 @@
-<%-
-  def select_upstream(upstream, alternative="chef_server_webui", proto="http")
-<<-EOS
-      set $my_upstream #{upstream};
-      if ($http_x_ops_userid = "") {
-        set $my_upstream #{alternative};
-      }
-      proxy_redirect #{proto}://$my_upstream /;
-      proxy_pass #{proto}://$my_upstream;
-EOS
-  end
--%>
-
 user <%= node['chef_server']['user']['username'] %> <%= node['chef_server']['user']['username']%>;
 worker_processes <%= @worker_processes %>;
 error_log /var/log/chef-server/nginx/error.log<%= node['chef_server']['lb']['debug'] ? " debug" : "" %>;
@@ -48,8 +35,19 @@ http {
   }
   <%- end -%>
 
+  # external lb config for Chef API
+  <%- if node['chef_server']['lb']['enable'] -%>
   proxy_cache_path  <%= File.join(@dir, "cache") %> levels=1:2 keys_zone=webui-cache:50m max_size=<%= @cache_max_size %> inactive=600m;
   proxy_temp_path <%= File.join(@dir, "cache-tmp") %>;
+
+  # We support three options: serve nothing on non_ssl_port (80),
+  # redirect to https, or actually serve the API.
+  <%- if @non_ssl_port -%>
+  <%- if @enable_non_ssl -%>
+
+  # Chef HTTP API
+  include <%= @chef_http_config %>;
+  <%- else -%>
 
   server {
     listen <%= @non_ssl_port %>;
@@ -57,82 +55,10 @@ http {
     access_log /var/log/chef-server/nginx/rewrite-port-<%= @non_ssl_port %>.log;
     rewrite ^(.*) https://$server_name:<%= @ssl_port %>$1 permanent;
   }
+  <%- end -%>
+  <%-  end -%>
 
-  server {
-    listen <%= @ssl_port %>;
-    server_name <%= @server_name %>;
-    access_log /var/log/chef-server/nginx/access.log opscode;
-    ssl on;
-    ssl_certificate <%= @ssl_certificate %>;
-    ssl_certificate_key <%= @ssl_certificate_key %>;
-
-    ssl_session_timeout 5m;
-
-    ssl_protocols <%= node['chef_server']['nginx']['ssl_protocols'] %>;
-    ssl_ciphers <%= node['chef_server']['nginx']['ssl_ciphers'] %>;
-    ssl_prefer_server_ciphers on;
-
-    root <%= File.join(@dir, "html") %>;
-
-		client_max_body_size <%= @client_max_body_size %>;
-
-    proxy_set_header Host $host:$server_port;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto https;
-    proxy_pass_request_headers on;
-    proxy_connect_timeout   1;
-    proxy_send_timeout      300;
-    proxy_read_timeout      300;
-
-    error_page 404 =404 /404.html;
-    error_page 503 =503 /503.json;
-
-    #location /nginx_status {
-      #stub_status on;
-      #access_log   off;
-      #allow 127.0.0.1;
-      #deny all;
-      #}
-
-    location /version {
-      types { }
-      default_type text/plain;
-      alias /opt/chef-server/version-manifest.txt;
-    }
-
-    location /docs {
-      index index.html ;
-      alias /opt/chef-server/docs;
-    }
-
-    # bookshelf
-    location ~ "/<%= node['chef_server']['erchef']['s3_bucket'] %>/{0,1}.*$" {
-      proxy_pass http://bookshelf;
-    }
-
-    location ~ "^/(?:stylesheets|javascripts|images|facebox|css|favicon|robots|humans)/{0,1}.*$" {
-      if ($http_x_chef_version ~* "^(\d+\.\d+?)\..+$") {
-        error_page 400 =400 /400-chef_client_manage.json;
-        return 400;
-      }
-      proxy_pass http://chef_server_webui;
-      proxy_pass_request_headers off;
-      proxy_cache webui-cache;
-      proxy_cache_valid 200 302 300m;
-      proxy_cache_valid 404 1m;
-    }
-
-   location = /_status {
-      proxy_pass http://erchef/_status;
-    }
-
-   location = /_status/ {
-      proxy_pass http://erchef/_status;
-    }
-
-    location / {
-    <%= select_upstream("erchef", "chef_server_webui") %>
-    }
-  }
+  # Chef HTTPS API
+  include <%= @chef_https_config %>;
+  <%- end -%>
 }
