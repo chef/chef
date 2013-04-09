@@ -17,10 +17,10 @@
 #
 
 #
-# PURPOSE: this strategy should be cross-platform and maintain SELinux contexts
-#          and windows ACL inheritance, but it uses cp and is both slower and is
-#          not atomic and may result in a corrupted destination file in low
-#          disk or power outage situations.
+# PURPOSE: This strategy preserves the inode, and will preserve modes + ownership
+#          even if the user running chef cannot create that ownership (but has
+#          rights to the file).  It is vulnerable to crashes in the middle of
+#          writing the file which could result in corruption or zero-length files.
 #
 
 class Chef
@@ -34,16 +34,20 @@ class Chef
           end
 
           def deploy(src, dst)
-            # we are only responsible for content so restore the dst files perms
+            Chef::Log.debug("reading modes from #{dst} file")
             mode = ::File.stat(dst).mode & 07777
             uid  = ::File.stat(dst).uid
             gid  = ::File.stat(dst).gid
-            Chef::Log.debug("saved mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} from #{dst}")
+            Chef::Log.debug("read mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
+
             Chef::Log.debug("copying temporary file #{src} into place at #{dst}")
             FileUtils.cp(src, dst)
-            ::File.chmod(mode, dst)
-            ::File.chown(uid, gid, dst)
-            Chef::Log.debug("restored mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
+
+            Chef::Log.debug("reading modes from #{dst} file")
+            mode = ::File.stat(dst).mode & 07777
+            uid  = ::File.stat(dst).uid
+            gid  = ::File.stat(dst).gid
+            Chef::Log.debug("read mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
           end
         end
       end

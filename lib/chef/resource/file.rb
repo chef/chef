@@ -46,13 +46,6 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
-        @deployment_strategy = Chef::Config[:file_deployment_strategy]
-        @deployment_strategy ||= if Chef::Platform.windows?
-                                   Chef::Provider::File::Deploy::MvWindows
-                                 else
-                                   Chef::Provider::File::Deploy::MvUnix
-                                 end
-
         @binmode = Platform.windows? ? true : false
         @diff = nil
       end
