@@ -34,15 +34,10 @@ class Chef
 
           def deploy(src, dst)
             if ::File.dirname(src) != ::File.dirname(dst)
-              # internal warning for now - in a Windows/SElinux/ACLs world its better to write
-              # a tempfile to your destination directory and then rename it
-              Chef::Log.debug("WARNING: moving tempfile across different directories -- this may break permissions")
+              Chef::Log.warn("WARNING: moving tempfile across different directories -- this may break inherited permissions")
             end
 
-            # FIXME: save all the windows perms off the dst
             FileUtils.mv(src, dst)
-            # FIXME: restore all the windows perms onto the dst
-
           end
         end
       end
