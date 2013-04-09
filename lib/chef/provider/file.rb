@@ -93,6 +93,7 @@ class Chef
       end
 
       def action_create
+        do_unlink
         do_create_file
         do_contents_changes
         do_acl_changes
@@ -162,15 +163,28 @@ class Chef
         end
       end
 
+      def do_unlink
+        @file_unlinked = false
+        unless ::File.file?(@new_resource.path)
+          converge_by("unlink non-normal file at #{@new_resource.path}") do
+            ::File.unlink(@new_resource.path)
+          end
+          @file_unlinked = true
+        end
+      end
+
+      def file_unlinked?
+        @file_unlinked == true
+      end
+
       def do_create_file
         @file_created = false
-        unless ::File.exists?(@new_resource.path)
-          description = "create new file #{@new_resource.path}"
-          converge_by(description) do
+        if !::File.exists?(@new_resource.path) || file_unlinked?
+          converge_by("create new file #{@new_resource.path}") do
             deployment_strategy.create(@new_resource.path)
             Chef::Log.info("#{@new_resource} created file #{@new_resource.path}")
-            @file_created = true
           end
+          @file_created = true
         end
       end
 
