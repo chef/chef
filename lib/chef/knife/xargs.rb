@@ -241,7 +241,7 @@ class Chef
               diff = `diff -u #{old_file.path} #{tempfile.path}`
               diff.gsub!(old_file.path, "#{format_path(file[:file])} (old)")
               diff.gsub!(tempfile.path, "#{format_path(file[:file])} (new)")
-              output diff
+              stdout.write diff
             ensure
               old_file.close!
             end
