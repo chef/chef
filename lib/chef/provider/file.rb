@@ -163,10 +163,31 @@ class Chef
         end
       end
 
+      def file_type_string(path)
+        case
+        when File.blockdev?(path)
+          "block device"
+        when File.chardev?(path)
+          "char device"
+        when File.directory?(path)
+          "directory"
+        when File.pipe?(path)
+          "pipe"
+        when File.socket?(path)
+          "socket"
+        when File.symlink?(path)
+          "symlink"
+        else
+          "unknown filetype"
+        end
+      end
+
       def do_unlink
         @file_unlinked = false
-        unless ::File.file?(@new_resource.path)
-          converge_by("unlink non-normal file at #{@new_resource.path}") do
+        if ::File.exists?(@new_resource.path) && !::File.file?(@new_resource.path)
+          # unlink things that aren't normal files
+          description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
+          converge_by(description) do
             ::File.unlink(@new_resource.path)
           end
           @file_unlinked = true
