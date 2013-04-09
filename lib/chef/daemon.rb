@@ -74,6 +74,20 @@ class Chef
         Chef::Application.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
       end
       
+      # Check if this process if forked from a Chef daemon
+      # ==== Returns
+      # Boolean::
+      # True if this process is forked 
+      # False if this process is not forked
+      #
+      def forked?
+        if running? and ( $$ != pid_from_file.to_i ) then
+          true
+        else
+          false
+        end
+      end
+      
       # Gets the pid file for @name
       # ==== Returns
       # String::
@@ -115,7 +129,9 @@ class Chef
     
       # Delete the PID from the filesystem
       def remove_pid_file
-        FileUtils.rm(pid_file) if File.exists?(pid_file)
+        if not forked? then
+          FileUtils.rm(pid_file) if File.exists?(pid_file)
+        end
       end
            
       # Change process user/group to those specified in Chef::Config
