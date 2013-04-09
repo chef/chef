@@ -214,7 +214,7 @@ class Chef
         end
         command_output = `#{command}`
         command_output = sub_filenames(command_output, tempfiles)
-        output command_output
+        stdout.write command_output
 
         # Check if the output is different
         tempfiles.each_pair do |tempfile, file|
