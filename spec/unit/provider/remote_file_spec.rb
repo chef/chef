@@ -117,18 +117,6 @@ describe Chef::Provider::RemoteFile do
 #      end
 #    end
 #
-#    # XXX: move to file
-#    context "and the uri scheme is file" do
-#      before do
-#        @resource.source("file:///nyan_cat.png")
-#      end
-#
-#      it "should fetch the local file" do
-#        Chef::Provider::RemoteFile::LocalFile.should_receive(:fetch).with(URI.parse("file:///nyan_cat.png"), nil).and_return(@tempfile)
-#        @provider.run_action(:create)
-#      end
-#    end
-#
 #    # XXX: move to http
 #    it "should raise an exception if it's any other kind of retriable response than 304" do
 #      r = Net::HTTPMovedPermanently.new("one", "two", "three")
