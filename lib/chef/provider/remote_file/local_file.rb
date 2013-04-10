@@ -26,10 +26,14 @@ class Chef
     class RemoteFile
       class LocalFile
 
+        attr_reader :uri
+        attr_reader :new_resource
+        attr_reader :last_modified
+
         def initialize(uri, new_resource, current_resource)
           @new_resource = new_resource
           if current_resource.source && Util.uri_matches_string?(uri, current_resource.source[0])
-            if current_resource.use_last_modified && current_resource.last_modified
+            if new_resource.use_last_modified && current_resource.last_modified
               @last_modified = current_resource.last_modified
             end
           end
@@ -38,15 +42,16 @@ class Chef
 
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
-          mtime = ::File.mtime(@uri.path)
-          if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
-            tempfile = nil
-          else
-            tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
-            Chef::Log.debug("#{@new_resource} staging #{@uri.path} to #{tempfile.path}")
-            FileUtils.cp(@uri.path, tempfile.path)
-            tempfile
-          end
+          mtime = ::File.mtime(uri.path)
+          tempfile =
+            if mtime && last_modified && mtime.to_i <= last_modified.to_i
+              nil
+            else
+              tempfile = Chef::Provider::File::Tempfile.new(new_resource).tempfile
+              Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
+              FileUtils.cp(uri.path, tempfile.path)
+              tempfile
+            end
           return Chef::Provider::RemoteFile::Result.new(tempfile, nil, mtime)
         end
 
