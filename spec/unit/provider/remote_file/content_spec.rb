@@ -52,13 +52,30 @@ describe Chef::Provider::RemoteFile::Content do
     it "should return nil for the tempfile" do
       content.tempfile.should be_nil
     end
+
+    it "should not call any fetcher" do
+      Chef::Provider::RemoteFile::Fetcher.should_not_receive(:for_resource)
+    end
   end
 
-  describe "when the checksum of the current_resource does not match the checksum set on the resource" do
+  describe "when the checksum of the current_resource is a partial match for the checksum set on the resource" do
+    before do
+      new_resource.stub!(:checksum).and_return("0fd012fd")
+      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+    end
+
+    it "should return nil for the tempfile" do
+      content.tempfile.should be_nil
+    end
+
+    it "should not call any fetcher" do
+      Chef::Provider::RemoteFile::Fetcher.should_not_receive(:for_resource)
+    end
+  end
+
+  shared_examples_for "the resource needs fetching" do
     before do
       # FIXME: test one or the other nil, test both not nil and not equal, abuse the regexp a little
-      new_resource.stub!(:checksum).and_return(nil)
-      current_resource.stub!(:checksum).and_return(nil)
       @uri = mock("URI")
       @sanitized_uri = mock("URI")
       URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri)
@@ -121,6 +138,38 @@ describe Chef::Provider::RemoteFile::Content do
       end
     end
   end
+  describe "when the checksum are both nil" do
+    before do
+      new_resource.stub!(:checksum).and_return(nil)
+      current_resource.stub!(:checksum).and_return(nil)
+    end
+    it_behaves_like "the resource needs fetching"
+  end
+
+  describe "when the current_resource checksum is nil" do
+    before do
+      new_resource.stub!(:checksum).and_return("fd012fd")
+      current_resource.stub!(:checksum).and_return(nil)
+    end
+    it_behaves_like "the resource needs fetching"
+  end
+
+  describe "when the new_resource checksum is nil" do
+    before do
+      new_resource.stub!(:checksum).and_return(nil)
+      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+    end
+    it_behaves_like "the resource needs fetching"
+  end
+
+  describe "when the checksums are a partial match, but not to the leading portion" do
+    before do
+      new_resource.stub!(:checksum).and_return("fd012fd")
+      current_resource.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
+    end
+    it_behaves_like "the resource needs fetching"
+  end
+
 
   describe "when the fetcher throws an exception" do
     before do
