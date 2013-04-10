@@ -71,16 +71,6 @@ describe Chef::Provider::RemoteFile do
 #    @provider.stub!(:load_current_resource)
 #  end
 
-  # XXX: move to content???
-#  describe "when checking if the file is at the target version" do
-#    it "considers the current file to be at the target version if it exists and matches the user-provided checksum" do
-#      provider.current_resource = resource.dup
-#      resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-#      provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-#      provider.current_resource_matches_target_checksum?.should be_true
-#    end
-#  end
-
 #  describe "when fetching the file from the remote" do
 #    before(:each) do
 #      #@tempfile = Tempfile.new("chef-rspec-remote_file_spec-line#{__LINE__}--")
@@ -105,71 +95,6 @@ describe Chef::Provider::RemoteFile do
 #      #@tempfile.close!
 #    end
 #
-#    # XXX: move to content
-#
-#    describe "and the resource specifies a checksum" do
-#
-#      describe "and the existing file matches the checksum exactly" do
-#        before do
-#          @resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
-#        end
-#
-#        it "does not download the file" do
-#          @rest.should_not_receive(:fetch)
-#          @provider.run_action(:create)
-#        end
-#
-#        it "does not update the resource" do
-#          @provider.run_action(:create)
-#          @provider.new_resource.should_not be_updated
-#        end
-#
-#      end
-#
-#      describe "and the existing file matches the given partial checksum" do
-#        before do
-#          @resource.checksum("0fd012fd")
-#        end
-#
-#        it "should not download the file if the checksum is a partial match from the beginning" do
-#          @rest.should_not_receive(:fetch)
-#          @provider.run_action(:create)
-#        end
-#
-#        it "does not update the resource" do
-#          @provider.run_action(:create)
-#          @provider.new_resource.should_not be_updated
-#        end
-#
-#      end
-#
-#      describe "and the existing file doesn't match the given checksum" do
-#        it "downloads the file" do
-#          @resource.checksum("this hash doesn't match")
-#          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
-#          @provider.stub!(:update_new_file_state)
-#          @provider.run_action(:create)
-#        end
-#
-#        it "does not consider the checksum a match if the matching string is offset" do
-#          # i.e., the existing file is      "0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa"
-#          @resource.checksum("fd012fd")
-#          @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
-#          @provider.stub!(:update_new_file_state)
-#          @provider.run_action(:create)
-#        end
-#      end
-#
-#    end
-#
-#    describe "and the resource doesn't specify a checksum" do
-#      it "should download the file from the remote URL" do
-#        @resource.checksum(nil)
-#        @rest.should_receive(:streaming_request).with(URI.parse("http://opscode.com/seattle.txt"), {}).and_return(@tempfile)
-#        @provider.run_action(:create)
-#      end
-#    end
-#
 #    # XXX: move to http
 #
 #    # CHEF-3140
@@ -189,24 +114,6 @@ describe Chef::Provider::RemoteFile do
 #
 #      it "disables gzip in the http client" do
 #        @provider.action_create
-#      end
-#    end
-#
-#    # XXX: move to ftp
-#    context "and the uri scheme is ftp" do
-#      before do
-#        @resource.source("ftp://opscode.com/seattle.txt")
-#      end
-#
-#      it "should fetch with ftp in passive mode" do
-#        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), false, nil).and_return(@tempfile)
-#        @provider.run_action(:create)
-#      end
-#
-#      it "should fetch with ftp in active mode" do
-#        @resource.ftp_active_mode true
-#        Chef::Provider::RemoteFile::FTP.should_receive(:fetch).with(URI.parse("ftp://opscode.com/seattle.txt"), true, nil).and_return(@tempfile)
-#        @provider.run_action(:create)
 #      end
 #    end
 #
