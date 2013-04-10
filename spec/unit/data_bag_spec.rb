@@ -155,6 +155,13 @@ describe Chef::DataBag do
         data_bag.should == { 'bar' => { 'id' => 'bar', 'name' => 'Bob Bar' }, 'baz' => { 'id' => 'baz', 'name' => 'John Baz' }}
       end
 
+      it "should return the data bag list" do
+        File.should_receive(:directory?).with('/var/chef/data_bags').and_return(true)
+        Dir.should_receive(:glob).and_return(["/var/chef/data_bags/foo", "/var/chef/data_bags/bar"])
+        data_bag_list = Chef::DataBag.list
+        data_bag_list.should == [ 'bar', 'foo' ]
+      end
+
       it 'should raise an error if the configured data_bag_path is invalid' do
         File.should_receive(:directory?).with('/var/chef/data_bags').and_return(false)
 
