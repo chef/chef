@@ -34,6 +34,7 @@ class Chef
           @new_resource = new_resource
           if current_resource.source && Util.uri_matches_string?(uri, current_resource.source[0])
             if new_resource.use_last_modified && current_resource.last_modified
+              Chef::Log.debug("#{new_resource} read last_modified time of #{current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")}")
               @last_modified = current_resource.last_modified
             end
           end
@@ -43,8 +44,10 @@ class Chef
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
           mtime = ::File.mtime(uri.path)
+          Chef::Log.debug("#{new_resource} read mtime of #{mtime.strftime("%a, %d %b %Y %H:%M:%S %Z")} for #{uri.path}")
           tempfile =
             if mtime && last_modified && mtime.to_i <= last_modified.to_i
+              Chef::Log.debug("#{new_resource} mtime on #{uri.path} has not been updated, not deploying")
               nil
             else
               tempfile = Chef::Provider::File::Tempfile.new(new_resource).tempfile
