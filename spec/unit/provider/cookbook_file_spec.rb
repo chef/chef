@@ -50,20 +50,4 @@ describe Chef::Provider::CookbookFile do
 
   it_behaves_like Chef::Provider::File
 
-  # FIXME: move to Chef::Provider::File
-  #  describe "when loading the current file state" do
-  #
-  #    it "converts windows-y filenames to unix-y ones" do
-  #      @new_resource.path('windows\stuff')
-  #      @provider.load_current_resource
-  #      @new_resource.path.should == 'windows/stuff'
-  #    end
-  #
-  #    it "sets the current resources path to the same as the new resource" do
-  #      @new_resource.path('/tmp/file')
-  #      @provider.load_current_resource
-  #      @provider.current_resource.path.should == '/tmp/file'
-  #    end
-  #  end
-
 end
