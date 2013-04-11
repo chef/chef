@@ -199,6 +199,11 @@ EOM
         @ui.config[:attribute] = "gi.go"
         @ui.format_for_display(input).should == { "sample-data-bag-item" => { "gi.go" => "ge" } }
       end
+      it "should return multiple attributes" do
+        input = { "gi" => { "go" => "ge" }, "id" => "sample-data-bag-item", "ha" => "hi" }
+        @ui.config[:attribute] = "gi.go,ha"
+        @ui.format_for_display(input).should == { "sample-data-bag-item" => { "gi.go" => "ge","ha" => "hi"} }
+      end
     end
 
     describe "with --run-list passed" do

@@ -55,9 +55,9 @@ class Chef
         :proc => lambda { |i| i.to_i }
 
       option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "Show only one attribute"
+        :short => "-a ATTR1,ATTR2",
+        :long => "--attribute ATTR1,ATTR2",
+        :description => "Show specific  attribute(s)"
 
       option :run_list,
         :short => "-r",

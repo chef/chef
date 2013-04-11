@@ -135,9 +135,11 @@ class Chef
         def format_data_subset_for_display(data)
           subset = if config[:attribute]
             result = {}
-            Array(config[:attribute]).each do |nested_value_spec|
-              nested_value = extract_nested_value(data, nested_value_spec)
-              result[nested_value_spec] = nested_value
+            config[:attribute].split(/\s*,\s*/).each do |attr|
+              Array(attr).each do |nested_value_spec|
+                nested_value = extract_nested_value(data, nested_value_spec)
+                result[nested_value_spec] = nested_value
+              end
             end
             result
           elsif config[:run_list]
