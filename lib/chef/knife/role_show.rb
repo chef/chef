@@ -30,9 +30,9 @@ class Chef
       banner "knife role show ROLE (options)"
 
       option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "Show only one attribute"
+        :short => "-a ATTR1,ATTR2",
+        :long => "--attribute ATTR1,ATTR2",
+        :description => "Show specific attribute(s)"
 
       def run
         @role_name = @name_args[0]
