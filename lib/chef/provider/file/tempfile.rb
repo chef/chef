@@ -30,10 +30,16 @@ class Chef
         end
 
         def tempfile
-          @tempfile ||= ::Tempfile.open(tempfile_basename, tempfile_dirname, tempfile_flags)
+          @tempfile ||= tempfile_open
         end
 
         private
+
+        def tempfile_open
+          tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
+          tf.binmode if new_resource.binmode
+          tf
+        end
 
         #
         # These are important for windows to get permissions right, and may
@@ -48,14 +54,6 @@ class Chef
 
         def tempfile_dirname
           Chef::Config[:file_deployment_uses_destdir] ? ::File.dirname(@new_resource.path) : Dir::tmpdir
-        end
-
-        def tempfile_flags
-          if new_resource.binmode
-            { :binmode => true }
-          else
-            {}
-          end
         end
       end
     end
