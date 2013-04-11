@@ -41,6 +41,10 @@ class Chef
         set_dacl
       end
 
+      def define_resource_requirements
+        # windows FAC has no assertions
+      end
+
       def requires_changes?
         should_update_dacl? || should_update_owner? || should_update_group?
       end
