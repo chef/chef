@@ -234,13 +234,6 @@ class Chef
       run_data
     end
 
-    def report_summary(run_data, compressed_data)
-      run_data["updated_res_count"] = updated_resources.count.to_s
-      run_data["post_size"] = compressed_data.bytesize.to_s
-      run_data["resources"] = []
-      run_data
-    end
-
     def run_list_expand_failed(node, exception)
       description = Formatters::ErrorMapper.run_list_expand_failed(node, exception)
       @error_descriptions = description.for_json
