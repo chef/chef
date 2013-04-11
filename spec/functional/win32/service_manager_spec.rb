@@ -33,7 +33,7 @@ end
 # directories.
 #
 
-describe "Chef::Application::WindowsServiceManager", :windows_only do
+describe "Chef::Application::WindowsServiceManager", :windows_only, :system_windows_service_gem_only do
 
   # Some helper methods.
 

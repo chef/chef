@@ -226,7 +226,7 @@ class Chef
     splay nil
     why_run false
     color false
-    client_fork false
+    client_fork true
     enable_reporting true
     enable_reporting_url_fatals false
 
