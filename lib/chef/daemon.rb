@@ -46,7 +46,10 @@ class Chef
             $stdout.reopen("/dev/null", "a")
             $stderr.reopen($stdout)
             save_pid_file
-            at_exit { remove_pid_file }
+            at_exit {
+              Chef::Log.debug("daemon pid #{Process.pid} in at_exit handler")
+              remove_pid_file
+            }
           rescue NotImplementedError => e
             Chef::Application.fatal!("There is no fork: #{e.message}")
           end
@@ -107,7 +110,9 @@ class Chef
         end
       
         begin
-          File.open(file, "w") { |f| f.write(Process.pid.to_s) }
+          pid = Process.pid.to_s
+          File.open(file, "w") { |f| f.write(pid) }
+          Chef::Log.debug("Wrote #{pid} to #{file}")
         rescue Errno::EACCES => e
           Chef::Application.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
         end
@@ -115,7 +120,17 @@ class Chef
     
       # Delete the PID from the filesystem
       def remove_pid_file
-        FileUtils.rm(pid_file) if File.exists?(pid_file)
+        return unless File.exists?(pid_file)
+
+        daemon_pid = pid_from_file
+        my_pid = Process.pid
+        if daemon_pid != my_pid
+          Chef::Log.debug("My pid is #{my_pid}; not removing #{pid_file} which contains #{daemon_pid}")
+          return
+        end
+
+        FileUtils.rm(pid_file)
+        Chef::Log.debug("Removed #{pid_file}")
       end
            
       # Change process user/group to those specified in Chef::Config
