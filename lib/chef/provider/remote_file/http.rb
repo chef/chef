@@ -29,6 +29,9 @@ class Chef
     class RemoteFile
       class HTTP
 
+        attr_reader :uri
+        attr_reader :headers
+
         # Parse the uri into instance variables
         def initialize(uri, new_resource, current_resource)
           @headers = Hash.new
@@ -59,8 +62,8 @@ class Chef
 
         def fetch
           begin
-            rest = Chef::REST.new(@uri, nil, nil, http_client_opts)
-            tempfile = rest.streaming_request(@uri, @headers)
+            rest = Chef::REST.new(uri, nil, nil, http_client_opts)
+            tempfile = rest.streaming_request(uri, headers)
             if rest.last_response['last_modified']
               mtime = Time.parse(rest.last_response['last_modified'])
               Chef::Log.debug("found last_modified header on response set to #{mtime}")
@@ -101,7 +104,7 @@ class Chef
           # which tricks Chef::REST into decompressing the response body. In this
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
-          if @uri.to_s =~ /gz$/
+          if uri.to_s =~ /gz$/
             Chef::Log.debug("turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
           end
