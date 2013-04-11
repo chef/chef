@@ -178,4 +178,13 @@ describe Chef::RunContext::CookbookCompiler do
     # Tests for this behavior are in RunContext's tests
   end
 
+  describe "listing cookbook order" do 
+    it "should return an array of cookbook names as symbols without duplicates" do
+      node.run_list("test-with-circular-deps::default", "circular-dep1::default", "circular-dep2::default")
+
+      compiler.cookbook_order.should == [:"circular-dep2",
+                                         :"circular-dep1",
+                                         :"test-with-circular-deps"]
+    end
+  end
 end
