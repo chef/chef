@@ -33,6 +33,13 @@ describe Chef::Knife::CookbookDownload do
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
+    it 'should exit with a fatal error when there is no cookbook on the server' do
+      @knife.name_args = ['foobar', nil]
+      @knife.should_receive(:determine_version).and_return(nil)
+      @knife.ui.should_receive(:fatal).with(/versions found for cookbook/)
+      lambda { @knife.run }.should raise_error(SystemExit)
+    end
+
     describe 'with a cookbook name' do
       before(:each) do
         @knife.name_args = ['foobar']
@@ -136,6 +143,13 @@ describe Chef::Knife::CookbookDownload do
   end
 
   describe 'determine_version' do
+
+    it 'should return nil if there are no versions' do
+      @knife.should_receive(:available_versions).and_return(nil)
+      @knife.determine_version.should == nil
+      @knife.version.should == nil
+    end
+
     it 'should return and set the version if there is only one version' do
       @knife.should_receive(:available_versions).at_least(:once).and_return(['1.0.0'])
       @knife.determine_version.should == '1.0.0'
@@ -164,7 +178,14 @@ describe Chef::Knife::CookbookDownload do
       @knife.cookbook_name = 'foobar'
     end
 
-    it 'should return the available vesions' do
+    it 'should return nil if there are no versions' do
+      Chef::CookbookVersion.should_receive(:available_versions).
+                            with('foobar').
+                            and_return(nil)
+      @knife.available_versions.should == nil
+    end
+
+    it 'should return the available versions' do
       Chef::CookbookVersion.should_receive(:available_versions).
                             with('foobar').
                             and_return(['1.1.0', '2.0.0', '1.0.0'])

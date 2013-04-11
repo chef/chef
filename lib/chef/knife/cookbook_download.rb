@@ -63,7 +63,7 @@ class Chef
           @version = determine_version
           if @version.nil?
             ui.fatal("No versions found for cookbook")
-            exit
+            exit 1
           end
         end
 
