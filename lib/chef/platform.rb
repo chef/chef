@@ -30,6 +30,7 @@ require 'chef/provider/group'
 require 'chef/provider/mount'
 require 'chef/provider/service'
 require 'chef/provider/package'
+require 'chef/provider/ifconfig'
 
 
 class Chef
@@ -71,6 +72,9 @@ class Chef
               :service => Chef::Provider::Service::Debian,
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
+            },
+            '>= 11.10' => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :gcel   => {
@@ -114,6 +118,9 @@ class Chef
             },
             ">= 6.0" => {
               :service => Chef::Provider::Service::Insserv
+            },
+            ">= 7.0" => {
+              :ifconfig => Chef::Provider::Ifconfig::Debian
             }
           },
           :xenserver   => {
@@ -129,7 +136,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :amazon   => {
@@ -153,7 +161,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :suse     => {
@@ -177,7 +186,8 @@ class Chef
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Yum,
-              :mdadm => Chef::Provider::Mdadm
+              :mdadm => Chef::Provider::Mdadm,
+              :ifconfig => Chef::Provider::Ifconfig::Redhat
             }
           },
           :gentoo   => {

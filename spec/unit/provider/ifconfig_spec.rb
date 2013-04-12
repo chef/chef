@@ -177,37 +177,4 @@ describe Chef::Provider::Ifconfig do
       @new_resource.should_not be_updated
     end
   end
-  
-  describe Chef::Provider::Ifconfig, "generate_config for action_add" do
-   #%w[ centos redhat fedora ].each do |platform|
-     
-     it "should write network-script for centos" do
-      @provider.stub!(:load_current_resource)
-      @node.automatic_attrs[:platform] = "centos"
-      @provider.stub!(:run_command)
-      config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      config_file = StringIO.new
-      File.should_receive(:new).with(config_filename, "w").and_return(config_file)
-
-      @provider.run_action(:add)
-      config_file.string.should match(/^\s*DEVICE=eth0\s*$/)
-      config_file.string.should match(/^\s*IPADDR=10.0.0.1\s*$/)
-      config_file.string.should match(/^\s*NETMASK=255.255.254.0\s*$/)
-     end
-  end
-
-  describe Chef::Provider::Ifconfig, "delete_config for action_delete" do
-
-    it "should delete network-script if it exists for centos" do
-      @node.automatic_attrs[:platform] = "centos"
-      @current_resource.device "eth0"
-      @provider.stub!(:load_current_resource)
-      @provider.stub!(:run_command)
-      config_filename =  "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-      File.should_receive(:exist?).with(config_filename).and_return(true)
-      FileUtils.should_receive(:rm_f).with(config_filename, :verbose => false)
-
-      @provider.run_action(:delete)
-    end
-  end
 end
