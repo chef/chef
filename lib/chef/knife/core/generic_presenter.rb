@@ -22,8 +22,8 @@ class Chef
   class Knife
     module Core
 
-      # Allows includer knife commands to  return multiple attribute:
-      # e.g knife node show NAME -a ATTR1 -a ATTR2
+      # Allows includer knife commands to  return multiple attributes
+      # @brief knife node show NAME -a ATTR1 -a ATTR2
       module MultiAttributeReturnOption
         # :nodoc:
         def self.included(includer)
