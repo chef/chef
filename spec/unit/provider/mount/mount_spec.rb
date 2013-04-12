@@ -216,6 +216,32 @@ describe Chef::Provider::Mount::Mount do
       @provider.load_current_resource
       @provider.current_resource.enabled.should be_false
     end
+
+    it "should not mangle the mount options if the device in fstab is a symlink" do
+      target = "/dev/mapper/target"
+      options = "rw,noexec,noauto"
+
+      ::File.stub!(:symlink?).with(@new_resource.device).and_return(true)
+      ::File.stub!(:readlink).with(@new_resource.device).and_return(target)
+
+      fstab = "#{@new_resource.device} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+      @provider.load_current_resource
+      @provider.current_resource.options.should eq(options.split(','))
+    end
+
+    it "should not mangle the mount options if the symlink target is in fstab" do
+      target = "/dev/mapper/target"
+      options = "rw,noexec,noauto"
+
+      ::File.stub!(:symlink?).with(@new_resource.device).and_return(true)
+      ::File.stub!(:readlink).with(@new_resource.device).and_return(target)
+
+      fstab = "#{target} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+      @provider.load_current_resource
+      @provider.current_resource.options.should eq(options.split(','))
+    end
   end
 
   context "after the mount's state has been discovered" do
