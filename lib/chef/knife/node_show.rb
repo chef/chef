@@ -24,6 +24,7 @@ class Chef
     class NodeShow < Knife
 
       include Knife::Core::NodeFormattingOptions
+      include Knife::Core::MultiAttributeRetrunOption
 
       deps do
         require 'chef/node'
@@ -31,13 +32,6 @@ class Chef
       end
 
       banner "knife node show NODE (options)"
-
-      @attrs_to_show = []
-      option :attribute,
-        :short => "-a [ATTR]",
-        :long => "--attribute [ATTR]",
-        :proc => lambda {|val| @attrs_to_show << val},
-        :description => "Show one or more attributes"
 
       option :run_list,
         :short => "-r",
