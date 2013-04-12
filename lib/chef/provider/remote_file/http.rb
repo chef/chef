@@ -34,7 +34,7 @@ class Chef
 
         # Parse the uri into instance variables
         def initialize(uri, new_resource, current_resource)
-          @headers = Hash.new
+          @headers = Hash[new_resource.headers]
           if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.etag && ( current_resource.etag != "" )
               if new_resource.use_etag

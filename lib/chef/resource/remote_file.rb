@@ -38,6 +38,7 @@ class Chef
         @use_etag = true
         @use_last_modified = true
         @ftp_active_mode = false
+        @headers = {}
         @provider = Chef::Provider::RemoteFile
       end
 
@@ -105,6 +106,14 @@ class Chef
           :ftp_active_mode,
           args,
           :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def headers(args=nil)
+        set_or_return(
+          :headers,
+          args,
+          :kind_of => Hash
         )
       end
 
