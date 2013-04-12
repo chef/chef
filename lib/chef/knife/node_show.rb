@@ -24,7 +24,7 @@ class Chef
     class NodeShow < Knife
 
       include Knife::Core::NodeFormattingOptions
-      include Knife::Core::MultiAttributeRetrunOption
+      include Knife::Core::MultiAttributeReturnOption
 
       deps do
         require 'chef/node'

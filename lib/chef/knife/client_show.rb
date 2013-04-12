@@ -22,7 +22,7 @@ class Chef
   class Knife
     class ClientShow < Knife
 
-      include Knife::Core::MultiAttributeRetrunOption
+      include Knife::Core::MultiAttributeReturnOption
 
       deps do
         require 'chef/api_client'
