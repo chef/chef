@@ -22,7 +22,7 @@ class Chef
   class Knife
     class EnvironmentShow < Knife
 
-      include Knife::Core::MultiAttributeRetrunOption
+      include Knife::Core::MultiAttributeReturnOption
 
       deps do
         require 'chef/environment'

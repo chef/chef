@@ -24,7 +24,7 @@ class Chef
 
       # Allows includer knife commands to  return multiple attribute:
       # e.g knife node show NAME -a ATTR1 -a ATTR2
-      module MultiAttributeRetrunOption
+      module MultiAttributeReturnOption
         # :nodoc:
         def self.included(includer)
           includer.class_eval do
