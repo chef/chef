@@ -37,11 +37,9 @@ class Chef
       def action_run
         opts = {}
 
-        if sentinel_file = @new_resource.creates
-          if ::File.exists?(sentinel_file)
-            Chef::Log.debug("#{@new_resource} sentinel file #{sentinel_file} exists - nothing to do")
-            return false
-          end
+        if sentinel_file = sentinel_file_if_exists
+          Chef::Log.debug("#{@new_resource} sentinel file #{sentinel_file} exists - nothing to do")
+          return false
         end
 
         # original implementation did not specify a timeout, but ShellOut
@@ -61,6 +59,25 @@ class Chef
         converge_by("execute #{@new_resource.command}") do 
           result = shell_out!(@new_resource.command, opts)
           Chef::Log.info("#{@new_resource} ran successfully")
+        end
+      end
+
+      private
+
+      def sentinel_file_if_exists
+        if sentinel_file = @new_resource.creates
+          relative = Pathname(sentinel_file).relative?
+          cwd = @new_resource.cwd
+          if relative && !cwd
+            Chef::Log.warn "You have provided relative path for execute#creates (#{sentinel_file}) without execute#cwd (see CHEF-3819)"
+          end
+
+          if ::File.exists?(sentinel_file)
+            sentinel_file
+          elsif cwd && relative
+            sentinel_file = ::File.join(cwd, sentinel_file)
+            sentinel_file if ::File.exists?(sentinel_file)
+          end
         end
       end
     end
