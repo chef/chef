@@ -60,6 +60,18 @@ then
   sudo gem install bundler --no-ri --no-rdoc
 fi
 
+# ensure berkshelf is installed
+if ! exists berks;
+then
+  sudo gem install berkshelf --no-ri --no-rdoc
+fi
+
+# install omnibus cookbook and dependencies
+berks install --path=vendor/cookbooks
+
+# Omnibus build server prep tasks, including build ruby
+sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $(pwd)/jenkins/dna.json -l debug
+
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}"
@@ -69,11 +81,6 @@ if [ "$CLEAN" = "true" ]; then
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
   sudo rm -f pkg/* || true
 fi
-bundle install
-
-
-# Omnibus build server prep tasks, including build ruby
-sudo -i env PATH=$PATH OMNIBUS_GEM_PATH=$(bundle show omnibus) chef-solo -c $(pwd)/jenkins/solo.rb -j $(pwd)/jenkins/dna.json -l debug
 
 # copy config into place
 cp omnibus.rb.example omnibus.rb

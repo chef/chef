@@ -25,8 +25,14 @@ IF "%CLEAN%"=="true" (
 
 call bundle install || GOTO :error
 
-rem # this is how we set environment variables from commands in batch files
-FOR /F %%i in ('call bundle show omnibus') DO SET OMNIBUS_GEM_PATH=%%i
+rem # ensure berkshelf is installed
+where /q berks
+IF NOT %ERRORLEVEL% == 0 (
+  call gem install berkshelf --no-ri --no-rdoc
+)
+
+rem # install omnibus cookbook and dependencies
+call berks install --path=vendor/cookbooks
 
 call chef-solo -c .\jenkins\solo.rb -j .\jenkins\windows-dna.json -l debug || GOTO :error
 
