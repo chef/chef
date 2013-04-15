@@ -21,6 +21,7 @@
 
 require 'uri'
 require 'chef/event_dispatch/base'
+require 'uuidtools'
 
 class Chef
   class ResourceReporter < EventDispatch::Base
@@ -85,7 +86,6 @@ class Chef
     attr_reader :exception
     attr_reader :run_id
     attr_reader :error_descriptions
-    attr_reader :summary_only
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
@@ -102,29 +102,36 @@ class Chef
       @rest_client = rest_client
       @node = nil
       @error_descriptions = {}
-      @summary_only = true
     end
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
       if reporting_enabled?
         begin
+          @run_id = UUIDTools::UUID.random_create.to_s # Ensure the uuid is a string so the json encoding never tries to encode the uuid object
           resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin})
-          run_uri = URI.parse(server_response["uri"])
-          @run_id = ::File.basename(run_uri.path)
-          Chef::Log.info("Chef server generated run history id: #{@run_id}")
-          @summary_only = server_response["summary_only"]
+          server_response = @rest_client.post(resource_history_url, {"action" => "begin", "run_id" => @run_id})
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+          message = "Reporting error beginning run. URL: #{resource_history_url} "
           if !e.response || e.response.code.to_s != "404"
+            code = if e.response.code
+                     e.response.code
+                   else
+                     "Exception Code Empty"
+                   end
+            exception = "Exception: #{code} "
             if Chef::Config[:enable_reporting_url_fatals]
-              Chef::Log.error("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), and enable_reporting_url_fatals is set, aborting run.")
+              reporting_status = "Reporting fatals enabled. Aborting run. "
+              Chef::Log.error(message + exception + reporting_status)
               raise
             else
-              Chef::Log.info("Received exception #{"(" + e.response.code + ") " if e.response.code}attempting to generate run history id (URL Path: #{resource_history_url}), disabling reporting for this run.")
+              reporting_status = "Disabling reporting for run."
+              Chef::Log.info(message + exception + reporting_status)
             end
           else
-            Chef::Log.debug("Received 404 attempting to generate run history id (URL Path: #{resource_history_url}), assuming feature is not supported on server.")
+            reason = "Received 404. "
+            reporting_status = "Disabling reporting for run."
+            Chef::Log.debug(message + reason + reporting_status)
           end
           @reporting_enabled = false
         end
@@ -188,18 +195,10 @@ class Chef
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
         begin
-          #if summary only is enabled send the uncompressed run_data excluding the run_data["resources"] and some additional metrics.
-          if @summary_only
-            run_data = report_summary(run_data, compressed_data)
-            Chef::Log.info("run_data_summary: #{run_data}")
-            @rest_client.post_rest(resource_history_url, run_data)
-          else
-            Chef::Log.debug("Sending compressed run data...")
-            # Since we're posting compressed data we can not directly call
-            # post_rest which expects JSON
-            reporting_url = @rest_client.create_url(resource_history_url)
-            @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
-          end
+          Chef::Log.debug("Sending compressed run data...")
+          # Since we're posting compressed data we can not directly call post_rest which expects JSON
+          reporting_url = @rest_client.create_url(resource_history_url)
+          @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
         rescue Net::HTTPServerException => e
           if e.response.code.to_s == "400"
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
