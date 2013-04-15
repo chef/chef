@@ -1,0 +1,3 @@
+site :opscode
+
+cookbook "omnibus"
