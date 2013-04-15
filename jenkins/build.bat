@@ -37,8 +37,8 @@ rem # bundle install from here now too
 set PATH=C:\Ruby193\bin;%PATH%
 call bundle install || GOTO :error
 
-call bundle exec rake projects:%omnibus_project%-windows || GOTO :error
-     
+call bundle exec omnibus build project %omnibus_project%-windows || GOTO :error
+
 GOTO :EOF
 
 :error

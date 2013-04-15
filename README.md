@@ -5,8 +5,8 @@ This repository contains the skeleton for building Omnibus Chef packages.
 # Building Chef
 
 As root:
-$ bundle install
-$ CHEF_GIT_REV=10.14.4 rake projects:chef
+$ bundle install --binstubs
+$ CHEF_GIT_REV=10.14.4 bin/omnibus build project chef
 
 Packages will be in pkg/
 
