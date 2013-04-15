@@ -19,7 +19,7 @@ name "chef-server-scripts"
 
 dependencies [ "rsync" ]
 
-source :path => File.expand_path("files/chef-server-scripts", Omnibus.root)
+source :path => File.expand_path("files/chef-server-scripts", Omnibus.project_root)
 
 build do
   command "mkdir -p #{install_dir}/embedded/bin"
