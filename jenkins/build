@@ -42,7 +42,7 @@ fi
 # create the build timestamp file for fingerprinting if it doesn't exist (manual build execution)
 if [ ! -f build_timestamp ]
 then
-  date > build_timstamp
+  date > build_timestamp
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
 
