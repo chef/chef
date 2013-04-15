@@ -1,14 +1,8 @@
 {
   "omnibus": {
-    "build-user": "jenkins-node",
-    "build-path": "/home/jenkins/omnibus",
-    "install-dirs": [
-      "/opt/chef",
-      "/opt/chef-server"
-    ],
-    "cache-dirs": [
-      "/var/cache/omnibus"
-    ]
+    "build_user": "jenkins-node",
+    "install_dir": "/opt/chef",
+    "cache_dir": "/var/cache/omnibus"
   },
   "run_list": [
     "recipe[omnibus]"
