@@ -5,6 +5,7 @@ group(:test) do
 
   gem "rspec_junit_formatter"
   gem 'awesome_print'
+  gem 'rake'
 
 end
 
