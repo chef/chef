@@ -17,10 +17,11 @@
 #
 
 #
-# PURPOSE: this strategy is atomic and preserves default umasks, but on windows you must
-#          not be copying from the temp directory, and will not correctly restore
-#          SELinux contexts.
+# We update the contents of the file, using mv for atomicity, while maintaining all the
+# ACL information on the dst file.
 #
+
+require 'chef/win32/security'
 
 class Chef
   class Provider
@@ -32,10 +33,34 @@ class Chef
             FileUtils.touch(file)
           end
 
+          ALL_ACLS =
+            Chef::ReservedNames::Win32::Security::OWNER_SECURITY_INFORMATION |
+            Chef::ReservedNames::Win32::Security::GROUP_SECURITY_INFORMATION |
+            Chef::ReservedNames::Win32::Security::DACL_SECURITY_INFORMATION
+            #Chef::ReservedNames::Win32::Security::SACL_SECURITY_INFORMATION
+
           def deploy(src, dst)
-            if ::File.dirname(src) != ::File.dirname(dst)
-              Chef::Log.warn("WARNING: moving tempfile across different directories -- this may break inherited permissions")
-            end
+            result = Chef::ReservedNames::Win32::Security.get_named_security_info(dst, :SE_FILE_OBJECT, ALL_ACLS)
+
+            Chef::Log.debug("applying owner #{result.owner} to staged file")
+            Chef::Log.debug("applying group #{result.group} to staged file")
+            Chef::Log.debug("applying dacl #{result.dacl} to staged file")
+            Chef::Log.debug("applying dacl inheritance to staged file") if result.dacl_inherits?
+
+            # FIXME: SACL
+            # FIXME: inheritance
+            # FIXME: control?
+            # FIXME: filter out inherited DACLs
+
+            so = Chef::ReservedNames::Win32::Security::SecurableObject.new(src)
+
+            so.set_dacl(result.dacl, result.dacl_inherits?)
+
+            so.group = result.group
+
+            so.owner = result.owner
+
+            #so.set_sacl(result.sacl, result.sacl_inherits?)
 
             FileUtils.mv(src, dst)
           end
