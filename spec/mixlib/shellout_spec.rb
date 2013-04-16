@@ -203,7 +203,7 @@ describe Mixlib::ShellOut do
 
     context "with options hash" do
       let(:cmd) { 'brew install couchdb' }
-      let(:options) { { :cwd => cwd, :user => user, :domain => domain, :password => password, :group => group, 
+      let(:options) { { :cwd => cwd, :user => user, :domain => domain, :password => password, :group => group,
         :umask => umask, :timeout => timeout, :environment => environment, :returns => valid_exit_codes,
         :live_stream => stream, :input => input } }
 
@@ -422,12 +422,12 @@ describe Mixlib::ShellOut do
         let(:user) { 'administrator' }
         let(:domain) { ENV['COMPUTERNAME'].downcase }
         let(:options) { { :domain => domain, :user => user, :password => 'vagrant' } }
-  
+
         it "should run as Administrator" do
           running_user.should eql("#{domain}\\#{user}")
         end
       end
-    end      
+    end
 
     context "with a live stream" do
       let(:stream) { StringIO.new }
@@ -759,6 +759,16 @@ describe Mixlib::ShellOut do
               executed_cmd
             end
           end.should_not raise_error
+        end
+      end
+
+      context 'with open files for parent process' do
+        let(:ruby_code) { "count = 0; 0.upto(256) do |n| fd = File.for_fd(n) rescue nil; count += 1 if fd end; puts count" }
+
+        it "should not see file descriptors of the parent" do
+          test_file = Tempfile.new('fd_test')
+          stdout.chomp.should eql("3")
+          test_file.close
         end
       end
 
