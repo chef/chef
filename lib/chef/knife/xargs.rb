@@ -253,7 +253,7 @@ class Chef
 
       def sub_filenames(str, tempfiles)
         tempfiles.each_pair do |tempfile, file|
-          str.gsub!(tempfile.path, format_path(file[:file]))
+          str = str.gsub(tempfile.path, format_path(file[:file]))
         end
         str
       end
