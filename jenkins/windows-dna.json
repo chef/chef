@@ -1,6 +1,6 @@
 {
   "omnibus": {
-    "build_user": "administrator",
+    "build_user": "Administrator",
     "install_dir": "c:\\opscode\\chef",
     "cache_dir": "c:\\omnibus-cache"
   },
