@@ -69,8 +69,13 @@ fi
 # install omnibus cookbook and dependencies
 berks install --path=vendor/cookbooks
 
+if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep -i solaris)" ]; then
+  dna=$(pwd)/jenkins/solaris2-dna.json
+else
+  dna=$(pwd)/jenkins/dna.json
+fi
 # Omnibus build server prep tasks, including build ruby
-sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $(pwd)/jenkins/dna.json -l debug
+sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
