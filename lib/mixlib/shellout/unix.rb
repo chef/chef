@@ -178,6 +178,26 @@ module Mixlib
         STDIN.sync = true if input
       end
 
+      # When a new process is started with chef, it shares the file
+      # descriptors of the parent. We clean the file descriptors
+      # coming from the parent to prevent unintended locking if parent
+      # is killed.
+      # NOTE: After some discussions we've decided to iterate on file
+      # descriptors upto 256. We believe this  is a reasonable upper
+      # limit in a chef environment. If we have issues in the future this
+      # number could be made to be configurable or updated based on
+      # the ulimit based on platform.
+      def clean_parent_file_descriptors
+        # Don't clean $stdin, $stdout, $stderr, process_status_pipe.
+        # Also 3 & 4 is reserved by RubyVM
+        5.upto(256) do |n|
+          fd = File.for_fd(n) rescue nil
+          if fd && process_status_pipe.last.to_i != n
+            fd.close
+          end
+        end
+      end
+
       def configure_parent_process_file_descriptors
         # Close the sides of the pipes we don't care about
         stdin_pipe.first.close
@@ -230,6 +250,8 @@ module Mixlib
 
         fork do
           configure_subprocess_file_descriptors
+
+          clean_parent_file_descriptors
 
           set_group
           set_user
