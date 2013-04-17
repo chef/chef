@@ -36,8 +36,8 @@ class Chef
         end
 
         def write_shadow_file
-          buffer = Tempfile.new("shadow")
-          ::File.open(@password_file, ::File::RDWR|::File::CREAT) do |shadow_file|
+          buffer = Tempfile.new("shadow", "/etc")
+          ::File.open(@password_file) do |shadow_file|
             shadow_file.each do |entry|
               user = entry.split(":").first
               if user == @new_resource.username
@@ -47,8 +47,8 @@ class Chef
               end
             end
           end
-          buffer.rewind
-          make_it_real(buffer)
+          buffer.close
+          FileUtils.mv buffer.path, @password_file
         end
 
       private
@@ -57,12 +57,7 @@ class Chef
           fields = entry.split(":")
           fields[1] = @new_resource.password
           fields[2] = days_since_epoch
-          fields.join(":") + "\n"
-        end
-
-        def make_it_real(buffer)
-          FileUtils.link buffer.path, @password_file, :force => true
-          buffer.unlink
+          fields.join(":")
         end
 
         def days_since_epoch
