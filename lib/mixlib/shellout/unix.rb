@@ -189,11 +189,13 @@ module Mixlib
       # the ulimit based on platform.
       def clean_parent_file_descriptors
         # Don't clean $stdin, $stdout, $stderr, process_status_pipe.
-        # Also 3 & 4 is reserved by RubyVM
-        5.upto(256) do |n|
-          fd = File.for_fd(n) rescue nil
-          if fd && process_status_pipe.last.to_i != n
-            fd.close
+        3.upto(256) do |n|
+          # We are checking the fd for error pipe before attempting to
+          # create a file because error pipe will auto close when we
+          # try to create a file since it's set to CLOEXEC.
+          if n != @process_status_pipe.last.to_i
+            fd = File.for_fd(n) rescue nil
+            fd.close if fd
           end
         end
       end
