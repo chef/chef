@@ -28,39 +28,55 @@ class Chef
     class File
       class Deploy
         class MvWindows
+
+          Security = Chef::ReservedNames::Win32::Security
+          ACL = Security::ACL
+
           def create(file)
             Chef::Log.debug("touching #{file} to create it")
             FileUtils.touch(file)
           end
 
           ALL_ACLS =
-            Chef::ReservedNames::Win32::Security::OWNER_SECURITY_INFORMATION |
-            Chef::ReservedNames::Win32::Security::GROUP_SECURITY_INFORMATION |
-            Chef::ReservedNames::Win32::Security::DACL_SECURITY_INFORMATION
-            #Chef::ReservedNames::Win32::Security::SACL_SECURITY_INFORMATION
+            Security::OWNER_SECURITY_INFORMATION |
+            Security::GROUP_SECURITY_INFORMATION |
+            Security::DACL_SECURITY_INFORMATION |
+            Security::SACL_SECURITY_INFORMATION
 
           def deploy(src, dst)
-            result = Chef::ReservedNames::Win32::Security.get_named_security_info(dst, :SE_FILE_OBJECT, ALL_ACLS)
+            dst_so = Security::SecurableObject.new(dst)
 
-            Chef::Log.debug("applying owner #{result.owner} to staged file")
-            Chef::Log.debug("applying group #{result.group} to staged file")
-            Chef::Log.debug("applying dacl #{result.dacl} to staged file")
-            Chef::Log.debug("applying dacl inheritance to staged file") if result.dacl_inherits?
+            # FIXME: catch exception when we can't elevate privs?
+            dst_sd = dst_so.security_descriptor(true)  # get the sd with the SACL
 
-            # FIXME: SACL
-            # FIXME: inheritance
-            # FIXME: control?
-            # FIXME: filter out inherited DACLs
+            #result = Security.get_named_security_info(dst, :SE_FILE_OBJECT, ALL_ACLS)
 
-            so = Chef::ReservedNames::Win32::Security::SecurableObject.new(src)
+            if dst_sd.dacl_present?
+              apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
+            end
+            if dst_sd.sacl_present?
+              apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
+            end
 
-            so.set_dacl(result.dacl, result.dacl_inherits?)
+            Chef::Log.debug("applying owner #{dst_sd.owner} to staged file")
+            Chef::Log.debug("applying group #{dst_sd.group} to staged file")
+            Chef::Log.debug("applying dacl #{dst_sd.dacl} to staged file") if dst_sd.dacl_present?
+            Chef::Log.debug("applying dacl inheritance to staged file") if dst_sd.dacl_inherits?
+            Chef::Log.debug("applying sacl #{dst_sd.sacl} to staged file") if dst_sd.sacl_present?
+            Chef::Log.debug("applying sacl inheritance to staged file") if dst_sd.sacl_inherits?
 
-            so.group = result.group
+            # FIXME: self_relative?
 
-            so.owner = result.owner
 
-            #so.set_sacl(result.sacl, result.sacl_inherits?)
+            so = Security::SecurableObject.new(src)
+
+            so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dst_sd.dacl_present?
+
+            so.group = dst_sd.group
+
+            so.owner = dst_sd.owner
+
+            so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if dst_sd.sacl_present?
 
             FileUtils.mv(src, dst)
           end
