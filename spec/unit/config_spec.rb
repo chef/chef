@@ -230,12 +230,8 @@ describe Chef::Config do
     end
 
     it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
-      data_bag_path = if windows?
-        "C:\\chef\\data_bags"
-      else
-        "/var/chef/data_bags"
-      end
-
+      data_bag_path =
+        Chef::Config.platform_specific_path("/var/chef/data_bags")
       Chef::Config[:data_bag_path].should == data_bag_path
     end
   end
@@ -262,7 +258,9 @@ describe Chef::Config do
   end
 
   describe "Chef::Config[:encrypted_data_bag_secret]" do
-    db_secret_default_path = "/etc/chef/encrypted_data_bag_secret"
+    db_secret_default_path =
+      Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+
     let(:db_secret_default_path){ db_secret_default_path }
 
     before do
