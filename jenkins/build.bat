@@ -41,6 +41,8 @@ call copy /Y omnibus.rb.example.windows omnibus.rb || GOTO :error
 rem # we're guaranteed to have the correct ruby installed into C:\Ruby193 from chef-solo cookbooks
 rem # bundle install from here now too
 set PATH=C:\Ruby193\bin;%PATH%
+rem # ensure the installed certificate authority is loaded
+set SSL_CERT_FILE=C:\Ruby193\ssl\certs\cacert.pem
 call bundle install || GOTO :error
 
 call bundle exec omnibus build project %omnibus_project%-windows || GOTO :error
@@ -51,4 +53,3 @@ GOTO :EOF
 ECHO Failed with error level %errorlevel%
 
 ENDLOCAL
-
