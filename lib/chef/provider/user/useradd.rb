@@ -23,23 +23,23 @@ class Chef
   class Provider
     class User
       class Useradd < Chef::Provider::User
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
 
         def create_user
           command = compile_command("useradd") do |useradd|
             useradd << universal_options
-            useradd << password_option
             useradd << useradd_options
           end
           run_command(:command => command)
         end
 
         def manage_user
-          command = compile_command("usermod") do |u|
-            u << universal_options
-            u << password_option
+          if universal_options != ""
+            command = compile_command("usermod") do |u|
+              u << universal_options
+            end
+            run_command(:command => command)
           end
-          run_command(:command => command)
         end
 
         def remove_user
@@ -98,28 +98,25 @@ class Chef
         end
 
         def universal_options
-          opts = ''
-
-          UNIVERSAL_OPTIONS.each do |field, option|
-            update_options(field, option, opts)
-          end
-          if updating_home?
-            if managing_home_dir?
-              Chef::Log.debug("#{@new_resource} managing the users home directory")
-              opts << " -m -d '#{@new_resource.home}'"
-            else
-              Chef::Log.debug("#{@new_resource} setting home to #{@new_resource.home}")
-              opts << " -d '#{@new_resource.home}'"
+          @universal_options ||=
+            begin
+              opts = ''
+              # magic allows UNIVERSAL_OPTIONS to be overridden in a subclass
+              self.class::UNIVERSAL_OPTIONS.each do |field, option|
+                update_options(field, option, opts)
+              end
+              if updating_home?
+                if managing_home_dir?
+                  Chef::Log.debug("#{@new_resource} managing the users home directory")
+                  opts << " -m -d '#{@new_resource.home}'"
+                else
+                  Chef::Log.debug("#{@new_resource} setting home to #{@new_resource.home}")
+                  opts << " -d '#{@new_resource.home}'"
+                end
+              end
+              opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
+              opts
             end
-          end
-          opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
-          opts
-        end
-
-        def password_option
-          opts = ''
-          update_options(:password, "-p", opts)
-          opts
         end
 
         def update_options(field, option, opts)

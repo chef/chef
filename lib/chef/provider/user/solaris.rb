@@ -20,6 +20,8 @@ class Chef
   class Provider
     class User
       class Solaris < Chef::Provider::User::Useradd
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
+
         attr_writer :password_file
 
         def initialize(new_resource, run_context)
@@ -27,12 +29,23 @@ class Chef
           super
         end
 
-        def password_option
+        def create_user
+          super
+          manage_password
+        end
+
+        def manage_user
+          manage_password
+          super
+        end
+
+      private
+
+        def manage_password
           if @current_resource.password != @new_resource.password && @new_resource.password
             Chef::Log.debug("#{@new_resource} setting password to #{@new_resource.password}")
             write_shadow_file
           end
-          ""
         end
 
         def write_shadow_file
@@ -50,8 +63,6 @@ class Chef
           buffer.close
           FileUtils.mv buffer.path, @password_file
         end
-
-      private
 
         def updated_password(entry)
           fields = entry.split(":")
