@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,32 +21,34 @@ require 'chef/provider/user'
 
 class Chef
   class Provider
-    class User 
+    class User
       class Useradd < Chef::Provider::User
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
+        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
 
         def create_user
           command = compile_command("useradd") do |useradd|
             useradd << universal_options
+            useradd << password_option
             useradd << useradd_options
           end
           run_command(:command => command)
         end
-        
+
         def manage_user
           command = compile_command("usermod") do |u|
             u << universal_options
+            u << password_option
           end
           run_command(:command => command)
         end
-        
+
         def remove_user
           command = "userdel"
           command << " -r" if managing_home_dir?
           command << " #{@new_resource.username}"
           run_command(:command => command)
         end
-        
+
         def check_lock
           status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
             status_line = stdout.gets.split(' ')
@@ -80,11 +82,11 @@ class Chef
 
           @locked
         end
-        
+
         def lock_user
           run_command(:command => "usermod -L #{@new_resource.username}")
         end
-        
+
         def unlock_user
           run_command(:command => "usermod -U #{@new_resource.username}")
         end
@@ -94,17 +96,12 @@ class Chef
           base_command << " #{@new_resource.username}"
           base_command
         end
-        
+
         def universal_options
           opts = ''
-          
+
           UNIVERSAL_OPTIONS.each do |field, option|
-            if @current_resource.send(field) != @new_resource.send(field)
-              if @new_resource.send(field)
-                Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field)}")
-                opts << " #{option} '#{@new_resource.send(field)}'"
-              end
-            end
+            update_options(field, option, opts)
           end
           if updating_home?
             if managing_home_dir?
@@ -117,6 +114,21 @@ class Chef
           end
           opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
           opts
+        end
+
+        def password_option
+          opts = ''
+          update_options(:password, "-p", opts)
+          opts
+        end
+
+        def update_options(field, option, opts)
+          if @current_resource.send(field) != @new_resource.send(field)
+            if @new_resource.send(field)
+              Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field)}")
+              opts << " #{option} '#{@new_resource.send(field)}'"
+            end
+          end
         end
 
         def useradd_options

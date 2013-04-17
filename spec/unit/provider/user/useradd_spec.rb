@@ -56,8 +56,7 @@ describe Chef::Provider::User::Useradd do
       'comment' => "-c",
       'gid' => "-g",
       'uid' => "-u",
-      'shell' => "-s",
-      'password' => "-p"
+      'shell' => "-s"
     }
 
     field_list.each do |attribute, option|
@@ -94,6 +93,41 @@ describe Chef::Provider::User::Useradd do
         match_string << " #{option} 'hola'"
       end
       @provider.universal_options.should eql(match_string)
+    end
+
+    describe "when we want to set a password" do
+      before do
+        @new_resource.password "hocus-pocus"
+      end
+
+      it "should set useradd -p" do
+        @provider.password_option.should =~ / -p 'hocus-pocus'/
+      end
+
+      describe "and platform is Solaris" do
+        before do
+          @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
+          @provider.current_resource = @current_resource
+        end
+
+        it "should use its own shadow file writer to set the password" do
+          Chef::Provider::User::Solaris.any_instance.should_receive(:write_shadow_file)
+          @provider.stub!(:run_command).and_return(true)
+          @provider.manage_user
+        end
+
+        it "should write out a modified version of the password file" do
+          password_file = Tempfile.new("shadow")
+          password_file.puts "adam:existingpassword:15441::::::"
+          password_file.flush
+          @provider.password_file = password_file.path
+          @provider.stub!(:run_command).and_return(true)
+          @new_resource.password "verysecurepassword"
+          @provider.manage_user
+          ::File.open(password_file.path, "r").read.should =~ /adam:verysecurepassword:/
+          password_file.unlink
+        end
+      end
     end
 
     describe "when we want to create a system user" do
@@ -168,7 +202,7 @@ describe Chef::Provider::User::Useradd do
     end
 
     it "runs useradd with the computed command options" do
-      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' adam"
+      command = "useradd -c 'Adam Jacob' -g '23' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' -p 'abracadabra' adam"
       @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
       @provider.create_user
     end
@@ -177,12 +211,12 @@ describe Chef::Provider::User::Useradd do
 
       before do
         @provider.new_resource.system true
-        # there is no public API to set attribute's value to nil 
+        # there is no public API to set attribute's value to nil
         @provider.new_resource.instance_variable_set("@home", nil)
       end
 
       it "should not include -m or -d in the command options" do
-        command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -r adam"
+        command = "useradd -c 'Adam Jacob' -g '23' -s '/usr/bin/zsh' -u '1000' -p 'abracadabra' -r adam"
         @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
         @provider.create_user
       end
