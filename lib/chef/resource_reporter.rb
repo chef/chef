@@ -25,8 +25,6 @@ require 'chef/event_dispatch/base'
 class Chef
   class ResourceReporter < EventDispatch::Base
 
-
-
     class ResourceReport < Struct.new(:new_resource,
                                       :current_resource,
                                       :action,
@@ -68,7 +66,6 @@ class Chef
         as_hash["cookbook_name"] = new_resource.cookbook_name
         as_hash["cookbook_version"] = new_resource.cookbook_version.version
         as_hash
-
       end
 
       def finish
@@ -78,13 +75,16 @@ class Chef
       def success?
         !self.exception
       end
-    end
+
+    end # End class ResouceReport
 
     attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
     attr_reader :run_id
     attr_reader :error_descriptions
+
+    PROTOCOL_VERSION = '0.1.0'
 
     def initialize(rest_client)
       if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
@@ -108,37 +108,53 @@ class Chef
       @error_descriptions = {}
     end
 
+    def headers(additional_headers = {})
+      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
+      options.merge(additional_headers)
+    end
+
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin, :run_id => @run_id})
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin, :run_id => @run_id}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-          message = "Reporting error beginning run. URL: #{resource_history_url} "
-          if !e.response || e.response.code.to_s != "404"
-            code = if e.response.code
-                     e.response.code
-                   else
-                     "Exception Code Empty"
-                   end
-            exception = "Exception: #{code} "
-            if Chef::Config[:enable_reporting_url_fatals]
-              reporting_status = "Reporting fatals enabled. Aborting run. "
-              Chef::Log.error(message + exception + reporting_status)
-              raise
-            else
-              reporting_status = "Disabling reporting for run."
-              Chef::Log.info(message + exception + reporting_status)
-            end
-          else
-            reason = "Received 404. "
-            reporting_status = "Disabling reporting for run."
-            Chef::Log.debug(message + reason + reporting_status)
-          end
-          @reporting_enabled = false
+          handle_error_beginning_run(e, resource_history_url)
         end
       end
+    end
+
+    def handle_error_beginning_run(e, url)
+      message = "Reporting error beginning run. URL: #{url} "
+      code = if e.response.code
+               e.response.code.to_s
+             else
+               "Exception Code Empty"
+             end
+
+      if !e.response || (code != "404" && code != "406")
+        exception = "Exception: #{code} "
+        if Chef::Config[:enable_reporting_url_fatals]
+          reporting_status = "Reporting fatals enabled. Aborting run. "
+          Chef::Log.error(message + exception + reporting_status)
+          raise
+        else
+          reporting_status = "Disabling reporting for run."
+          Chef::Log.info(message + exception + reporting_status)
+        end
+      else
+        reason = "Received #{code}. "
+        if code == "406"
+          reporting_status = "Client version not supported. Please update the client. Disabling reporting for run."
+          Chef::Log.info(message + reason + reporting_status)
+        else
+          reporting_status = "Disabling reporting for run."
+          Chef::Log.debug(message + reason + reporting_status)
+        end
+      end
+
+      @reporting_enabled = false
     end
 
     def resource_current_state_loaded(new_resource, action, current_resource)
@@ -201,7 +217,7 @@ class Chef
           Chef::Log.debug("Sending compressed run data...")
           # Since we're posting compressed data we can not directly call post_rest which expects JSON
           reporting_url = @rest_client.create_url(resource_history_url)
-          @rest_client.raw_http_request(:POST, reporting_url, {'Content-Encoding' => 'gzip'}, compressed_data)
+          @rest_client.raw_http_request(:POST, reporting_url, headers({'Content-Encoding' => 'gzip'}), compressed_data)
         rescue Net::HTTPServerException => e
           if e.response.code.to_s == "400"
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
