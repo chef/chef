@@ -763,12 +763,18 @@ describe Mixlib::ShellOut do
       end
 
       context 'with open files for parent process' do
-        let(:ruby_code) { "count = 0; 0.upto(256) do |n| fd = File.for_fd(n) rescue nil; count += 1 if fd end; puts count" }
+        before do
+          @test_file = Tempfile.new('fd_test')
+        end
+
+        after do
+          @test_file.close if @test_file
+        end
+
+        let(:ruby_code) { "fd = File.for_fd(#{@test_file.to_i}) rescue nil; puts fd.nil?" }
 
         it "should not see file descriptors of the parent" do
-          test_file = Tempfile.new('fd_test')
-          stdout.chomp.should eql("3")
-          test_file.close
+          stdout.chomp.should eql("true")
         end
       end
 
