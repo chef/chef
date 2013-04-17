@@ -56,6 +56,7 @@ describe Chef::Provider::User::Useradd do
       'comment' => "-c",
       'gid' => "-g",
       'uid' => "-u",
+      'password' => "-p",
       'shell' => "-s"
     }
 
@@ -101,7 +102,7 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should set useradd -p" do
-        @provider.password_option.should =~ / -p 'hocus-pocus'/
+        @provider.universal_options.should =~ / -p 'hocus-pocus'/
       end
 
       describe "and platform is Solaris" do
@@ -119,9 +120,12 @@ describe Chef::Provider::User::Useradd do
         it "should write out a modified version of the password file" do
           password_file = Tempfile.new("shadow")
           password_file.puts "adam:existingpassword:15441::::::"
-          password_file.flush
+          password_file.close
           @provider.password_file = password_file.path
           @provider.stub!(:run_command).and_return(true)
+          # may not be able to write to /etc for tests...
+          temp_file = Tempfile.new("shadow")
+          Tempfile.stub!(:new).with("shadow", "/etc").and_return(temp_file)
           @new_resource.password "verysecurepassword"
           @provider.manage_user
           ::File.open(password_file.path, "r").read.should =~ /adam:verysecurepassword:/
@@ -202,7 +206,7 @@ describe Chef::Provider::User::Useradd do
     end
 
     it "runs useradd with the computed command options" do
-      command = "useradd -c 'Adam Jacob' -g '23' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' -p 'abracadabra' adam"
+      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' adam"
       @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
       @provider.create_user
     end
@@ -216,7 +220,7 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should not include -m or -d in the command options" do
-        command = "useradd -c 'Adam Jacob' -g '23' -s '/usr/bin/zsh' -u '1000' -p 'abracadabra' -r adam"
+        command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -r adam"
         @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
         @provider.create_user
       end
