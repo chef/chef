@@ -55,6 +55,11 @@ class Chef
         :long => "--email EMAIL",
         :description => "Email address of cookbook maintainer"
 
+      option :cookbook_type,
+        :short => "-t TYPE",
+        :long => "--type TYPE",
+        :description => "Type of cookbook to create: minimal, full(default)"
+
       def run
         self.config = Chef::Config.merge!(config)
         if @name_args.length < 1
@@ -73,22 +78,34 @@ class Chef
         email = config[:cookbook_email] || "YOUR_EMAIL"
         license = ((config[:cookbook_license] != "false") && config[:cookbook_license]) || "none"
         readme_format = ((config[:readme_format] != "false") && config[:readme_format]) || "md"
-        create_cookbook(cookbook_path, cookbook_name, copyright, license)
+        cookbook_type = ((config[:cookbook_type] != "false") && config[:cookbook_type]) || "full"
+        create_cookbook_tree(cookbook_path, cookbook_name, copyright, license, cookbook_type)
+        if File.directory?(File.join(cookbook_path, cookbook_name, "recipes"))
+          create_default_recipe(cookbook_path, cookbook_name, copyright, license)
+        end
         create_readme(cookbook_path, cookbook_name, readme_format)
         create_changelog(cookbook_path, cookbook_name)
         create_metadata(cookbook_path, cookbook_name, copyright, email, license, readme_format)
       end
 
-      def create_cookbook(dir, cookbook_name, copyright, license)
-        msg("** Creating cookbook #{cookbook_name}")
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "libraries")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "resources")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
-        FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
+      def create_cookbook_tree(dir, cookbook_name, copyright, license, cookbook_type)
+        msg("** Creating #{cookbook_type} cookbook #{cookbook_name}")
+        case cookbook_type
+          when "minimal"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
+          else
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "recipes")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "attributes")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "definitions")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "libraries")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "resources")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "providers")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "files", "default")}"
+            FileUtils.mkdir_p "#{File.join(dir, cookbook_name, "templates", "default")}"
+        end
+      end
+
+      def create_default_recipe(dir, cookbook_name, copyright, license)
         unless File.exists?(File.join(dir, cookbook_name, "recipes", "default.rb"))
           open(File.join(dir, cookbook_name, "recipes", "default.rb"), "w") do |file|
             file.puts <<-EOH
