@@ -132,7 +132,7 @@ F
     # Track all subclasses of Resource. This is used so names can be looked up
     # when attempting to deserialize from JSON. (See: json_compat)
     def self.resource_classes
-      @resource_classes ||= []
+      @@resource_classes ||= []
     end
 
     # Callback when subclass is defined. Adds subclass to list of subclasses.
