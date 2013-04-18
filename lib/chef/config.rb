@@ -351,8 +351,8 @@ class Chef
     # guess if you're running selinux or not -- override this if it guesses wrong
     selinux_enabled  Chef::Util::Selinux.new.selinuxenabled?
 
-    # set this to something like Chef::Provider::File::Deploy::CpUnix if you want to override behavior globally
-    file_deployment_strategy nil
+    # for file resources, deploy files with either :move or :copy
+    file_deploy_with :move
 
     # do we create /tmp or %TEMP% files, or do we create temp files in the destination directory of the file?
     #  - on windows this avoids issues with permission inheritance with the %TEMP% directory (do not set this to false)

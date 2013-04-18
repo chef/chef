@@ -50,8 +50,8 @@ class Chef
 
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content
-        if new_resource.respond_to?(:deployment_strategy)
-          @deployment_strategy = Chef::Provider::File::Deploy.strategy(new_resource.deployment_strategy)
+        if new_resource.respond_to?(:deploy_with)
+          @deployment_strategy = Chef::Provider::File::Deploy.strategy(new_resource.deploy_with)
         end
         super
       end

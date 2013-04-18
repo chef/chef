@@ -27,27 +27,15 @@ class Chef
   class Provider
     class File
       class Deploy
-        class CpUnix
+        class Cp
           def create(file)
             Chef::Log.debug("touching #{file} to create it")
             FileUtils.touch(file)
           end
 
           def deploy(src, dst)
-            Chef::Log.debug("reading modes from #{dst} file")
-            mode = ::File.stat(dst).mode & 07777
-            uid  = ::File.stat(dst).uid
-            gid  = ::File.stat(dst).gid
-            Chef::Log.debug("read mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
-
             Chef::Log.debug("copying temporary file #{src} into place at #{dst}")
             FileUtils.cp(src, dst)
-
-            Chef::Log.debug("reading modes from #{dst} file")
-            mode = ::File.stat(dst).mode & 07777
-            uid  = ::File.stat(dst).uid
-            gid  = ::File.stat(dst).gid
-            Chef::Log.debug("read mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
           end
         end
       end

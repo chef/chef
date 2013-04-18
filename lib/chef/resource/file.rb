@@ -47,6 +47,7 @@ class Chef
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
         @binmode = Platform.windows? ? true : false
+        @deploy_with = Chef::Config[:file_deploy_with]
         @diff = nil
       end
 
@@ -99,16 +100,11 @@ class Chef
         )
       end
 
-      def deployment_strategy(arg=nil)
-        klass = if arg.kind_of?(String) || arg.kind_of?(Symbol)
-                  lookup_provider_constant(arg)
-                else
-                  arg
-                end
+      def deploy_with(arg=nil)
         set_or_return(
-          :deployment_strategy,
-          klass,
-          :kind_of => [ Class ]
+          :deploy_with,
+          arg,
+          :equal_to => [ :move, :copy ]
         )
       end
 
