@@ -61,6 +61,15 @@ class Chef
             end
           end
           buffer.close
+
+          # FIXME: mostly duplicates code with file provider deploying a file
+          mode = ::File.stat(@password_file).mode & 07777
+          uid  = ::File.stat(@password_file).uid
+          gid  = ::File.stat(@password_file).gid
+
+          FileUtils.chown uid, gid, buffer.path
+          FileUtils.chmod mode, buffer.path
+
           FileUtils.mv buffer.path, @password_file
         end
 
