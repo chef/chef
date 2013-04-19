@@ -49,8 +49,6 @@ class Chef
             # FIXME: catch exception when we can't elevate privs?
             dst_sd = dst_so.security_descriptor(true)  # get the sd with the SACL
 
-            #result = Security.get_named_security_info(dst, :SE_FILE_OBJECT, ALL_ACLS)
-
             if dst_sd.dacl_present?
               apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
             end
@@ -64,9 +62,6 @@ class Chef
             Chef::Log.debug("applying dacl inheritance to staged file") if dst_sd.dacl_inherits?
             Chef::Log.debug("applying sacl #{dst_sd.sacl} to staged file") if dst_sd.sacl_present?
             Chef::Log.debug("applying sacl inheritance to staged file") if dst_sd.sacl_inherits?
-
-            # FIXME: self_relative?
-
 
             so = Security::SecurableObject.new(src)
 
