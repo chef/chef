@@ -56,7 +56,7 @@ class Chef
             # work has caused dotfiles of mine to change to root-owned, i'm fine with this not being
             # exceptional, and i think most use cases will consider this to not be exceptional, and
             # the right thing is to fix the ownership of the file to the user running the commmand
-            # (which requires write perms to the directory, or mv will have already thrown an exception)
+            # (which requires write perms to the directory, or mv will throw an exception)
             begin
               ::File.chown(uid, nil, src)
             rescue Errno::EPERM
