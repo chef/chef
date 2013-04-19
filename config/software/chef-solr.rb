@@ -18,7 +18,8 @@
 name "chef-solr"
 version "11.0.1"
 
-dependencies ["rsync", "jre"]
+dependency "rsync"
+dependency "jre"
 
 source :git => "git://github.com/opscode/chef-solr"
 

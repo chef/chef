@@ -18,7 +18,12 @@
 name "chef-server-webui"
 version "11.0.4"
 
-dependencies ["ruby", "bundler", "libxml2", "libxslt", "curl", "rsync"]
+dependency "ruby"
+dependency "bundler"
+dependency "libxml2"
+dependency "libxslt"
+dependency "curl"
+dependency "rsync"
 
 source :git => "git://github.com/opscode/chef-server-webui.git"
 

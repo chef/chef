@@ -18,7 +18,9 @@
 name "chef-expander"
 version "11.0.0"
 
-dependencies ["ruby", "bundler", "rsync"]
+dependency "ruby"
+dependency "bundler"
+dependency "rsync"
 
 source :git => "git://github.com/opscode/chef-expander"
 

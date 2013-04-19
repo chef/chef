@@ -24,6 +24,7 @@ build_version   Omnibus::BuildVersion.full
 build_iteration 4
 package_name    "chef-client"
 
+dependency "preparation"
 dependency "ruby-windows"
 dependency "ruby-windows-devkit"
 dependency "chef-windows"

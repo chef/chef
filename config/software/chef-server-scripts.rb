@@ -17,7 +17,7 @@
 
 name "chef-server-scripts"
 
-dependencies [ "rsync" ]
+dependency "rsync"
 
 source :path => File.expand_path("files/chef-server-scripts", Omnibus.project_root)
 
