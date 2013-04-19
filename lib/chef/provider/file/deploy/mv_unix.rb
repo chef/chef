@@ -17,9 +17,11 @@
 #
 
 #
-# PURPOSE: this strategy is atomic, attempts to preserve file modes, and supports selinux
+# PURPOSE: this strategy is atomic, and attempts to preserve file modes
 #
-# NOTE: there is no a preserve flag to FileUtils.mv, and the complexity here is probably why
+# NOTE: there is no preserve flag to FileUtils.mv, and we want to preserve the dst file
+#       modes rather than the src file modes (preserve = true is what mv does already, we
+#       would like preserve = false which is tricky).
 #
 
 class Chef
@@ -41,13 +43,10 @@ class Chef
             uid  = ::File.stat(dst).uid
             gid  = ::File.stat(dst).gid
 
-            Chef::Log.debug("moving temporary file #{src} into place at #{dst}")
-            FileUtils.mv(src, dst)
-
-            Chef::Log.debug("applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
+            Chef::Log.debug("applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
 
             # i own the inode, so should be able to at least chmod it
-            ::File.chmod(mode, dst)
+            ::File.chmod(mode, src)
 
             # we may be running as non-root in which case because we are doing an mv we cannot preserve
             # the file modes.  after the mv we have a different inode and if we don't have rights to
@@ -59,15 +58,18 @@ class Chef
             # the right thing is to fix the ownership of the file to the user running the commmand
             # (which requires write perms to the directory, or mv will have already thrown an exception)
             begin
-              ::File.chown(uid, nil, dst)
+              ::File.chown(uid, nil, src)
             rescue Errno::EPERM
-              Chef::Log.warn("Could not set uid = #{uid} on #{dst}, file modes not preserved")
+              Chef::Log.warn("Could not set uid = #{uid} on #{src}, file modes not preserved")
             end
             begin
-              ::File.chown(nil, gid, dst)
+              ::File.chown(nil, gid, src)
             rescue Errno::EPERM
-              Chef::Log.warn("Could not set gid = #{gid} on #{dst}, file modes not preserved")
+              Chef::Log.warn("Could not set gid = #{gid} on #{src}, file modes not preserved")
             end
+
+            Chef::Log.debug("moving temporary file #{src} into place at #{dst}")
+            FileUtils.mv(src, dst)
           end
         end
       end
