@@ -37,12 +37,6 @@ class Chef
             FileUtils.touch(file)
           end
 
-          ALL_ACLS =
-            Security::OWNER_SECURITY_INFORMATION |
-            Security::GROUP_SECURITY_INFORMATION |
-            Security::DACL_SECURITY_INFORMATION |
-            Security::SACL_SECURITY_INFORMATION
-
           def deploy(src, dst)
             dst_so = Security::SecurableObject.new(dst)
 
