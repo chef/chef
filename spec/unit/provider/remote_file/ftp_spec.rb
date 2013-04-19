@@ -141,7 +141,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
     it "should return a tempfile in the result" do
       result = fetcher.fetch
-      result.raw_file.should == @tempfile
+      result.raw_file.should eql @tempfile
     end
 
     it "should return the mtime in the result"
