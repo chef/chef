@@ -74,10 +74,7 @@ class Chef
     config_attr_writer :chef_server_url do |url|
       url = url.strip
       configure do |c|
-        [ :registration_url,
-          :template_url,
-          :remotefile_url,
-          :search_url,
+        [ :search_url,
           :chef_server_url,
           :role_url ].each do |u|
             c[u] = url
@@ -116,25 +113,11 @@ class Chef
       end
     end
 
-    # Override the config dispatch to set the value of authorized_openid_providers when openid_providers (deprecated) is used
-    #
-    # === Parameters
-    # providers<Array>:: An array of openid providers that are authorized to login to the chef server
-    #
-    config_attr_writer :openid_providers do |providers|
-      configure { |c| c[:authorized_openid_providers] = providers }
-      providers
-    end
-
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     enforce_path_sanity(true)
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     formatter "null"
-
-    # Used when OpenID authentication is enabled in the Web UI
-    authorized_openid_identifiers nil
-    authorized_openid_providers nil
 
     # The number of times the client should retry when registering with the server
     client_registration_retries 5
@@ -146,9 +129,6 @@ class Chef
 
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     script_path []
-
-    # Where files are stored temporarily during uploads
-    sandbox_path "/var/chef/sandboxes"
 
     # Where cookbook files are stored on the server (by content checksum)
     checksum_path "/var/chef/checksums"
@@ -173,7 +153,6 @@ class Chef
     user nil
     group nil
     umask 0022
-
 
     # Valid log_levels are:
     # * :debug
@@ -202,7 +181,6 @@ class Chef
     # toggle info level log items that can create a lot of output
     verbose_logging true
     node_name nil
-    node_path "/var/chef/node"
     diff_disabled           false
     diff_filesize_threshold 10000000
     diff_output_threshold   1000000
@@ -210,17 +188,10 @@ class Chef
     pid_file nil
 
     chef_server_url   "http://localhost:4000"
-    registration_url  "http://localhost:4000"
-    template_url      "http://localhost:4000"
     role_url          "http://localhost:4000"
-    remotefile_url    "http://localhost:4000"
     search_url        "http://localhost:4000"
 
-    client_url "http://localhost:4042"
-
     rest_timeout 300
-    run_command_stderr_timeout 120
-    run_command_stdout_timeout 120
     solo  false
     splay nil
     why_run false
@@ -236,7 +207,6 @@ class Chef
     ssl_verify_mode :verify_none
     ssl_ca_path nil
     ssl_ca_file nil
-
 
     # Where should chef-solo look for role files?
     role_path platform_specific_path("/var/chef/roles")
@@ -304,24 +274,6 @@ class Chef
     # The `validation_key` is never used if the `client_key` exists.
     validation_key platform_specific_path("/etc/chef/validation.pem")
     validation_client_name "chef-validator"
-    web_ui_client_name "chef-webui"
-    web_ui_key "/etc/chef/webui.pem"
-    web_ui_admin_user_name  "admin"
-    web_ui_admin_default_password "p@ssw0rd1"
-
-    # Server Signing CA
-    #
-    # In truth, these don't even have to change
-    signing_ca_cert "/var/chef/ca/cert.pem"
-    signing_ca_key "/var/chef/ca/key.pem"
-    signing_ca_user nil
-    signing_ca_group nil
-    signing_ca_country "US"
-    signing_ca_state "Washington"
-    signing_ca_location "Seattle"
-    signing_ca_org "Chef User"
-    signing_ca_domain "opensource.opscode.com"
-    signing_ca_email "opensource-cert@opscode.com"
 
     # Zypper package provider gpg checks. Set to true to enable package
     # gpg signature checking. This will be default in the
