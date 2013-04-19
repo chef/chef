@@ -25,18 +25,6 @@ describe Chef::Config do
   end
 
   shared_examples_for "server URL" do
-    it "should set the registration url" do
-      Chef::Config.registration_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the template url" do
-      Chef::Config.template_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the remotefile url" do
-      Chef::Config.remotefile_url.should == "https://junglist.gen.nz"
-    end
-
     it "should set the search url" do
       Chef::Config.search_url.should == "https://junglist.gen.nz"
     end
@@ -165,19 +153,7 @@ describe Chef::Config do
     end
   end
 
-  describe "class method: openid_providers=" do
-    it "should not log an appropriate deprecation info message" do
-      Chef::Log.should_not_receive(:info).with("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers")
-      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
-    end
-
-    it "should internally configure authorized_openid_providers with the value given" do
-      Chef::Config.should_receive(:configure).and_return(%w{opscode.com junglist.gen.nz})
-      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
-    end
-  end
-
-   describe "class method: plaform_specific_path" do
+  describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
         path = "/etc/chef/cookbooks"
