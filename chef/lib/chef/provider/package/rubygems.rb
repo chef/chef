@@ -122,7 +122,7 @@ class Chef
           # code into Gem::Package.
           def spec_from_file(file)
             if defined?(Gem::Format)
-              Gem::Format.from_file_by_path(source).spec
+              Gem::Format.from_file_by_path(file).spec
             else
               Gem::Package.new(file).spec
             end
