@@ -24,9 +24,11 @@ install_path    "/opt/chef-server"
 build_version   Omnibus::BuildVersion.new.semver
 build_iteration 1
 
+# creates required build directories
+dependency "preparation"
+
 # global
 dependency "chef-gem" # for embedded chef-solo
-dependency "preparation" # creates required build directories
 dependency "chef-server-cookbooks" # used by chef-server-ctl reconfigure
 dependency "chef-server-scripts" # assorted scripts used by installed instance
 dependency "chef-server-ctl" # additional project-specific chef-server-ctl subcommands
