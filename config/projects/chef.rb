@@ -16,11 +16,14 @@
 #
 
 name "chef"
+maintainer "Opscode, Inc."
+homepage "http://www.opscode.com"
 
 replaces        "chef-full"
 install_path    "/opt/chef"
 build_version   Omnibus::BuildVersion.full
-build_iteration "4"
+build_iteration 4
 
-dependencies ["preparation","chef","version-manifest"]
-
+dependency "preparation"
+dependency "chef"
+dependency "version-manifest"

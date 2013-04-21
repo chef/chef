@@ -17,9 +17,9 @@
 
 name "chef-server-cookbooks"
 
-dependencies [ "rsync" ]
+dependency "rsync"
 
-source :path => File.expand_path("files/chef-server-cookbooks", Omnibus.root)
+source :path => File.expand_path("files/chef-server-cookbooks", Omnibus.project_root)
 
 build do
   command "mkdir -p #{install_dir}/embedded/cookbooks"

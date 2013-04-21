@@ -17,9 +17,9 @@
 
 name "chef-windows"
 
-dependencies ["ruby-windows", #includes rubygems
-              "ruby-windows-devkit",
-              "bundler"]
+dependency "ruby-windows" #includes rubygems
+dependency "ruby-windows-devkit"
+dependency "bundler"
 
 version ENV['CHEF_GIT_REV'] || "master"
 
@@ -114,7 +114,7 @@ build do
 
   # render batch files
   #
-  # TODO: 
+  # TODO:
   #  I'd love to move this out to a top-level 'template' operation in omnibus, but it currently
   #  requires pretty deep inspection of the Rubygems structure of the installed chef and ohai
   #  gems

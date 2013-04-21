@@ -16,13 +16,16 @@
 #
 
 name "chef-windows"
+maintainer "Opscode, Inc."
+homepage "http://www.opscode.com"
 
 install_path    "c:\\opscode\\chef"
 build_version   Omnibus::BuildVersion.full
 build_iteration 4
 package_name    "chef-client"
 
-dependencies ["ruby-windows",
-              "ruby-windows-devkit",
-              "chef-windows",
-              "chef-client-msi"]
+dependency "preparation"
+dependency "ruby-windows"
+dependency "ruby-windows-devkit"
+dependency "chef-windows"
+dependency "chef-client-msi"

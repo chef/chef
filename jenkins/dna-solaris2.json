@@ -1,6 +1,6 @@
 {
   "omnibus": {
-    "build_user": "jenkins-node",
+    "build_user": "jenkins",
     "install_dir": "/opt/chef",
     "cache_dir": "/var/cache/omnibus"
   },

@@ -18,7 +18,7 @@
 name "rebar"
 version "retry_use_source"
 
-dependencies ["erlang"]
+dependency "erlang"
 
 source :git => "git://github.com/kevsmith/rebar.git"
 

@@ -1,80 +1,103 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require 'bundler/setup'
-require 'omnibus/vagrant/omnibus'
+require "vagrant"
 
-Vagrant::Config.run do |config|
+if Vagrant::VERSION < "1.2.1"
+  raise "The Omnibus Build Lab is only compatible with Vagrant 1.2.1+"
+end
+
+host_project_path = File.expand_path("..", __FILE__)
+guest_project_path = "/home/vagrant/#{File.basename(host_project_path)}"
+project_name = "chef"
+
+Vagrant.configure("2") do |config|
+
+  config.vm.hostname = "#{project_name}-omnibus-build-lab"
 
   config.vm.define 'ubuntu-10.04' do |c|
-    c.vm.box     = "opscode-ubuntu-10.04"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-ubuntu-10.04.box"
+    c.vm.box = "opscode-ubuntu-10.04"
+    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_chef-11.2.0.box"
   end
 
   config.vm.define 'ubuntu-11.04' do |c|
-    c.vm.box     = "opscode-ubuntu-11.04"
+    c.vm.box = "opscode-ubuntu-11.04"
     c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-ubuntu-11.04.box"
   end
 
   config.vm.define 'ubuntu-12.04' do |c|
-    c.vm.box     = "opscode-ubuntu-12.04"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-ubuntu-12.04.box"
+    c.vm.box = "canonical-ubuntu-12.04"
+    c.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"
   end
 
-  config.vm.define 'centos-5.5' do |c|
-    c.vm.box     = "opscode-centos-5.5"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-5.5.box"
+  config.vm.define 'centos-5' do |c|
+    c.vm.box = "opscode-centos-5.8"
+    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-5.8_chef-11.2.0.box"
   end
 
-  config.vm.define 'centos-5.7' do |c|
-    c.vm.box     = "opscode-centos-5.7"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-5.7.box"
+  config.vm.define 'centos-6' do |c|
+    c.vm.box = "opscode-centos-6.3"
+    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.3_chef-11.2.0.box"
   end
 
-  config.vm.define 'centos-6.0' do |c|
-    c.vm.box     = "opscode-centos-6.0"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.0.box"
+  config.vm.provider :virtualbox do |vb|
+    # Give enough horsepower to build without taking all day.
+    vb.customize [
+      "modifyvm", :id,
+      "--memory", "1536",
+      "--cpus", "2"
+    ]
   end
 
-  config.vm.define 'centos-6.2' do |c|
-    c.vm.box     = "opscode-centos-6.2"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.2.box"
-  end
+  # Ensure a recent version of the Chef Omnibus packages are installed
+  config.omnibus.chef_version = "11.4.0"
 
-  # Share an additional folder to the guest VM. The first argument is
-  # an identifier, the second is the path on the guest to mount the
-  # folder, and the third is the path on the host to the actual folder.
-  # config.vm.share_folder "v-data", "/vagrant_data", "../data"
-  config.vm.share_folder "omnibus-chef", "~/omnibus-chef", File.expand_path("..", __FILE__)
-  config.vm.share_folder "omnibus-ruby", "~/omnibus-ruby", File.expand_path("../../omnibus-ruby", __FILE__)
-  config.vm.share_folder "omnibus-software", "~/omnibus-software", File.expand_path("../../omnibus-software", __FILE__)
+  # Enable the berkshelf-vagrant plugin
+  config.berkshelf.enabled = true
+  # The path to the Berksfile to use with Vagrant Berkshelf
+  config.berkshelf.berksfile_path = "./Berksfile"
 
-  # Enable provisioning with chef solo, specifying a cookbooks path (relative
-  # to this Vagrantfile), and adding some recipes and/or roles.
+  config.ssh.max_tries = 40
+  config.ssh.timeout   = 120
+  config.ssh.forward_agent = true
+
+  host_project_path = File.expand_path("..", __FILE__)
+  guest_project_path = "/home/vagrant/#{File.basename(host_project_path)}"
+
+  config.vm.synced_folder host_project_path, guest_project_path
+
+  # prepare VM to be an Omnibus builder
   config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = ["cookbooks", File.join(Bundler.definition.specs["omnibus"][0].gem_dir, "cookbooks")]
-    chef.add_recipe "omnibus"
     chef.json = {
       "omnibus" => {
-        "install-dirs" => ["/opt/chef", "/opt/chef-server"]
+        "build_user" => "vagrant",
+        "build_dir" => guest_project_path,
+        "install_dir" => "/opt/#{project_name}"
       }
     }
+
+    chef.run_list = [
+      "recipe[omnibus::default]"
+    ]
   end
 
-  # Enable SSH agent forwarding for git clones
-  config.ssh.forward_agent = true
-  
-  # Give enough horsepower to build PC without taking all day
-  # or several hours worth of swapping  Disable support we don't need
-  config.vm.customize [ 
-    "modifyvm", :id,
-    "--memory", "1536", 
-    "--cpus", "2", 
-    "--usb", "off", 
-    "--usbehci", "off",
-    "--audio", "none"
-  ]
+  # We have to nuke any chef omnibus packages (used during provisioning) before
+  # we build new chef omnibus packages!
+  config.vm.provision :shell, :inline => <<-REMOVE_OMNIBUS
+    if command -v dpkg &>/dev/null;
+    then
+      sudo dpkg -P #{project_name} || true
+    else
+      sudo rpm -ev #{project_name} || true
+    fi
+  REMOVE_OMNIBUS
 
-  config.omnibus.path = "~/omnibus-chef"
+  config.vm.provision :shell, :inline => <<-OMNIBUS_BUILD
+    sudo mkdir -p /opt/#{project_name}
+    sudo chown vagrant /opt/#{project_name}
+    export PATH=/usr/local/bin:$PATH
+    cd #{guest_project_path}
+    su vagrant -c "bundle install --binstubs"
+    su vagrant -c "bin/omnibus build project #{project_name}"
+  OMNIBUS_BUILD
 end
-
