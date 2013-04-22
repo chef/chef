@@ -1,8 +1,0 @@
-#!/bin/sh
-
-cd <%= File.join(node['chef_server']['chef-solr']['dir'], 'jetty') %>
-
-ulimit -n 50000
-
-exec 2>&1
-exec chpst -P -o 50000 -U <%= node['chef_server']['user']['username'] %> -u <%= node['chef_server']['user']['username'] %> /usr/bin/env PATH=/opt/chef-server/embedded/bin:/opt/chef-server/bin:/opt/chef-server/embedded/jre/bin:$PATH JAVA_HOME=/opt/chef-server/embedded/jre <%= node['chef_server']['chef-solr']['command'] %>

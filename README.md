@@ -2,6 +2,9 @@
 
 This project creates full-stack platform-specific packages for `chef`!
 
+__PLEASE NOTE__ - The `chef-server` Omnibus project has been moved to:
+https://github.com/opscode/omnibus-chef-server
+
 ## Installation
 
 We'll assume you have Ruby 1.9+ and Bundler installed. First ensure all
