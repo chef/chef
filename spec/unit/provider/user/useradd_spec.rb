@@ -56,8 +56,8 @@ describe Chef::Provider::User::Useradd do
       'comment' => "-c",
       'gid' => "-g",
       'uid' => "-u",
-      'password' => "-p",
-      'shell' => "-s"
+      'shell' => "-s",
+      'password' => "-p"
     }
 
     field_list.each do |attribute, option|
@@ -94,44 +94,6 @@ describe Chef::Provider::User::Useradd do
         match_string << " #{option} 'hola'"
       end
       @provider.universal_options.should eql(match_string)
-    end
-
-    describe "when we want to set a password" do
-      before do
-        @new_resource.password "hocus-pocus"
-      end
-
-      it "should set useradd -p" do
-        @provider.universal_options.should =~ / -p 'hocus-pocus'/
-      end
-
-      describe "and platform is Solaris" do
-        before do
-          @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
-          @provider.current_resource = @current_resource
-        end
-
-        it "should use its own shadow file writer to set the password" do
-          Chef::Provider::User::Solaris.any_instance.should_receive(:write_shadow_file)
-          @provider.stub!(:run_command).and_return(true)
-          @provider.manage_user
-        end
-
-        it "should write out a modified version of the password file" do
-          password_file = Tempfile.new("shadow")
-          password_file.puts "adam:existingpassword:15441::::::"
-          password_file.close
-          @provider.password_file = password_file.path
-          @provider.stub!(:run_command).and_return(true)
-          # may not be able to write to /etc for tests...
-          temp_file = Tempfile.new("shadow")
-          Tempfile.stub!(:new).with("shadow", "/etc").and_return(temp_file)
-          @new_resource.password "verysecurepassword"
-          @provider.manage_user
-          ::File.open(password_file.path, "r").read.should =~ /adam:verysecurepassword:/
-          password_file.unlink
-        end
-      end
     end
 
     describe "when we want to create a system user" do
