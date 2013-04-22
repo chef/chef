@@ -103,7 +103,7 @@ class Chef
       self.class.run_start_notifications.each do |notification|
         notification.call(run_status)
       end
-      @events.run_started(@node, run_status.start_time)
+      @events.run_started(run_status)
     end
 
     # Callback to fire notifications that the run completed successfully
@@ -474,7 +474,7 @@ class Chef
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
-        @events.run_completed(node, run_status.end_time)
+        @events.run_completed(node)
         true
       rescue Exception => e
         # CHEF-3336: Send the error first in case something goes wrong below and we don't know why
@@ -485,7 +485,7 @@ class Chef
           run_status.exception = e
           run_failed
         end
-        @events.run_failed(e, run_status.end_time)
+        @events.run_failed(e)
         raise
       ensure
         @run_status = nil
