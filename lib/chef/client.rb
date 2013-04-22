@@ -103,6 +103,7 @@ class Chef
       self.class.run_start_notifications.each do |notification|
         notification.call(run_status)
       end
+      @events.run_started(run_status)
     end
 
     # Callback to fire notifications that the run completed successfully
