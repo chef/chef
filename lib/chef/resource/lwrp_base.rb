@@ -39,8 +39,13 @@ class Chef
 
         # Add log entry if we override an existing light-weight resource.
         class_name = convert_to_class_name(rname)
-        overriding = Chef::Resource.const_defined?(class_name)
-        Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
+        if Resource.const_defined?(class_name)
+          old_class = Resource.send(:remove_const, class_name)
+          # CHEF-3432 -- Chef::Resource keeps a list of subclasses; need to
+          # remove old ones from the list when replacing.
+          resource_classes.delete(old_class)
+          Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!")
+        end
 
         resource_class = Class.new(self)
 
