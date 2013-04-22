@@ -122,7 +122,10 @@ F
     # Track all subclasses of Resource. This is used so names can be looked up
     # when attempting to deserialize from JSON. (See: json_compat)
     def self.resource_classes
-      @resource_classes ||= []
+      # Using a class variable here ensures we have one variable to track
+      # subclasses shared by the entire class hierarchy; without this, each
+      # subclass would have its own list of subclasses.
+      @@resource_classes ||= []
     end
 
     # Callback when subclass is defined. Adds subclass to list of subclasses.
@@ -728,8 +731,11 @@ F
 
       # Add log entry if we override an existing light-weight resource.
       class_name = convert_to_class_name(rname)
-      overriding = Chef::Resource.const_defined?(class_name)
-      Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!") if overriding
+      if Chef::Resource.const_defined?(class_name)
+        Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!")
+        old_class = Chef::Resource.send(:remove_const, class_name)
+        Chef::Resource.resource_classes.delete(old_class)
+      end
 
       new_resource_class = Class.new self do |cls|
 
