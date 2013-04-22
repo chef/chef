@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
   s.add_dependency "highline", ">= 1.6.9"
   s.add_dependency "erubis"
-
+  s.add_dependency "uuidtools"
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.12.0" }
 

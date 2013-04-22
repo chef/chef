@@ -106,11 +106,23 @@ class Chef
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
+    end
+
+    def uuid
+      @uuid ||= UUIDTools::UUID.random_create.to_s # Ensure the uuid is a string so the json encoding never tries to encode the uuid object
+    end
+
+    def start_time
+      @run_status.start_time
+    end
+
+    def run_started(run_status)
+      @run_status = run_status
       if reporting_enabled?
         begin
-          @run_id = UUIDTools::UUID.random_create.to_s # Ensure the uuid is a string so the json encoding never tries to encode the uuid object
-          resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post(resource_history_url, {"action" => "begin", "run_id" => @run_id})
+          @run_id = uuid
+          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          server_response = @rest_client.post(resource_history_url, {"action" => "begin", "run_id" => @run_id, "start_time" => start_time.to_s})
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           message = "Reporting error beginning run. URL: #{resource_history_url} "
           if !e.response || e.response.code.to_s != "404"
@@ -211,7 +223,11 @@ class Chef
         Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
       end
     end
-    
+
+    def end_time
+      @run_status.end_time
+    end
+
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"
@@ -222,6 +238,7 @@ class Chef
       run_data["run_list"] = @node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
+      run_data["end_time"] = end_time.to_s
 
       if exception
         exception_data = {}
