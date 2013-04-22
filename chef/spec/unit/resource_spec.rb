@@ -35,6 +35,21 @@ describe Chef::Resource do
     @resource = Chef::Resource.new("funk", @run_context)
   end
 
+  describe "when inherited" do
+
+    it "adds an entry to a list of subclasses" do
+      subclass = Class.new(Chef::Resource)
+      Chef::Resource.resource_classes.should include(subclass)
+    end
+
+    it "keeps track of subclasses of subclasses" do
+      subclass = Class.new(Chef::Resource)
+      subclass_of_subclass = Class.new(subclass)
+      Chef::Resource.resource_classes.should include(subclass_of_subclass)
+    end
+
+  end
+
   describe "when declaring the identity attribute" do
     it "has no identity attribute by default" do
       Chef::Resource.identity_attr.should be_nil

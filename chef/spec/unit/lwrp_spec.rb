@@ -45,6 +45,22 @@ describe "override logging" do
     end
   end
 
+  it "removes the old LRWP resource class from the list of resource subclasses [CHEF-3432]" do
+    # CHEF-3432 regression test:
+    # Chef::Resource keeps a list of all subclasses to assist class inflation
+    # for json parsing (see Chef::JSONCompat). When replacing LWRP resources,
+    # we need to ensure the old resource class is remove from that list.
+    Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
+      Chef::Resource.build_from_file("lwrp", file, nil)
+    end
+    first_lwr_foo_class = Chef::Resource::LwrpFoo
+    Chef::Resource.resource_classes.should include(first_lwr_foo_class)
+    Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
+      Chef::Resource.build_from_file("lwrp", file, nil)
+    end
+    Chef::Resource.resource_classes.should_not include(first_lwr_foo_class)
+  end
+
 end
 
 describe "LWRP" do
