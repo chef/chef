@@ -27,7 +27,7 @@ GEM
       mixlib-shellout
       systemu
       yajl-ruby
-    omnibus (1.0.1)
+    omnibus (1.0.2)
       fpm (= 0.3.11)
       mixlib-config (~> 1.1.2)
       mixlib-shellout (~> 1.0)
