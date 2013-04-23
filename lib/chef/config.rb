@@ -110,7 +110,7 @@ class Chef
           f = File.new(location.to_str, "a")
           f.sync = true
         rescue Errno::ENOENT
-          raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
+          raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
           f
       end
