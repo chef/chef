@@ -71,7 +71,7 @@ export PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 # bundle install may fail if the internets are down
 retries=0
 while true; do
-  if /opt/chef/embedded/bin/bundle install --without server --without docgen --path bundle; then
+  if /opt/chef/embedded/bin/bundle install --without server docgen --path bundle; then
     break
   fi
   retries=$( expr $retries + 1 )
