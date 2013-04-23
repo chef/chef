@@ -145,6 +145,9 @@ class Chef
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
 
+    # File-like resource found a non-file (socket, pipe, directory, etc) at its destination
+    class FileTypeMismatch < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

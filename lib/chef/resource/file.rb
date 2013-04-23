@@ -48,6 +48,7 @@ class Chef
         @provider = Chef::Provider::File
         @binmode = Platform.windows? ? true : false
         @deploy_with = Chef::Config[:file_deploy_with]
+        @force_unlik = Chef::Config[:file_force_unlink]
         @diff = nil
       end
 
@@ -105,6 +106,14 @@ class Chef
           :deploy_with,
           arg,
           :equal_to => [ :move, :copy ]
+        )
+      end
+
+      def force_unlink(arg=nil)
+        set_or_return(
+          :diff,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 

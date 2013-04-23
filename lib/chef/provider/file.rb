@@ -91,6 +91,19 @@ class Chef
             a.failure_message(Chef::Exceptions::InsufficientPermissions,"File #{@new_resource.path} exists but is not writable so it cannot be deleted")
           end
         end
+
+        # Make sure if the destination already exists that it is a normal file
+        #   for :create_if_missing, we're assuming the user wanted to avoid blowing away the non-file here
+        #   for :touch, we can modify perms of whatever is at this path, regardless of its type
+        #   for :delete, we can blow away whatever is here, regardless of its type
+        #   for :create, we have a problem with devining the users intent, so we raise an exception
+        unless @new_resource.force_unlink
+          requirements.assert(:create) do |a|
+            a.assertion { !exists_or_symlink?(@new_resource.path) || ::File.file?(@new_resource.path) }
+            a.failure_message(Chef::Exceptions::FileTypeMismatch, "File #{@new_resource.path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove")
+            a.whyrun("Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource")
+          end
+        end
       end
 
       def action_create
@@ -166,17 +179,17 @@ class Chef
 
       def file_type_string(path)
         case
-        when File.blockdev?(path)
+        when ::File.blockdev?(path)
           "block device"
-        when File.chardev?(path)
+        when ::File.chardev?(path)
           "char device"
-        when File.directory?(path)
+        when ::File.directory?(path)
           "directory"
-        when File.pipe?(path)
+        when ::File.pipe?(path)
           "pipe"
-        when File.socket?(path)
+        when ::File.socket?(path)
           "socket"
-        when File.symlink?(path)
+        when ::File.symlink?(path)
           "symlink"
         else
           "unknown filetype"
@@ -185,13 +198,15 @@ class Chef
 
       def do_unlink
         @file_unlinked = false
-        if ::File.exists?(@new_resource.path) && !::File.file?(@new_resource.path)
-          # unlink things that aren't normal files
-          description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
-          converge_by(description) do
-            ::File.unlink(@new_resource.path)
+        if @new_resource.force_unlink
+          if ::File.exists?(@new_resource.path) && !::File.file?(@new_resource.path)
+            # unlink things that aren't normal files
+            description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
+            converge_by(description) do
+              ::File.unlink(@new_resource.path)
+            end
+            @file_unlinked = true
           end
-          @file_unlinked = true
         end
       end
 
@@ -237,7 +252,8 @@ class Chef
         if tempfile.path.nil? || !::File.exists?(tempfile.path)
           raise "chef-client is confused, trying to deploy a file that has no path or does not exist..."
         end
-        if contents_changed?
+        # the file? on the next line suppresses the case in why-run when we have a not-file here that would have otherwise been removed
+        if ::File.file?(@new_resource.path) && contents_changed?
           diff.diff(@current_resource.path, tempfile.path)
           @new_resource.diff( diff.for_reporting ) unless file_created?
           description = [ "update content in file #{@new_resource.path} from #{short_cksum(@current_resource.checksum)} to #{short_cksum(checksum(tempfile.path))}" ]
@@ -293,6 +309,11 @@ class Chef
         end
         acl_scanner = ScanAccessControl.new(@new_resource, resource)
         acl_scanner.set_all!
+      end
+
+      # File.exists? always follows symlinks, i want true if there's a symlink there
+      def exists_or_symlink?(path)
+        ::File.symlink?(path) || ::File.exists?(path)
       end
 
     end
