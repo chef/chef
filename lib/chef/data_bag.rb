@@ -87,7 +87,8 @@ class Chef
           raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
 
-        Dir.glob(File.join(Chef::Config[:data_bag_path], "*")).map{|f|File.basename(f)}.sort
+        names = Dir.glob(File.join(Chef::Config[:data_bag_path], "*")).map{|f|File.basename(f)}.sort
+        names.inject({}) {|h, n| h[n] = n; h}
       else
         if inflate
           # Can't search for all data bags like other objects, fall back to N+1 :(
