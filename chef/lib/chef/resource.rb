@@ -731,7 +731,7 @@ F
 
       # Add log entry if we override an existing light-weight resource.
       class_name = convert_to_class_name(rname)
-      if Chef::Resource.const_defined?(class_name)
+      if Chef::Resource.const_defined?(class_name, false)
         Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!")
         old_class = Chef::Resource.send(:remove_const, class_name)
         Chef::Resource.resource_classes.delete(old_class)

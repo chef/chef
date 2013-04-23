@@ -18,6 +18,9 @@
 
 require 'spec_helper'
 
+module LwrpConstScopingConflict
+end
+
 describe "override logging" do
   before :each do
     $stderr.stub!(:write)
@@ -60,6 +63,12 @@ describe "override logging" do
     end
     Chef::Resource.resource_classes.should_not include(first_lwr_foo_class)
   end
+
+   it "does not attempt to remove classes from higher up namespaces [CHEF-4117]" do
+     conflicting_lwrp_file = File.expand_path( "lwrp_const_scoping/resources/conflict.rb", CHEF_SPEC_DATA)
+     # The test is that this should not raise an error:
+     Chef::Resource.build_from_file("lwrp_const_scoping", conflicting_lwrp_file, nil)
+   end
 
 end
 
