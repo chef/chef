@@ -129,6 +129,17 @@ F
 
     extend Chef::Mixin::ConvertToClassName
 
+
+    if Module.method(:const_defined?).arity == 1
+      def self.strict_const_defined?(const)
+        const_defined?(const)
+      end
+    else
+      def self.strict_const_defined?(const)
+        const_defined?(const, false)
+      end
+    end
+
     # Track all subclasses of Resource. This is used so names can be looked up
     # when attempting to deserialize from JSON. (See: json_compat)
     def self.resource_classes
