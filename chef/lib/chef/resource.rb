@@ -146,6 +146,15 @@ F
     include Chef::Mixin::ConvertToClassName
     include Chef::Mixin::Deprecation
 
+    if Module.method(:const_defined?).arity == 1
+      def self.strict_const_defined?(const)
+        const_defined?(const)
+      end
+    else
+      def self.strict_const_defined?(const)
+        const_defined?(const, false)
+      end
+    end
 
     # Set or return the list of "state attributes" implemented by the Resource
     # subclass. State attributes are attributes that describe the desired state
@@ -731,7 +740,7 @@ F
 
       # Add log entry if we override an existing light-weight resource.
       class_name = convert_to_class_name(rname)
-      if Chef::Resource.const_defined?(class_name, false)
+      if Chef::Resource.strict_const_defined?(class_name)
         Chef::Log.info("#{class_name} light-weight resource already initialized -- overriding!")
         old_class = Chef::Resource.send(:remove_const, class_name)
         Chef::Resource.resource_classes.delete(old_class)
