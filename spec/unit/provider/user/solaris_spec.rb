@@ -20,7 +20,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::User::Useradd do
+describe Chef::Provider::User::Solaris do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -47,7 +47,7 @@ describe Chef::Provider::User::Useradd do
     @current_resource.manage_home false
     @current_resource.non_unique false
     @current_resource.supports({:manage_home => false, :non_unique => false})
-    @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
+    @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
 
@@ -56,8 +56,7 @@ describe Chef::Provider::User::Useradd do
       'comment' => "-c",
       'gid' => "-g",
       'uid' => "-u",
-      'shell' => "-s",
-      'password' => "-p"
+      'shell' => "-s"
     }
 
     field_list.each do |attribute, option|
@@ -94,6 +93,33 @@ describe Chef::Provider::User::Useradd do
         match_string << " #{option} 'hola'"
       end
       @provider.universal_options.should eql(match_string)
+    end
+
+    describe "when we want to set a password" do
+      before do
+        @new_resource.password "hocus-pocus"
+      end
+
+      it "should use its own shadow file writer to set the password" do
+        @provider.should_receive(:write_shadow_file)
+        @provider.stub!(:run_command).and_return(true)
+        @provider.manage_user
+      end
+
+      it "should write out a modified version of the password file" do
+        password_file = Tempfile.new("shadow")
+        password_file.puts "adam:existingpassword:15441::::::"
+        password_file.close
+        @provider.password_file = password_file.path
+        @provider.stub!(:run_command).and_return(true)
+        # may not be able to write to /etc for tests...
+        temp_file = Tempfile.new("shadow")
+        Tempfile.stub!(:new).with("shadow", "/etc").and_return(temp_file)
+        @new_resource.password "verysecurepassword"
+        @provider.manage_user
+        ::File.open(password_file.path, "r").read.should =~ /adam:verysecurepassword:/
+        password_file.unlink
+      end
     end
 
     describe "when we want to create a system user" do
@@ -168,8 +194,9 @@ describe Chef::Provider::User::Useradd do
     end
 
     it "runs useradd with the computed command options" do
-      command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' adam"
+      command = "useradd -c 'Adam Jacob' -g '23' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' adam"
       @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+      @provider.should_receive(:manage_password).and_return(nil)
       @provider.create_user
     end
 
@@ -182,8 +209,9 @@ describe Chef::Provider::User::Useradd do
       end
 
       it "should not include -m or -d in the command options" do
-        command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -r adam"
+        command = "useradd -c 'Adam Jacob' -g '23' -s '/usr/bin/zsh' -u '1000' -r adam"
         @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+        @provider.should_receive(:manage_password).and_return(nil)
         @provider.create_user
       end
 
@@ -375,7 +403,7 @@ describe Chef::Provider::User::Useradd do
     it "should return true if the current home does not exist but a home is specified by the new resource" do
       @new_resource = Chef::Resource::User.new("adam", @run_context)
       @current_resource = Chef::Resource::User.new("adam", @run_context)
-      @provider = Chef::Provider::User::Useradd.new(@new_resource, @run_context)
+      @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource
       @current_resource.home nil
       @new_resource.home "/home/kitten"

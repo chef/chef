@@ -261,7 +261,8 @@ class Chef
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Solaris,
             }
           },
           :solaris2 => {
@@ -269,13 +270,15 @@ class Chef
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Solaris,
             },
             ">= 5.9" => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Solaris,
             }
           },
           :smartos => {
