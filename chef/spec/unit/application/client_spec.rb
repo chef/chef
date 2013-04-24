@@ -148,8 +148,17 @@ describe Chef::Application::Client, "run_application", :unix_only do
 
   it "should exit gracefully when sent SIGTERM" do
     pid = fork do
-      @app.run_application
+      begin
+        @app.run_application
+      rescue SystemExit # expected
+      rescue Exception => e
+        $stderr.puts e
+        $stderr.puts e.backtrace
+      ensure
+        exit!
+      end
     end
+    IO.select([@pipe[0]], nil, nil, 10).should_not be_nil
     @pipe[0].gets.should == "started\n"
     Process.kill("TERM", pid)
     Process.wait
