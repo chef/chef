@@ -20,6 +20,7 @@
 # limitations under the License.
 
 require 'chef/log'
+require 'chef/exceptions'
 require 'mixlib/config'
 
 class Chef
