@@ -148,6 +148,11 @@
             "ubuntu",
             "12.10",
             "x86_64"
+        ],
+        [
+            "ubuntu",
+            "13.04",
+            "x86_64"
         ]
     ],
     "build_os=ubuntu-11-04,machine_architecture=x86,role=oss-builder": [
