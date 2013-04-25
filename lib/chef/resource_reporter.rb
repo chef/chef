@@ -115,10 +115,19 @@ class Chef
 
     def node_load_completed(node, expanded_run_list_with_versions, config)
       @node = node
+    end
+
+    def start_time
+      @run_status.start_time
+    end
+
+    def run_started(run_status)
+      @run_status = run_status
       if reporting_enabled?
         begin
-          resource_history_url = "reports/nodes/#{node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin, :run_id => @run_id}, headers)
+          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin, :run_id => @run_id,
+                                                                          :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_beginning_run(e, resource_history_url)
         end
@@ -203,7 +212,11 @@ class Chef
     def run_failed(exception)
       @exception = exception
       @status = "failure"
-      post_reporting_data
+      # If we haven't had the node setup yet, there's not much we can do
+      # in terms of reporting
+      if @node
+          post_reporting_data
+      end
     end
 
     def post_reporting_data
@@ -231,6 +244,10 @@ class Chef
       end
     end
 
+    def end_time
+      @run_status.end_time
+    end
+
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"
@@ -241,6 +258,7 @@ class Chef
       run_data["run_list"] = @node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
+      run_data["end_time"] = end_time.to_s
 
       if exception
         exception_data = {}
