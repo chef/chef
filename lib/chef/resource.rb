@@ -404,6 +404,9 @@ F
       # could end up with multiple resources.
       resources = [ resource_spec ].flatten
       resources.each do |resource|
+
+        validate_resource_spec!(resource_spec)
+
         case timing.to_s
         when 'delayed'
           notifies_delayed(action, resource)
@@ -458,6 +461,10 @@ F
         resource.notifies(action, self, timing)
       end
       true
+    end
+
+    def validate_resource_spec!(resource_spec)
+      run_context.resource_collection.validate_lookup_spec!(resource_spec)
     end
 
     def is(*args)
