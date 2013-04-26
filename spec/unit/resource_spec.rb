@@ -618,7 +618,9 @@ describe Chef::Resource do
       describe "with a syntax error in the resource spec" do
 
         it "raises an exception immmediately" do
-          pending
+          lambda do
+            @resource.notifies(:run, "typo[missing-closing-bracket")
+          end.should raise_error(Chef::Exceptions::InvalidResourceSpecification)
         end
       end
     end
