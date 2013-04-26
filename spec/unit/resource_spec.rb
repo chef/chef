@@ -590,6 +590,66 @@ describe Chef::Resource do
     end
 
   end
+
+  describe "when creating notifications" do
+
+    describe "with a string resource spec" do
+
+      it "creates a delayed notification when timing is not specified" do
+        @resource.notifies(:run, "execute[foo]")
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates a delayed notification when :delayed is not specified" do
+        @resource.notifies(:run, "execute[foo]", :delayed)
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediate is specified" do
+        @resource.notifies(:run, "execute[foo]", :immediate)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediately is specified" do
+        @resource.notifies(:run, "execute[foo]", :immediately)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+
+      describe "with a syntax error in the resource spec" do
+
+        it "raises an exception immmediately" do
+          pending
+        end
+      end
+    end
+
+    describe "with a resource reference" do
+      before do
+        @notified_resource = Chef::Resource.new("punk", @run_context)
+      end
+
+      it "creates a delayed notification when timing is not specified" do
+        @resource.notifies(:run, @notified_resource)
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates a delayed notification when :delayed is not specified" do
+        @resource.notifies(:run, @notified_resource, :delayed)
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediate is specified" do
+        @resource.notifies(:run, @notified_resource, :immediate)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediately is specified" do
+        @resource.notifies(:run, @notified_resource, :immediately)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+    end
+
+  end
 end
 
 describe Chef::Resource::Notification do
