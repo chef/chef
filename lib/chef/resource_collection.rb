@@ -24,6 +24,14 @@ class Chef
   class ResourceCollection
     include Enumerable
 
+    # Matches a multiple resource lookup specification,
+    # e.g., "service[nginx,unicorn]"
+    MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/
+
+    # Matches a single resource lookup specification,
+    # e.g., "service[nginx]"
+    SINGLE_RESOURCE_MATCH = /^(.+)\[(.+)\]$/
+
     attr_reader :iterator
 
     def initialize
@@ -57,7 +65,7 @@ class Chef
 
     # 'push' is an alias method to <<
     alias_method :push, :<<
-     
+
     def insert(resource)
       is_chef_resource(resource)
       if @insert_after_idx
@@ -150,6 +158,36 @@ class Chef
     # compat.
     alias_method :resources, :find
 
+
+    # Returns true if +query_object+ is a valid string for looking up a
+    # resource, or raises InvalidResourceSpecification if not.
+    # === Arguments
+    # * query_object should be a string of the form
+    # "resource_type[resource_name]", a single element Hash (e.g., :service =>
+    # "apache2"), or a Chef::Resource (this is the happy path). Other arguments
+    # will raise an exception.
+    # === Returns
+    # * true returns true for all valid input.
+    # === Raises
+    # * Chef::Exceptions::InvalidResourceSpecification for all invalid input.
+    def validate_lookup_spec!(query_object)
+      case query_object
+      when Chef::Resource
+        true
+      when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH
+        true
+      when Hash
+        true
+      when String
+        raise Chef::Exceptions::InvalidResourceSpecification,
+          "The string `#{query_object}' is not valid for resource collection lookup. Correct syntax is `resource_type[resource_name]'"
+      else
+        raise Chef::Exceptions::InvalidResourceSpecification,
+          "The object `#{query_object.inspect}' is not valid for resource collection lookup. " + 
+          "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
+      end
+    end
+
     # Serialize this object as a hash
     def to_json(*a)
       instance_vars = Hash.new
@@ -188,7 +226,7 @@ class Chef
       def find_resource_by_string(arg)
         results = Array.new
         case arg
-        when /^(.+)\[(.+?),(.+)\]$/
+        when MULTIPLE_RESOURCE_MATCH
           resource_type = $1
           arg =~ /^.+\[(.+)\]$/
           resource_list = $1
@@ -196,7 +234,7 @@ class Chef
             resource_name = "#{resource_type}[#{name}]"
             results << lookup(resource_name)
           end
-        when /^(.+)\[(.+)\]$/
+        when SINGLE_RESOURCE_MATCH
           resource_type = $1
           name = $2
           resource_name = "#{resource_type}[#{name}]"
