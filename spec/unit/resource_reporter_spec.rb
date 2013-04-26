@@ -429,7 +429,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPNotFound.new("a response body", "404", "Not Found")
         @error = Net::HTTPServerException.new("404 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id,
+          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id,
                                                :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
@@ -459,7 +459,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id, :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
@@ -489,7 +489,7 @@ describe Chef::ResourceReporter do
         @response = Net::HTTPInternalServerError.new("a response body", "500", "Internal Server Error")
         @error = Net::HTTPServerException.new("500 message", @response)
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id, :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_raise(@error)
       end
@@ -510,7 +510,7 @@ describe Chef::ResourceReporter do
       before do
         response = {"uri"=>"https://example.com/reports/nodes/spitfire/runs/@run_id"}
         @rest_client.should_receive(:post_rest).
-          with("reports/nodes/spitfire/runs", {:action => :begin, :run_id => @run_id, :start_time => @start_time.to_s},
+          with("reports/nodes/spitfire/runs", {:action => :start, :run_id => @run_id, :start_time => @start_time.to_s},
                {'X-Ops-Reporting-Protocol-Version' => Chef::ResourceReporter::PROTOCOL_VERSION}).
           and_return(response)
         @resource_reporter.run_started(@run_status)
