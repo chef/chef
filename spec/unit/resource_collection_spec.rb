@@ -210,6 +210,35 @@ describe Chef::ResourceCollection do
 
   end
 
+  describe "when validating a resource query object" do
+    it "accepts a string of the form 'resource_type[resource_name]'" do
+      @rc.validate_lookup_spec!("resource_type[resource_name]").should be_true
+    end
+
+    it "accepts a single-element :resource_type => 'resource_name' Hash" do
+      @rc.validate_lookup_spec!(:service => "apache2").should be_true
+    end
+
+
+    it "accepts a chef resource object" do
+      res = Chef::Resource.new("foo", nil)
+      @rc.validate_lookup_spec!(res).should be_true
+    end
+
+    it "rejects a malformed query string" do
+      lambda do
+        @rc.validate_lookup_spec!("resource_type[missing-end-bracket")
+      end.should raise_error(Chef::Exceptions::InvalidResourceSpecification)
+    end
+
+    it "rejects an argument that is not a String, Hash, or Chef::Resource" do
+      lambda do
+        @rc.validate_lookup_spec!(Object.new)
+      end.should raise_error(Chef::Exceptions::InvalidResourceSpecification)
+    end
+
+  end
+
   describe "to_json" do
     it "should serialize to json" do
       json = @rc.to_json
