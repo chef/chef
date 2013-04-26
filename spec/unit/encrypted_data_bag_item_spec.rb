@@ -46,6 +46,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       # out. Instead we test if the encrypted data is the same. If it *is* the
       # same, we assume the IV was the same each time.
       encryptor.encrypted_data.should_not eq encryptor2.encrypted_data
+      encryptor.hmac.should_not eq(encryptor2.hmac)
     end
   end
 
@@ -64,6 +65,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       final_data["iv"].should eq Base64.encode64(encryptor.iv)
       final_data["version"].should eq 1
       final_data["cipher"].should eq"aes-256-cbc"
+      final_data["hmac"].should eq(encryptor.hmac)
     end
   end
 
@@ -99,6 +101,27 @@ describe Chef::EncryptedDataBagItem::Decryptor do
         # the original plain text) [CHEF-3858]
         decryptor.should_receive(:decrypted_data).and_return("lksajdf")
         lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
+    end
+
+    context "and an hmac is present" do
+      let(:bogus_hmac) do
+        digest = OpenSSL::Digest::Digest.new("sha256")
+        raw_hmac = OpenSSL::HMAC.digest(digest, "WRONG", encrypted_value["encrypted_data"])
+        Base64.encode64(raw_hmac)
+      end
+
+      it "rejects the data if the hmac is wrong" do
+        encrypted_value["hmac"] = bogus_hmac
+        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
+    end
+
+    context "and an hmac is not present" do
+
+      it "decrypts the data" do
+        encrypted_value.delete("hmac")
+        lambda { decryptor.for_decrypted_item }.should_not raise_error
       end
 
     end

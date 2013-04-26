@@ -86,6 +86,7 @@ class Chef::EncryptedDataBagItem
     def for_encrypted_item
       {
         "encrypted_data" => encrypted_data,
+        "hmac" => hmac,
         "iv" => Base64.encode64(iv),
         "version" => 1,
         "cipher" => ALGORITHM
@@ -119,6 +120,15 @@ class Chef::EncryptedDataBagItem
         enc_data = openssl_encryptor.update(serialized_data)
         enc_data << openssl_encryptor.final
         Base64.encode64(enc_data)
+      end
+    end
+
+    # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
+    def hmac
+      @hmac ||= begin
+        digest = OpenSSL::Digest::Digest.new("sha256")
+        raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
+        Base64.encode64(raw_hmac)
       end
     end
 
@@ -182,7 +192,6 @@ class Chef::EncryptedDataBagItem
         raise DecryptionFailure, "Error decrypting data bag value. Most likely the provided key is incorrect"
       end
 
-
       def encrypted_bytes
         Base64.decode64(@encrypted_data["encrypted_data"])
       end
@@ -193,12 +202,31 @@ class Chef::EncryptedDataBagItem
 
       def decrypted_data
         @decrypted_data ||= begin
+          validate_hmac!
           plaintext = openssl_decryptor.update(encrypted_bytes)
           plaintext << openssl_decryptor.final
         rescue OpenSSL::Cipher::CipherError => e
           raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect"
         end
       end
+
+      def validate_hmac!
+        return nil unless @encrypted_data.key?("hmac")
+
+        digest = OpenSSL::Digest::Digest.new("sha256")
+        raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
+        expected_bytes = raw_hmac.bytes.to_a
+        actual_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
+        valid = expected_bytes.size ^ actual_bytes.size
+        expected_bytes.zip(actual_bytes) { |x, y| valid |= x ^ y.to_i }
+        if valid == 0
+          # correct hmac
+          true
+        else
+          raise DecryptionFailure, "Error decrypting data bag value: invalid hmac. Most likely the provided key is incorrect"
+        end
+      end
+
 
       def openssl_decryptor
         @openssl_decryptor ||= begin
