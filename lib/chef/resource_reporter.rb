@@ -126,16 +126,16 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{@node.name}/runs"
-          server_response = @rest_client.post_rest(resource_history_url, {:action => :begin, :run_id => @run_id,
+          server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => @run_id,
                                                                           :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-          handle_error_beginning_run(e, resource_history_url)
+          handle_error_starting_run(e, resource_history_url)
         end
       end
     end
 
-    def handle_error_beginning_run(e, url)
-      message = "Reporting error beginning run. URL: #{url} "
+    def handle_error_starting_run(e, url)
+      message = "Reporting error starting run. URL: #{url} "
       code = if e.response.code
                e.response.code.to_s
              else
