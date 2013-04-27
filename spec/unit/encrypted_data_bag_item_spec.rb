@@ -46,7 +46,6 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       # out. Instead we test if the encrypted data is the same. If it *is* the
       # same, we assume the IV was the same each time.
       encryptor.encrypted_data.should_not eq encryptor2.encrypted_data
-      encryptor.hmac.should_not eq(encryptor2.hmac)
     end
   end
 
@@ -65,10 +64,23 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       final_data["iv"].should eq Base64.encode64(encryptor.iv)
       final_data["version"].should eq 1
       final_data["cipher"].should eq"aes-256-cbc"
-      final_data["hmac"].should eq(encryptor.hmac)
     end
   end
 
+  describe "when using version 2 format" do
+
+    subject(:encryptor) { described_class::Version2Encryptor.new(plaintext_data, key) }
+
+    it "generates an hmac based on ciphertext including iv" do
+      encryptor2 = Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.new(plaintext_data, key)
+      encryptor.hmac.should_not eq(encryptor2.hmac)
+    end
+
+    it "includes the hmac in the envelope" do
+      final_data = encryptor.for_encrypted_item
+      final_data["hmac"].should eq(encryptor.hmac)
+    end
+  end
 end
 
 describe Chef::EncryptedDataBagItem::Decryptor do
@@ -77,11 +89,36 @@ describe Chef::EncryptedDataBagItem::Decryptor do
   let(:plaintext_data) { {"foo" => "bar"} }
   let(:encryption_key) { "passwd" }
   let(:decryption_key) { encryption_key }
-  let(:encrypted_value) do
-    Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+
+  context "when decrypting a version 2 (JSON+aes-256-cbc+hmac-sha256+random iv) encrypted value" do
+    let(:encrypted_value) do
+      Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+    end
+
+    let(:bogus_hmac) do
+      digest = OpenSSL::Digest::Digest.new("sha256")
+      raw_hmac = OpenSSL::HMAC.digest(digest, "WRONG", encrypted_value["encrypted_data"])
+      Base64.encode64(raw_hmac)
+    end
+
+    it "rejects the data if the hmac is wrong" do
+      encrypted_value["hmac"] = bogus_hmac
+      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+    end
+
+    it "rejects the data if the hmac is missing" do
+      encrypted_value.delete("hmac")
+      lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+    end
+
   end
 
   context "when decrypting a version 1 (JSON+aes-256-cbc+random iv) encrypted value" do
+
+    let(:encrypted_value) do
+      Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, encryption_key).for_encrypted_item
+    end
+
     it "selects the correct strategy for version 1" do
       decryptor.should be_a_kind_of Chef::EncryptedDataBagItem::Decryptor::Version1Decryptor
     end
@@ -102,28 +139,6 @@ describe Chef::EncryptedDataBagItem::Decryptor do
         decryptor.should_receive(:decrypted_data).and_return("lksajdf")
         lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
       end
-    end
-
-    context "and an hmac is present" do
-      let(:bogus_hmac) do
-        digest = OpenSSL::Digest::Digest.new("sha256")
-        raw_hmac = OpenSSL::HMAC.digest(digest, "WRONG", encrypted_value["encrypted_data"])
-        Base64.encode64(raw_hmac)
-      end
-
-      it "rejects the data if the hmac is wrong" do
-        encrypted_value["hmac"] = bogus_hmac
-        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
-      end
-    end
-
-    context "and an hmac is not present" do
-
-      it "decrypts the data" do
-        encrypted_value.delete("hmac")
-        lambda { decryptor.for_decrypted_item }.should_not raise_error
-      end
-
     end
 
     context "and the provided key is incorrect" do

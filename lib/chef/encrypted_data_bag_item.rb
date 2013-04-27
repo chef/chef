@@ -61,83 +61,104 @@ class Chef::EncryptedDataBagItem
 
   # Implementation class for converting plaintext data bag item values to an
   # encrypted value, including any necessary wrappers and metadata.
-  class Encryptor
+  module Encryptor
 
-    attr_reader :key
-    attr_reader :plaintext_data
-
-    # Create a new Encryptor for +data+, which will be encrypted with the given
-    # +key+.
-    #
-    # === Arguments:
-    # * data: An object of any type that can be serialized to json
-    # * key: A String representing the desired passphrase
-    # * iv: The optional +iv+ parameter is intended for testing use only. When
-    # *not* supplied, Encryptor will use OpenSSL to generate a secure random
-    # IV, which is what you want.
-    def initialize(plaintext_data, key, iv=nil)
-      @plaintext_data = plaintext_data
-      @key = key
-      @iv = iv && Base64.decode64(iv)
+    def self.new(*args)
+      Version1Encryptor.new(*args)
     end
 
-    # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
-    # using as the value in an encrypted data bag item.
-    def for_encrypted_item
-      {
-        "encrypted_data" => encrypted_data,
-        "hmac" => hmac,
-        "iv" => Base64.encode64(iv),
-        "version" => 1,
-        "cipher" => ALGORITHM
-      }
-    end
+    class Version1Encryptor
+      attr_reader :key
+      attr_reader :plaintext_data
 
-    # Generates or returns the IV.
-    def iv
-      # Generated IV comes from OpenSSL::Cipher::Cipher#random_iv
-      # This gets generated when +openssl_encryptor+ gets created.
-      openssl_encryptor if @iv.nil?
-      @iv
-    end
+      # Create a new Encryptor for +data+, which will be encrypted with the given
+      # +key+.
+      #
+      # === Arguments:
+      # * data: An object of any type that can be serialized to json
+      # * key: A String representing the desired passphrase
+      # * iv: The optional +iv+ parameter is intended for testing use only. When
+      # *not* supplied, Encryptor will use OpenSSL to generate a secure random
+      # IV, which is what you want.
+      def initialize(plaintext_data, key, iv=nil)
+        @plaintext_data = plaintext_data
+        @key = key
+        @iv = iv && Base64.decode64(iv)
+      end
 
-    # Generates (and memoizes) an OpenSSL::Cipher::Cipher object and configures
-    # it for the specified iv and encryption key.
-    def openssl_encryptor
-      @openssl_encryptor ||= begin
-        encryptor = OpenSSL::Cipher::Cipher.new(ALGORITHM)
-        encryptor.encrypt
-        @iv ||= encryptor.random_iv
-        encryptor.iv = @iv
-        encryptor.key = Digest::SHA256.digest(key)
-        encryptor
+      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
+      # using as the value in an encrypted data bag item.
+      def for_encrypted_item
+        {
+          "encrypted_data" => encrypted_data,
+          "iv" => Base64.encode64(iv),
+          "version" => 1,
+          "cipher" => ALGORITHM
+        }
+      end
+
+      # Generates or returns the IV.
+      def iv
+        # Generated IV comes from OpenSSL::Cipher::Cipher#random_iv
+        # This gets generated when +openssl_encryptor+ gets created.
+        openssl_encryptor if @iv.nil?
+        @iv
+      end
+
+      # Generates (and memoizes) an OpenSSL::Cipher::Cipher object and configures
+      # it for the specified iv and encryption key.
+      def openssl_encryptor
+        @openssl_encryptor ||= begin
+          encryptor = OpenSSL::Cipher::Cipher.new(ALGORITHM)
+          encryptor.encrypt
+          @iv ||= encryptor.random_iv
+          encryptor.iv = @iv
+          encryptor.key = Digest::SHA256.digest(key)
+          encryptor
+        end
+      end
+
+      # Encrypts and Base64 encodes +serialized_data+
+      def encrypted_data
+        @encrypted_data ||= begin
+          enc_data = openssl_encryptor.update(serialized_data)
+          enc_data << openssl_encryptor.final
+          Base64.encode64(enc_data)
+        end
+      end
+
+      # Wraps the data in a single key Hash (JSON Object) and converts to JSON.
+      # The wrapper is required because we accept values (such as Integers or
+      # Strings) that do not produce valid JSON when serialized without the
+      # wrapper.
+      def serialized_data
+        Yajl::Encoder.encode(:json_wrapper => plaintext_data)
       end
     end
 
-    # Encrypts and Base64 encodes +serialized_data+
-    def encrypted_data
-      @encrypted_data ||= begin
-        enc_data = openssl_encryptor.update(serialized_data)
-        enc_data << openssl_encryptor.final
-        Base64.encode64(enc_data)
-      end
-    end
+    class Version2Encryptor < Version1Encryptor
 
-    # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
-    def hmac
-      @hmac ||= begin
-        digest = OpenSSL::Digest::Digest.new("sha256")
-        raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
-        Base64.encode64(raw_hmac)
+      # Returns a wrapped and encrypted version of +plaintext_data+ suitable for
+      # using as the value in an encrypted data bag item.
+      def for_encrypted_item
+        {
+          "encrypted_data" => encrypted_data,
+          "hmac" => hmac,
+          "iv" => Base64.encode64(iv),
+          "version" => 2,
+          "cipher" => ALGORITHM
+        }
       end
-    end
 
-    # Wraps the data in a single key Hash (JSON Object) and converts to JSON.
-    # The wrapper is required because we accept values (such as Integers or
-    # Strings) that do not produce valid JSON when serialized without the
-    # wrapper.
-    def serialized_data
-      Yajl::Encoder.encode(:json_wrapper => plaintext_data)
+      # Generates an HMAC-SHA2-256 of the encrypted data (encrypt-then-mac)
+      def hmac
+        @hmac ||= begin
+          digest = OpenSSL::Digest::Digest.new("sha256")
+          raw_hmac = OpenSSL::HMAC.digest(digest, key, encrypted_data)
+          Base64.encode64(raw_hmac)
+        end
+      end
+
     end
   end
 
@@ -154,7 +175,10 @@ class Chef::EncryptedDataBagItem
     # decryptor object for that version. Call #for_decrypted_item on the
     # resulting object to decrypt and deserialize it.
     def self.for(encrypted_value, key)
-      case format_version_of(encrypted_value)
+      format_version = format_version_of(encrypted_value)
+      case format_version
+      when 2
+        Version2Decryptor.new(encrypted_value, key)
       when 1
         Version1Decryptor.new(encrypted_value, key)
       when 0
@@ -202,31 +226,12 @@ class Chef::EncryptedDataBagItem
 
       def decrypted_data
         @decrypted_data ||= begin
-          validate_hmac!
           plaintext = openssl_decryptor.update(encrypted_bytes)
           plaintext << openssl_decryptor.final
         rescue OpenSSL::Cipher::CipherError => e
           raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect"
         end
       end
-
-      def validate_hmac!
-        return nil unless @encrypted_data.key?("hmac")
-
-        digest = OpenSSL::Digest::Digest.new("sha256")
-        raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
-        expected_bytes = raw_hmac.bytes.to_a
-        actual_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
-        valid = expected_bytes.size ^ actual_bytes.size
-        expected_bytes.zip(actual_bytes) { |x, y| valid |= x ^ y.to_i }
-        if valid == 0
-          # correct hmac
-          true
-        else
-          raise DecryptionFailure, "Error decrypting data bag value: invalid hmac. Most likely the provided key is incorrect"
-        end
-      end
-
 
       def openssl_decryptor
         @openssl_decryptor ||= begin
@@ -249,6 +254,36 @@ class Chef::EncryptedDataBagItem
         end
       end
 
+    end
+
+    class Version2Decryptor < Version1Decryptor
+
+      def decrypted_data
+        validate_hmac! unless @decrypted_data
+        super
+      end
+
+      def validate_hmac!
+        digest = OpenSSL::Digest::Digest.new("sha256")
+        raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
+
+        if candidate_hmac_matches?(raw_hmac)
+          true
+        else
+          raise DecryptionFailure, "Error decrypting data bag value: invalid hmac. Most likely the provided key is incorrect"
+        end
+      end
+
+      private
+
+      def candidate_hmac_matches?(expected_hmac)
+        return false unless @encrypted_data["hmac"]
+        expected_bytes = expected_hmac.bytes.to_a
+        candidate_hmac_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
+        valid = expected_bytes.size ^ candidate_hmac_bytes.size
+        expected_bytes.zip(candidate_hmac_bytes) { |x, y| valid |= x ^ y.to_i }
+        valid == 0
+      end
     end
 
     class Version0Decryptor
