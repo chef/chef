@@ -92,6 +92,17 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       decryptor.for_decrypted_item.should eq plaintext_data
     end
 
+    describe "and the decryption step returns invalid data" do
+      it "raises a decryption failure error" do
+        # Over a large number of tests on a variety of systems, we occasionally
+        # see the decryption step "succeed" but return invalid data (e.g., not
+        # the original plain text) [CHEF-3858]
+        decryptor.should_receive(:decrypted_data).and_return("lksajdf")
+        lambda { decryptor.for_decrypted_item }.should raise_error(Chef::EncryptedDataBagItem::DecryptionFailure)
+      end
+
+    end
+
     context "and the provided key is incorrect" do
       let(:decryption_key) { "wrong-passwd" }
 
