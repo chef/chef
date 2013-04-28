@@ -123,7 +123,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @run_id = @resource_reporter.run_id
     @run_status = Chef::RunStatus.new(@node, @events)
 
-    @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
     @resource_reporter.run_started(@run_status)
 
     @new_resource.cookbook_name = "monkey"

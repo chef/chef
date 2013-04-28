@@ -91,7 +91,6 @@ describe Chef::ResourceReporter do
       @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
       @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
-      @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
     end
 
     context "before converging any resources" do
@@ -260,7 +259,6 @@ describe Chef::ResourceReporter do
       @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
       @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/spitfire/runs/#{@run_id}"});
 
-      @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
       @resource_reporter.run_started(@run_status)
     end
 
@@ -367,7 +365,7 @@ describe Chef::ResourceReporter do
 
       it "includes the run_list" do
         @report.should have_key("run_list")
-        @report["run_list"].should == @node.run_list.to_json
+        @report["run_list"].should == @run_status.node.run_list.to_json
       end
 
       it "includes the end_time" do
@@ -419,7 +417,7 @@ describe Chef::ResourceReporter do
 
   describe "when updating resource history on the server" do
     before do
-      @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+      @resource_reporter.run_started(@run_status)
       @run_status.start_clock
     end
 

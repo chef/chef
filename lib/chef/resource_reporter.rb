@@ -104,28 +104,15 @@ class Chef
         @reporting_enabled = false
       end
       @rest_client = rest_client
-      @node = nil
       @error_descriptions = {}
-    end
-
-    def headers(additional_headers = {})
-      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
-      options.merge(additional_headers)
-    end
-
-    def node_load_completed(node, expanded_run_list_with_versions, config)
-      @node = node
-    end
-
-    def start_time
-      @run_status.start_time
     end
 
     def run_started(run_status)
       @run_status = run_status
+
       if reporting_enabled?
         begin
-          resource_history_url = "reports/nodes/#{@node.name}/runs"
+          resource_history_url = "reports/nodes/#{node_name}/runs"
           server_response = @rest_client.post_rest(resource_history_url, {:action => :start, :run_id => @run_id,
                                                                           :start_time => start_time.to_s}, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
@@ -212,9 +199,9 @@ class Chef
     def run_failed(exception)
       @exception = exception
       @status = "failure"
-      # If we haven't had the node setup yet, there's not much we can do
+      # If we failed before we received the run_started callback, there's not much we can do
       # in terms of reporting
-      if @node
+      if @run_status
           post_reporting_data
       end
     end
@@ -222,7 +209,7 @@ class Chef
     def post_reporting_data
       if reporting_enabled?
         run_data = prepare_run_data
-        resource_history_url = "reports/nodes/#{@node.name}/runs/#{@run_id}"
+        resource_history_url = "reports/nodes/#{node_name}/runs/#{@run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{@run_id})")
         Chef::Log.debug run_data.inspect
         compressed_data = encode_gzip(run_data.to_json)
@@ -244,6 +231,19 @@ class Chef
       end
     end
 
+    def headers(additional_headers = {})
+      options = {'X-Ops-Reporting-Protocol-Version' => PROTOCOL_VERSION}
+      options.merge(additional_headers)
+    end
+
+    def node_name
+      @run_status.node.name
+    end
+
+    def start_time
+      @run_status.start_time
+    end
+
     def end_time
       @run_status.end_time
     end
@@ -255,7 +255,7 @@ class Chef
         resource_record.for_json
       end
       run_data["status"] = @status
-      run_data["run_list"] = @node.run_list.to_json
+      run_data["run_list"] = @run_status.node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
       run_data["end_time"] = end_time.to_s
