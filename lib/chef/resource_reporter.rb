@@ -258,6 +258,7 @@ class Chef
       run_data["run_list"] = @run_status.node.run_list.to_json
       run_data["total_res_count"] = @total_res_count.to_s
       run_data["data"] = {}
+      run_data["start_time"] = start_time.to_s
       run_data["end_time"] = end_time.to_s
 
       if exception
