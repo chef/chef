@@ -69,21 +69,12 @@ Full help for the Omnibus command line interface can be accessed with the
 $ bin/omnibus help
 ```
 
-## Vagrant-based Virtualized Build Lab
-
-Every Omnibus project ships will a project-specific
-[Berksfile](http://berkshelf.com/) and [Vagrantfile](http://www.vagrantup.com/)
-that will allow you to build your projects on the following platforms:
-
-* CentOS 5 64-bit
-* CentOS 6 64-bit
-* Ubuntu 10.04 64-bit
-* Ubuntu 11.04 64-bit
-* Ubuntu 12.04 64-bit
+## Vagrant-based Virtualized Build Labs
 
 Please note this build-lab is only meant to get you up and running quickly;
-there's nothing inherent in Omnibus that restricts you to just building CentOS
-or Ubuntu packages. See the Vagrantfile to add new platforms to your build lab.
+there's nothing inherent in Omnibus that restricts you to just building
+packages for the platforms below. See an individual Vagrantfile to add new
+platforms to your build lab.
 
 The only requirements for standing up this virtualized build lab are:
 
@@ -101,16 +92,29 @@ $ vagrant plugin install vagrant-berkshelf
 $ vagrant plugin install vagrant-omnibus
 ```
 
-Once the pre-requisites are installed you can build your package across all
-platforms with the following command:
+This project ships will a project-specific [Berksfile](http://berkshelf.com/)
+and [Vagrantfile](http://www.vagrantup.com/) that will allow you to build your
+projects on the following platforms:
+
+### Linux
+
+The following distibutions are currently supported by the Linux build lab:
+
+* CentOS 5 64-bit
+* CentOS 6 64-bit
+* Ubuntu 10.04 64-bit
+* Ubuntu 11.04 64-bit
+* Ubuntu 12.04 64-bit
 
 ```shell
+$ cd vagrant/linux
 $ vagrant up
 ```
 
 If you would like to build a package for a single platform the command looks like this:
 
 ```shell
+$ cd vagrant/linux
 $ vagrant up PLATFORM
 ```
 
