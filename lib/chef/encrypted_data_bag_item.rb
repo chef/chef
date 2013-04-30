@@ -50,6 +50,9 @@ require 'open-uri'
 class Chef::EncryptedDataBagItem
   ALGORITHM = 'aes-256-cbc'
 
+  class UnacceptableEncryptedDataBagItemFormat < StandardError
+  end
+
   class UnsupportedEncryptedDataBagItemFormat < StandardError
   end
 
@@ -63,8 +66,21 @@ class Chef::EncryptedDataBagItem
   # encrypted value, including any necessary wrappers and metadata.
   module Encryptor
 
-    def self.new(*args)
-      Version1Encryptor.new(*args)
+    # "factory" method that creates an encryptor object with the proper class
+    # for the desired encrypted data bag format version.
+    #
+    # +Chef::Config[:data_bag_encrypt_version]+ determines which version is used.
+    def self.new(value, secret, iv=nil)
+      format_version = Chef::Config[:data_bag_encrypt_version]
+      case format_version
+      when 1
+        Version1Encryptor.new(value, secret, iv)
+      when 2
+        Version2Encryptor.new(value, secret, iv)
+      else
+        raise UnsupportedEncryptedDataBagItemFormat,
+          "Invalid encrypted data bag format version `#{format_version}'. Supported versions are '1', '2'"
+      end
     end
 
     class Version1Encryptor
@@ -176,6 +192,7 @@ class Chef::EncryptedDataBagItem
     # resulting object to decrypt and deserialize it.
     def self.for(encrypted_value, key)
       format_version = format_version_of(encrypted_value)
+      assert_format_version_acceptable!(format_version)
       case format_version
       when 2
         Version2Decryptor.new(encrypted_value, key)
@@ -194,6 +211,14 @@ class Chef::EncryptedDataBagItem
         encrypted_value["version"]
       else
         0
+      end
+    end
+
+    def self.assert_format_version_acceptable!(format_version)
+      unless format_version.kind_of?(Integer) and format_version >= Chef::Config[:data_bag_decrypt_minimum_version]
+        raise UnacceptableEncryptedDataBagItemFormat,
+          "The encrypted data bag item has format version `#{format_version}', " +
+          "but the config setting 'data_bag_decrypt_minimum_version' requires version `#{Chef::Config[:data_bag_decrypt_minimum_version]}'"
       end
     end
 

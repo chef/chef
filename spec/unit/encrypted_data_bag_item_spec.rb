@@ -38,6 +38,10 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
   let(:plaintext_data) { {"foo" => "bar"} }
   let(:key) { "passwd" }
 
+  it "encrypts to format version 1 by default" do
+    encryptor.should be_a_kind_of(Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor)
+  end
+
   describe "generating a random IV" do
     it "generates a new IV for each encryption pass" do
       encryptor2 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
@@ -69,10 +73,21 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
 
   describe "when using version 2 format" do
 
-    subject(:encryptor) { described_class::Version2Encryptor.new(plaintext_data, key) }
+    before do
+      @original_config = Chef::Config.hash_dup
+      Chef::Config[:data_bag_encrypt_version] = 2
+    end
+
+    after do
+      Chef::Config.configuration = @original_config
+    end
+
+    it "creates a version 2 encryptor" do
+      encryptor.should be_a_kind_of(Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor)
+    end
 
     it "generates an hmac based on ciphertext including iv" do
-      encryptor2 = Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.new(plaintext_data, key)
+      encryptor2 = Chef::EncryptedDataBagItem::Encryptor.new(plaintext_data, key)
       encryptor.hmac.should_not eq(encryptor2.hmac)
     end
 
@@ -81,6 +96,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
       final_data["hmac"].should eq(encryptor.hmac)
     end
   end
+
 end
 
 describe Chef::EncryptedDataBagItem::Decryptor do
@@ -161,6 +177,22 @@ describe Chef::EncryptedDataBagItem::Decryptor do
       end
     end
 
+    context "and version 2 format is required" do
+      before do
+        @original_config = Chef::Config.hash_dup
+        Chef::Config[:data_bag_decrypt_minimum_version] = 2
+      end
+
+      after do
+        Chef::Config.configuration = @original_config
+      end
+
+      it "raises an error attempting to decrypt" do
+        lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::UnacceptableEncryptedDataBagItemFormat)
+      end
+
+    end
+
   end
 
   context "when decrypting a version 0 (YAML+aes-256-cbc+no iv) encrypted value" do
@@ -175,6 +207,23 @@ describe Chef::EncryptedDataBagItem::Decryptor do
     it "decrypts the encrypted value" do
       decryptor.for_decrypted_item.should eq plaintext_data
     end
+
+    context "and version 1 format is required" do
+      before do
+        @original_config = Chef::Config.hash_dup
+        Chef::Config[:data_bag_decrypt_minimum_version] = 1
+      end
+
+      after do
+        Chef::Config.configuration = @original_config
+      end
+
+      it "raises an error attempting to decrypt" do
+        lambda { decryptor }.should raise_error(Chef::EncryptedDataBagItem::UnacceptableEncryptedDataBagItemFormat)
+      end
+
+    end
+
   end
 end
 
