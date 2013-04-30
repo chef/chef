@@ -157,7 +157,7 @@ describe Chef::Knife::CookbookDownload do
     end
 
     it 'should ask which version to download and return it if there is more than one' do
-      @knife.should_receive(:available_versions).and_return(['1.0.0', '2.0.0'])
+      @knife.should_receive(:available_versions).at_least(:once).and_return(['1.0.0', '2.0.0'])
       @knife.should_receive(:ask_which_version).and_return('1.0.0')
       @knife.determine_version.should == '1.0.0'
     end

@@ -99,14 +99,13 @@ class Chef
       end
 
       def determine_version
-        versions = available_versions
 
-        if versions.nil?
+        if available_versions.nil?
           nil
-        elsif versions.size == 1
-          @version = versions.first
+        elsif available_versions.size == 1
+          @version = available_versions.first
         elsif config[:latest]
-          @version = versions.map { |v| Chef::Version.new(v) }.sort.last
+          @version = available_versions.map { |v| Chef::Version.new(v) }.sort.last
         else
           ask_which_version
         end
