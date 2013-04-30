@@ -152,6 +152,50 @@ $ cd vagrant/freebsd
 $ vagrant up
 ```
 
+### Joyent SmartOS
+
+This requires the [vagrant-joyent](https://github.com/someara/vagrant-joyent)
+provider which has not pushed to Rubygems.org yet. It can be installed very
+easily though:
+
+```shell
+$ git clone https://github.com/someara/vagrant-joyent/
+$ cd vagrant-joyent
+$ gem build vagrant-joyent.gemspec
+$ vagrant plugin install vagrant-joyent-*.gem
+$ vagrant box add dummy dummy.box
+```
+
+You will also need to export the following environment variables in your shell:
+
+* `SDC_CLI_ACCOUNT` - Login name (account).
+* `SDC_CLI_KEY_ID` - Name of the Joyant Cloud key to use for singing requests.
+* `SDC_CLI_IDENTITY` - Path to the location of your private SSH key.
+* `SDC_CLI_URL` - URL of the CloudAPI endpoint. This is
+  `https://api.joyentcloud.com` if you are using the Joyent Cloud.
+
+The same environment variables are leveraged by the Joyent CloudAPI CLI and
+are [fully documented on the Joyent Cloud wiki]
+(https://api.joyentcloud.com/docs#working-with-the-cli).
+
+Currently the [vagrant-berkshelf](https://github.com/RiotGames/vagrant-berkshelf)
+plugin does not properly rsync the cookbooks directory on the initial
+`vagrant up` when using the `vagrant-joyent` provider. This can be easily
+remedied by running a `berks install` before the initial `vagrant up`:
+
+```shell
+$ cd vagrant/smartos
+$ berks install --berksfile=../Berksfile --path=cookbooks
+```
+
+On subsequent `vagrant provision` commands the `berks install` is no longer
+requried as the vagrant-berkshelf will fire correctly.
+
+```shell
+$ cd vagrant/smartos
+$ vagrant up --provider=joyent
+```
+
 ## License
 
 See the LICENSE file for details.
