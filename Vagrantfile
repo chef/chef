@@ -87,8 +87,10 @@ Vagrant.configure("2") do |config|
     if command -v dpkg &>/dev/null;
     then
       sudo dpkg -P #{project_name} || true
-    else
+    elseif command -v rpm &>/dev/null;
       sudo rpm -ev #{project_name} || true
+    else
+      sudo rm -r /opt/#{project_name} || true
     fi
   REMOVE_OMNIBUS
 
