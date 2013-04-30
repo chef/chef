@@ -175,6 +175,11 @@ class Chef::EncryptedDataBagItem
 
       def for_decrypted_item
         Yajl::Parser.parse(decrypted_data)["json_wrapper"]
+      rescue Yajl::ParseError
+        # convert to a DecryptionFailure error because the most likely scenario
+        # here is that the decryption step was unsuccessful but returned bad
+        # data rather than raising an error.
+        raise DecryptionFailure, "Error decrypting data bag value. Most likely the provided key is incorrect"
       end
 
 
