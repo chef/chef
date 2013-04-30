@@ -25,7 +25,13 @@ end
 describe "Chef::ReservedNames::Win32::Version", :windows_only do
   before do
     host = WMI::Win32_OperatingSystem.find(:first)
+
+    # Ensure that the OS name returned by WMI does not have extended
+    # characters like the registered trademark that get mapped to
+    # the character 'r' -- this is an issue for Win2k3, Win2k8 only.
+    # This gets normalized below
     @current_os_version = host.caption.gsub("Serverr", "Server")
+    
     @version = Chef::ReservedNames::Win32::Version.new
   end
   context "Windows Operating System version" do
