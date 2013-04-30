@@ -138,6 +138,20 @@ $ vagrant up PLATFORM
 The complete list of valid platform names can be viewed with the
 `vagrant status` command.
 
+### FreeBSD
+
+The FreeBSD guest for Vagrant only supports folder mounting via NFS. This means
+the FreeBSD Build Lab can only be started up on a platform that has `nfsd`
+installed, the NFS server daemon. This comes pre-installed on Mac OS X, and is
+typically a simple package install on Linux.
+
+SO..if you are on a *nix platform you should be able to just run:
+
+```shell
+$ cd vagrant/freebsd
+$ vagrant up
+```
+
 ## License
 
 See the LICENSE file for details.
