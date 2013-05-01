@@ -39,6 +39,15 @@ class Chef
     class Ifconfig < Chef::Provider
       include Chef::Mixin::Command
 
+      attr_accessor :config_template
+      attr_accessor :config_path
+
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context)
+        @config_template = nil
+        @config_path = nil
+      end
+
       def whyrun_supported?
         true
       end
@@ -163,50 +172,31 @@ class Chef
         end
       end
 
+      def can_generate_config?
+        ! @config_template.nil? and ! @config_path.nil?
+      end
+
       def generate_config
+        return unless can_generate_config?
         b = binding
-        case node[:platform]
-        when "centos","redhat","fedora"
-          content = %{
-<% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
-<% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
-<% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
-<% if @new_resource.target %>IPADDR=<%= @new_resource.target %><% end %>
-<% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
-<% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
-<% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
-<% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
-          }
-          template = ::ERB.new(content)
-          network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          converge_by ("generate configuration file : #{network_file_name}") do
-            network_file = ::File.new(network_file_name, "w")
-            network_file.puts(template.result(b))
-            network_file.close
-          end
-          Chef::Log.info("#{@new_resource} created configuration file")
-        when "debian","ubuntu"
-          # template
-        when "slackware"
-          # template
+        template = ::ERB.new(@config_template)
+        converge_by ("generate configuration file : #{@config_path}") do
+          network_file = ::File.new(@config_path, "w")
+          network_file.puts(template.result(b))
+          network_file.close
         end
+        Chef::Log.info("#{@new_resource} created configuration file")
       end
 
       def delete_config
+        return unless can_generate_config?
         require 'fileutils'
-        case node[:platform]
-        when "centos","redhat","fedora"
-          ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          if ::File.exist?(ifcfg_file)
-            converge_by ("delete the #{ifcfg_file}") do
-              FileUtils.rm_f(ifcfg_file, :verbose => false)
-            end
+        if ::File.exist?(@config_path)
+          converge_by ("delete the #{@config_path}") do
+            FileUtils.rm_f(@config_path, :verbose => false)
           end
-        when "debian","ubuntu"
-          # delete configs
-        when "slackware"
-          # delete configs
         end
+        Chef::Log.info("#{@new_resource} deleted configuration file")
       end
 
     end
