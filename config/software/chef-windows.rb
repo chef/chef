@@ -102,15 +102,26 @@ build do
        "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" ")
 
-  # gems with precompiled binaries
-  gem ["install",
-       "ffi win32-api win32-service",
-       "--no-rdoc --no-ri"].join(" ")
+  aux_gems = {
+    "ffi"           => "1.3.1",
+    "win32-api"     => "1.4.8",
+    "win32-service" => "0.7.2",
+    "rdp-ruby-wmi"  => "0.3.1",
+    "win32-dir"     => "0.4.1",
+    "win32-event"   => "0.6.0",
+    "win32-mutex"   => "0.4.0",
+    "win32-process" => "0.7.1",
+    "win32-service" => "0.7.2",
+    "windows-api"   => "0.4.2",
+    "windows-pr"    => "1.2.2"
+  }
 
-  # the rest
-  gem ["install",
-       "rdp-ruby-wmi windows-api windows-pr win32-dir win32-event win32-mutex win32-process",
-       "--no-rdoc --no-ri"].join(" ")
+
+
+  aux_gems.each do |gem_name, version|
+    gem ["install", gem_name, "-v", version, "--no-rdoc --no-ri"].join(" ")
+  end
+
 
   # render batch files
   #
