@@ -30,13 +30,14 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
     # characters like the registered trademark that get mapped to
     # the character 'r' -- this is an issue for Win2k3, Win2k8 only.
     # This gets normalized below
-    @current_os_version = host.caption.gsub("Serverr", "Server")
-    
+    @current_os_version_canonicalized = host.caption.gsub("Serverr", "Server")
+
     @version = Chef::ReservedNames::Win32::Version.new
   end
   context "Windows Operating System version" do
     it "should match the version from WMI" do
-      @current_os_version.include?(@version.marketing_name).should == true
+      puts "WMI: #{current_os_version_canonicalized} Resource: #{@version.marketing_name}"
+      @current_os_version_canonicalized.include?(@version.marketing_name).should == true
     end
   end
 end
