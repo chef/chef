@@ -11,10 +11,10 @@ describe 'redirection' do
 
     context 'and another server redirects to it with 302' do
       before :each do
-        @original_chef_server_url = Chef::Config.chef_server_url
+        @real_chef_server_url = Chef::Config.chef_server_url
         Chef::Config.chef_server_url = "http://127.0.0.1:9018"
         app = lambda do |env|
-          [302, {'Content-Type' => 'text','Location' => "#{@original_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
+          [302, {'Content-Type' => 'text','Location' => "#{@real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
         end
         @redirector_server = Thin::Server.new('127.0.0.1', 9018, app, { :signals => false })
         @redirector_thread = Thread.new do
@@ -34,10 +34,11 @@ describe 'redirection' do
       end
 
       after :each do
-        @redirector_server.stop
+        Chef::Config.chef_server_url = @real_chef_server_url
+        @redirector_thread.kill
         @redirector_thread.join(nil)
-        @redirector_server = nil
         @redirector_thread = nil
+        @redirector_server = nil
       end
 
       it 'knife list /roles returns the role' do
