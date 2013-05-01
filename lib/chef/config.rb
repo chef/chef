@@ -281,6 +281,21 @@ class Chef
       encrypted_data_bag_secret(nil)
     end
 
+    # As of Chef 11.0, version "1" is the default encrypted data bag item
+    # format. Version "2" is available which adds encrypt-then-mac protection.
+    # To maintain compatibility, versions other than 1 must be opt-in.
+    #
+    # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure:
+    data_bag_encrypt_version 1
+
+    # When reading data bag items, any supported version is accepted. However,
+    # if all encrypted data bags have been generated with the version 2 format,
+    # it is recommended to disable support for earlier formats to improve
+    # security. For example, the version 2 format is identical to version 1
+    # except for the addition of an HMAC, so an attacker with MITM capability
+    # could downgrade an encrypted data bag to version 1 as part of an attack.
+    data_bag_decrypt_minimum_version 0
+
     # If there is no file in the location given by `client_key`, chef-client
     # will temporarily use the "validator" identity to generate one. If the
     # `client_key` is not present and the `validation_key` is also not present,
