@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
   # Enable the berkshelf-vagrant plugin
   config.berkshelf.enabled = true
   # The path to the Berksfile to use with Vagrant Berkshelf
-  config.berkshelf.berksfile_path = File.expand_path("../../Berksfile", __FILE__)
+  config.berkshelf.berksfile_path = File.expand_path("../../../Berksfile", __FILE__)
 
   config.ssh.max_tries = 40
   config.ssh.timeout   = 120
