@@ -170,6 +170,9 @@ class Chef
               :cron => Chef::Provider::Cron,
               :package => Chef::Provider::Package::Zypper,
               :group => Chef::Provider::Group::Suse
+            },
+            ">= 12.3" => {
+              :group => Chef::Provider::Group::Usermod
             }
           },
           :oracle  => {
