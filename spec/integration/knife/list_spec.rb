@@ -8,20 +8,30 @@ describe 'knife list' do
   when_the_chef_server "is empty" do
     it "knife list / returns all top level directories" do
       knife('list /').should_succeed <<EOM
+/clients
 /cookbooks
 /data_bags
 /environments
+/nodes
 /roles
+/users
 EOM
     end
 
     it "knife list -R / returns everything" do
       knife('list -R /').should_succeed <<EOM
 /:
+clients
 cookbooks
 data_bags
 environments
+nodes
 roles
+users
+
+/clients:
+chef-validator.json
+chef-webui.json
 
 /cookbooks:
 
@@ -30,7 +40,12 @@ roles
 /environments:
 _default.json
 
+/nodes:
+
 /roles:
+
+/users:
+admin.json
 EOM
     end
   end
@@ -53,20 +68,32 @@ EOM
 
     it "knife list / returns all top level directories" do
       knife('list /').should_succeed <<EOM
+/clients
 /cookbooks
 /data_bags
 /environments
+/nodes
 /roles
+/users
 EOM
     end
 
     it "knife list -R / returns everything" do
       knife('list -R /').should_succeed <<EOM
 /:
+clients
 cookbooks
 data_bags
 environments
+nodes
 roles
+users
+
+/clients:
+chef-validator.json
+chef-webui.json
+client1.json
+client2.json
 
 /cookbooks:
 cookbook1
@@ -99,14 +126,28 @@ _default.json
 environment1.json
 environment2.json
 
+/nodes:
+node1.json
+node2.json
+
 /roles:
 role1.json
 role2.json
+
+/users:
+admin.json
+user1.json
+user2.json
 EOM
     end
 
     it "knife list -R --flat / returns everything" do
       knife('list -R --flat /').should_succeed <<EOM
+/clients
+/clients/chef-validator.json
+/clients/chef-webui.json
+/clients/client1.json
+/clients/client2.json
 /cookbooks
 /cookbooks/cookbook1
 /cookbooks/cookbook1/metadata.rb
@@ -125,14 +166,26 @@ EOM
 /environments/_default.json
 /environments/environment1.json
 /environments/environment2.json
+/nodes
+/nodes/node1.json
+/nodes/node2.json
 /roles
 /roles/role1.json
 /roles/role2.json
+/users
+/users/admin.json
+/users/user1.json
+/users/user2.json
 EOM
     end
 
     it "knife list -Rfp / returns everything" do
       knife('list -Rfp /').should_succeed <<EOM
+/clients/
+/clients/chef-validator.json
+/clients/chef-webui.json
+/clients/client1.json
+/clients/client2.json
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb
@@ -151,9 +204,16 @@ EOM
 /environments/_default.json
 /environments/environment1.json
 /environments/environment2.json
+/nodes/
+/nodes/node1.json
+/nodes/node2.json
 /roles/
 /roles/role1.json
 /roles/role2.json
+/users/
+/users/admin.json
+/users/user1.json
+/users/user2.json
 EOM
     end
 
@@ -186,6 +246,10 @@ EOM
 
     it "knife list /**.json returns all json files" do
       knife('list /**.json').should_succeed <<EOM
+/clients/chef-validator.json
+/clients/chef-webui.json
+/clients/client1.json
+/clients/client2.json
 /data_bags/bag1/item1.json
 /data_bags/bag1/item2.json
 /data_bags/bag2/item1.json
@@ -193,8 +257,13 @@ EOM
 /environments/_default.json
 /environments/environment1.json
 /environments/environment2.json
+/nodes/node1.json
+/nodes/node2.json
 /roles/role1.json
 /roles/role2.json
+/users/admin.json
+/users/user1.json
+/users/user2.json
 EOM
     end
 
@@ -232,6 +301,11 @@ EOM
 
           it "knife list -Rfp returns everything" do
             knife('list -Rfp').should_succeed <<EOM
+clients/
+clients/chef-validator.json
+clients/chef-webui.json
+clients/client1.json
+clients/client2.json
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -250,9 +324,16 @@ environments/
 environments/_default.json
 environments/environment1.json
 environments/environment2.json
+nodes/
+nodes/node1.json
+nodes/node2.json
 roles/
 roles/role1.json
 roles/role2.json
+users/
+users/admin.json
+users/user1.json
+users/user2.json
 EOM
           end
         end
@@ -265,6 +346,11 @@ EOM
 
           it "knife list -Rfp / returns everything" do
             knife('list -Rfp /').should_succeed <<EOM
+/clients/
+/clients/chef-validator.json
+/clients/chef-webui.json
+/clients/client1.json
+/clients/client2.json
 ./
 cookbook1/
 cookbook1/metadata.rb
@@ -283,14 +369,26 @@ cookbook2/recipes/default.rb
 /environments/_default.json
 /environments/environment1.json
 /environments/environment2.json
+/nodes/
+/nodes/node1.json
+/nodes/node2.json
 /roles/
 /roles/role1.json
 /roles/role2.json
+/users/
+/users/admin.json
+/users/user1.json
+/users/user2.json
 EOM
           end
 
           it "knife list -Rfp .. returns everything" do
             knife('list -Rfp ..').should_succeed <<EOM
+/clients/
+/clients/chef-validator.json
+/clients/chef-webui.json
+/clients/client1.json
+/clients/client2.json
 ./
 cookbook1/
 cookbook1/metadata.rb
@@ -309,9 +407,16 @@ cookbook2/recipes/default.rb
 /environments/_default.json
 /environments/environment1.json
 /environments/environment2.json
+/nodes/
+/nodes/node1.json
+/nodes/node2.json
 /roles/
 /roles/role1.json
 /roles/role2.json
+/users/
+/users/admin.json
+/users/user1.json
+/users/user2.json
 EOM
           end
 
@@ -461,6 +566,9 @@ EOM
 
       it "knife list -Rfp / returns everything" do
         knife('list -Rp --local --flat /').should_succeed <<EOM
+/clients/
+/clients/client1.json
+/clients/client2.json
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/metadata.rb
@@ -478,9 +586,15 @@ EOM
 /environments/
 /environments/environment1.json
 /environments/environment2.json
+/nodes/
+/nodes/node1.json
+/nodes/node2.json
 /roles/
 /roles/role1.json
 /roles/role2.json
+/users/
+/users/user1.json
+/users/user2.json
 EOM
       end
 

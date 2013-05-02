@@ -26,76 +26,34 @@ describe 'knife diff' do
 
         it 'knife diff reports everything as deleted' do
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients/chef-validator.json
+D\t/clients/chef-webui.json
+D\t/clients/x.json
 D\t/cookbooks/x
 D\t/data_bags/x
 D\t/environments/_default.json
 D\t/environments/x.json
+D\t/nodes/x.json
 D\t/roles/x.json
+D\t/users/admin.json
+D\t/users/x.json
 EOM
       end
     end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/x.json', <<EOM
-{}
-EOM
-        file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-        file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-        file 'nodes/x.json', <<EOM
-{}
-EOM
-        file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
 
-  ]
-}
-EOM
-        file 'users/x.json', <<EOM
-{}
-EOM
+        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
         it 'knife diff reports no differences' do
           knife('diff /').should_succeed ''
@@ -123,7 +81,7 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', {}
+          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
           file 'cookbooks/x/blah.rb', ''
           file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
           file 'data_bags/x/z.json', {}
@@ -131,16 +89,19 @@ EOM
           file 'environments/y.json', {}
           file 'nodes/y.json', {}
           file 'roles/y.json', {}
-          file 'users/y.json', {}
+          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
           it 'knife diff reports the new files as added' do
             knife('diff --name-status /').should_succeed <<EOM
+A\t/clients/y.json
 A\t/cookbooks/x/blah.rb
 A\t/cookbooks/y
 A\t/data_bags/x/z.json
 A\t/data_bags/y
 A\t/environments/y.json
+A\t/nodes/y.json
 A\t/roles/y.json
+A\t/users/y.json
 EOM
           end
 
@@ -165,10 +126,13 @@ EOM
       when_the_repository 'is empty' do
         it 'knife diff reports everything as deleted' do
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
+D\t/nodes
 D\t/roles
+D\t/users
 EOM
         end
       end
@@ -321,76 +285,33 @@ EOM
 
         it 'knife diff reports everything as deleted' do
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients/chef-validator.json
+D\t/clients/chef-webui.json
+D\t/clients/x.json
 D\t/cookbooks/x-1.0.0
 D\t/data_bags/x
 D\t/environments/_default.json
 D\t/environments/x.json
+D\t/nodes/x.json
 D\t/roles/x.json
+D\t/users/admin.json
+D\t/users/x.json
 EOM
       end
     end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/x.json', <<EOM
-{}
-EOM
+        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-        file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-        file 'nodes/x.json', <<EOM
-{}
-EOM
-        file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-        file 'users/x.json', <<EOM
-{}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
         it 'knife diff reports no differences' do
           knife('diff /').should_succeed ''
@@ -431,13 +352,16 @@ EOM
 
           it 'knife diff reports the new files as added' do
             knife('diff --name-status /').should_succeed <<EOM
+A\t/clients/y.json
 A\t/cookbooks/x-1.0.0/blah.rb
 A\t/cookbooks/x-2.0.0
 A\t/cookbooks/y-1.0.0
 A\t/data_bags/x/z.json
 A\t/data_bags/y
 A\t/environments/y.json
+A\t/nodes/y.json
 A\t/roles/y.json
+A\t/users/y.json
 EOM
           end
 
@@ -462,10 +386,13 @@ EOM
       when_the_repository 'is empty' do
         it 'knife diff reports everything as deleted' do
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
+D\t/nodes
 D\t/roles
+D\t/users
 EOM
         end
       end

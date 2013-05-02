@@ -17,7 +17,7 @@ describe 'chef_repo_path tests' do
       file 'roles/role1.json', {}
       file 'users/user1.json', {}
 
-      file 'clients2/client1.json', {}
+      file 'clients2/client2.json', {}
       file 'cookbooks2/cookbook2/metadata.rb', ''
       file 'data_bags2/bag2/item2.json', {}
       file 'environments2/env2.json', {}
@@ -61,6 +61,8 @@ describe 'chef_repo_path tests' do
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client2.json
 cookbooks/
 cookbooks/cookbook2/
 cookbooks/cookbook2/metadata.rb
@@ -69,8 +71,12 @@ data_bags/bag2/
 data_bags/bag2/item2.json
 environments/
 environments/env2.json
+nodes/
+nodes/node2.json
 roles/
 roles/role2.json
+users/
+users/user2.json
 EOM
           end
         end
@@ -100,6 +106,8 @@ EOM
           cwd '.'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client2.json
 cookbooks/
 cookbooks/cookbook2/
 cookbooks/cookbook2/metadata.rb
@@ -108,8 +116,12 @@ data_bags/bag2/
 data_bags/bag2/item2.json
 environments/
 environments/env2.json
+nodes/
+nodes/node2.json
 roles/
 roles/role2.json
+users/
+users/user2.json
 EOM
           end
         end
@@ -165,6 +177,8 @@ EOM
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client3.json
 cookbooks/
 cookbooks/cookbook3/
 cookbooks/cookbook3/metadata.rb
@@ -173,8 +187,12 @@ data_bags/bag3/
 data_bags/bag3/item3.json
 environments/
 environments/env3.json
+nodes/
+nodes/node3.json
 roles/
 roles/role3.json
+users/
+users/user3.json
 EOM
           end
         end
@@ -351,6 +369,9 @@ EOM
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client1.json
+clients/client2.json
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -364,9 +385,15 @@ data_bags/bag2/item2.json
 environments/
 environments/env1.json
 environments/env2.json
+nodes/
+nodes/node1.json
+nodes/node2.json
 roles/
 roles/role1.json
 roles/role2.json
+users/
+users/user1.json
+users/user2.json
 EOM
           end
         end
@@ -399,6 +426,9 @@ EOM
           cwd '.'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client1.json
+clients/client3.json
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -412,9 +442,15 @@ data_bags/bag3/item3.json
 environments/
 environments/env1.json
 environments/env3.json
+nodes/
+nodes/node1.json
+nodes/node3.json
 roles/
 roles/role1.json
 roles/role3.json
+users/
+users/user1.json
+users/user3.json
 EOM
           end
         end
@@ -435,6 +471,9 @@ EOM
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client1.json
+clients/client3.json
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -448,9 +487,15 @@ data_bags/bag3/item3.json
 environments/
 environments/env1.json
 environments/env3.json
+nodes/
+nodes/node1.json
+nodes/node3.json
 roles/
 roles/role1.json
 roles/role3.json
+users/
+users/user1.json
+users/user3.json
 EOM
           end
         end
@@ -495,6 +540,8 @@ EOM
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client3.json
 cookbooks/
 cookbooks/cookbook3/
 cookbooks/cookbook3/metadata.rb
@@ -503,8 +550,12 @@ data_bags/bag3/
 data_bags/bag3/item3.json
 environments/
 environments/env3.json
+nodes/
+nodes/node3.json
 roles/
 roles/role3.json
+users/
+users/user3.json
 EOM
           end
         end
@@ -536,6 +587,9 @@ EOM
           cwd '.'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client1.json
+clients/client3.json
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -549,9 +603,15 @@ data_bags/bag3/item3.json
 environments/
 environments/env1.json
 environments/env3.json
+nodes/
+nodes/node1.json
+nodes/node3.json
 roles/
 roles/role1.json
 roles/role3.json
+users/
+users/user1.json
+users/user3.json
 EOM
           end
         end
@@ -572,6 +632,9 @@ EOM
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client1.json
+clients/client3.json
 cookbooks/
 cookbooks/cookbook1/
 cookbooks/cookbook1/metadata.rb
@@ -585,9 +648,15 @@ data_bags/bag3/item3.json
 environments/
 environments/env1.json
 environments/env3.json
+nodes/
+nodes/node1.json
+nodes/node3.json
 roles/
 roles/role1.json
 roles/role3.json
+users/
+users/user1.json
+users/user3.json
 EOM
           end
         end
@@ -635,6 +704,8 @@ EOM
           cwd 'chef_repo2'
           it 'knife list --local -Rfp lists everything' do
             knife('list --local -Rfp').should_succeed <<EOM
+clients/
+clients/client3.json
 cookbooks/
 cookbooks/cookbook3/
 cookbooks/cookbook3/metadata.rb
@@ -643,8 +714,12 @@ data_bags/bag/
 data_bags/bag/item.json
 environments/
 environments/env3.json
+nodes/
+nodes/node3.json
 roles/
 roles/role3.json
+users/
+users/user3.json
 EOM
           end
         end

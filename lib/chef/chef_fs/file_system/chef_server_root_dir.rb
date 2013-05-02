@@ -82,19 +82,19 @@ class Chef
               EnvironmentsDir.new(self),
               RestListDir.new("roles", self, nil, Chef::ChefFS::DataHandler::RoleDataHandler.new)
             ]
-            if repo_mode == 'everything'
-              result += [
-                RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
-                NodesDir.new(self),
-                RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
-              ]
-            elsif repo_mode == 'hosted_everything'
+            if repo_mode == 'hosted_everything'
               result += [
                 AclsDir.new(self),
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
                 RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
                 RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
                 NodesDir.new(self)
+              ]
+            elsif repo_mode != 'static'
+              result += [
+                RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
+                NodesDir.new(self),
+                RestListDir.new("users", self, nil, Chef::ChefFS::DataHandler::UserDataHandler.new)
               ]
             end
             result.sort_by { |child| child.name }
