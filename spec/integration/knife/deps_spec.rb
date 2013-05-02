@@ -50,14 +50,14 @@ EOM
     when_the_repository 'has a node with no environment or run_list' do
       file 'nodes/mort.json', {}
       it 'knife deps reports just the node' do
-        knife('deps --repo-mode=everything /nodes/mort.json').should_succeed "/nodes/mort.json\n"
+        knife('deps /nodes/mort.json').should_succeed "/nodes/mort.json\n"
       end
     end
     when_the_repository 'has a node with an environment' do
       file 'environments/desert.json', {}
       file 'nodes/mort.json', { 'chef_environment' => 'desert' }
       it 'knife deps reports just the node' do
-        knife('deps --repo-mode=everything /nodes/mort.json').should_succeed "/environments/desert.json\n/nodes/mort.json\n"
+        knife('deps /nodes/mort.json').should_succeed "/environments/desert.json\n/nodes/mort.json\n"
       end
     end
     when_the_repository 'has a node with roles and recipes in its run_list' do
@@ -68,7 +68,7 @@ EOM
       file 'cookbooks/soup/recipes/chicken.rb', ''
       file 'nodes/mort.json', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       it 'knife deps reports just the node' do
-        knife('deps --repo-mode=everything /nodes/mort.json').should_succeed <<EOM
+        knife('deps /nodes/mort.json').should_succeed <<EOM
 /roles/minor.json
 /cookbooks/quiche
 /cookbooks/soup
@@ -115,7 +115,7 @@ EOM
       file 'nodes/bart.json', { 'run_list' => [ 'role[minor]' ] }
 
       it 'knife deps reports all dependencies' do
-        knife('deps --repo-mode=everything /nodes/mort.json').should_succeed <<EOM
+        knife('deps /nodes/mort.json').should_succeed <<EOM
 /environments/desert.json
 /roles/minor.json
 /cookbooks/quiche
@@ -125,7 +125,7 @@ EOM
 EOM
       end
       it 'knife deps * reports all dependencies of all things' do
-        knife('deps --repo-mode=everything /nodes/*').should_succeed <<EOM
+        knife('deps /nodes/*').should_succeed <<EOM
 /roles/minor.json
 /nodes/bart.json
 /environments/desert.json
@@ -136,7 +136,7 @@ EOM
 EOM
       end
       it 'knife deps a b reports all dependencies of a and b' do
-        knife('deps --repo-mode=everything /nodes/bart.json /nodes/mort.json').should_succeed <<EOM
+        knife('deps /nodes/bart.json /nodes/mort.json').should_succeed <<EOM
 /roles/minor.json
 /nodes/bart.json
 /environments/desert.json
@@ -147,7 +147,7 @@ EOM
 EOM
       end
       it 'knife deps --tree /* shows dependencies in a tree' do
-        knife('deps --tree --repo-mode=everything /nodes/*').should_succeed <<EOM
+        knife('deps --tree /nodes/*').should_succeed <<EOM
 /nodes/bart.json
   /roles/minor.json
 /nodes/mort.json
@@ -159,7 +159,7 @@ EOM
 EOM
       end
       it 'knife deps --tree --no-recurse shows only the first level of dependencies' do
-        knife('deps --tree --no-recurse --repo-mode=everything /nodes/*').should_succeed <<EOM
+        knife('deps --tree --no-recurse /nodes/*').should_succeed <<EOM
 /nodes/bart.json
   /roles/minor.json
 /nodes/mort.json
@@ -233,7 +233,7 @@ EOM
           )
         end
         it 'knife deps /nodes/x.json reports an error' do
-          knife('deps --repo-mode=everything /nodes/x.json').should_fail(
+          knife('deps /nodes/x.json').should_fail(
             :exit_code => 2,
             :stdout => "/nodes/x.json\n",
             :stderr => "ERROR: /nodes/x.json: No such file or directory\n"
@@ -274,7 +274,7 @@ EOM
       when_the_repository 'is missing a dependent environment' do
         file 'nodes/mort.json', { 'chef_environment' => 'desert' }
         it 'knife deps reports the environment, along with an error' do
-          knife('deps --repo-mode=everything /nodes/mort.json').should_fail(
+          knife('deps /nodes/mort.json').should_fail(
             :exit_code => 2,
             :stdout => "/environments/desert.json\n/nodes/mort.json\n",
             :stderr => "ERROR: /environments/desert.json: No such file or directory\n"
@@ -363,14 +363,14 @@ EOM
     when_the_chef_server 'has a node with no environment or run_list' do
       node 'mort', {}
       it 'knife deps reports just the node' do
-        knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed "/nodes/mort.json\n"
+        knife('deps --remote /nodes/mort.json').should_succeed "/nodes/mort.json\n"
       end
     end
     when_the_chef_server 'has a node with an environment' do
       environment 'desert', {}
       node 'mort', { 'chef_environment' => 'desert' }
       it 'knife deps reports just the node' do
-        knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed "/environments/desert.json\n/nodes/mort.json\n"
+        knife('deps --remote /nodes/mort.json').should_succeed "/environments/desert.json\n/nodes/mort.json\n"
       end
     end
     when_the_chef_server 'has a node with roles and recipes in its run_list' do
@@ -379,7 +379,7 @@ EOM
       cookbook 'soup', '1.0.0', { 'metadata.rb' =>   "name 'soup'\nversion '1.0.0'\n", 'recipes' => { 'chicken.rb' => '' } }
       node 'mort', { 'run_list' => %w(role[minor] recipe[quiche] recipe[soup::chicken]) }
       it 'knife deps reports just the node' do
-        knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed <<EOM
+        knife('deps --remote /nodes/mort.json').should_succeed <<EOM
 /roles/minor.json
 /cookbooks/quiche
 /cookbooks/soup
@@ -422,7 +422,7 @@ EOM
       node 'bart', { 'run_list' => [ 'role[minor]' ] }
 
       it 'knife deps reports all dependencies' do
-        knife('deps --remote --repo-mode=everything /nodes/mort.json').should_succeed <<EOM
+        knife('deps --remote /nodes/mort.json').should_succeed <<EOM
 /environments/desert.json
 /roles/minor.json
 /cookbooks/quiche
@@ -432,7 +432,7 @@ EOM
 EOM
       end
       it 'knife deps * reports all dependencies of all things' do
-        knife('deps --remote --repo-mode=everything /nodes/*').should_succeed <<EOM
+        knife('deps --remote /nodes/*').should_succeed <<EOM
 /roles/minor.json
 /nodes/bart.json
 /environments/desert.json
@@ -443,7 +443,7 @@ EOM
 EOM
       end
       it 'knife deps a b reports all dependencies of a and b' do
-        knife('deps --remote --repo-mode=everything /nodes/bart.json /nodes/mort.json').should_succeed <<EOM
+        knife('deps --remote /nodes/bart.json /nodes/mort.json').should_succeed <<EOM
 /roles/minor.json
 /nodes/bart.json
 /environments/desert.json
@@ -454,7 +454,7 @@ EOM
 EOM
       end
       it 'knife deps --tree /* shows dependencies in a tree' do
-        knife('deps --remote --tree --repo-mode=everything /nodes/*').should_succeed <<EOM
+        knife('deps --remote --tree /nodes/*').should_succeed <<EOM
 /nodes/bart.json
   /roles/minor.json
 /nodes/mort.json
@@ -466,7 +466,7 @@ EOM
 EOM
       end
       it 'knife deps --tree --no-recurse shows only the first level of dependencies' do
-        knife('deps --remote --tree --no-recurse --repo-mode=everything /nodes/*').should_succeed <<EOM
+        knife('deps --remote --tree --no-recurse /nodes/*').should_succeed <<EOM
 /nodes/bart.json
   /roles/minor.json
 /nodes/mort.json
@@ -540,7 +540,7 @@ EOM
           )
         end
         it 'knife deps /nodes/x.json reports an error' do
-          knife('deps --remote --repo-mode=everything /nodes/x.json').should_fail(
+          knife('deps --remote /nodes/x.json').should_fail(
             :exit_code => 2,
             :stdout => "/nodes/x.json\n",
             :stderr => "ERROR: /nodes/x.json: No such file or directory\n"
@@ -581,7 +581,7 @@ EOM
       when_the_chef_server 'is missing a dependent environment' do
         node 'mort', { 'chef_environment' => 'desert' }
         it 'knife deps reports the environment, along with an error' do
-          knife('deps --remote --repo-mode=everything /nodes/mort.json').should_fail(
+          knife('deps --remote /nodes/mort.json').should_fail(
             :exit_code => 2,
             :stdout => "/environments/desert.json\n/nodes/mort.json\n",
             :stderr => "ERROR: /environments/desert.json: No such file or directory\n"
