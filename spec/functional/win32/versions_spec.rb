@@ -28,7 +28,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
 
     # Ensure that the OS name returned by WMI does not have extended
     # characters like the registered trademark that get mapped to
-    # the character 'r' -- this is an issue for Win2k3, Win2k8 only.
+    # the character 'r' -- this is an issue for Win2k8 only.
     # This gets normalized below
     @current_os_version_canonicalized = host.caption.gsub("Serverr", "Server")
 
@@ -40,8 +40,8 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       @current_os_version_canonicalized.include?(@version.marketing_name).should == true
     end
 
-    context "Windows Server 2003" do
-      it "should report 'Windows Server 2003'", :windows_win2k3 do
+    context "Windows Server 2003", :windows_win2k3 do
+      it "should report 'Windows Server 2003'" do
         @version.marketing_name.include?('Windows Server 2003') == true
       end            
     end
