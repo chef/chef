@@ -50,7 +50,17 @@ class Chef
         @suite_mask = ver_info[:w_suite_mask]
         @sp_major_version = ver_info[:w_service_pack_major]
         @sp_minor_version = ver_info[:w_service_pack_minor]
-        @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
+
+        # obtain sku information for the purpose of identifying
+        # datacenter, cluster, core, the latter 2 only apply
+        # after Windows Server 2003
+        if ! Chef::Platform::windows_server_2003
+          @sku = get_product_info(@major_version, @minor_version, @sp_major_version, @sp_minor_version)
+        else
+          # The get_product_info API is not supported on Win2k3,
+          # use an alternative to identify datacenter skus
+          @sku = get_datacenter_product_info_windows_server_2003(ver_info)
+        end        
       end
 
       marketing_names = Array.new
@@ -79,11 +89,6 @@ class Chef
             (self.class.const_get(c) == @sku) &&
               (c.to_s =~ /#{m}/i )
           end
-          # if @sku
-          #   !(PRODUCT_TYPE[@sku][:name] =~ /#{m}/i).nil?
-          # else
-          #   false
-          # end
         end
       end
 
@@ -110,6 +115,12 @@ class Chef
         out = FFI::MemoryPointer.new(:uint32)
         GetProductInfo(major, minor, sp_major, sp_minor, out)
         out.get_uint(0)
+      end
+
+      def get_datacenter_product_info_windows_server_2003(ver_info)
+        # The intent is not to get the actual sku, just identify
+        # Windows Server 2003 datacenter
+        sku = (ver_info[:w_suite_mask] & VER_SUITE_DATACENTER) ? PRODUCT_DATACENTER_SERVER : 0
       end
 
       def get_system_metrics(n_index)
