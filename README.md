@@ -69,6 +69,23 @@ Full help for the Omnibus command line interface can be accessed with the
 $ bin/omnibus help
 ```
 
+## Specifying a Chef version
+
+By default, the package you build will be based on master branch HEAD of the
+[opscode/chef](https://github.com/opscode/chef) git repository. You can build
+packages for a specific version of Chef by leveraging the `CHEF_GIT_REV`
+environment variable. The value can be any valid git reference (e.g., tag,
+branch name, or SHA).
+
+For example, to build a package for Chef 11.4.4 you would run the following
+command:
+
+```shell
+CHEF_GIT_REV=11.4.4 bin/omnibus build project chef
+```
+The `CHEF_GIT_REV` environment variable is also respected when using the
+Vagrant-based build lab documented below.
+
 ## Vagrant-based Virtualized Build Labs
 
 Please note this build-lab is only meant to get you up and running quickly;
