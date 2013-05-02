@@ -8,13 +8,13 @@ describe 'knife download' do
 
   context 'without versioned cookbooks' do
     when_the_chef_server "has one of each thing" do
-      client 'x', '{}'
+      client 'x', {}
       cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => '{}' }
-      environment 'x', '{}'
-      node 'x', '{}'
-      role 'x', '{}'
-      user 'x', '{}'
+      data_bag 'x', { 'y' => {} }
+      environment 'x', {}
+      node 'x', {}
+      role 'x', {}
+      user 'x', {}
 
       when_the_repository 'has only top-level directories' do
         directory 'clients'
@@ -27,79 +27,36 @@ describe 'knife download' do
 
         it 'knife download downloads everything' do
           knife('download /').should_succeed <<EOM
+Created /clients/chef-validator.json
+Created /clients/chef-webui.json
+Created /clients/x.json
 Created /cookbooks/x
 Created /cookbooks/x/metadata.rb
 Created /data_bags/x
 Created /data_bags/x/y.json
 Created /environments/_default.json
 Created /environments/x.json
+Created /nodes/x.json
 Created /roles/x.json
+Created /users/admin.json
+Created /users/x.json
 EOM
           knife('diff --name-status /').should_succeed ''
         end
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/x.json', <<EOM
-{}
-EOM
+        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
         file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-        file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-        file 'nodes/x.json', <<EOM
-{}
-EOM
-        file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-        file 'users/x.json', <<EOM
-{}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
         it 'knife download makes no changes' do
           knife('download /').should_succeed ''
@@ -160,73 +117,42 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'name' => 'y' }
+          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
           file 'cookbooks/x/blah.rb', ''
           file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
-          file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
-          file 'data_bags/y/zz.json', <<EOM
-{
-  "id": "zz"
-}
-EOM
-          file 'environments/y.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "y",
-  "override_attributes": {
-  }
-}
-EOM
-          file 'nodes/y.json', { 'name' => 'y' }
-          file 'roles/y.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "y",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-          file 'users/y.json', { 'name' => 'y' }
+          file 'data_bags/x/z.json', {}
+          file 'data_bags/y/zz.json', {}
+          file 'environments/y.json', {}
+          file 'nodes/y.json', {}
+          file 'roles/y.json', {}
+          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
           it 'knife download does nothing' do
             knife('download /').should_succeed ''
             knife('diff --name-status /').should_succeed <<EOM
+A\t/clients/y.json
 A\t/cookbooks/x/blah.rb
 A\t/cookbooks/y
 A\t/data_bags/x/z.json
 A\t/data_bags/y
 A\t/environments/y.json
+A\t/nodes/y.json
 A\t/roles/y.json
+A\t/users/y.json
 EOM
           end
 
           it 'knife download --purge deletes the extra files' do
             knife('download --purge /').should_succeed <<EOM
+Deleted extra entry /clients/y.json (purge is on)
 Deleted extra entry /cookbooks/x/blah.rb (purge is on)
 Deleted extra entry /cookbooks/y (purge is on)
 Deleted extra entry /data_bags/x/z.json (purge is on)
 Deleted extra entry /data_bags/y (purge is on)
 Deleted extra entry /environments/y.json (purge is on)
+Deleted extra entry /nodes/y.json (purge is on)
 Deleted extra entry /roles/y.json (purge is on)
+Deleted extra entry /users/y.json (purge is on)
 EOM
             knife('diff --name-status /').should_succeed ''
           end
@@ -236,6 +162,10 @@ EOM
       when_the_repository 'is empty' do
         it 'knife download creates the extra files' do
           knife('download /').should_succeed <<EOM
+Created /clients
+Created /clients/chef-validator.json
+Created /clients/chef-webui.json
+Created /clients/x.json
 Created /cookbooks
 Created /cookbooks/x
 Created /cookbooks/x/metadata.rb
@@ -245,8 +175,13 @@ Created /data_bags/x/y.json
 Created /environments
 Created /environments/_default.json
 Created /environments/x.json
+Created /nodes
+Created /nodes/x.json
 Created /roles
 Created /roles/x.json
+Created /users
+Created /users/admin.json
+Created /users/x.json
 EOM
           knife('diff --name-status /').should_succeed ''
         end
@@ -529,13 +464,13 @@ EOM
 
   with_versioned_cookbooks do
     when_the_chef_server "has one of each thing" do
-      client 'x', '{}'
+      client 'x', {}
       cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => '{}' }
-      environment 'x', '{}'
-      node 'x', '{}'
-      role 'x', '{}'
-      user 'x', '{}'
+      data_bag 'x', { 'y' => {} }
+      environment 'x', {}
+      node 'x', {}
+      role 'x', {}
+      user 'x', {}
 
       when_the_repository 'has only top-level directories' do
         directory 'clients'
@@ -548,79 +483,36 @@ EOM
 
         it 'knife download downloads everything' do
           knife('download /').should_succeed <<EOM
+Created /clients/chef-validator.json
+Created /clients/chef-webui.json
+Created /clients/x.json
 Created /cookbooks/x-1.0.0
 Created /cookbooks/x-1.0.0/metadata.rb
 Created /data_bags/x
 Created /data_bags/x/y.json
 Created /environments/_default.json
 Created /environments/x.json
+Created /nodes/x.json
 Created /roles/x.json
+Created /users/admin.json
+Created /users/x.json
 EOM
           knife('diff --name-status /').should_succeed ''
         end
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/x.json', <<EOM
-{}
-EOM
+        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-        file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-        file 'nodes/x.json', <<EOM
-{}
-EOM
-        file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-        file 'users/x.json', <<EOM
-{}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
         it 'knife download makes no changes' do
           knife('download /').should_succeed ''
@@ -633,23 +525,8 @@ EOM
         end
 
         context 'except the role file' do
-          file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "blarghle",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
+          file 'roles/x.json', { "description" => "blarghle" }
 
-  ]
-}
-EOM
           it 'knife download changes the role' do
             knife('download /').should_succeed "Updated /roles/x.json\n"
             knife('diff --name-status /').should_succeed ''
@@ -658,8 +535,8 @@ EOM
 
         context 'except the role file is textually different, but not ACTUALLY different' do
           file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
+{  
+  "chef_type": "role" ,
   "default_attributes": {
   },
   "env_run_lists": {
@@ -670,7 +547,7 @@ EOM
   "override_attributes": {
   },
   "run_list": [
-
+     
   ]
 }
 EOM
@@ -681,76 +558,45 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'name' => 'y' }
+          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
           file 'cookbooks/x-1.0.0/blah.rb', ''
           file 'cookbooks/x-2.0.0/metadata.rb', 'version "2.0.0"'
           file 'cookbooks/y-1.0.0/metadata.rb', 'version "1.0.0"'
-          file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
-          file 'data_bags/y/zz.json', <<EOM
-{
-  "id": "zz"
-}
-EOM
-          file 'environments/y.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "y",
-  "override_attributes": {
-  }
-}
-EOM
-          file 'nodes/y.json', { 'name' => 'y' }
-          file 'roles/y.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "y",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-          file 'users/y.json', { 'name' => 'y' }
+          file 'data_bags/x/z.json', {}
+          file 'data_bags/y/zz.json', {}
+          file 'environments/y.json', {}
+          file 'nodes/y.json', {}
+          file 'roles/y.json', {}
+          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
           it 'knife download does nothing' do
             knife('download /').should_succeed ''
             knife('diff --name-status /').should_succeed <<EOM
+A\t/clients/y.json
 A\t/cookbooks/x-1.0.0/blah.rb
 A\t/cookbooks/x-2.0.0
 A\t/cookbooks/y-1.0.0
 A\t/data_bags/x/z.json
 A\t/data_bags/y
 A\t/environments/y.json
+A\t/nodes/y.json
 A\t/roles/y.json
+A\t/users/y.json
 EOM
           end
 
           it 'knife download --purge deletes the extra files' do
             knife('download --purge /').should_succeed <<EOM
+Deleted extra entry /clients/y.json (purge is on)
 Deleted extra entry /cookbooks/x-1.0.0/blah.rb (purge is on)
 Deleted extra entry /cookbooks/x-2.0.0 (purge is on)
 Deleted extra entry /cookbooks/y-1.0.0 (purge is on)
 Deleted extra entry /data_bags/x/z.json (purge is on)
 Deleted extra entry /data_bags/y (purge is on)
 Deleted extra entry /environments/y.json (purge is on)
+Deleted extra entry /nodes/y.json (purge is on)
 Deleted extra entry /roles/y.json (purge is on)
+Deleted extra entry /users/y.json (purge is on)
 EOM
             knife('diff --name-status /').should_succeed ''
           end
@@ -760,6 +606,10 @@ EOM
       when_the_repository 'is empty' do
         it 'knife download creates the extra files' do
           knife('download /').should_succeed <<EOM
+Created /clients
+Created /clients/chef-validator.json
+Created /clients/chef-webui.json
+Created /clients/x.json
 Created /cookbooks
 Created /cookbooks/x-1.0.0
 Created /cookbooks/x-1.0.0/metadata.rb
@@ -769,8 +619,13 @@ Created /data_bags/x/y.json
 Created /environments
 Created /environments/_default.json
 Created /environments/x.json
+Created /nodes
+Created /nodes/x.json
 Created /roles
 Created /roles/x.json
+Created /users
+Created /users/admin.json
+Created /users/x.json
 EOM
           knife('diff --name-status /').should_succeed ''
         end

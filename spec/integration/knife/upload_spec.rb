@@ -8,13 +8,13 @@ describe 'knife upload' do
 
   context 'without versioned cookbooks' do
     when_the_chef_server "has one of each thing" do
-      client 'x', '{}'
+      client 'x', {}
       cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => '{}' }
-      environment 'x', '{}'
-      node 'x', '{}'
-      role 'x', '{}'
-      user 'x', '{}'
+      data_bag 'x', { 'y' => {} }
+      environment 'x', {}
+      node 'x', {}
+      role 'x', {}
+      user 'x', {}
 
       when_the_repository 'has only top-level directories' do
         directory 'clients'
@@ -28,20 +28,32 @@ describe 'knife upload' do
         it 'knife upload does nothing' do
           knife('upload /').should_succeed ''
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients/chef-validator.json
+D\t/clients/chef-webui.json
+D\t/clients/x.json
 D\t/cookbooks/x
 D\t/data_bags/x
 D\t/environments/_default.json
 D\t/environments/x.json
+D\t/nodes/x.json
 D\t/roles/x.json
+D\t/users/admin.json
+D\t/users/x.json
 EOM
       end
 
       it 'knife upload --purge deletes everything' do
         knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+Deleted extra entry /clients/chef-validator.json (purge is on)
+Deleted extra entry /clients/chef-webui.json (purge is on)
+Deleted extra entry /clients/x.json (purge is on)
 Deleted extra entry /cookbooks/x (purge is on)
 Deleted extra entry /data_bags/x (purge is on)
 Deleted extra entry /environments/x.json (purge is on)
+Deleted extra entry /nodes/x.json (purge is on)
 Deleted extra entry /roles/x.json (purge is on)
+Deleted extra entry /users/admin.json (purge is on)
+Deleted extra entry /users/x.json (purge is on)
 EOM
         knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
@@ -50,66 +62,17 @@ EOM
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/x.json', <<EOM
-{}
-EOM
+        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
         file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-        file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-        file 'nodes/x.json', <<EOM
-{}
-EOM
-        file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-        file 'users/x.json', <<EOM
-{}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', { "description" => "The default Chef environment" }
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
         it 'knife upload makes no changes' do
           knife('upload /cookbooks/x').should_succeed ''
@@ -122,23 +85,7 @@ EOM
         end
 
         context 'except the role file' do
-          file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "blarghle",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
+          file 'roles/x.json', { 'description' => 'blarghle' }
           it 'knife upload changes the role' do
             knife('upload /').should_succeed "Updated /roles/x.json\n"
             knife('diff --name-status /').should_succeed ''
@@ -149,7 +96,7 @@ EOM
           file 'roles/x.json', <<EOM
 {
   "chef_type": "role",
-  "default_attributes": {
+  "default_attributes":  {
   },
   "env_run_lists": {
   },
@@ -170,62 +117,28 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'name' => 'y' }
+          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
           file 'cookbooks/x/blah.rb', ''
           file 'cookbooks/y/metadata.rb', 'version "1.0.0"'
-          file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
-          file 'data_bags/y/zz.json', <<EOM
-{
-  "id": "zz"
-}
-EOM
-          file 'environments/y.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "y",
-  "override_attributes": {
-  }
-}
-EOM
-          file 'nodes/y.json', { 'name' => 'y' }
-          file 'roles/y.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "y",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-          file 'users/y.json', { 'name' => 'y' }
+          file 'data_bags/x/z.json', {}
+          file 'data_bags/y/zz.json', {}
+          file 'environments/y.json', {}
+          file 'nodes/y.json', {}
+          file 'roles/y.json', {}
+          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
           it 'knife upload adds the new files' do
             knife('upload /').should_succeed <<EOM
+Created /clients/y.json
 Updated /cookbooks/x
 Created /cookbooks/y
 Created /data_bags/x/z.json
 Created /data_bags/y
 Created /data_bags/y/zz.json
 Created /environments/y.json
+Created /nodes/y.json
 Created /roles/y.json
+Created /users/y.json
 EOM
             knife('diff --name-status /').should_succeed ''
           end
@@ -236,25 +149,34 @@ EOM
         it 'knife upload does nothing' do
           knife('upload /').should_succeed ''
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
+D\t/nodes
 D\t/roles
+D\t/users
 EOM
         end
 
         it 'knife upload --purge deletes nothing' do
           knife('upload --purge /').should_fail <<EOM
+ERROR: /clients cannot be deleted.
 ERROR: /cookbooks cannot be deleted.
 ERROR: /data_bags cannot be deleted.
 ERROR: /environments cannot be deleted.
+ERROR: /nodes cannot be deleted.
 ERROR: /roles cannot be deleted.
+ERROR: /users cannot be deleted.
 EOM
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
+D\t/nodes
 D\t/roles
+D\t/users
 EOM
         end
 
@@ -270,16 +192,8 @@ EOM
     # Test upload of an item when the other end doesn't even have the container
     when_the_chef_server 'is empty' do
       when_the_repository 'has two data bag items' do
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'data_bags/x/z.json', {}
         it 'knife upload of one data bag item itself succeeds' do
           knife('upload /data_bags/x/y.json').should_succeed <<EOM
 Created /data_bags/x
@@ -294,23 +208,12 @@ EOM
 
     when_the_chef_server 'has three data bag items' do
       data_bag 'x', { 'deleted' => {}, 'modified' => {}, 'unmodified' => {} }
+
       when_the_repository 'has a modified, unmodified, added and deleted data bag item' do
-        file 'data_bags/x/added.json', <<EOM
-{
-  "id": "added"
-}
-EOM
-        file 'data_bags/x/modified.json', <<EOM
-{
-  "id": "modified",
-  "foo": "bar"
-}
-EOM
-        file 'data_bags/x/unmodified.json', <<EOM
-{
-  "id": "unmodified"
-}
-EOM
+        file 'data_bags/x/added.json', {}
+        file 'data_bags/x/modified.json', { 'foo' => 'bar' }
+        file 'data_bags/x/unmodified.json', {}
+
         it 'knife upload of the modified file succeeds' do
           knife('upload /data_bags/x/modified.json').should_succeed <<EOM
 Updated /data_bags/x/modified.json
@@ -579,13 +482,13 @@ EOM
 
   with_versioned_cookbooks do
     when_the_chef_server "has one of each thing" do
-      client 'x', '{}'
+      client 'x', {}
       cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
-      data_bag 'x', { 'y' => '{}' }
-      environment 'x', '{}'
-      node 'x', '{}'
-      role 'x', '{}'
-      user 'x', '{}'
+      data_bag 'x', { 'y' => {} }
+      environment 'x', {}
+      node 'x', {}
+      role 'x', {}
+      user 'x', {}
 
       when_the_repository 'has only top-level directories' do
         directory 'clients'
@@ -599,20 +502,32 @@ EOM
         it 'knife upload does nothing' do
           knife('upload /').should_succeed ''
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients/chef-validator.json
+D\t/clients/chef-webui.json
+D\t/clients/x.json
 D\t/cookbooks/x-1.0.0
 D\t/data_bags/x
 D\t/environments/_default.json
 D\t/environments/x.json
+D\t/nodes/x.json
 D\t/roles/x.json
+D\t/users/admin.json
+D\t/users/x.json
 EOM
       end
 
       it 'knife upload --purge deletes everything' do
         knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+Deleted extra entry /clients/chef-validator.json (purge is on)
+Deleted extra entry /clients/chef-webui.json (purge is on)
+Deleted extra entry /clients/x.json (purge is on)
 Deleted extra entry /cookbooks/x-1.0.0 (purge is on)
 Deleted extra entry /data_bags/x (purge is on)
 Deleted extra entry /environments/x.json (purge is on)
+Deleted extra entry /nodes/x.json (purge is on)
 Deleted extra entry /roles/x.json (purge is on)
+Deleted extra entry /users/admin.json (purge is on)
+Deleted extra entry /users/x.json (purge is on)
 EOM
         knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
@@ -621,66 +536,17 @@ EOM
       end
 
       when_the_repository 'has an identical copy of each thing' do
-        file 'clients/x.json', <<EOM
-{}
-EOM
+        file 'clients/chef-validator.json', { 'validator' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/chef-webui.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'clients/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'environments/_default.json', <<EOM
-{
-  "name": "_default",
-  "description": "The default Chef environment",
-  "cookbook_versions": {
-  },
-  "json_class": "Chef::Environment",
-  "chef_type": "environment",
-  "default_attributes": {
-  },
-  "override_attributes": {
-  }
-}
-EOM
-        file 'environments/x.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "x",
-  "override_attributes": {
-  }
-}
-EOM
-        file 'nodes/x.json', <<EOM
-{}
-EOM
-        file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-        file 'users/x.json', <<EOM
-{}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'environments/_default.json', { 'description' => 'The default Chef environment' }
+        file 'environments/x.json', {}
+        file 'nodes/x.json', {}
+        file 'roles/x.json', {}
+        file 'users/admin.json', { 'admin' => true, 'public_key' => ChefZero::PUBLIC_KEY }
+        file 'users/x.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
         it 'knife upload makes no changes' do
           knife('upload /cookbooks/x-1.0.0').should_succeed ''
@@ -693,23 +559,8 @@ EOM
         end
 
         context 'except the role file' do
-          file 'roles/x.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "blarghle",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "x",
-  "override_attributes": {
-  },
-  "run_list": [
+          file 'roles/x.json', { 'description' => 'blarghle' }
 
-  ]
-}
-EOM
           it 'knife upload changes the role' do
             knife('upload /').should_succeed "Updated /roles/x.json\n"
             knife('diff --name-status /').should_succeed ''
@@ -720,7 +571,7 @@ EOM
           file 'roles/x.json', <<EOM
 {
   "chef_type": "role",
-  "default_attributes": {
+  "default_attributes":  {
   },
   "env_run_lists": {
   },
@@ -741,56 +592,20 @@ EOM
         end
 
         context 'as well as one extra copy of each thing' do
-          file 'clients/y.json', { 'name' => 'y' }
+          file 'clients/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
           file 'cookbooks/x-1.0.0/blah.rb', ''
           file 'cookbooks/x-2.0.0/metadata.rb', 'version "2.0.0"'
           file 'cookbooks/y-1.0.0/metadata.rb', 'version "1.0.0"'
-          file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
-          file 'data_bags/y/zz.json', <<EOM
-{
-  "id": "zz"
-}
-EOM
-          file 'environments/y.json', <<EOM
-{
-  "chef_type": "environment",
-  "cookbook_versions": {
-  },
-  "default_attributes": {
-  },
-  "description": "",
-  "json_class": "Chef::Environment",
-  "name": "y",
-  "override_attributes": {
-  }
-}
-EOM
-          file 'nodes/y.json', { 'name' => 'y' }
-          file 'roles/y.json', <<EOM
-{
-  "chef_type": "role",
-  "default_attributes": {
-  },
-  "description": "",
-  "env_run_lists": {
-  },
-  "json_class": "Chef::Role",
-  "name": "y",
-  "override_attributes": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
-          file 'users/y.json', { 'name' => 'y' }
+          file 'data_bags/x/z.json', {}
+          file 'data_bags/y/zz.json', {}
+          file 'environments/y.json', {}
+          file 'nodes/y.json', {}
+          file 'roles/y.json', {}
+          file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
           it 'knife upload adds the new files' do
             knife('upload /').should_succeed <<EOM
+Created /clients/y.json
 Updated /cookbooks/x-1.0.0
 Created /cookbooks/x-2.0.0
 Created /cookbooks/y-1.0.0
@@ -798,7 +613,9 @@ Created /data_bags/x/z.json
 Created /data_bags/y
 Created /data_bags/y/zz.json
 Created /environments/y.json
+Created /nodes/y.json
 Created /roles/y.json
+Created /users/y.json
 EOM
             knife('diff --name-status /').should_succeed ''
           end
@@ -809,25 +626,34 @@ EOM
         it 'knife upload does nothing' do
           knife('upload /').should_succeed ''
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
+D\t/nodes
 D\t/roles
+D\t/users
 EOM
         end
 
         it 'knife upload --purge deletes nothing' do
           knife('upload --purge /').should_fail <<EOM
+ERROR: /clients cannot be deleted.
 ERROR: /cookbooks cannot be deleted.
 ERROR: /data_bags cannot be deleted.
 ERROR: /environments cannot be deleted.
+ERROR: /nodes cannot be deleted.
 ERROR: /roles cannot be deleted.
+ERROR: /users cannot be deleted.
 EOM
           knife('diff --name-status /').should_succeed <<EOM
+D\t/clients
 D\t/cookbooks
 D\t/data_bags
 D\t/environments
+D\t/nodes
 D\t/roles
+D\t/users
 EOM
         end
 
@@ -843,16 +669,9 @@ EOM
     # Test upload of an item when the other end doesn't even have the container
     when_the_chef_server 'is empty' do
       when_the_repository 'has two data bag items' do
-        file 'data_bags/x/y.json', <<EOM
-{
-  "id": "y"
-}
-EOM
-        file 'data_bags/x/z.json', <<EOM
-{
-  "id": "z"
-}
-EOM
+        file 'data_bags/x/y.json', {}
+        file 'data_bags/x/z.json', {}
+
         it 'knife upload of one data bag item itself succeeds' do
           knife('upload /data_bags/x/y.json').should_succeed <<EOM
 Created /data_bags/x
@@ -868,22 +687,10 @@ EOM
     when_the_chef_server 'has three data bag items' do
       data_bag 'x', { 'deleted' => {}, 'modified' => {}, 'unmodified' => {} }
       when_the_repository 'has a modified, unmodified, added and deleted data bag item' do
-        file 'data_bags/x/added.json', <<EOM
-{
-  "id": "added"
-}
-EOM
-        file 'data_bags/x/modified.json', <<EOM
-{
-  "id": "modified",
-  "foo": "bar"
-}
-EOM
-        file 'data_bags/x/unmodified.json', <<EOM
-{
-  "id": "unmodified"
-}
-EOM
+        file 'data_bags/x/added.json', {}
+        file 'data_bags/x/modified.json', { 'foo' => 'bar' }
+        file 'data_bags/x/unmodified.json', {}
+
         it 'knife upload of the modified file succeeds' do
           knife('upload /data_bags/x/modified.json').should_succeed <<EOM
 Updated /data_bags/x/modified.json
@@ -974,14 +781,17 @@ EOM
     # case.
     when_the_chef_server 'has a cookbook' do
       cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"', 'z.rb' => '' }
+
       when_the_repository 'has a modified, extra and missing file for the cookbook' do
         file 'cookbooks/x-1.0.0/metadata.rb', 'version  "1.0.0"'
         file 'cookbooks/x-1.0.0/y.rb', 'hi'
+
         it 'knife upload of any individual file fails' do
           knife('upload /cookbooks/x-1.0.0/metadata.rb').should_fail "ERROR: /cookbooks/x-1.0.0/metadata.rb cannot be updated.\n"
           knife('upload /cookbooks/x-1.0.0/y.rb').should_fail "ERROR: /cookbooks/x-1.0.0 cannot have a child created under it.\n"
           knife('upload --purge /cookbooks/x-1.0.0/z.rb').should_fail "ERROR: /cookbooks/x-1.0.0/z.rb cannot be deleted.\n"
         end
+
         # TODO this is a bit of an inconsistency: if we didn't specify --purge,
         # technically we shouldn't have deleted missing files.  But ... cookbooks
         # are a special case.
@@ -991,6 +801,7 @@ Updated /cookbooks/x-1.0.0
 EOM
           knife('diff --name-status /cookbooks').should_succeed ''
         end
+
         it 'knife upload --purge of the cookbook itself succeeds' do
           knife('upload /cookbooks/x-1.0.0').should_succeed <<EOM
 Updated /cookbooks/x-1.0.0
@@ -998,8 +809,10 @@ EOM
           knife('diff --name-status /cookbooks').should_succeed ''
         end
       end
+
       when_the_repository 'has a missing file for the cookbook' do
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
+
         it 'knife upload of the cookbook succeeds' do
           knife('upload /cookbooks/x-1.0.0').should_succeed <<EOM
 Updated /cookbooks/x-1.0.0
@@ -1007,10 +820,12 @@ EOM
           knife('diff --name-status /cookbooks').should_succeed ''
         end
       end
+
       when_the_repository 'has an extra file for the cookbook' do
         file 'cookbooks/x-1.0.0/metadata.rb', 'version "1.0.0"'
         file 'cookbooks/x-1.0.0/z.rb', ''
         file 'cookbooks/x-1.0.0/blah.rb', ''
+
         it 'knife upload of the cookbook succeeds' do
           knife('upload /cookbooks/x-1.0.0').should_succeed <<EOM
 Updated /cookbooks/x-1.0.0

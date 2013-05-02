@@ -28,7 +28,7 @@ class Chef
       def self.common_options
         option :repo_mode,
           :long => '--repo-mode MODE',
-          :description => "Specifies the local repository layout.  Values: default, everything, hosted_everything"
+          :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
 
         option :chef_repo_path,
           :long => '--chef-repo-path PATH',
@@ -66,6 +66,15 @@ class Chef
           Chef::Config[:role_path] = nil
         end
 
+        # Default to getting *everything* from the server.
+        if !Chef::Config[:repo_mode]
+          if Chef::Config[:chef_server_url] =~ /^[^\/]+\/+organizations\//
+            Chef::Config[:repo_mode] = 'hosted_everything'
+          else
+            Chef::Config[:repo_mode] = 'everything'
+          end
+        end
+
         # Infer any *_path variables that are not specified
         if Chef::Config[:chef_repo_path]
           path_variables.each do |variable_name|
@@ -92,12 +101,12 @@ class Chef
 
           result = {}
           case Chef::Config[:repo_mode]
-          when 'everything'
-            object_names = %w(clients cookbooks data_bags environments nodes roles users)
+          when 'static'
+            object_names = %w(cookbooks data_bags environments roles)
           when 'hosted_everything'
             object_names = %w(acls clients cookbooks containers data_bags environments groups nodes roles)
           else
-            object_names = %w(cookbooks data_bags environments roles)
+            object_names = %w(clients cookbooks data_bags environments nodes roles users)
           end
           object_names.each do |object_name|
             variable_name = "#{object_name[0..-2]}_path" # cookbooks -> cookbook_path
