@@ -27,7 +27,7 @@ GEM
       mixlib-shellout
       systemu
       yajl-ruby
-    omnibus (1.0.2)
+    omnibus (1.0.3)
       fpm (= 0.3.11)
       mixlib-config (~> 1.1.2)
       mixlib-shellout (~> 1.0)
@@ -56,5 +56,5 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  omnibus (~> 1.0.0)
+  omnibus (~> 1.0.3)
   omnibus-software!
