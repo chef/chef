@@ -35,9 +35,17 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
     @version = Chef::ReservedNames::Win32::Version.new
   end
   context "Windows Operating System version" do
-    it "should match the version from WMI" do
+    it "should match the version from WMI", :not_supported_on_win2k3 do
       puts "WMI: #{@current_os_version_canonicalized} Resource: #{@version.marketing_name}"
       @current_os_version_canonicalized.include?(@version.marketing_name).should == true
     end
+
+    context "Windows Server 2003" do
+      it "should report 'Windows Server 2003'", :windows_win2k3 do
+        @version.marketing_name.include?('Windows Server 2003') == true
+      end            
+    end
+    
+    
   end
 end
