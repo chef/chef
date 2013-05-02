@@ -1,0 +1,104 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require "vagrant"
+
+if Vagrant::VERSION < "1.2.1"
+  raise "The Omnibus Build Lab is only compatible with Vagrant 1.2.1+"
+end
+
+# TODO - open a Vagrant PR for this fix.
+# We need to ensure the `chown` command is called with a `-f` flag
+require Vagrant.source_root.join("plugins", "provisioners", "chef", "provisioner", "base")
+class VagrantPlugins::Chef::Provisioner::Base
+  def chown_provisioning_folder
+    @machine.communicate.tap do |comm|
+      comm.sudo("mkdir -p #{@config.provisioning_path}")
+      comm.sudo("chown -Rf #{@machine.ssh_info[:username]} #{@config.provisioning_path}")
+    end
+  end
+end
+#
+
+host_project_path = File.expand_path("../../..", __FILE__)
+guest_project_path = "/home/vagrant/#{File.basename(host_project_path)}"
+project_name = "chef"
+
+Vagrant.configure("2") do |config|
+  config.vm.hostname = "#{project_name}-omnibus-build-lab"
+
+  config.vm.guest   = :freebsd
+  config.vm.box     = "freebsd-9.1"
+  config.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-freebsd-9.1.box"
+  config.vm.network :private_network, :ip => "33.33.33.55"
+  config.vm.provision :shell, :inline => <<-FREEBSD_SETUP
+    sed -i '' -E 's%^([^#].*):setenv=%\1:setenv=PACKAGESITE=ftp://ftp.freebsd.org/pub/FreeBSD/ports/amd64/packages-9-stable/Latest,%' /etc/login.conf
+  FREEBSD_SETUP
+
+  config.vm.provider :virtualbox do |vb|
+    # Give enough horsepower to build without taking all day.
+    vb.customize [
+      "modifyvm", :id,
+      "--memory", "1536",
+      "--cpus", "2"
+    ]
+  end
+
+  # Ensure a recent version of the Chef Omnibus packages are installed
+  config.omnibus.chef_version = "11.4.0"
+
+  # Enable the berkshelf-vagrant plugin
+  config.berkshelf.enabled = true
+  # The path to the Berksfile to use with Vagrant Berkshelf
+  config.berkshelf.berksfile_path = File.expand_path("../../../Berksfile", __FILE__)
+
+  config.ssh.max_tries = 40
+  config.ssh.timeout   = 120
+  config.ssh.forward_agent = true
+
+  config.vm.synced_folder host_project_path, guest_project_path, :nfs => true
+  config.vm.synced_folder File.expand_path("../../..", __FILE__), "/vagrant", :id => "vagrant-root", :nfs => true
+
+  # Uncomment for DEV MODE
+  # config.vm.synced_folder File.expand_path("../../../../omnibus-ruby", __FILE__), "/home/vagrant/omnibus-ruby", :nfs => true
+  # config.vm.synced_folder File.expand_path("../../../../omnibus-software", __FILE__), "/home/vagrant/omnibus-software", :nfs => true
+
+  # prepare VM to be an Omnibus builder
+  config.vm.provision :chef_solo do |chef|
+    chef.nfs = true
+    chef.json = {
+      "omnibus" => {
+        "build_user" => "vagrant",
+        "build_dir" => guest_project_path,
+        "install_dir" => "/opt/#{project_name}"
+      }
+    }
+
+    chef.run_list = [
+      "recipe[omnibus::default]"
+    ]
+  end
+
+  # We have to nuke any chef omnibus packages (used during provisioning) before
+  # we build new chef omnibus packages!
+  config.vm.provision :shell, :inline => <<-REMOVE_OMNIBUS
+    if command -v dpkg &>/dev/null;
+    then
+      sudo dpkg -P #{project_name} || true
+    elseif command -v rpm &>/dev/null;
+      sudo rpm -ev #{project_name} || true
+    else
+      sudo rm -r /opt/#{project_name} || true
+    fi
+  REMOVE_OMNIBUS
+
+  config.vm.provision :shell, :inline => <<-OMNIBUS_BUILD
+    sudo mkdir -p /opt/#{project_name}
+    sudo chown vagrant /opt/#{project_name}
+    export PATH=/usr/local/bin:$PATH
+    cd #{guest_project_path}
+    su vagrant -c "bundle install --binstubs"
+    export CHEF_GIT_REV=#{ENV['CHEF_GIT_REV'] || 'master'}
+    su vagrant -c "bin/omnibus build project #{project_name}"
+  OMNIBUS_BUILD
+end
