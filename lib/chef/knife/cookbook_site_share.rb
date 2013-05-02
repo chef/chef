@@ -79,7 +79,7 @@ class Chef
               if shell_out("which gnutar").exitstatus.equal?(0)
                 tar_cmd = "gnutar"
               end
-            rescue
+            rescue Errno::ENOENT
             end
             shell_out!("#{tar_cmd} -czf #{cookbook_name}.tgz #{cookbook_name}", :cwd => tmp_cookbook_dir)
           rescue => e
