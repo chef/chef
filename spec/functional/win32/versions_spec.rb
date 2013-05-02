@@ -36,7 +36,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
   end
   context "Windows Operating System version" do
     it "should match the version from WMI" do
-      puts "WMI: #{current_os_version_canonicalized} Resource: #{@version.marketing_name}"
+      puts "WMI: #{@current_os_version_canonicalized} Resource: #{@version.marketing_name}"
       @current_os_version_canonicalized.include?(@version.marketing_name).should == true
     end
   end
