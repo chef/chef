@@ -150,6 +150,7 @@ class Chef
             raise Chef::ChefFS::FileSystem::NotFoundError.new(@could_not_get_chef_object), "#{path_for_printing} not found"
           end
 
+          retries = 0
           begin
             # We want to fail fast, for now, because of the 500 issue :/
             # This will make things worse for parallelism, a little, because
@@ -178,7 +179,15 @@ class Chef
               @could_not_get_chef_object = $!
               raise Chef::ChefFS::FileSystem::NotFoundError.new(@could_not_get_chef_object), "#{path_for_printing} not found"
             else
-              raise
+              if retries < old_retry_count
+                retries += 1
+                wait = 2**retries
+                Chef::Log.debug "Retrying (#{retries}/#{old_retry_count}) failed HTTP request in #{wait} seconds"
+                sleep wait
+                retry
+              else
+                raise
+              end
             end
           end
         end
