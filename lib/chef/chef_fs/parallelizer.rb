@@ -1,8 +1,15 @@
 class Chef
   module ChefFS
     class Parallelizer
+      @@parallelizer = nil
+
+      def self.threads=(value)
+        raise "Cannot set threads after parallelize has been called" if @@parallelizer
+        @@threads = value
+      end
+
       def self.parallelize(enumerator, options = {}, &block)
-        @@parallelizer ||= Parallelizer.new(10)
+        @@parallelizer ||= Parallelizer.new(@@threads)
         @@parallelizer.parallelize(enumerator, options, &block)
       end
 
