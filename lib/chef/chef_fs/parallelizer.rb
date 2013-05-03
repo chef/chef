@@ -2,10 +2,13 @@ class Chef
   module ChefFS
     class Parallelizer
       @@parallelizer = nil
+      @@threads = 0
 
       def self.threads=(value)
-        raise "Cannot set threads after parallelize has been called" if @@parallelizer
-        @@threads = value
+        if @@threads != value
+          @@threads = value
+          @@parallelizer = nil
+        end
       end
 
       def self.parallelize(enumerator, options = {}, &block)
@@ -47,13 +50,17 @@ class Chef
           next_index = 0
           while true
             # Report any results that already exist
-            while @status.length > next_index && @status[next_index] == :finished
-              if @options[:flatten]
-                @outputs[next_index].each do |entry|
-                  yield entry
+            while @status.length > next_index && ([:finished, :exception].include?(@status[next_index]))
+              if @status[next_index] == :finished
+                if @options[:flatten]
+                  @outputs[next_index].each do |entry|
+                    yield entry
+                  end
+                else
+                  yield @outputs[next_index]
                 end
               else
-                yield @outputs[next_index]
+                raise @outputs[next_index]
               end
               next_index = next_index + 1
             end
@@ -84,8 +91,13 @@ class Chef
             [ index, input ]
           end
 
-          @outputs[index] = @block.call(input, @options)
-          @status[index] = :finished
+          begin
+            @outputs[index] = @block.call(input)
+            @status[index] = :finished
+          rescue
+            @outputs[index] = $!
+            @status[index] = :exception
+          end
           index
         end
       end

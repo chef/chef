@@ -15,6 +15,9 @@ module KnifeSupport
       args = args[0].split(/\s+/)
     end
 
+    # Make output stable
+    Chef::Config[:concurrency] = 1
+
     # This is Chef::Knife.run without load_commands and load_deps--we'll
     # load stuff ourselves, thank you very much
     stdout = StringIO.new
@@ -38,6 +41,7 @@ module KnifeSupport
       Chef::Log.use_log_devices([logger])
       Chef::Log.level = ( DEBUG ? :debug : :warn )
       Chef::Log::Formatter.show_time = false
+
       instance.run
 
       exit_code = 0
