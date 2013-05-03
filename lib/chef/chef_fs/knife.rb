@@ -205,6 +205,9 @@ class Chef
         end
       end
 
+      def parallelize(inputs, options = {}, &block)
+        Chef::ChefFS::Parallelizer.parallelize(inputs, options, &block)
+      end
     end
   end
 end

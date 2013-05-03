@@ -20,6 +20,7 @@ require 'chef/chef_fs/path_utils'
 require 'chef/chef_fs/file_system/default_environment_cannot_be_modified_error'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/operation_not_allowed_error'
+require 'chef/chef_fs/parallelizer'
 
 class Chef
   module ChefFS
@@ -47,8 +48,8 @@ class Chef
         attr_reader :root
         attr_reader :pattern
 
-        def each
-          list_from(root) { |entry| yield entry }
+        def each(&block)
+          list_from(root, &block)
         end
 
         def list_from(entry, &block)
@@ -71,7 +72,8 @@ class Chef
 
             # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              entry.children.each { |child| list_from(child, &block) }
+              results = Parallelizer::parallelize(entry.children, :flatten => true) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results.each(&block)
             end
           end
         end

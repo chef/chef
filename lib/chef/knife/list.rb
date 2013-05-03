@@ -41,21 +41,28 @@ class Chef
         patterns = name_args.length == 0 ? [""] : name_args
 
         # Get the matches (recursively)
-        results = []
-        dir_results = []
-        pattern_args_from(patterns).each do |pattern|
-          Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).each do |result|
-            if result.dir? && !config[:bare_directories]
-              dir_results += add_dir_result(result)
-            elsif result.exists?
-              results << result
-            elsif pattern.exact_path
-              ui.error "#{format_path(result)}: No such file or directory"
-              self.exit_code = 1
-            end
+        all_results = parallelize(pattern_args_from(patterns), :flatten => true) do |pattern|
+          pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern)
+          if pattern_results.first && !pattern_results.first.exists? && pattern.exact_path
+            ui.error "#{format_path(pattern_results.first)}: No such file or directory"
+            self.exit_code = 1
           end
+          pattern_results
         end
 
+        # Process directories
+        if !config[:bare_directories]
+          dir_results = parallelize(all_results.select { |result| result.dir? }, :flatten => true) do |result|
+            add_dir_result(result)
+          end.to_a
+        else
+          dir_results = []
+        end
+
+        # Process all other results
+        results = all_results.select { |result| result.exists? && (!result.dir? || config[:bare_directories]) }.to_a
+
+        # Flatten out directory results if necessary
         if config[:flat]
           dir_results.each do |result, children|
             results += children
@@ -63,9 +70,11 @@ class Chef
           dir_results = []
         end
 
+        # Sort by path for happy output
         results = results.sort_by { |result| result.path }
         dir_results = dir_results.sort_by { |result| result[0].path }
 
+        # Print!
         if results.length == 0 && dir_results.length == 1
           results = dir_results[0][1]
           dir_results = []
@@ -96,11 +105,8 @@ class Chef
 
         result = [ [ result, children ] ]
         if config[:recursive]
-          children.each do |child|
-            if child.dir?
-              result += add_dir_result(child)
-            end
-          end
+          child_dirs = children.select { |child| child.dir? }
+          result += parallelize(child_dirs, :flatten => true) { |child| add_dir_result(child) }.to_a
         end
         result
       end
