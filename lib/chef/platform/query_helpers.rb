@@ -16,12 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/platform/provider_mapping'
-require 'chef/platform/query_helpers'
-
 class Chef
   class Platform
-
 
     class << self
       def windows?

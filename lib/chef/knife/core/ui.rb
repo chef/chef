@@ -19,7 +19,7 @@
 #
 
 require 'forwardable'
-require 'chef/platform'
+require 'chef/platform/query_helpers'
 require 'chef/knife/core/generic_presenter'
 
 class Chef
