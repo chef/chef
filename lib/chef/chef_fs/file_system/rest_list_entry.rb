@@ -106,6 +106,8 @@ class Chef
         end
 
         def compare_to(other)
+          # TODO this pair of reads can be parallelized
+
           # Grab the other value
           begin
             other_value_json = other.read

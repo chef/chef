@@ -139,7 +139,7 @@ class Chef
       def self.copy_to(pattern, src_root, dest_root, recurse_depth, options, ui, format_path)
         found_result = false
         error = false
-        list_pairs(pattern, src_root, dest_root).each do |src, dest|
+        parallel_do(list_pairs(pattern, src_root, dest_root)) do |src, dest|
           found_result = true
           new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
           child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
@@ -243,6 +243,7 @@ class Chef
           are_same, b_value, a_value = b.compare_to(a)
         end
         if are_same.nil?
+          # TODO these reads can be parallelized
           begin
             a_value = a.read if a_value.nil?
           rescue Chef::ChefFS::FileSystem::NotFoundError
@@ -315,7 +316,7 @@ class Chef
                 end
                 # Directory creation is recursive.
                 if recurse_depth != 0
-                  src_entry.children.each do |src_child|
+                  parallel_do(src_entry.children) do |src_child|
                     new_dest_child = new_dest_dir.child(src_child.name)
                     child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                     error ||= child_error
@@ -352,7 +353,7 @@ class Chef
               if dest_entry.dir?
                 # If both are directories, recurse into their children
                 if recurse_depth != 0
-                  child_pairs(src_entry, dest_entry).each do |src_child, dest_child|
+                  parallel_do(child_pairs(src_entry, dest_entry)) do |src_child, dest_child|
                     child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                     error ||= child_error
                   end
@@ -415,6 +416,9 @@ class Chef
         return parent
       end
 
+      def self.parallel_do(enum, options = {}, &block)
+        Chef::ChefFS::Parallelizer.parallelize(enum, options, &block).to_a
+      end
     end
   end
 end
