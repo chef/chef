@@ -24,36 +24,54 @@ require 'chef/chef_fs/file_system/operation_not_allowed_error'
 class Chef
   module ChefFS
     module FileSystem
-      # Yields a list of all things under (and including) this entry that match the
+      # Returns a list of all things under (and including) this entry that match the
       # given pattern.
       #
       # ==== Attributes
       #
-      # * +entry+ - Entry to start listing under
+      # * +root+ - Entry to start listing under
       # * +pattern+ - Chef::ChefFS::FilePattern to match children under
       #
-      def self.list(entry, pattern, &block)
-        # Include self in results if it matches
-        if pattern.match?(entry.path)
-          block.call(entry)
+      def self.list(root, pattern)
+        Lister.new(root, pattern)
+      end
+
+      class Lister
+        include Enumerable
+
+        def initialize(root, pattern)
+          @root = root
+          @pattern = pattern
         end
 
-        if pattern.could_match_children?(entry.path)
-          # If it's possible that our children could match, descend in and add matches.
-          exact_child_name = pattern.exact_child_name_under(entry.path)
+        attr_reader :root
+        attr_reader :pattern
 
-          # If we've got an exact name, don't bother listing children; just grab the
-          # child with the given name.
-          if exact_child_name
-            exact_child = entry.child(exact_child_name)
-            if exact_child
-              list(exact_child, pattern, &block)
-            end
+        def each
+          list_from(root) { |entry| yield entry }
+        end
 
-          # Otherwise, go through all children and find any matches
-          elsif entry.dir?
-            entry.children.each do |child|
-              list(child, pattern, &block)
+        def list_from(entry, &block)
+          # Include self in results if it matches
+          if pattern.match?(entry.path)
+            block.call(entry)
+          end
+
+          if pattern.could_match_children?(entry.path)
+            # If it's possible that our children could match, descend in and add matches.
+            exact_child_name = pattern.exact_child_name_under(entry.path)
+
+            # If we've got an exact name, don't bother listing children; just grab the
+            # child with the given name.
+            if exact_child_name
+              exact_child = entry.child(exact_child_name)
+              if exact_child
+                list_from(exact_child, &block)
+              end
+
+            # Otherwise, go through all children and find any matches
+            elsif entry.dir?
+              entry.children.each { |child| list_from(child, &block) }
             end
           end
         end
@@ -119,7 +137,7 @@ class Chef
       def self.copy_to(pattern, src_root, dest_root, recurse_depth, options, ui, format_path)
         found_result = false
         error = false
-        list_pairs(pattern, src_root, dest_root) do |src, dest|
+        list_pairs(pattern, src_root, dest_root).each do |src, dest|
           found_result = true
           new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
           child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
@@ -143,25 +161,43 @@ class Chef
       #
       # ==== Example
       #
-      #     Chef::ChefFS::FileSystem.list_pairs(FilePattern.new('**x.txt', a_root, b_root)) do |a, b|
+      #     Chef::ChefFS::FileSystem.list_pairs(FilePattern.new('**x.txt', a_root, b_root)).each do |a, b|
       #       ...
       #     end
       #
       def self.list_pairs(pattern, a_root, b_root)
-        # Make sure everything on the server is also on the filesystem, and diff
-        found_paths = Set.new
-        Chef::ChefFS::FileSystem.list(a_root, pattern) do |a|
-          found_paths << a.path
-          b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.path)
-          yield [ a, b ]
+        PairLister.new(pattern, a_root, b_root)
+      end
+
+      class PairLister
+        include Enumerable
+
+        def initialize(pattern, a_root, b_root)
+          @pattern = pattern
+          @a_root = a_root
+          @b_root = b_root
         end
 
-        # Check the outer regex pattern to see if it matches anything on the
-        # filesystem that isn't on the server
-        Chef::ChefFS::FileSystem.list(b_root, pattern) do |b|
-          if !found_paths.include?(b.path)
-            a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.path)
+        attr_reader :pattern
+        attr_reader :a_root
+        attr_reader :b_root
+
+        def each
+          # Make sure everything on the server is also on the filesystem, and diff
+          found_paths = Set.new
+          Chef::ChefFS::FileSystem.list(a_root, pattern).each do |a|
+            found_paths << a.path
+            b = Chef::ChefFS::FileSystem.resolve_path(b_root, a.path)
             yield [ a, b ]
+          end
+
+          # Check the outer regex pattern to see if it matches anything on the
+          # filesystem that isn't on the server
+          Chef::ChefFS::FileSystem.list(b_root, pattern).each do |b|
+            if !found_paths.include?(b.path)
+              a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.path)
+              yield [ a, b ]
+            end
           end
         end
       end

@@ -34,7 +34,7 @@ class Chef
         @root = config[:remote] ? chef_fs : local_fs
         dependencies = {}
         pattern_args.each do |pattern|
-          Chef::ChefFS::FileSystem.list(@root, pattern) do |entry|
+          Chef::ChefFS::FileSystem.list(@root, pattern).each do |entry|
             if config[:tree]
               print_dependencies_tree(entry, dependencies)
             else
