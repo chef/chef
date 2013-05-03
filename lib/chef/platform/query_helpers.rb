@@ -16,14 +16,27 @@
 # limitations under the License.
 #
 
-require 'chef/platform/provider_mapping'
-require 'chef/platform/query_helpers'
-
 class Chef
   class Platform
 
-    # Functionality for this class is defined in chef/platform/provider_mapping
-    # and chef/platform/query_helpers
+    class << self
+      def windows?
+        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+          true
+        else
+          false
+        end
+      end
+
+      def windows_server_2003?
+        return false unless windows?
+
+        require 'ruby-wmi'
+
+        host = WMI::Win32_OperatingSystem.find(:first)
+        (host.version && host.version.start_with?("5.2"))
+      end
+    end
 
   end
 end
