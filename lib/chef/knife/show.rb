@@ -18,7 +18,7 @@ class Chef
         # Get the matches (recursively)
         error = false
         pattern_args.each do |pattern|
-          Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern) do |result|
+          Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).each do |result|
             if result.dir?
               ui.error "#{format_path(result)}: is a directory" if pattern.exact_path
               error = true

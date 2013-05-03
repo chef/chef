@@ -72,7 +72,7 @@ class Chef
         # Get the matches (recursively)
         files = []
         pattern_args_from(get_patterns).each do |pattern|
-          Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern) do |result|
+          Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).each do |result|
             if result.dir?
               # TODO option to include directories
               ui.warn "#{format_path(result)}: is a directory.  Will not run #{command} on it."

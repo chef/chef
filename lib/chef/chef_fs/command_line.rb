@@ -126,7 +126,7 @@ class Chef
       end
 
       def self.diff(pattern, a_root, b_root, recurse_depth, get_content)
-        Chef::ChefFS::FileSystem.list_pairs(pattern, a_root, b_root) do |a, b|
+        Chef::ChefFS::FileSystem.list_pairs(pattern, a_root, b_root).each do |a, b|
           diff_entries(a, b, recurse_depth, get_content) do |diff|
             yield diff
           end
