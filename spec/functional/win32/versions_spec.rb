@@ -34,7 +34,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
     # For Win2k3 and Win2k8, we eplicitly OS marketing name
     # based on version number information from WMI.
     if Chef::Platform::windows_server_2003?
-      @current_os_version = 'Windows Server 2003'
+      @current_os_version = 'Windows Server 2003 R2'
     elsif is_windows_server_2008?(host)
       @current_os_version = 'Windows Server 2008'
     else
