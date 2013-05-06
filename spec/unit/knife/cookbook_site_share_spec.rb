@@ -108,11 +108,20 @@ describe Chef::Knife::CookbookSiteShare do
       expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    it 'should make a tarball of the cookbook' do
-      expect(@knife).to receive(:shell_out!) do |args|
-        expect(args.to_s).to match(/(gnu)?tar -czf/)
+    if File.exists?('/usr/bin/gnutar') || File.exists?('/bin/gnutar')
+      it 'should use gnutar to make a tarball of the cookbook' do
+        expect(@knife).to receive(:shell_out!) do |args|
+          expect(args.to_s).to match(/gnutar -czf/)
+        end
+        @knife.run
       end
-      @knife.run
+    else
+      it 'should make a tarball of the cookbook' do
+        expect(@knife).to receive(:shell_out!) do |args|
+          expect(args.to_s).to match(/tar -czf/)
+        end
+        @knife.run
+      end
     end
 
     it 'should exit and log to error when the tarball creation fails' do
