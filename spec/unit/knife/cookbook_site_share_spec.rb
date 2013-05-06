@@ -110,7 +110,7 @@ describe Chef::Knife::CookbookSiteShare do
 
     it 'should make a tarball of the cookbook' do
       expect(@knife).to receive(:shell_out!) do |args|
-        expect(args.to_s).to match(/tar -czf/)
+        expect(args.to_s).to match(/(gnu)?tar -czf/)
       end
       @knife.run
     end
