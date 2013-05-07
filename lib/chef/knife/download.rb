@@ -33,6 +33,12 @@ class Chef
         :default => false,
         :description => "Don't take action, only print what would happen"
 
+      option :diff,
+        :long => '--[no-]diff',
+        :boolean => true,
+        :default => true,
+        :description => 'Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff'
+
       def run
         if name_args.length == 0
           show_usage

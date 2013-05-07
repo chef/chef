@@ -90,6 +90,10 @@ EOM
             knife('upload /').should_succeed "Updated /roles/x.json\n"
             knife('diff --name-status /').should_succeed ''
           end
+          it 'knife upload --no-diff does not change the role' do
+            knife('upload /').should_succeed ''
+            knife('diff --name-status /').should_succeed "M\t/roles/x.json\n"
+          end
         end
 
         context 'except the role file is textually different, but not ACTUALLY different' do
@@ -128,6 +132,22 @@ EOM
           file 'users/y.json', { 'public_key' => ChefZero::PUBLIC_KEY }
 
           it 'knife upload adds the new files' do
+            knife('upload /').should_succeed <<EOM
+Created /clients/y.json
+Updated /cookbooks/x
+Created /cookbooks/y
+Created /data_bags/x/z.json
+Created /data_bags/y
+Created /data_bags/y/zz.json
+Created /environments/y.json
+Created /nodes/y.json
+Created /roles/y.json
+Created /users/y.json
+EOM
+            knife('diff --name-status /').should_succeed ''
+          end
+
+          it 'knife upload --no-diff adds the new files' do
             knife('upload /').should_succeed <<EOM
 Created /clients/y.json
 Updated /cookbooks/x
