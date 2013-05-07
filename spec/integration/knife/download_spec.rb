@@ -90,6 +90,11 @@ EOM
             knife('download /').should_succeed "Updated /roles/x.json\n"
             knife('diff --name-status /').should_succeed ''
           end
+
+          it 'knife download --no-diff does not change the role' do
+            knife('download --no-diff /').should_succeed ''
+            knife('diff --name-status /').should_succeed "M\t/roles/x.json\n"
+          end
         end
 
         context 'except the role file is textually different, but not ACTUALLY different' do
@@ -161,6 +166,32 @@ EOM
 
       when_the_repository 'is empty' do
         it 'knife download creates the extra files' do
+          knife('download /').should_succeed <<EOM
+Created /clients
+Created /clients/chef-validator.json
+Created /clients/chef-webui.json
+Created /clients/x.json
+Created /cookbooks
+Created /cookbooks/x
+Created /cookbooks/x/metadata.rb
+Created /data_bags
+Created /data_bags/x
+Created /data_bags/x/y.json
+Created /environments
+Created /environments/_default.json
+Created /environments/x.json
+Created /nodes
+Created /nodes/x.json
+Created /roles
+Created /roles/x.json
+Created /users
+Created /users/admin.json
+Created /users/x.json
+EOM
+          knife('diff --name-status /').should_succeed ''
+        end
+
+        it 'knife download --no-diff creates the extra files' do
           knife('download /').should_succeed <<EOM
 Created /clients
 Created /clients/chef-validator.json

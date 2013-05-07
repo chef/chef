@@ -369,8 +369,10 @@ class Chef
                 return
               else
 
-                # Both are files!  Copy them unless we're sure they are the same.
-                if options[:force]
+                # Both are files!  Copy them unless we're sure they are the same.'
+                if options[:diff] == false
+                  should_copy = false
+                elsif options[:force]
                   should_copy = true
                   src_value = nil
                 else
