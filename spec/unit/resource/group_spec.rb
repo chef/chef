@@ -60,8 +60,12 @@ describe Chef::Resource::Group, "initialize" do
   end
 
   it "should accept domain groups" do
-    lambda { @resource.group_name "domain\\group" }.should == "domain\\group"
-    lambda { @resource.group_name "domain@group" }.should == "domain@group"
+    lambda { @resource.group_name "domain\@group" }.should_not raise_error(ArgumentError)
+    @resource.group_name.should == "domain\@group"
+    lambda { @resource.group_name "domain\\group" }.should_not raise_error(ArgumentError)
+    @resource.group_name.should == "domain\\group"
+    lambda { @resource.group_name "domain\\group^name" }.should_not raise_error(ArgumentError)
+    @resource.group_name.should == "domain\\group^name"
   end
 end
 
