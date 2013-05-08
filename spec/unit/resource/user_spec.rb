@@ -61,8 +61,10 @@ describe Chef::Resource::User, "initialize" do
   end
 
   it "should accept domain users" do
-    lambda { @resource.username "domain\\user" }.should == "domain\\user"
-    lambda { @resource.username "domain@user" }.should == "domain@user"
+    lambda { @resource.username "domain\@user" }.should_not raise_error(ArgumentError)
+    @resource.username.should == "domain\@user"
+    lambda { @resource.username "domain\\user" }.should_not raise_error(ArgumentError)
+    @resource.username.should  == "domain\\user"
   end
 end
 
