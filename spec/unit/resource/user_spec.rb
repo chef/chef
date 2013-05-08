@@ -59,6 +59,11 @@ describe Chef::Resource::User, "initialize" do
       @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
     end
   end
+
+  it "should accept domain users" do
+    lambda { @resource.username "domain\\user" }.should == "domain\\user"
+    lambda { @resource.username "domain@user" }.should == "domain@user"
+  end
 end
 
 %w{username comment home shell password}.each do |attrib|
