@@ -115,13 +115,14 @@ projects on the following platforms:
 
 ### Linux
 
-The following distibutions are currently supported by the Linux build lab:
+The following distributions are currently supported by the Linux build lab:
 
 * CentOS 5 64-bit
 * CentOS 6 64-bit
 * Ubuntu 10.04 64-bit
 * Ubuntu 11.04 64-bit
 * Ubuntu 12.04 64-bit
+* Ubuntu 13.04 64-bit
 
 ```shell
 $ cd vagrant/linux

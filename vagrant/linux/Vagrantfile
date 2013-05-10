@@ -30,6 +30,11 @@ Vagrant.configure("2") do |config|
     c.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"
   end
 
+  config.vm.define 'ubuntu-13.04' do |c|
+    c.vm.box = "canonical-ubuntu-13.04"
+    c.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/raring/current/raring-server-cloudimg-amd64-vagrant-disk1.box"
+  end
+
   config.vm.define 'centos-5' do |c|
     c.vm.box = "opscode-centos-5.8"
     c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-5.8_chef-11.2.0.box"
