@@ -177,6 +177,22 @@ describe Chef::Knife::CookbookCreate do
       @knife.run
     end
 
+    it "should allow specifying the isc license" do
+      @dir = Dir.tmpdir
+      @knife.config = {
+        :cookbook_path => @dir,
+        :cookbook_copyright => "Opscode, Inc",
+        :cookbook_email => "nuo@opscode.com",
+        :cookbook_license => "isc"
+      }
+      @knife.name_args=["foobar"]
+      @knife.should_receive(:create_cookbook).with(@dir, @knife.name_args.first, "Opscode, Inc", "isc")
+      @knife.should_receive(:create_readme).with(@dir, @knife.name_args.first, "md")
+      @knife.should_receive(:create_changelog).with(@dir, @knife.name_args.first)
+      @knife.should_receive(:create_metadata).with(@dir, @knife.name_args.first, "Opscode, Inc", "nuo@opscode.com", "isc", "md")
+      @knife.run
+    end
+
     it "should allow specifying the rdoc readme format" do
       @dir = Dir.tmpdir
       @knife.config = {

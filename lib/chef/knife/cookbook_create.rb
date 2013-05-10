@@ -43,7 +43,7 @@ class Chef
       option :cookbook_license,
         :short => "-I LICENSE",
         :long => "--license LICENSE",
-        :description => "License for cookbook, apachev2, gplv2, gplv3, mit or none"
+        :description => "License for cookbook, apachev2, gplv2, gplv3, isc, mit or none"
 
       option :cookbook_copyright,
         :short => "-C COPYRIGHT",
@@ -146,6 +146,21 @@ EOH
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+EOH
+            when "isc"
+              file.puts <<-EOH
+# Permission to use, copy, modify, and/or distribute this software for
+# any purpose with or without fee is hereby granted, provided that the
+# above copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 EOH
             when "mit"
@@ -409,6 +424,8 @@ EOH
                          "GNU Public License 2.0"
                        when "gplv3"
                          "GNU Public License 3.0"
+                       when "isc"
+                         "ISC"
                        when "mit"
                          "MIT"
                        when "none"
