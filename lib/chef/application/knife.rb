@@ -43,8 +43,8 @@ class Chef::Application::Knife < Chef::Application
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => true,
-    :description  => "Use colored output, defaults to enabled"
+    :default      => !Chef::Platform.windows?,
+    :description  => "Use colored output, defaults to enabled (windows default disabled)"
 
   option :environment,
     :short        => "-E ENVIRONMENT",
