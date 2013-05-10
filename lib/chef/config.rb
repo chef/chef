@@ -183,7 +183,7 @@ class Chef
 
     pid_file nil
 
-    chef_server_url   "http://localhost:4000"
+    chef_server_url   "https://localhost:443"
 
     rest_timeout 300
     solo  false
