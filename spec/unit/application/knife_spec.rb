@@ -61,6 +61,18 @@ describe Chef::Application::Knife do
     end
   end
 
+  it "should set default colored output to false on windows and true otherwise" do
+    with_argv(*%w{noop knife command}) do
+      @knife.should_receive(:exit).with(0)
+      @knife.run
+    end
+    if windows?
+      Chef::Config[:color].should be_false
+    else
+      Chef::Config[:color].should be_true
+    end
+  end
+
   describe "when given a path to the client key" do
     it "expands a relative path relative to the CWD" do
       relative_path = '.chef/client.pem'
