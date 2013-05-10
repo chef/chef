@@ -140,6 +140,13 @@ The complete list of valid platform names can be viewed with the
 
 ### FreeBSD
 
+The following versions are supported by the FreeBSD build lab:
+
+* FreeBSD 8.3 32-bit
+* FreeBSD 8.3 64-bit
+* FreeBSD 9.1 32-bit
+* FreeBSD 9.1 64-bit
+
 The FreeBSD guest for Vagrant only supports folder mounting via NFS. This means
 the FreeBSD Build Lab can only be started up on a platform that has `nfsd`
 installed, the NFS server daemon. This comes pre-installed on Mac OS X, and is

@@ -27,13 +27,45 @@ project_name = "chef"
 Vagrant.configure("2") do |config|
   config.vm.hostname = "#{project_name}-omnibus-build-lab"
 
-  config.vm.guest   = :freebsd
-  config.vm.box     = "freebsd-9.1"
-  config.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-freebsd-9.1.box"
-  config.vm.network :private_network, :ip => "33.33.33.55"
-  config.vm.provision :shell, :inline => <<-FREEBSD_SETUP
-    sed -i '' -E 's%^([^#].*):setenv=%\1:setenv=PACKAGESITE=ftp://ftp.freebsd.org/pub/FreeBSD/ports/amd64/packages-9-stable/Latest,%' /etc/login.conf
-  FREEBSD_SETUP
+  config.vm.define 'freebsd-8.3' do |c|
+    c.vm.guest   = :freebsd
+    c.vm.box     = "freebsd-8.3"
+    c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-freebsd-8.3.box"
+    c.vm.network :private_network, :ip => "33.33.33.52"
+    c.vm.provision :shell, :inline => <<-FREEBSD_SETUP
+      sed -i '' -E 's%^([^#].*):setenv=%\1:setenv=PACKAGESITE=ftp://ftp.freebsd.org/pub/FreeBSD/ports/amd64/packages-8-stable/Latest,%' /etc/login.conf
+    FREEBSD_SETUP
+  end
+
+  config.vm.define 'freebsd-8.3-i386' do |c|
+    c.vm.guest   = :freebsd
+    c.vm.box     = "freebsd-8.3-i386"
+    c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-freebsd-8.3-i386.box"
+    c.vm.network :private_network, :ip => "33.33.33.53"
+    c.vm.provision :shell, :inline => <<-FREEBSD_SETUP
+      sed -i '' -E 's%^([^#].*):setenv=%\1:setenv=PACKAGESITE=ftp://ftp.freebsd.org/pub/FreeBSD/ports/i386/packages-8-stable/Latest,%' /etc/login.conf
+    FREEBSD_SETUP
+  end
+
+  config.vm.define 'freebsd-9.1' do |c|
+    c.vm.guest   = :freebsd
+    c.vm.box     = "freebsd-9.1"
+    c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-freebsd-9.1.box"
+    c.vm.network :private_network, :ip => "33.33.33.54"
+    c.vm.provision :shell, :inline => <<-FREEBSD_SETUP
+      sed -i '' -E 's%^([^#].*):setenv=%\1:setenv=PACKAGESITE=ftp://ftp.freebsd.org/pub/FreeBSD/ports/amd64/packages-9-stable/Latest,%' /etc/login.conf
+    FREEBSD_SETUP
+  end
+
+  config.vm.define 'freebsd-9.1-i386' do |c|
+    c.vm.guest   = :freebsd
+    c.vm.box     = "freebsd-9.1-i386"
+    c.vm.box_url = "http://dyn-vm.s3.amazonaws.com/vagrant/dyn-chef-11.4.0-virtualbox-freebsd-9.1-i386.box"
+    c.vm.network :private_network, :ip => "33.33.33.55"
+    c.vm.provision :shell, :inline => <<-FREEBSD_SETUP
+      sed -i '' -E 's%^([^#].*):setenv=%\1:setenv=PACKAGESITE=ftp://ftp.freebsd.org/pub/FreeBSD/ports/i386/packages-9-stable/Latest,%' /etc/login.conf
+    FREEBSD_SETUP
+  end
 
   config.vm.provider :virtualbox do |vb|
     # Give enough horsepower to build without taking all day.
