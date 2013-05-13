@@ -61,7 +61,7 @@ describe Chef::Application::Knife do
     end
   end
 
-  it "should set default colored output to false on windows and true otherwise" do
+  it "should set the colored output to false by default on windows and true otherwise" do
     with_argv(*%w{noop knife command}) do
       @knife.should_receive(:exit).with(0)
       @knife.run
