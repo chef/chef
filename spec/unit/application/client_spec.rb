@@ -141,7 +141,7 @@ describe Chef::Application::Client, "configure_chef" do
     @app.configure_chef
   end
 
-  it "should set default colored output to false on windows and true otherwise" do
+  it "should set the colored output to false by default on windows and true otherwise" do
     if windows?
       Chef::Config[:color].should be_false
     else
