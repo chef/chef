@@ -74,11 +74,7 @@ class Chef
     config_attr_writer :chef_server_url do |url|
       url = url.strip
       configure do |c|
-        [ :search_url,
-          :chef_server_url,
-          :role_url ].each do |u|
-            c[u] = url
-        end
+        c[:chef_server_url] = url
       end
       url
     end
@@ -187,9 +183,7 @@ class Chef
 
     pid_file nil
 
-    chef_server_url   "http://localhost:4000"
-    role_url          "http://localhost:4000"
-    search_url        "http://localhost:4000"
+    chef_server_url   "https://localhost:443"
 
     rest_timeout 300
     solo  false
