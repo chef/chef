@@ -231,22 +231,24 @@ class Chef
     end
 
     # Load a role from disk - prefers to load the JSON, but will happily load
-    # the raw rb files as well.
+    # the raw rb files as well. Can search within directories in the role_path.
     def self.from_disk(name, force=nil)
       paths = Array(Chef::Config[:role_path])
+      paths.each do |path|
+        roles_files = Dir.glob(File.join(path, "**", "**"))
+        js_path = roles_files.detect { |file| file.match /#{name}\.json$/ }
+        rb_path = roles_files.detect { |file| file.match /#{name}\.rb$/ }
 
-      paths.each do |p|
-        js_file = File.join(p, "#{name}.json")
-        rb_file = File.join(p, "#{name}.rb")
-
-        if File.exists?(js_file) || force == "json"
+        if js_path && (File.exists?(js_path) || force == "json")
           # from_json returns object.class => json_class in the JSON.
-          return Chef::JSONCompat.from_json(IO.read(js_file))
-        elsif File.exists?(rb_file) || force == "ruby"
+          return Chef::JSONCompat.from_json(IO.read(js_path))
+        elsif rb_path && (File.exists?(rb_path) || force == "ruby")
           role = Chef::Role.new
           role.name(name)
-          role.from_file(rb_file)
+          role.from_file(rb_path)
           return role
+        else
+          raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
         end
       end
 
