@@ -59,7 +59,7 @@ class Chef::Application::Client < Chef::Application
     :long         => '--[no-]color',
     :boolean      => true,
     :default      => !Chef::Platform.windows?,
-    :description  => "Use colored output, defaults to enabled on *NIX platforms and disabled on Windows platforms"
+    :description  => "Use colored output, defaults to false on Windows, true otherwise"
 
   option :log_level,
     :short        => "-l LEVEL",
