@@ -271,6 +271,7 @@ describe Chef::Environment do
       Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
       Chef::Environment.validate_cookbook_version("= 1.2.3a").should == false
       Chef::Environment.validate_cookbook_version("= 1").should == false
+      Chef::Environment.validate_cookbook_version("= a").should == false
       Chef::Environment.validate_cookbook_version("= 1.2.3.4").should == false
     end
   end

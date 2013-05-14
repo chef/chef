@@ -47,6 +47,19 @@ describe Shell::ShellSession do
 
 end
 
+describe Shell::ClientSession do
+  it "builds the node's run_context with the proper environment" do
+    @session = Shell::ClientSession.instance
+    @node = Chef::Node.build("foo")
+    @session.node = @node
+    @session.instance_variable_set(:@client, stub(:sync_cookbooks => {}))
+    @expansion = Chef::RunList::RunListExpansion.new(@node.chef_environment, [])
+
+    @node.run_list.should_receive(:expand).with(@node.chef_environment).and_return(@expansion)
+    @session.rebuild_context
+  end
+end
+
 describe Shell::StandAloneSession do
   before do
     @session = Shell::StandAloneSession.instance
@@ -109,7 +122,7 @@ describe Shell::SoloSession do
     @session.resource_collection.should include(kitteh)
   end
 
-  it "returns definitions from it's compilation object" do
+  it "returns definitions from its compilation object" do
     @session.definitions.should == @run_context.definitions
   end
 
@@ -119,7 +132,7 @@ describe Shell::SoloSession do
     #pending "1) keep attribs in an ivar 2) pass them to the node 3) feed them to the node on reset"
   end
 
-  it "generates it's resource collection from the compiled cookbooks and the ad hoc recipe" do
+  it "generates its resource collection from the compiled cookbooks and the ad hoc recipe" do
     @session.stub!(:node_built?).and_return(true)
     kitteh_cat = Chef::Resource::Cat.new("kitteh")
     @run_context.resource_collection << kitteh_cat

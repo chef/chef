@@ -134,3 +134,18 @@ describe Chef::Application::Client, "setup_application" do
     Chef::Config[:solo] = false
   end
 end
+
+describe Chef::Application::Client, "configure_chef" do
+  before do
+    @app = Chef::Application::Client.new
+    @app.configure_chef
+  end
+
+  it "should set the colored output to false by default on windows and true otherwise" do
+    if windows?
+      Chef::Config[:color].should be_false
+    else
+      Chef::Config[:color].should be_true
+    end
+  end
+end

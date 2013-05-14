@@ -155,7 +155,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
 
       context "and service is stopped" do
         ["delete", "uninstall"].each do |action|
-          it "#{action} => should remove the service" do
+          it "#{action} => should remove the service", :volatile do
             service_manager.run(["-a", action])
             test_service_exists?.should be_false
           end
@@ -170,7 +170,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           @service_manager_output.grep(/stopped/).length.should > 0
         end
 
-        it "start should start the service" do
+        it "start should start the service", :volatile do
           service_manager.run(["-a", "start"])
           test_service_state.should == "running"
           File.exists?(test_service_file).should be_true
@@ -188,13 +188,13 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           end
         end
 
-        context "and service is started" do
+        context "and service is started", :volatile do
           before(:each) do
             service_manager.run(["-a", "start"])
           end
 
           ["delete", "uninstall"].each do |action|
-            it "#{action} => should remove the service" do
+            it "#{action} => should remove the service", :volatile do
               service_manager.run(["-a", action])
               test_service_exists?.should be_false
             end
@@ -225,7 +225,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
           end
         end
 
-        context "and service is paused" do
+        context "and service is paused", :volatile do
           before(:each) do
             service_manager.run(["-a", "start"])
             service_manager.run(["-a", "pause"])

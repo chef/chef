@@ -24,42 +24,36 @@ describe Chef::Config do
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
   end
 
-  shared_examples_for "server URL" do
-    it "should set the registration url" do
-      Chef::Config.registration_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the template url" do
-      Chef::Config.template_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the remotefile url" do
-      Chef::Config.remotefile_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the search url" do
-      Chef::Config.search_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the role url" do
-      Chef::Config.role_url.should == "https://junglist.gen.nz"
-    end
-  end
-
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
     end
-    
-    it_behaves_like "server URL"
-  end
 
-  context "when the url has a leading space" do
-    before do
-      Chef::Config.chef_server_url = " https://junglist.gen.nz"
+    it "sets the server url" do
+      Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
     end
-    
-    it_behaves_like "server URL"
+
+    context "when the url has a leading space" do
+      before do
+        Chef::Config.chef_server_url = " https://junglist.gen.nz"
+      end
+
+      it "strips the space from the url when setting" do
+        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      end
+
+    end
+
+    context "when the url is a frozen string" do
+      before do
+        Chef::Config.chef_server_url = " https://junglist.gen.nz".freeze
+      end
+
+      it "strips the space from the url when setting without raising an error" do
+        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      end
+    end
+
   end
 
   describe "when configuring formatters" do
@@ -106,14 +100,6 @@ describe Chef::Config do
 
   end
 
-  context "when the url is a frozen string" do
-    before do
-      Chef::Config.chef_server_url = " https://junglist.gen.nz".freeze
-    end
-
-    it_behaves_like "server URL"
-  end
-
   describe "class method: manage_secret_key" do
     before do
       Chef::FileCache.stub!(:load).and_return(true)
@@ -131,7 +117,7 @@ describe Chef::Config do
       end
 
       it "should not generate and store a chef server cookie id" do
-        Chef::FileCache.should_not_receive(:store).with("chef_server_cookie_id", /\w{40}/).and_return(true)
+        Chef::FileCache.should_not_receive(:store).with("chef_server_cookie_id", /\w{40}/)
         Chef::Config.manage_secret_key
       end
     end
@@ -165,19 +151,7 @@ describe Chef::Config do
     end
   end
 
-  describe "class method: openid_providers=" do
-    it "should not log an appropriate deprecation info message" do
-      Chef::Log.should_not_receive(:info).with("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers").and_return(true)
-      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
-    end
-
-    it "should internally configure authorized_openid_providers with the value given" do
-      Chef::Config.should_receive(:configure).and_return(%w{opscode.com junglist.gen.nz})
-      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
-    end
-  end
-
-   describe "class method: plaform_specific_path" do
+  describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
         path = "/etc/chef/cookbooks"
@@ -230,12 +204,8 @@ describe Chef::Config do
     end
 
     it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
-      data_bag_path = if windows?
-        "C:\\chef\\data_bags"
-      else
-        "/var/chef/data_bags"
-      end
-
+      data_bag_path =
+        Chef::Config.platform_specific_path("/var/chef/data_bags")
       Chef::Config[:data_bag_path].should == data_bag_path
     end
   end
@@ -257,6 +227,35 @@ describe Chef::Config do
     after(:each) do
       @original_env.each do |env_setting|
         ENV[env_setting[0]] = env_setting[1]
+      end
+    end
+  end
+
+  describe "Chef::Config[:encrypted_data_bag_secret]" do
+    db_secret_default_path =
+      Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+
+    let(:db_secret_default_path){ db_secret_default_path }
+
+    before do
+      File.stub(:exist?).with(db_secret_default_path).and_return(secret_exists)
+      # ugh...the only way to properly test this since the conditional
+      # is evaluated at file load/require time.
+      $LOADED_FEATURES.delete_if{|f| f =~ /chef\/config\.rb/}
+      require 'chef/config'
+    end
+
+    context "#{db_secret_default_path} exists" do
+      let(:secret_exists) { true }
+      it "sets the value to #{db_secret_default_path}" do
+        Chef::Config[:encrypted_data_bag_secret].should eq db_secret_default_path
+      end
+    end
+
+    context "#{db_secret_default_path} does not exist" do
+      let(:secret_exists) { false }
+      it "sets the value to nil" do
+        Chef::Config[:encrypted_data_bag_secret].should be_nil
       end
     end
   end

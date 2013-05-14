@@ -225,7 +225,11 @@ class Chef
             # ignore trailing slash
             Regexp.escape(device_real)+"/?"
           elsif ::File.symlink?(device_real)
-            "(?:#{Regexp.escape(device_real)})|(?:#{Regexp.escape(::File.readlink(device_real))})"
+            # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
+            # So given a symlink like this:
+            # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
+            # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.readlink(device_real))})"
           else
             Regexp.escape(device_real)
           end

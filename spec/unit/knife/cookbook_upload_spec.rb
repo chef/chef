@@ -42,7 +42,8 @@ describe Chef::Knife::CookbookUpload do
 
   describe 'run' do
     before(:each) do
-      @knife.stub!(:upload).and_return(true)
+      @cookbook_uploader = stub(:upload_cookbooks => nil)
+      Chef::CookbookUploader.stub(:new => @cookbook_uploader)
       Chef::CookbookVersion.stub(:list_all_versions).and_return({})
     end
 
@@ -164,8 +165,11 @@ describe Chef::Knife::CookbookUpload do
 
     describe 'when a frozen cookbook exists on the server' do
       it 'should fail to replace it' do
-        @knife.stub!(:upload).and_raise(Chef::Exceptions::CookbookFrozen)
-        @knife.ui.should_receive(:error).with(/Failed to upload 1 cookbook/)
+        exception = Chef::Exceptions::CookbookFrozen.new
+        @cookbook_uploader.should_receive(:upload_cookbooks).
+          and_raise(exception)
+        @knife.ui.stub(:error)
+        @knife.ui.should_receive(:error).with(exception)
         lambda { @knife.run }.should raise_error(SystemExit)
       end
 
@@ -180,4 +184,4 @@ describe Chef::Knife::CookbookUpload do
       end
     end
   end # run
-end # Chef::Knife::CookbookUpload
+end

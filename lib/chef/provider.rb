@@ -169,7 +169,7 @@ class Chef
       # this block cannot interact with resources outside, e.g.,
       # manipulating notifies.
 
-      converge_by ("would evaluate block and run any associated actions") do
+      converge_by ("evaluate block and run any associated actions") do
         saved_run_context = @run_context
         @run_context = @run_context.dup
         @run_context.resource_collection = Chef::ResourceCollection.new

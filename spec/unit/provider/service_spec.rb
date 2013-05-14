@@ -60,7 +60,7 @@ describe Chef::Provider::Service do
 
     it "should not disable the service if already disabled" do
       @current_resource.stub!(:enabled).and_return(false)
-      @provider.should_not_receive(:disable_service).and_return(true)
+      @provider.should_not_receive(:disable_service)
       @provider.run_action(:disable)
       @provider.new_resource.should_not be_updated
     end
@@ -92,7 +92,7 @@ describe Chef::Provider::Service do
 
     it "should not stop the service if it's already stopped" do
       @current_resource.stub!(:running).and_return(false)
-      @provider.should_not_receive(:stop_service).and_return(true)
+      @provider.should_not_receive(:stop_service)
       @provider.run_action(:stop)
       @provider.new_resource.should_not be_updated
     end
@@ -137,7 +137,7 @@ describe Chef::Provider::Service do
 
     it "should not reload the service if it's stopped" do
       @current_resource.stub!(:running).and_return(false)
-      @provider.should_not_receive(:reload_service).and_return(true)
+      @provider.should_not_receive(:reload_service)
       @provider.run_action(:stop)
       @provider.new_resource.should_not be_updated
     end

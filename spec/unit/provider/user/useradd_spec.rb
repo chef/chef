@@ -177,7 +177,7 @@ describe Chef::Provider::User::Useradd do
 
       before do
         @provider.new_resource.system true
-        # there is no public API to set attribute's value to nil 
+        # there is no public API to set attribute's value to nil
         @provider.new_resource.instance_variable_set("@home", nil)
       end
 
