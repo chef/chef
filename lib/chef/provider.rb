@@ -132,12 +132,8 @@ class Chef
       !converge_actions.empty? || @new_resource.updated_by_last_action?
     end
 
-    def resource_up_to_date?
-      !resource_updated?
-    end
-
     def set_updated_status
-      if resource_up_to_date?
+      if !resource_updated?
         events.resource_up_to_date(@new_resource, @action)
       else
         events.resource_updated(@new_resource, @action)

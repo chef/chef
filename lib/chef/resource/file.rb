@@ -48,14 +48,14 @@ class Chef
         @provider = Chef::Provider::File
         @binmode = Platform.windows? ? true : false
         @deploy_with = Chef::Config[:file_deploy_with]
-        @force_unlik = Chef::Config[:file_force_unlink]
+        @force_unlink = Chef::Config[:file_force_unlink]
         @diff = nil
       end
 
 
       def content(arg=nil)
         set_or_return(
-                      :content,
+          :content,
           arg,
           :kind_of => String
         )
@@ -95,7 +95,7 @@ class Chef
 
       def binmode(arg=nil)
         set_or_return(
-          :diff,
+          :binmode,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
@@ -111,7 +111,7 @@ class Chef
 
       def force_unlink(arg=nil)
         set_or_return(
-          :diff,
+          :force_unlink,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
