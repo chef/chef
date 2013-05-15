@@ -47,10 +47,6 @@ class Chef
         end
       end
 
-      def action_create
-        super
-      end
-
       private
 
       def do_contents_changes
