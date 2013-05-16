@@ -21,7 +21,31 @@ require 'chef/deprecation/warnings'
 
 describe Chef::Deprecation do
 
-  it "method snapshot before file-refactor should match current methods" do
+  # Support code for Chef::Deprecation
+
+  def class_from_string(str)
+    str.split('::').inject(Object) do |mod, class_name|
+      mod.const_get(class_name)
+    end
+  end
+
+  module DeprecatedMethods
+    def deprecated_method(value)
+      @value = value
+    end
+
+    def get_value
+      @value
+    end
+  end
+
+  class TestClass
+    extend Chef::Deprecation::Warnings
+    include DeprecatedMethods
+    add_deprecation_warnings_for(DeprecatedMethods.instance_methods)
+  end
+
+  it "defines all methods that were available in 11.0" do
     method_snapshot_file = File.join(CHEF_SPEC_DATA, "file-providers-method-snapshot-chef-11-4.json")
     method_snapshot = JSON.parse(File.open(method_snapshot_file).read())
 
@@ -30,9 +54,7 @@ describe Chef::Deprecation do
       current_methods = class_object.public_instance_methods
 
       old_methods.each do |old_method|
-        if !current_methods.include?(old_method.to_sym)
-          fail "Can not find method '#{old_method.to_sym}' for class '#{class_name}'"
-        end
+        current_methods.should include(old_method.to_sym)
       end
     end
   end
@@ -58,28 +80,6 @@ describe Chef::Deprecation do
     test_instance = TestClass.new
     test_instance.deprecated_method(10)
     test_instance.get_value.should == 10
-  end
-
-  def class_from_string(str)
-    str.split('::').inject(Object) do |mod, class_name|
-      mod.const_get(class_name)
-    end
-  end
-
-  module DeprecatedMethods
-    def deprecated_method(value)
-      @value = value
-    end
-
-    def get_value
-      @value
-    end
-  end
-
-  class TestClass
-    extend Chef::Deprecation::Warnings
-    include DeprecatedMethods
-    add_deprecation_warnings_for(DeprecatedMethods.instance_methods)
   end
 
 end
