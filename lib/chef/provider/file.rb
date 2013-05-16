@@ -28,6 +28,8 @@ require 'chef/mixin/checksum'
 require 'chef/mixin/shell_out'
 require 'chef/util/backup'
 require 'chef/util/diff'
+require 'chef/deprecation/provider/file'
+require 'chef/deprecation/warnings'
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -45,6 +47,10 @@ class Chef
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::Checksum
       include Chef::Mixin::ShellOut
+
+      extend Chef::Deprecation::Warnings
+      include Chef::Deprecation::Provider::File
+      add_deprecation_warnings_for(Chef::Deprecation::Provider::File.instance_methods)
 
       attr_reader :deployment_strategy
 
@@ -126,7 +132,7 @@ class Chef
       def action_delete
         if ::File.exists?(@new_resource.path)
           converge_by("delete file #{@new_resource.path}") do
-            backup unless ::File.symlink?(@new_resource.path)
+            do_backup unless ::File.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
             Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
           end
@@ -140,32 +146,6 @@ class Chef
           ::File.utime(time, time, @new_resource.path)
           Chef::Log.info("#{@new_resource} updated atime and mtime to #{time}")
         end
-      end
-
-      # deprecated methods to support
-
-      def set_content
-        Chef::Log.warn("The method Chef::Provider::File#set_content is deprecated and will be removed in Chef 12")
-      end
-
-      def compare_content
-        Chef::Log.warn("The method Chef::Provider::File#compare_content is deprecated and will be removed in Chef 12")
-      end
-
-      def diff_current
-        Chef::Log.warn("The method Chef::Provider::File#diff_current is deprecated and will be removed in Chef 12")
-      end
-
-      def diff_current_from_content
-        Chef::Log.warn("The method Chef::Provider::File#diff_current_from_content is deprecated and will be removed in Chef 12")
-      end
-
-      def is_binary?(path)
-        Chef::Log.warn("The method Chef::Provider::File#is_binary? is deprecated and will be removed in Chef 12")
-      end
-
-      def update_new_file_state
-        Chef::Log.warn("The method Chef::Provider::File#update_new_file_state is deprecated and will be removed in Chef 12")
       end
 
       private
@@ -230,7 +210,7 @@ class Chef
         @file_created == true
       end
 
-      def backup(file = nil)
+      def do_backup(file = nil)
         Chef::Util::Backup.new(@new_resource, file).backup!
       end
 
@@ -239,7 +219,7 @@ class Chef
       end
 
       def update_file_contents
-        backup unless file_created?
+        do_backup unless file_created?
         deployment_strategy.deploy(tempfile.path, @new_resource.path)
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
         @new_resource.checksum(checksum(@new_resource.path)) # for reporting
