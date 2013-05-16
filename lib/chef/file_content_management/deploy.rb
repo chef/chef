@@ -16,24 +16,26 @@
 # limitations under the License.
 #
 
-require 'chef/file_content_management/content_base'
-require 'chef/file_content_management/tempfile'
+require 'chef/file_content_management/deploy/cp'
+require 'chef/file_content_management/deploy/mv_unix'
+if Chef::Platform.windows?
+  require 'chef/file_content_management/deploy/mv_windows'
+end
 
 class Chef
-  class Provider
-    class File
-      class Content < Chef::FileContentManagement::ContentBase
-        def file_for_provider
-          if @new_resource.content
-            tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
-            tempfile.write(@new_resource.content)
-            tempfile.close
-            tempfile
-          else
-            nil
-          end
+  class FileContentManagement
+    class Deploy
+      def self.strategy(deploy_with)
+        case deploy_with
+        when :move
+          Chef::Platform.windows? ? MvWindows.new() : MvUnix.new()
+        when :copy
+          Cp.new()
+        else
+          raise "invalid deployment strategy use :move or :copy"
         end
       end
     end
   end
 end
+
