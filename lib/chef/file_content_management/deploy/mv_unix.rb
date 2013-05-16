@@ -16,17 +16,16 @@
 # limitations under the License.
 #
 
-#
-# PURPOSE: this strategy is atomic, and attempts to preserve file modes
-#
-# NOTE: there is no preserve flag to FileUtils.mv, and we want to preserve the dst file
-#       modes rather than the src file modes (preserve = true is what mv does already, we
-#       would like preserve = false which is tricky).
-#
-
 class Chef
   class FileContentManagement
     class Deploy
+      #
+      # PURPOSE: this strategy is atomic, and attempts to preserve file modes
+      #
+      # NOTE: there is no preserve flag to FileUtils.mv, and we want to preserve the dst file
+      #       modes rather than the src file modes (preserve = true is what mv does already, we
+      #       would like preserve = false which is tricky).
+      #
       class MvUnix
         def create(file)
           # this is very simple, but it ensures that ownership and file modes take

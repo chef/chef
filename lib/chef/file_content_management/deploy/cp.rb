@@ -26,6 +26,12 @@
 class Chef
   class FileContentManagement
     class Deploy
+      #
+      # PURPOSE: This strategy preserves the inode, and will preserve modes + ownership
+      #          even if the user running chef cannot create that ownership (but has
+      #          rights to the file).  It is vulnerable to crashes in the middle of
+      #          writing the file which could result in corruption or zero-length files.
+      #
       class Cp
         def create(file)
           Chef::Log.debug("touching #{file} to create it")

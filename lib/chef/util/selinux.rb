@@ -22,14 +22,13 @@
 
 require 'chef/mixin/shell_out'
 
-#
-# IMPORTANT: We assume that selinux utilities are installed on an
-# selinux enabled server. Provisioning an selinux enabled server
-# without selinux utilities is not supported.
-#
-
 class Chef
   class Util
+    #
+    # IMPORTANT: We assume that selinux utilities are installed on an
+    # selinux enabled server. Provisioning an selinux enabled server
+    # without selinux utilities is not supported.
+    #
     class Selinux
 
       include Chef::Mixin::ShellOut
