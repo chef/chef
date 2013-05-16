@@ -22,7 +22,7 @@ require 'net/ftp'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/util'
 require 'chef/provider/remote_file/result'
-require 'chef/provider/file/tempfile'
+require 'chef/file_content_management/tempfile'
 
 class Chef
   class Provider
@@ -98,7 +98,7 @@ class Chef
 
         # Fetches using Net::FTP, returns a Tempfile with the content
         def get
-          tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
+          tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           if @typecode
             ftp.voidcmd("TYPE #{@typecode.upcase}")
           end

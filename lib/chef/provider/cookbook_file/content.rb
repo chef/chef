@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require 'chef/provider/file_content_base'
-require 'chef/provider/file/tempfile'
+require 'chef/file_content_management/content_base'
+require 'chef/file_content_management/tempfile'
 
 class Chef
   class Provider
     class CookbookFile
-      class Content < Chef::Provider::FileContentBase
+      class Content < Chef::FileContentManagement::ContentBase
 
         private
 
@@ -32,7 +32,7 @@ class Chef
           if file_cache_location.nil?
             nil
           else
-            tempfile = Chef::Provider::File::Tempfile.new(@new_resource).tempfile
+            tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
             tempfile.close
             Chef::Log.debug("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
             FileUtils.cp(file_cache_location, tempfile.path)

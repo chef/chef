@@ -24,19 +24,17 @@
 #
 
 class Chef
-  class Provider
-    class File
-      class Deploy
-        class Cp
-          def create(file)
-            Chef::Log.debug("touching #{file} to create it")
-            FileUtils.touch(file)
-          end
+  class FileContentManagement
+    class Deploy
+      class Cp
+        def create(file)
+          Chef::Log.debug("touching #{file} to create it")
+          FileUtils.touch(file)
+        end
 
-          def deploy(src, dst)
-            Chef::Log.debug("copying temporary file #{src} into place at #{dst}")
-            FileUtils.cp(src, dst)
-          end
+        def deploy(src, dst)
+          Chef::Log.debug("copying temporary file #{src} into place at #{dst}")
+          FileUtils.cp(src, dst)
         end
       end
     end

@@ -30,6 +30,7 @@ require 'chef/util/backup'
 require 'chef/util/diff'
 require 'chef/deprecation/provider/file'
 require 'chef/deprecation/warnings'
+require 'chef/file_content_management/deploy'
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
@@ -57,7 +58,7 @@ class Chef
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content
         if new_resource.respond_to?(:deploy_with)
-          @deployment_strategy = Chef::Provider::File::Deploy.strategy(new_resource.deploy_with)
+          @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.deploy_with)
         end
         super
       end

@@ -20,13 +20,13 @@
 require 'rest_client'
 require 'uri'
 require 'tempfile'
-require 'chef/provider/file_content_base'
+require 'chef/file_content_management/content_base'
 require 'chef/provider/remote_file/util'
 
 class Chef
   class Provider
     class RemoteFile
-      class Content < Chef::Provider::FileContentBase
+      class Content < Chef::FileContentManagement::ContentBase
 
         attr_reader :raw_file_source
 
