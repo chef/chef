@@ -247,14 +247,23 @@ class Chef
         tempfile.unlink
       end
 
-      # this might be made into some kind of generic platform-dependent post-converge hook for
-      # file-like resources, but for now we only have the single selinux use case.
-      def do_selinux(command_args = nil)
-        if Chef::Config[:selinux_enabled] && resource_updated?
-          cmd = "#{Chef::Config[:selinux_restorecon_command]} #{command_args} #{@new_resource.path}"
-          converge_by("fix selinux context with #{cmd}") do
-            Chef::Log.debug("running #{cmd}")
-            shell_out!(cmd)
+      # This logic ideally will be  made into some kind of generic
+      # platform-dependent post-converge hook for file-like
+      # resources, but for now we only have the single selinux use
+      # case.
+      def do_selinux(recursive = false)
+        selinux_util = Chef::Util::Selinux.new
+        if resource_updated?
+          if Chef::Config[:enable_selinux_file_permission_fixup]
+            if selinux_util.selinux_enabled?
+              converge_by("restore selinux security context") do
+                selinux_util.restore_security_context(@new_resource_path, recursive)
+              end
+            else
+              Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
+            end
+          else
+            Chef::Log.debug "selinux_file_permission_fixup is disabled. Skipping selinux permission fixup."
           end
         end
       end
