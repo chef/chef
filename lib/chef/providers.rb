@@ -112,16 +112,8 @@ require 'chef/provider/remote_file/util'
 require "chef/provider/lwrp_base"
 require 'chef/provider/registry_key'
 
-require 'chef/provider/file_content_base'
 require 'chef/provider/file/content'
 require 'chef/provider/remote_file/content'
 require 'chef/provider/cookbook_file/content'
 require 'chef/provider/template/content'
-require 'chef/provider/file/deploy'
-require 'chef/provider/file/deploy/cp'
-require 'chef/provider/file/deploy/mv_unix'
-if Chef::Platform.windows?
-  require 'chef/provider/file/deploy/mv_windows'
-end
-
 

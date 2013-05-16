@@ -17,12 +17,12 @@
 #
 
 require 'chef/mixin/template'
-require 'chef/provider/file_content_base'
+require 'chef/file_content_management/content_base'
 
 class Chef
   class Provider
     class Template
-      class Content < Chef::Provider::FileContentBase
+      class Content < Chef::FileContentManagement::ContentBase
 
         include Chef::Mixin::Template
 

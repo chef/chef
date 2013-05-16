@@ -16,40 +16,43 @@
 # limitations under the License.
 #
 
+require "tempfile"
+
 class Chef
-  class Provider
-    class FileContentBase
+  class FileContentManagement
+    class Tempfile
 
-      attr_reader :run_context
       attr_reader :new_resource
-      attr_reader :current_resource
 
-      def initialize(new_resource, current_resource, run_context)
+      def initialize(new_resource)
         @new_resource = new_resource
-        @current_resource = current_resource
-        @run_context = run_context
-        @tempfile_loaded = false
       end
 
       def tempfile
-        # tempfile may be nil, so we cannot use ||= here
-        if @tempfile_loaded
-          @tempfile
-        else
-          @tempfile_loaded = true
-          @tempfile = file_for_provider
-        end
+        @tempfile ||= tempfile_open
       end
 
       private
 
+      def tempfile_open
+        tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
+        tf.binmode if new_resource.binmode
+        tf
+      end
+
       #
-      # Return something that looks like a File or Tempfile and
-      # you must assume the provider will unlink this file.  Copy
-      # the contents to a Tempfile if you need to.
+      # These are important for windows to get permissions right, and may
+      # be useful for SELinux and other ACL approaches.  Please use them
+      # as the arguments to Tempfile.new() consistently.
       #
-      def file_for_provider
-        raise "class must implement file_for_provider!"
+      def tempfile_basename
+        basename = ::File.basename(@new_resource.name)
+        basename.insert 0, "." unless Chef::Platform.windows?  # dotfile if we're not on windows
+        basename
+      end
+
+      def tempfile_dirname
+        Chef::Config[:file_deployment_uses_destdir] ? ::File.dirname(@new_resource.path) : Dir::tmpdir
       end
     end
   end

@@ -50,7 +50,7 @@ class Chef
               Chef::Log.debug("#{new_resource} mtime on #{uri.path} has not been updated, not deploying")
               nil
             else
-              tempfile = Chef::Provider::File::Tempfile.new(new_resource).tempfile
+              tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
               Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
               FileUtils.cp(uri.path, tempfile.path)
               tempfile

@@ -98,11 +98,11 @@ describe Chef::Provider::RemoteFile::LocalFile do
       @fetcher.fetch.should == @result
     end
 
-    it "calls Chef::Provider::File::Tempfile to get a tempfile" do
+    it "calls Chef::FileContentManagement::Tempfile to get a tempfile" do
       ::File.stub!(:mtime).and_return(@now + 10)
       @tempfile = mock("Tempfile", "path" => "/tmp/nyan.png")
-      @chef_tempfile = mock("Chef::Provider::File::Tempfile", :tempfile => @tempfile)
-      Chef::Provider::File::Tempfile.should_receive(:new).with(@new_resource).and_return(@chef_tempfile)
+      @chef_tempfile = mock("Chef::FileContentManagement::Tempfile", :tempfile => @tempfile)
+      Chef::FileContentManagement::Tempfile.should_receive(:new).with(@new_resource).and_return(@chef_tempfile)
       ::FileUtils.should_receive(:cp).with(@uri.path, @tempfile.path)
       @result = mock("Chef::Provider::RemoteFile::Result")
       Chef::Provider::RemoteFile::Result.should_receive(:new).with(@tempfile, nil, @now + 10).and_return(@result)
