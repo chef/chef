@@ -331,11 +331,6 @@ class Chef
     # for file resources, deploy files with either :move or :copy
     file_deploy_with :move
 
-    # for file resources, when they find a non-file (incl directories heirarchies) at their dest, set to
-    # true to have them default to obliterate whatever they find.
-    # BE CAREFUL: if this is true, file "/#{variable}" will result in: unlink "/" if variable.nil?
-    file_force_unlink false
-
     # do we create /tmp or %TEMP% files, or do we create temp files in the destination directory of the file?
     #  - on windows this avoids issues with permission inheritance with the %TEMP% directory (do not set this to false)
     #  - on unix this creates temp files like /etc/.sudoers.X-Y-Z and may create noise and make for itchy neckbeards
