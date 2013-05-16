@@ -373,7 +373,7 @@ shared_examples_for Chef::Provider::File do
           context "when the file was created" do
             before { provider.should_receive(:file_created?).at_least(:once).and_return(true) }
             it "does not backup the file and does not produce a diff for reporting" do
-              provider.should_not_receive(:backup)
+              provider.should_not_receive(:do_backup)
               provider.send(:do_contents_changes)
               resource.diff.should be_nil
             end
@@ -381,7 +381,7 @@ shared_examples_for Chef::Provider::File do
           context "when the file was not created" do
             before { provider.should_receive(:file_created?).at_least(:once).and_return(false) }
             it "backs up the file and produces a diff for reporting" do
-              provider.should_receive(:backup)
+              provider.should_receive(:do_backup)
               provider.send(:do_contents_changes)
               resource.diff.should == diff_for_reporting
             end
@@ -436,7 +436,7 @@ shared_examples_for Chef::Provider::File do
     #      @provider.load_current_resource
     #      @provider.new_resource.content "foobar"
     #      @provider.should_receive(:diff_current_from_content).and_return("")
-    #      @provider.should_receive(:backup)
+    #      @provider.should_receive(:do_backup)
     #      # checksum check
     #      File.should_receive(:open).with(@provider.new_resource.path, "rb").and_yield(io)
     #      File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
@@ -488,7 +488,7 @@ shared_examples_for Chef::Provider::File do
         context "when the file is not a symlink" do
           before { setup_normal_file }
           it "should backup and delete the file and be updated by the last action" do
-            provider.should_receive(:backup).at_least(:once).and_return(true)
+            provider.should_receive(:do_backup).at_least(:once).and_return(true)
             File.should_receive(:delete).with(resource_path).and_return(true)
             provider.run_action(:delete)
             resource.should be_updated_by_last_action
@@ -497,7 +497,7 @@ shared_examples_for Chef::Provider::File do
         context "when the file is a symlink" do
           before { setup_symlink }
           it "should not backup the symlink" do
-            provider.should_not_receive(:backup)
+            provider.should_not_receive(:do_backup)
             File.should_receive(:delete).with(resource_path).and_return(true)
             provider.run_action(:delete)
             resource.should be_updated_by_last_action
@@ -507,7 +507,7 @@ shared_examples_for Chef::Provider::File do
       context "when the file is not writable" do
         before { setup_unwritable_file }
         it "should not try to backup or delete the file, and should not be updated by last action" do
-          provider.should_not_receive(:backup)
+          provider.should_not_receive(:do_backup)
           File.should_not_receive(:delete)
           lambda { provider.run_action(:delete) }.should raise_error()
           resource.should_not be_updated_by_last_action
@@ -519,7 +519,7 @@ shared_examples_for Chef::Provider::File do
       before { setup_missing_file }
 
       it "should not try to backup or delete the file, and should not be updated by last action" do
-        provider.should_not_receive(:backup)
+        provider.should_not_receive(:do_backup)
         File.should_not_receive(:delete)
         lambda { provider.run_action(:delete) }.should_not raise_error()
         resource.should_not be_updated_by_last_action

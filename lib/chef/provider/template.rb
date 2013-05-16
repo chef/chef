@@ -19,10 +19,17 @@
 
 require 'chef/provider/template_finder'
 require 'chef/provider/file'
+require 'chef/deprecation/provider/template'
+require 'chef/deprecation/warnings'
+
 
 class Chef
   class Provider
     class Template < Chef::Provider::File
+
+      extend Chef::Deprecation::Warnings
+      include Chef::Deprecation::Provider::Template
+      add_deprecation_warnings_for(Chef::Deprecation::Provider::Template.instance_methods)
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::Template::Content

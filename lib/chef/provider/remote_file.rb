@@ -18,10 +18,16 @@
 #
 
 require 'chef/provider/file'
+require 'chef/deprecation/provider/remote_file'
+require 'chef/deprecation/warnings'
 
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
+
+      extend Chef::Deprecation::Warnings
+      include Chef::Deprecation::Provider::RemoteFile
+      add_deprecation_warnings_for(Chef::Deprecation::Provider::RemoteFile.instance_methods)
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::RemoteFile::Content

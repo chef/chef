@@ -289,7 +289,7 @@ describe Chef::Provider::RemoteFile do
 
       describe "and the file downloaded from the remote is identical to the current" do
         it "shouldn't backup the original file" do
-          @provider.should_not_receive(:backup).with(@resource.path)
+          @provider.should_not_receive(:do_backup).with(@resource.path)
           @provider.run_action(:create)
         end
 
@@ -307,7 +307,7 @@ describe Chef::Provider::RemoteFile do
 
         it "should backup the original file" do
           @provider.stub!(:update_new_file_state)
-          @provider.should_receive(:backup).with(@resource.path).and_return(true)
+          @provider.should_receive(:do_backup).with(@resource.path).and_return(true)
           @provider.run_action(:create)
         end
 
