@@ -234,8 +234,12 @@ class Chef
     # the raw rb files as well. Can search within directories in the role_path.
     def self.from_disk(name, force=nil)
       roles_files = Dir.glob(File.join(Chef::Config[:role_path], "**", "**"))
-      js_path = roles_files.detect { |file| file.match /#{name}\.json$/ }
-      rb_path = roles_files.detect { |file| file.match /#{name}\.rb$/ }
+      js_files = roles_files.select { |file| file.match /#{name}\.json$/ }
+      rb_files = roles_files.select { |file| file.match /#{name}\.rb$/ }
+      if js_files.count > 1 or rb_files.count > 1
+        raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
+      end
+      js_path, rb_path = js_files.first, rb_files.first
 
       if js_path && (File.exists?(js_path) || force == "json")
         # from_json returns object.class => json_class in the JSON.
