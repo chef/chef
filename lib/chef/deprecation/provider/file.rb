@@ -16,15 +16,16 @@
 # limitations under the License.
 #
 
-#
-# This module contains the deprecated functions of
-# Chef::Provider::File. These functions are refactored to different
-# components. They are frozen and will be removed in Chef 12.
-#
 
 class Chef
   module Deprecation
     module Provider
+
+      # == Deprecation::Provider::File
+      # This module contains the deprecated functions of
+      # Chef::Provider::File. These functions are refactored to different
+      # components. They are frozen and will be removed in Chef 12.
+      #
       module File
 
         def diff_current_from_content(new_content)

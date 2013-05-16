@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-#
-# This module contains the deprecated functions of
-# Chef::Provider::Template. These functions are refactored to different
-# components. They are frozen and will be removed in Chef 12.
-#
-
 require 'chef/mixin/template'
 
 class Chef
   module Deprecation
     module Provider
+
+      # == Deprecation::Provider::Template
+      # This module contains the deprecated functions of
+      # Chef::Provider::Template. These functions are refactored to different
+      # components. They are frozen and will be removed in Chef 12.
+      #
       module Template
 
         include Chef::Mixin::Template

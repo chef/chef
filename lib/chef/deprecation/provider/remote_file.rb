@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-#
-# This module contains the deprecated functions of
-# Chef::Provider::RemoteFile. These functions are refactored to different
-# components. They are frozen and will be removed in Chef 12.
-#
-
 class Chef
   module Deprecation
     module Provider
+
+      # == Deprecation::Provider::RemoteFile
+      # This module contains the deprecated functions of
+      # Chef::Provider::RemoteFile. These functions are refactored to different
+      # components. They are frozen and will be removed in Chef 12.
+      #
       module RemoteFile
 
         def current_resource_matches_target_checksum?
