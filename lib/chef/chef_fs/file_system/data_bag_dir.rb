@@ -51,10 +51,6 @@ class Chef
           'id'
         end
 
-        def _make_child_entry(name, exists = nil)
-          DataBagItem.new(name, self, exists)
-        end
-
         def delete(recurse)
           if !recurse
             raise NotFoundError.new(self) if !exists?

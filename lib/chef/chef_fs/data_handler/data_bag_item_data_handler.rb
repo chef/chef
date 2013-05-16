@@ -19,6 +19,16 @@ class Chef
           })
         end
 
+        def normalize_for_put(data_bag_item, entry)
+          {
+            "name" => "data_bag_item_#{entry.parent.name}_#{entry.name}",
+            "json_class" => "Chef::DataBagItem",
+            "chef_type" => "data_bag_item",
+            "data_bag" => entry.parent.name,
+            "raw_data" => normalize(data_bag_item)
+          }
+        end
+
         def preserve_key(key)
           return key == 'id'
         end
