@@ -27,7 +27,7 @@ class Chef
             Chef::Log.warn "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef 12."
             Chef::Log.warn "Please update your cookbooks accordingly. Accessed from:"
             caller[0..3].each {|l| Chef::Log.warn l}
-            m.send(args)
+            super(*args)
           end
         end
       end
