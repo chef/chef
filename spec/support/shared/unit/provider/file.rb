@@ -357,9 +357,9 @@ shared_examples_for Chef::Provider::File do
         end
 
         context "when the contents have changed" do
-          let (:tempfile_path) { "/tmp/foo-bar-baz" }
-          let (:tempfile_sha256) { "42971f0ddce0cb20cf7660a123ffa1a1543beb2f1e7cd9d65858764a27f3201d" }
-          let (:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
+          let(:tempfile_path) { "/tmp/foo-bar-baz" }
+          let(:tempfile_sha256) { "42971f0ddce0cb20cf7660a123ffa1a1543beb2f1e7cd9d65858764a27f3201d" }
+          let(:diff_for_reporting) { "+++\n---\n+foo\n-bar\n" }
           before do
             provider.stub!(:contents_changed?).and_return(true)
             diff = double('Diff', :for_output => ['+++','---','+foo','-bar'],
