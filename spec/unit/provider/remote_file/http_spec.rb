@@ -110,32 +110,31 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:tempfile) { mock(Tempfile) }
 
+    let(:last_response) { {} }
+
     let(:rest) do
       rest = mock(Chef::REST)
       rest.stub!(:streaming_request).and_return(tempfile)
-      rest.stub!(:last_response).and_return({})
+      rest.stub!(:last_response).and_return(last_response)
       rest
     end
-
-    let(:result) { mock(Chef::Provider::RemoteFile::Result) }
 
     before do
       new_resource.should_receive(:headers).and_return({})
       new_resource.should_receive(:use_last_modified).and_return(false)
 
       Chef::REST.should_receive(:new).with(*expected_http_args).and_return(rest)
-      Chef::Provider::RemoteFile::Result.stub!(:new).and_return(result)
     end
 
     it "should return a result" do
-      Chef::Provider::RemoteFile::Result.stub!(:new).and_return(result)
-      fetcher.fetch.should == result
+      result = fetcher.fetch
+      result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+      result.raw_file.should == tempfile
     end
 
     it "should propagate non-304 exceptions to the caller" do
       r = Net::HTTPBadRequest.new("one", "two", "three")
       e = Net::HTTPServerException.new("fake exception", r)
-      Chef::Provider::RemoteFile::Result.stub!(:new).and_return(result)
       rest.stub!(:streaming_request).and_raise(e)
       lambda { fetcher.fetch }.should raise_error(Net::HTTPServerException)
     end
@@ -143,7 +142,6 @@ describe Chef::Provider::RemoteFile::HTTP do
     it "should return HTTPRetriableError when Chef::REST returns a 301" do
       r = Net::HTTPMovedPermanently.new("one", "two", "three")
       e = Net::HTTPRetriableError.new("301", r)
-      Chef::Provider::RemoteFile::Result.stub!(:new).and_return(result)
       rest.stub!(:streaming_request).and_raise(e)
       lambda { fetcher.fetch }.should raise_error(Net::HTTPRetriableError)
     end
@@ -152,8 +150,8 @@ describe Chef::Provider::RemoteFile::HTTP do
       r = Net::HTTPNotModified.new("one", "two", "three")
       e = Net::HTTPRetriableError.new("304", r)
       rest.stub!(:streaming_request).and_raise(e)
-      Chef::Provider::RemoteFile::Result.should_receive(:new).with(nil, nil, nil).and_return(result)
-      fetcher.fetch.should == result
+      result = fetcher.fetch
+      result.raw_file.should be_nil
     end
 
     context "and the target file is a tarball [CHEF-3140]" do
@@ -171,8 +169,14 @@ describe Chef::Provider::RemoteFile::HTTP do
       # Chef::REST.
 
       it "should disable gzip compression in the client" do
-        Chef::Provider::RemoteFile::Result.stub!(:new).and_return(result)
-        fetcher.fetch.should == result
+        # Before block in the parent context has set an expectation on
+        # Chef::REST.new() being called with expected arguments. Here we fufil
+        # that expectation, so that we can explicitly set it for this test.
+        # This is intended to provide insurance that refactoring of the parent
+        # context does not negate the value of this particular example.
+        Chef::REST.new(*expected_http_args)
+        Chef::REST.should_receive(:new).once.with(*expected_http_args).and_return(rest)
+        fetcher.fetch
       end
     end
   end
