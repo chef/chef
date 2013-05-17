@@ -33,27 +33,13 @@ class Chef
 
       include Chef::Mixin::ShellOut
 
-      def selinux_enabled?
-        if selinuxenabled_path
-          cmd = shell_out(selinuxenabled_path)
-          case cmd.exitstatus
-          when 1
-            return false
-          when 0
-            return true
-          else
-            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
-          end
-        else
-          # We assume selinux is not enabled if selinux utils are not
-          # installed.
-          return false
-        end
+      def self.selinux_enabled?
+        @@selinux_enabled
       end
 
-      def restore_security_context(file_path, recursive = false)
-        if restorecon_path
-          restorecon_command = recursive ? "#{restorecon_path} -R -r" : "#{restorecon_path} -R"
+      def self.restore_security_context(file_path, recursive = false)
+        if @@restorecon_path
+          restorecon_command = recursive ? "#{@@restorecon_path} -R -r" : "#{@@restorecon_path} -R"
           restorecon_command += " #{file_path}"
           Chef::Log.debug("Restoring selinux security content with #{restorecon_command}")
           shell_out!(restorecon_command)
@@ -64,15 +50,7 @@ class Chef
 
       private
 
-      def selinuxenabled_path
-        @selinuxenabled_path ||= which("selinuxenabled")
-      end
-
-      def restorecon_path
-        @restorecon_path ||= which("restorecon")
-      end
-
-      def which(cmd)
+      def self.which(cmd)
         paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
         paths.each do |path|
           filename = File.join(path, cmd)
@@ -80,6 +58,28 @@ class Chef
         end
         false
       end
+
+      def self.check_selinux_enabled?
+        if @@selinuxenabled_path
+          cmd = shell_out(@@selinuxenabled_path)
+          case cmd.exitstatus
+          when 1
+            return false
+          when 0
+            return true
+          else
+            raise RuntimeError, "Unknown exit code from command #{@@selinuxenabled_path}: #{cmd.exitstatus}"
+          end
+        else
+          # We assume selinux is not enabled if selinux utils are not
+          # installed.
+          return false
+        end
+      end
+
+      @@restorecon_path ||= self.which("restorecon")
+      @@selinuxenabled_path ||= self.which("selinuxenabled")
+      @@selinux_enabled ||= self.check_selinux_enabled?
     end
   end
 end

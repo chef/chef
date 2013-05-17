@@ -252,18 +252,13 @@ class Chef
       # resources, but for now we only have the single selinux use
       # case.
       def do_selinux(recursive = false)
-        selinux_util = Chef::Util::Selinux.new
-        if resource_updated?
-          if Chef::Config[:enable_selinux_file_permission_fixup]
-            if selinux_util.selinux_enabled?
-              converge_by("restore selinux security context") do
-                selinux_util.restore_security_context(@new_resource_path, recursive)
-              end
-            else
-              Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
+        if resource_updated? && Chef::Config[:enable_selinux_file_permission_fixup]
+          if Chef::Util::Selinux.selinux_enabled?
+            converge_by("restore selinux security context") do
+              Chef::Util::Selinux.restore_security_context(@new_resource_path, recursive)
             end
           else
-            Chef::Log.debug "selinux_file_permission_fixup is disabled. Skipping selinux permission fixup."
+            Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
           end
         end
       end
