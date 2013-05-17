@@ -82,7 +82,7 @@ class Chef
           if mtime_header = response['last_modified'] || response['date']
             Time.parse(mtime_header)
           else
-            Time.new
+            nil
           end
         end
 
