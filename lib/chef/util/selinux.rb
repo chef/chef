@@ -68,7 +68,6 @@ class Chef
       end
 
       def which(cmd)
-        puts "Running which #{cmd}"
         paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
         paths.each do |path|
           filename = File.join(path, cmd)
