@@ -48,7 +48,7 @@ class Chef
         @provider = Chef::Provider::File
         @binmode = Platform.windows? ? true : false
         @deploy_with = Chef::Config[:file_deploy_with]
-        @force_unlink = Chef::Config[:file_force_unlink]
+        @force_unlink = false
         @diff = nil
       end
 

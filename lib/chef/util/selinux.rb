@@ -22,87 +22,50 @@
 
 require 'chef/mixin/shell_out'
 
-#
-# NB: We take the approach that provisioning an selinux enabled server
-# without installing the selinux utilities is completely incoherent
-# and needs to be fixed in the provisioner / base image.
-#
-
 class Chef
   class Util
-    class Selinux
+    #
+    # IMPORTANT: We assume that selinux utilities are installed on an
+    # selinux enabled server. Provisioning an selinux enabled server
+    # without selinux utilities is not supported.
+    #
+    module Selinux
 
       include Chef::Mixin::ShellOut
 
-      attr_accessor :setenforce_path
-      attr_accessor :getenforce_path
-      attr_accessor :selinuxenabled_path
+      # We want to initialize below variables once during a
+      # chef-client run therefore they are class variables.
+      @@selinux_enabled = nil
+      @@restorecon_path = nil
+      @@selinuxenabled_path = nil
 
-      def setenforce_path
-        @setenforce_path ||= which("setenforce")
+      def selinux_enabled?
+        @@selinux_enabled = check_selinux_enabled? if @@selinux_enabled.nil?
+        @@selinux_enabled
       end
 
-      def getenforce_path
-        @getenforce_path ||= which("getenforce")
-      end
-
-      def selinuxenabled_path
-        @selinuxenabled_path ||= which("selinuxenabled")
-      end
-
-      def setenforce(state)
-        if setenforce_path
-          case state
-          when :enforcing
-            shell_out!("#{setenforce_path} 1")
-          when :permissive
-            shell_out!("#{setenforce_path} 0")
-          else
-            raise ArgumentError, "Bad argument to Chef::Util::Seliux#setenforce: #{state}"
-          end
+      def restore_security_context(file_path, recursive = false)
+        if restorecon_path
+          restorecon_command = recursive ? "#{restorecon_path} -R -r" : "#{restorecon_path} -R"
+          restorecon_command += " #{file_path}"
+          Chef::Log.debug("Restoring selinux security content with #{restorecon_command}")
+          shell_out!(restorecon_command)
         else
-          # FIXME?: manually roll our own setenforce
+          Chef::Log.warn "Can not find 'restorecon' on the system. Skipping selinux security context restore."
         end
-        raise RuntimeError, "Called setenforce but binary does not exist (try installing selinux-utils or libselinux-utils)"
-      end
-
-      def getenforce
-        if getenforce_path
-          cmd = shell_out!(getenforce_path)
-          case cmd.stdout
-          when /Permissive/i
-            return :permissive
-          when /Enforcing/i
-            return :enforcing
-          when /Disabled/i
-            return :disabled
-          else
-            raise RuntimeError, "Unknown output from getenforce: #{cmd.stdout}"
-          end
-        else
-          # FIXME?: manually roll our own getenforce
-        end
-        raise RuntimeError, "Called getenforce but binary does not exist (try installing selinux-utils or libselinux-utils)"
-      end
-
-      def selinuxenabled?
-        if selinuxenabled_path
-          cmd = shell_out(selinuxenabled_path)
-          case cmd.exitstatus
-          when 1
-            return false
-          when 0
-            return true
-          else
-            raise RuntimeError, "Unknown exit code from selinuxenabled: #{cmd.exitstatus}"
-          end
-        else
-          # FIXME?: manually roll our own selinuxenabled
-        end
-        false
       end
 
       private
+
+      def restorecon_path
+        @@restorecon_path = which("restorecon") if @@restorecon_path.nil?
+        @@restorecon_path
+      end
+
+      def selinuxenabled_path
+        @@selinuxenabled_path = which("selinuxenabled") if @@selinuxenabled_path.nil?
+        @@selinuxenabled_path
+      end
 
       def which(cmd)
         paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
@@ -112,6 +75,25 @@ class Chef
         end
         false
       end
+
+      def check_selinux_enabled?
+        if selinuxenabled_path
+          cmd = shell_out(selinuxenabled_path)
+          case cmd.exitstatus
+          when 1
+            return false
+          when 0
+            return true
+          else
+            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+          end
+        else
+          # We assume selinux is not enabled if selinux utils are not
+          # installed.
+          return false
+        end
+      end
+
     end
   end
 end

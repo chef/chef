@@ -102,7 +102,7 @@ class Chef
           end
         end
         do_acl_changes
-        do_selinux("-r")
+        do_selinux(true)
         load_resource_attributes_from_file(@new_resource)
       end
 
