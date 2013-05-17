@@ -19,6 +19,7 @@
 require 'chef/chef_fs/file_system/acls_dir'
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_dir'
+require 'chef/chef_fs/file_system/containers_dir'
 require 'chef/chef_fs/file_system/cookbooks_dir'
 require 'chef/chef_fs/file_system/data_bags_dir'
 require 'chef/chef_fs/file_system/nodes_dir'
@@ -86,7 +87,7 @@ class Chef
               result += [
                 AclsDir.new(self),
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
-                RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
+                ContainersDir.new(self),
                 RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
                 NodesDir.new(self)
               ]

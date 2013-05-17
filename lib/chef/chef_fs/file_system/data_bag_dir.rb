@@ -17,7 +17,6 @@
 #
 
 require 'chef/chef_fs/file_system/rest_list_dir'
-require 'chef/chef_fs/file_system/data_bag_item'
 require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/chef_fs/file_system/must_delete_recursively_error'
 require 'chef/chef_fs/data_handler/data_bag_item_data_handler'
