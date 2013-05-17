@@ -154,6 +154,63 @@ describe Chef::Provider::RemoteFile::HTTP do
       result.raw_file.should be_nil
     end
 
+    context "and the response does not contain an etag" do
+      let(:last_response) { {"etag" => nil} }
+      it "does not include an etag in the result" do
+        result = fetcher.fetch
+        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+        result.etag.should be_nil
+      end
+    end
+
+    context "and the response has an etag header" do
+      let(:last_response) { {"etag" => "abc123"} }
+
+      it "includes the etag value in the response" do
+        result = fetcher.fetch
+        result.raw_file.should == tempfile
+        result.etag.should == "abc123"
+      end
+
+    end
+
+    context "and the response has no Date or Last-Modified header" do
+      let(:last_response) { {"date" => nil, "last_modified" => nil} }
+      it "does not set an mtime in the result" do
+        # RFC 2616 suggests that servers that do not set a Date header do not
+        # have a reliable clock, so no use in making them deal with dates.
+        result = fetcher.fetch
+        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+        result.mtime.should be_nil
+      end
+    end
+
+    context "and the response has a Last-Modified header" do
+      let(:last_response) do
+        # Last-Modified should be preferred to Date if both are set
+        {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => "Fri, 17 May 2013 11:11:11 GMT"}
+      end
+
+      it "sets the mtime to the Last-Modified time in the response" do
+        result = fetcher.fetch
+        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+        result.mtime.should  == Time.at(1368789071).utc
+      end
+    end
+
+    context "and the response has a Date header but no Last-Modified header" do
+      let(:last_response) do
+        {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => nil}
+      end
+
+      it "sets the mtime to the Date in the response" do
+        result = fetcher.fetch
+        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+        result.mtime.should  == Time.at(1368833003).utc
+      end
+
+    end
+
     context "and the target file is a tarball [CHEF-3140]" do
 
       let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
