@@ -21,6 +21,10 @@ require 'spec_helper'
 describe Chef::Provider::Service::Macosx do
   describe ".gather_plist_dirs" do
     context "when HOME directory is set" do
+      before do
+        ENV.stub(:[]).with('HOME').and_return("/User/someuser")
+      end
+
       it "includes users's LaunchAgents folder" do
         described_class.gather_plist_dirs.should include("~/Library/LaunchAgents")
       end
@@ -28,11 +32,7 @@ describe Chef::Provider::Service::Macosx do
 
     context "when HOME directory is not set" do
       before do
-        @home_dir = ENV.delete('HOME')
-      end
-
-      after do
-        ENV['HOME'] = @home_dir
+        ENV.stub(:[]).with('HOME').and_return(nil)
       end
 
       it "doesn't include user's LaunchAgents folder" do

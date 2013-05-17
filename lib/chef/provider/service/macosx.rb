@@ -30,12 +30,11 @@ class Chef
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
 
-          locations.tap do |locations|
-            locations << '~/Library/LaunchAgents' if ENV['HOME']
-          end
+          locations << '~/Library/LaunchAgents' if ENV['HOME']
+          locations
         end
 
-        PLIST_DIRS = Macosx.gather_plist_dirs
+        PLIST_DIRS = gather_plist_dirs
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
