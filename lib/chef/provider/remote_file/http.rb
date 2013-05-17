@@ -64,26 +64,10 @@ class Chef
           begin
             rest = Chef::REST.new(uri, nil, nil, http_client_opts)
             tempfile = rest.streaming_request(uri, headers)
-            if rest.last_response['last_modified']
-              mtime = Time.parse(rest.last_response['last_modified'])
-              Chef::Log.debug("found last_modified header on response set to #{mtime}")
-            elsif rest.last_response['date']
-              mtime = Time.parse(rest.last_response['date'])
-              Chef::Log.debug("found date header on response set to #{mtime}")
-            else
-              mtime = Time.now
-              Chef::Log.debug("returning current time #{mtime} as last_modified time")
-            end
-            if rest.last_response['etag']
-              etag = rest.last_response['etag']
-              Chef::Log.debug("found etag header on response set to #{etag}")
-            else
-              etag = nil
-              Chef::Log.debug("did not find an etag header on response")
-            end
+            mtime = last_modified_time_from(rest.last_response)
+            etag = etag_from(rest.last_response)
           rescue Net::HTTPRetriableError => e
             if e.response.is_a? Net::HTTPNotModified
-              Chef::Log.debug("got 304 HTTPNotModified response")
               tempfile = nil
             else
               raise e
@@ -93,6 +77,18 @@ class Chef
         end
 
         private
+
+        def last_modified_time_from(response)
+          if mtime_header = response['last_modified'] || response['date']
+            Time.parse(mtime_header)
+          else
+            Time.new
+          end
+        end
+
+        def etag_from(response)
+          response['etag']
+        end
 
         def http_client_opts
           opts={}
