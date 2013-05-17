@@ -324,18 +324,12 @@ class Chef
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
     user_home(ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
 
-    # selinux command to restore file contexts
-    selinux_restorecon_command "/sbin/restorecon -R"
-    # guess if you're running selinux or not -- override this if it guesses wrong
-    selinux_enabled  Chef::Util::Selinux.new.selinuxenabled?
+    # Enable file permission fixup for selinux. Fixup will be done
+    # only if selinux is enabled in the system.
+    enable_selinux_file_permission_fixup true
 
     # for file resources, deploy files with either :move or :copy
     file_deploy_with :move
-
-    # for file resources, when they find a non-file (incl directories heirarchies) at their dest, set to
-    # true to have them default to obliterate whatever they find.
-    # BE CAREFUL: if this is true, file "/#{variable}" will result in: unlink "/" if variable.nil?
-    file_force_unlink false
 
     # do we create /tmp or %TEMP% files, or do we create temp files in the destination directory of the file?
     #  - on windows this avoids issues with permission inheritance with the %TEMP% directory (do not set this to false)
