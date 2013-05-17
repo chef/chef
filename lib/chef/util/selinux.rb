@@ -29,17 +29,24 @@ class Chef
     # selinux enabled server. Provisioning an selinux enabled server
     # without selinux utilities is not supported.
     #
-    class Selinux
+    module Selinux
 
       include Chef::Mixin::ShellOut
 
-      def self.selinux_enabled?
+      # We want to initialize below variables once during a
+      # chef-client run therefore they are class variables.
+      @@selinux_enabled = nil
+      @@restorecon_path = nil
+      @@selinuxenabled_path = nil
+
+      def selinux_enabled?
+        @@selinux_enabled = check_selinux_enabled? if @@selinux_enabled.nil?
         @@selinux_enabled
       end
 
-      def self.restore_security_context(file_path, recursive = false)
-        if @@restorecon_path
-          restorecon_command = recursive ? "#{@@restorecon_path} -R -r" : "#{@@restorecon_path} -R"
+      def restore_security_context(file_path, recursive = false)
+        if restorecon_path
+          restorecon_command = recursive ? "#{restorecon_path} -R -r" : "#{restorecon_path} -R"
           restorecon_command += " #{file_path}"
           Chef::Log.debug("Restoring selinux security content with #{restorecon_command}")
           shell_out!(restorecon_command)
@@ -50,7 +57,18 @@ class Chef
 
       private
 
-      def self.which(cmd)
+      def restorecon_path
+        @@restorecon_path = which("restorecon") if @@restorecon_path.nil?
+        @@restorecon_path
+      end
+
+      def selinuxenabled_path
+        @@selinuxenabled_path = which("selinuxenabled") if @@selinuxenabled_path.nil?
+        @@selinuxenabled_path
+      end
+
+      def which(cmd)
+        puts "Running which #{cmd}"
         paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
         paths.each do |path|
           filename = File.join(path, cmd)
@@ -59,16 +77,16 @@ class Chef
         false
       end
 
-      def self.check_selinux_enabled?
-        if @@selinuxenabled_path
-          cmd = shell_out(@@selinuxenabled_path)
+      def check_selinux_enabled?
+        if selinuxenabled_path
+          cmd = shell_out(selinuxenabled_path)
           case cmd.exitstatus
           when 1
             return false
           when 0
             return true
           else
-            raise RuntimeError, "Unknown exit code from command #{@@selinuxenabled_path}: #{cmd.exitstatus}"
+            raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
           # We assume selinux is not enabled if selinux utils are not
@@ -77,9 +95,6 @@ class Chef
         end
       end
 
-      @@restorecon_path ||= self.which("restorecon")
-      @@selinuxenabled_path ||= self.which("selinuxenabled")
-      @@selinux_enabled ||= self.check_selinux_enabled?
     end
   end
 end

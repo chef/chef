@@ -48,6 +48,7 @@ class Chef
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::Checksum
       include Chef::Mixin::ShellOut
+      include Chef::Util::Selinux
 
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::File
@@ -253,9 +254,9 @@ class Chef
       # case.
       def do_selinux(recursive = false)
         if resource_updated? && Chef::Config[:enable_selinux_file_permission_fixup]
-          if Chef::Util::Selinux.selinux_enabled?
+          if selinux_enabled?
             converge_by("restore selinux security context") do
-              Chef::Util::Selinux.restore_security_context(@new_resource_path, recursive)
+              restore_security_context(@new_resource_path, recursive)
             end
           else
             Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
