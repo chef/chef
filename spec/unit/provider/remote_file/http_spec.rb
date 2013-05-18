@@ -22,25 +22,24 @@ describe Chef::Provider::RemoteFile::HTTP do
 
   let(:uri) { URI.parse("http://opscode.com/seattle.txt") }
 
+  let(:existing_file_source) { nil }
+
   let(:current_resource) do
-    current_resource = mock('Chef::Resource::RemoteFile (current_resource)')
-    current_resource.stub!(:source).and_return(["http://opscode.com/seattle.txt"])
-    current_resource.stub!(:last_modified).and_return(Time.new)
-    current_resource.stub!(:etag).and_return(nil)
+    current_resource = Chef::Resource::RemoteFile.new("/tmp/foo.txt")
+    current_resource.source(existing_file_source) if existing_file_source
+    current_resource.last_modified(Time.new)
+    current_resource.etag(nil)
     current_resource
   end
 
   let(:new_resource) do
-    new_resource = mock('Chef::Resource::RemoteFile (new_resource)')
-    new_resource.stub!(:headers).and_return({})
+    new_resource = Chef::Resource::RemoteFile.new("/tmp/foo.txt")
+    new_resource.headers({})
     new_resource
   end
 
   describe "when contructing the object" do
     describe "when the current resource has no source" do
-      before do
-        current_resource.should_receive(:source).and_return(nil)
-      end
 
       it "stores the uri it is passed" do
         fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
@@ -49,33 +48,30 @@ describe Chef::Provider::RemoteFile::HTTP do
 
       it "stores any headers it is passed" do
         headers = { "foo" => "foo", "bar" => "bar", "baz" => "baz" }
-        new_resource.stub!(:headers).and_return(headers)
+        new_resource.headers(headers)
         fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
         fetcher.headers.should == headers
       end
 
     end
 
-    describe "when the current resource has a source" do
+    context "when the current file was fetched from the current URI" do
+      let(:existing_file_source) { ["http://opscode.com/seattle.txt"] }
 
       it "stores the last_modified string in the headers when we are using last_modified headers and the uri matches the cache" do
-        current_resource.stub!(:source).and_return(["http://opscode.com/seattle.txt"])
-        new_resource.should_receive(:use_last_modified).and_return(true)
-        current_resource.stub!(:last_modified).and_return(Time.new)
-        current_resource.stub!(:etag).and_return(nil)
-        Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(uri, current_resource.source[0]).and_return(true)
+        new_resource.use_last_modified(true)
+        current_resource.last_modified(Time.new)
+        current_resource.etag(nil)
         fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
         fetcher.headers['if-modified-since'].should == current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
         fetcher.headers.should_not have_key('if-none-match')
       end
 
       it "stores the etag string in the headers when we are using etag headers and the uri matches the cache" do
-        current_resource.stub!(:source).and_return(["http://opscode.com/seattle.txt"])
-        new_resource.should_receive(:use_etag).and_return(true)
-        new_resource.should_receive(:use_last_modified).and_return(false)
-        current_resource.stub!(:last_modified).and_return(Time.new)
-        current_resource.stub!(:etag).and_return("a_unique_identifier")
-        Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(uri, current_resource.source[0]).and_return(true)
+        new_resource.use_etag(true)
+        new_resource.use_last_modified(false)
+        current_resource.last_modified(Time.new)
+        current_resource.etag("a_unique_identifier")
         fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
         fetcher.headers['if-none-match'].should == "\"#{current_resource.etag}\""
         fetcher.headers.should_not have_key('if-modified-since')
