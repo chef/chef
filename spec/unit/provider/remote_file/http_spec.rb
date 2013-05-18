@@ -38,6 +38,19 @@ describe Chef::Provider::RemoteFile::HTTP do
     new_resource
   end
 
+  def use_last_modified!
+    new_resource.use_last_modified(true)
+    current_resource.last_modified(Time.new)
+    current_resource.etag(nil)
+  end
+
+  def use_etags!
+    new_resource.use_etag(true)
+    new_resource.use_last_modified(false)
+    current_resource.last_modified(Time.new)
+    current_resource.etag("a_unique_identifier")
+  end
+
   describe "when contructing the object" do
     describe "when the current resource has no source" do
 
@@ -55,26 +68,51 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     end
 
+    context "when the existing file was fetched from a different URI" do
+      let(:existing_file_source) { ["http://opscode.com/tukwila.txt"] }
+
+      it "does not set a last modified header" do
+        use_last_modified!
+        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+        fetcher.headers.should_not have_key('if-none-match')
+        fetcher.headers.should_not have_key('if-modified-since')
+      end
+
+      it "does not set an etag header" do
+        use_etags!
+        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+        fetcher.headers.should_not have_key('if-none-match')
+        fetcher.headers.should_not have_key('if-modified-since')
+      end
+    end
+
     context "when the current file was fetched from the current URI" do
       let(:existing_file_source) { ["http://opscode.com/seattle.txt"] }
 
-      it "stores the last_modified string in the headers when we are using last_modified headers and the uri matches the cache" do
-        new_resource.use_last_modified(true)
-        current_resource.last_modified(Time.new)
-        current_resource.etag(nil)
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.headers['if-modified-since'].should == current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
-        fetcher.headers.should_not have_key('if-none-match')
+      context "and using If-Modified-Since" do
+        before do
+          use_last_modified!
+        end
+
+        it "stores the last_modified string in the headers" do
+          fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+          fetcher.headers['if-modified-since'].should == current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
+          fetcher.headers.should_not have_key('if-none-match')
+          pending("http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.4")
+        end
       end
 
-      it "stores the etag string in the headers when we are using etag headers and the uri matches the cache" do
-        new_resource.use_etag(true)
-        new_resource.use_last_modified(false)
-        current_resource.last_modified(Time.new)
-        current_resource.etag("a_unique_identifier")
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.headers['if-none-match'].should == "\"#{current_resource.etag}\""
-        fetcher.headers.should_not have_key('if-modified-since')
+      context "and using etags" do
+        before do
+          use_etags!
+        end
+
+        it "stores the etag string in the headers" do
+          fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+          fetcher.headers['if-none-match'].should == "\"#{current_resource.etag}\""
+          fetcher.headers.should_not have_key('if-modified-since')
+          pending("http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.4")
+        end
       end
 
     end
