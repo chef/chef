@@ -135,7 +135,7 @@ shared_examples_for "a directory resource" do
     ]
   end
 
-  it_behaves_like "a securable resource"
+  it_behaves_like "a securable resource without existing target"
 end
 
 shared_context Chef::Resource::Directory do

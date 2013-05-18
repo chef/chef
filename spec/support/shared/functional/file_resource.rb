@@ -155,7 +155,7 @@ shared_examples_for "a file resource" do
   end
 
    # note the stripping of the drive letter from the tmpdir on windows
-  let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
+  let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, test_file_dir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
   # Most tests update the resource, but a few do not. We need to test that the
   # resource is marked updated or not correctly, but the test contexts are
@@ -234,6 +234,7 @@ shared_examples_for "a file resource" do
     [ ACE.access_denied(sid, expected_perms[:specific]) ]
   end
 
+  it_behaves_like "a securable resource without existing target"
 
   context "when the target file has the wrong content" do
     before(:each) do
@@ -250,7 +251,7 @@ shared_examples_for "a file resource" do
 
       it_behaves_like "a file with the wrong content"
 
-      it_behaves_like "a securable resource"
+      it_behaves_like "a securable resource with existing target"
     end
 
     context "and the target file has incorrect permissions" do
@@ -258,7 +259,7 @@ shared_examples_for "a file resource" do
 
       it_behaves_like "a file with the wrong content"
 
-      it_behaves_like "a securable resource"
+      it_behaves_like "a securable resource with existing target"
     end
   end
 
@@ -282,46 +283,45 @@ shared_examples_for "a file resource" do
 
       it_behaves_like "a file with the correct content"
 
-      it_behaves_like "a securable resource"
+      it_behaves_like "a securable resource with existing target"
     end
 
     context "and the target file has incorrect permissions" do
       include_context "setup broken permissions"
 
       it_behaves_like "a file with the correct content"
-  
-      it_behaves_like "a securable resource"
+
+      it_behaves_like "a securable resource with existing target"
     end
   end
 
-  it_behaves_like "a file that inherits permissions from a parent directory"
-  
-end
-
-shared_examples_for "a file that inherits permissions from a parent directory" do
-  include_context "diff disabled"
-  include_context "use Windows permissions"
-  context "on Windows", :windows_only do
-    it "has only inherited aces if no explicit aces were specified" do
-      File.exist?(path).should == false
-
-      resource.run_action(:create)
-
-      descriptor.dacl_inherits?.should == true
-      descriptor.dacl.each do | ace |
-        ace.inherited?.should == true
-      end
-    end
-  end
 end
 
 shared_context Chef::Resource::File  do
+  # We create the files in a different directory than tmp to exercise
+  # different file deployment strategies more completely.
+  let(:test_file_dir) do
+    if windows?
+      File.join(ENV['systemdrive'], "test-dir")
+    else
+      "/test-dir"
+    end
+  end
+
   let(:path) do
-    File.join(Dir.tmpdir, make_tmpname(file_base))
+    File.join(test_file_dir, make_tmpname(file_base))
+  end
+
+  before do
+    FileUtils::mkdir_p(test_file_dir)
   end
 
   after(:each) do
     FileUtils.rm_r(path) if File.exists?(path)
     FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+  end
+
+  after do
+    FileUtils::rm_rf(test_file_dir)
   end
 end

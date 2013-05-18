@@ -77,6 +77,5 @@ describe Chef::Resource::CookbookFile do
       FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exists?(windows_non_temp_dir)
     end
 
-    it_behaves_like "a file that inherits permissions from a parent directory"
   end
 end

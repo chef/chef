@@ -330,7 +330,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
       context 'and the link already exists and is not writeable to this user', :pending do
       end
-      it_behaves_like 'a securable resource' do
+      it_behaves_like 'a securable resource without existing target' do
         let(:path) { target_file }
         def allowed_acl(sid, expected_perms)
           [ ACE.access_allowed(sid, expected_perms[:specific]) ]

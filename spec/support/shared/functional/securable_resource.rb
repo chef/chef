@@ -126,7 +126,7 @@ shared_context "use Windows permissions", :windows_only do
   end
 end
 
-shared_examples_for "a securable resource" do
+shared_examples_for "a securable resource with existing target" do
 
   include_context "diff disabled"
 
@@ -211,9 +211,21 @@ shared_examples_for "a securable resource" do
   context "on Windows", :windows_only do
     include_context "use Windows permissions"
 
-    before(:each) do
-      resource.run_action(:delete)
-    end
+    pending "coming soon..."
+  end
+
+end
+
+shared_examples_for "a securable resource without existing target" do
+
+  include_context "diff disabled"
+
+  context "on Unix", :unix_only do
+    pending "if we need any securable resource tests on Unix without existing target resource."
+  end
+
+  context "on Windows", :windows_only do
+    include_context "use Windows permissions"
 
     it "sets owner to Administrators on create if owner is not specified" do
       File.exist?(path).should == false
@@ -428,5 +440,30 @@ shared_examples_for "a securable resource" do
       end
     end
 
+    it "does not inherit aces if inherits is set to false" do
+      resource.inherits(false)
+      resource.run_action(:create)
+
+      descriptor.dacl.each do | ace |
+        ace.inherited?.should == false
+      end
+    end
+
+    it "has the inheritable acls of parent directory if no acl is specified" do
+      File.exist?(path).should == false
+
+      resource.run_action(:create)
+
+      dummy_file_path = File.join(test_file_dir, "dummy_file")
+      dummy_file = FileUtils.touch(dummy_file_path)
+      dummy_desc = get_security_descriptor(dummy_file_path)
+
+      descriptor.dacl.each_with_index do |ace, index|
+        ace.inherited?.should == true
+        ace.should == dummy_desc.dacl[index]
+      end
+    end
+
   end
 end
+
