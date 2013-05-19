@@ -86,7 +86,7 @@ class Chef
               result += [
                 AclsDir.new(self),
                 RestListDir.new("clients", self, nil, Chef::ChefFS::DataHandler::ClientDataHandler.new),
-                ContainersDir.new(self),
+                RestListDir.new("containers", self, nil, Chef::ChefFS::DataHandler::ContainerDataHandler.new),
                 RestListDir.new("groups", self, nil, Chef::ChefFS::DataHandler::GroupDataHandler.new),
                 NodesDir.new(self)
               ]
