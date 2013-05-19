@@ -184,39 +184,31 @@ describe Chef::Provider::User do
   end
 
   describe "compare_user" do
-    before(:each) do
-      # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User", 
-      #   :null_object => true,
-      #   :username => "adam",
-      #   :comment => "Adam Jacob",
-      #   :uid => 1000,
-      #   :gid => 1000,
-      #   :home => "/home/adam",
-      #   :shell => "/usr/bin/zsh",
-      #   :password => nil,
-      #   :updated => nil
-      # )
-      # @current_resource = mock("Chef::Resource::User", 
-      #   :null_object => true,
-      #   :username => "adam",
-      #   :comment => "Adam Jacob",
-      #   :uid => 1000,
-      #   :gid => 1000,
-      #   :home => "/home/adam",
-      #   :shell => "/usr/bin/zsh",
-      #   :password => nil,
-      #   :updated => nil
-      # )
-      # @provider = Chef::Provider::User.new(@node, @new_resource)
-      # @provider.current_resource = @current_resource
-    end
+    let(:mapping) {
+      {
+        'username' => ["adam", "Adam"],
+        'comment' => ["Adam Jacob", "adam jacob"],
+        'uid' => [1000, 1001],
+        'gid' => [1000, 1001],
+        'home' => ["/home/adam", "/Users/adam"],
+        'shell'=> ["/usr/bin/zsh", "/bin/bash"],
+        'password'=> ["abcd","12345"]
+      }
+    }
 
     %w{uid gid comment home shell password}.each do |attribute|
       it "should return true if #{attribute} doesn't match" do
-        @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
-        @current_resource.should_receive(attribute).once.and_return(false)
+        @new_resource.send(attribute, mapping[attribute][0])
+        @current_resource.send(attribute, mapping[attribute][1])
         @provider.compare_user.should eql(true)
+      end
+    end
+
+    %w{uid gid}.each do |attribute|
+      it "should return false if string #{attribute} matches fixnum" do
+        @new_resource.send(attribute, "100")
+        @current_resource.send(attribute, 100)
+        @provider.compare_user.should eql(false)
       end
     end
 

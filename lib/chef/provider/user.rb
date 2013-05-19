@@ -79,9 +79,7 @@ class Chef
             end
           end
 
-          if @new_resource.gid
-            convert_group_name
-          end
+          convert_group_name if @new_resource.gid
         end
 
         @current_resource
@@ -112,9 +110,15 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        [ :uid, :gid, :comment, :home, :shell, :password ].any? do |user_attrib|
+        changed = [ :comment, :home, :shell, :password ].keep_if do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
         end
+
+        changed += [ :uid, :gid ].keep_if do |user_attrib|
+          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_i != @current_resource.send(user_attrib).to_i
+        end
+
+        changed.any?
       end
 
       def action_create
