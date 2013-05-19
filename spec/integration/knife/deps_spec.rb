@@ -396,7 +396,7 @@ EOM
     when_the_chef_server 'has a cookbook with dependencies' do
       cookbook 'kettle', '1.0.0', { 'metadata.rb' => "name 'kettle'\nversion '1.0.0'\n" }
       cookbook 'quiche', '1.0.0', { 'metadata.rb' => "name 'quiche'\ndepends 'kettle'\n", 'recipes' => { 'default.rb' => '' } }
-      it 'knife deps reports just the cookbook' do
+      it 'knife deps reports the cookbook and its dependencies' do
         knife('deps --remote /cookbooks/quiche').should_succeed "/cookbooks/kettle\n/cookbooks/quiche\n"
       end
     end
