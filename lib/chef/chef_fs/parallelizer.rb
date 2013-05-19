@@ -94,7 +94,7 @@ class Chef
           begin
             @outputs[index] = @block.call(input)
             @status[index] = :finished
-          rescue
+          rescue Exception
             @outputs[index] = $!
             @status[index] = :exception
           end
