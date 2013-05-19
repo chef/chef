@@ -91,7 +91,7 @@ EOM
             knife('diff --name-status /').should_succeed ''
           end
           it 'knife upload --no-diff does not change the role' do
-            knife('upload /').should_succeed ''
+            knife('upload --no-diff /').should_succeed ''
             knife('diff --name-status /').should_succeed "M\t/roles/x.json\n"
           end
         end
@@ -148,7 +148,7 @@ EOM
           end
 
           it 'knife upload --no-diff adds the new files' do
-            knife('upload /').should_succeed <<EOM
+            knife('upload --no-diff /').should_succeed <<EOM
 Created /clients/y.json
 Updated /cookbooks/x
 Created /cookbooks/y

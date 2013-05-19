@@ -192,7 +192,7 @@ EOM
         end
 
         it 'knife download --no-diff creates the extra files' do
-          knife('download /').should_succeed <<EOM
+          knife('download --no-diff /').should_succeed <<EOM
 Created /clients
 Created /clients/chef-validator.json
 Created /clients/chef-webui.json
