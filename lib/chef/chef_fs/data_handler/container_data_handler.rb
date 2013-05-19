@@ -4,8 +4,8 @@ class Chef
   module ChefFS
     module DataHandler
       class ContainerDataHandler < DataHandlerBase
-        def normalize(user, entry)
-          super(user, {
+        def normalize(container, entry)
+          super(container, {
             'containername' => remove_dot_json(entry.name),
             'containerpath' => remove_dot_json(entry.name)
           })
@@ -13,6 +13,13 @@ class Chef
 
         def preserve_key(key)
           return key == 'containername'
+        end
+
+        def verify_integrity(object, entry, &on_error)
+          base_name = remove_dot_json(entry.name)
+          if object['name'] != "data_bag_item_#{entry.parent.name}_#{remove_dot_json(entry.name)}"
+            on_error.call("Name in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['name']}')")
+          end
         end
 
         # There is no chef_class for users, nor does to_ruby work.
