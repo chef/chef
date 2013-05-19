@@ -17,6 +17,7 @@
 #
 
 require 'spec_helper'
+require 'chef/exceptions'
 
 describe Chef::Config do
   before(:all) do
@@ -283,6 +284,13 @@ describe Chef::Config do
       it "sets the value to nil" do
         Chef::Config[:encrypted_data_bag_secret].should be_nil
       end
+    end
+  end
+
+  describe "Chef::Config[:log_location]" do
+    it "raises ConfigurationError when log_location directory is missing" do
+      missing_path = "/tmp/non-existing-dir/file"
+      expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
   end
 
