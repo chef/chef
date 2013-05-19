@@ -16,6 +16,51 @@
 # limitations under the License.
 #
 
+shared_context "deploying with move" do
+  before do
+    @original_deploy_with = Chef::Config[:file_deploy_with]
+    Chef::Config[:file_deploy_with] = :move
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_with
+  end
+end
+
+shared_context "deploying with copy" do
+  before do
+    @original_deploy_with = Chef::Config[:file_deploy_with]
+    Chef::Config[:file_deploy_with] = :copy
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_with
+  end
+end
+
+shared_context "deploying via tmpdir" do
+  before do
+    @original_deploy_via = Chef::Config[:file_deployment_uses_destdir]
+    Chef::Config[:file_deployment_uses_destdir] = false
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_via
+  end
+end
+
+shared_context "deploying via destdir" do
+  before do
+    @original_deploy_via = Chef::Config[:file_deployment_uses_destdir]
+    Chef::Config[:file_deployment_uses_destdir] = true
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_via
+  end
+end
+
+
 shared_examples_for "a file with the wrong content" do
   before do
     # Assert starting state is as expected
@@ -147,6 +192,47 @@ shared_examples_for "a file with the correct content" do
 end
 
 shared_examples_for "a file resource" do
+  describe "when deploying with :move" do
+
+    include_context "deploying with move"
+
+    describe "when deploying via tmpdir" do
+
+      include_context "deploying via tmpdir"
+
+      it_behaves_like "a configured file resource"
+    end
+
+    describe "when deploying via destdir" do
+
+      include_context "deploying via destdir"
+
+      it_behaves_like "a configured file resource"
+    end
+  end
+
+  describe "when deploying with :copy" do
+
+    include_context "deploying with copy"
+
+    describe "when deploying via tmpdir" do
+
+      include_context "deploying via tmpdir"
+
+      it_behaves_like "a configured file resource"
+    end
+
+    describe "when deploying via destdir" do
+
+      include_context "deploying via destdir"
+
+      it_behaves_like "a configured file resource"
+    end
+  end
+
+end
+
+shared_examples_for "a configured file resource" do
 
   include_context "diff disabled"
 
@@ -304,7 +390,7 @@ shared_context Chef::Resource::File  do
     if windows?
       File.join(ENV['systemdrive'], "test-dir")
     else
-      "/test-dir"
+      File.join(CHEF_SPEC_DATA, "test-dir")
     end
   end
 

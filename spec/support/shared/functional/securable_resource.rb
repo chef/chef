@@ -18,9 +18,6 @@
 # limitations under the License.
 #
 
-# TODO test that these work when you are logged on as a user joined to a domain (rather than local computer)
-# TODO test that you can set users from other domains
-
 require 'etc'
 
 shared_context "setup correct permissions" do
@@ -39,7 +36,15 @@ shared_context "setup correct permissions" do
     File.chown(Etc.getpwnam('nobody').uid, 1337, path)
   end
 
-  # FIXME: windows
+  before :each, :windows_only do
+    Security = Chef::ReservedNames::Win32::Security
+    so = Security::SecurableObject.new(path)
+    so.owner = SID.Administrator
+    so.group = SID.Administrators
+    dacl = Security::ACL.create(denied_acl(SID.Guest, expected_full_control_perms) +
+                                allowed_acl(SID.Guest, expected_write_perms))
+    so.set_dacl(dacl, true)
+  end
 end
 
 shared_context "setup broken permissions" do
@@ -52,7 +57,15 @@ shared_context "setup broken permissions" do
     File.chown(0, 0, path)
   end
 
-  # FIXME: windows
+  before :each, :windows_only do
+    Security = Chef::ReservedNames::Win32::Security
+    so = Security::SecurableObject.new(path)
+    so.owner = SID.Guest
+    so.group = SID.Everyone
+    dacl = Security::ACL.create(allowed_acl(SID.Administrator, expected_write_perms) +
+                                denied_acl(SID.Administrator, expected_full_control_perms))
+    so.set_dacl(dacl, true)
+  end
 end
 
 shared_context "use Windows permissions", :windows_only do
@@ -209,11 +222,52 @@ shared_examples_for "a securable resource with existing target" do
   end
 
   context "on Windows", :windows_only do
-    include_context "use Windows permissions"
+    describe "when setting owner" do
+      before do
+        resource.owner('Administrator')
+        resource.run_action(:create)
+      end
 
-    pending "coming soon..."
+      it "should set the owner" do
+        descriptor.owner.should == SID.Administrator
+      end
+
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
+      end
+    end
+
+    describe "when setting group" do
+      before do
+        resource.group('Administrators')
+        resource.run_action(:create)
+      end
+
+      it "should set the group" do
+        descriptor.group.should == SID.Administrators
+      end
+
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
+      end
+    end
+
+    describe "when setting rights and deny_rights" do
+      before do
+        resource.rights(:write, 'Guest')
+        resource.deny_rights(:full_control, 'Guest')
+        resource.run_action(:create)
+      end
+
+      it "should set the rights and deny_rights" do
+        explicit_aces.should == denied_acl(SID.Guest, expected_full_control_perms) + allowed_acl(SID.Guest, expected_write_perms)
+      end
+
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
+      end
+    end
   end
-
 end
 
 shared_examples_for "a securable resource without existing target" do

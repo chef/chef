@@ -54,7 +54,7 @@ describe Chef::Resource::File do
 
   let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
-  it_behaves_like "a file resource", :focus => true
+  it_behaves_like "a file resource"
 
   it_behaves_like "a securable resource with reporting"
 
