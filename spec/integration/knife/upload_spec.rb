@@ -451,7 +451,7 @@ EOM
       when_the_repository 'has the same environment with the wrong name in the file' do
         file 'environments/x.json', { 'name' => 'y' }
         it 'knife upload fails' do
-          knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name in remote/environments/x.json/x.json must be 'x' (is 'y')\n"
+          knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n"
         end
       end
@@ -477,7 +477,7 @@ EOM
       when_the_repository 'has an environment with the wrong name in the file' do
         file 'environments/x.json', { 'name' => 'y' }
         it 'knife upload fails' do
-          knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Name in remote/environments/x.json must be 'x' (is 'y')\n"
+          knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Error creating 'x.json': Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
         end
       end
@@ -930,7 +930,7 @@ EOM
       when_the_repository 'has the same environment with the wrong name in the file' do
         file 'environments/x.json', { 'name' => 'y' }
         it 'knife upload fails' do
-          knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name in remote/environments/x.json/x.json must be 'x' (is 'y')\n"
+          knife('upload /environments/x.json').should_fail "ERROR: /environments/x.json failed to write: Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "M\t/environments/x.json\n"
         end
       end
@@ -956,7 +956,7 @@ EOM
       when_the_repository 'has an environment with the wrong name in the file' do
         file 'environments/x.json', { 'name' => 'y' }
         it 'knife upload fails' do
-          knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Name in remote/environments/x.json must be 'x' (is 'y')\n"
+          knife('upload /environments/x.json').should_fail "ERROR: /environments failed to create_child: Error creating 'x.json': Name must be 'x' (is 'y')\n"
           knife('diff --name-status /environments/x.json').should_succeed "A\t/environments/x.json\n"
         end
       end
