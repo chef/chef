@@ -25,42 +25,36 @@ describe Chef::Config do
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
   end
 
-  shared_examples_for "server URL" do
-    it "should set the registration url" do
-      Chef::Config.registration_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the template url" do
-      Chef::Config.template_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the remotefile url" do
-      Chef::Config.remotefile_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the search url" do
-      Chef::Config.search_url.should == "https://junglist.gen.nz"
-    end
-
-    it "should set the role url" do
-      Chef::Config.role_url.should == "https://junglist.gen.nz"
-    end
-  end
-
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
     end
 
-    it_behaves_like "server URL"
-  end
-
-  context "when the url has a leading space" do
-    before do
-      Chef::Config.chef_server_url = " https://junglist.gen.nz"
+    it "sets the server url" do
+      Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
     end
 
-    it_behaves_like "server URL"
+    context "when the url has a leading space" do
+      before do
+        Chef::Config.chef_server_url = " https://junglist.gen.nz"
+      end
+
+      it "strips the space from the url when setting" do
+        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      end
+
+    end
+
+    context "when the url is a frozen string" do
+      before do
+        Chef::Config.chef_server_url = " https://junglist.gen.nz".freeze
+      end
+
+      it "strips the space from the url when setting without raising an error" do
+        Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
+      end
+    end
+
   end
 
   describe "when configuring formatters" do
@@ -105,14 +99,6 @@ describe Chef::Config do
       @config_class.formatters.should == [[:doc, "/var/log/formatter.log"]]
     end
 
-  end
-
-  context "when the url is a frozen string" do
-    before do
-      Chef::Config.chef_server_url = " https://junglist.gen.nz".freeze
-    end
-
-    it_behaves_like "server URL"
   end
 
   describe "class method: manage_secret_key" do
@@ -166,19 +152,7 @@ describe Chef::Config do
     end
   end
 
-  describe "class method: openid_providers=" do
-    it "should not log an appropriate deprecation info message" do
-      Chef::Log.should_not_receive(:info).with("DEPRECATION: openid_providers will be removed, please use authorized_openid_providers")
-      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
-    end
-
-    it "should internally configure authorized_openid_providers with the value given" do
-      Chef::Config.should_receive(:configure).and_return(%w{opscode.com junglist.gen.nz})
-      Chef::Config.openid_providers = %w{opscode.com junglist.gen.nz}
-    end
-  end
-
-   describe "class method: plaform_specific_path" do
+  describe "class method: plaform_specific_path" do
     it "should return given path on non-windows systems" do
       platform_mock :unix do
         path = "/etc/chef/cookbooks"

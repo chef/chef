@@ -25,7 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
 require 'chef/api_client/registration'
-require 'chef/platform'
+require 'chef/platform/query_helpers'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
@@ -103,6 +103,7 @@ class Chef
       self.class.run_start_notifications.each do |notification|
         notification.call(run_status)
       end
+      @events.run_started(run_status)
     end
 
     # Callback to fire notifications that the run completed successfully

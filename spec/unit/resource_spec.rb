@@ -35,7 +35,7 @@ describe Chef::Resource do
     @resource = Chef::Resource.new("funk", @run_context)
   end
 
-  describe "when inherited", :focus do
+  describe "when inherited" do
 
     it "adds an entry to a list of subclasses" do
       subclass = Class.new(Chef::Resource)

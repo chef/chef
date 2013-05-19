@@ -31,7 +31,7 @@ class Chef
       attr_accessor :rest
 
       def initialize(url=nil)
-        @rest = Chef::REST.new(url ||Chef::Config[:search_url])
+        @rest = Chef::REST.new(url ||Chef::Config[:chef_server_url])
       end
 
       # Search Solr for objects of a given type, for a given query. If you give
@@ -53,7 +53,7 @@ class Chef
       end
 
       def list_indexes
-        response = @rest.get_rest("search")
+        @rest.get_rest("search")
       end
 
       private

@@ -173,7 +173,7 @@ class Chef
     class RunListExpansionFromAPI < RunListExpansion
 
       def rest
-        @rest ||= (source || Chef::REST.new(Chef::Config[:role_url]))
+        @rest ||= (source || Chef::REST.new(Chef::Config[:chef_server_url]))
       end
 
       def fetch_role(name, included_by)

@@ -39,7 +39,7 @@ class Chef
 
         # Add log entry if we override an existing light-weight resource.
         class_name = convert_to_class_name(rname)
-        if Resource.const_defined?(class_name, false)
+        if Resource.strict_const_defined?(class_name)
           old_class = Resource.send(:remove_const, class_name)
           # CHEF-3432 -- Chef::Resource keeps a list of subclasses; need to
           # remove old ones from the list when replacing.
