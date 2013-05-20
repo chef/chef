@@ -26,7 +26,7 @@ describe Chef::Provider::Service::Macosx do
       end
 
       it "includes users's LaunchAgents folder" do
-        described_class.gather_plist_dirs.should include("~/Library/LaunchAgents")
+        described_class.gather_plist_dirs.should include("#{ENV['HOME']}/Library/LaunchAgents")
       end
     end
 
