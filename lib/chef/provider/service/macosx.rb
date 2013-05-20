@@ -30,7 +30,7 @@ class Chef
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
 
-          locations << '~/Library/LaunchAgents' if ENV['HOME']
+          locations << "#{ENV['HOME']}/Library/LaunchAgents" if ENV['HOME']
           locations
         end
 
