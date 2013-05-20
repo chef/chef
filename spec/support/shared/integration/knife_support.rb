@@ -1,3 +1,4 @@
+require 'chef/config'
 require 'chef/knife'
 require 'chef/application/knife'
 require 'logger'
@@ -18,43 +19,53 @@ module KnifeSupport
     # Make output stable
     Chef::Config[:concurrency] = 1
 
-    # This is Chef::Knife.run without load_commands and load_deps--we'll
-    # load stuff ourselves, thank you very much
-    stdout = StringIO.new
-    stderr = StringIO.new
-    old_loggers = Chef::Log.loggers
-    old_log_level = Chef::Log.level
-    begin
-      puts "knife: #{args.join(' ')}" if DEBUG
-      subcommand_class = Chef::Knife.subcommand_class_from(args)
-      subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
-      instance = subcommand_class.new(args)
+    # Work on machines where we can't access /var
+    checksums_cache_dir = Dir.mktmpdir('checksums') do |checksums_cache_dir|
+      old_cache_options = Chef::Config[:cache_options]
+      Chef::Config[:cache_options] = {
+        :path => checksums_cache_dir,
+        :skip_expires => true
+      }
 
-      # Capture stdout/stderr
-      instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
+      # This is Chef::Knife.run without load_commands and load_deps--we'll
+      # load stuff ourselves, thank you very much
+      stdout = StringIO.new
+      stderr = StringIO.new
+      old_loggers = Chef::Log.loggers
+      old_log_level = Chef::Log.level
+      begin
+        puts "knife: #{args.join(' ')}" if DEBUG
+        subcommand_class = Chef::Knife.subcommand_class_from(args)
+        subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
+        instance = subcommand_class.new(args)
 
-      # Don't print stuff
-      Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
-      instance.configure_chef
-      logger = Logger.new(stderr)
-      logger.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg}\n" }
-      Chef::Log.use_log_devices([logger])
-      Chef::Log.level = ( DEBUG ? :debug : :warn )
-      Chef::Log::Formatter.show_time = false
+        # Capture stdout/stderr
+        instance.ui = Chef::Knife::UI.new(stdout, stderr, STDIN, {})
 
-      instance.run
+        # Don't print stuff
+        Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
+        instance.configure_chef
+        logger = Logger.new(stderr)
+        logger.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg}\n" }
+        Chef::Log.use_log_devices([logger])
+        Chef::Log.level = ( DEBUG ? :debug : :warn )
+        Chef::Log::Formatter.show_time = false
 
-      exit_code = 0
+        instance.run
 
-    # This is how rspec catches exit()
-    rescue SystemExit => e
-      exit_code = e.status
-    ensure
-      Chef::Log.use_log_devices(old_loggers)
-      Chef::Log.level = old_log_level
+        exit_code = 0
+
+      # This is how rspec catches exit()
+      rescue SystemExit => e
+        exit_code = e.status
+      ensure
+        Chef::Log.use_log_devices(old_loggers)
+        Chef::Log.level = old_log_level
+        Chef::Config[:cache_options] = old_cache_options
+      end
+
+      KnifeResult.new(stdout.string, stderr.string, exit_code)
     end
-
-    KnifeResult.new(stdout.string, stderr.string, exit_code)
   end
 
   private
