@@ -27,29 +27,48 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
 
   let(:expect_updated?) {true}
 
-  let(:base_dir) do
+  # We create the files in a different directory than tmp to exercise
+  # different file deployment strategies more completely.
+  let(:test_file_dir) do
     if windows?
-      Chef::ReservedNames::Win32::File.get_long_path_name(Dir.tmpdir.gsub('/', '\\'))
+      File.join(ENV['systemdrive'], "test-dir")
     else
-      Dir.tmpdir
+      File.join(CHEF_SPEC_DATA, "test-dir")
     end
   end
 
+  before do
+    FileUtils::mkdir_p(test_file_dir)
+  end
+
+  after do
+    FileUtils::rm_rf(test_file_dir)
+  end
+
   let(:to) do
-    File.join(base_dir, make_tmpname("to_spec"))
+    File.join(test_file_dir, make_tmpname("to_spec"))
   end
   let(:target_file) do
-    File.join(base_dir, make_tmpname("from_spec"))
+    File.join(test_file_dir, make_tmpname("from_spec"))
   end
 
   after(:each) do
-    # TODO Windows fails to clean up some symlinks.
     begin
-      FileUtils.rm_r(to) if File.exists?(to)
-      FileUtils.rm_r(target_file) if File.exists?(target_file)
-      FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+      cleanup_link(to) if File.exists?(to)
+      cleanup_link(target_file) if File.exists?(target_file)
+      cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
     rescue
       puts "Could not remove a file: #{$!}"
+    end
+  end
+
+  def cleanup_link(path)
+    if windows? && File.directory?(path)
+      # If the link target is a directory rm_rf doesn't work all the
+      # time on windows.
+      system "rmdir '#{path}'"
+    else
+      FileUtils.rm_rf(path)
     end
   end
 
@@ -270,7 +289,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         end
         context 'pointing somewhere else' do
           before(:each) do
-            @other_target = File.join(base_dir, make_tmpname('other_spec'))
+            @other_target = File.join(test_file_dir, make_tmpname('other_spec'))
             File.open(@other_target, 'w') { |file| file.write('eek') }
             symlink(@other_target, target_file)
             symlink?(target_file).should be_true
@@ -288,7 +307,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         end
         context 'pointing nowhere' do
           before(:each) do
-            nonexistent = File.join(base_dir, make_tmpname('nonexistent_spec'))
+            nonexistent = File.join(test_file_dir, make_tmpname('nonexistent_spec'))
             symlink(nonexistent, target_file)
             symlink?(target_file).should be_true
             readlink(target_file).should == nonexistent
@@ -338,6 +357,13 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         def denied_acl(sid, expected_perms)
           [ ACE.access_denied(sid, expected_perms[:specific]) ]
         end
+          def parent_inheritable_acls
+            dummy_file_path = File.join(test_file_dir, "dummy_file")
+            dummy_file = FileUtils.touch(dummy_file_path)
+            dummy_desc = get_security_descriptor(dummy_file_path)
+            FileUtils.rm_rf(dummy_file_path)
+            dummy_desc
+          end
       end
     end
     context 'when the link destination is a directory' do
@@ -354,7 +380,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     context "when the link destination is a symbolic link" do
       context 'to a file that exists' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec"))
+          @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
           File.open(@other_target, "w") { |file| file.write("eek") }
           symlink(@other_target, to)
           symlink?(to).should be_true
@@ -370,7 +396,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
       context 'to a file that does not exist' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec"))
+          @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
           symlink(@other_target, to)
           symlink?(to).should be_true
           readlink(to).should == @other_target
@@ -394,7 +420,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     }.each do |prefix, desc|
       context desc do
         let(:to) { "#{prefix}#{File.basename(absolute_to)}" }
-        let(:absolute_to) { File.join(base_dir, make_tmpname("to_spec")) }
+        let(:absolute_to) { File.join(test_file_dir, make_tmpname("to_spec")) }
         before(:each) do
           resource.to(to)
         end
@@ -513,7 +539,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     context "when the link destination is a symbolic link" do
       context 'to a real file' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec"))
+          @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
           File.open(@other_target, "w") { |file| file.write("eek") }
           symlink(@other_target, to)
           symlink?(to).should be_true
@@ -537,7 +563,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
       end
       context 'to a nonexistent file' do
         before(:each) do
-          @other_target = File.join(base_dir, make_tmpname("other_spec"))
+          @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
           symlink(@other_target, to)
           symlink?(to).should be_true
           readlink(to).should == @other_target
