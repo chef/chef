@@ -146,6 +146,4 @@ describe Chef::Util::Backup do
     end
   end
 
-  # it "should keep the same ownership on backed up files" do (FIXME: functional test)
-
 end

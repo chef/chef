@@ -161,8 +161,8 @@ shared_examples_for Chef::Provider::File do
           provider.load_current_resource
         end
 
-        it "should load the permissions into the current_resource as numbers (BUT DOESN'T, BUG?)" do
-          # FIXME: inconsistency, hmmmm....
+        it "should load the permissions into the current_resource as numbers", :focus => true do
+          # Mode is always loaded as string for reporting purposes.
           provider.current_resource.mode.should == "0600"
           provider.current_resource.owner.should == 0
           provider.current_resource.group.should == 0
@@ -267,8 +267,7 @@ shared_examples_for Chef::Provider::File do
     end
   end
 
-  context "when reporting security metadata on windows (FIXME: moar tests)" do
-
+  context "when reporting security metadata on windows" do
     it "records the file owner" do
       pending
     end

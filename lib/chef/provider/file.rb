@@ -288,9 +288,10 @@ class Chef
       def load_resource_attributes_from_file(resource)
 
         if Chef::Platform.windows?
-          # TODO: To work around CHEF-3554, add support for Windows
-          # equivalent, or implicit resource reporting won't work for
-          # Windows.
+          # This is a work around for CHEF-3554.
+          # OC-6534: is tracking the real fix for this workaround.
+          # Add support for Windows equivalent, or implicit resource
+          # reporting won't work for Windows.
           return
         end
         acl_scanner = ScanAccessControl.new(@new_resource, resource)

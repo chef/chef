@@ -94,7 +94,8 @@ class Chef
           else
             @diff = result.stdout.split("\n")
             @diff.delete("\\ No newline at end of file")
-            # XXX: successful return of the diff is here, we return nil as no error...  ugh...
+            # Successful return of the diff.
+            # We return nil as no error...
             return nil
           end
         elsif not result.stderr.empty?

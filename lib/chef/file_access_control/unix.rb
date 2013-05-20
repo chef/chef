@@ -104,7 +104,7 @@ class Chef
         gid_from_resource(current_resource)
       end
 
-      def gid_from_resource(resource)  # XXX:  masking instance variable
+      def gid_from_resource(resource)
         return nil if resource == nil or resource.group.nil?
         if resource.group.kind_of?(String)
           diminished_radix_complement( Etc.getgrnam(resource.group).gid )
@@ -245,7 +245,7 @@ class Chef
         end
       end
 
-      def uid_from_resource(resource)  # XXX: masking instance variable
+      def uid_from_resource(resource)
         return nil if resource == nil or resource.owner.nil?
         if resource.owner.kind_of?(String)
           diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
