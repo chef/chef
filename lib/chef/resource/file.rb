@@ -47,7 +47,7 @@ class Chef
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
         @binmode = Platform.windows? ? true : false
-        @deploy_with = Chef::Config[:file_deploy_with]
+        @atomic_update = Chef::Config[:file_atomic_update]
         @force_unlink = false
         @diff = nil
       end
@@ -101,9 +101,9 @@ class Chef
         )
       end
 
-      def deploy_with(arg=nil)
+      def atomic_update(arg=nil)
         set_or_return(
-          :deploy_with,
+          :atomic_update,
           arg,
           :equal_to => [ :move, :copy ]
         )
