@@ -16,6 +16,51 @@
 # limitations under the License.
 #
 
+shared_context "deploying with move" do
+  before do
+    @original_deploy_with = Chef::Config[:file_deploy_with]
+    Chef::Config[:file_deploy_with] = :move
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_with
+  end
+end
+
+shared_context "deploying with copy" do
+  before do
+    @original_deploy_with = Chef::Config[:file_deploy_with]
+    Chef::Config[:file_deploy_with] = :copy
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_with
+  end
+end
+
+shared_context "deploying via tmpdir" do
+  before do
+    @original_deploy_via = Chef::Config[:file_deployment_uses_destdir]
+    Chef::Config[:file_deployment_uses_destdir] = false
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_via
+  end
+end
+
+shared_context "deploying via destdir" do
+  before do
+    @original_deploy_via = Chef::Config[:file_deployment_uses_destdir]
+    Chef::Config[:file_deployment_uses_destdir] = true
+  end
+
+  after do
+    Chef::Config[:file_deploy_with] = @original_deploy_via
+  end
+end
+
+
 shared_examples_for "a file with the wrong content" do
   before do
     # Assert starting state is as expected
@@ -147,6 +192,47 @@ shared_examples_for "a file with the correct content" do
 end
 
 shared_examples_for "a file resource" do
+  describe "when deploying with :move" do
+
+    include_context "deploying with move"
+
+    describe "when deploying via tmpdir" do
+
+      include_context "deploying via tmpdir"
+
+      it_behaves_like "a configured file resource"
+    end
+
+    describe "when deploying via destdir" do
+
+      include_context "deploying via destdir"
+
+      it_behaves_like "a configured file resource"
+    end
+  end
+
+  describe "when deploying with :copy" do
+
+    include_context "deploying with copy"
+
+    describe "when deploying via tmpdir" do
+
+      include_context "deploying via tmpdir"
+
+      it_behaves_like "a configured file resource"
+    end
+
+    describe "when deploying via destdir" do
+
+      include_context "deploying via destdir"
+
+      it_behaves_like "a configured file resource"
+    end
+  end
+
+end
+
+shared_examples_for "a configured file resource" do
 
   include_context "diff disabled"
 
@@ -155,7 +241,7 @@ shared_examples_for "a file resource" do
   end
 
    # note the stripping of the drive letter from the tmpdir on windows
-  let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, Dir.tmpdir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
+  let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, test_file_dir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
   # Most tests update the resource, but a few do not. We need to test that the
   # resource is marked updated or not correctly, but the test contexts are
@@ -234,6 +320,15 @@ shared_examples_for "a file resource" do
     [ ACE.access_denied(sid, expected_perms[:specific]) ]
   end
 
+  def parent_inheritable_acls
+    dummy_file_path = File.join(test_file_dir, "dummy_file")
+    dummy_file = FileUtils.touch(dummy_file_path)
+    dummy_desc = get_security_descriptor(dummy_file_path)
+    FileUtils.rm_rf(dummy_file_path)
+    dummy_desc
+  end
+
+  it_behaves_like "a securable resource without existing target"
 
   context "when the target file has the wrong content" do
     before(:each) do
@@ -250,7 +345,7 @@ shared_examples_for "a file resource" do
 
       it_behaves_like "a file with the wrong content"
 
-      it_behaves_like "a securable resource"
+      it_behaves_like "a securable resource with existing target"
     end
 
     context "and the target file has incorrect permissions" do
@@ -258,7 +353,7 @@ shared_examples_for "a file resource" do
 
       it_behaves_like "a file with the wrong content"
 
-      it_behaves_like "a securable resource"
+      it_behaves_like "a securable resource with existing target"
     end
   end
 
@@ -282,46 +377,45 @@ shared_examples_for "a file resource" do
 
       it_behaves_like "a file with the correct content"
 
-      it_behaves_like "a securable resource"
+      it_behaves_like "a securable resource with existing target"
     end
 
     context "and the target file has incorrect permissions" do
       include_context "setup broken permissions"
 
       it_behaves_like "a file with the correct content"
-  
-      it_behaves_like "a securable resource"
+
+      it_behaves_like "a securable resource with existing target"
     end
   end
 
-  it_behaves_like "a file that inherits permissions from a parent directory"
-  
-end
-
-shared_examples_for "a file that inherits permissions from a parent directory" do
-  include_context "diff disabled"
-  include_context "use Windows permissions"
-  context "on Windows", :windows_only do
-    it "has only inherited aces if no explicit aces were specified" do
-      File.exist?(path).should == false
-
-      resource.run_action(:create)
-
-      descriptor.dacl_inherits?.should == true
-      descriptor.dacl.each do | ace |
-        ace.inherited?.should == true
-      end
-    end
-  end
 end
 
 shared_context Chef::Resource::File  do
+  # We create the files in a different directory than tmp to exercise
+  # different file deployment strategies more completely.
+  let(:test_file_dir) do
+    if windows?
+      File.join(ENV['systemdrive'], "test-dir")
+    else
+      File.join(CHEF_SPEC_DATA, "test-dir")
+    end
+  end
+
   let(:path) do
-    File.join(Dir.tmpdir, make_tmpname(file_base))
+    File.join(test_file_dir, make_tmpname(file_base))
+  end
+
+  before do
+    FileUtils::mkdir_p(test_file_dir)
   end
 
   after(:each) do
     FileUtils.rm_r(path) if File.exists?(path)
     FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+  end
+
+  after do
+    FileUtils::rm_rf(test_file_dir)
   end
 end

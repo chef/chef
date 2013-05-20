@@ -37,36 +37,53 @@ class Chef
         end
 
         def deploy(src, dst)
-          dst_so = Security::SecurableObject.new(dst)
+          #
+          # At the time of deploy ACLs are correctly configured on the
+          # dst. This would be a simple atomic move operations in
+          # windows was not converting inherited ACLs of src to
+          # non-inherited ACLs in certain cases.See:
+          # http://blogs.msdn.com/b/oldnewthing/archive/2006/08/24/717181.aspx
+          #
 
-          # FIXME: catch exception when we can't elevate privs?
-          dst_sd = dst_so.security_descriptor(true)  # get the sd with the SACL
+          #
+          # First cache the ACLs of dst file
+          #
+
+          dst_so = Security::SecurableObject.new(dst)
+          begin
+            # get the sd with the SACL
+            dst_sd = dst_so.security_descriptor(true)
+          rescue Chef::Exceptions::Win32APIError
+            # Catch and raise if the user is not elevated enough.
+            # At this point we can't configure the file as expected so
+            # we're failing action on the resource.
+            raise Chef::Exceptions::WindowsNotAdmin, "can not get the security information for '#{dst}' due to missing Administrator privilages."
+          end
 
           if dst_sd.dacl_present?
             apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
           end
+
           if dst_sd.sacl_present?
             apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
           end
 
-          Chef::Log.debug("applying owner #{dst_sd.owner} to staged file")
-          Chef::Log.debug("applying group #{dst_sd.group} to staged file")
-          Chef::Log.debug("applying dacl #{dst_sd.dacl} to staged file") if dst_sd.dacl_present?
-          Chef::Log.debug("applying dacl inheritance to staged file") if dst_sd.dacl_inherits?
-          Chef::Log.debug("applying sacl #{dst_sd.sacl} to staged file") if dst_sd.sacl_present?
-          Chef::Log.debug("applying sacl inheritance to staged file") if dst_sd.sacl_inherits?
-
-          so = Security::SecurableObject.new(src)
-
-          so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dst_sd.dacl_present?
-
-          so.group = dst_sd.group
-
-          so.owner = dst_sd.owner
-
-          so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if dst_sd.sacl_present?
+          #
+          # Then deploy the file
+          #
 
           FileUtils.mv(src, dst)
+
+          #
+          # Then apply the cached acls to the new dst file
+          #
+
+          dst_so = Security::SecurableObject.new(dst)
+          dst_so.group = dst_sd.group
+          dst_so.owner = dst_sd.owner
+          dst_so.set_dacl(apply_dacl, dst_sd.dacl_inherits?) if dst_sd.dacl_present?
+          dst_so.set_sacl(apply_sacl, dst_sd.sacl_inherits?) if dst_sd.sacl_present?
+
         end
       end
     end
