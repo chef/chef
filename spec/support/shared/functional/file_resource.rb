@@ -18,45 +18,45 @@
 
 shared_context "deploying with move" do
   before do
-    @original_deploy_with = Chef::Config[:file_deploy_with]
-    Chef::Config[:file_deploy_with] = :move
+    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_atomic_update] = true
   end
 
   after do
-    Chef::Config[:file_deploy_with] = @original_deploy_with
+    Chef::Config[:file_atomic_update] = @original_atomic_update
   end
 end
 
 shared_context "deploying with copy" do
   before do
-    @original_deploy_with = Chef::Config[:file_deploy_with]
-    Chef::Config[:file_deploy_with] = :copy
+    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_atomic_update] = false
   end
 
   after do
-    Chef::Config[:file_deploy_with] = @original_deploy_with
+    Chef::Config[:file_atomic_update] = @original_atomic_update
   end
 end
 
 shared_context "deploying via tmpdir" do
   before do
-    @original_deploy_via = Chef::Config[:file_deployment_uses_destdir]
-    Chef::Config[:file_deployment_uses_destdir] = false
+    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
+    Chef::Config[:file_staging_uses_destdir] = false
   end
 
   after do
-    Chef::Config[:file_deploy_with] = @original_deploy_via
+    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
   end
 end
 
 shared_context "deploying via destdir" do
   before do
-    @original_deploy_via = Chef::Config[:file_deployment_uses_destdir]
-    Chef::Config[:file_deployment_uses_destdir] = true
+    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
+    Chef::Config[:file_staging_uses_destdir] = true
   end
 
   after do
-    Chef::Config[:file_deploy_with] = @original_deploy_via
+    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
   end
 end
 

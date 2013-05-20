@@ -25,14 +25,11 @@ end
 class Chef
   class FileContentManagement
     class Deploy
-      def self.strategy(deploy_with)
-        case deploy_with
-        when :move
+      def self.strategy(atomic_update)
+        if atomic_update
           Chef::Platform.windows? ? MvWindows.new() : MvUnix.new()
-        when :copy
-          Cp.new()
         else
-          raise "invalid deployment strategy use :move or :copy"
+          Cp.new()
         end
       end
     end
