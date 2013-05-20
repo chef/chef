@@ -80,7 +80,7 @@ class Chef
           @net_user.delete
         end
         
-        def check_lock
+        def locked?
           @net_user.check_enabled
         end
         

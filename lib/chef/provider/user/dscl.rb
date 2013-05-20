@@ -229,10 +229,6 @@ class Chef
           end
         end
         
-        def check_lock
-          return @locked = locked?
-        end
-
         def lock_user
           safe_dscl("append /Users/#{@new_resource.username} AuthenticationAuthority ';DisabledUser;'")
         end

@@ -168,17 +168,17 @@ class Chef
       end
 
       def action_lock
-        if check_lock() == false
+        if locked?
+          Chef::Log.debug("#{@new_resource} already locked - nothing to do")
+        else
           converge_by("lock the user #{@new_resource}") do
             lock_user
             Chef::Log.info("#{@new_resource} locked")
           end
-         else
-          Chef::Log.debug("#{@new_resource} already locked - nothing to do")
         end
       end
 
-      def check_lock
+      def locked?
         raise NotImplementedError
       end
 
@@ -187,7 +187,7 @@ class Chef
       end
 
       def action_unlock
-        if check_lock() == true
+        if locked?
           converge_by("unlock user #{@new_resource}") do
             unlock_user
             Chef::Log.info("#{@new_resource} unlocked")

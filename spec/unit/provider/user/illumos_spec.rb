@@ -20,7 +20,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::User::Solaris do
+describe Chef::Provider::User::Illumos do
   before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -47,7 +47,7 @@ describe Chef::Provider::User::Solaris do
     @current_resource.manage_home false
     @current_resource.non_unique false
     @current_resource.supports({:manage_home => false, :non_unique => false})
-    @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
+    @provider = Chef::Provider::User::Illumos.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
 
@@ -269,25 +269,19 @@ describe Chef::Provider::User::Solaris do
 
   describe "when checking the lock" do
     before(:each) do
-      # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User",
-      #   :nil_object => true,
-      #   :username => "adam"
-      # )
       @status = mock("Status", :exitstatus => 0)
-      #@provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
       @provider.stub!(:shell_out).and_return(@status)
-      @status.stub!(:stdout).and_return("root P 09/02/2008 0 99999 7 -1")
+      @status.stub!(:stdout).and_return("root      NL   09/02/2008 0 99999 7")
     end
 
     it "should call passwd -S to check the lock status" do
-      @provider.should_receive(:shell_out).with("passwd -S #{@new_resource.username}").and_return(@status)
+      @provider.should_receive(:shell_out).with("passwd -s #{@new_resource.username}").and_return(@status)
       @provider.locked?
     end
 
     it "should get the first line of passwd -S STDOUT" do
       @provider.should_receive(:shell_out).and_return(@status)
-      @status.should_receive(:stdout).and_return("root P 09/02/2008 0 99999 7 -1")
+      @status.should_receive(:stdout).and_return("root      NL   09/02/2008 0 99999 7")
       @provider.locked?
     end
 
@@ -297,60 +291,35 @@ describe Chef::Provider::User::Solaris do
     end
 
     it "should return false if status begins with N" do
-      @status.stub!(:stdout).and_return("root N")
+      @status.stub!(:stdout).and_return("root      NP")
       @provider.should_receive(:shell_out).and_return(@status)
       @provider.locked?.should eql(false)
     end
 
     it "should return true if status begins with L" do
-      @status.stub!(:stdout).and_return("root L")
+      @status.stub!(:stdout).and_return("root      LK")
       @provider.should_receive(:shell_out).and_return(@status)
       @provider.locked?.should eql(true)
     end
 
-    it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
-      @node.automatic_attrs[:platform] = 'ubuntu'
+    it "should raise a Chef::Exceptions::User if passwd -s fails" do
+      @node.automatic_attrs[:platform] = 'smartos'
       @status.should_receive(:exitstatus).and_return(1)
       lambda { @provider.locked? }.should raise_error(Chef::Exceptions::User)
     end
 
-    ['redhat', 'centos'].each do |os|
-      it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
-        @node.automatic_attrs[:platform] = os
-        @status.stub!(:stdout).and_return("root N", "passwd-0.73-1\n")
-        @status.should_receive(:exitstatus).twice.and_return(1)
-        @provider.should_receive(:shell_out).with("passwd -S #{@new_resource.username}")
-        @provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(@status)
-        lambda { @provider.locked? }.should_not raise_error(Chef::Exceptions::User)
-      end
-
-      it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do
-        @node.automatic_attrs[:platform] = os
-        @status.stub!(:stdout).and_return("root N", "passwd-0.73-2\n")
-        @status.should_receive(:exitstatus).twice.and_return(1)
-        @provider.should_receive(:shell_out).with("passwd -S #{@new_resource.username}")
-        @provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(@status)
-        lambda { @provider.locked? }.should raise_error(Chef::Exceptions::User)
-      end
-
-      it "should raise a Chef::Exceptions::User if passwd -S exits with something other than 0 or 1 on #{os}" do
-        @node.automatic_attrs[:platform] = os
-        @status.should_receive(:exitstatus).twice.and_return(2)
-        lambda { @provider.locked? }.should raise_error(Chef::Exceptions::User)
-      end
-    end
   end
 
   describe "when locking the user" do
-    it "should run usermod -L with the new resources username" do
-      @provider.should_receive(:shell_out!).with("usermod -L #{@new_resource.username}")
+    it "should run passwd -l with the new resources username" do
+      @provider.should_receive(:shell_out!).with("passwd -l #{@new_resource.username}")
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
-    it "should run usermod -L with the new resources username" do
-      @provider.should_receive(:shell_out!).with("usermod -U #{@new_resource.username}")
+    it "should run passwd -u with the new resources username" do
+      @provider.should_receive(:shell_out!).with("passwd -u #{@new_resource.username}")
       @provider.unlock_user
     end
   end
@@ -399,7 +368,7 @@ describe Chef::Provider::User::Solaris do
     it "should return true if the current home does not exist but a home is specified by the new resource" do
       @new_resource = Chef::Resource::User.new("adam", @run_context)
       @current_resource = Chef::Resource::User.new("adam", @run_context)
-      @provider = Chef::Provider::User::Solaris.new(@new_resource, @run_context)
+      @provider = Chef::Provider::User::Illumos.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource
       @current_resource.home nil
       @new_resource.home "/home/kitten"

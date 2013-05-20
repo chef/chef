@@ -134,12 +134,12 @@ describe Chef::Provider::User::Pw do
   describe "determining if the user is locked" do
     it "should return true if user is locked" do
       @current_resource.stub!(:password).and_return("*LOCKED*abracadabra")
-      @provider.check_lock.should eql(true)
+      @provider.locked?.should eql(true)
     end
 
     it "should return false if user is not locked" do
       @current_resource.stub!(:password).and_return("abracadabra")
-      @provider.check_lock.should eql(false)
+      @provider.locked?.should eql(false)
     end
   end
 
