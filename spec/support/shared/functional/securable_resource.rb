@@ -21,6 +21,9 @@
 require 'etc'
 
 shared_context "setup correct permissions" do
+  if windows?
+    include_context "use Windows permissions"
+  end
 
   # I could not get this to work with :requires_unprivileged_user for whatever
   # reason. The setup when running as root is the same as non-root, except we
@@ -37,17 +40,19 @@ shared_context "setup correct permissions" do
   end
 
   before :each, :windows_only do
-    Security = Chef::ReservedNames::Win32::Security
-    so = Security::SecurableObject.new(path)
+    so = SecurableObject.new(path)
     so.owner = SID.Administrator
     so.group = SID.Administrators
-    dacl = Security::ACL.create(denied_acl(SID.Guest, expected_full_control_perms) +
-                                allowed_acl(SID.Guest, expected_write_perms))
-    so.set_dacl(dacl, true)
+    dacl = ACL.create(denied_acl(SID.Guest, expected_modify_perms) +
+                      allowed_acl(SID.Guest, expected_read_perms))
+    so.dacl = dacl
   end
 end
 
 shared_context "setup broken permissions" do
+  if windows?
+    include_context "use Windows permissions"
+  end
 
   before :each, :unix_only do
     File.chmod(0644, path)
@@ -58,12 +63,10 @@ shared_context "setup broken permissions" do
   end
 
   before :each, :windows_only do
-    Security = Chef::ReservedNames::Win32::Security
-    so = Security::SecurableObject.new(path)
+    so = SecurableObject.new(path)
     so.owner = SID.Guest
     so.group = SID.Everyone
-    dacl = Security::ACL.create(allowed_acl(SID.Administrator, expected_write_perms) +
-                                denied_acl(SID.Administrator, expected_full_control_perms))
+    dacl = ACL.create(allowed_acl(SID.Guest, expected_modify_perms))
     so.set_dacl(dacl, true)
   end
 end
@@ -72,6 +75,8 @@ shared_context "use Windows permissions", :windows_only do
   if windows?
     SID ||= Chef::ReservedNames::Win32::Security::SID
     ACE ||= Chef::ReservedNames::Win32::Security::ACE
+    ACL ||= Chef::ReservedNames::Win32::Security::ACL
+    SecurableObject ||= Chef::ReservedNames::Win32::Security::SecurableObject
   end
 
   def get_security_descriptor(path)
@@ -222,6 +227,8 @@ shared_examples_for "a securable resource with existing target" do
   end
 
   context "on Windows", :windows_only do
+    include_context "use Windows permissions"
+
     describe "when setting owner" do
       before do
         resource.owner('Administrator')
@@ -254,13 +261,13 @@ shared_examples_for "a securable resource with existing target" do
 
     describe "when setting rights and deny_rights" do
       before do
-        resource.rights(:write, 'Guest')
-        resource.deny_rights(:full_control, 'Guest')
+        resource.deny_rights(:modify, 'Guest')
+        resource.rights(:read, 'Guest')
         resource.run_action(:create)
       end
 
       it "should set the rights and deny_rights" do
-        explicit_aces.should == denied_acl(SID.Guest, expected_full_control_perms) + allowed_acl(SID.Guest, expected_write_perms)
+        explicit_aces.should == denied_acl(SID.Guest, expected_modify_perms) + allowed_acl(SID.Guest, expected_read_perms)
       end
 
       it "is marked as updated only if changes are made" do
@@ -495,6 +502,9 @@ shared_examples_for "a securable resource without existing target" do
     end
 
     it "does not inherit aces if inherits is set to false" do
+      # We need at least one ACE if we're creating a securable without
+      # inheritance
+      resource.rights(:full_control, 'Administrators')
       resource.inherits(false)
       resource.run_action(:create)
 
@@ -506,15 +516,13 @@ shared_examples_for "a securable resource without existing target" do
     it "has the inheritable acls of parent directory if no acl is specified" do
       File.exist?(path).should == false
 
-      resource.run_action(:create)
+      parent_acls = parent_inheritable_acls
 
-      dummy_file_path = File.join(test_file_dir, "dummy_file")
-      dummy_file = FileUtils.touch(dummy_file_path)
-      dummy_desc = get_security_descriptor(dummy_file_path)
+      resource.run_action(:create)
 
       descriptor.dacl.each_with_index do |ace, index|
         ace.inherited?.should == true
-        ace.should == dummy_desc.dacl[index]
+        ace.should == parent_acls.dacl[index]
       end
     end
 

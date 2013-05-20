@@ -331,10 +331,9 @@ class Chef
     # for file resources, deploy files with either :move or :copy
     file_deploy_with :move
 
-    # do we create /tmp or %TEMP% files, or do we create temp files in the destination directory of the file?
-    #  - on windows this avoids issues with permission inheritance with the %TEMP% directory (do not set this to false)
-    #  - on unix this creates temp files like /etc/.sudoers.X-Y-Z and may create noise and make for itchy neckbeards
-    #  - with selinux and other ACLs approaches it may still be useful or to avoid copying across filesystems
-    file_deployment_uses_destdir ( RUBY_PLATFORM =~ /mswin|mingw|windows/ )
+    # If false file deployment is will be done via tempfiles that are
+    # created under ENV['TMP'] otherwise tempfiles will be created in
+    # the directory that files are going to reside.
+    file_deployment_uses_destdir false
   end
 end

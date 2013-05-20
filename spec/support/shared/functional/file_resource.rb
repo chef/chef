@@ -320,6 +320,14 @@ shared_examples_for "a configured file resource" do
     [ ACE.access_denied(sid, expected_perms[:specific]) ]
   end
 
+  def parent_inheritable_acls
+    dummy_file_path = File.join(test_file_dir, "dummy_file")
+    dummy_file = FileUtils.touch(dummy_file_path)
+    dummy_desc = get_security_descriptor(dummy_file_path)
+    FileUtils.rm_rf(dummy_file_path)
+    dummy_desc
+  end
+
   it_behaves_like "a securable resource without existing target"
 
   context "when the target file has the wrong content" do

@@ -63,6 +63,31 @@ shared_examples_for "a directory resource" do
         end
       end
     end
+
+    # Set up the context for security tests
+    def allowed_acl(sid, expected_perms)
+      [
+       ACE.access_allowed(sid, expected_perms[:specific]),
+       ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+      ]
+    end
+
+    def denied_acl(sid, expected_perms)
+      [
+       ACE.access_denied(sid, expected_perms[:specific]),
+       ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
+      ]
+    end
+
+    def parent_inheritable_acls
+      dummy_directory_path = File.join(test_file_dir, "dummy_directory")
+      dummy_directory = FileUtils.mkdir_p(dummy_directory_path)
+      dummy_desc = get_security_descriptor(dummy_directory_path)
+      FileUtils.rm_rf(dummy_directory_path)
+      dummy_desc
+    end
+
+    it_behaves_like "a securable resource without existing target"
   end
 
   context "when the target directory exists" do
@@ -120,27 +145,29 @@ shared_examples_for "a directory resource" do
     end
   end
 
-  # Set up the context for security tests
-  def allowed_acl(sid, expected_perms)
-    [
-      ACE.access_allowed(sid, expected_perms[:specific]),
-      ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
-    ]
-  end
-
-  def denied_acl(sid, expected_perms)
-    [
-      ACE.access_denied(sid, expected_perms[:specific]),
-      ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE))
-    ]
-  end
-
-  it_behaves_like "a securable resource without existing target"
 end
 
 shared_context Chef::Resource::Directory do
+  # We create the  directory than tmp to exercise different file
+  # deployment strategies more completely.
+  let(:test_file_dir) do
+    if windows?
+      File.join(ENV['systemdrive'], "test-dir")
+    else
+      File.join(CHEF_SPEC_DATA, "test-dir")
+    end
+  end
+
   let(:path) do
-    File.join(Dir.tmpdir, make_tmpname(directory_base))
+    File.join(test_file_dir, make_tmpname(directory_base))
+  end
+
+  before do
+    FileUtils::mkdir_p(test_file_dir)
+  end
+
+  after do
+    FileUtils::rm_rf(test_file_dir)
   end
 
   after(:each) do
