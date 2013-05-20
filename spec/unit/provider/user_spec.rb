@@ -388,13 +388,13 @@ describe Chef::Provider::User do
       @provider.stub!(:load_current_resource)
     end
     it "should lock the user if it exists and is unlocked" do
-      @provider.stub!(:check_lock).and_return(false)
+      @provider.stub!(:locked?).and_return(false)
       @provider.should_receive(:lock_user).and_return(true)
       @provider.action_lock
     end
 
     it "should set the new resources updated flag to true if lock_user is called" do
-      @provider.stub!(:check_lock).and_return(false)
+      @provider.stub!(:locked?).and_return(false)
       @provider.should_receive(:lock_user)
       @provider.action_lock
       @provider.set_updated_status
@@ -422,12 +422,12 @@ describe Chef::Provider::User do
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
       # @provider.user_exists = true
-      # @provider.stub!(:check_lock).and_return(true)
+      # @provider.stub!(:locked?).and_return(true)
       # @provider.stub!(:unlock_user).and_return(true)
     end
 
     it "should unlock the user if it exists and is locked" do
-      @provider.stub!(:check_lock).and_return(true)
+      @provider.stub!(:locked?).and_return(true)
       @provider.should_receive(:unlock_user).and_return(true)
       @provider.action_unlock
       @provider.set_updated_status
