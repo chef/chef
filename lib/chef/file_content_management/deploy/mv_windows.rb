@@ -57,7 +57,7 @@ class Chef
             # Catch and raise if the user is not elevated enough.
             # At this point we can't configure the file as expected so
             # we're failing action on the resource.
-            raise Chef::Exceptions::WindowsNotAdmin
+            raise Chef::Exceptions::WindowsNotAdmin, "can not get the security information for '#{dst}' due to missing Administrator privilages."
           end
 
           if dst_sd.dacl_present?
@@ -75,7 +75,7 @@ class Chef
           FileUtils.mv(src, dst)
 
           #
-          # Then apply the cached files to the new dst file
+          # Then apply the cached acls to the new dst file
           #
 
           dst_so = Security::SecurableObject.new(dst)
