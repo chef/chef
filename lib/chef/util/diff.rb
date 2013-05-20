@@ -50,9 +50,7 @@ class Chef
       def diff(old_file, new_file)
         use_tempfile_if_missing(old_file) do |old_file|
           use_tempfile_if_missing(new_file) do |new_file|
-            @error = catch (:nodiff) do
-              do_diff(old_file, new_file)
-            end
+            @error = do_diff(old_file, new_file)
           end
         end
       end
@@ -61,19 +59,19 @@ class Chef
 
       def do_diff(old_file, new_file)
         if Chef::Config[:diff_disabled]
-          throw :nodiff, "(diff output suppressed by config)"
+          return "(diff output suppressed by config)"
         end
 
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
         diff_output_threshold = Chef::Config[:diff_output_threshold]
 
         if ::File.size(old_file) > diff_filesize_threshold || ::File.size(new_file) > diff_filesize_threshold
-          throw :nodiff, "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)"
+          return "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)"
         end
 
         # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
-        throw :nodiff, "(current file is binary, diff output suppressed)" if is_binary?(old_file)
-        throw :nodiff, "(new content is binary, diff output suppressed)" if is_binary?(new_file)
+        return "(current file is binary, diff output suppressed)" if is_binary?(old_file)
+        return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
 
         begin
           # -u: Unified diff format
@@ -82,7 +80,7 @@ class Chef
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that
           # an exception can be thrown even using shell_out instead of shell_out!
-          throw :nodiff, "Could not determine diff. Error: #{e.message}"
+          return "Could not determine diff. Error: #{e.message}"
         end
 
         # diff will set a non-zero return code even when there's
@@ -90,18 +88,16 @@ class Chef
         # So as long as we have output, we'll show it.
         if not result.stdout.empty?
           if result.stdout.length > diff_output_threshold
-            throw :nodiff, "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
+            return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
             @diff = result.stdout.split("\n")
             @diff.delete("\\ No newline at end of file")
-            # Successful return of the diff.
-            # We return nil as no error...
-            return nil
+            return "(diff available)"
           end
         elsif not result.stderr.empty?
-          throw :nodiff, "Could not determine diff. Error: #{result.stderr}"
+          return "Could not determine diff. Error: #{result.stderr}"
         else
-          throw :nodiff, "(no diff)"
+          return "(no diff)"
         end
       end
 
