@@ -58,8 +58,8 @@ class Chef
 
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content
-        if new_resource.respond_to?(:deploy_with)
-          @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.deploy_with)
+        if new_resource.respond_to?(:atomic_update)
+          @deployment_strategy = Chef::FileContentManagement::Deploy.strategy(new_resource.atomic_update)
         end
         super
       end

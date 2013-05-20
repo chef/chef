@@ -328,12 +328,14 @@ class Chef
     # only if selinux is enabled in the system.
     enable_selinux_file_permission_fixup true
 
-    # for file resources, deploy files with either :move or :copy
-    file_deploy_with :move
+    # Use atomic updates (i.e. move operation) hile updating contents
+    # of the files resources. When set to false :copy operation is
+    # used to update files.
+    file_atomic_update true
 
     # If false file deployment is will be done via tempfiles that are
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
-    file_deployment_uses_destdir false
+    file_staging_uses_destdir false
   end
 end

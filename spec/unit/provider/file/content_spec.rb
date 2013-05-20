@@ -69,14 +69,14 @@ describe Chef::Provider::File::Content do
       IO.read(content.tempfile.path).should == new_resource.content
     end
 
-    it "returns a tempfile in the tempdir when :file_deployment_uses_destdir is not set" do
-      Chef::Config[:file_deployment_uses_destdir] = false
+    it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
+      Chef::Config[:file_staging_uses_destdir] = false
       content.tempfile.path.should match /^#{Dir::tmpdir}/
       content.tempfile.path.should_not match /^#{enclosing_directory}/
     end
 
     it "returns a tempfile in the destdir when :file_desployment_uses_destdir is not set" do
-      Chef::Config[:file_deployment_uses_destdir] = true
+      Chef::Config[:file_staging_uses_destdir] = true
       content.tempfile.path.should_not match /^#{Dir::tmpdir}/
       content.tempfile.path.should match /^#{enclosing_directory}/
     end

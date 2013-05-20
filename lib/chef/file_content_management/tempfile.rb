@@ -52,7 +52,7 @@ class Chef
       end
 
       def tempfile_dirname
-        Chef::Config[:file_deployment_uses_destdir] ? ::File.dirname(@new_resource.path) : Dir::tmpdir
+        Chef::Config[:file_staging_uses_destdir] ? ::File.dirname(@new_resource.path) : Dir::tmpdir
       end
     end
   end
