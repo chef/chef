@@ -39,10 +39,10 @@ describe Chef::Knife::Configure do
   end
 
   let(:default_admin_key) { "/etc/chef-server/admin.pem" }
-  let(:default_admin_key_win32) { "C:#{default_admin_key}" }
+  let(:default_admin_key_win32) { File.join(ENV['systemdrive'], "etc", "chef-server", "admin.pem") }
 
   let(:default_validator_key) { "/etc/chef-server/chef-validator.pem" }
-  let(:default_validator_key_win32) { "C:#{default_validator_key}" }
+  let(:default_validator_key_win32) { File.join(ENV['systemdrive'], "etc", "chef-server", "chef-validator.pem") }
 
   let(:default_server_url) { "https://#{fqdn}:443" }
 

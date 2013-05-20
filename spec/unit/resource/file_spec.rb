@@ -95,11 +95,6 @@ describe Chef::Resource::File do
       end
     end
 
-    context "on windows", :windows_only do
-      # according to Chef::Resource::File, windows state attributes are rights + deny_rights
-      pending "it describes its state"
-    end
-
     it "returns the file path as its identity" do
       @resource.identity.should == "/tmp/foo.txt"
     end
