@@ -19,41 +19,119 @@
 require 'spec_helper'
 
 describe Chef::Provider::RemoteFile::CacheControlData do
+
+  let(:uri) { "http://www.google.com/robots.txt" }
+
+
+  subject(:cache_control_data) do
+    Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, current_file_checksum)
+  end
+
+  let(:cache_path) { "remote_file/http___www_google_com_robots_txt-9839677abeeadf0691026e0cabca2339.json" }
+
+  # the checksum of the file we have on disk already
+  let(:current_file_checksum) { "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+
   context "when loading data for an unknown URI" do
+
+    before do
+      Chef::FileCache.should_receive(:load).with(cache_path).and_raise(Chef::Exceptions::FileNotFound, "nope")
+    end
+
+    context "and there is no current copy of the file" do
+      let(:current_file_checksum) { nil }
+
+      it "returns empty cache control data" do
+        cache_control_data.etag.should be_nil
+        cache_control_data.mtime.should be_nil
+      end
+    end
+
     it "returns empty cache control data" do
-      pending
+      cache_control_data.etag.should be_nil
+      cache_control_data.mtime.should be_nil
     end
   end
 
   describe "when loading data for a known URI" do
+
+    # the checksum of the file last we fetched it.
+    let(:last_fetched_checksum) { "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+
+    let(:etag) { "\"a-strong-identifier\"" }
+    let(:mtime) { "Tue, 21 May 2013 19:19:23 GMT" }
+
+    let(:cache_json_data) do
+      cache = {}
+      cache["etag"] = etag
+      cache["mtime"] = mtime
+      cache["checksum"] = last_fetched_checksum
+      cache.to_json
+    end
+
     before do
-      # setup or stub: cache file exists
+      Chef::FileCache.should_receive(:load).with(cache_path).and_return(cache_json_data)
+    end
+
+    context "and there is no on-disk copy of the file" do
+      let(:current_file_checksum) { nil }
+
+      it "returns empty cache control data" do
+        cache_control_data.etag.should be_nil
+        cache_control_data.mtime.should be_nil
+      end
     end
 
     context "and the cached checksum does not match the on-disk copy" do
-      before do
-        # setup or stub: cache data has a checksum that != checksum passed to constructor
-      end
+      let(:current_file_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
 
-      it "either deletes or ignores the cached data" do
-        pending
+      it "returns empty cache control data" do
+        cache_control_data.etag.should be_nil
+        cache_control_data.mtime.should be_nil
       end
     end
 
     context "and the cached checksum matches the on-disk copy" do
-      before do
-        # setup or stub: cache data has a checksum that != checksum passed to constructor
-      end
 
       it "populates the cache control data" do
-        pending
+        cache_control_data.etag.should == etag
+        cache_control_data.mtime.should == mtime
       end
     end
   end
 
   describe "when saving to disk" do
+
+    let(:etag) { "\"a-strong-identifier\"" }
+    let(:mtime) { "Tue, 21 May 2013 19:19:23 GMT" }
+    let(:fetched_file_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
+
+    let(:expected_serialization_data) do
+      data = {}
+      data["etag"] = etag
+      data["mtime"] = mtime
+      data["checksum"] = fetched_file_checksum
+      data
+    end
+
+    before do
+      cache_control_data.etag = etag
+      cache_control_data.mtime = mtime
+      cache_control_data.checksum = fetched_file_checksum
+    end
+
+    it "serializes its attributes to JSON" do
+      # we have to test this separately because ruby 1.8 hash order is unstable
+      # so we can't count on the order of the keys in the json format.
+
+      json_data = cache_control_data.json_data
+      Chef::JSONCompat.from_json(json_data).should == expected_serialization_data
+    end
+
     it "writes data to the cache" do
-      pending
+      json_data = cache_control_data.json_data
+      Chef::FileCache.should_receive(:store).with(cache_path, json_data)
+      cache_control_data.save
     end
   end
 
@@ -84,7 +162,7 @@ describe Chef::Provider::RemoteFile::HTTP do
     Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
   end
 
-  let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new }
+  let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new(uri) }
 
   def use_last_modified!
     new_resource.use_last_modified(true)
