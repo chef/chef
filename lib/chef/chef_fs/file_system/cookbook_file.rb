@@ -39,6 +39,8 @@ class Chef
           rest.sign_on_redirect = false
           begin
             tmpfile = rest.get_rest(file[:url], true)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading #{file[:url]}: #{e}"
           rescue Net::HTTPServerException => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "#{e.message} retrieving #{file[:url]}"
           ensure
