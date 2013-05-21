@@ -69,11 +69,13 @@ class Chef
         def delete(recurse)
           begin
             rest.delete_rest(api_path)
-          rescue Net::HTTPServerException
-            if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
             end
           end
         end
@@ -85,9 +87,11 @@ class Chef
         def _read_hash
           begin
             json = Chef::ChefFS::RawRequest.raw_request(rest, api_path)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
           rescue Net::HTTPServerException => e
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
             else
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "HTTP error reading: #{e}"
             end
@@ -126,7 +130,6 @@ class Chef
           value = minimize_value(value)
           value_json = Chef::JSONCompat.to_json_pretty(value)
           begin
-            #other_value = Chef::JSONCompat.from_json(other_value_json, :create_additions => false)
             other_value = JSON.parse(other_value_json, :create_additions => false)
           rescue JSON::ParserError => e
             Chef::Log.warn("Parse error reading #{other.path_for_printing} as JSON: #{e}")
@@ -144,7 +147,6 @@ class Chef
 
         def write(file_contents)
           begin
-            #object = Chef::JSONCompat.from_json(file_contents).to_hash
             object = JSON.parse(file_contents, :create_additions => false)
           rescue JSON::ParserError => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Parse error reading JSON: #{e}"
@@ -159,6 +161,8 @@ class Chef
 
           begin
             rest.put_rest(api_path, object)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
           rescue Net::HTTPServerException => e
             if e.response.code == "404"
               raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
