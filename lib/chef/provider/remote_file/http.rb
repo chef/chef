@@ -19,6 +19,7 @@
 
 require 'uri'
 require 'tempfile'
+require 'chef/digester'
 require 'chef/rest'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/util'
@@ -29,8 +30,84 @@ class Chef
     class RemoteFile
 
       class CacheControlData
+
+        def self.load_and_validate(uri, current_copy_checksum)
+          ccdata = new(uri)
+          ccdata.load
+          ccdata.validate!(current_copy_checksum)
+          ccdata
+        end
+
         attr_accessor :etag
         attr_accessor :mtime
+        attr_accessor :checksum
+
+        attr_reader :uri
+
+        def initialize(uri)
+          @uri = uri
+        end
+
+        def load
+          previous_cc_data = load_data
+          apply(previous_cc_data)
+          self
+        rescue Chef::Exceptions::FileNotFound
+          false
+        end
+
+        def validate!(current_copy_checksum)
+          if current_copy_checksum.nil? or checksum != current_copy_checksum
+            reset!
+            false
+          else
+            true
+          end
+        end
+
+        def save
+          Chef::FileCache.store("remote_file/#{sanitized_cache_file_basename}", json_data)
+        end
+
+        # :nodoc:
+        # JSON representation of this object for storage.
+        def json_data
+          Chef::JSONCompat.to_json(hash_data)
+        end
+
+        private
+
+        def hash_data
+          as_hash = {}
+          as_hash["etag"]     = @etag
+          as_hash["mtime"]    = @mtime
+          as_hash["checksum"] = @checksum
+          as_hash
+        end
+
+        def reset!
+          @etag, @mtime = nil, nil
+        end
+
+        def apply(previous_cc_data)
+          @etag = previous_cc_data["etag"]
+          @mtime = previous_cc_data["mtime"]
+          @checksum = previous_cc_data["checksum"]
+        end
+
+        def load_data
+          Chef::JSONCompat.from_json(load_json_data)
+        end
+
+        def load_json_data
+          Chef::FileCache.load("remote_file/#{sanitized_cache_file_basename}")
+        end
+
+        def sanitized_cache_file_basename
+          scrubbed_uri = @uri.gsub(/\W/, '_')
+          uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(@uri))
+          "#{scrubbed_uri}-#{uri_md5}.json"
+        end
 
       end
 
