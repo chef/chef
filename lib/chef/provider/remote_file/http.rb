@@ -27,13 +27,26 @@ require 'chef/provider/remote_file/result'
 class Chef
   class Provider
     class RemoteFile
+
+      class CacheControlData
+        attr_accessor :etag
+        attr_accessor :mtime
+
+      end
+
       class HTTP
 
         attr_reader :uri
         attr_reader :headers
+        attr_reader :new_resource
+        attr_reader :current_resource
 
         # Parse the uri into instance variables
         def initialize(uri, new_resource, current_resource)
+          @uri = uri
+          @new_resource = new_resource
+          @current_resource = current_resource
+
           @headers = Hash[new_resource.headers]
           if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
             if current_resource.etag && ( current_resource.etag != "" )
@@ -60,6 +73,18 @@ class Chef
           @uri = uri
         end
 
+        def conditional_get_headers
+          cache_control_headers = {}
+          cache_control_data = CacheControlData.load_and_validate(uri, current_resource.checksum)
+          if last_modified = cache_control_data.mtime and want_mtime_cache_control?
+            cache_control_headers["if-modified-since"] = last_modified
+          end
+          if etag = cache_control_data.etag and want_etag_cache_control?
+            cache_control_headers["if-none-match"] = etag
+          end
+          cache_control_headers
+        end
+
         def fetch
           begin
             rest = Chef::REST.new(uri, nil, nil, http_client_opts)
@@ -77,6 +102,14 @@ class Chef
         end
 
         private
+
+        def want_mtime_cache_control?
+          new_resource.use_last_modified || new_resource.use_conditional_get
+        end
+
+        def want_etag_cache_control?
+          new_resource.use_etag || new_resource.use_conditional_get
+        end
 
         def last_modified_time_from(response)
           if mtime_header = response['last_modified'] || response['date']
