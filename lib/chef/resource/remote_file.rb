@@ -35,8 +35,9 @@ class Chef
         @source = []
         @etag = nil
         @last_modified = nil
-        @use_etag = true
-        @use_last_modified = true
+        @use_conditional_get = false
+        @use_etag = false
+        @use_last_modified = false
         @ftp_active_mode = false
         @headers = {}
         @provider = Chef::Provider::RemoteFile
@@ -60,6 +61,13 @@ class Chef
         )
       end
 
+      # Enables the use of both ETag and last modified time-based cache
+      # control. For servers that are behaving correctly, this is the
+      # recommended way to enable conditional GET.
+      def use_conditional_get(args=nil)
+        set_or_return(:use_conditional_get, args, :kind_of => [ TrueClass, FalseClass ])
+      end
+
       def etag(args=nil)
         # Only store the etag itself, skip the quotes (and leading W/ if it's there)
         if args.is_a?(String) && args.include?('"')
@@ -79,6 +87,8 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
+
+      alias :use_etags :use_etag
 
       def last_modified(args=nil)
         if args.is_a?(String)

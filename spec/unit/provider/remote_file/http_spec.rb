@@ -18,17 +18,61 @@
 
 require 'spec_helper'
 
+describe Chef::Provider::RemoteFile::CacheControlData do
+  context "when loading data for an unknown URI" do
+    it "returns empty cache control data" do
+      pending
+    end
+  end
+
+  describe "when loading data for a known URI" do
+    before do
+      # setup or stub: cache file exists
+    end
+
+    context "and the cached checksum does not match the on-disk copy" do
+      before do
+        # setup or stub: cache data has a checksum that != checksum passed to constructor
+      end
+
+      it "either deletes or ignores the cached data" do
+        pending
+      end
+    end
+
+    context "and the cached checksum matches the on-disk copy" do
+      before do
+        # setup or stub: cache data has a checksum that != checksum passed to constructor
+      end
+
+      it "populates the cache control data" do
+        pending
+      end
+    end
+  end
+
+  describe "when saving to disk" do
+    it "writes data to the cache" do
+      pending
+    end
+  end
+
+end
+
 describe Chef::Provider::RemoteFile::HTTP do
 
   let(:uri) { URI.parse("http://opscode.com/seattle.txt") }
 
   let(:existing_file_source) { nil }
 
+  let(:current_resource_checksum) { "41e78735319af11327e9d2ca8535ea1c191e5ac1f76bb08d88fe6c3f93a8c8e5" }
+
   let(:current_resource) do
     current_resource = Chef::Resource::RemoteFile.new("/tmp/foo.txt")
     current_resource.source(existing_file_source) if existing_file_source
     current_resource.last_modified(Time.new)
     current_resource.etag(nil)
+    current_resource.checksum(current_resource_checksum)
     current_resource
   end
 
@@ -49,6 +93,82 @@ describe Chef::Provider::RemoteFile::HTTP do
     new_resource.use_last_modified(false)
     current_resource.last_modified(Time.new)
     current_resource.etag("a_unique_identifier")
+  end
+
+  describe "when loading cache control data" do
+    let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new }
+
+    subject(:fetcher) do
+      Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+    end
+
+    context "and there is no valid cache control data for this URI on disk" do
+
+      before do
+        Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+      end
+
+      it "does not add conditional GET headers" do
+        fetcher.conditional_get_headers.should == {}
+      end
+    end
+
+    context "and the cache control data matches the existing file" do
+
+      # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26
+      let(:etag) { "\"a-strong-unique-identifier\"" }
+      let(:mtime) { "Tue, 21 May 2013 19:19:23 GMT" }
+      before do
+        cache_control_data.etag = etag
+        cache_control_data.mtime = mtime
+
+        Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+      end
+
+      context "and no conditional get features are enabled" do
+        it "does not add headers to the request" do
+          fetcher.conditional_get_headers.should == {}
+        end
+      end
+
+      context "and conditional get is enabled" do
+        before do
+          new_resource.use_conditional_get(true)
+        end
+
+        it "adds If-None-Match and If-Modified-Since headers to the request" do
+          headers = fetcher.conditional_get_headers
+          headers["if-none-match"].should == etag
+          headers["if-modified-since"].should == mtime
+        end
+
+      end
+
+      context "and etag support is enabled" do
+        before do
+          new_resource.use_etags(true)
+        end
+
+        it "only adds If-None-Match headers to the request" do
+          headers = fetcher.conditional_get_headers
+          headers["if-none-match"].should == etag
+          headers.should_not have_key("if-modified-since")
+        end
+      end
+
+      context "and mtime support is enabled" do
+        before do
+          new_resource.use_last_modified(true)
+        end
+
+        it "only adds If-Modified-Since headers to the request" do
+          headers = fetcher.conditional_get_headers
+          headers["if-modified-since"].should == mtime
+          headers.should_not have_key("if-none-match")
+        end
+      end
+    end
+
   end
 
   describe "when contructing the object" do
