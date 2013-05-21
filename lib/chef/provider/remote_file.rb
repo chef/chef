@@ -37,20 +37,6 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::RemoteFile.new(@new_resource.name)
         super
-        unless fileinfo.nil? || fileinfo["checksum"].nil? || fileinfo["checksum"] == ""
-          Chef::Log.debug("found cached file information at #{Chef::Config[:file_cache_path]}/remote_file/#{new_resource.name}")
-          if fileinfo["checksum"] == @current_resource.checksum
-            @current_resource.etag fileinfo["etag"]
-            @current_resource.last_modified fileinfo["last_modified"]
-            @current_resource.source fileinfo["src"]
-            Chef::Log.debug("loaded etag %s, last_modified %s, source %s from file metadata cache" % [fileinfo["etag"], fileinfo["last_modified"], fileinfo["src"]])
-          else
-            Chef::Log.debug("current resource checksum '#{@current_resource.checksum}' does not match cached checksum '#{fileinfo['checksum']}', removing metadata...")
-            FileUtils.rm_f("#{Chef::Config[:file_cache_path]}/remote_file/#{new_resource.name}")
-          end
-        else
-          Chef::Log.debug("no cached file information found")
-        end
       end
 
       private

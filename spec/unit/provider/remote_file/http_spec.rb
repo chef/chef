@@ -77,10 +77,14 @@ describe Chef::Provider::RemoteFile::HTTP do
   end
 
   let(:new_resource) do
-    new_resource = Chef::Resource::RemoteFile.new("/tmp/foo.txt")
-    new_resource.headers({})
-    new_resource
+    Chef::Resource::RemoteFile.new("/tmp/foo.txt")
   end
+
+  subject(:fetcher) do
+    Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
+  end
+
+  let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new }
 
   def use_last_modified!
     new_resource.use_last_modified(true)
@@ -95,12 +99,7 @@ describe Chef::Provider::RemoteFile::HTTP do
     current_resource.etag("a_unique_identifier")
   end
 
-  describe "when loading cache control data" do
-    let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new }
-
-    subject(:fetcher) do
-      Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-    end
+  describe "generating cache control headers" do
 
     context "and there is no valid cache control data for this URI on disk" do
 
@@ -111,13 +110,27 @@ describe Chef::Provider::RemoteFile::HTTP do
       it "does not add conditional GET headers" do
         fetcher.conditional_get_headers.should == {}
       end
+
+      context "and the resource specifies custom headers" do
+        before do
+          new_resource.headers("x-myapp-header" => "custom-header-value")
+        end
+
+        it "has the user-specified custom headers" do
+          fetcher.headers.should == {"x-myapp-header" => "custom-header-value"}
+        end
+      end
+
     end
 
     context "and the cache control data matches the existing file" do
 
       # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26
       let(:etag) { "\"a-strong-unique-identifier\"" }
+
+      # http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
       let(:mtime) { "Tue, 21 May 2013 19:19:23 GMT" }
+
       before do
         cache_control_data.etag = etag
         cache_control_data.mtime = mtime
@@ -127,7 +140,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
       context "and no conditional get features are enabled" do
         it "does not add headers to the request" do
-          fetcher.conditional_get_headers.should == {}
+          fetcher.headers.should == {}
         end
       end
 
@@ -137,9 +150,27 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "adds If-None-Match and If-Modified-Since headers to the request" do
-          headers = fetcher.conditional_get_headers
+          headers = fetcher.headers
           headers["if-none-match"].should == etag
           headers["if-modified-since"].should == mtime
+        end
+
+        context "and custom headers are provided" do
+          before do
+            new_resource.headers("x-myapp-header" => "app-specific-header",
+                                 "if-none-match" => "custom-etag",
+                                 "if-modified-since" => "custom-last-modified")
+          end
+
+          it "preserves non-conflicting headers" do
+            fetcher.headers["x-myapp-header"].should == "app-specific-header"
+          end
+
+          it "prefers user-supplied cache control headers" do
+            headers = fetcher.headers
+            headers["if-none-match"].should == "custom-etag"
+            headers["if-modified-since"].should == "custom-last-modified"
+          end
         end
 
       end
@@ -150,7 +181,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "only adds If-None-Match headers to the request" do
-          headers = fetcher.conditional_get_headers
+          headers = fetcher.headers
           headers["if-none-match"].should == etag
           headers.should_not have_key("if-modified-since")
         end
@@ -162,7 +193,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "only adds If-Modified-Since headers to the request" do
-          headers = fetcher.conditional_get_headers
+          headers = fetcher.headers
           headers["if-modified-since"].should == mtime
           headers.should_not have_key("if-none-match")
         end
@@ -179,85 +210,11 @@ describe Chef::Provider::RemoteFile::HTTP do
         fetcher.uri.should == uri
       end
 
-      it "stores any headers it is passed" do
-        headers = { "foo" => "foo", "bar" => "bar", "baz" => "baz" }
-        new_resource.headers(headers)
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.headers.should == headers
-      end
-
-    end
-
-    context "when the existing file was fetched from a different URI" do
-      let(:existing_file_source) { ["http://opscode.com/tukwila.txt"] }
-
-      it "does not set a last modified header" do
-        use_last_modified!
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.headers.should_not have_key('if-none-match')
-        fetcher.headers.should_not have_key('if-modified-since')
-      end
-
-      it "does not set an etag header" do
-        use_etags!
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.headers.should_not have_key('if-none-match')
-        fetcher.headers.should_not have_key('if-modified-since')
-      end
-    end
-
-    context "when the current file was fetched from the current URI" do
-      let(:existing_file_source) { ["http://opscode.com/seattle.txt"] }
-
-      context "and using If-Modified-Since" do
-        before do
-          use_last_modified!
-        end
-
-        it "stores the last_modified string in the headers" do
-          fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-          fetcher.headers['if-modified-since'].should == current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")
-          fetcher.headers.should_not have_key('if-none-match')
-          pending("http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.4")
-        end
-      end
-
-      context "and using etags" do
-        before do
-          use_etags!
-        end
-
-        it "stores the etag string in the headers" do
-          fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-          fetcher.headers['if-none-match'].should == "\"#{current_resource.etag}\""
-          fetcher.headers.should_not have_key('if-modified-since')
-          pending("http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.4")
-        end
-      end
-
-    end
-
-    describe "when use_last_modified is disabled in the new_resource" do
-
-      it "stores nil for the last_modified date" do
-        current_resource.stub!(:source).and_return(["http://opscode.com/seattle.txt"])
-        new_resource.should_receive(:use_last_modified).and_return(false)
-        current_resource.stub!(:last_modified).and_return(Time.new)
-        current_resource.stub!(:etag).and_return(nil)
-        Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(uri, current_resource.source[0]).and_return(true)
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.headers.should_not have_key('if-modified-since')
-        fetcher.headers.should_not have_key('if-none-match')
-      end
     end
 
   end
 
   describe "when fetching the uri" do
-    let(:fetcher) do
-      Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(uri, current_resource.source[0]).and_return(true)
-      Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-    end
 
     let(:expected_http_opts) { {} }
     let(:expected_http_args) { [uri, nil, nil, expected_http_opts] }
@@ -274,8 +231,9 @@ describe Chef::Provider::RemoteFile::HTTP do
     end
 
     before do
-      new_resource.should_receive(:headers).and_return({})
-      new_resource.should_receive(:use_last_modified).and_return(false)
+      new_resource.headers({})
+      new_resource.use_last_modified(false)
+      Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
 
       Chef::REST.should_receive(:new).with(*expected_http_args).and_return(rest)
     end
