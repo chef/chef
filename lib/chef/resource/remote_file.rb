@@ -33,11 +33,8 @@ class Chef
         @resource_name = :remote_file
         @action = "create"
         @source = []
-        @etag = nil
-        @last_modified = nil
-        @use_conditional_get = false
-        @use_etag = false
-        @use_last_modified = false
+        @use_etag = true
+        @use_last_modified = true
         @ftp_active_mode = false
         @headers = {}
         @provider = Chef::Provider::RemoteFile
@@ -61,13 +58,17 @@ class Chef
         )
       end
 
-      def use_conditional_get(args=nil)
-        set_or_return(:use_conditional_get, args, :kind_of => [ TrueClass, FalseClass ])
+      # Disable or enable ETag and Last Modified conditional GET. Equivalent to
+      #   use_etag(true_or_false)
+      #   use_last_modified(true_or_false)
+      def use_conditional_get(true_or_false)
+        use_etag(true_or_false)
+        use_last_modified(true_or_false)
       end
 
       def use_etag(args=nil)
         set_or_return(
-          :use_etags,
+          :use_etag,
           args,
           :kind_of => [ TrueClass, FalseClass ]
         )

@@ -202,6 +202,10 @@ describe Chef::Provider::RemoteFile::HTTP do
       end
 
       context "and no conditional get features are enabled" do
+        before do
+          new_resource.use_conditional_get(false)
+        end
+
         it "does not add headers to the request" do
           fetcher.headers.should == {}
         end
@@ -240,6 +244,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
       context "and etag support is enabled" do
         before do
+          new_resource.use_conditional_get(false)
           new_resource.use_etags(true)
         end
 
@@ -252,6 +257,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
       context "and mtime support is enabled" do
         before do
+          new_resource.use_conditional_get(false)
           new_resource.use_last_modified(true)
         end
 

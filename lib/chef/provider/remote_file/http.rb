@@ -169,11 +169,11 @@ class Chef
         end
 
         def want_mtime_cache_control?
-          new_resource.use_last_modified || new_resource.use_conditional_get
+          new_resource.use_last_modified
         end
 
         def want_etag_cache_control?
-          new_resource.use_etag || new_resource.use_conditional_get
+          new_resource.use_etag
         end
 
         def last_modified_time_from(response)
