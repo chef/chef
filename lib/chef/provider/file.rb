@@ -72,7 +72,7 @@ class Chef
         # Let children resources override constructing the @current_resource
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path)
+        if real_file?(@current_resource.path) && ::File.exists?(@current_resource.path)
           if @action != :create_if_missing && @current_resource.respond_to?(:checksum) && ::File.file?(@current_resource.path)
             @current_resource.checksum(checksum(@current_resource.path))
           end
@@ -107,7 +107,7 @@ class Chef
         #   for :create, we have a problem with devining the users intent, so we raise an exception
         unless @new_resource.force_unlink
           requirements.assert(:create) do |a|
-            a.assertion { !exists_or_symlink?(@new_resource.path) || ::File.file?(@new_resource.path) }
+            a.assertion { !::File.symlink?(@new_resource.path) }
             a.failure_message(Chef::Exceptions::FileTypeMismatch, "File #{@new_resource.path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove")
             a.whyrun("Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource")
           end
@@ -178,10 +178,15 @@ class Chef
         end
       end
 
+      def real_file?(path)
+        # TODO: For now only testing the logic with symlinks
+        ! ::File.symlink?(path)
+      end
+
       def do_unlink
         @file_unlinked = false
         if @new_resource.force_unlink
-          if ::File.exists?(@new_resource.path) && !::File.file?(@new_resource.path)
+          if !real_file?(@new_resource.path)
             # unlink things that aren't normal files
             description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
             converge_by(description) do
@@ -299,9 +304,9 @@ class Chef
       end
 
       # File.exists? always follows symlinks, i want true if there's a symlink there
-      def exists_or_symlink?(path)
-        ::File.symlink?(path) || ::File.exists?(path)
-      end
+      # def exists_or_symlink?(path)
+      #  ::File.symlink?(path) || ::File.exists?(path)
+      # end
 
     end
   end

@@ -232,6 +232,35 @@ shared_examples_for "a file resource" do
 
 end
 
+shared_examples_for "file resource not pointing to a real file" do
+  def real_file?(file_path)
+    !File.symlink?(file_path)
+  end
+
+  describe "when force_unlink is set to true" do
+    it ":create unlinks the target" do
+      real_file?(path).should be_false
+      resource.force_unlink(true)
+      resource.run_action(:create)
+      real_file?(path).should be_true
+      binread(path).should == expected_content
+      resource.should be_updated_by_last_action
+    end
+  end
+
+  describe "when force_unlink is set to false" do
+    it ":create raises an error" do
+      lambda {resource.run_action(:create) }.should raise_error(Chef::Exceptions::FileTypeMismatch)
+    end
+  end
+
+  describe "when force_unlink is not set (default)" do
+    it ":create raises an error" do
+      lambda {resource.run_action(:create) }.should raise_error(Chef::Exceptions::FileTypeMismatch)
+    end
+  end
+end
+
 shared_examples_for "a configured file resource" do
 
   include_context "diff disabled"
@@ -256,6 +285,49 @@ shared_examples_for "a configured file resource" do
     end
     content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
     content
+  end
+
+  context "when the target file is a symlink", :not_supported_on_win2k3, :focus => true  do
+    let (:symlink_target) {
+      File.join(CHEF_SPEC_DATA, "file-test-target")
+    }
+
+    before do
+      FileUtils.touch(symlink_target)
+    end
+
+    after do
+      FileUtils.rm_rf(symlink_target)
+    end
+
+    before(:each) do
+      File.symlink(symlink_target, path)
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    describe "when symlink target has correct content" do
+      before(:each) do
+        File.open(symlink_target, "wb") { |f| f.print expected_content }
+      end
+
+      it_behaves_like "file resource not pointing to a real file"
+    end
+
+    describe "when symlink target has the wrong content" do
+      before(:each) do
+        File.open(symlink_target, "wb") { |f| f.print "This is so wrong!!!" }
+      end
+
+      after(:each) do
+        # symlink should never be followed
+        binread(symlink_target).should == "This is so wrong!!!"
+      end
+
+      it_behaves_like "file resource not pointing to a real file"
+    end
   end
 
   context "when the target file does not exist" do
