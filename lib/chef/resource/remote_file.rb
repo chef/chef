@@ -61,23 +61,8 @@ class Chef
         )
       end
 
-      # Enables the use of both ETag and last modified time-based cache
-      # control. For servers that are behaving correctly, this is the
-      # recommended way to enable conditional GET.
       def use_conditional_get(args=nil)
         set_or_return(:use_conditional_get, args, :kind_of => [ TrueClass, FalseClass ])
-      end
-
-      def etag(args=nil)
-        # Only store the etag itself, skip the quotes (and leading W/ if it's there)
-        if args.is_a?(String) && args.include?('"')
-          args = args.split('"')[1]
-        end
-        set_or_return(
-          :etag,
-          args,
-          :kind_of => String
-        )
       end
 
       def use_etag(args=nil)
@@ -89,19 +74,6 @@ class Chef
       end
 
       alias :use_etags :use_etag
-
-      def last_modified(args=nil)
-        if args.is_a?(String)
-          args = Time.parse(args).gmtime
-        elsif args.is_a?(Time)
-          args.gmtime
-        end
-        set_or_return(
-          :last_modified,
-          args,
-          :kind_of => Time
-        )
-      end
 
       def use_last_modified(args=nil)
         set_or_return(

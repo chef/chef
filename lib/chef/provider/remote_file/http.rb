@@ -45,7 +45,7 @@ class Chef
         attr_reader :uri
 
         def initialize(uri)
-          @uri = uri
+          @uri = uri.to_s
         end
 
         def load
@@ -79,9 +79,9 @@ class Chef
 
         def hash_data
           as_hash = {}
-          as_hash["etag"]     = @etag
-          as_hash["mtime"]    = @mtime
-          as_hash["checksum"] = @checksum
+          as_hash["etag"]     = etag
+          as_hash["mtime"]    = mtime
+          as_hash["checksum"] = checksum
           as_hash
         end
 
@@ -104,8 +104,8 @@ class Chef
         end
 
         def sanitized_cache_file_basename
-          scrubbed_uri = @uri.gsub(/\W/, '_')
-          uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(@uri))
+          scrubbed_uri = uri.gsub(/\W/, '_')
+          uri_md5 = Chef::Digester.instance.generate_md5_checksum(StringIO.new(uri))
           "#{scrubbed_uri}-#{uri_md5}.json"
         end
 
@@ -130,7 +130,6 @@ class Chef
 
         def conditional_get_headers
           cache_control_headers = {}
-          cache_control_data = CacheControlData.load_and_validate(uri, current_resource.checksum)
           if last_modified = cache_control_data.mtime and want_mtime_cache_control?
             cache_control_headers["if-modified-since"] = last_modified
           end
@@ -142,11 +141,11 @@ class Chef
         end
 
         def fetch
+          tempfile = nil
           begin
             rest = Chef::REST.new(uri, nil, nil, http_client_opts)
             tempfile = rest.streaming_request(uri, headers)
-            mtime = last_modified_time_from(rest.last_response)
-            etag = etag_from(rest.last_response)
+            update_cache_control_data(rest.last_response)
           rescue Net::HTTPRetriableError => e
             if e.response.is_a? Net::HTTPNotModified
               tempfile = nil
@@ -154,10 +153,20 @@ class Chef
               raise e
             end
           end
-          return Chef::Provider::RemoteFile::Result.new(tempfile, etag, mtime)
+          return Chef::Provider::RemoteFile::Result.new(tempfile, cache_control_data.etag, cache_control_data.mtime)
         end
 
         private
+
+        def update_cache_control_data(response)
+          cache_control_data.mtime = last_modified_time_from(response)
+          cache_control_data.etag = etag_from(response)
+          cache_control_data.save
+        end
+
+        def cache_control_data
+          @cache_control_data ||= CacheControlData.load_and_validate(uri, current_resource.checksum)
+        end
 
         def want_mtime_cache_control?
           new_resource.use_last_modified || new_resource.use_conditional_get
@@ -168,11 +177,7 @@ class Chef
         end
 
         def last_modified_time_from(response)
-          if mtime_header = response['last_modified'] || response['date']
-            Time.parse(mtime_header)
-          else
-            nil
-          end
+          response['last_modified'] || response['date']
         end
 
         def etag_from(response)
