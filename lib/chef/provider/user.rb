@@ -115,7 +115,7 @@ class Chef
         end
 
         changed += [ :uid, :gid ].keep_if do |user_attrib|
-          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_i != @current_resource.send(user_attrib).to_i
+          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
         end
 
         changed.any?
