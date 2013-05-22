@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe Chef::Provider::RemoteFile::CacheControlData do
 
-  let(:uri) { "http://www.google.com/robots.txt" }
+  let(:uri) { URI.parse("http://www.google.com/robots.txt") }
 
 
   subject(:cache_control_data) do
@@ -148,8 +148,6 @@ describe Chef::Provider::RemoteFile::HTTP do
   let(:current_resource) do
     current_resource = Chef::Resource::RemoteFile.new("/tmp/foo.txt")
     current_resource.source(existing_file_source) if existing_file_source
-    current_resource.last_modified(Time.new)
-    current_resource.etag(nil)
     current_resource.checksum(current_resource_checksum)
     current_resource
   end
@@ -163,19 +161,6 @@ describe Chef::Provider::RemoteFile::HTTP do
   end
 
   let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new(uri) }
-
-  def use_last_modified!
-    new_resource.use_last_modified(true)
-    current_resource.last_modified(Time.new)
-    current_resource.etag(nil)
-  end
-
-  def use_etags!
-    new_resource.use_etag(true)
-    new_resource.use_last_modified(false)
-    current_resource.last_modified(Time.new)
-    current_resource.etag("a_unique_identifier")
-  end
 
   describe "generating cache control headers" do
 
@@ -280,18 +265,6 @@ describe Chef::Provider::RemoteFile::HTTP do
 
   end
 
-  describe "when contructing the object" do
-    describe "when the current resource has no source" do
-
-      it "stores the uri it is passed" do
-        fetcher = Chef::Provider::RemoteFile::HTTP.new(uri, new_resource, current_resource)
-        fetcher.uri.should == uri
-      end
-
-    end
-
-  end
-
   describe "when fetching the uri" do
 
     let(:expected_http_opts) { {} }
@@ -316,116 +289,142 @@ describe Chef::Provider::RemoteFile::HTTP do
       Chef::REST.should_receive(:new).with(*expected_http_args).and_return(rest)
     end
 
-    it "should return a result" do
-      result = fetcher.fetch
-      result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-      result.raw_file.should == tempfile
+
+    describe "and the request does not return new content" do
+
+      it "should propagate non-304 exceptions to the caller" do
+        r = Net::HTTPBadRequest.new("one", "two", "three")
+        e = Net::HTTPServerException.new("fake exception", r)
+        rest.stub!(:streaming_request).and_raise(e)
+        lambda { fetcher.fetch }.should raise_error(Net::HTTPServerException)
+      end
+
+      it "should return HTTPRetriableError when Chef::REST returns a 301" do
+        r = Net::HTTPMovedPermanently.new("one", "two", "three")
+        e = Net::HTTPRetriableError.new("301", r)
+        rest.stub!(:streaming_request).and_raise(e)
+        lambda { fetcher.fetch }.should raise_error(Net::HTTPRetriableError)
+      end
+
+      it "should return a nil tempfile for a 304 HTTPNotModifed" do
+        r = Net::HTTPNotModified.new("one", "two", "three")
+        e = Net::HTTPRetriableError.new("304", r)
+        rest.stub!(:streaming_request).and_raise(e)
+        result = fetcher.fetch
+        result.raw_file.should be_nil
+      end
+
     end
 
-    it "should propagate non-304 exceptions to the caller" do
-      r = Net::HTTPBadRequest.new("one", "two", "three")
-      e = Net::HTTPServerException.new("fake exception", r)
-      rest.stub!(:streaming_request).and_raise(e)
-      lambda { fetcher.fetch }.should raise_error(Net::HTTPServerException)
-    end
+    describe "and the request returns new content" do
+      before do
+        cache_control_data.should_receive(:save)
+      end
 
-    it "should return HTTPRetriableError when Chef::REST returns a 301" do
-      r = Net::HTTPMovedPermanently.new("one", "two", "three")
-      e = Net::HTTPRetriableError.new("301", r)
-      rest.stub!(:streaming_request).and_raise(e)
-      lambda { fetcher.fetch }.should raise_error(Net::HTTPRetriableError)
-    end
-
-    it "should return a nil tempfile for a 304 HTTPNotModifed" do
-      r = Net::HTTPNotModified.new("one", "two", "three")
-      e = Net::HTTPRetriableError.new("304", r)
-      rest.stub!(:streaming_request).and_raise(e)
-      result = fetcher.fetch
-      result.raw_file.should be_nil
-    end
-
-    context "and the response does not contain an etag" do
-      let(:last_response) { {"etag" => nil} }
-      it "does not include an etag in the result" do
+      it "should return a result" do
         result = fetcher.fetch
         result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-        result.etag.should be_nil
-      end
-    end
-
-    context "and the response has an etag header" do
-      let(:last_response) { {"etag" => "abc123"} }
-
-      it "includes the etag value in the response" do
-        result = fetcher.fetch
         result.raw_file.should == tempfile
-        result.etag.should == "abc123"
+        cache_control_data.etag.should be_nil
+        cache_control_data.mtime.should be_nil
       end
 
+      context "and the response does not contain an etag" do
+        let(:last_response) { {"etag" => nil} }
+        it "does not include an etag in the result" do
+          result = fetcher.fetch
+          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+          result.etag.should be_nil
+          cache_control_data.etag.should be_nil
+          cache_control_data.mtime.should be_nil
+        end
+      end
+
+      context "and the response has an etag header" do
+        let(:last_response) { {"etag" => "abc123"} }
+
+        it "includes the etag value in the response" do
+          result = fetcher.fetch
+          result.raw_file.should == tempfile
+          result.etag.should == "abc123"
+          cache_control_data.etag.should == "abc123"
+          cache_control_data.mtime.should be_nil
+        end
+
+      end
+
+      context "and the response has no Date or Last-Modified header" do
+        let(:last_response) { {"date" => nil, "last_modified" => nil} }
+        it "does not set an mtime in the result" do
+          # RFC 2616 suggests that servers that do not set a Date header do not
+          # have a reliable clock, so no use in making them deal with dates.
+          result = fetcher.fetch
+          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+          result.mtime.should be_nil
+          cache_control_data.etag.should be_nil
+          cache_control_data.mtime.should be_nil
+        end
+      end
+
+      context "and the response has a Last-Modified header" do
+        let(:last_response) do
+          # Last-Modified should be preferred to Date if both are set
+          {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => "Fri, 17 May 2013 11:11:11 GMT"}
+        end
+
+        it "sets the mtime to the Last-Modified time in the response" do
+          result = fetcher.fetch
+          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+          result.mtime.should  == last_response["last_modified"]
+          cache_control_data.etag.should be_nil
+          cache_control_data.mtime.should == last_response["last_modified"]
+        end
+      end
+
+      context "and the response has a Date header but no Last-Modified header" do
+        let(:last_response) do
+          {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => nil}
+        end
+
+        it "sets the mtime to the Date in the response" do
+          result = fetcher.fetch
+          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
+          result.mtime.should  == last_response["date"]
+          cache_control_data.etag.should be_nil
+          cache_control_data.mtime.should == last_response["date"]
+        end
+
+      end
+
+      context "and the target file is a tarball [CHEF-3140]" do
+
+        let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
+        let(:expected_http_opts) { {:disable_gzip => true} }
+
+        # CHEF-3140
+        # Some servers return tarballs as content type tar and encoding gzip, which
+        # is totally wrong. When this happens and gzip isn't disabled, Chef::REST
+        # will decompress the file for you, which is not at all what you expected
+        # to happen (you end up with an uncomressed tar archive instead of the
+        # gzipped tar archive you expected). To work around this behavior, we
+        # detect when users are fetching gzipped files and turn off gzip in
+        # Chef::REST.
+
+        it "should disable gzip compression in the client" do
+          # Before block in the parent context has set an expectation on
+          # Chef::REST.new() being called with expected arguments. Here we fufil
+          # that expectation, so that we can explicitly set it for this test.
+          # This is intended to provide insurance that refactoring of the parent
+          # context does not negate the value of this particular example.
+          Chef::REST.new(*expected_http_args)
+          Chef::REST.should_receive(:new).once.with(*expected_http_args).and_return(rest)
+          fetcher.fetch
+          cache_control_data.etag.should be_nil
+          cache_control_data.mtime.should be_nil
+        end
+      end
     end
 
-    context "and the response has no Date or Last-Modified header" do
-      let(:last_response) { {"date" => nil, "last_modified" => nil} }
-      it "does not set an mtime in the result" do
-        # RFC 2616 suggests that servers that do not set a Date header do not
-        # have a reliable clock, so no use in making them deal with dates.
-        result = fetcher.fetch
-        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-        result.mtime.should be_nil
-      end
-    end
-
-    context "and the response has a Last-Modified header" do
-      let(:last_response) do
-        # Last-Modified should be preferred to Date if both are set
-        {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => "Fri, 17 May 2013 11:11:11 GMT"}
-      end
-
-      it "sets the mtime to the Last-Modified time in the response" do
-        result = fetcher.fetch
-        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-        result.mtime.should  == Time.at(1368789071).utc
-      end
-    end
-
-    context "and the response has a Date header but no Last-Modified header" do
-      let(:last_response) do
-        {"date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => nil}
-      end
-
-      it "sets the mtime to the Date in the response" do
-        result = fetcher.fetch
-        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-        result.mtime.should  == Time.at(1368833003).utc
-      end
-
-    end
-
-    context "and the target file is a tarball [CHEF-3140]" do
-
-      let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
-      let(:expected_http_opts) { {:disable_gzip => true} }
-
-      # CHEF-3140
-      # Some servers return tarballs as content type tar and encoding gzip, which
-      # is totally wrong. When this happens and gzip isn't disabled, Chef::REST
-      # will decompress the file for you, which is not at all what you expected
-      # to happen (you end up with an uncomressed tar archive instead of the
-      # gzipped tar archive you expected). To work around this behavior, we
-      # detect when users are fetching gzipped files and turn off gzip in
-      # Chef::REST.
-
-      it "should disable gzip compression in the client" do
-        # Before block in the parent context has set an expectation on
-        # Chef::REST.new() being called with expected arguments. Here we fufil
-        # that expectation, so that we can explicitly set it for this test.
-        # This is intended to provide insurance that refactoring of the parent
-        # context does not negate the value of this particular example.
-        Chef::REST.new(*expected_http_args)
-        Chef::REST.should_receive(:new).once.with(*expected_http_args).and_return(rest)
-        fetcher.fetch
-      end
-    end
   end
 
 end
