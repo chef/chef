@@ -28,6 +28,28 @@ require 'chef/exceptions'
 class Chef
   class Provider
     class RemoteFile
+
+      # == CacheControlData
+      # Implements per-uri storage of cache control data for a remote resource
+      # along with a sanity check checksum of the file in question.
+      # Provider::RemoteFile protocol implementation classes can use this
+      # information to avoid re-fetching files when the current copy is up to
+      # date. The way this information is used is protocol-dependent. For HTTP,
+      # this information is sent to the origin server via headers to make a
+      # conditional GET request.
+      #
+      # == API
+      # The general shape of the API is active-record-the-pattern-like. New
+      # instances should be instantiated via
+      # `CacheControlData.load_and_validate`, which will do a find-or-create
+      # operation and then sanity check the data against the checksum of the
+      # current copy of the file. If there is no data or the sanity check
+      # fails, the `etag` and `mtime` attributes will be set to nil; otherwise
+      # they are populated with the previously saved values.
+      #
+      # After fetching a file, the CacheControlData instance should be updated
+      # with new etag, mtime and checksum values in whatever format is
+      # preferred by the protocol used. Then call #save to save the data to disk.
       class CacheControlData
 
         def self.load_and_validate(uri, current_copy_checksum)
@@ -37,10 +59,25 @@ class Chef
           ccdata
         end
 
+        # Entity Tag of the resource. HTTP-specific. See also:
+        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2
+        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19
         attr_accessor :etag
+
+        # Last modified time of the remote resource. Different protocols will
+        # use different types for this field (e.g., string representation of a
+        # specific date format, integer, etc.) For HTTP-specific references,
+        # see:
+        # * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
+        # * http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.1
+        # * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25
         attr_accessor :mtime
+
+        # SHA2-256 Hash of the file as last fetched.
         attr_accessor :checksum
 
+        # URI of the resource as a String. This is the "primary key" used for
+        # storage and retrieval.
         attr_reader :uri
 
         def initialize(uri)
@@ -64,6 +101,10 @@ class Chef
           end
         end
 
+        # Saves the data to disk using Chef::FileCache. The filename is a
+        # sanitized version of the URI with a MD5 of the same URI appended (to
+        # avoid collisions between different URIs having the same sanitized
+        # form).
         def save
           Chef::FileCache.store("remote_file/#{sanitized_cache_file_basename}", json_data)
         end
