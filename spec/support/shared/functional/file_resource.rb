@@ -234,7 +234,7 @@ end
 
 shared_examples_for "file resource not pointing to a real file" do
   def real_file?(file_path)
-    !File.symlink?(file_path)
+    !File.symlink?(file_path) && !File.directory?(file_path)
   end
 
   describe "when force_unlink is set to true" do
@@ -287,7 +287,7 @@ shared_examples_for "a configured file resource" do
     content
   end
 
-  context "when the target file is a symlink", :not_supported_on_win2k3, :focus => true  do
+  context "when the target file is a symlink", :not_supported_on_win2k3 do
     let (:symlink_target) {
       File.join(CHEF_SPEC_DATA, "file-test-target")
     }
@@ -328,6 +328,30 @@ shared_examples_for "a configured file resource" do
 
       it_behaves_like "file resource not pointing to a real file"
     end
+  end
+
+  context "when the target file is a directory" do
+    before(:each) do
+      FileUtils.mkdir_p(path)
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a blockdev", :focus => true  do
+    before(:each) do
+      FileUtils.mkdir_p(path)
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
   end
 
   context "when the target file does not exist" do
