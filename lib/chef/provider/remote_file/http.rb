@@ -18,6 +18,7 @@
 #
 
 require 'chef/rest'
+require 'chef/digester'
 require 'chef/provider/remote_file'
 require 'chef/provider/remote_file/result'
 require 'chef/provider/remote_file/cache_control_data'
@@ -60,7 +61,7 @@ class Chef
           begin
             rest = Chef::REST.new(uri, nil, nil, http_client_opts)
             tempfile = rest.streaming_request(uri, headers)
-            update_cache_control_data(rest.last_response)
+            update_cache_control_data(tempfile, rest.last_response)
           rescue Net::HTTPRetriableError => e
             if e.response.is_a? Net::HTTPNotModified
               tempfile = nil
@@ -73,7 +74,8 @@ class Chef
 
         private
 
-        def update_cache_control_data(response)
+        def update_cache_control_data(tempfile, response)
+          cache_control_data.checksum = Chef::Digester.checksum_for_file(tempfile.path)
           cache_control_data.mtime = last_modified_time_from(response)
           cache_control_data.etag = etag_from(response)
           cache_control_data.save
