@@ -92,11 +92,32 @@ describe Chef::Resource::RemoteFile do
     end
   end
 
-  describe "use conditional get" do
-    it "defaults to disabled" do
-      pending "TODO: make some decisions"
-      # maybe should just be a wrapper to turn etags and last_modified on or off?
-      # What should the default be?
+  describe "conditional get options" do
+    it "defaults to using etags and last modified" do
+      @resource.use_etags.should be_true
+      @resource.use_last_modified.should be_true
+    end
+
+    it "enable or disables etag and last modified options as a group" do
+      @resource.use_conditional_get(false)
+      @resource.use_etags.should be_false
+      @resource.use_last_modified.should be_false
+
+      @resource.use_conditional_get(true)
+      @resource.use_etags.should be_true
+      @resource.use_last_modified.should be_true
+    end
+
+    it "disables etags indivdually" do
+      @resource.use_etags(false)
+      @resource.use_etags.should be_false
+      @resource.use_last_modified.should be_true
+    end
+
+    it "disables last modified individually" do
+      @resource.use_last_modified(false)
+      @resource.use_last_modified.should be_false
+      @resource.use_etags.should be_true
     end
 
   end
