@@ -234,7 +234,7 @@ end
 
 shared_examples_for "file resource not pointing to a real file" do
   def real_file?(file_path)
-    !File.symlink?(file_path) && !File.directory?(file_path)
+    !File.symlink?(file_path) && File.file?(file_path)
   end
 
   describe "when force_unlink is set to true" do
@@ -342,9 +342,51 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a blockdev", :focus => true  do
+  context "when the target file is a blockdev",:unix_only, :requires_root do
+    include Chef::Mixin::ShellOut
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testdev")
+    end
+
     before(:each) do
-      FileUtils.mkdir_p(path)
+      result = shell_out("mknod #{path} b 1 2")
+      result.stderr.empty?
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a chardev",:unix_only, :requires_root do
+    include Chef::Mixin::ShellOut
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testdev")
+    end
+
+    before(:each) do
+      result = shell_out("mknod #{path} c 1 2")
+      result.stderr.empty?
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a pipe",:unix_only, :focus => true do
+    include Chef::Mixin::ShellOut
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testpipe")
+    end
+
+    before(:each) do
+      result = shell_out("mkfifo #{path}")
+      result.stderr.empty?
     end
 
     after(:each) do

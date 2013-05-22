@@ -180,7 +180,8 @@ class Chef
 
       def real_file?(path)
         # TODO: For now only testing the logic with symlinks
-        !::File.symlink?(path) && !::File.directory?(path)
+        # !::File.symlink?(path) && !::File.directory?(path)
+        !::File.symlink?(path) && ::File.file?(path)
       end
 
       def unlink(path)
