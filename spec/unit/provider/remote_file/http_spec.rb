@@ -157,7 +157,9 @@ describe Chef::Provider::RemoteFile::HTTP do
     let(:expected_http_opts) { {} }
     let(:expected_http_args) { [uri, nil, nil, expected_http_opts] }
 
-    let(:tempfile) { mock(Tempfile) }
+    let(:tempfile_path) { "/tmp/chef-mock-tempfile-abc123" }
+
+    let(:tempfile) { mock(Tempfile, :path => tempfile_path) }
 
     let(:last_response) { {} }
 
@@ -204,8 +206,12 @@ describe Chef::Provider::RemoteFile::HTTP do
     end
 
     describe "and the request returns new content" do
+
+      let(:fetched_content_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
+
       before do
         cache_control_data.should_receive(:save)
+        Chef::Digester.should_receive(:checksum_for_file).with(tempfile_path).and_return(fetched_content_checksum)
       end
 
       it "should return a result" do
@@ -214,6 +220,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         result.raw_file.should == tempfile
         cache_control_data.etag.should be_nil
         cache_control_data.mtime.should be_nil
+        cache_control_data.checksum.should == fetched_content_checksum
       end
 
       context "and the response does not contain an etag" do
@@ -224,6 +231,7 @@ describe Chef::Provider::RemoteFile::HTTP do
           result.etag.should be_nil
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should be_nil
+          cache_control_data.checksum.should == fetched_content_checksum
         end
       end
 
@@ -236,6 +244,7 @@ describe Chef::Provider::RemoteFile::HTTP do
           result.etag.should == "abc123"
           cache_control_data.etag.should == "abc123"
           cache_control_data.mtime.should be_nil
+          cache_control_data.checksum.should == fetched_content_checksum
         end
 
       end
@@ -250,6 +259,7 @@ describe Chef::Provider::RemoteFile::HTTP do
           result.mtime.should be_nil
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should be_nil
+          cache_control_data.checksum.should == fetched_content_checksum
         end
       end
 
@@ -279,6 +289,7 @@ describe Chef::Provider::RemoteFile::HTTP do
           result.mtime.should  == last_response["date"]
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should == last_response["date"]
+          cache_control_data.checksum.should == fetched_content_checksum
         end
 
       end
@@ -308,6 +319,7 @@ describe Chef::Provider::RemoteFile::HTTP do
           fetcher.fetch
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should be_nil
+          cache_control_data.checksum.should == fetched_content_checksum
         end
       end
     end
