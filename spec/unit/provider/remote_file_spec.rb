@@ -38,8 +38,12 @@ describe Chef::Provider::RemoteFile do
   let(:node) { double('Chef::Node') }
   let(:events) { double('Chef::Events').as_null_object }  # mock all the methods
   let(:run_context) { double('Chef::RunContext', :node => node, :events => events) }
-  let(:enclosing_directory) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates")) }
-  let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
+  let(:enclosing_directory) {
+    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
+  }
+  let(:resource_path) {
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
+  }
 
   subject(:provider) do
     provider = described_class.new(resource, run_context)

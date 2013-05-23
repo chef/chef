@@ -18,48 +18,58 @@
 
 require 'spec_helper'
 require 'tmpdir'
+if windows?
+  require 'chef/win32/file'
+end
 
-  # Filesystem stubs
-
-  def setup_normal_file
-    File.stub!(:exists?).with(resource_path).and_return(true)
-    File.stub!(:directory?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(enclosing_directory).and_return(true)
-    File.stub!(:writable?).with(resource_path).and_return(true)
-    File.stub!(:symlink?).with(resource_path).and_return(false)
+# Filesystem stubs
+def file_symlink_class
+  if windows?
+    Chef::ReservedNames::Win32::File
+  else
+    File
   end
+end
 
-  def setup_missing_file
-    File.stub!(:exists?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(enclosing_directory).and_return(true)
-    File.stub!(:writable?).with(resource_path).and_return(false)
-    File.stub!(:symlink?).with(resource_path).and_return(false)
-  end
+def setup_normal_file
+  File.stub!(:exists?).with(resource_path).and_return(true)
+  File.stub!(:directory?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(enclosing_directory).and_return(true)
+  File.stub!(:writable?).with(resource_path).and_return(true)
+  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+end
 
-  def setup_symlink
-    File.stub!(:exists?).with(resource_path).and_return(true)
-    File.stub!(:directory?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(enclosing_directory).and_return(true)
-    File.stub!(:writable?).with(resource_path).and_return(true)
-    File.stub!(:symlink?).with(resource_path).and_return(true)
-  end
+def setup_missing_file
+  File.stub!(:exists?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(enclosing_directory).and_return(true)
+  File.stub!(:writable?).with(resource_path).and_return(false)
+  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+end
 
-  def setup_unwritable_file
-    File.stub!(:exists?).with(resource_path).and_return(true)
-    File.stub!(:directory?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(enclosing_directory).and_return(true)
-    File.stub!(:writable?).with(resource_path).and_return(false)
-    File.stub!(:symlink?).with(resource_path).and_return(false)
-  end
+def setup_symlink
+  File.stub!(:exists?).with(resource_path).and_return(true)
+  File.stub!(:directory?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(enclosing_directory).and_return(true)
+  File.stub!(:writable?).with(resource_path).and_return(true)
+  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(true)
+end
 
-  def setup_missing_enclosing_directory
-    File.stub!(:exists?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(resource_path).and_return(false)
-    File.stub!(:directory?).with(enclosing_directory).and_return(false)
-    File.stub!(:writable?).with(resource_path).and_return(false)
-    File.stub!(:symlink?).with(resource_path).and_return(false)
-  end
+def setup_unwritable_file
+  File.stub!(:exists?).with(resource_path).and_return(true)
+  File.stub!(:directory?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(enclosing_directory).and_return(true)
+  File.stub!(:writable?).with(resource_path).and_return(false)
+  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+end
+
+def setup_missing_enclosing_directory
+  File.stub!(:exists?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(enclosing_directory).and_return(false)
+  File.stub!(:writable?).with(resource_path).and_return(false)
+  file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+end
 
 shared_examples_for Chef::Provider::File do
 

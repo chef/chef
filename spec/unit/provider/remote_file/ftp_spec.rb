@@ -19,8 +19,12 @@
 require 'spec_helper'
 
 describe Chef::Provider::RemoteFile::FTP do
-  let(:enclosing_directory) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates")) }
-  let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
+  let(:enclosing_directory) {
+    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
+  }
+  let(:resource_path) {
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
+  }
 
   before(:each) do
     @ftp = mock(Net::FTP, { })
