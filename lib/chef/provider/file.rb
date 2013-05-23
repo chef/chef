@@ -26,6 +26,7 @@ require 'fileutils'
 require 'chef/scan_access_control'
 require 'chef/mixin/checksum'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/file_class'
 require 'chef/util/backup'
 require 'chef/util/diff'
 require 'chef/deprecation/provider/file'
@@ -49,6 +50,7 @@ class Chef
       include Chef::Mixin::Checksum
       include Chef::Mixin::ShellOut
       include Chef::Util::Selinux
+      include Chef::Mixin::FileClass
 
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::File
@@ -136,7 +138,7 @@ class Chef
       def action_delete
         if ::File.exists?(@new_resource.path)
           converge_by("delete file #{@new_resource.path}") do
-            do_backup unless ::File.symlink?(@new_resource.path)
+            do_backup unless file_class.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
             Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
           end
@@ -173,7 +175,7 @@ class Chef
           "pipe"
         when ::File.socket?(path)
           "socket"
-        when ::File.symlink?(path)
+        when file_class.symlink?(path)
           "symlink"
         else
           "unknown filetype"
@@ -181,7 +183,7 @@ class Chef
       end
 
       def real_file?(path)
-        !::File.symlink?(path) && ::File.file?(path)
+        !file_class.symlink?(path) && ::File.file?(path)
       end
 
       def unlink(path)
@@ -312,11 +314,6 @@ class Chef
         acl_scanner = ScanAccessControl.new(@new_resource, resource)
         acl_scanner.set_all!
       end
-
-      # File.exists? always follows symlinks, i want true if there's a symlink there
-      # def exists_or_symlink?(path)
-      #  ::File.symlink?(path) || ::File.exists?(path)
-      # end
 
     end
   end

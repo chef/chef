@@ -233,8 +233,16 @@ shared_examples_for "a file resource" do
 end
 
 shared_examples_for "file resource not pointing to a real file" do
+  def symlink?(file_path)
+    if windows?
+      Chef::ReservedNames::Win32::File.symlink?(file_path)
+    else
+      File.symlink?(file_path)
+    end
+  end
+
   def real_file?(file_path)
-    !File.symlink?(file_path) && File.file?(file_path)
+    !symlink?(file_path) && File.file?(file_path)
   end
 
   describe "when force_unlink is set to true" do
@@ -301,7 +309,11 @@ shared_examples_for "a configured file resource" do
     end
 
     before(:each) do
-      File.symlink(symlink_target, path)
+      if windows?
+        Chef::ReservedNames::Win32::File.symlink(symlink_target, path)
+      else
+        File.symlink(symlink_target, path)
+      end
     end
 
     after(:each) do
@@ -548,6 +560,10 @@ shared_examples_for "a configured file resource" do
 end
 
 shared_context Chef::Resource::File  do
+  if windows?
+    require 'chef/win32/file'
+  end
+
   # We create the files in a different directory than tmp to exercise
   # different file deployment strategies more completely.
   let(:test_file_dir) do

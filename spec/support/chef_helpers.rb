@@ -77,3 +77,9 @@ def system_windows_service_gem?
     system windows_service_gem_check_command
   end
 end
+
+# This is a helper to canonicalize paths that we're using in the file
+# tests.
+def canonicalize_path(path)
+  windows? ? path.gsub('/', '\\') : path
+end
