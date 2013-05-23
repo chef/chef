@@ -299,7 +299,7 @@ class Chef
 
       def run_symlinks_before_migrate
         links_info = @new_resource.symlink_before_migrate.map { |src, dst| "#{src} => #{dst}" }.join(", ")
-        converge_by("make pre-migration symliinks: #{links_info}") do
+        converge_by("make pre-migration symlinks: #{links_info}") do
           @new_resource.symlink_before_migrate.each do |src, dest|
             begin
               FileUtils.ln_sf(@new_resource.shared_path + "/#{src}", release_path + "/#{dest}")

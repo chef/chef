@@ -18,7 +18,7 @@
 #
 
 require 'chef/resource'
-require 'chef/platform'
+require 'chef/platform/query_helpers'
 require 'chef/provider/file'
 require 'chef/mixin/securable'
 

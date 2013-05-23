@@ -22,6 +22,7 @@ class Chef
     STANDARD_OPS = %w(< > <= >=)
     OPS = %w(< > = <= >= ~>)
     PATTERN = /^(#{OPS.join('|')}) (.+)$/
+    VERSION_CLASS = Chef::Version
 
     attr_reader :op, :version
 
@@ -41,9 +42,9 @@ class Chef
 
     def include?(v)
       version = if v.respond_to? :version # a CookbookVersion-like object
-                  Chef::Version.new(v.version.to_s)
+                  self.class::VERSION_CLASS.new(v.version.to_s)
                 else
-                  Chef::Version.new(v.to_s)
+                  self.class::VERSION_CLASS.new(v.to_s)
                 end
      do_op(version)
     end
@@ -98,13 +99,13 @@ class Chef
       @missing_patch_level = false
       if str.index(" ").nil? && str =~ /^[0-9]/
         # try for lone version, implied '='
-        @version = Chef::Version.new(str)
+        @version = self.class::VERSION_CLASS.new(str)
         @op = "="
       elsif PATTERN.match str
         @op = $1
         raw_version = $2
-        @version = Chef::Version.new(raw_version)
-        if raw_version.split('.').size == 2
+        @version = self.class::VERSION_CLASS.new(raw_version)
+        if raw_version.split('.').size <= 2
           @missing_patch_level = true
         end
       else

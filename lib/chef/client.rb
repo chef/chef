@@ -25,7 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
 require 'chef/api_client/registration'
-require 'chef/platform'
+require 'chef/platform/query_helpers'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
@@ -103,6 +103,7 @@ class Chef
       self.class.run_start_notifications.each do |notification|
         notification.call(run_status)
       end
+      @events.run_started(run_status)
     end
 
     # Callback to fire notifications that the run completed successfully
@@ -444,18 +445,18 @@ class Chef
     def do_run
       runlock = RunLock.new(Chef::Config)
       runlock.acquire
-
-      run_context = nil
-      @events.run_start(Chef::VERSION)
-      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
-      enforce_path_sanity
-      run_ohai
-      @events.ohai_completed(node)
-      register unless Chef::Config[:solo]
-
-      load_node
-
+      # don't add code that may fail before entering this section to be sure to release lock
       begin
+        run_context = nil
+        @events.run_start(Chef::VERSION)
+        Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        enforce_path_sanity
+        run_ohai
+        @events.ohai_completed(node)
+        register unless Chef::Config[:solo]
+
+        load_node
+
         build_node
 
         run_status.start_clock

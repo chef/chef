@@ -91,11 +91,11 @@ class Chef
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l  #{name}=#{version}"
+              :command => "zypper -n#{gpg_checks} install -l #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l  #{name}"
+              :command => "zypper -n#{gpg_checks} install -l #{name}"
             )
           end
         end
@@ -107,11 +107,11 @@ class Chef
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l #{name}=#{version}"
+              :command => "zypper -n#{gpg_checks} install -l #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l #{name}"
+              :command => "zypper -n#{gpg_checks} install -l #{name}"
             )
           end
         end
@@ -123,21 +123,33 @@ class Chef
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks remove  #{name}=#{version}"
+              :command => "zypper -n#{gpg_checks} remove #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks remove  #{name}"
+              :command => "zypper -n#{gpg_checks} remove #{name}"
             )
           end
-            
-         
         end
       
         def purge_package(name, version)
           remove_package(name, version)
         end
-      
+
+        private
+        def gpg_checks()
+          case Chef::Config[:zypper_check_gpg]
+          when true
+            ""
+          when false
+            " --no-gpg-checks"
+          when nil
+            Chef::Log.warn("Chef::Config[:zypper_check_gpg] was not set. " + 
+              "All packages will be installed without gpg signature checks. " + 
+              "This is a security hazard.")
+            " --no-gpg-checks"
+          end
+        end
       end
     end
   end

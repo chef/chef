@@ -94,6 +94,11 @@ class Chef
         :description => "Execute the bootstrap via sudo",
         :boolean => true
 
+      option :use_sudo_password,
+        :long => "--use-sudo-password",
+        :description => "Execute the bootstrap via sudo with password",
+        :boolean => false
+
       option :template_file,
         :long => "--template-file TEMPLATE",
         :description => "Full path to location of template to use",
@@ -126,6 +131,15 @@ class Chef
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
+
+      option :secret,
+        :short => "-s SECRET",
+        :long  => "--secret ",
+        :description => "The secret key to use to encrypt data bag item values"
+
+      option :secret_file,
+        :long => "--secret-file SECRET_FILE",
+        :description => "A file containing the secret key to use to encrypt data bag item values"
 
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -166,11 +180,12 @@ class Chef
 
       def run
         validate_name_args!
+        warn_chef_config_secret_key
         @template_file = find_template(config[:bootstrap_template])
         @node_name = Array(@name_args).first
         # back compat--templates may use this setting:
         config[:server_name] = @node_name
-        
+
         $stdout.sync = true
 
         ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
@@ -222,10 +237,32 @@ class Chef
         command = render_template(read_template)
 
         if config[:use_sudo]
-          command = "sudo #{command}"
+          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
         end
 
         command
+      end
+
+      def warn_chef_config_secret_key
+        unless Chef::Config[:encrypted_data_bag_secret].nil?
+          ui.warn "* " * 40
+          ui.warn(<<-WARNING)
+Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
+entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
+can supress this warning and still distribute the secret key to all bootstrapped
+machines by adding the following to your 'knife.rb' file:
+
+  knife[:secret_file] = "/path/to/your/secret"
+
+If you would like to selectively distribute a secret key during bootstrap
+please use the '--secret' or '--secret-file' options of this command instead.
+
+#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
+behavior will be removed and any 'encrypted_data_bag_secret' entries in
+'knife.rb' will be ignored completely.
+WARNING
+          ui.warn "* " * 40
+        end
       end
 
     end

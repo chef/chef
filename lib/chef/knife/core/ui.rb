@@ -19,7 +19,7 @@
 #
 
 require 'forwardable'
-require 'chef/platform'
+require 'chef/platform/query_helpers'
 require 'chef/knife/core/generic_presenter'
 
 class Chef
@@ -64,14 +64,24 @@ class Chef
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       def msg(message)
-        stdout.puts message
+        begin
+          stdout.puts message
+        rescue Errno::EPIPE => e
+          raise e if @config[:verbosity] >= 2
+          exit 0
+        end
       end
 
       alias :info :msg
 
       # Prints a msg to stderr. Used for warn, error, and fatal.
       def err(message)
-        stderr.puts message
+        begin
+          stderr.puts message
+        rescue Errno::EPIPE => e
+          raise e if @config[:verbosity] >= 2
+          exit 0
+        end
       end
 
       # Print a warning message
@@ -143,7 +153,12 @@ class Chef
       end
 
       def pretty_print(data)
-        stdout.puts data
+        begin
+          stdout.puts data
+        rescue Errno::EPIPE => e
+          raise e if @config[:verbosity] >= 2
+          exit 0
+        end
       end
 
       def edit_data(data, parse_output=true)

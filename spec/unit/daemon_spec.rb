@@ -154,8 +154,34 @@ describe Chef::Daemon do
         FileUtils.should_receive(:rm).with("/var/run/chef/chef-client.pid")
         Chef::Daemon.remove_pid_file
       end
+    
 
+    end
 
+    describe "when the pid file exists and the process is forked" do
+      
+      before do
+        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
+        Chef::Daemon.stub!(:forked?) { true }
+      end
+      
+      it "should not remove the file" do
+        FileUtils.should_not_receive(:rm)
+        Chef::Daemon.remove_pid_file
+      end
+      
+    end
+    
+    describe "when the pid file exists and the process is not forked" do
+      before do
+        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
+        Chef::Daemon.stub!(:forked?) { false }
+      end
+      
+      it "should remove the file" do
+        FileUtils.should_receive(:rm)
+        Chef::Daemon.remove_pid_file
+      end
     end
 
     describe "when the pid file does not exist" do

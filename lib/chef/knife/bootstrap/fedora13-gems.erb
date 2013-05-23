@@ -15,7 +15,7 @@ awk NF > /etc/chef/validation.pem <<'EOP'
 EOP
 chmod 0600 /etc/chef/validation.pem
 
-<% if @chef_config[:encrypted_data_bag_secret] -%>
+<% if encrypted_data_bag_secret -%>
 awk NF > /etc/chef/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP

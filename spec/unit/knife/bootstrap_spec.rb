@@ -128,13 +128,65 @@ describe Chef::Knife::Bootstrap do
     @knife.render_template(template_string).should match /\{\"foo\":\"bar\"\}/
   end
 
-
   it "should take the node name from ARGV" do
     @knife.name_args = ['barf']
     @knife.name_args.first.should == "barf"
   end
 
-  describe "when configuring the underlying knife ssh command"
+  describe "specifying the encrypted data bag secret key" do
+    subject(:knife) { described_class.new }
+    let(:secret) { "supersekret" }
+    let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
+    let(:options) { [] }
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "secret.erb")) }
+    let(:rendered_template) do
+      knife.instance_variable_set("@template_file", template_file)
+      knife.parse_options(options)
+      template_string = knife.read_template
+      knife.render_template(template_string)
+    end
+
+    context "via --secret" do
+      let(:options){ ["--secret", secret] }
+
+      it "creates a secret file" do
+        rendered_template.should match(%r{#{secret}})
+      end
+
+      it "renders the client.rb with an encrypted_data_bag_secret entry" do
+        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
+      end
+    end
+
+    context "via --secret-file" do
+      let(:options) { ["--secret-file", secret_file] }
+      let(:secret) { IO.read(secret_file) }
+
+      it "creates a secret file" do
+        rendered_template.should match(%r{#{secret}})
+      end
+
+      it "renders the client.rb with an encrypted_data_bag_secret entry" do
+        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
+      end
+    end
+
+    context "via Chef::Config[:encrypted_data_bag_secret]" do
+      before(:each) { Chef::Config[:encrypted_data_bag_secret] = secret_file }
+      let(:secret) { IO.read(secret_file) }
+
+      it "creates a secret file" do
+        rendered_template.should match(%r{#{secret}})
+      end
+
+      it "renders the client.rb with an encrypted_data_bag_secret entry" do
+        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
+      end
+      after(:each) { Chef::Config.configuration = @original_config }
+    end
+  end
+
+  describe "when configuring the underlying knife ssh command" do
     context "from the command line" do
       before do
         @knife.name_args = ["foo.example.com"]
@@ -147,28 +199,52 @@ describe Chef::Knife::Bootstrap do
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
-  
+
       it "configures the hostname" do
         @knife_ssh.name_args.first.should == "foo.example.com"
       end
-  
+
       it "configures the ssh user" do
         @knife_ssh.config[:ssh_user].should == 'rooty'
       end
-  
+
       it "configures the ssh password" do
         @knife_ssh.config[:ssh_password].should == 'open_sesame'
       end
-  
+
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '4001'
       end
-  
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/me.rsa'
       end
     end
+    context "validating use_sudo_password" do
+      before do
+        @knife.config[:distro] = "ubuntu"
+        @knife.config[:ssh_password] = "password"
+        @knife.stub(:read_template).and_return(IO.read(@knife.find_template).chomp)
+      end
 
+      it "use_sudo_password contains description and long params for help" do
+        @knife.options.should have_key(:use_sudo_password) \
+          and @knife.options[:use_sudo_password][:description].to_s.should_not == ''\
+          and @knife.options[:use_sudo_password][:long].to_s.should_not == ''
+      end
+
+      it "uses the password from --ssh-password for sudo when --use-sudo-password is set" do
+        @knife.config[:use_sudo] = true
+        @knife.config[:use_sudo_password] = true
+        @knife.ssh_command.should include("echo #{@knife.config[:ssh_password]} | sudo -S")
+      end
+
+      it "should not honor --use-sudo-password when --use-sudo is not set" do
+        @knife.config[:use_sudo] = false
+        @knife.config[:use_sudo_password] = true
+        @knife.ssh_command.should_not include("echo #{@knife.config[:ssh_password]} | sudo -S")
+      end
+    end
     context "from the knife config file" do
       before do
         @knife.name_args = ["config.example.com"]
@@ -185,19 +261,19 @@ describe Chef::Knife::Bootstrap do
         @knife.stub!(:read_template).and_return("")
         @knife_ssh = @knife.knife_ssh
       end
-  
+
       it "configures the ssh user" do
         @knife_ssh.config[:ssh_user].should == 'curiosity'
       end
-  
+
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '2430'
       end
-  
+
       it "configures the ssh identity file" do
         @knife_ssh.config[:identity_file].should == '~/.ssh/you.rsa'
       end
-  
+
       it "configures the ssh gateway" do
         @knife_ssh.config[:ssh_gateway].should == 'towel.blinkenlights.nl'
       end
@@ -205,29 +281,30 @@ describe Chef::Knife::Bootstrap do
       it "configures the host key verify mode" do
         @knife_ssh.config[:host_key_verify].should == true
       end
-  end
-
-  describe "when falling back to password auth when host key auth fails" do
-    before do
-      @knife.name_args = ["foo.example.com"]
-      @knife.config[:ssh_user]      = "rooty"
-      @knife.config[:identity_file] = "~/.ssh/me.rsa"
-      @knife.stub!(:read_template).and_return("")
-      @knife_ssh = @knife.knife_ssh
     end
 
-    it "prompts the user for a password " do
-      @knife.stub!(:knife_ssh).and_return(@knife_ssh)
-      @knife_ssh.stub!(:get_password).and_return('typed_in_password')
-      alternate_knife_ssh = @knife.knife_ssh_with_password_auth
-      alternate_knife_ssh.config[:ssh_password].should == 'typed_in_password'
-    end
+    describe "when falling back to password auth when host key auth fails" do
+      before do
+        @knife.name_args = ["foo.example.com"]
+        @knife.config[:ssh_user]      = "rooty"
+        @knife.config[:identity_file] = "~/.ssh/me.rsa"
+        @knife.stub!(:read_template).and_return("")
+        @knife_ssh = @knife.knife_ssh
+      end
 
-    it "configures knife not to use the identity file that didn't work previously" do
-      @knife.stub!(:knife_ssh).and_return(@knife_ssh)
-      @knife_ssh.stub!(:get_password).and_return('typed_in_password')
-      alternate_knife_ssh = @knife.knife_ssh_with_password_auth
-      alternate_knife_ssh.config[:identity_file].should be_nil
+      it "prompts the user for a password " do
+        @knife.stub!(:knife_ssh).and_return(@knife_ssh)
+        @knife_ssh.stub!(:get_password).and_return('typed_in_password')
+        alternate_knife_ssh = @knife.knife_ssh_with_password_auth
+        alternate_knife_ssh.config[:ssh_password].should == 'typed_in_password'
+      end
+
+      it "configures knife not to use the identity file that didn't work previously" do
+        @knife.stub!(:knife_ssh).and_return(@knife_ssh)
+        @knife_ssh.stub!(:get_password).and_return('typed_in_password')
+        alternate_knife_ssh = @knife.knife_ssh_with_password_auth
+        alternate_knife_ssh.config[:identity_file].should be_nil
+      end
     end
   end
 
@@ -260,6 +337,17 @@ describe Chef::Knife::Bootstrap do
       @knife.stub!(:knife_ssh_with_password_auth).and_return(@fallback_knife_ssh)
       @fallback_knife_ssh.should_receive(:run)
       @knife.run
+    end
+
+    context "Chef::Config[:encrypted_data_bag_secret] is set" do
+      let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
+      before { Chef::Config[:encrypted_data_bag_secret] = secret_file }
+
+      it "warns the configuration option is deprecated" do
+        @knife_ssh.should_receive(:run)
+        @knife.ui.should_receive(:warn).at_least(3).times
+        @knife.run
+      end
     end
 
   end

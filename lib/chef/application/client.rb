@@ -58,8 +58,8 @@ class Chef::Application::Client < Chef::Application
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => true,
-    :description  => "Use colored output, defaults to enabled"
+    :default      => !Chef::Platform.windows?,
+    :description  => "Use colored output, defaults to false on Windows, true otherwise"
 
   option :log_level,
     :short        => "-l LEVEL",
@@ -184,10 +184,10 @@ class Chef::Application::Client < Chef::Application
     :long         => '--why-run',
     :description  => 'Enable whyrun mode',
     :boolean      => true
-  
+
   option :client_fork,
     :short        => "-f",
-    :long         => "--fork",
+    :long         => "--[no-]fork",
     :description  => "Fork client",
     :boolean      => true
 
@@ -217,9 +217,6 @@ class Chef::Application::Client < Chef::Application
     super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-    unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
-      Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
-    end
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
