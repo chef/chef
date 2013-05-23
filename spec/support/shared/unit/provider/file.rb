@@ -161,7 +161,7 @@ shared_examples_for Chef::Provider::File do
           provider.load_current_resource
         end
 
-        it "should load the permissions into the current_resource as numbers", :focus => true do
+        it "should load the permissions into the current_resource as numbers" do
           # Mode is always loaded as string for reporting purposes.
           provider.current_resource.mode.should == "0600"
           provider.current_resource.owner.should == 0
