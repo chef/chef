@@ -65,7 +65,7 @@ describe Chef::Provider::RemoteFile::FTP do
     Tempfile.stub!(:new).and_return(tempfile)
   end
 
-  describe "when constructing the object" do
+  describe "when first created" do
 
     it "throws an argument exception when no path is given" do
       uri.path = ""
@@ -87,16 +87,16 @@ describe Chef::Provider::RemoteFile::FTP do
       lambda { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }.should raise_error(ArgumentError)
     end
 
-    it "sets ftp_active_mode to true when new_resource sets ftp_active_mode" do
+    it "does not use passive mode when new_resource sets ftp_active_mode to true" do
       new_resource.ftp_active_mode(true)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-      fetcher.ftp_active_mode.should == true
+      fetcher.use_passive_mode?.should be_false
     end
 
-    it "sets ftp_active_mode to false when new_resource does not set ftp_active_mode" do
+    it "uses passive mode when new_resource sets ftp_active_mode to false" do
       new_resource.ftp_active_mode(false)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
-      fetcher.ftp_active_mode.should == false
+      fetcher.use_passive_mode?.should be_true
     end
   end
 
