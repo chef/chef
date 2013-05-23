@@ -25,13 +25,15 @@ describe Chef::Provider::RemoteFile::Content do
   #
 
   let(:current_resource) do
-    mock("Chef::Provider::RemoteFile::Resource (current)", :source => nil)
+    Chef::Resource::RemoteFile.new("remote-file-content-spec (current resource)")
   end
 
   let(:source) { [ "http://opscode.com/seattle.txt" ] }
 
   let(:new_resource) do
-    mock("Chef::Provider::RemoteFile::Resource (new)", :source => source, :etag => nil, :last_modified => nil)
+    r = Chef::Resource::RemoteFile.new("remote-file-content-spec (current resource)")
+    r.source(source)
+    r
   end
 
   let(:run_context) { mock("Chef::RunContext") }
@@ -110,16 +112,18 @@ describe Chef::Provider::RemoteFile::Content do
     end
 
     describe "when the fetcher returns a result with a valid tempfile" do
+
+      let(:mtime) { Time.now }
+      let(:tempfile) { mock("Tempfile") }
+      let(:result) { Chef::Provider::RemoteFile::Result.new(tempfile, "etag", mtime) }
+      let(:http_fetcher) { mock("Chef::Provider::RemoteFile::HTTP", :fetch => result) }
+
       before do
-        @tempfile = mock("Tempfile")
-        mtime = Time.now
-        @result = mock("Chef::Provider::RemoteFile::Result", :raw_file => @tempfile, :etag => "etag", :mtime => mtime)
-        http_fetcher = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @result)
         Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
       end
 
       it "should return the tempfile object to the caller" do
-        content.tempfile.should == @tempfile
+        content.tempfile.should == tempfile
       end
 
       it "should return the raw_file_source when the accessor is called after getting the tempfile" do
@@ -127,21 +131,12 @@ describe Chef::Provider::RemoteFile::Content do
         content.raw_file_source.should == @sanitized_uri
       end
 
-      it "should set the etags on the new resource" do
-        new_resource.should_receive(:etag).with(@result.etag)
-        content.tempfile
-      end
-
-      it "should set the mtime on the new resource" do
-        new_resource.should_receive(:last_modified).with(@result.mtime)
-        content.tempfile
-      end
     end
   end
   describe "when the checksum are both nil" do
     before do
-      new_resource.stub!(:checksum).and_return(nil)
-      current_resource.stub!(:checksum).and_return(nil)
+      new_resource.checksum.should be_nil
+      current_resource.checksum.should be_nil
     end
     it_behaves_like "the resource needs fetching"
   end
@@ -223,16 +218,6 @@ describe Chef::Provider::RemoteFile::Content do
         content.raw_file_source.should == @sanitized_uri
       end
 
-      it "should set the etags on the new resource" do
-        new_resource.should_receive(:etag).with(@result.etag)
-        content.tempfile
-      end
-
-      it "should set the mtime on the new resource" do
-        new_resource.should_receive(:last_modified).with(@result.mtime)
-        content.tempfile
-      end
-
       it "should not mutate the new_resource" do
         content.tempfile
         new_resource.source.length.should == 2
@@ -275,16 +260,6 @@ describe Chef::Provider::RemoteFile::Content do
     it "should return the raw_file_source when the accessor is called after getting the tempfile" do
       content.tempfile
       content.raw_file_source.should == @sanitized_uri
-    end
-
-    it "should set the etags on the new resource" do
-      new_resource.should_receive(:etag).with(@result.etag)
-      content.tempfile
-    end
-
-    it "should set the mtime on the new resource" do
-      new_resource.should_receive(:last_modified).with(@result.mtime)
-      content.tempfile
     end
 
     it "should not mutate the new_resource" do
