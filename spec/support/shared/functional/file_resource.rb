@@ -232,6 +232,43 @@ shared_examples_for "a file resource" do
 
 end
 
+shared_examples_for "file resource not pointing to a real file" do
+  def symlink?(file_path)
+    if windows?
+      Chef::ReservedNames::Win32::File.symlink?(file_path)
+    else
+      File.symlink?(file_path)
+    end
+  end
+
+  def real_file?(file_path)
+    !symlink?(file_path) && File.file?(file_path)
+  end
+
+  describe "when force_unlink is set to true" do
+    it ":create unlinks the target" do
+      real_file?(path).should be_false
+      resource.force_unlink(true)
+      resource.run_action(:create)
+      real_file?(path).should be_true
+      binread(path).should == expected_content
+      resource.should be_updated_by_last_action
+    end
+  end
+
+  describe "when force_unlink is set to false" do
+    it ":create raises an error" do
+      lambda {resource.run_action(:create) }.should raise_error(Chef::Exceptions::FileTypeMismatch)
+    end
+  end
+
+  describe "when force_unlink is not set (default)" do
+    it ":create raises an error" do
+      lambda {resource.run_action(:create) }.should raise_error(Chef::Exceptions::FileTypeMismatch)
+    end
+  end
+end
+
 shared_examples_for "a configured file resource" do
 
   include_context "diff disabled"
@@ -256,6 +293,137 @@ shared_examples_for "a configured file resource" do
     end
     content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
     content
+  end
+
+  context "when the target file is a symlink", :not_supported_on_win2k3 do
+    let (:symlink_target) {
+      File.join(CHEF_SPEC_DATA, "file-test-target")
+    }
+
+    before do
+      FileUtils.touch(symlink_target)
+    end
+
+    after do
+      FileUtils.rm_rf(symlink_target)
+    end
+
+    before(:each) do
+      if windows?
+        Chef::ReservedNames::Win32::File.symlink(symlink_target, path)
+      else
+        File.symlink(symlink_target, path)
+      end
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    describe "when symlink target has correct content" do
+      before(:each) do
+        File.open(symlink_target, "wb") { |f| f.print expected_content }
+      end
+
+      it_behaves_like "file resource not pointing to a real file"
+    end
+
+    describe "when symlink target has the wrong content" do
+      before(:each) do
+        File.open(symlink_target, "wb") { |f| f.print "This is so wrong!!!" }
+      end
+
+      after(:each) do
+        # symlink should never be followed
+        binread(symlink_target).should == "This is so wrong!!!"
+      end
+
+      it_behaves_like "file resource not pointing to a real file"
+    end
+  end
+
+  context "when the target file is a directory" do
+    before(:each) do
+      FileUtils.mkdir_p(path)
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a blockdev",:unix_only, :requires_root do
+    include Chef::Mixin::ShellOut
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testdev")
+    end
+
+    before(:each) do
+      result = shell_out("mknod #{path} b 1 2")
+      result.stderr.empty?
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a chardev",:unix_only, :requires_root do
+    include Chef::Mixin::ShellOut
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testdev")
+    end
+
+    before(:each) do
+      result = shell_out("mknod #{path} c 1 2")
+      result.stderr.empty?
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a pipe",:unix_only do
+    include Chef::Mixin::ShellOut
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testpipe")
+    end
+
+    before(:each) do
+      result = shell_out("mkfifo #{path}")
+      result.stderr.empty?
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a socket",:unix_only do
+    require 'socket'
+
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testsocket")
+    end
+
+    before(:each) do
+      UNIXServer.new(path)
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
   end
 
   context "when the target file does not exist" do
@@ -392,6 +560,10 @@ shared_examples_for "a configured file resource" do
 end
 
 shared_context Chef::Resource::File  do
+  if windows?
+    require 'chef/win32/file'
+  end
+
   # We create the files in a different directory than tmp to exercise
   # different file deployment strategies more completely.
   let(:test_file_dir) do

@@ -26,6 +26,7 @@ require 'fileutils'
 require 'chef/scan_access_control'
 require 'chef/mixin/checksum'
 require 'chef/mixin/shell_out'
+require 'chef/mixin/file_class'
 require 'chef/util/backup'
 require 'chef/util/diff'
 require 'chef/deprecation/provider/file'
@@ -49,6 +50,7 @@ class Chef
       include Chef::Mixin::Checksum
       include Chef::Mixin::ShellOut
       include Chef::Util::Selinux
+      include Chef::Mixin::FileClass
 
       extend Chef::Deprecation::Warnings
       include Chef::Deprecation::Provider::File
@@ -72,8 +74,8 @@ class Chef
         # Let children resources override constructing the @current_resource
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
-        if ::File.exists?(@current_resource.path)
-          if @action != :create_if_missing && @current_resource.respond_to?(:checksum) && ::File.file?(@current_resource.path)
+        if real_file?(@current_resource.path) && ::File.exists?(@current_resource.path)
+          if @action != :create_if_missing && @current_resource.respond_to?(:checksum)
             @current_resource.checksum(checksum(@current_resource.path))
           end
           load_resource_attributes_from_file(@current_resource)
@@ -107,7 +109,9 @@ class Chef
         #   for :create, we have a problem with devining the users intent, so we raise an exception
         unless @new_resource.force_unlink
           requirements.assert(:create) do |a|
-            a.assertion { !exists_or_symlink?(@new_resource.path) || ::File.file?(@new_resource.path) }
+            # File should either not exist or be a real file in order
+            # to match this assertion.
+            a.assertion { !::File.exists?(@new_resource.path) || real_file?(@new_resource.path) }
             a.failure_message(Chef::Exceptions::FileTypeMismatch, "File #{@new_resource.path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove")
             a.whyrun("Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource")
           end
@@ -134,7 +138,7 @@ class Chef
       def action_delete
         if ::File.exists?(@new_resource.path)
           converge_by("delete file #{@new_resource.path}") do
-            do_backup unless ::File.symlink?(@new_resource.path)
+            do_backup unless file_class.symlink?(@new_resource.path)
             ::File.delete(@new_resource.path)
             Chef::Log.info("#{@new_resource} deleted file at #{@new_resource.path}")
           end
@@ -171,21 +175,34 @@ class Chef
           "pipe"
         when ::File.socket?(path)
           "socket"
-        when ::File.symlink?(path)
+        when file_class.symlink?(path)
           "symlink"
         else
           "unknown filetype"
         end
       end
 
+      def real_file?(path)
+        !file_class.symlink?(path) && ::File.file?(path)
+      end
+
+      def unlink(path)
+        # Directories can not be unlinked. Remove them using FileUtils.
+        if ::File.directory?(path)
+          FileUtils.rm_rf(path)
+        else
+          ::File.unlink(path)
+        end
+      end
+
       def do_unlink
         @file_unlinked = false
         if @new_resource.force_unlink
-          if ::File.exists?(@new_resource.path) && !::File.file?(@new_resource.path)
+          if !real_file?(@new_resource.path)
             # unlink things that aren't normal files
             description = "unlink #{file_type_string(@new_resource.path)} at #{@new_resource.path}"
             converge_by(description) do
-              ::File.unlink(@new_resource.path)
+              unlink(@new_resource.path)
             end
             @file_unlinked = true
           end
@@ -296,11 +313,6 @@ class Chef
         end
         acl_scanner = ScanAccessControl.new(@new_resource, resource)
         acl_scanner.set_all!
-      end
-
-      # File.exists? always follows symlinks, i want true if there's a symlink there
-      def exists_or_symlink?(path)
-        ::File.symlink?(path) || ::File.exists?(path)
       end
 
     end

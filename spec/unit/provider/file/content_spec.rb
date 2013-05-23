@@ -36,9 +36,12 @@ describe Chef::Provider::File::Content do
     mock("Chef::Provider::File::Resource (current)")
   end
 
-  let(:enclosing_directory) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates")) }
-
-  let(:resource_path) { File.expand_path(File.join(enclosing_directory, "seattle.txt")) }
+  let(:enclosing_directory) {
+    canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
+  }
+  let(:resource_path) {
+    canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
+  }
 
   let(:new_resource) do
     mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path, :binmode => true)
@@ -71,14 +74,14 @@ describe Chef::Provider::File::Content do
 
     it "returns a tempfile in the tempdir when :file_staging_uses_destdir is not set" do
       Chef::Config[:file_staging_uses_destdir] = false
-      content.tempfile.path.should match /^#{Dir::tmpdir}/
-      content.tempfile.path.should_not match /^#{enclosing_directory}/
+      content.tempfile.path.start_with?(Dir::tmpdir).should be_true
+      canonicalize_path(content.tempfile.path).start_with?(enclosing_directory).should be_false
     end
 
     it "returns a tempfile in the destdir when :file_desployment_uses_destdir is not set" do
       Chef::Config[:file_staging_uses_destdir] = true
-      content.tempfile.path.should_not match /^#{Dir::tmpdir}/
-      content.tempfile.path.should match /^#{enclosing_directory}/
+      content.tempfile.path.start_with?(Dir::tmpdir).should be_false
+      canonicalize_path(content.tempfile.path).start_with?(enclosing_directory).should be_true
     end
 
   end

@@ -33,7 +33,11 @@ class Chef
 
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(@new_resource.name)
-        super
+        @current_resource.path(@new_resource.path)
+        if ::File.exists?(@current_resource.path) && @action != :create_if_missing
+          load_resource_attributes_from_file(@current_resource)
+        end
+        @current_resource
       end
 
       def define_resource_requirements
