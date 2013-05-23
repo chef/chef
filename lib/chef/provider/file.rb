@@ -273,7 +273,7 @@ class Chef
         if resource_updated? && Chef::Config[:enable_selinux_file_permission_fixup]
           if selinux_enabled?
             converge_by("restore selinux security context") do
-              restore_security_context(@new_resource_path, recursive)
+              restore_security_context(@new_resource.path, recursive)
             end
           else
             Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
