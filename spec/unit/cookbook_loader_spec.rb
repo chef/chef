@@ -66,9 +66,10 @@ describe Chef::CookbookLoader do
         seen[0].should == "angrybash"
         seen[1].should == "apache2"
         seen[2].should == "borken"
-        seen[3].should == "java"
-        seen[4].should == "nginx"
-        seen[5].should == "openldap"
+        seen[3].should == "ignorken"
+        seen[4].should == "java"
+        seen[5].should == "nginx"
+        seen[6].should == "openldap"
       end
     end
   
