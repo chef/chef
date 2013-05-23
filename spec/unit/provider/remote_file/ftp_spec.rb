@@ -26,8 +26,17 @@ describe Chef::Provider::RemoteFile::FTP do
     canonicalize_path(File.expand_path(File.join(enclosing_directory, "seattle.txt")))
   }
 
-  let(:new_resource) { mock('Chef::Resource::RemoteFile (new resource)', :ftp_active_mode => false, :path => resource_path, :name => "seattle.txt", :binmode => true) }
-  let(:current_resource) {  mock('Chef::Resource::RemoteFile (current resource)', :source => nil) }
+  let(:new_resource) do
+    r = Chef::Resource::RemoteFile.new("remote file ftp backend test (new resource)")
+    r.ftp_active_mode(false)
+    r.path(resource_path)
+    r.binmode(true)
+    r
+  end
+
+  let(:current_resource) do
+    Chef::Resource::RemoteFile.new("remote file ftp backend test (current resource)'")
+  end
 
   let(:ftp) do
     ftp = mock(Net::FTP, { })
@@ -54,7 +63,6 @@ describe Chef::Provider::RemoteFile::FTP do
   before(:each) do
     Net::FTP.stub!(:new).and_return(ftp)
     Tempfile.stub!(:new).and_return(tempfile)
-
   end
 
   describe "when constructing the object" do
@@ -80,13 +88,13 @@ describe Chef::Provider::RemoteFile::FTP do
     end
 
     it "sets ftp_active_mode to true when new_resource sets ftp_active_mode" do
-      new_resource.stub!(:ftp_active_mode).and_return(true)
+      new_resource.ftp_active_mode(true)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
       fetcher.ftp_active_mode.should == true
     end
 
     it "sets ftp_active_mode to false when new_resource does not set ftp_active_mode" do
-      new_resource.stub!(:ftp_active_mode).and_return(false)
+      new_resource.ftp_active_mode(false)
       fetcher = Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource)
       fetcher.ftp_active_mode.should == false
     end
@@ -102,13 +110,13 @@ describe Chef::Provider::RemoteFile::FTP do
     end
 
     it "should set passive true when ftp_active_mode is false" do
-      new_resource.should_receive(:ftp_active_mode).and_return(false)
+      new_resource.ftp_active_mode(false)
       ftp.should_receive(:passive=).with(true)
       fetcher.fetch
     end
 
     it "should set passive false when ftp_active_mode is false" do
-      new_resource.should_receive(:ftp_active_mode).and_return(true)
+      new_resource.ftp_active_mode(true)
       ftp.should_receive(:passive=).with(false)
       fetcher.fetch
     end
