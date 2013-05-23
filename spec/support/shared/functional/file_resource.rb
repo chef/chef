@@ -378,7 +378,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a pipe",:unix_only, :focus => true do
+  context "when the target file is a pipe",:unix_only do
     include Chef::Mixin::ShellOut
     let (:path) do
       File.join(CHEF_SPEC_DATA, "testpipe")
@@ -387,6 +387,24 @@ shared_examples_for "a configured file resource" do
     before(:each) do
       result = shell_out("mkfifo #{path}")
       result.stderr.empty?
+    end
+
+    after(:each) do
+      FileUtils.rm_rf(path)
+    end
+
+    it_behaves_like "file resource not pointing to a real file"
+  end
+
+  context "when the target file is a socket",:unix_only do
+    require 'socket'
+
+    let (:path) do
+      File.join(CHEF_SPEC_DATA, "testsocket")
+    end
+
+    before(:each) do
+      UNIXServer.new(path)
     end
 
     after(:each) do

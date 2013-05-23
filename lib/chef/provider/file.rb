@@ -73,7 +73,7 @@ class Chef
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
         if real_file?(@current_resource.path) && ::File.exists?(@current_resource.path)
-          if @action != :create_if_missing && @current_resource.respond_to?(:checksum) && ::File.file?(@current_resource.path)
+          if @action != :create_if_missing && @current_resource.respond_to?(:checksum)
             @current_resource.checksum(checksum(@current_resource.path))
           end
           load_resource_attributes_from_file(@current_resource)
@@ -107,7 +107,9 @@ class Chef
         #   for :create, we have a problem with devining the users intent, so we raise an exception
         unless @new_resource.force_unlink
           requirements.assert(:create) do |a|
-            a.assertion { real_file?(@new_resource.path) }
+            # File should either not exist or be a real file in order
+            # to match this assertion.
+            a.assertion { !::File.exists?(@new_resource.path) || real_file?(@new_resource.path) }
             a.failure_message(Chef::Exceptions::FileTypeMismatch, "File #{@new_resource.path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove")
             a.whyrun("Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource")
           end
@@ -179,12 +181,11 @@ class Chef
       end
 
       def real_file?(path)
-        # TODO: For now only testing the logic with symlinks
-        # !::File.symlink?(path) && !::File.directory?(path)
         !::File.symlink?(path) && ::File.file?(path)
       end
 
       def unlink(path)
+        # Directories can not be unlinked. Remove them using FileUtils.
         if ::File.directory?(path)
           FileUtils.rm_rf(path)
         else
