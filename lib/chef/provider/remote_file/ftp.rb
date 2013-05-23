@@ -37,11 +37,6 @@ class Chef
           @uri = uri
           @new_resource = new_resource
           @current_resource = current_resource
-          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
-            if current_resource.use_last_modified && current_resource.last_modified
-              @last_modified = current_resource.last_modified
-            end
-          end
           validate_typecode!
           validate_path!
         end
@@ -95,7 +90,7 @@ class Chef
             ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
             connect
             mtime = ftp.mtime(filename)
-            tempfile = if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
+            tempfile = if use_conditional_fetch? and local_up_to_date?(mtime)
                          nil
                        else
                          get
@@ -110,6 +105,15 @@ class Chef
 
         def ftp
           @ftp ||= Net::FTP.new
+        end
+
+        def local_up_to_date?(remote_mtime)
+          # TODO: stub code
+          false
+        end
+
+        def use_conditional_fetch?
+          new_resource.use_last_modified
         end
 
         private

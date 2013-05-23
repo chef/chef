@@ -179,10 +179,48 @@ describe Chef::Provider::RemoteFile::FTP do
 
     end
 
+    context "when not using last modified based conditional fetching" do
+      before do
+        new_resource.use_last_modified(false)
+      end
 
-    it "should return a tempfile in the result" do
-      result = fetcher.fetch
-      result.raw_file.should equal(tempfile)
+      it "should return a tempfile in the result" do
+        result = fetcher.fetch
+        result.raw_file.should equal(tempfile)
+      end
+
+    end
+
+    context "when using last modified based conditional fetching" do
+      before do
+        new_resource.use_last_modified(true)
+      end
+
+      context "and the last modified time is unknown" do
+
+        it "should return a tempfile in the result" do
+          result = fetcher.fetch
+          result.raw_file.should equal(tempfile)
+        end
+
+      end
+
+      context "and the last modified time is older than remote's mtime" do
+
+        it "should return a tempfile in the result" do
+          result = fetcher.fetch
+          result.raw_file.should equal(tempfile)
+        end
+
+      end
+
+      context "and the last modified time matches the remote mtime" do
+
+        it "does not fetch the file, and returns a nil tempfile" do
+          pending
+        end
+
+      end
     end
 
   end
