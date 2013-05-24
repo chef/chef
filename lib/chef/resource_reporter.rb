@@ -20,6 +20,7 @@
 #
 
 require 'uri'
+require 'chef/monkey_patches/securerandom'
 require 'chef/event_dispatch/base'
 
 class Chef
@@ -97,12 +98,7 @@ class Chef
       @pending_update  = nil
       @status = "success"
       @exception = nil
-      begin
-         @run_id = uuid
-      rescue LoadError
-        Chef::Log.debug("Can't load SecureRandom - disabling resource_reporter")
-        @reporting_enabled = false
-      end
+      @run_id = SecureRandom.uuid
       @rest_client = rest_client
       @error_descriptions = {}
     end
@@ -307,13 +303,5 @@ class Chef
       end
     end
 
-    def uuid
-      require 'securerandom'
-      # Ruby 1.8.7 does not have SecureRandom::uuid, so copy the 1.9.2 impl here
-      ary = SecureRandom.random_bytes(16).unpack("NnnnnN")
-      ary[2] = (ary[2] & 0x0fff) | 0x4000
-      ary[3] = (ary[3] & 0x3fff) | 0x8000
-      "%08x-%04x-%04x-%04x-%04x%08x" % ary
-    end
   end
 end
