@@ -111,7 +111,9 @@ class Chef
           ui.msg("\n")
           result_items.each do |item|
             output(item)
-            ui.msg("\n")
+            unless config[:id_only]
+              ui.msg("\n")
+            end
           end
         end
       end
