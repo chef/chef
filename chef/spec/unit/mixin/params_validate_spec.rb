@@ -366,5 +366,40 @@ describe Chef::Mixin::ParamsValidate do
     @vo.set_or_return(:name, value, { }).object_id.should == value.object_id
     @vo.set_or_return(:foo, nil, { :name_attribute => true }).object_id.should == value.object_id
   end
+
+  it "should allow DelayedEvaluator instance to be set for value regardless of restriction" do
+    value = Chef::DelayedEvaluator.new{ 'test' }
+    @vo.set_or_return(:test, value, {:kind_of => Numeric})
+  end
+
+  it "should raise an error when delayed evaluated attribute is not valid" do
+    value = Chef::DelayedEvaluator.new{ 'test' }
+    @vo.set_or_return(:test, value, {:kind_of => Numeric})
+    lambda do
+      @vo.set_or_return(:test, nil, {:kind_of => Numeric})
+    end.should raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "should create DelayedEvaluator instance when #lazy is used" do
+    @vo.set_or_return(:delayed, @vo.lazy{ 'test' }, {})
+    @vo.instance_variable_get(:@delayed).should be_a(Chef::DelayedEvaluator)
+  end
+
+  it "should execute block on each call when DelayedEvaluator" do
+    value = 'fubar'
+    @vo.set_or_return(:test, @vo.lazy{ value }, {})
+    @vo.set_or_return(:test, nil, {}).should == 'fubar'
+    value = 'foobar'
+    @vo.set_or_return(:test, nil, {}).should == 'foobar'
+    value = 'fauxbar'
+    @vo.set_or_return(:test, nil, {}).should == 'fauxbar'
+  end
+
+  it "should not evaluate non DelayedEvaluator instances" do
+    value = lambda{ 'test' }
+    @vo.set_or_return(:test, value, {})
+    @vo.set_or_return(:test, nil, {}).object_id.should == value.object_id
+    @vo.set_or_return(:test, nil, {}).should be_a(Proc)
+  end
   
 end
