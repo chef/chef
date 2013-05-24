@@ -85,38 +85,35 @@ class Chef
 
 
         def fetch
-          saved_socks_env = ENV['SOCKS_SERVER']
-          begin
-            ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
-            connect
-            mtime = ftp.mtime(filename)
-            tempfile = if use_conditional_fetch? and local_up_to_date?(mtime)
-                         nil
-                       else
-                         get
-                       end
-            disconnect
-            @result = Chef::Provider::RemoteFile::Result.new(tempfile, nil, mtime)
-          ensure
-            ENV['SOCKS_SERVER'] = saved_socks_env
+          with_connection do
+            tempfile = get
+            @result = Chef::Provider::RemoteFile::Result.new(tempfile, nil, nil)
           end
-          return @result
+          @result
         end
 
         def ftp
           @ftp ||= Net::FTP.new
         end
 
-        def local_up_to_date?(remote_mtime)
-          # TODO: stub code
-          false
-        end
-
-        def use_conditional_fetch?
-          new_resource.use_last_modified
-        end
-
         private
+
+        def with_proxy_env
+          saved_socks_env = ENV['SOCKS_SERVER']
+          ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
+          yield
+        ensure
+          ENV['SOCKS_SERVER'] = saved_socks_env
+        end
+
+        def with_connection
+          with_proxy_env do
+            connect
+            yield
+          end
+        ensure
+          disconnect
+        end
 
         def validate_typecode!
           # Only support ascii and binary types

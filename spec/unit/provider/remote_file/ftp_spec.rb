@@ -61,7 +61,7 @@ describe Chef::Provider::RemoteFile::FTP do
   let(:uri) { URI.parse("ftp://opscode.com/seattle.txt") }
 
   before(:each) do
-    Net::FTP.stub!(:new).and_return(ftp)
+    Net::FTP.stub!(:new).with().and_return(ftp)
     Tempfile.stub!(:new).and_return(tempfile)
   end
 
@@ -102,7 +102,15 @@ describe Chef::Provider::RemoteFile::FTP do
 
   describe "when fetching the object" do
 
-    let(:fetcher) { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }
+    let(:cache_control_data) { Chef::Provider::RemoteFile::CacheControlData.new(uri) }
+    let(:current_resource_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
+
+    subject(:fetcher) { Chef::Provider::RemoteFile::FTP.new(uri, new_resource, current_resource) }
+
+    before do
+      current_resource.checksum(current_resource_checksum)
+      #Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+    end
 
     it "should connect to the host from the uri on the default port 21" do
       ftp.should_receive(:connect).with("opscode.com", 21)
@@ -191,36 +199,26 @@ describe Chef::Provider::RemoteFile::FTP do
 
     end
 
-    context "when using last modified based conditional fetching" do
+    context "and proxying is enabled" do
       before do
-        new_resource.use_last_modified(true)
+        @original_config = Chef::Config.hash_dup
+        Chef::Config[:ftp_proxy] = "socks5://socks.example.com:5000"
+        Chef::Config[:ftp_proxy_user] = "bill"
+        Chef::Config[:ftp_proxy_pass] = "ted"
       end
 
-      context "and the last modified time is unknown" do
-
-        it "should return a tempfile in the result" do
-          result = fetcher.fetch
-          result.raw_file.should equal(tempfile)
-        end
-
+      after do
+        Chef::Config.configuration = @original_config
       end
 
-      context "and the last modified time is older than remote's mtime" do
-
-        it "should return a tempfile in the result" do
-          result = fetcher.fetch
-          result.raw_file.should equal(tempfile)
-        end
-
+      it "fetches the file via the proxy" do
+        current_socks_server = ENV["SOCKS_SERVER"]
+        ENV.should_receive(:[]=).with("SOCKS_SERVER", "socks5://bill:ted@socks.example.com:5000").ordered
+        ENV.should_receive(:[]=).with("SOCKS_SERVER", current_socks_server).ordered
+        result = fetcher.fetch
+        result.raw_file.should equal(tempfile)
       end
 
-      context "and the last modified time matches the remote mtime" do
-
-        it "does not fetch the file, and returns a nil tempfile" do
-          pending
-        end
-
-      end
     end
 
   end
