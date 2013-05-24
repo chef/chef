@@ -2,6 +2,9 @@ source "https://rubygems.org"
 
 gemspec
 
+gem 'mixlib-cli', :git => 'git@github.com:chrisroberts/mixlib-cli.git',
+                  :branch => 'enhancement/option-inheritance'
+
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
 group(:docgen) do
