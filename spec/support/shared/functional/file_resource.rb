@@ -230,6 +230,31 @@ shared_examples_for "a file resource" do
     end
   end
 
+  describe "when running under why run" do
+
+    before do
+      Chef::Config[:why_run] = true
+    end
+
+    after do
+      Chef::Config[:why_run] = false
+    end
+
+    context "and the resource has a path with a missing intermediate directory" do
+      # CHEF-3978
+
+      let(:path) do
+        File.join(test_file_dir, "intermediate_dir", make_tmpname(file_base))
+      end
+
+      it "successfully doesn't create the file" do
+        resource.run_action(:create) # should not raise
+        File.should_not exist(path)
+      end
+    end
+
+  end
+
 end
 
 shared_examples_for "file resource not pointing to a real file" do
@@ -296,7 +321,7 @@ shared_examples_for "a configured file resource" do
   end
 
   context "when the target file is a symlink", :not_supported_on_win2k3 do
-    let (:symlink_target) {
+    let(:symlink_target) {
       File.join(CHEF_SPEC_DATA, "file-test-target")
     }
 
@@ -356,7 +381,7 @@ shared_examples_for "a configured file resource" do
 
   context "when the target file is a blockdev",:unix_only, :requires_root do
     include Chef::Mixin::ShellOut
-    let (:path) do
+    let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
     end
 
@@ -374,7 +399,7 @@ shared_examples_for "a configured file resource" do
 
   context "when the target file is a chardev",:unix_only, :requires_root do
     include Chef::Mixin::ShellOut
-    let (:path) do
+    let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
     end
 
@@ -392,7 +417,7 @@ shared_examples_for "a configured file resource" do
 
   context "when the target file is a pipe",:unix_only do
     include Chef::Mixin::ShellOut
-    let (:path) do
+    let(:path) do
       File.join(CHEF_SPEC_DATA, "testpipe")
     end
 
@@ -411,7 +436,7 @@ shared_examples_for "a configured file resource" do
   context "when the target file is a socket",:unix_only do
     require 'socket'
 
-    let (:path) do
+    let(:path) do
       File.join(CHEF_SPEC_DATA, "testsocket")
     end
 
@@ -490,7 +515,7 @@ shared_examples_for "a configured file resource" do
 
   def parent_inheritable_acls
     dummy_file_path = File.join(test_file_dir, "dummy_file")
-    dummy_file = FileUtils.touch(dummy_file_path)
+    FileUtils.touch(dummy_file_path)
     dummy_desc = get_security_descriptor(dummy_file_path)
     FileUtils.rm_rf(dummy_file_path)
     dummy_desc
