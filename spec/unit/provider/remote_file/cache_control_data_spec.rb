@@ -51,6 +51,16 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       cache_control_data.etag.should be_nil
       cache_control_data.mtime.should be_nil
     end
+
+    context "and the URI contains a password" do
+
+      let(:uri) { URI.parse("http://bob:password@example.org/") }
+      let(:cache_path) { "remote_file/http___bob_XXXX_example_org_-f121caacb74c05a35bcefdf578ed5fc9.json" }
+
+      it "loads the cache data from a path based on a sanitized URI" do
+        Chef::Provider::RemoteFile::CacheControlData.load_and_validate(uri, current_file_checksum)
+      end
+    end
   end
 
   describe "when loading data for a known URI" do
@@ -132,6 +142,18 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       json_data = cache_control_data.json_data
       Chef::FileCache.should_receive(:store).with(cache_path, json_data)
       cache_control_data.save
+    end
+
+    context "and the URI contains a password" do
+
+      let(:uri) { URI.parse("http://bob:password@example.org/") }
+      let(:cache_path) { "remote_file/http___bob_XXXX_example_org_-f121caacb74c05a35bcefdf578ed5fc9.json" }
+
+      it "writes the data to the cache with a sanitized path name" do
+        json_data = cache_control_data.json_data
+        Chef::FileCache.should_receive(:store).with(cache_path, json_data)
+        cache_control_data.save
+      end
     end
   end
 

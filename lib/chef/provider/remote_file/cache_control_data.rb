@@ -81,6 +81,8 @@ class Chef
         attr_reader :uri
 
         def initialize(uri)
+          uri = uri.dup
+          uri.password = "XXXX" unless uri.userinfo.nil?
           @uri = uri.to_s
         end
 
