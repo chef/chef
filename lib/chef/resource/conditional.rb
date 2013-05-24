@@ -83,6 +83,10 @@ class Chef
         @block.call
       end
 
+      def short_description
+        @positivity
+      end
+
       def description
         cmd_or_block = @command ? "command `#{@command}`" : "ruby block"
         "#{@positivity} #{cmd_or_block}"
