@@ -22,17 +22,14 @@ class Chef
   class Knife
     class UserShow < Knife
 
+      include Knife::Core::MultiAttributeReturnOption
+
       deps do
         require 'chef/user'
         require 'chef/json_compat'
       end
 
       banner "knife user show USER (options)"
-
-      option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "Show only one attribute"
 
       def run
         @user_name = @name_args[0]

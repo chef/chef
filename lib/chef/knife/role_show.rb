@@ -22,6 +22,8 @@ class Chef
   class Knife
     class RoleShow < Knife
 
+      include Knife::Core::MultiAttributeReturnOption
+
       deps do
         require 'chef/node'
         require 'chef/json_compat'
@@ -29,10 +31,6 @@ class Chef
 
       banner "knife role show ROLE (options)"
 
-      option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "Show only one attribute"
 
       def run
         @role_name = @name_args[0]
