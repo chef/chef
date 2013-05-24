@@ -28,34 +28,18 @@ class Chef
 
         attr_reader :uri
         attr_reader :new_resource
-        attr_reader :last_modified
 
         def initialize(uri, new_resource, current_resource)
           @new_resource = new_resource
-          if current_resource.source && Util.uri_matches_string?(uri, current_resource.source[0])
-            if new_resource.use_last_modified && current_resource.last_modified
-              Chef::Log.debug("#{new_resource} read last_modified time of #{current_resource.last_modified.strftime("%a, %d %b %Y %H:%M:%S %Z")}")
-              @last_modified = current_resource.last_modified
-            end
-          end
           @uri = uri
         end
 
         # Fetches the file at uri, returning a Tempfile-like File handle
         def fetch
-          mtime = ::File.mtime(uri.path)
-          Chef::Log.debug("#{new_resource} read mtime of #{mtime.strftime("%a, %d %b %Y %H:%M:%S %Z")} for #{uri.path}")
-          tempfile =
-            if mtime && last_modified && mtime.to_i <= last_modified.to_i
-              Chef::Log.debug("#{new_resource} mtime on #{uri.path} has not been updated, not deploying")
-              nil
-            else
-              tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
-              Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
-              FileUtils.cp(uri.path, tempfile.path)
-              tempfile
-            end
-          return Chef::Provider::RemoteFile::Result.new(tempfile, nil, mtime)
+          tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
+          Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
+          FileUtils.cp(uri.path, tempfile.path)
+          Chef::Provider::RemoteFile::Result.new(tempfile, nil, nil)
         end
 
       end
