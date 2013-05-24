@@ -44,7 +44,7 @@ class Chef
           # only check for existence of non-remote devices
           if (device_should_exist? && !::File.exists?(device_real) )
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif( !::File.exists?(@new_resource.mount_point) )
+          elsif( @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point) )
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
           return true
@@ -177,7 +177,8 @@ class Chef
         end
 
         def device_should_exist?
-          ( not network_device? ) &&
+          ( @new_resource.device != "none" ) && 
+            ( not network_device? ) &&
             ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
         end
 
