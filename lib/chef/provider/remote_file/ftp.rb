@@ -29,51 +29,67 @@ class Chef
     class RemoteFile
       class FTP
 
-        attr_reader :ftp_active_mode
+        attr_reader :uri
+        attr_reader :new_resource
+        attr_reader :current_resource
 
         def initialize(uri, new_resource, current_resource)
-          @new_resource = new_resource
-          @ftp_active_mode = new_resource.ftp_active_mode
-          @hostname = uri.host
-          @port = uri.port
-          @directories, @filename = parse_path(uri.path)
-          if current_resource.source && Chef::Provider::RemoteFile::Util.uri_matches_string?(uri, current_resource.source[0])
-            if current_resource.use_last_modified && current_resource.last_modified
-              @last_modified = current_resource.last_modified
-            end
-          end
-          # Only support ascii and binary types
-          @typecode = uri.typecode
-          if @typecode && /\A[ai]\z/ !~ @typecode
-            raise ArgumentError, "invalid typecode: #{@typecode.inspect}"
-          end
-          if uri.userinfo
-            @user = URI.unescape(uri.user)
-            @pass = URI.unescape(uri.password)
-          else
-            @user = 'anonymous'
-            @pass = nil
-          end
           @uri = uri
+          @new_resource = new_resource
+          @current_resource = current_resource
+          validate_typecode!
+          validate_path!
         end
 
-        def fetch
-          saved_socks_env = ENV['SOCKS_SERVER']
-          begin
-            ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
-            connect
-            mtime = ftp.mtime(@filename)
-            tempfile = if mtime && @last_modified && mtime.to_i <= @last_modified.to_i
-                         nil
-                       else
-                         get
-                       end
-            disconnect
-            @result = Chef::Provider::RemoteFile::Result.new(tempfile, nil, mtime)
-          ensure
-            ENV['SOCKS_SERVER'] = saved_socks_env
+        def hostname
+          @uri.host
+        end
+
+        def port
+          @uri.port
+        end
+
+        def use_passive_mode?
+          ! new_resource.ftp_active_mode
+        end
+
+        def typecode
+          uri.typecode
+        end
+
+        def user
+          if uri.userinfo
+            URI.unescape(uri.user)
+          else
+            'anonymous'
           end
-          return @result
+        end
+
+        def pass
+          if uri.userinfo
+            URI.unescape(uri.password)
+          else
+            nil
+          end
+        end
+
+        def directories
+          parse_path if @directories.nil?
+          @directories
+        end
+
+        def filename
+          parse_path if @filename.nil?
+          @filename
+        end
+
+
+        def fetch
+          with_connection do
+            tempfile = get
+            @result = Chef::Provider::RemoteFile::Result.new(tempfile, nil, nil)
+          end
+          @result
         end
 
         def ftp
@@ -82,12 +98,40 @@ class Chef
 
         private
 
+        def with_proxy_env
+          saved_socks_env = ENV['SOCKS_SERVER']
+          ENV['SOCKS_SERVER'] = proxy_uri(@uri).to_s
+          yield
+        ensure
+          ENV['SOCKS_SERVER'] = saved_socks_env
+        end
+
+        def with_connection
+          with_proxy_env do
+            connect
+            yield
+          end
+        ensure
+          disconnect
+        end
+
+        def validate_typecode!
+          # Only support ascii and binary types
+          if typecode and /\A[ai]\z/ !~ typecode
+            raise ArgumentError, "invalid typecode: #{typecode.inspect}"
+          end
+        end
+
+        def validate_path!
+          parse_path
+        end
+
         def connect
           # The access sequence is defined by RFC 1738
-          ftp.connect(@hostname, @port)
-          ftp.passive = !@ftp_active_mode
-          ftp.login(@user, @pass)
-          @directories.each do |cwd|
+          ftp.connect(hostname, port)
+          ftp.passive = use_passive_mode?
+          ftp.login(user, pass)
+          directories.each do |cwd|
             ftp.voidcmd("CWD #{cwd}")
           end
         end
@@ -99,10 +143,10 @@ class Chef
         # Fetches using Net::FTP, returns a Tempfile with the content
         def get
           tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
-          if @typecode
-            ftp.voidcmd("TYPE #{@typecode.upcase}")
+          if typecode
+            ftp.voidcmd("TYPE #{typecode.upcase}")
           end
-          ftp.getbinaryfile(@filename, tempfile.path)
+          ftp.getbinaryfile(filename, tempfile.path)
           tempfile
         end
 
@@ -121,8 +165,8 @@ class Chef
           return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
         end
 
-        def parse_path(path)
-          path = path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
+        def parse_path
+          path = uri.path.sub(%r{\A/}, '%2F') # re-encode the beginning slash because uri library decodes it.
           directories = path.split(%r{/}, -1)
           directories.each {|d|
             d.gsub!(/%([0-9A-Fa-f][0-9A-Fa-f])/) { [$1].pack("H2") }
@@ -133,7 +177,8 @@ class Chef
           if filename.length == 0 || filename.end_with?( "/" )
             raise ArgumentError, "no filename: #{path.inspect}"
           end
-          return directories, filename
+
+          @directories, @filename = directories, filename
         end
 
       end
