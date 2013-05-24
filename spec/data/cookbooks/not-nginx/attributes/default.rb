@@ -1,0 +1,1 @@
+default[:cheese] = 'mr whiskers'
