@@ -20,93 +20,41 @@ require 'spec_helper'
 
 describe Chef::Provider::RemoteFile::LocalFile do
 
-  before(:each) do
-    @uri = URI.parse("file:///nyan_cat.png")
-  end
+  let(:uri) { URI.parse("file:///nyan_cat.png") }
 
-  describe "when constructing the object" do
+  let(:new_resource) { Chef::Resource::RemoteFile.new("local file backend test (new_resource)") }
+  let(:current_resource) { Chef::Resource::RemoteFile.new("local file backend test (current_resource)") }
+  subject(:fetcher) { Chef::Provider::RemoteFile::LocalFile.new(uri, new_resource, current_resource) }
 
-    before do
-      @new_resource = mock('Chef::Resource::RemoteFile (new_resource)')
-      @current_resource = mock('Chef::Resource::RemoteFile (current_resource)')
+  context "when first created" do
+
+    it "stores the uri it is passed" do
+      fetcher.uri.should == uri
     end
 
-    describe "when the current resource has no source" do
-      before do
-        @current_resource.should_receive(:source).and_return(nil)
-      end
-
-      it "stores the uri it is passed" do
-        fetcher = Chef::Provider::RemoteFile::LocalFile.new(@uri, @new_resource, @current_resource)
-        fetcher.uri.should == @uri
-      end
-
-      it "stores the new_resource" do
-        fetcher = Chef::Provider::RemoteFile::LocalFile.new(@uri, @new_resource, @current_resource)
-        fetcher.new_resource.should == @new_resource
-      end
-
-      it "stores nil for the last_modified date" do
-        fetcher = Chef::Provider::RemoteFile::LocalFile.new(@uri, @new_resource, @current_resource)
-        fetcher.last_modified.should == nil
-      end
-    end
-
-    describe "when the current resource has a source" do
-
-      it "stores the last_modified string when the voodoo matches" do
-        @current_resource.stub!(:source).and_return(["file:///nyan_cat.png"])
-        @new_resource.should_receive(:use_last_modified).and_return(true)
-        @current_resource.stub!(:last_modified).and_return(Time.new)
-        Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(@uri, @current_resource.source[0]).and_return(true)
-        fetcher = Chef::Provider::RemoteFile::LocalFile.new(@uri, @new_resource, @current_resource)
-        fetcher.last_modified.should == @current_resource.last_modified
-      end
-
-    end
-
-    describe "when use_last_modified is disabled in the new_resource" do
-
-      it "stores nil for the last_modified date" do
-        @current_resource.stub!(:source).and_return(["file:///nyan_cat.png"])
-        @new_resource.should_receive(:use_last_modified).and_return(false)
-        @current_resource.stub!(:last_modified).and_return(Time.new)
-        Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(@uri, @current_resource.source[0]).and_return(true)
-        fetcher = Chef::Provider::RemoteFile::LocalFile.new(@uri, @new_resource, @current_resource)
-        fetcher.last_modified.should == nil
-      end
+    it "stores the new_resource" do
+      fetcher.new_resource.should == new_resource
     end
 
   end
 
   describe "when fetching the object" do
+
+    let(:tempfile) { mock("Tempfile", :path => "/tmp/foo/bar/nyan.png") }
+    let(:chef_tempfile) { mock("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
+
     before do
-      @new_resource = mock('Chef::Resource::RemoteFile (new_resource)')
-      @current_resource = mock('Chef::Resource::RemoteFile (current_resource)')
-      @current_resource.stub!(:source).and_return(["file:///nyan_cat.png"])
-      @new_resource.should_receive(:use_last_modified).and_return(true)
-      @now = Time.now
-      @current_resource.stub!(:last_modified).and_return(@now)
-      Chef::Provider::RemoteFile::Util.should_receive(:uri_matches_string?).with(@uri, @current_resource.source[0]).and_return(true)
-      @fetcher = Chef::Provider::RemoteFile::LocalFile.new(@uri, @new_resource, @current_resource)
+      current_resource.source("file:///nyan_cat.png")
     end
 
-    it "returns nil tempfile when the source file has not been modified" do
-      ::File.stub!(:mtime).and_return(@now)
-      @result = mock("Chef::Provider::RemoteFile::Result")
-      Chef::Provider::RemoteFile::Result.should_receive(:new).with(nil, nil, @now).and_return(@result)
-      @fetcher.fetch.should == @result
-    end
+    it "stages the local file to a temporary file" do
+      Chef::FileContentManagement::Tempfile.should_receive(:new).with(new_resource).and_return(chef_tempfile)
+      ::FileUtils.should_receive(:cp).with(uri.path, tempfile.path)
 
-    it "calls Chef::FileContentManagement::Tempfile to get a tempfile" do
-      ::File.stub!(:mtime).and_return(@now + 10)
-      @tempfile = mock("Tempfile", "path" => "/tmp/nyan.png")
-      @chef_tempfile = mock("Chef::FileContentManagement::Tempfile", :tempfile => @tempfile)
-      Chef::FileContentManagement::Tempfile.should_receive(:new).with(@new_resource).and_return(@chef_tempfile)
-      ::FileUtils.should_receive(:cp).with(@uri.path, @tempfile.path)
-      @result = mock("Chef::Provider::RemoteFile::Result")
-      Chef::Provider::RemoteFile::Result.should_receive(:new).with(@tempfile, nil, @now + 10).and_return(@result)
-      @fetcher.fetch.should == @result
+      result = fetcher.fetch
+      result.raw_file.should == tempfile
+      result.etag.should be_nil
+      result.mtime.should be_nil
     end
 
   end
