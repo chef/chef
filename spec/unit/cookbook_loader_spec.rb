@@ -67,7 +67,8 @@ describe Chef::CookbookLoader do
         seen[1].should == "apache2"
         seen[2].should == "borken"
         seen[3].should == "java"
-        seen[4].should == "openldap"
+        seen[4].should == "nginx"
+        seen[5].should == "openldap"
       end
     end
   
@@ -152,6 +153,26 @@ describe Chef::CookbookLoader do
         cookbooks.each do |cookbook|
             File.should_receive(:directory?).with(cookbook).once;
         end
+        @cookbook_loader.load_cookbooks
+      end
+
+      it "should index cookbooks by name, not pathname" do
+        @cookbook_loader.should_not have_key(:'not-nginx')
+        @cookbook_loader.should_not have_key(:'no-really-not-nginx')
+        @cookbook_loader.should have_key(:nginx)
+      end
+
+      it "should shadow cookbooks by name, not pathname" do
+        @cookbook_loader[:nginx].attribute_filenames.detect { |f|
+          f =~ /cookbooks\/not-nginx\/attributes\/default.rb/
+        }.should_not eql(nil)
+        @cookbook_loader[:nginx].attribute_filenames.detect { |f|
+          f =~ /kitchen\/no-really-not-nginx\/attributes\/default.rb/
+        }.should eql(nil)
+      end
+
+      it "should emit deprecation warning if name is not in metadata" do
+        Chef::Log.should_receive(:warn).exactly(6).with(/Inferring cookbook name from directory name \([^)]+\) is deprecated, please set a name in the metadata./)
         @cookbook_loader.load_cookbooks
       end
     end # load_cookbooks
