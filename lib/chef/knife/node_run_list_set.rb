@@ -31,7 +31,11 @@ class Chef
 
       def run
         node = Chef::Node.load(@name_args[0])
-        if @name_args.size > 2
+        if @name_args.size < 2
+          ui.fatal "You must supply both a node name and a run list."
+          show_usage
+          exit 1
+        elsif @name_args.size > 2
           # Check for nested lists and create a single plain one
           entries = @name_args[1..-1].map do |entry|
             entry.split(',').map { |e| e.strip }
