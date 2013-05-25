@@ -74,6 +74,7 @@ require "chef/provider/package/macports"
 require "chef/provider/package/openbsd"
 require "chef/provider/package/pacman"
 require "chef/provider/package/portage"
+require 'chef/provider/package/poldek'
 require "chef/provider/package/paludis"
 require "chef/provider/package/rpm"
 require "chef/provider/package/rubygems"
