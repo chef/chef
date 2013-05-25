@@ -11,7 +11,7 @@ end
 group(:development, :test) do
   gem 'rack', "~> 1.5.1"
 
-  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd)/)
+  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd|aix)/)
 #  gem 'awesome_print'
 #  gem 'pry'
 end
