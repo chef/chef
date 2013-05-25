@@ -17,56 +17,16 @@
 #
 
 require 'chef/chef_fs/file_system'
-require 'chef/chef_fs/file_system/base_fs_dir'
-require 'chef/chef_fs/file_system/base_fs_object'
+require 'chef/chef_fs/file_system/memory_root'
+require 'chef/chef_fs/file_system/memory_dir'
+require 'chef/chef_fs/file_system/memory_file'
 
 module FileSystemSupport
-  class MemoryFile < Chef::ChefFS::FileSystem::BaseFSObject
-    def initialize(name, parent, value)
-      super(name, parent)
-      @value = value
-    end
-    def read
-      return @value
-    end
-  end
-
-  class MemoryDir < Chef::ChefFS::FileSystem::BaseFSDir
-    def initialize(name, parent)
-      super(name, parent)
-      @children = []
-    end
-    attr_reader :children
-    def child(name)
-      @children.select { |child| child.name == name }.first || Chef::ChefFS::FileSystem::NonexistentFSObject.new(name, self)
-    end
-    def add_child(child)
-      @children.push(child)
-    end
-    def can_have_child?(name, is_dir)
-      root.cannot_be_in_regex ? (name !~ root.cannot_be_in_regex) : true
-    end
-  end
-
-  class MemoryRoot < MemoryDir
-    def initialize(pretty_name, cannot_be_in_regex = nil)
-      super('', nil)
-      @pretty_name = pretty_name
-      @cannot_be_in_regex = cannot_be_in_regex
-    end
-
-    attr_reader :cannot_be_in_regex
-
-    def path_for_printing
-      @pretty_name
-    end
-  end
-
   def memory_fs(pretty_name, value, cannot_be_in_regex = nil)
     if !value.is_a?(Hash)
       raise "memory_fs() must take a Hash"
     end
-    dir = MemoryRoot.new(pretty_name, cannot_be_in_regex)
+    dir = Chef::ChefFS::FileSystem::MemoryRoot.new(pretty_name, cannot_be_in_regex)
     value.each do |key, child|
       dir.add_child(memory_fs_value(child, key.to_s, dir))
     end
@@ -75,13 +35,13 @@ module FileSystemSupport
 
   def memory_fs_value(value, name = '', parent = nil)
     if value.is_a?(Hash)
-      dir = MemoryDir.new(name, parent)
+      dir = Chef::ChefFS::FileSystem::MemoryDir.new(name, parent)
       value.each do |key, child|
         dir.add_child(memory_fs_value(child, key.to_s, dir))
       end
       dir
     else
-      MemoryFile.new(name, parent, value || "#{name}\n")
+      Chef::ChefFS::FileSystem::MemoryFile.new(name, parent, value || "#{name}\n")
     end
   end
 
@@ -94,7 +54,7 @@ module FileSystemSupport
   end
 
   def no_blocking_calls_allowed
-    [ MemoryFile, MemoryDir ].each do |c|
+    [ Chef::ChefFS::FileSystem::MemoryFile, Chef::ChefFS::FileSystem::MemoryDir ].each do |c|
       [ :children, :exists?, :read ].each do |m|
         c.any_instance.stub(m).and_raise("#{m.to_s} should not be called")
       end
