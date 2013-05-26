@@ -53,7 +53,7 @@ class Chef
             end
 
             if !installed
-                out = shell_out!("poldek -q --uniq --skip-installed --cmd 'ls #{name}'", :env => nil, :returns => [0,1])
+                out = shell_out!("poldek -q --uniq --skip-installed #{expand_options(@new_resource.options)} --cmd 'ls #{name}'", :env => nil, :returns => [0,1])
                 if out.stdout
                     Chef::Log.debug("poldek STDOUT: #{out.stdout}");
                     version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
@@ -69,7 +69,7 @@ class Chef
         def install_package(name, version)
             Chef::Log.debug("#{@new_resource} installing package #{name}-#{version}")
             package = "#{name}-#{version}"
-            out = shell_out!("poldek --noask --up -u #{package}", :env => nil)
+            out = shell_out!("poldek --noask --up #{expand_options(@new_resource.options)} -u #{package}", :env => nil)
         end
 
         def upgrade_package(name, version)
@@ -80,7 +80,7 @@ class Chef
         def remove_package(name, version)
             Chef::Log.debug("#{@new_resource} removing package #{name}-#{version}")
             package = "#{name}-#{version}"
-            out = shell_out!("poldek --noask -e #{package}", :env => nil)
+            out = shell_out!("poldek --noask #{expand_options(@new_resource.options)} -e #{package}", :env => nil)
         end
 
         def purge_package(name, version)
