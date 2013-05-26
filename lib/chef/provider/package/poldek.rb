@@ -69,7 +69,8 @@ class Chef
         def install_package(name, version)
             Chef::Log.debug("#{@new_resource} installing package #{name}-#{version}")
             package = "#{name}-#{version}"
-            out = shell_out!("poldek --noask --up #{expand_options(@new_resource.options)} -u #{package}", :env => nil)
+            update_indexes
+            out = shell_out!("poldek --noask #{expand_options(@new_resource.options)} -u #{package}", :env => nil)
         end
 
         def upgrade_package(name, version)
@@ -85,6 +86,17 @@ class Chef
 
         def purge_package(name, version)
             remove_package(name, version)
+        end
+
+        @@updated = false
+        private
+        def update_indexes()
+            if @@updated
+                return
+            end
+            Chef::Log.debug("#{@new_resource} updating package indexes")
+            shell_out!("poldek --up #{expand_options(@new_resource.options)}", :env => nil)
+            @@updated = true
         end
       end
     end
