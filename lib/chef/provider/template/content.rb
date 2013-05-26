@@ -22,6 +22,37 @@ require 'chef/file_content_management/content_base'
 class Chef
   class Provider
     class Template
+
+      # TODO: extract to file
+      # TODO: integrate into mixin/template (make it work with partials)
+      # TODO: docs
+      class TemplateContext < Erubis::Context
+
+        def _define_helpers(helper_methods)
+          # TODO (ruby 1.8 hack)
+          # This is most elegantly done with Object#define_singleton_method,
+          # however ruby 1.8.7 does not support that, so we create a module and
+          # include it. This should be revised when 1.8 support is not needed.
+          helper_mod = Module.new do
+            helper_methods.each do |method_name, method_body|
+              define_method(method_name, &method_body)
+            end
+          end
+          extend(helper_mod)
+        end
+
+        def _define_helpers_from_blocks(blocks)
+          blocks.each do |module_body|
+            helper_mod = Module.new(&module_body)
+            extend(helper_mod)
+          end
+        end
+
+        def _extend_modules(module_names)
+          module_names.each { |mod| extend(mod) }
+        end
+      end
+
       class Content < Chef::FileContentManagement::ContentBase
 
         include Chef::Mixin::Template
@@ -35,10 +66,12 @@ class Chef
         private
 
         def file_for_provider
-          context = {}
-          context.merge!(@new_resource.variables)
+          context = TemplateContext.new(@new_resource.variables)
           context[:node] = @run_context.node
           context[:template_finder] = template_finder
+          context._define_helpers(@new_resource.inline_helper_blocks)
+          context._define_helpers_from_blocks(@new_resource.inline_helper_modules)
+          context._extend_modules(@new_resource.helper_modules)
           file = nil
           render_template(IO.read(template_location), context) { |t| file = t }
           file

@@ -29,6 +29,10 @@ class Chef
 
       provides :template, :on_platforms => :all
 
+      attr_reader :inline_helper_blocks
+      attr_reader :inline_helper_modules
+      attr_reader :helper_modules
+
       def initialize(name, run_context=nil)
         super
         @resource_name = :template
@@ -38,6 +42,9 @@ class Chef
         @local = false
         @variables = Hash.new
         @provider = Chef::Provider::Template
+        @inline_helper_blocks = {}
+        @inline_helper_modules = []
+        @helper_modules = []
       end
 
       def source(file=nil)
@@ -71,6 +78,21 @@ class Chef
           :kind_of => [ TrueClass, FalseClass ]
         )
       end
+
+      def helper(method_name, &block)
+        # TODO: method_name must be symbol or coerce.
+        # TODO: block is not optional.
+        @inline_helper_blocks[method_name] = block
+      end
+
+      def helpers(module_name=nil,&block)
+        if block_given?
+          @inline_helper_modules << block
+        else
+          @helper_modules << module_name
+        end
+      end
+
     end
   end
 end

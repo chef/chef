@@ -105,4 +105,47 @@ describe Chef::Resource::Template do
       @resource.identity.should == "/tmp/foo.txt"
     end
   end
+
+  describe "defining helper methods" do
+
+    it "collects helper method bodies as blocks" do
+      @resource.helper(:example_1) { "example_1" }
+      @resource.helper(:example_2) { "example_2" }
+      @resource.inline_helper_blocks[:example_1].call.should == "example_1"
+      @resource.inline_helper_blocks[:example_2].call.should == "example_2"
+    end
+
+    it "raises an error when attempting to define a helper method without a method body" do
+      pending
+      @resource.helper(:example) # should raise_error()
+    end
+
+    it "collects helper module bodies as blocks" do
+      @resource.helpers do
+        def example_1
+          "example_1"
+        end
+      end
+      module_body = @resource.inline_helper_modules.first
+      module_body.should be_a(Proc)
+      test_mod = Module.new(&module_body)
+      test_context = Object.new
+      test_context.extend(test_mod)
+      test_context.example_1.should == "example_1"
+    end
+
+    module ExampleHelpers
+    end
+
+    it "collects helper modules" do
+      @resource.helpers(ExampleHelpers)
+      @resource.helper_modules.should include(ExampleHelpers)
+    end
+
+    it "raises an error if a non-module is given as a helper module" do
+      pending
+    end
+
+  end
+
 end

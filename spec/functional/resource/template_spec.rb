@@ -71,4 +71,101 @@ describe Chef::Resource::Template do
       IO.read(path).should == expected_content
     end
   end
+
+  describe "when the template resource defines helper methods" do
+
+    include_context "diff disabled"
+
+    let!(:resource) do
+      r = create_resource
+      r.source "helper_test.erb"
+      r
+    end
+
+    let(:expected_content) { "value from helper method\n" }
+
+    shared_examples "a template with helpers" do
+      it "generates expected content by calling helper methods" do
+        resource.run_action(:create)
+        IO.read(path).should == expected_content
+      end
+    end
+
+    context "using single helper syntax" do
+      before do
+        resource.helper(:helper_method) { "value from helper method" }
+      end
+
+      it_behaves_like "a template with helpers"
+    end
+
+    context "using single helper syntax referencing @node" do
+      before do
+        node.set[:helper_test_attr] = "value from helper method"
+        resource.helper(:helper_method) { "#{@node[:helper_test_attr]}" }
+      end
+
+      it_behaves_like "a template with helpers"
+    end
+
+    context "using an inline block to define helpers" do
+      before do
+        resource.helpers do
+          def helper_method
+            "value from helper method"
+          end
+        end
+      end
+
+      it_behaves_like "a template with helpers"
+    end
+
+    context "using an inline block referencing @node" do
+      before do
+        node.set[:helper_test_attr] = "value from helper method"
+
+        resource.helpers do
+          def helper_method
+            @node[:helper_test_attr]
+          end
+        end
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+
+    context "using a module from a library" do
+
+      module ExampleModule
+        def helper_method
+          "value from helper method"
+        end
+      end
+
+      before do
+        resource.helpers(ExampleModule)
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+    context "using a module from a library referencing @node" do
+
+      module ExampleModuleReferencingATNode
+        def helper_method
+          @node[:helper_test_attr]
+        end
+      end
+
+      before do
+        node.set[:helper_test_attr] = "value from helper method"
+
+        resource.helpers(ExampleModuleReferencingATNode)
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+  end
 end
