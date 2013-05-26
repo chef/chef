@@ -53,7 +53,7 @@ class Chef
             end
 
             if !installed
-                out = shell_out!("poldek -q --uniq --skip-installed #{expand_options(@new_resource.options)} --cmd 'ls #{name}'", :env => nil, :returns => [0,1])
+                out = shell_out!("poldek -q --uniq --skip-installed #{expand_options(@new_resource.options)} --cmd 'ls #{name}'", :env => nil, :returns => [0,1,255])
                 if out.stdout
                     Chef::Log.debug("poldek STDOUT: #{out.stdout}");
                     version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
