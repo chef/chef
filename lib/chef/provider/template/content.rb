@@ -39,8 +39,6 @@ class Chef
           context = TemplateContext.new(@new_resource.variables)
           context[:node] = @run_context.node
           context[:template_finder] = template_finder
-          context._define_helpers(@new_resource.inline_helper_blocks)
-          context._define_helpers_from_blocks(@new_resource.inline_helper_modules)
           context._extend_modules(@new_resource.helper_modules)
           file = nil
           render_template(IO.read(template_location), context) { |t| file = t }

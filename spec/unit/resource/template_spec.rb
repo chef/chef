@@ -108,6 +108,12 @@ describe Chef::Resource::Template do
 
   describe "defining helper methods" do
 
+    module ExampleHelpers
+      def static_example
+        "static_example"
+      end
+    end
+
     it "collects helper method bodies as blocks" do
       @resource.helper(:example_1) { "example_1" }
       @resource.helper(:example_2) { "example_2" }
@@ -115,9 +121,23 @@ describe Chef::Resource::Template do
       @resource.inline_helper_blocks[:example_2].call.should == "example_2"
     end
 
+    it "compiles helper methods into a module" do
+      @resource.helper(:example_1) { "example_1" }
+      @resource.helper(:example_2) { "example_2" }
+      modules = @resource.helper_modules
+      modules.should have(1).module
+      o = Object.new
+      modules.each {|m| o.extend(m)}
+      o.example_1.should == "example_1"
+      o.example_2.should == "example_2"
+    end
+
     it "raises an error when attempting to define a helper method without a method body" do
-      pending
-      @resource.helper(:example) # should raise_error()
+      lambda { @resource.helper(:example) }.should raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "raises an error when attempting to define a helper method with a non-Symbod method name" do
+      lambda { @resource.helper("example") { "fail" } }.should raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "collects helper module bodies as blocks" do
@@ -128,13 +148,31 @@ describe Chef::Resource::Template do
       end
       module_body = @resource.inline_helper_modules.first
       module_body.should be_a(Proc)
-      test_mod = Module.new(&module_body)
-      test_context = Object.new
-      test_context.extend(test_mod)
-      test_context.example_1.should == "example_1"
     end
 
-    module ExampleHelpers
+    it "compiles helper module bodies into modules" do
+      @resource.helpers do
+        def example_1
+          "example_1"
+        end
+      end
+      modules = @resource.helper_modules
+      modules.should have(1).module
+      o = Object.new
+      modules.each {|m| o.extend(m)}
+      o.example_1.should == "example_1"
+    end
+
+    it "raises an error when no block or module name is given for helpers definition" do
+      lambda { @resource.helpers() }.should raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "raises an error when a non-module is given for helpers definition" do
+      lambda { @resource.helpers("NotAModule") }.should raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "raises an error when a module name and block are both given for helpers definition" do
+      lambda { @resource.helpers(ExampleHelpers) { module_code } }.should raise_error(Chef::Exceptions::ValidationFailed)
     end
 
     it "collects helper modules" do
@@ -142,9 +180,23 @@ describe Chef::Resource::Template do
       @resource.helper_modules.should include(ExampleHelpers)
     end
 
-    it "raises an error if a non-module is given as a helper module" do
-      pending
+    it "combines all helpers into a set of compiled modules" do
+      @resource.helpers(ExampleHelpers)
+      @resource.helpers do
+        def inline_module
+          "inline_module"
+        end
+      end
+      @resource.helper(:inline_method) { "inline_method" }
+      @resource.should have(3).helper_modules
+
+      o = Object.new
+      @resource.helper_modules.each {|m| o.extend(m)}
+      o.static_example.should == "static_example"
+      o.inline_module.should == "inline_module"
+      o.inline_method.should == "inline_method"
     end
+
 
   end
 

@@ -31,7 +31,6 @@ class Chef
 
       attr_reader :inline_helper_blocks
       attr_reader :inline_helper_modules
-      attr_reader :helper_modules
 
       def initialize(name, run_context=nil)
         super
@@ -80,16 +79,62 @@ class Chef
       end
 
       def helper(method_name, &block)
-        # TODO: method_name must be symbol or coerce.
-        # TODO: block is not optional.
+        unless block_given?
+          raise Exceptions::ValidationFailed,
+            "`helper(:method)` requires a block argument (e.g., `helper(:method) { code }`)"
+        end
+
+        unless method_name.kind_of?(Symbol)
+          raise Exceptions::ValidationFailed,
+            "method_name argument to `helper(method_name)` must be a symbol (e.g., `helper(:method) { code }`)"
+        end
+
         @inline_helper_blocks[method_name] = block
       end
 
       def helpers(module_name=nil,&block)
-        if block_given?
+        if block_given? and !module_name.nil?
+          raise Exceptions::ValidationFailed,
+            "Passing both a module and block to #helpers is not supported. Call #helpers multiple times instead"
+        elsif block_given?
           @inline_helper_modules << block
-        else
+        elsif module_name.kind_of?(::Module)
           @helper_modules << module_name
+        elsif module_name.nil?
+          raise Exceptions::ValidationFailed,
+            "#helpers requires either a module name or inline module code as a block.\n" +
+            "e.g.: helpers do; helper_code; end;\n" +
+            "OR: helpers(MyHelpersModule)"
+        else
+          raise Exceptions::ValidationFailed,
+            "Argument to #helpers must be a module. You gave #{module_name.inspect} (#{module_name.class})"
+        end
+      end
+
+      def helper_modules
+        compiled_helper_methods + compiled_helper_modules + @helper_modules
+      end
+
+      private
+
+      # compiles helper methods into a module that can be included in template context
+      def compiled_helper_methods
+        if inline_helper_blocks.empty?
+          []
+        else
+          resource_helper_blocks = inline_helper_blocks
+          helper_mod = Module.new do
+            resource_helper_blocks.each do |method_name, method_body|
+              define_method(method_name, &method_body)
+            end
+          end
+          [ helper_mod ]
+        end
+      end
+
+      def compiled_helper_modules
+        @inline_helper_modules.map do |module_body|
+          Module.new(&module_body)
         end
       end
 

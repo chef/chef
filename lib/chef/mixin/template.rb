@@ -94,28 +94,6 @@ class Chef
         # INTERNAL PUBLIC API
         ###
 
-        def _define_helpers(helper_methods)
-          # TODO (ruby 1.8 hack)
-          # This is most elegantly done with Object#define_singleton_method,
-          # however ruby 1.8.7 does not support that, so we create a module and
-          # include it. This should be revised when 1.8 support is not needed.
-          helper_mod = Module.new do
-            helper_methods.each do |method_name, method_body|
-              define_method(method_name, &method_body)
-            end
-          end
-          @_extension_modules << helper_mod
-          extend(helper_mod)
-        end
-
-        def _define_helpers_from_blocks(blocks)
-          blocks.each do |module_body|
-            helper_mod = Module.new(&module_body)
-            extend(helper_mod)
-            @_extension_modules << helper_mod
-          end
-        end
-
         def _extend_modules(module_names)
           module_names.each do |mod|
             extend(mod)
