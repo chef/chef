@@ -42,6 +42,11 @@ describe Chef::Resource::Template do
     resource = Chef::Resource::Template.new(path, run_context)
     resource.source('openldap_stuff.conf.erb')
     resource.cookbook('openldap')
+
+    # TODO: partials rely on `cookbook_name` getting set by chef internals and
+    # ignore the user-set `cookbook` attribute.
+    resource.cookbook_name = "openldap"
+
     resource
   end
 
@@ -162,6 +167,16 @@ describe Chef::Resource::Template do
         node.set[:helper_test_attr] = "value from helper method"
 
         resource.helpers(ExampleModuleReferencingATNode)
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+
+    context "using helpers with partial templates" do
+      before do
+        resource.source("helpers_via_partial_test.erb")
+        resource.helper(:helper_method) { "value from helper method" }
       end
 
       it_behaves_like "a template with helpers"

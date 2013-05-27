@@ -23,7 +23,32 @@ class Chef
   module Mixin
     module Template
 
+      # == ChefContext
+      # ChefContext was previously used to mix behavior into Erubis::Context so
+      # that it would be available to templates. This behavior has now moved to
+      # TemplateContext, but this module is still mixed in to the
+      # TemplateContext class so that any user code that modified ChefContext
+      # will continue to work correctly.
       module ChefContext
+      end
+
+      # TODO: extract to file
+      # TODO: docs
+      class TemplateContext < Erubis::Context
+
+        include ChefContext
+
+        attr_reader :_extension_modules
+
+        def initialize(variables)
+          super
+          @_extension_modules = []
+        end
+
+        ###
+        # USER FACING API
+        ###
+
         def node
           return @node if @node
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
@@ -56,22 +81,60 @@ class Chef
         def render(partial_name, options = {})
           raise "You cannot render partials in this context" unless @template_finder
 
-          if variables = options.delete(:variables)
-            context = {}
-            context.merge!(variables)
-            context[:node] = @node
-            context[:template_finder] = @template_finder
-          else
-            context = self.dup
-          end
+          partial_variables = options.delete(:variables) || _public_instance_variables
+          partial_context = self.class.new(partial_variables)
+          partial_context._extend_modules(@_extension_modules)
 
           template_location = @template_finder.find(partial_name, options)
           eruby = Erubis::Eruby.new(IO.read(template_location))
-          eruby.evaluate(context)
+          eruby.evaluate(partial_context)
+        end
+
+        ###
+        # INTERNAL PUBLIC API
+        ###
+
+        def _define_helpers(helper_methods)
+          # TODO (ruby 1.8 hack)
+          # This is most elegantly done with Object#define_singleton_method,
+          # however ruby 1.8.7 does not support that, so we create a module and
+          # include it. This should be revised when 1.8 support is not needed.
+          helper_mod = Module.new do
+            helper_methods.each do |method_name, method_body|
+              define_method(method_name, &method_body)
+            end
+          end
+          @_extension_modules << helper_mod
+          extend(helper_mod)
+        end
+
+        def _define_helpers_from_blocks(blocks)
+          blocks.each do |module_body|
+            helper_mod = Module.new(&module_body)
+            extend(helper_mod)
+            @_extension_modules << helper_mod
+          end
+        end
+
+        def _extend_modules(module_names)
+          module_names.each do |mod|
+            extend(mod)
+            @_extension_modules << mod
+          end
+        end
+
+        def _public_instance_variables
+          all_ivars = instance_variables
+          all_ivars.delete(:@_extension_modules)
+          all_ivars.inject({}) do |ivar_map, ivar_symbol_name|
+            value = instance_variable_get(ivar_symbol_name)
+            name_without_at = ivar_symbol_name.to_s[1..-1].to_sym
+            ivar_map[name_without_at] = value
+            ivar_map
+          end
         end
       end
 
-      ::Erubis::Context.send(:include, ChefContext)
 
       # Render a template with Erubis.  Takes a template as a string, and a
       # context hash.

@@ -24,16 +24,19 @@ describe Chef::Mixin::Template, "render_template" do
 
   before :each do
     @template = TinyTemplateClass.new
+    @context = Chef::Mixin::Template::TemplateContext.new({})
   end
 
   it "should render the template evaluated in the given context" do
-    @template.render_template("<%= @foo %>", { :foo => "bar" }) do |tmp|
+    @context[:foo] = "bar"
+    @template.render_template("<%= @foo %>", @context) do |tmp|
       tmp.open.read.should == "bar"
     end
   end
 
   it "should provide a node method to access @node" do
-    @template.render_template("<%= node %>",{:node => "tehShizzle"}) do |tmp|
+    @context[:node] = "tehShizzle"
+    @template.render_template("<%= node %>", @context) do |tmp|
       tmp.open.read.should == "tehShizzle"
     end
   end
@@ -64,7 +67,7 @@ describe Chef::Mixin::Template, "render_template" do
 
       @content_provider = Chef::Provider::Template::Content.new(@resource, @current_resource, @run_context)
 
-      @template_context = {}
+      @template_context = Chef::Mixin::Template::TemplateContext.new({})
       @template_context[:node] = @node
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, @resource.cookbook_name, @node)
     end
