@@ -32,8 +32,12 @@ class Chef
       module ChefContext
       end
 
-      # TODO: extract to file
-      # TODO: docs
+      # == TemplateContext
+      # TemplateContext is the base context class for all templates in Chef. It
+      # defines user-facing extensions to the base Erubis::Context to provide
+      # enhanced features. Individual instances of TemplateContext can be
+      # extended to add logic to a specific template.
+      #
       class TemplateContext < Erubis::Context
 
         include ChefContext
@@ -49,6 +53,9 @@ class Chef
         # USER FACING API
         ###
 
+        # Returns the current node object, or raises an error if it's not set.
+        # Provides API consistency, allowing users to reference the node object
+        # by the bare `node` everywhere.
         def node
           return @node if @node
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
@@ -101,6 +108,10 @@ class Chef
           end
         end
 
+        # Collects instance variables set on the current object as a Hash
+        # suitable for creating a new TemplateContext. Instance variables that
+        # are only valid for this specific instance are omitted from the
+        # collection.
         def _public_instance_variables
           all_ivars = instance_variables
           all_ivars.delete(:@_extension_modules)
