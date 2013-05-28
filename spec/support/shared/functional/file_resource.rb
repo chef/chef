@@ -91,6 +91,10 @@ shared_examples_for "a file with the wrong content" do
       it "is marked as updated by last action" do
         resource.should be_updated_by_last_action
       end
+
+      it "should restore the security contexts on selinux", :selinux_only do
+        selinux_security_context_restored?(path).should be_true
+      end
     end
 
     context "with backups disabled" do
@@ -102,6 +106,10 @@ shared_examples_for "a file with the wrong content" do
 
       it "should not attempt to backup the existing file if :backup == 0" do
         Dir.glob(backup_glob).size.should equal(0)
+      end
+
+      it "should restore the security contexts on selinux", :selinux_only do
+        selinux_security_context_restored?(path).should be_true
       end
     end
   end
@@ -118,6 +126,10 @@ shared_examples_for "a file with the wrong content" do
 
     it "is not marked as updated" do
       resource.should_not be_updated_by_last_action
+    end
+
+    it "should restore the security contexts on selinux", :selinux_only do
+      selinux_security_context_restored?(path).should be_true
     end
   end
 
@@ -160,6 +172,10 @@ shared_examples_for "a file with the correct content" do
     it "is not marked as updated by last action" do
       resource.should_not be_updated_by_last_action
     end
+
+    it "should restore the security contexts on selinux", :selinux_only do
+      selinux_security_context_restored?(path).should be_true
+    end
   end
 
   describe "when running action :create_if_missing" do
@@ -173,6 +189,10 @@ shared_examples_for "a file with the correct content" do
 
     it "is not marked as updated by last action" do
       resource.should_not be_updated_by_last_action
+    end
+
+    it "should restore the security contexts on selinux", :selinux_only do
+      selinux_security_context_restored?(path).should be_true
     end
   end
 
@@ -311,6 +331,17 @@ shared_examples_for "a configured file resource" do
   # permissions. We override this "let" definition in the context where content
   # and permissions are correct.
   let(:expect_updated?) { true }
+
+  include Chef::Mixin::ShellOut
+
+  def selinux_security_context_restored?(path)
+    @restorecon_path = which("restorecon") if @restorecon_path.nil?
+    restorecon_test_command = "#{@restorecon_path} -n -v #{path}"
+    cmdresult = shell_out(restorecon_test_command)
+    # restorecon will print the required changes to stdout if any is
+    # needed
+    cmdresult.stdout.empty?
+  end
 
   def binread(file)
     content = File.open(file, "rb") do |f|
@@ -473,6 +504,10 @@ shared_examples_for "a configured file resource" do
       it "is marked as updated by last action" do
         resource.should be_updated_by_last_action
       end
+
+      it "should restore the security contexts on selinux", :selinux_only do
+        selinux_security_context_restored?(path).should be_true
+      end
     end
 
     describe "when running action :create_if_missing" do
@@ -486,6 +521,10 @@ shared_examples_for "a configured file resource" do
 
       it "is marked as updated by last action" do
         resource.should be_updated_by_last_action
+      end
+
+      it "should restore the security contexts on selinux", :selinux_only do
+        selinux_security_context_restored?(path).should be_true
       end
     end
 

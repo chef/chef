@@ -83,3 +83,13 @@ end
 def canonicalize_path(path)
   windows? ? path.gsub('/', '\\') : path
 end
+
+# Check if a cmd exists on the PATH
+def which(cmd)
+  paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+  paths.each do |path|
+    filename = File.join(path, cmd)
+    return filename if File.executable?(filename)
+  end
+  false
+end

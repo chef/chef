@@ -81,6 +81,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
   config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
