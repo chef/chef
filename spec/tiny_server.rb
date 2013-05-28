@@ -18,6 +18,7 @@
 
 require 'rubygems'
 require 'webrick'
+require 'webrick/https'
 require 'rack'
 #require 'thin'
 require 'singleton'
