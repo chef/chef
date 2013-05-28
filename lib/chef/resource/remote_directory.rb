@@ -45,7 +45,6 @@ class Chef
         @files_owner = nil
         @files_group = nil
         @files_mode = 0644 unless Chef::Platform.windows?
-        @files_binmode = Platform.windows? ? true : false
         @overwrite = true
         @allowed_actions.push(:create, :create_if_missing, :delete)
         @cookbook = nil
@@ -103,14 +102,6 @@ class Chef
           :files_owner,
           arg,
           :regex => Chef::Config[:user_valid_regex]
-        )
-      end
-
-      def files_binmode(arg=nil)
-        set_or_return(
-          :diff,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 

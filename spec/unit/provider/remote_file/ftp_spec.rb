@@ -30,7 +30,6 @@ describe Chef::Provider::RemoteFile::FTP do
     r = Chef::Resource::RemoteFile.new("remote file ftp backend test (new resource)")
     r.ftp_active_mode(false)
     r.path(resource_path)
-    r.binmode(true)
     r
   end
 

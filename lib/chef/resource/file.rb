@@ -46,7 +46,6 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
-        @binmode = Platform.windows? ? true : false
         @atomic_update = Chef::Config[:file_atomic_update]
         @force_unlink = false
         @diff = nil
@@ -90,14 +89,6 @@ class Chef
           :diff,
           arg,
           :kind_of => String
-        )
-      end
-
-      def binmode(arg=nil)
-        set_or_return(
-          :binmode,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
