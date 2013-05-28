@@ -27,14 +27,24 @@ class Chef
 
         def add_file(path, value)
           path_parts = path.split('/')
-          if path_parts.length == 1
-            add_child(MemoryFile.new(path_parts[0], self, value))
-          else
-            if !child(path_parts[0]).exists?
-              add_child(MemoryDir.new(path_parts[0], self))
+          dir = add_dir(path_parts[0..-2].join('/'))
+          file = MemoryFile.new(path_parts[0], dir, value)
+          dir.add_child(file)
+          file
+        end
+
+        def add_dir(path)
+          path_parts = path.split('/')
+          dir = self
+          path_parts.each do |path_part|
+            subdir = dir.child(path_part)
+            if !subdir.exists?
+              subdir = MemoryDir.new(path_part, dir)
+              dir.add_child(subdir)
             end
-            child(path_parts[0]).add_file(path_parts[1..-1], value)
+            dir = subdir
           end
+          dir
         end
       end
     end
