@@ -28,7 +28,7 @@ class Chef
         def add_file(path, value)
           path_parts = path.split('/')
           dir = add_dir(path_parts[0..-2].join('/'))
-          file = MemoryFile.new(path_parts[0], dir, value)
+          file = MemoryFile.new(path_parts[-1], dir, value)
           dir.add_child(file)
           file
         end

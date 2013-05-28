@@ -276,8 +276,8 @@ class Chef
 
         error = false
         begin
-          dest_path = format_path.call(dest_entry)
-          src_path = format_path.call(src_entry)
+          dest_path = format_path.call(dest_entry) if ui
+          src_path = format_path.call(src_entry) if ui
           if !src_entry.exists?
             if options[:purge]
               # If we would not have uploaded it, we will not purge it.
@@ -406,13 +406,13 @@ class Chef
       def self.get_or_create_parent(entry, options, ui, format_path)
         parent = entry.parent
         if parent && !parent.exists?
-          parent_path = format_path.call(parent)
+          parent_path = format_path.call(parent) if ui
           parent_parent = get_or_create_parent(entry.parent, options, ui, format_path)
           if options[:dry_run]
-            ui.output "Would create #{parent_path}"
+            ui.output "Would create #{parent_path}" if ui
           else
             parent = parent_parent.create_child(parent.name, nil)
-            ui.output "Created #{parent_path}"
+            ui.output "Created #{parent_path}" if ui
           end
         end
         return parent
