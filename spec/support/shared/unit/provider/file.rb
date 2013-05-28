@@ -430,65 +430,86 @@ shared_examples_for Chef::Provider::File do
       end
     end
 
-    #    it "should compare the current content with the requested content" do
-    #      @provider.load_current_resource
-    #
-    #      @provider.new_resource.content "foobar"
-    #      @provider.compare_content.should eql(false)
-    #
-    #      @provider.new_resource.content IO.read(@resource.path)
-    #      @provider.compare_content.should eql(true)
-    #    end
-    #
-    #    it "should set the content of the file to the requested content" do
-    #      io = StringIO.new
-    #      @provider.load_current_resource
-    #      @provider.new_resource.content "foobar"
-    #      @provider.should_receive(:diff_current_from_content).and_return("")
-    #      @provider.should_receive(:do_backup)
-    #      # checksum check
-    #      File.should_receive(:open).with(@provider.new_resource.path, "rb").and_yield(io)
-    #      File.should_receive(:open).with(@provider.new_resource.path, "w").and_yield(io)
-    #      @provider.set_content
-    #      io.string.should == "foobar"
-    #    end
-    #
-    #    it "should not set the content of the file if it already matches the requested content" do
-    #      @provider.load_current_resource
-    #      @provider.new_resource.content IO.read(@resource.path)
-    #      # Checksum check:
-    #      File.should_receive(:open).with(@resource.path, "rb").and_yield(StringIO.new(@resource.content))
-    #      File.should_not_receive(:open).with(@provider.new_resource.path, "w")
-    #      lambda { @provider.set_content }.should_not raise_error
-    #      @resource.should_not be_updated_by_last_action
-    #    end
-    #
-    #    it "should create the file if it is missing, then set the attributes on action_create" do
-    #      @provider.load_current_resource
-    #      @provider.stub!(:update_new_file_state)
-    #      @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
-    #      @provider.access_controls.should_receive(:set_all)
-    #      @provider.should_receive(:diff_current_from_content).and_return("")
-    #      File.stub!(:open).and_return(1)
-    #      #File.should_receive(:directory?).with("/tmp").and_return(true)
-    #      File.should_receive(:open).with(@provider.new_resource.path, "w+")
-    #      @provider.run_action(:create)
-    #      @resource.should be_updated_by_last_action
-    #    end
-    #
-    #    it "should create the file with the proper content if it is missing, then set attributes on action_create" do
-    #      io = StringIO.new
-    #      @provider.load_current_resource
-    #      @provider.new_resource.content "foobar"
-    #      @provider.new_resource.stub!(:path).and_return(File.join(Dir.tmpdir, "monkeyfoo"))
-    #      @provider.should_receive(:diff_current_from_content).and_return("")
-    #      @provider.stub!(:update_new_file_state)
-    #      File.should_receive(:open).with(@provider.new_resource.path, "w+").and_yield(io)
-    #      @provider.access_controls.should_receive(:set_all)
-    #      @provider.run_action(:create)
-    #      io.string.should == "foobar"
-    #      @resource.should be_updated_by_last_action
-    #    end
+    context "do_selinux" do
+      context "when resource is updated" do
+        before do
+          setup_normal_file
+          provider.load_current_resource
+          provider.stub!(:resource_updated?).and_return(true)
+        end
+
+        it "should check for selinux_enabled? by default" do
+          provider.should_receive(:selinux_enabled?)
+          provider.send(:do_selinux)
+        end
+
+        context "when selinux fixup is enabled in the config" do
+          before do
+            @original_selinux_fixup = Chef::Config[:enable_selinux_file_permission_fixup]
+            Chef::Config[:enable_selinux_file_permission_fixup] = true
+          end
+
+          after do
+            Chef::Config[:enable_selinux_file_permission_fixup] = @original_selinux_fixup
+          end
+
+          context "when selinux is enabled on the system" do
+            before do
+              provider.should_receive(:selinux_enabled?).and_return(true)
+            end
+
+            it "restores security context on the file" do
+              provider.should_receive(:restore_security_context).with(resource_path, false)
+              provider.send(:do_selinux)
+            end
+
+            it "restores security context recursively when told so" do
+              provider.should_receive(:restore_security_context).with(resource_path, true)
+              provider.send(:do_selinux, true)
+            end
+          end
+
+          context "when selinux is disabled on the system" do
+            before do
+              provider.should_receive(:selinux_enabled?).and_return(false)
+            end
+
+            it "should not restore security context" do
+              provider.should_not_receive(:restore_security_context)
+              provider.send(:do_selinux)
+            end
+          end
+        end
+
+        context "when selinux fixup is disabled in the config" do
+          before do
+            @original_selinux_fixup = Chef::Config[:enable_selinux_file_permission_fixup]
+            Chef::Config[:enable_selinux_file_permission_fixup] = false
+          end
+
+          after do
+            Chef::Config[:enable_selinux_file_permission_fixup] = @original_selinux_fixup
+          end
+
+          it "should not check for selinux_enabled?" do
+            provider.should_not_receive(:selinux_enabled?)
+            provider.send(:do_selinux)
+          end
+        end
+      end
+
+      context "when resource is not updated" do
+        before do
+          provider.stub!(:resource_updated?).and_return(false)
+        end
+
+        it "should not check for selinux_enabled?" do
+          provider.should_not_receive(:selinux_enabled?)
+          provider.send(:do_selinux)
+        end
+      end
+    end
+
   end
 
   context "action delete" do
