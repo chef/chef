@@ -97,7 +97,11 @@ class Chef
       end
 
       def chef_fs
-        @chef_fs ||= Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", Chef::Config)
+        @chef_fs ||= create_chef_fs
+      end
+
+      def create_chef_fs
+        Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", Chef::Config)
       end
 
       def object_paths
@@ -194,7 +198,11 @@ class Chef
       end
 
       def local_fs
-        @local_fs ||= Chef::ChefFS::FileSystem::ChefRepositoryFileSystemRootDir.new(object_paths)
+        @local_fs ||= create_local_fs
+      end
+
+      def create_local_fs
+        Chef::ChefFS::FileSystem::ChefRepositoryFileSystemRootDir.new(object_paths)
       end
 
       def pattern_args
