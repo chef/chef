@@ -47,3 +47,25 @@ def freebsd?
 end
 
 DEV_NULL = windows? ? 'NUL' : '/dev/null'
+
+def selinux_enabled?
+  # This code is currently copied from lib/chef/util/selinux to make
+  # specs independent of product.
+  selinuxenabled_path = which("selinuxenabled")
+  if selinuxenabled_path
+    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0,1])
+    cmd_result = cmd.run_command
+    case cmd_result.exitstatus
+    when 1
+      return false
+    when 0
+      return true
+    else
+      raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+    end
+  else
+    # We assume selinux is not enabled if selinux utils are not
+    # installed.
+    return false
+  end
+end

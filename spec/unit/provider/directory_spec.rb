@@ -91,7 +91,7 @@ describe Chef::Provider::Directory do
     Dir.should_receive(:mkdir).with(@new_resource.path).once.and_return(true)
 
     @directory.should_receive(:do_acl_changes)
-    @directory.stub!(:update_new_file_state)
+    @directory.stub!(:do_selinux)
     @directory.run_action(:create)
     @directory.new_resource.should be_updated
   end
@@ -117,7 +117,7 @@ describe Chef::Provider::Directory do
 
     FileUtils.should_receive(:mkdir_p).with(@new_resource.path).and_return(true)
     @directory.should_receive(:do_acl_changes)
-    @directory.stub!(:update_new_file_state)
+    @directory.stub!(:do_selinux)
     @directory.run_action(:create)
     @new_resource.should be_updated
   end
