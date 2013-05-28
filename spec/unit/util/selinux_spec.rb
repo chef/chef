@@ -32,17 +32,31 @@ describe Chef::Util::Selinux do
 
   before do
     @test_instance = TestClass.new
+
   end
 
   after(:each) do
     TestClass.reset_state
   end
 
+  it "each part of ENV['PATH'] should be checked" do
+    expected_paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
+
+    File.stub!(:executable?) do |file_path|
+      file_path.end_with?("selinuxenabled").should be_true
+      expected_paths.delete(File.dirname(file_path))
+      false
+    end
+
+    @test_instance.selinux_enabled?
+    expected_paths.should be_empty
+  end
+
   describe "when selinuxenabled binary exists" do
     before do
-      paths = ENV['PATH'].split(File::PATH_SEPARATOR)
-      @selinux_enabled_path = File.join(paths[Random.rand(paths.length)], "selinuxenabled")
+      @selinux_enabled_path = File.join("/sbin", "selinuxenabled")
       File.stub!(:executable?) do |file_path|
+        file_path.end_with?("selinuxenabled").should be_true
         file_path == @selinux_enabled_path
       end
     end
@@ -50,7 +64,7 @@ describe Chef::Util::Selinux do
     describe "when selinux is enabled" do
       before do
         cmd_result = mock("Cmd Result", :exitstatus => 0)
-        @test_instance.should_receive(:shell_out).once.with(@selinux_enabled_path).and_return(cmd_result)
+        @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
       it "should report selinux is enabled" do
@@ -63,7 +77,7 @@ describe Chef::Util::Selinux do
     describe "when selinux is disabled" do
       before do
         cmd_result = mock("Cmd Result", :exitstatus => 1)
-        @test_instance.should_receive(:shell_out).once.with(@selinux_enabled_path).and_return(cmd_result)
+        @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
       it "should report selinux is disabled" do
@@ -76,7 +90,7 @@ describe Chef::Util::Selinux do
     describe "when selinux gives an unexpected status" do
       before do
         cmd_result = mock("Cmd Result", :exitstatus => 101)
-        @test_instance.should_receive(:shell_out).once.with(@selinux_enabled_path).and_return(cmd_result)
+        @test_instance.should_receive(:shell_out!).once.with(@selinux_enabled_path, {:returns=>[0, 1]}).and_return(cmd_result)
       end
 
       it "should throw an error" do
@@ -87,7 +101,10 @@ describe Chef::Util::Selinux do
 
   describe "when selinuxenabled binary doesn't exist" do
     before do
-      File.stub!(:executable?).and_return(false)
+      File.stub!(:executable?) do |file_path|
+        file_path.end_with?("selinuxenabled").should be_true
+        false
+      end
     end
 
     it "should report selinux is disabled" do
@@ -102,16 +119,16 @@ describe Chef::Util::Selinux do
     let (:path) { "/path/to/awesome" }
 
     before do
-      paths = ENV['PATH'].split(File::PATH_SEPARATOR)
-      @restorecon_enabled_path = File.join(paths[Random.rand(paths.length)], "restorecon")
+      @restorecon_enabled_path = File.join("/sbin", "restorecon")
       File.stub!(:executable?) do |file_path|
+        file_path.end_with?("restorecon").should be_true
         file_path == @restorecon_enabled_path
       end
     end
 
     it "should call restorecon non-recursive by default" do
       restorecon_command = "#{@restorecon_enabled_path} -R #{path}"
-      @test_instance.should_receive(:shell_out).twice.with(restorecon_command)
+      @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path)
       File.should_not_receive(:executable?)
       @test_instance.restore_security_context(path)
@@ -119,7 +136,7 @@ describe Chef::Util::Selinux do
 
     it "should call restorecon recursive when recursive is set" do
       restorecon_command = "#{@restorecon_enabled_path} -R -r #{path}"
-      @test_instance.should_receive(:shell_out).twice.with(restorecon_command)
+      @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path, true)
       File.should_not_receive(:executable?)
       @test_instance.restore_security_context(path, true)
@@ -127,7 +144,7 @@ describe Chef::Util::Selinux do
 
     it "should call restorecon non-recursive when recursive is not set" do
       restorecon_command = "#{@restorecon_enabled_path} -R #{path}"
-      @test_instance.should_receive(:shell_out).twice.with(restorecon_command)
+      @test_instance.should_receive(:shell_out!).twice.with(restorecon_command)
       @test_instance.restore_security_context(path)
       File.should_not_receive(:executable?)
       @test_instance.restore_security_context(path)
@@ -135,7 +152,10 @@ describe Chef::Util::Selinux do
 
     describe "when restorecon doesn't exist on the system" do
       before do
-        File.stub!(:executable?).and_return(false)
+        File.stub!(:executable?) do |file_path|
+          file_path.end_with?("restorecon").should be_true
+          false
+        end
       end
 
       it "should log a warning message" do
