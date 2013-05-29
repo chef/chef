@@ -132,6 +132,14 @@ describe Chef::Resource::Template do
       o.example_2.should == "example_2"
     end
 
+    it "compiles helper methods with arguments into a module" do
+      @resource.helper(:shout) { |quiet| quiet.upcase }
+      modules = @resource.helper_modules
+      o = Object.new
+      modules.each {|m| o.extend(m)}
+      o.shout("shout").should == "SHOUT"
+    end
+
     it "raises an error when attempting to define a helper method without a method body" do
       lambda { @resource.helper(:example) }.should raise_error(Chef::Exceptions::ValidationFailed)
     end
