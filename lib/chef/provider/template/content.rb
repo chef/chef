@@ -22,6 +22,7 @@ require 'chef/file_content_management/content_base'
 class Chef
   class Provider
     class Template
+
       class Content < Chef::FileContentManagement::ContentBase
 
         include Chef::Mixin::Template
@@ -35,10 +36,10 @@ class Chef
         private
 
         def file_for_provider
-          context = {}
-          context.merge!(@new_resource.variables)
+          context = TemplateContext.new(@new_resource.variables)
           context[:node] = @run_context.node
           context[:template_finder] = template_finder
+          context._extend_modules(@new_resource.helper_modules)
           file = nil
           render_template(IO.read(template_location), context) { |t| file = t }
           file
