@@ -78,6 +78,40 @@ class Chef
         )
       end
 
+      # Declares a helper method to be defined in the template context when
+      # rendering.
+      #
+      # === Example:
+      #
+      # ==== Basic usage:
+      # Given the following helper:
+      #   helper(:static_value) { "hello from helper" }
+      # A template with the following code:
+      #   <%= static_value %>
+      # Will render as;
+      #   hello from helper
+      #
+      # ==== Referencing Instance Variables:
+      # Any instance variables available to the template can be referenced in
+      # the method body. For example, you can simplify accessing app-specific
+      # node attributes like this:
+      #   helper(:app) { @node[:my_app_attributes] }
+      # And use it in a template like this:
+      #   <%= app[:listen_ports] %>
+      # This is equivalent to the non-helper template code:
+      #   <%= @node[:my_app_attributes][:listen_ports] %>
+      #
+      # ==== Method Arguments:
+      # Helper methods can also take arguments. The syntax available for
+      # argument specification will be dependent on ruby version. Ruby 1.8 only
+      # supports a subset of the argument specification syntax available for
+      # method definition, whereas 1.9 supports the full syntax.
+      #
+      # Continuing the above example of simplifying attribute access, we can
+      # define a helper to look up app-specific attributes like this:
+      #   helper(:app) { |setting| @node[:my_app_attributes][setting] }
+      # The template can then look up attributes like this:
+      #   <%= app(:listen_ports) %>
       def helper(method_name, &block)
         unless block_given?
           raise Exceptions::ValidationFailed,
@@ -92,6 +126,46 @@ class Chef
         @inline_helper_blocks[method_name] = block
       end
 
+      # Declares a module to define helper methods in the template's context
+      # when rendering. There are two primary forms.
+      #
+      # === Inline Module Definition
+      # When a block is given, the block is used to define a module which is
+      # then mixed in to the template context w/ `extend`.
+      #
+      # ==== Inline Module Example
+      # Given the following code in the template resource:
+      #   helpers do
+      #     # Add "syntax sugar" for referencing app-specific attributes
+      #     def app(attribute)
+      #       @node[:my_app_attributes][attribute]
+      #     end
+      #   end
+      # You can use it in the template like so:
+      #   <%= app(:listen_ports) %>
+      # Which is equivalent to:
+      #   <%= @node[:my_app_attributes][:listen_ports] %>
+      #
+      # === External Module Form
+      # When a module name is given, the template context will be extended with
+      # that module. This is the recommended way to customize template contexts
+      # when you need to define more than an handful of helper functions (but
+      # also try to keep your template helpers from getting out of hand--if you
+      # have very complex logic in your template helpers, you should further
+      # extract your code into separate libraries).
+      #
+      # ==== External Module Example
+      # To extract the above inline module code to a library, you'd create a
+      # library file like this:
+      #   module MyTemplateHelper
+      #     # Add "syntax sugar" for referencing app-specific attributes
+      #     def app(attribute)
+      #       @node[:my_app_attributes][attribute]
+      #     end
+      #   end
+      # And in the template resource:
+      #   helpers(MyTemplateHelper)
+      # The template code in the above example will work unmodified.
       def helpers(module_name=nil,&block)
         if block_given? and !module_name.nil?
           raise Exceptions::ValidationFailed,
@@ -111,6 +185,10 @@ class Chef
         end
       end
 
+      # Compiles all helpers from inline method definitions, inline module
+      # definitions, and external modules into an Array of Modules. The context
+      # object for the template is extended with these modules to provide
+      # per-resource template logic.
       def helper_modules
         compiled_helper_methods + compiled_helper_modules + @helper_modules
       end
