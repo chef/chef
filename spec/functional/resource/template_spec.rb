@@ -43,7 +43,7 @@ describe Chef::Resource::Template do
     resource.source('openldap_stuff.conf.erb')
     resource.cookbook('openldap')
 
-    # TODO: partials rely on `cookbook_name` getting set by chef internals and
+    # NOTE: partials rely on `cookbook_name` getting set by chef internals and
     # ignore the user-set `cookbook` attribute.
     resource.cookbook_name = "openldap"
 
