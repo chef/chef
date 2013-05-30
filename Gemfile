@@ -9,6 +9,7 @@ group(:docgen) do
 end
 
 group(:development, :test) do
+  gem "simplecov"
   gem 'rack', "~> 1.5.1"
 
   gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd)/)
