@@ -150,9 +150,8 @@ describe Chef::Mixin::Template, "render_template" do
           end
         end
         @template_context._extend_modules([mod])
-        @content_provider.render_template("<%=hello%>", @template_context) do |tmp|
-          tmp.open.read.should == "ohai"
-        end
+        output = @template_context.render_template_from_string("<%=hello%>")
+        output.should == "ohai"
       end
 
       it "emits a warning when overriding 'core' methods" do
@@ -161,12 +160,14 @@ describe Chef::Mixin::Template, "render_template" do
           end
           def node
           end
+          def render_template
+          end
+          def render_template_from_string
+          end
         end
-        expected_node_warning = Regexp.escape("Core template method `node' overridden by extension module")
-        Chef::Log.should_receive(:warn).with(/^#{expected_node_warning}/)
-
-        expected_render_warning = Regexp.escape("Core template method `render' overridden by extension module")
-        Chef::Log.should_receive(:warn).with(/^#{expected_render_warning}/)
+        ['node', 'render', 'render_template', 'render_template_from_string'].each do |method_name|
+          Chef::Log.should_receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
+        end
         @template_context._extend_modules([mod])
       end
     end
