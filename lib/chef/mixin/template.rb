@@ -93,13 +93,46 @@ class Chef
           partial_context._extend_modules(@_extension_modules)
 
           template_location = @template_finder.find(partial_name, options)
-          eruby = Erubis::Eruby.new(IO.read(template_location))
-          eruby.evaluate(partial_context)
+          _render_template(IO.binread(template_location), partial_context)
+        end
+
+        def render_template(template_location)
+          _render_template(IO.binread(template_location), self)
+        end
+
+        def render_template_from_string(template)
+          _render_template(template, self)
         end
 
         ###
         # INTERNAL PUBLIC API
         ###
+
+        def _render_template(template, context)
+          # CHEF-2991
+          # Erubis always emits unix line endings during template
+          # rendering. This results in automatic conversion of windows
+          # line endings to linux line endings if the original template
+          # contains windows line endings. In order to fix this we
+          # determine the line ending style of the template before
+          # rendering and convert the line endings of the output if needed
+          # If template contains any windows line endings we emit
+          # the template result with windows line endings.
+          windows_line_endings = template.include? "\r\n"
+
+          begin
+            eruby = Erubis::Eruby.new(template)
+            output = eruby.evaluate(context)
+          rescue Object => e
+            raise TemplateError.new(e, template, context)
+          end
+
+          if windows_line_endings
+            output = output.gsub("\n","\r\n")
+          end
+
+          output
+        end
 
         def _extend_modules(module_names)
           module_names.each do |mod|
@@ -126,23 +159,6 @@ class Chef
             ivar_map[name_without_at] = value
             ivar_map
           end
-        end
-      end
-
-
-      # Render a template with Erubis.  Takes a template as a string, and a
-      # context hash.
-      def render_template(template, context)
-        begin
-          eruby = Erubis::Eruby.new(template)
-          output = eruby.evaluate(context)
-        rescue Object => e
-          raise TemplateError.new(e, template, context)
-        end
-        Tempfile.open("chef-rendered-template") do |tempfile|
-          tempfile.print(output)
-          tempfile.close
-          yield tempfile
         end
       end
 
