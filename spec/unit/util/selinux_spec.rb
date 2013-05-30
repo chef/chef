@@ -31,8 +31,8 @@ describe Chef::Util::Selinux do
   end
 
   before do
+    TestClass.reset_state
     @test_instance = TestClass.new
-
   end
 
   after(:each) do
