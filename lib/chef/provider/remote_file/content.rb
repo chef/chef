@@ -21,14 +21,11 @@ require 'rest_client'
 require 'uri'
 require 'tempfile'
 require 'chef/file_content_management/content_base'
-require 'chef/provider/remote_file/util'
 
 class Chef
   class Provider
     class RemoteFile
       class Content < Chef::FileContentManagement::ContentBase
-
-        attr_reader :raw_file_source
 
         private
 
@@ -39,12 +36,10 @@ class Chef
             Chef::Log.debug("#{@new_resource} checksum matches target checksum (#{@new_resource.checksum}) - not updating")
           else
             sources = @new_resource.source
-            raw_file, @raw_file_source = try_multiple_sources(sources)
+            raw_file = try_multiple_sources(sources)
           end
           raw_file
         end
-
-        private
 
         # Given an array of source uris, iterate through them until one does not fail
         def try_multiple_sources(sources)
@@ -62,7 +57,7 @@ class Chef
               raise e
             end
           end
-          return raw_file, Chef::Provider::RemoteFile::Util.uri_for_cache(uri)
+          raw_file
         end
 
         # Given a source uri, return a Tempfile, or a File that acts like a Tempfile (close! method)
