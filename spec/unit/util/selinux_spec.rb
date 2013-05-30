@@ -42,14 +42,12 @@ describe Chef::Util::Selinux do
   it "each part of ENV['PATH'] should be checked" do
     expected_paths = ENV['PATH'].split(File::PATH_SEPARATOR) + [ '/bin', '/usr/bin', '/sbin', '/usr/sbin' ]
 
-    File.stub!(:executable?) do |file_path|
-      file_path.end_with?("selinuxenabled").should be_true
-      expected_paths.delete(File.dirname(file_path))
-      false
+    expected_paths.each do |bin_path|
+      selinux_path = File.join(bin_path, "selinuxenabled")
+      File.should_receive(:executable?).with(selinux_path).and_return(false)
     end
 
-    @test_instance.selinux_enabled?
-    expected_paths.should be_empty
+    @test_instance.selinux_enabled?.should be_false
   end
 
   describe "when selinuxenabled binary exists" do
