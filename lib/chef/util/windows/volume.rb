@@ -51,8 +51,8 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
     end
   end
 
-  def add(device)
-    unless SetVolumeMountPoint(@name, device)
+  def add(args)
+    unless SetVolumeMountPoint(@name, args[:remote])
       raise ArgumentError, get_last_error
     end
   end
