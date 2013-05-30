@@ -107,7 +107,6 @@ require 'chef/provider/remote_file/http'
 require 'chef/provider/remote_file/local_file'
 require 'chef/provider/remote_file/fetcher'
 require 'chef/provider/remote_file/result'
-require 'chef/provider/remote_file/util'
 
 require "chef/provider/lwrp_base"
 require 'chef/provider/registry_key'

@@ -79,9 +79,7 @@ describe Chef::Provider::RemoteFile::Content do
     before do
       # FIXME: test one or the other nil, test both not nil and not equal, abuse the regexp a little
       @uri = mock("URI")
-      @sanitized_uri = mock("URI")
       URI.should_receive(:parse).with(new_resource.source[0]).and_return(@uri)
-      Chef::Provider::RemoteFile::Util.should_receive(:uri_for_cache).with(@uri).and_return(@sanitized_uri)
     end
 
     describe "when the fetcher returns nil for the tempfile" do
@@ -93,11 +91,6 @@ describe Chef::Provider::RemoteFile::Content do
 
       it "should return nil for the tempfile" do
         content.tempfile.should be_nil
-      end
-
-      it "should return the raw_file_source when the accessor is called after getting the tempfile" do
-        content.tempfile
-        content.raw_file_source.should == @sanitized_uri
       end
 
       it "should not set the etags on the new resource" do
@@ -124,11 +117,6 @@ describe Chef::Provider::RemoteFile::Content do
 
       it "should return the tempfile object to the caller" do
         content.tempfile.should == tempfile
-      end
-
-      it "should return the raw_file_source when the accessor is called after getting the tempfile" do
-        content.tempfile
-        content.raw_file_source.should == @sanitized_uri
       end
 
     end
@@ -175,7 +163,6 @@ describe Chef::Provider::RemoteFile::Content do
       http_fetcher = mock("Chef::Provider::RemoteFile::HTTP")
       http_fetcher.should_receive(:fetch).and_raise(Errno::ECONNREFUSED)
       Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
-      Chef::Provider::RemoteFile::Util.should_not_receive(:uri_for_cache)
     end
 
     it "should propagate the error back to the caller" do
@@ -205,17 +192,10 @@ describe Chef::Provider::RemoteFile::Content do
         @result = mock("Chef::Provider::RemoteFile::Result", :raw_file => @tempfile, :etag => "etag", :mtime => mtime)
         http_fetcher_works = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @result)
         Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
-        @sanitized_uri = mock("URI")
-        Chef::Provider::RemoteFile::Util.should_receive(:uri_for_cache).with(@uri1).and_return(@sanitized_uri)
       end
 
       it "should return a valid tempfile" do
         content.tempfile.should == @tempfile
-      end
-
-      it "should return the raw_file_source when the accessor is called after getting the tempfile" do
-        content.tempfile
-        content.raw_file_source.should == @sanitized_uri
       end
 
       it "should not mutate the new_resource" do
@@ -227,7 +207,6 @@ describe Chef::Provider::RemoteFile::Content do
     describe "when both urls fail" do
       before do
         Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(@http_fetcher_throws_exception)
-        Chef::Provider::RemoteFile::Util.should_not_receive(:uri_for_cache)
       end
 
       it "should propagate the error back to the caller" do
@@ -249,17 +228,10 @@ describe Chef::Provider::RemoteFile::Content do
       @result = mock("Chef::Provider::RemoteFile::Result", :raw_file => @tempfile, :etag => "etag", :mtime => mtime)
       http_fetcher_works = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @result)
       Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(http_fetcher_works)
-      @sanitized_uri = mock("URI")
-      Chef::Provider::RemoteFile::Util.should_receive(:uri_for_cache).with(@uri0).and_return(@sanitized_uri)
     end
 
     it "should return a valid tempfile" do
       content.tempfile.should == @tempfile
-    end
-
-    it "should return the raw_file_source when the accessor is called after getting the tempfile" do
-      content.tempfile
-      content.raw_file_source.should == @sanitized_uri
     end
 
     it "should not mutate the new_resource" do
