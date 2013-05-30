@@ -161,6 +161,37 @@ describe Chef::Mixin::Template, "render_template" do
         tmp.open.read.should == "before {partial one We could be diving for pearls!\n calling home\n} after"
       end
     end
+
+    describe "when customizing the template context" do
+
+      it "extends the context to include modules" do
+        mod = Module.new do
+          def hello
+            "ohai"
+          end
+        end
+        @template_context._extend_modules([mod])
+        @content_provider.render_template("<%=hello%>", @template_context) do |tmp|
+          tmp.open.read.should == "ohai"
+        end
+      end
+
+      it "emits a warning when overriding 'core' methods" do
+        mod = Module.new do
+          def render
+          end
+          def node
+          end
+        end
+        expected_node_warning = Regexp.escape("Core template method `node' overridden by extension module")
+        Chef::Log.should_receive(:warn).with(/^#{expected_node_warning}/)
+
+        expected_render_warning = Regexp.escape("Core template method `render' overridden by extension module")
+        Chef::Log.should_receive(:warn).with(/^#{expected_render_warning}/)
+        @template_context._extend_modules([mod])
+      end
+    end
+
   end
 
   describe "when an exception is raised in the template" do
