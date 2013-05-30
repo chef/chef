@@ -58,6 +58,15 @@ describe Chef::Resource::Group, "initialize" do
       @resource.allowed_actions.detect { |a| a == action.to_sym }.should eql(action.to_sym)
     end
   end
+
+  it "should accept domain groups" do
+    lambda { @resource.group_name "domain\@group" }.should_not raise_error(ArgumentError)
+    @resource.group_name.should == "domain\@group"
+    lambda { @resource.group_name "domain\\group" }.should_not raise_error(ArgumentError)
+    @resource.group_name.should == "domain\\group"
+    lambda { @resource.group_name "domain\\group^name" }.should_not raise_error(ArgumentError)
+    @resource.group_name.should == "domain\\group^name"
+  end
 end
 
 describe Chef::Resource::Group, "group_name" do
