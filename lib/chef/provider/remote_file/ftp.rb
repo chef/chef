@@ -20,7 +20,6 @@ require 'uri'
 require 'tempfile'
 require 'net/ftp'
 require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/util'
 require 'chef/provider/remote_file/result'
 require 'chef/file_content_management/tempfile'
 
