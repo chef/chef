@@ -495,6 +495,20 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
+  # Regression test for http://tickets.opscode.com/browse/CHEF-4082
+  context "when notification is configured" do
+    before do
+      @notified_resource = Chef::Resource.new("punk", resource.run_context)
+      resource.notifies(:run, @notified_resource, :immediately)
+      resource.run_action(:create)
+    end
+
+    it "should notify the other resources correctly" do
+      resource.should be_updated_by_last_action
+      resource.run_context.immediate_notifications(resource).length.should == 1
+    end
+  end
+
   context "when the target file does not exist" do
     before do
       # Assert starting state is expected
