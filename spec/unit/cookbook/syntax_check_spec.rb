@@ -37,7 +37,10 @@ describe Chef::Cookbook::SyntaxCheck do
                     helper_test.erb
                     openldap_stuff.conf.erb
                     openldap_variable_stuff.conf.erb
-                    test.erb }
+                    test.erb
+                    some_windows_line_endings.erb
+                    all_windows_line_endings.erb
+                    no_windows_line_endings.erb }
     @template_files = basenames.map { |f| File.join(cookbook_path, 'templates', 'default', f)}
   end
 

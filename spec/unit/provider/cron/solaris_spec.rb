@@ -87,7 +87,7 @@ CRONTAB
     before :each do
       @status = mock("Status", :exitstatus => 0)
       @provider.stub!(:run_command).and_return(@status)
-      @tempfile = mock("foo", :path => "/tmp/foo", :close => true, :binmode => nil)
+      @tempfile = mock("foo", :path => "/tmp/foo", :close => true)
       Tempfile.stub!(:new).and_return(@tempfile)
       @tempfile.should_receive(:flush)
       @tempfile.should_receive(:chmod).with(420)

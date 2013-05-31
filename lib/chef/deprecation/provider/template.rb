@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/template'
+require 'chef/deprecation/mixin/template'
 
 class Chef
   module Deprecation
@@ -29,7 +29,7 @@ class Chef
       #
       module Template
 
-        include Chef::Mixin::Template
+        include Chef::Deprecation::Mixin::Template
 
         def template_finder
           @template_finder ||= begin
