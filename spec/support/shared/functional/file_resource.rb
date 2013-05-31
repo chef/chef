@@ -467,8 +467,21 @@ shared_examples_for "a configured file resource" do
   context "when the target file is a socket",:unix_only do
     require 'socket'
 
+    # It turns out that the path to a socket can have at most ~104
+    # bytes. Therefore we are creating our sockets in tmpdir so that
+    # they have a shorter path.
+    let(:test_socket_dir) { File.join(Dir.tmpdir, "sockets") }
+
+    before do
+      FileUtils::mkdir_p(test_socket_dir)
+    end
+
+    after do
+      FileUtils::rm_rf(test_socket_dir)
+    end
+
     let(:path) do
-      File.join(CHEF_SPEC_DATA, "testsocket")
+      File.join(test_socket_dir, "testsocket")
     end
 
     before(:each) do
