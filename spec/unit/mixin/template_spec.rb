@@ -70,11 +70,11 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render local files" do
       begin
         tf = Tempfile.new("partial")
-        tf.puts "test"
+        tf.write "test"
         tf.rewind
 
         output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
-        output.should == "before {test\n} after"
+        output.should == "before {test} after"
       ensure
         tf.close
       end
@@ -90,11 +90,11 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render using the source argument if provided" do
       begin
         tf = Tempfile.new("partial")
-        tf.puts "test"
+        tf.write "test"
         tf.rewind
 
         output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
-        output.should == "before {test\n} after"
+        output.should == "before {test} after"
       ensure
         tf.close
       end
