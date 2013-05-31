@@ -298,7 +298,7 @@ describe Chef::REST::RESTRequest do
         Chef::Config[:http_proxy]  = "http://proxy.example.com:3128"
         Chef::Config[:https_proxy] = "http://sproxy.example.com:3129"
         Chef::Config[:http_proxy_user] = nil
-        Chef::Config[:https_proxy_pass] = nil
+        Chef::Config[:http_proxy_pass] = nil
         Chef::Config[:https_proxy_user] = nil
         Chef::Config[:https_proxy_pass] = nil
         Chef::Config[:no_proxy] = nil
@@ -308,7 +308,7 @@ describe Chef::REST::RESTRequest do
         Chef::Config[:http_proxy]  = nil
         Chef::Config[:https_proxy] = nil
         Chef::Config[:http_proxy_user] = nil
-        Chef::Config[:https_proxy_pass] = nil
+        Chef::Config[:http_proxy_pass] = nil
         Chef::Config[:https_proxy_user] = nil
         Chef::Config[:https_proxy_pass] = nil
         Chef::Config[:no_proxy] = nil

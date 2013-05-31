@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Mark Mzyk (mmzyk@opscode.com)
+# Author:: Mark Mzyk (<mmzyk@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,6 +20,7 @@
 # limitations under the License.
 
 require 'chef/log'
+require 'chef/exceptions'
 require 'mixlib/config'
 require 'chef/util/selinux'
 
@@ -104,7 +106,7 @@ class Chef
           f = File.new(location.to_str, "a")
           f.sync = true
         rescue Errno::ENOENT
-          raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
+          raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
           f
       end
@@ -207,6 +209,8 @@ class Chef
     role_path platform_specific_path("/var/chef/roles")
 
     data_bag_path platform_specific_path("/var/chef/data_bags")
+
+    environment_path platform_specific_path("/var/chef/environments")
 
     # Where should chef-solo download recipes from?
     recipe_url nil
@@ -316,8 +320,8 @@ class Chef
 
       fatal_windows_admin_check false
     else
-      user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-      group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
+      user_valid_regex [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      group_valid_regex [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
     end
 
     # returns a platform specific path to the user home dir

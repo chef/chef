@@ -33,7 +33,6 @@ require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
 
-
 class Chef
   # == Chef::REST
   # Chef's custom REST client with built-in JSON support and RSA signed header

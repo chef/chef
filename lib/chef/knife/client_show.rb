@@ -22,17 +22,14 @@ class Chef
   class Knife
     class ClientShow < Knife
 
+      include Knife::Core::MultiAttributeReturnOption
+
       deps do
         require 'chef/api_client'
         require 'chef/json_compat'
       end
 
       banner "knife client show CLIENT (options)"
-
-      option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "Show only one attribute"
 
       def run
         @client_name = @name_args[0]
