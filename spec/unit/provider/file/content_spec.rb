@@ -44,7 +44,7 @@ describe Chef::Provider::File::Content do
   }
 
   let(:new_resource) do
-    mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path, :binmode => true)
+    mock("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
   end
 
   let(:run_context) do

@@ -36,7 +36,9 @@ class Chef
 
       def tempfile_open
         tf = ::Tempfile.open(tempfile_basename, tempfile_dirname)
-        tf.binmode if new_resource.binmode
+        # We always process the tempfile in binmode so that we
+        # preserve the line endings of the content.
+        tf.binmode
         tf
       end
 

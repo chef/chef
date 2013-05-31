@@ -40,9 +40,12 @@ class Chef
           context[:node] = @run_context.node
           context[:template_finder] = template_finder
           context._extend_modules(@new_resource.helper_modules)
-          file = nil
-          render_template(IO.read(template_location), context) { |t| file = t }
-          file
+          output = context.render_template(template_location)
+
+          tempfile = Tempfile.open("chef-rendered-template")
+          tempfile.write(output)
+          tempfile.close
+          tempfile
         end
 
         def template_finder
