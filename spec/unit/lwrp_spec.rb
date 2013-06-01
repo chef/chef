@@ -18,33 +18,7 @@
 
 require 'spec_helper'
 
-describe "override logging" do
-  before :each do
-    $stderr.stub!(:write)
-  end
-
-  it "should log if attempting to load resource of same name" do
-    Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
-      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
-    end
-
-    Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "resources", "*"))].each do |file|
-      Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
-    end
-  end
-
-  it "should log if attempting to load provider of same name" do
-    Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "providers", "*"))].each do |file|
-      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
-    end
-
-    Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp_override", "providers", "*"))].each do |file|
-      Chef::Log.should_receive(:info).with(/overriding/)
-      Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
-    end
-  end
-
+module LwrpConstScopingConflict
 end
 
 describe "LWRP" do
@@ -55,6 +29,57 @@ describe "LWRP" do
 
   after do
     $VERBOSE = @original_VERBOSE
+  end
+
+  describe "when overriding an existing class" do
+    before :each do
+      $stderr.stub!(:write)
+    end
+
+    it "should log if attempting to load resource of same name" do
+      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
+      end
+
+      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
+        Chef::Log.should_receive(:info).with(/overriding/)
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
+      end
+    end
+
+    it "should log if attempting to load provider of same name" do
+      Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
+        Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
+      end
+
+      Dir[File.expand_path( "lwrp/providers/*", CHEF_SPEC_DATA)].each do |file|
+        Chef::Log.should_receive(:info).with(/overriding/)
+        Chef::Provider::LWRPBase.build_from_file("lwrp", file, nil)
+      end
+    end
+
+    it "removes the old LRWP resource class from the list of resource subclasses [CHEF-3432]" do
+      # CHEF-3432 regression test:
+      # Chef::Resource keeps a list of all subclasses to assist class inflation
+      # for json parsing (see Chef::JSONCompat). When replacing LWRP resources,
+      # we need to ensure the old resource class is remove from that list.
+      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
+      end
+      first_lwr_foo_class = Chef::Resource::LwrpFoo
+      Chef::Resource.resource_classes.should include(first_lwr_foo_class)
+      Dir[File.expand_path( "lwrp/resources/*", CHEF_SPEC_DATA)].each do |file|
+        Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
+      end
+      Chef::Resource.resource_classes.should_not include(first_lwr_foo_class)
+    end
+
+    it "does not attempt to remove classes from higher up namespaces [CHEF-4117]" do
+      conflicting_lwrp_file = File.expand_path( "lwrp_const_scoping/resources/conflict.rb", CHEF_SPEC_DATA)
+      # The test is that this should not raise an error:
+      Chef::Resource::LWRPBase.build_from_file("lwrp_const_scoping", conflicting_lwrp_file, nil)
+    end
+
   end
 
   describe "Lightweight Chef::Resource" do
@@ -224,6 +249,48 @@ describe "LWRP" do
       provider.action_twiddle_thumbs
 
       provider.enclosed_resource.monkey.should == 'bob, the monkey'
+    end
+
+    describe "when using inline compilation" do
+      before do
+        # Behavior in these examples depends on implementation of fixture provider.
+        # See spec/data/lwrp/providers/inline_compiler
+
+        # Side effect of lwrp_inline_compiler provider for testing notifications.
+        $interior_ruby_block_2 = nil
+        # resource type doesn't matter, so make an existing resource type work with provider.
+        @resource = Chef::Resource::LwrpFoo.new("morpheus", @run_context)
+        @resource.allowed_actions << :test
+        @resource.action(:test)
+        @resource.provider(:lwrp_inline_compiler)
+      end
+
+      it "does not add interior resources to the exterior resource collection" do
+        @resource.run_action(:test)
+        @run_context.resource_collection.should be_empty
+      end
+
+      context "when interior resources are updated" do
+        it "processes notifications within the LWRP provider's action" do
+          @resource.run_action(:test)
+          $interior_ruby_block_2.should == "executed"
+        end
+
+        it "marks the parent resource updated" do
+          @resource.run_action(:test)
+          @resource.should be_updated
+          @resource.should be_updated_by_last_action
+        end
+      end
+
+      context "when interior resources are not updated" do
+        it "does not mark the parent resource updated" do
+          @resource.run_action(:no_updates)
+          @resource.should_not be_updated
+          @resource.should_not be_updated_by_last_action
+        end
+      end
+
     end
 
   end

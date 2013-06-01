@@ -25,7 +25,7 @@ class Chef
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap
-      # 
+      #
       class BootstrapContext
 
         def initialize(config, run_list, chef_config)
@@ -47,11 +47,17 @@ class Chef
         end
 
         def validation_key
-          IO.read(@chef_config[:validation_key])
+          IO.read(File.expand_path(@chef_config[:validation_key]))
         end
 
         def encrypted_data_bag_secret
-          IO.read(@chef_config[:encrypted_data_bag_secret])
+          @config[:secret] || begin
+            if @config[:secret_file] && File.exist?(@config[:secret_file])
+              IO.read(File.expand_path(@config[:secret_file]))
+            elsif @chef_config[:encrypted_data_bag_secret] && File.exist?(@chef_config[:encrypted_data_bag_secret])
+              IO.read(File.expand_path(@chef_config[:encrypted_data_bag_secret]))
+            end
+          end
         end
 
         def config_content
@@ -72,7 +78,7 @@ CONFIG
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
           end
 
-          if @chef_config[:encrypted_data_bag_secret]
+          if encrypted_data_bag_secret
             client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
@@ -94,7 +100,7 @@ CONFIG
         def chef_version
           knife_config[:bootstrap_version] || Chef::VERSION
         end
-        
+
         def first_boot
           (@config[:first_boot_attributes] || {}).merge(:run_list => @run_list)
         end

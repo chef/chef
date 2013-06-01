@@ -54,20 +54,16 @@ describe Chef::Resource::RegistryKey, :windows_only do
   let(:resource_name) { "This is the name of my Resource" }
 
   def clean_registry
-    # clean 64-bit space on WOW64
-    begin
-      hive_class.open(key_parent, Win32::Registry::KEY_WRITE | 0x0100) do |reg|
-        reg.delete_key(child, true)
-      end
-    rescue
+    if windows64?
+      # clean 64-bit space on WOW64
+      @registry.architecture = :x86_64
+      @registry.delete_key(reg_parent, true)
+      @registry.architecture = :machine
     end
     # clean 32-bit space on WOW64
-    begin
-      hive_class.open(key_parent, Win32::Registry::KEY_WRITE | 0x0200) do |reg|
-        reg.delete_key(child, true)
-      end
-    rescue
-    end
+    @registry.architecture = :i386
+    @registry.delete_key(reg_parent, true)
+    @registry.architecture = :machine
   end
 
   def reset_registry

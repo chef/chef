@@ -22,7 +22,6 @@
 require 'forwardable'
 require 'chef/config'
 require 'chef/nil_argument'
-require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/deep_merge'
@@ -57,7 +56,6 @@ class Chef
     include Chef::DSL::IncludeAttribute
     include Chef::DSL::PlatformIntrospection
 
-    include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
 
     # Create a new Chef::Node object.
@@ -125,6 +123,7 @@ class Chef
     # Set a normal attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def normal
+      attributes.set_unless_value_present = false
       attributes.normal
     end
 
@@ -141,12 +140,14 @@ class Chef
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
+      attributes.set_unless_value_present = false
       attributes.default
     end
 
     # Set a force default attribute. Intermediate mashes will be created by
     # auto-vivify if necessary.
     def default!
+      attributes.set_unless_value_present = false
       attributes.default!
     end
 
@@ -160,12 +161,14 @@ class Chef
     # Set an override attribute of this node, but auto-vivify any Mashes that
     # might be missing
     def override
+      attributes.set_unless_value_present = false
       attributes.override
     end
 
     # Set a force override attribute. Intermediate mashes will be created by
     # auto-vivify if needed.
     def override!
+      attributes.set_unless_value_present = false
       attributes.override!
     end
 
@@ -241,7 +244,7 @@ class Chef
     #
     # NOTE: It's used by cookbook authors
     def recipe?(recipe_name)
-      run_list.include?(recipe_name) || self[recipes].include?(recipe_name)
+      run_list.include?(recipe_name) || Array(self[:recipes]).include?(recipe_name)
     end
 
     # Returns true if this Node expects a given role, false if not.
@@ -500,6 +503,10 @@ class Chef
 
     def to_s
       "node[#{name}]"
+    end
+
+    def <=>(other_node)
+      self.name <=> other_node.name
     end
 
   end

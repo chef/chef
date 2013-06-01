@@ -51,7 +51,7 @@ describe Chef::Provider::Mount do
 
     it "should not mount the filesystem if it is mounted" do
       @current_resource.stub!(:mounted).and_return(true)
-      @provider.should_not_receive(:mount_fs).and_return(true)
+      @provider.should_not_receive(:mount_fs)
       @provider.run_action(:mount)
       @new_resource.should_not be_updated_by_last_action
     end
@@ -68,7 +68,7 @@ describe Chef::Provider::Mount do
 
     it "should not umount the filesystem if it is not mounted" do
       @current_resource.stub!(:mounted).and_return(false)
-      @provider.should_not_receive(:umount_fs).and_return(true)
+      @provider.should_not_receive(:umount_fs)
       @provider.run_action(:umount)
       @new_resource.should_not be_updated_by_last_action
     end
@@ -108,14 +108,24 @@ describe Chef::Provider::Mount do
   describe "when enabling the filesystem to be mounted" do
     it "should enable the mount if it isn't enable" do
       @current_resource.stub!(:enabled).and_return(false)
-      @provider.should_receive(:enable_fs).with.and_return(true)
+      @provider.should_not_receive(:mount_options_unchanged?)
+      @provider.should_receive(:enable_fs).and_return(true)
       @provider.run_action(:enable)
       @new_resource.should be_updated_by_last_action
     end
 
-    it "should not enable the mount if it is enabled" do
+    it "should enable the mount if it is enabled and mount options have changed" do
       @current_resource.stub!(:enabled).and_return(true)
-      @provider.should_not_receive(:enable_fs).with.and_return(true)
+      @provider.should_receive(:mount_options_unchanged?).and_return(false)
+      @provider.should_receive(:enable_fs).and_return(true)
+      @provider.run_action(:enable)
+      @new_resource.should be_updated_by_last_action
+    end
+
+    it "should not enable the mount if it is enabled and mount options have not changed" do
+      @current_resource.stub!(:enabled).and_return(true)
+      @provider.should_receive(:mount_options_unchanged?).and_return(true)
+      @provider.should_not_receive(:enable_fs).and_return(true)
       @provider.run_action(:enable)
       @new_resource.should_not be_updated_by_last_action
     end
@@ -131,7 +141,7 @@ describe Chef::Provider::Mount do
 
     it "should not disable the mount if it isn't enabled" do
       @current_resource.stub!(:enabled).and_return(false)
-      @provider.should_not_receive(:disable_fs).with.and_return(true)
+      @provider.should_not_receive(:disable_fs)
       @provider.run_action(:disable)
       @new_resource.should_not be_updated_by_last_action
     end

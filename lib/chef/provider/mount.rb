@@ -79,7 +79,7 @@ class Chef
       end
 
       def action_enable
-        unless @current_resource.enabled
+        unless @current_resource.enabled && mount_options_unchanged?
           converge_by("remount #{@current_resource.device}") do 
             status = enable_fs
             if status

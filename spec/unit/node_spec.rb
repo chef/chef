@@ -35,6 +35,13 @@ describe Chef::Node do
     lambda{Chef::Node.build('solo node')}.should raise_error(Chef::Exceptions::ValidationFailed)
   end
 
+  it "should be sortable" do
+    n1 = Chef::Node.build('alpha')
+    n2 = Chef::Node.build('beta')
+    n3 = Chef::Node.build('omega')
+    [n3, n1, n2].sort.should == [n1, n2, n3]
+  end
+
   describe "when the node does not exist on the server" do
     before do
       response = OpenStruct.new(:code => '404')
@@ -177,6 +184,21 @@ describe Chef::Node do
         node[:snoopy][:is_a_puppy].should == true
       end
 
+      it "should allow you to set a value after a set_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.set_unless[:snoopy][:is_a_puppy] = false
+        node.set[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should let you set a value after a 'dangling' set_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.set[:snoopy][:is_a_puppy] = "what"
+        node.set_unless[:snoopy][:is_a_puppy]
+        node.set[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
       it "auto-vivifies attributes created via method syntax" do
         node.set.fuu.bahrr.baz = "qux"
         node.fuu.bahrr.baz.should == "qux"
@@ -198,6 +220,21 @@ describe Chef::Node do
       it "should not allow you to set an attribute with default_unless if it already exists" do
         node.default[:snoopy][:is_a_puppy] = true
         node.default_unless[:snoopy][:is_a_puppy] = false
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after a default_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.default_unless[:snoopy][:is_a_puppy] = false
+        node.default[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after a 'dangling' default_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.default[:snoopy][:is_a_puppy] = "what"
+        node.default_unless[:snoopy][:is_a_puppy]
+        node.default[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
 
@@ -228,6 +265,21 @@ describe Chef::Node do
       it "should not allow you to set an attribute with override_unless if it already exists" do
         node.override[:snoopy][:is_a_puppy] = true
         node.override_unless[:snoopy][:is_a_puppy] = false
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after an override_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.override_unless[:snoopy][:is_a_puppy] = false
+        node.override[:snoopy][:is_a_puppy] = true
+        node[:snoopy][:is_a_puppy].should == true
+      end
+
+      it "should allow you to set a value after a 'dangling' override_unless" do
+        # this tests for set_unless_present state bleeding between statements CHEF-3806
+        node.override_unless[:snoopy][:is_a_puppy] = "what"
+        node.override_unless[:snoopy][:is_a_puppy]
+        node.override[:snoopy][:is_a_puppy] = true
         node[:snoopy][:is_a_puppy].should == true
       end
 
@@ -401,6 +453,36 @@ describe Chef::Node do
       @expansion.override_attrs["role override key"] = "role override value"
       node.expand!
       node.attributes.role_override["role override key"].should == "role override value"
+    end
+  end
+
+  describe "when querying for recipes in the run list" do
+    context "when a recipe is in the top level run list" do
+      before do
+        node.run_list << "recipe[nginx::module]"
+      end
+
+      it "finds the recipe" do
+        node.recipe?("nginx::module").should be_true
+      end
+
+      it "does not find a recipe not in the run list" do
+        node.recipe?("nginx::other_module").should be_false
+      end
+    end
+    context "when a recipe is in the expanded run list only" do
+      before do
+        node.run_list << "role[base]"
+        node.automatic_attrs[:recipes] = [ "nginx::module" ]
+      end
+
+      it "finds a recipe in the expanded run list" do
+        node.recipe?("nginx::module").should be_true
+      end
+
+      it "does not find a recipe that's not in the run list" do
+        node.recipe?("nginx::other_module").should be_false
+      end
     end
   end
 

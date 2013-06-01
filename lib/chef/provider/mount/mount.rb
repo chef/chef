@@ -44,7 +44,7 @@ class Chef
           # only check for existence of non-remote devices
           if (device_should_exist? && !::File.exists?(device_real) )
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif( !::File.exists?(@new_resource.mount_point) )
+          elsif( @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point) )
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
           return true
@@ -177,7 +177,8 @@ class Chef
         end
 
         def device_should_exist?
-          ( not network_device? ) &&
+          ( @new_resource.device != "none" ) && 
+            ( not network_device? ) &&
             ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
         end
 
@@ -225,7 +226,11 @@ class Chef
             # ignore trailing slash
             Regexp.escape(device_real)+"/?"
           elsif ::File.symlink?(device_real)
-            "(?:#{Regexp.escape(device_real)})|(?:#{Regexp.escape(::File.readlink(device_real))})"
+            # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
+            # So given a symlink like this:
+            # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
+            # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.readlink(device_real))})"
           else
             Regexp.escape(device_real)
           end

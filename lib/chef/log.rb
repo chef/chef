@@ -18,6 +18,7 @@
 # limitations under the License.
 
 require 'logger'
+require 'chef/monologger'
 require 'mixlib/log'
 
 class Chef
@@ -25,8 +26,7 @@ class Chef
     extend Mixlib::Log
 
     # Force initialization of the primary log device (@logger)
-    init
-
+    init(MonoLogger.new(STDOUT))
 
     class Formatter
       def self.show_time=(*args)

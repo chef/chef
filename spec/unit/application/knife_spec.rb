@@ -23,6 +23,11 @@ describe Chef::Application::Knife do
 
   before(:all) do
     class NoopKnifeCommand < Chef::Knife
+      option :opt_with_default,
+        :short => "-D VALUE",
+        :long => "-optwithdefault VALUE",
+        :default => "default-value"
+
       def run
       end
     end
@@ -53,6 +58,18 @@ describe Chef::Application::Knife do
       Chef::Knife.should_receive(:run).with(ARGV, @knife.options).and_return(knife)
       @knife.should_receive(:exit).with(0)
       @knife.run
+    end
+  end
+
+  it "should set the colored output to false by default on windows and true otherwise" do
+    with_argv(*%w{noop knife command}) do
+      @knife.should_receive(:exit).with(0)
+      @knife.run
+    end
+    if windows?
+      Chef::Config[:color].should be_false
+    else
+      Chef::Config[:color].should be_true
     end
   end
 

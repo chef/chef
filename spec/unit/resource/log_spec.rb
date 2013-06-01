@@ -38,6 +38,15 @@ describe Chef::Resource::Log do
   it "should allow you to set a log string" do
     @resource.name.should == @log_str
   end
+
+  it "should set the message to the first argument to new" do
+    @resource.message.should == @log_str
+  end
+
+  it "should accept a string for the log message" do
+    @resource.message "this is different"
+    @resource.message.should == "this is different"
+  end
   
   it "should accept a vaild level option" do
     @resource.level :debug

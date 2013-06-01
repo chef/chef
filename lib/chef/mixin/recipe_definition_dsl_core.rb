@@ -24,10 +24,12 @@
 # This constant (module name) will eventually be deprecated and then removed.
 ###
 
-require 'chef/dsl/recipe'
+require 'chef/mixin/deprecation'
 
 class Chef
   module Mixin
-    RecipeDefinitionDSLCore = Chef::DSL::Recipe
+    deprecate_constant(:RecipeDefinitionDSLCore, Chef::DSL::Recipe, <<-EOM)
+Chef::Mixin::RecipeDefinitionDSLCore is deprecated. Use Chef::DSL::Recipe instead.
+EOM
   end
 end

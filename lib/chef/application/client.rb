@@ -58,8 +58,8 @@ class Chef::Application::Client < Chef::Application
   option :color,
     :long         => '--[no-]color',
     :boolean      => true,
-    :default      => true,
-    :description  => "Use colored output, defaults to enabled"
+    :default      => !Chef::Platform.windows?,
+    :description  => "Use colored output, defaults to false on Windows, true otherwise"
 
   option :log_level,
     :short        => "-l LEVEL",
@@ -184,10 +184,10 @@ class Chef::Application::Client < Chef::Application
     :long         => '--why-run',
     :description  => 'Enable whyrun mode',
     :boolean      => true
-  
+
   option :client_fork,
     :short        => "-f",
-    :long         => "--fork",
+    :long         => "--[no-]fork",
     :description  => "Fork client",
     :boolean      => true
 
@@ -197,10 +197,19 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
+  if Chef::Platform.windows?
+    option :fatal_windows_admin_check,
+      :short        => "-A",
+      :long         => "--fatal-windows-admin-check",
+      :description  => "Fail the run when chef-client doesn't have administrator privileges on Windows",
+      :boolean      => true
+  end
+
   attr_reader :chef_client_json
 
   def initialize
     super
+    @exit_gracefully = false
   end
 
   # Reconfigure the chef client
@@ -209,9 +218,6 @@ class Chef::Application::Client < Chef::Application
     super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
-    unless Chef::Config[:exception_handlers].any? {|h| Chef::Handler::ErrorReport === h}
-      Chef::Config[:exception_handlers] << Chef::Handler::ErrorReport.new
-    end
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
@@ -269,6 +275,12 @@ class Chef::Application::Client < Chef::Application
         Chef::Log.info("SIGUSR1 received, waking up")
         SELF_PIPE[1].putc('.') # wakeup master process from select
       end
+
+      trap("TERM") do
+        Chef::Log.info("SIGTERM received, exiting gracefully")
+        @exit_gracefully = true
+        SELF_PIPE[1].putc('.')
+      end
     end
 
     if Chef::Config[:version]
@@ -281,6 +293,7 @@ class Chef::Application::Client < Chef::Application
 
     loop do
       begin
+        Chef::Application.exit!("Exiting", 0) if @exit_gracefully
         if Chef::Config[:splay]
           splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
@@ -298,9 +311,6 @@ class Chef::Application::Client < Chef::Application
         else
           Chef::Application.exit! "Exiting", 0
         end
-      rescue Chef::Application::Wakeup => e
-        Chef::Log.debug("Received Wakeup signal.  Starting run.")
-        next
       rescue SystemExit => e
         raise
       rescue Exception => e

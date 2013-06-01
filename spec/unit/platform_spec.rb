@@ -35,7 +35,8 @@ describe "Chef::Platform supports" do
     :solaris,
     :mswin,
     :mingw32,
-    :windows
+    :windows,
+    :gcel
   ].each do |platform|
     it "#{platform}" do
       Chef::Platform.platforms.should have_key(platform)
@@ -56,6 +57,9 @@ describe Chef::Platform do
   before(:each) do
     Chef::Platform.platforms = {
       :darwin => {
+        ">= 10.11" => {
+          :file => "new_darwinian"
+        },
         "9.2.2" => {
           :file => "darwinian",
           :else => "thing"
@@ -82,6 +86,12 @@ describe Chef::Platform do
     pmap[:file].should eql("darwinian")
   end
   
+  it "should allow you to look up a platform by name and version using \"greater than\" style operators" do
+    pmap = Chef::Platform.find("Darwin", "11.1.0")
+    pmap.should be_a_kind_of(Hash)
+    pmap[:file].should eql("new_darwinian")
+  end
+
   it "should use the default providers for an os if the specific version does not exist" do
     pmap = Chef::Platform.find("Darwin", "1")
     pmap.should be_a_kind_of(Hash)
@@ -132,6 +142,10 @@ describe Chef::Platform do
     node.automatic_attrs[:platform] = "mac_os_x"
     node.automatic_attrs[:platform_version] = "9.2.2"
     Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
+  end
+
+  it "should not throw an exception when the platform version has an unknown format" do
+    Chef::Platform.find_provider(:darwin, "bad-version", :file).should eql("old school")
   end
 
   it "should prefer an explicit provider" do

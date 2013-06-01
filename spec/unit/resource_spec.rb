@@ -35,6 +35,21 @@ describe Chef::Resource do
     @resource = Chef::Resource.new("funk", @run_context)
   end
 
+  describe "when inherited" do
+
+    it "adds an entry to a list of subclasses" do
+      subclass = Class.new(Chef::Resource)
+      Chef::Resource.resource_classes.should include(subclass)
+    end
+
+    it "keeps track of subclasses of subclasses" do
+      subclass = Class.new(Chef::Resource)
+      subclass_of_subclass = Class.new(subclass)
+      Chef::Resource.resource_classes.should include(subclass_of_subclass)
+    end
+
+  end
+
   describe "when declaring the identity attribute" do
     it "has no identity attribute by default" do
       Chef::Resource.identity_attr.should be_nil
@@ -270,6 +285,29 @@ describe Chef::Resource do
       zr = @run_context.resource_collection.find(:zen_master => "coffee")
       @resource.subscribes :reload, zr, :immediately
       zr.immediate_notifications.detect{|e| e.resource.name == @resource.name && e.action == :reload}.should_not be_nil
+    end
+  end
+
+  describe "defined_at" do
+    it "should correctly parse source_line on unix-like operating systems" do
+      @resource.source_line = "/some/path/to/file.rb:80:in `wombat_tears'"
+      @resource.defined_at.should == "/some/path/to/file.rb line 80"
+    end
+
+    it "should correctly parse source_line on Windows" do
+      @resource.source_line = "C:/some/path/to/file.rb:80 in 1`wombat_tears'"
+      @resource.defined_at.should == "C:/some/path/to/file.rb line 80"
+    end
+
+    it "should include the cookbook and recipe when it knows it" do
+      @resource.source_line = "/some/path/to/file.rb:80:in `wombat_tears'"
+      @resource.recipe_name = "wombats"
+      @resource.cookbook_name = "animals"
+      @resource.defined_at.should == "animals::wombats line 80"
+    end
+
+    it "should recognize dynamically defined resources" do
+      @resource.defined_at.should == "dynamically defined"
     end
   end
 
@@ -548,6 +586,68 @@ describe Chef::Resource do
       end
       it "returns a resource by short_name if nothing else matches" do
         Chef::Resource.resource_for_node(:soundwave, @node).should eql(Soundwave)
+      end
+    end
+
+  end
+
+  describe "when creating notifications" do
+
+    describe "with a string resource spec" do
+
+      it "creates a delayed notification when timing is not specified" do
+        @resource.notifies(:run, "execute[foo]")
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates a delayed notification when :delayed is not specified" do
+        @resource.notifies(:run, "execute[foo]", :delayed)
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediate is specified" do
+        @resource.notifies(:run, "execute[foo]", :immediate)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediately is specified" do
+        @resource.notifies(:run, "execute[foo]", :immediately)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+
+      describe "with a syntax error in the resource spec" do
+
+        it "raises an exception immmediately" do
+          lambda do
+            @resource.notifies(:run, "typo[missing-closing-bracket")
+          end.should raise_error(Chef::Exceptions::InvalidResourceSpecification)
+        end
+      end
+    end
+
+    describe "with a resource reference" do
+      before do
+        @notified_resource = Chef::Resource.new("punk", @run_context)
+      end
+
+      it "creates a delayed notification when timing is not specified" do
+        @resource.notifies(:run, @notified_resource)
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates a delayed notification when :delayed is not specified" do
+        @resource.notifies(:run, @notified_resource, :delayed)
+        @run_context.delayed_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediate is specified" do
+        @resource.notifies(:run, @notified_resource, :immediate)
+        @run_context.immediate_notification_collection.should have(1).notifications
+      end
+
+      it "creates an immediate notification when :immediately is specified" do
+        @resource.notifies(:run, @notified_resource, :immediately)
+        @run_context.immediate_notification_collection.should have(1).notifications
       end
     end
 

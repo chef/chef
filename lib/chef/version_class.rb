@@ -51,7 +51,7 @@ class Chef
       other.is_a?(Version) && self == other
     end
 
-    private
+    protected
 
     def parse(str="")
       @major, @minor, @patch =

@@ -1,6 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Seth Falcon (<seth@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2008-2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -96,6 +97,9 @@ class Chef
     class Win32APIFunctionNotImplemented < NotImplementedError; end
     # Attempting to run windows code on a not-windows node
     class Win32NotWindows < RuntimeError; end
+    class WindowsNotAdmin < RuntimeError; end
+    # Attempting to access a 64-bit only resource on a 32-bit Windows system
+    class Win32ArchitectureIncorrect < RuntimeError; end
     class ObsoleteDependencySyntax < ArgumentError; end
     class InvalidDataBagPath < ArgumentError; end
 
@@ -104,11 +108,15 @@ class Chef
     class CookbookVersionConflict < ArgumentError ; end
 
     # does not follow X.Y.Z format. ArgumentError?
+    class InvalidPlatformVersion < ArgumentError; end
     class InvalidCookbookVersion < ArgumentError; end
 
     # version constraint should be a string or array, or it doesn't
     # match OP VERSION. ArgumentError?
     class InvalidVersionConstraint < ArgumentError; end
+
+    # Version constraints are not allowed in chef-solo
+    class IllegalVersionConstraint < NotImplementedError; end
 
     # File operation attempted but no permissions to perform it
     class InsufficientPermissions < RuntimeError; end
@@ -129,8 +137,8 @@ class Chef
     # of merged attributes will trigger this error.
     class StaleAttributeRead < StandardError; end
 
-    #Registry Helper throws the following errors
-    class Win32RegArchitectureIncorrect < RuntimeError; end
+    # Registry Helper throws the following errors
+    class Win32RegArchitectureIncorrect < Win32ArchitectureIncorrect; end
     class Win32RegHiveMissing < ArgumentError; end
     class Win32RegKeyMissing < RuntimeError; end
     class Win32RegValueMissing < RuntimeError; end
@@ -141,6 +149,9 @@ class Chef
     class Win32RegBadType < ArgumentError; end
     class Win32RegBadValueSize < ArgumentError; end
     class Win32RegTypesMismatch < ArgumentError; end
+
+    class InvalidEnvironmentPath < ArgumentError; end
+    class EnvironmentNotFound < RuntimeError; end
 
     class MissingRole < RuntimeError
       NULL = Object.new
@@ -269,6 +280,12 @@ class Chef
       end
 
     end # CookbookVersionSelection
+
+    # When the server sends a redirect, RFC 2616 states a user-agent should
+    # not follow it with a method other than GET or HEAD, unless a specific
+    # action is taken by the user. A redirect received as response to a
+    # non-GET and non-HEAD request will thus raise an InvalidRedirect.
+    class InvalidRedirect < StandardError; end
 
   end
 end

@@ -72,13 +72,19 @@ class Chef
         :short => "-p PORT",
         :long => "--ssh-port PORT",
         :description => "The ssh port",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key }
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_port] = key.strip }
 
       option :ssh_gateway,
         :short => "-G GATEWAY",
         :long => "--ssh-gateway GATEWAY",
         :description => "The ssh gateway",
-        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
+
+      option :forward_agent,
+        :short => "-A",
+        :long => "--forward-agent",
+        :description => "Enable SSH agent forwarding",
+        :boolean => true
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
@@ -112,6 +118,22 @@ class Chef
         end
 
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency], :on_error => ssh_error_handler)
+      end
+
+      def configure_gateway
+        config[:ssh_gateway] ||= Chef::Config[:knife][:ssh_gateway]
+        if config[:ssh_gateway]
+          gw_host, gw_user = config[:ssh_gateway].split('@').reverse
+          gw_host, gw_port = gw_host.split(':')
+          gw_opts = gw_port ? { :port => gw_port } : {}
+
+          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
+        end
+      rescue Net::SSH::AuthenticationFailed
+        user = gw_user || config[:ssh_user]
+        prompt = "Enter the password for #{user}@#{gw_host}: "
+        gw_opts.merge!(:password => prompt_for_password(prompt))
+        session.via(gw_host, user, gw_opts)
       end
 
       def configure_session
@@ -154,15 +176,6 @@ class Chef
       end
 
       def session_from_list(list)
-        config[:ssh_gateway] ||= Chef::Config[:knife][:ssh_gateway]
-        if config[:ssh_gateway]
-          gw_host, gw_user = config[:ssh_gateway].split('@').reverse
-          gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
-
-          session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
-        end
-
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
           session_opts = {}
@@ -175,6 +188,7 @@ class Chef
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:keys_only] = true if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
+          session_opts[:forward_agent] = config[:forward_agent]
           session_opts[:port] = config[:ssh_port] || Chef::Config[:knife][:ssh_port] || ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 
@@ -230,7 +244,11 @@ class Chef
       end
 
       def get_password
-        @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
+        @password ||= prompt_for_password
+      end
+
+      def prompt_for_password(prompt = "Enter your password: ")
+        ui.ask(prompt) { |q| q.echo = false }
       end
 
       # Present the prompt and read a single line from the console. It also
@@ -416,6 +434,7 @@ class Chef
         configure_attribute
         configure_user
         configure_identity_file
+        configure_gateway
         configure_session
 
         exit_status =

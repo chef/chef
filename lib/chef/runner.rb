@@ -22,7 +22,6 @@ require 'chef/exceptions'
 require 'chef/mixin/params_validate'
 require 'chef/node'
 require 'chef/resource_collection'
-require 'chef/platform'
 
 class Chef
   # == Chef::Runner

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/provider/batch'
 require 'chef/provider/breakpoint'
 require 'chef/provider/cookbook_file'
 require 'chef/provider/cron'
@@ -36,6 +37,7 @@ require 'chef/provider/ohai'
 require 'chef/provider/mdadm'
 require 'chef/provider/mount'
 require 'chef/provider/package'
+require 'chef/provider/powershell'
 require 'chef/provider/remote_directory'
 require 'chef/provider/remote_file'
 require 'chef/provider/route'
@@ -82,6 +84,7 @@ require 'chef/provider/user/dscl'
 require 'chef/provider/user/pw'
 require 'chef/provider/user/useradd'
 require 'chef/provider/user/windows'
+require 'chef/provider/user/solaris'
 
 require 'chef/provider/group/aix'
 require 'chef/provider/group/dscl'

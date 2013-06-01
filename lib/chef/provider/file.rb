@@ -138,41 +138,15 @@ class Chef
             end
           end
         end
-        load_current_resource_attrs
         setup_acl
-        
+
         @current_resource
       end
 
-      def load_current_resource_attrs
-        if Chef::Platform.windows?
-          # TODO: To work around CHEF-3554, add support for Windows
-          # equivalent, or implicit resource reporting won't work for
-          # Windows.
-          return
-        end
-
-        if ::File.exist?(@new_resource.path)
-          stat = ::File.stat(@new_resource.path)
-          @current_resource.owner(stat.uid)
-          @current_resource.mode(stat.mode & 07777)
-          @current_resource.group(stat.gid)
-
-          if @new_resource.group.nil?
-            @new_resource.group(@current_resource.group)
-          end 
-          if @new_resource.owner.nil?
-            @new_resource.owner(@current_resource.owner)
-          end
-          if @new_resource.mode.nil?
-            @new_resource.mode(@current_resource.mode)
-          end
-        end
-      end
-      
       def setup_acl
-        @acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
-        @acl_scanner.set_all!
+        return if Chef::Platform.windows?
+        acl_scanner = ScanAccessControl.new(@new_resource, @current_resource)
+        acl_scanner.set_all!
       end
 
       def define_resource_requirements
@@ -236,10 +210,8 @@ class Chef
           return
         end
 
-        stat = ::File.stat(path)
-        @new_resource.owner(stat.uid)
-        @new_resource.mode(stat.mode & 07777)
-        @new_resource.group(stat.gid)
+        acl_scanner = ScanAccessControl.new(@new_resource, @new_resource)
+        acl_scanner.set_all!
       end
 
       def action_create
@@ -249,7 +221,7 @@ class Chef
           desc << " with content checksum #{short_cksum(new_resource_content_checksum)}" if new_resource.content
           description << desc
           description << diff_current_from_content(@new_resource.content) 
-          
+
           converge_by(description) do
             Chef::Log.info("entered create")
             ::File.open(@new_resource.path, "w+") {|f| f.write @new_resource.content }

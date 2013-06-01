@@ -110,7 +110,16 @@ class Chef
       # files are uploaded, so save the manifest
       cookbooks.each do |cb|
         save_url = opts[:force] ? cb.force_save_url : cb.save_url
-        rest.put_rest(save_url, cb)
+        begin
+          rest.put_rest(save_url, cb)
+        rescue Net::HTTPServerException => e
+          case e.response.code
+          when "409"
+            raise Chef::Exceptions::CookbookFrozen, "Version #{cb.version} of cookbook #{cb.name} is frozen. Use --force to override."
+          else
+            raise
+          end
+        end
       end
 
       Chef::Log.info("Upload complete!")
@@ -150,7 +159,7 @@ class Chef
 
     def validate_cookbooks
       cookbooks.each do |cb|
-        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name, @user_cookbook_path)
+        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.pathname, @user_cookbook_path)
         Chef::Log.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
         Chef::Log.info("Validating templates")

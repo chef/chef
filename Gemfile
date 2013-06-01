@@ -1,14 +1,17 @@
-source :rubygems
+source "https://rubygems.org"
 
 gemspec
 
 gem "activesupport", :group => :compat_testing, :platform => "ruby"
-gem "ronn"
+
+group(:docgen) do
+  gem "ronn"
+end
 
 group(:development, :test) do
-  gem 'rack'
+  gem 'rack', "~> 1.5.1"
 
-  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd)/)
+  gem 'ruby-shadow', :platforms => :ruby unless RUBY_PLATFORM.downcase.match(/(darwin|freebsd|aix)/)
 #  gem 'awesome_print'
 #  gem 'pry'
 end

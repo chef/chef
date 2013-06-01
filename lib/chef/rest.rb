@@ -31,8 +31,7 @@ require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
 require 'chef/exceptions'
-require 'chef/platform'
-
+require 'chef/platform/query_helpers'
 
 class Chef
   # == Chef::REST
@@ -185,7 +184,11 @@ class Chef
           elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
             false
           elsif redirect_location = redirected_to(response)
-            follow_redirect {api_request(:GET, create_url(redirect_location))}
+            if [:GET, :HEAD].include?(method)
+              follow_redirect {api_request(method, create_url(redirect_location))}
+            else
+              raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
+            end
           else
             # have to decompress the body before making an exception for it. But the body could be nil.
             response.body.replace(response_body) if response.body.respond_to?(:replace)
@@ -369,7 +372,6 @@ class Chef
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
-      size = 0
 
       inflater = if gzip_disabled?
         NoopInflater.new
@@ -388,7 +390,6 @@ class Chef
 
       response.read_body do |chunk|
         tf.write(inflater.inflate(chunk))
-        size += chunk.size
       end
       tf.close
       tf

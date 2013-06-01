@@ -32,7 +32,7 @@ end
 # From Ruby 1.9.2+
 # Here for backwards compatibility with Ruby 1.8.7
 # http://rubydoc.info/stdlib/tmpdir/1.9.2/Dir/Tmpname
-def make_tmpname(prefix_suffix, n)
+def make_tmpname(prefix_suffix, n = nil)
   case prefix_suffix
   when String
     prefix = prefix_suffix
@@ -59,5 +59,20 @@ def has_diff?
     true
   rescue Errno::ENOENT
     false
+  end
+end
+
+# This is a helper to determine if the ruby in the PATH contains
+# win32/service gem. windows_service_manager tests create a windows
+# service that starts with the system ruby and requires this gem.
+def system_windows_service_gem?
+  if defined?(Bundler)
+    Bundler.with_clean_env do
+      # This returns true if the gem can be loaded
+      system "ruby -e 'require \"win32/daemon\"'"
+    end
+  else
+    # This returns true if the gem can be loaded
+    system "ruby -e 'require \"win32/daemon\"'"
   end
 end

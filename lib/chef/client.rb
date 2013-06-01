@@ -25,7 +25,7 @@ require 'chef/log'
 require 'chef/rest'
 require 'chef/api_client'
 require 'chef/api_client/registration'
-require 'chef/platform'
+require 'chef/platform/query_helpers'
 require 'chef/node'
 require 'chef/role'
 require 'chef/file_cache'
@@ -103,6 +103,7 @@ class Chef
       self.class.run_start_notifications.each do |notification|
         notification.call(run_status)
       end
+      @events.run_started(run_status)
     end
 
     # Callback to fire notifications that the run completed successfully
@@ -129,9 +130,9 @@ class Chef
     #--
     # TODO: timh/cw: 5-19-2010: json_attribs should be moved to RunContext?
     attr_reader :json_attribs
-
     attr_reader :run_status
-
+    attr_reader :events
+    
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs
@@ -410,6 +411,25 @@ class Chef
       raise
     end
 
+    def do_windows_admin_check
+      if Chef::Platform.windows?
+        Chef::Log.debug("Checking for administrator privileges....")
+
+        if !has_admin_privileges?
+          message = "chef-client doesn't have administrator privileges on node #{node_name}."
+          if Chef::Config[:fatal_windows_admin_check]
+            Chef::Log.fatal(message)
+            Chef::Log.fatal("fatal_windows_admin_check is set to TRUE.")
+            raise Chef::Exceptions::WindowsNotAdmin, message
+          else
+            Chef::Log.warn("#{message} This might cause unexpected resource failures.")
+          end
+        else
+          Chef::Log.debug("chef-client has administrator privileges on node #{node_name}.")
+        end
+      end
+    end
+
     private
 
     # Do a full run for this Chef::Client.  Calls:
@@ -425,23 +445,25 @@ class Chef
     def do_run
       runlock = RunLock.new(Chef::Config)
       runlock.acquire
-
-      run_context = nil
-      @events.run_start(Chef::VERSION)
-      Chef::Log.info("*** Chef #{Chef::VERSION} ***")
-      enforce_path_sanity
-      run_ohai
-      @events.ohai_completed(node)
-      register unless Chef::Config[:solo]
-
-      load_node
-
+      # don't add code that may fail before entering this section to be sure to release lock
       begin
+        run_context = nil
+        @events.run_start(Chef::VERSION)
+        Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        enforce_path_sanity
+        run_ohai
+        @events.ohai_completed(node)
+        register unless Chef::Config[:solo]
+
+        load_node
+
         build_node
 
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
+
+        do_windows_admin_check
 
         run_context = setup_run_context
 
@@ -518,6 +540,13 @@ class Chef
       end
 
     end
+
+    def has_admin_privileges?
+      require 'chef/win32/security'
+
+      Chef::ReservedNames::Win32::Security.has_admin_privileges?
+    end
+
   end
 end
 

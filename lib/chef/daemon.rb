@@ -74,6 +74,24 @@ class Chef
         Chef::Application.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
       end
       
+      # Check if this process if forked from a Chef daemon
+      # ==== Returns
+      # Boolean::
+      # True if this process is forked 
+      # False if this process is not forked
+      #
+      def forked?
+        if running? and Process.ppid == pid_from_file.to_i
+          # chef daemon is running and this process is a child of it
+          true
+        elsif not running? and Process.ppid == 1
+          # an orphaned fork, its parent becomes init, launchd, etc. after chef daemon dies
+          true
+        else
+          false
+        end
+      end
+      
       # Gets the pid file for @name
       # ==== Returns
       # String::
@@ -112,12 +130,14 @@ class Chef
           Chef::Application.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
         end
       end
-    
+  
       # Delete the PID from the filesystem
       def remove_pid_file
-        FileUtils.rm(pid_file) if File.exists?(pid_file)
-      end
-           
+        if not forked? then
+          FileUtils.rm(pid_file) if File.exists?(pid_file)
+        end
+      end           
+
       # Change process user/group to those specified in Chef::Config
       #
       def change_privilege

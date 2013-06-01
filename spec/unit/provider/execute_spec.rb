@@ -27,7 +27,7 @@ describe Chef::Provider::Execute do
     @new_resource = Chef::Resource::Execute.new("foo_resource", @run_context)
     @new_resource.timeout 3600
     @new_resource.returns 0
-    @new_resource.creates "foo_resource"
+    @new_resource.creates "/foo_resource"
     @provider = Chef::Provider::Execute.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("foo_resource", @run_context)
     @provider.current_resource = @current_resource
@@ -46,6 +46,7 @@ describe Chef::Provider::Execute do
     opts[:log_tag] = @new_resource.to_s
     opts[:live_stream] = STDOUT
     @provider.should_receive(:shell_out!).with(@new_resource.command, opts)
+    Chef::Log.should_not_receive(:warn)
 
     @provider.run_action(:run)
     @new_resource.should be_updated
@@ -53,6 +54,31 @@ describe Chef::Provider::Execute do
 
   it "should do nothing if the sentinel file exists" do
     @provider.stub!(:load_current_resource)
+    File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
+    @provider.should_not_receive(:shell_out!)
+    Chef::Log.should_not_receive(:warn)
+
+    @provider.run_action(:run)
+    @new_resource.should_not be_updated
+  end
+
+  it "should respect cwd options for 'creates'" do
+    @new_resource.cwd "/tmp"
+    @new_resource.creates "foo_resource"
+    @provider.stub!(:load_current_resource)
+    File.should_receive(:exists?).with(@new_resource.creates).and_return(false)
+    File.should_receive(:exists?).with(File.join("/tmp", @new_resource.creates)).and_return(true)
+    Chef::Log.should_not_receive(:warn)
+    @provider.should_not_receive(:shell_out!)
+
+    @provider.run_action(:run)
+    @new_resource.should_not be_updated
+  end 
+
+  it "should warn if user specified relative path without cwd" do
+    @new_resource.creates "foo_resource"
+    @provider.stub!(:load_current_resource)
+    Chef::Log.should_receive(:warn).with(/relative path/)
     File.should_receive(:exists?).with(@new_resource.creates).and_return(true)
     @provider.should_not_receive(:shell_out!)
 

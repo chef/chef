@@ -50,12 +50,21 @@ class Chef
           if exception.respond_to?(:source_listing)
             error_description.section("Template Context:", "#{exception.source_location}\n#{exception.source_listing}")
           end
+
+          if Chef::Platform.windows?
+            require 'chef/win32/security'
+
+            if !Chef::ReservedNames::Win32::Security.has_admin_privileges?
+              error_description.section("Missing Windows Admin Privileges", "chef-client doesn't have administrator privileges. This can be a possible reason for the resource failure.")
+            end
+          end
         end
 
         def recipe_snippet
           return nil if dynamic_resource?
           @snippet ||= begin
             if file = resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/,1] and line = resource.source_line[/^#{file}:([\d]+)/,1].to_i
+              return nil unless ::File.exists?(file)
               lines = IO.readlines(file)
 
               relevant_lines = ["# In #{file}\n\n"]

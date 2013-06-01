@@ -23,6 +23,8 @@ class Chef
   class Knife
     class Search < Knife
 
+      include Knife::Core::MultiAttributeReturnOption
+
       deps do
         require 'chef/node'
         require 'chef/environment'
@@ -53,11 +55,6 @@ class Chef
         :description => "The number of rows to return",
         :default => 1000,
         :proc => lambda { |i| i.to_i }
-
-      option :attribute,
-        :short => "-a ATTR",
-        :long => "--attribute ATTR",
-        :description => "Show only one attribute"
 
       option :run_list,
         :short => "-r",
@@ -114,7 +111,9 @@ class Chef
           ui.msg("\n")
           result_items.each do |item|
             output(item)
-            ui.msg("\n")
+            unless config[:id_only]
+              ui.msg("\n")
+            end
           end
         end
       end

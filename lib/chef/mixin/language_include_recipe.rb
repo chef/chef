@@ -17,10 +17,16 @@
 #
 
 require 'chef/dsl/include_recipe'
+require 'chef/mixin/deprecation'
 
 class Chef
   module Mixin
-    LanguageIncludeRecipe = Chef::DSL::IncludeRecipe
+
+    deprecate_constant(:LanguageIncludeRecipe, Chef::DSL::IncludeRecipe, <<-EOM)
+Chef::Mixin::LanguageIncludeRecipe is deprecated, use Chef::DSL::IncludeRecipe
+instead.
+EOM
+
   end
 end
 

@@ -167,7 +167,11 @@ class Chef
 
       def enable_submodules
         if @new_resource.enable_submodules
-          converge_by("enable git submodules for #{@new_resource}") do 
+          converge_by("enable git submodules for #{@new_resource}") do
+            Chef::Log.info "#{@new_resource} synchronizing git submodules"
+            command = "git submodule sync"
+            shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :info))
+
             Chef::Log.info "#{@new_resource} enabling git submodules"
             # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
             command = "git submodule update --init --recursive"
@@ -221,12 +225,37 @@ class Chef
 
       def remote_resolve_reference
         Chef::Log.debug("#{@new_resource} resolving remote reference")
-        command = git('ls-remote', @new_resource.repository, @new_resource.revision)
+        # The sha pointed to by an annotated tag is identified by the
+        # '^{}' suffix appended to the tag. In order to resolve
+        # annotated tags, we have to search for "revision*" and
+        # post-process. Special handling for 'HEAD' to ignore a tag
+        # named 'HEAD'.
+        rev_pattern = case @new_resource.revision
+                      when '', 'HEAD'
+                        'HEAD'
+                      else
+                        @new_resource.revision + '*'
+                      end
+        command = git('ls-remote', @new_resource.repository, rev_pattern)
         @resolved_reference = shell_out!(command, run_options).stdout
-        if  @resolved_reference =~ /^([0-9a-f]{40})\s+(\S+)/
-          $1
+        ref_lines = @resolved_reference.split("\n")
+        refs = ref_lines.map { |line| line.split("\t") }
+        # first try for ^{} indicating the commit pointed to by an
+        # annotated tag
+        tagged_commit = refs.find { |m| m[1].end_with?("#{@new_resource.revision}^{}") }
+        # It is possible for a user to create a tag named 'HEAD'.
+        # Using such a degenerate annotated tag would be very
+        # confusing. We avoid the issue by disallowing the use of
+        # annotated tags named 'HEAD'.
+        if tagged_commit && rev_pattern != 'HEAD'
+          tagged_commit[0]
         else
-          nil
+          found = refs.find { |m| m[1].end_with?(@new_resource.revision) }
+          if found
+            found[0]
+          else
+            nil
+          end
         end
       end
 

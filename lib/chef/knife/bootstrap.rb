@@ -59,6 +59,12 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
+      option :forward_agent,
+        :short => "-A",
+        :long => "--forward-agent",
+        :description => "Enable SSH agent forwarding",
+        :boolean => true
+
       option :identity_file,
         :short => "-i IDENTITY_FILE",
         :long => "--identity-file IDENTITY_FILE",
@@ -94,6 +100,11 @@ class Chef
         :description => "Execute the bootstrap via sudo",
         :boolean => true
 
+      option :use_sudo_password,
+        :long => "--use-sudo-password",
+        :description => "Execute the bootstrap via sudo with password",
+        :boolean => false
+
       option :template_file,
         :long => "--template-file TEMPLATE",
         :description => "Full path to location of template to use",
@@ -126,6 +137,15 @@ class Chef
           Chef::Config[:knife][:hints] ||= Hash.new
           name, path = h.split("=")
           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
+
+      option :secret,
+        :short => "-s SECRET",
+        :long  => "--secret ",
+        :description => "The secret key to use to encrypt data bag item values"
+
+      option :secret_file,
+        :long => "--secret-file SECRET_FILE",
+        :description => "A file containing the secret key to use to encrypt data bag item values"
 
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
@@ -166,11 +186,12 @@ class Chef
 
       def run
         validate_name_args!
+        warn_chef_config_secret_key
         @template_file = find_template(config[:bootstrap_template])
         @node_name = Array(@name_args).first
         # back compat--templates may use this setting:
         config[:server_name] = @node_name
-        
+
         $stdout.sync = true
 
         ui.info("Bootstrapping Chef on #{ui.color(@node_name, :bold)}")
@@ -200,13 +221,14 @@ class Chef
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
-        ssh.config[:ssh_user] = config[:ssh_user]
+        ssh.config[:ssh_user] = Chef::Config[:knife][:ssh_user] || config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
-        ssh.config[:identity_file] = config[:identity_file]
+        ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
+        ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
         ssh.config[:manual] = true
-        ssh.config[:host_key_verify] = config[:host_key_verify]
+        ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
         ssh.config[:on_error] = :raise
         ssh
       end
@@ -222,10 +244,32 @@ class Chef
         command = render_template(read_template)
 
         if config[:use_sudo]
-          command = "sudo #{command}"
+          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
         end
 
         command
+      end
+
+      def warn_chef_config_secret_key
+        unless Chef::Config[:encrypted_data_bag_secret].nil?
+          ui.warn "* " * 40
+          ui.warn(<<-WARNING)
+Specifying the encrypted data bag secret key using an 'encrypted_data_bag_secret'
+entry in 'knife.rb' is deprecated. Please see CHEF-4011 for more details. You
+can supress this warning and still distribute the secret key to all bootstrapped
+machines by adding the following to your 'knife.rb' file:
+
+  knife[:secret_file] = "/path/to/your/secret"
+
+If you would like to selectively distribute a secret key during bootstrap
+please use the '--secret' or '--secret-file' options of this command instead.
+
+#{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
+behavior will be removed and any 'encrypted_data_bag_secret' entries in
+'knife.rb' will be ignored completely.
+WARNING
+          ui.warn "* " * 40
+        end
       end
 
     end

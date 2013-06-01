@@ -17,6 +17,11 @@
 #
 
 shared_examples_for "a directory resource" do
+
+  include_context "diff disabled"
+
+  let(:expect_updated?) {true}
+
   context "when the target directory does not exist" do
     before do
       # assert pre-condition
@@ -135,7 +140,7 @@ end
 
 shared_context Chef::Resource::Directory do
   let(:path) do
-    File.join(Dir.tmpdir, make_tmpname(directory_base, nil))
+    File.join(Dir.tmpdir, make_tmpname(directory_base))
   end
 
   after(:each) do

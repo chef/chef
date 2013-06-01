@@ -21,7 +21,6 @@
 require 'chef/mash'
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
-require 'chef/mixin/check_helper'
 require 'chef/log'
 require 'chef/version_class'
 require 'chef/version_constraint'
@@ -64,7 +63,6 @@ class Chef
                              :provides    => PROVIDING,
                              :replaces    => REPLACING }
 
-      include Chef::Mixin::CheckHelper
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
@@ -93,7 +91,7 @@ class Chef
       # metadata<Chef::Cookbook::Metadata>
       def initialize(cookbook=nil, maintainer='YOUR_COMPANY_NAME', maintainer_email='YOUR_EMAIL', license='none')
         @cookbook = cookbook
-        @name = cookbook ? cookbook.name : ""
+        @name = cookbook ? cookbook.name : nil
         @long_description = ""
         self.maintainer(maintainer)
         self.maintainer_email(maintainer_email)

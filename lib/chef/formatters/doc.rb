@@ -21,7 +21,7 @@ class Chef
       end
 
       def run_completed(node)
-        if Chef::Config[:whyrun]
+        if Chef::Config[:why_run]
           puts "Chef Client finished, #{@updated_resources} resources would have been updated"
         else
           puts "Chef Client finished, #{@updated_resources} resources updated"
@@ -29,7 +29,7 @@ class Chef
       end
 
       def run_failed(exception)
-        if Chef::Config[:whyrun]
+        if Chef::Config[:why_run]
           puts "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
           puts "Chef Client failed. #{@updated_resources} resources updated"

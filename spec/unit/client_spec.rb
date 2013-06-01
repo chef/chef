@@ -263,6 +263,25 @@ shared_examples_for Chef::Client do
       end
     end
 
+    it "should remove the run_lock on failure of #load_node" do
+      @run_lock = mock("Chef::RunLock", :acquire => true)
+      Chef::RunLock.stub!(:new).and_return(@run_lock)
+
+      @events = mock("Chef::EventDispatch::Dispatcher").as_null_object
+      Chef::EventDispatch::Dispatcher.stub!(:new).and_return(@events)
+
+      # @events is created on Chef::Client.new, so we need to recreate it after mocking
+      @client = Chef::Client.new
+      @client.stub!(:load_node).and_raise(Exception)
+      @run_lock.should_receive(:release)
+      if(Chef::Config[:client_fork])
+        @client.should_receive(:fork) do |&block|
+          block.call
+        end
+      end
+      lambda { @client.run }.should raise_error(Exception)
+    end
+
     describe "when notifying other objects of the status of the chef run" do
       before do
         Chef::Client.clear_notifications
@@ -332,6 +351,68 @@ shared_examples_for Chef::Client do
       @node[:recipes].should_not be_nil
       @node[:recipes].length.should == 1
       @node[:recipes].should include("cookbook1")
+    end
+  end
+
+  describe "windows_admin_check" do
+    before do
+      @client = Chef::Client.new
+    end
+
+    context "platform is not windows" do
+      before do
+        Chef::Platform.stub(:windows?).and_return(false)
+      end
+
+      it "shouldn't be called" do
+        @client.should_not_receive(:has_admin_privileges?)
+        @client.do_windows_admin_check
+      end
+    end
+
+    context "platform is windows" do
+      before do
+        Chef::Platform.stub(:windows?).and_return(true)
+      end
+
+      it "should be called" do
+        @client.should_receive(:has_admin_privileges?)
+        @client.do_windows_admin_check
+      end
+
+      context "admin privileges exist" do
+        before do
+          @client.should_receive(:has_admin_privileges?).and_return(true)
+        end
+
+        it "should not log a warning message" do
+          Chef::Log.should_not_receive(:warn)
+          @client.do_windows_admin_check
+        end
+
+        context "fatal admin check is configured" do
+          it "should not raise an exception" do
+            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+          end
+        end
+      end
+
+      context "admin privileges doesn't exist" do
+        before do
+          @client.should_receive(:has_admin_privileges?).and_return(false)
+        end
+
+        it "should log a warning message" do
+          Chef::Log.should_receive(:warn)
+          @client.do_windows_admin_check
+        end
+
+        context "fatal admin check is configured" do
+          it "should raise an exception" do
+            @client.do_windows_admin_check.should_not raise_error(Chef::Exceptions::WindowsNotAdmin)
+          end
+        end
+      end
     end
   end
 

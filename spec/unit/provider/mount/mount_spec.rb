@@ -108,13 +108,18 @@ describe Chef::Provider::Mount::Mount do
     it "does not expect the device to exist for tmpfs" do
       @new_resource.fstype("tmpfs")
       @new_resource.device("whatever")
-      lambda { @provider.load_current_resource() }.should_not raise_error
+      lambda { @provider.load_current_resource();@provider.mountable? }.should_not raise_error
     end
 
     it "does not expect the device to exist for Fuse filesystems" do
       @new_resource.fstype("fuse")
       @new_resource.device("nilfs#xxx")
-      lambda { @provider.load_current_resource() }.should_not raise_error
+      lambda { @provider.load_current_resource();@provider.mountable? }.should_not raise_error
+    end
+
+    it "does not expect the device to exist if it's none" do
+      @new_resource.device("none")
+      lambda { @provider.load_current_resource();@provider.mountable? }.should_not raise_error
     end
 
     it "should set mounted true if the mount point is found in the mounts list" do
@@ -215,6 +220,32 @@ describe Chef::Provider::Mount::Mount do
 
       @provider.load_current_resource
       @provider.current_resource.enabled.should be_false
+    end
+
+    it "should not mangle the mount options if the device in fstab is a symlink" do
+      target = "/dev/mapper/target"
+      options = "rw,noexec,noauto"
+
+      ::File.stub!(:symlink?).with(@new_resource.device).and_return(true)
+      ::File.stub!(:readlink).with(@new_resource.device).and_return(target)
+
+      fstab = "#{@new_resource.device} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+      @provider.load_current_resource
+      @provider.current_resource.options.should eq(options.split(','))
+    end
+
+    it "should not mangle the mount options if the symlink target is in fstab" do
+      target = "/dev/mapper/target"
+      options = "rw,noexec,noauto"
+
+      ::File.stub!(:symlink?).with(@new_resource.device).and_return(true)
+      ::File.stub!(:readlink).with(@new_resource.device).and_return(target)
+
+      fstab = "#{target} #{@new_resource.mount_point} #{@new_resource.fstype} #{options} 1 2\n"
+      ::File.stub!(:foreach).with("/etc/fstab").and_yield fstab
+      @provider.load_current_resource
+      @provider.current_resource.options.should eq(options.split(','))
     end
   end
 

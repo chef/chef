@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Mark Mzyk (mmzyk@opscode.com)
+# Author:: Mark Mzyk (<mmzyk@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,6 +20,7 @@
 # limitations under the License.
 
 require 'chef/log'
+require 'chef/exceptions'
 require 'mixlib/config'
 
 class Chef
@@ -72,16 +74,9 @@ class Chef
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
     config_attr_writer :chef_server_url do |url|
-      url.strip!
+      url = url.strip
       configure do |c|
-        [ :registration_url,
-          :template_url,
-          :remotefile_url,
-          :search_url,
-          :chef_server_url,
-          :role_url ].each do |u|
-            c[u] = url
-        end
+        c[:chef_server_url] = url
       end
       url
     end
@@ -110,20 +105,10 @@ class Chef
           f = File.new(location.to_str, "a")
           f.sync = true
         rescue Errno::ENOENT
-          raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
+          raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
           f
       end
-    end
-
-    # Override the config dispatch to set the value of authorized_openid_providers when openid_providers (deprecated) is used
-    #
-    # === Parameters
-    # providers<Array>:: An array of openid providers that are authorized to login to the chef server
-    #
-    config_attr_writer :openid_providers do |providers|
-      configure { |c| c[:authorized_openid_providers] = providers }
-      providers
     end
 
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
@@ -131,10 +116,6 @@ class Chef
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     formatter "null"
-
-    # Used when OpenID authentication is enabled in the Web UI
-    authorized_openid_identifiers nil
-    authorized_openid_providers nil
 
     # The number of times the client should retry when registering with the server
     client_registration_retries 5
@@ -146,9 +127,6 @@ class Chef
 
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     script_path []
-
-    # Where files are stored temporarily during uploads
-    sandbox_path "/var/chef/sandboxes"
 
     # Where cookbook files are stored on the server (by content checksum)
     checksum_path "/var/chef/checksums"
@@ -173,7 +151,6 @@ class Chef
     user nil
     group nil
     umask 0022
-
 
     # Valid log_levels are:
     # * :debug
@@ -202,30 +179,20 @@ class Chef
     # toggle info level log items that can create a lot of output
     verbose_logging true
     node_name nil
-    node_path "/var/chef/node"
-    diff_disable            false
+    diff_disabled           false
     diff_filesize_threshold 10000000
     diff_output_threshold   1000000
 
     pid_file nil
 
-    chef_server_url   "http://localhost:4000"
-    registration_url  "http://localhost:4000"
-    template_url      "http://localhost:4000"
-    role_url          "http://localhost:4000"
-    remotefile_url    "http://localhost:4000"
-    search_url        "http://localhost:4000"
-
-    client_url "http://localhost:4042"
+    chef_server_url   "https://localhost:443"
 
     rest_timeout 300
-    run_command_stderr_timeout 120
-    run_command_stdout_timeout 120
     solo  false
     splay nil
     why_run false
     color false
-    client_fork false
+    client_fork true
     enable_reporting true
     enable_reporting_url_fatals false
 
@@ -237,11 +204,12 @@ class Chef
     ssl_ca_path nil
     ssl_ca_file nil
 
-
     # Where should chef-solo look for role files?
     role_path platform_specific_path("/var/chef/roles")
 
     data_bag_path platform_specific_path("/var/chef/data_bags")
+
+    environment_path platform_specific_path("/var/chef/environments")
 
     # Where should chef-solo download recipes from?
     recipe_url nil
@@ -270,6 +238,32 @@ class Chef
     # `node_name` of the client.
     client_key platform_specific_path("/etc/chef/client.pem")
 
+    # This secret is used to decrypt encrypted data bag items.
+    encrypted_data_bag_secret platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+
+    # We have to check for the existence of the default file before setting it
+    # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
+    # bootstrap templates to determine if the local secret should be uploaded to
+    # node being bootstrapped. This should be removed in Chef 12.
+    unless File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
+      encrypted_data_bag_secret(nil)
+    end
+
+    # As of Chef 11.0, version "1" is the default encrypted data bag item
+    # format. Version "2" is available which adds encrypt-then-mac protection.
+    # To maintain compatibility, versions other than 1 must be opt-in.
+    #
+    # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure:
+    data_bag_encrypt_version 1
+
+    # When reading data bag items, any supported version is accepted. However,
+    # if all encrypted data bags have been generated with the version 2 format,
+    # it is recommended to disable support for earlier formats to improve
+    # security. For example, the version 2 format is identical to version 1
+    # except for the addition of an HMAC, so an attacker with MITM capability
+    # could downgrade an encrypted data bag to version 1 as part of an attack.
+    data_bag_decrypt_minimum_version 0
+
     # If there is no file in the location given by `client_key`, chef-client
     # will temporarily use the "validator" identity to generate one. If the
     # `client_key` is not present and the `validation_key` is also not present,
@@ -278,24 +272,12 @@ class Chef
     # The `validation_key` is never used if the `client_key` exists.
     validation_key platform_specific_path("/etc/chef/validation.pem")
     validation_client_name "chef-validator"
-    web_ui_client_name "chef-webui"
-    web_ui_key "/etc/chef/webui.pem"
-    web_ui_admin_user_name  "admin"
-    web_ui_admin_default_password "p@ssw0rd1"
 
-    # Server Signing CA
-    #
-    # In truth, these don't even have to change
-    signing_ca_cert "/var/chef/ca/cert.pem"
-    signing_ca_key "/var/chef/ca/key.pem"
-    signing_ca_user nil
-    signing_ca_group nil
-    signing_ca_country "US"
-    signing_ca_state "Washington"
-    signing_ca_location "Seattle"
-    signing_ca_org "Chef User"
-    signing_ca_domain "opensource.opscode.com"
-    signing_ca_email "opensource-cert@opscode.com"
+    # Zypper package provider gpg checks. Set to true to enable package
+    # gpg signature checking. This will be default in the
+    # future. Setting to false disables the warnings.
+    # Leaving this set to nil or false is a security hazard!
+    zypper_check_gpg nil
 
     # Report Handlers
     report_handlers []
@@ -334,9 +316,11 @@ class Chef
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
       user_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
       group_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
+
+      fatal_windows_admin_check false
     else
-      user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-      group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
+      user_valid_regex [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      group_valid_regex [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
     end
 
     # returns a platform specific path to the user home dir

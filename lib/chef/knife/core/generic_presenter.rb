@@ -22,6 +22,22 @@ class Chef
   class Knife
     module Core
 
+      # Allows includer knife commands to  return multiple attributes
+      # @brief knife node show NAME -a ATTR1 -a ATTR2
+      module MultiAttributeReturnOption
+        # :nodoc:
+        def self.included(includer)
+          includer.class_eval do
+            @attrs_to_show = []
+            option :attribute,
+              :short => "-a ATTR1 [-a ATTR2]",
+              :long => "--attribute ATTR1 [--attribute ATTR2] ",
+              :proc => lambda {|val| @attrs_to_show << val},
+              :description => "Show one or more attributes"
+          end
+        end
+      end
+
       #==Chef::Knife::Core::GenericPresenter
       # The base presenter class for displaying structured data in knife commands.
       # This is not an abstract base class, and it is suitable for displaying

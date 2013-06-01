@@ -18,6 +18,12 @@
 # If you need to add anything in here, don't.
 # Add it to one of the files in spec/support
 
+# Configure this first so it doesn't trigger annoying warning when we use it.
+# Main rspec configuration comes later
+RSpec.configure do |config|
+  config.treat_symbols_as_metadata_keys_with_true_values = true
+end
+
 # Abuse ruby's constant lookup to avoid undefined constant errors
 module Shell
   JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
@@ -73,6 +79,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
+  config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
