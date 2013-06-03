@@ -275,6 +275,19 @@ shared_examples_for "a file resource" do
 
   end
 
+  describe "when setting atomic_update" do
+    it "booleans should work" do
+      lambda {resource.atomic_update(true)}.should_not raise_error
+      lambda {resource.atomic_update(false)}.should_not raise_error
+    end
+
+    it "anything else should raise an error" do
+      lambda {resource.atomic_update(:copy)}.should raise_error(ArgumentError)
+      lambda {resource.atomic_update(:move)}.should raise_error(ArgumentError)
+      lambda {resource.atomic_update(958)}.should raise_error(ArgumentError)
+    end
+  end
+
 end
 
 shared_examples_for "file resource not pointing to a real file" do
@@ -485,6 +498,7 @@ shared_examples_for "a configured file resource" do
     end
 
     before(:each) do
+      path.bytesize.should <= 104
       UNIXServer.new(path)
     end
 
