@@ -200,7 +200,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         e = Net::HTTPRetriableError.new("304", r)
         rest.stub!(:streaming_request).and_raise(e)
         result = fetcher.fetch
-        result.raw_file.should be_nil
+        result.should be_nil
       end
 
     end
@@ -214,10 +214,9 @@ describe Chef::Provider::RemoteFile::HTTP do
         Chef::Digester.should_receive(:checksum_for_file).with(tempfile_path).and_return(fetched_content_checksum)
       end
 
-      it "should return a result" do
+      it "should return a tempfile" do
         result = fetcher.fetch
-        result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-        result.raw_file.should == tempfile
+        result.should == tempfile
         cache_control_data.etag.should be_nil
         cache_control_data.mtime.should be_nil
         cache_control_data.checksum.should == fetched_content_checksum
@@ -226,9 +225,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the response does not contain an etag" do
         let(:last_response) { {"etag" => nil} }
         it "does not include an etag in the result" do
-          result = fetcher.fetch
-          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-          result.etag.should be_nil
+          fetcher.fetch
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should be_nil
           cache_control_data.checksum.should == fetched_content_checksum
@@ -239,9 +236,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         let(:last_response) { {"etag" => "abc123"} }
 
         it "includes the etag value in the response" do
-          result = fetcher.fetch
-          result.raw_file.should == tempfile
-          result.etag.should == "abc123"
+          fetcher.fetch
           cache_control_data.etag.should == "abc123"
           cache_control_data.mtime.should be_nil
           cache_control_data.checksum.should == fetched_content_checksum
@@ -254,9 +249,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         it "does not set an mtime in the result" do
           # RFC 2616 suggests that servers that do not set a Date header do not
           # have a reliable clock, so no use in making them deal with dates.
-          result = fetcher.fetch
-          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-          result.mtime.should be_nil
+          fetcher.fetch
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should be_nil
           cache_control_data.checksum.should == fetched_content_checksum
@@ -270,9 +263,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "sets the mtime to the Last-Modified time in the response" do
-          result = fetcher.fetch
-          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-          result.mtime.should  == last_response["last_modified"]
+          fetcher.fetch
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should == last_response["last_modified"]
         end
@@ -284,9 +275,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         end
 
         it "sets the mtime to the Date in the response" do
-          result = fetcher.fetch
-          result.should be_a_kind_of(Chef::Provider::RemoteFile::Result)
-          result.mtime.should  == last_response["date"]
+          fetcher.fetch
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should == last_response["date"]
           cache_control_data.checksum.should == fetched_content_checksum

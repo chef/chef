@@ -275,6 +275,19 @@ shared_examples_for "a file resource" do
 
   end
 
+  describe "when setting atomic_update" do
+    it "booleans should work" do
+      lambda {resource.atomic_update(true)}.should_not raise_error
+      lambda {resource.atomic_update(false)}.should_not raise_error
+    end
+
+    it "anything else should raise an error" do
+      lambda {resource.atomic_update(:copy)}.should raise_error(ArgumentError)
+      lambda {resource.atomic_update(:move)}.should raise_error(ArgumentError)
+      lambda {resource.atomic_update(958)}.should raise_error(ArgumentError)
+    end
+  end
+
 end
 
 shared_examples_for "file resource not pointing to a real file" do
@@ -467,11 +480,25 @@ shared_examples_for "a configured file resource" do
   context "when the target file is a socket",:unix_only do
     require 'socket'
 
+    # It turns out that the path to a socket can have at most ~104
+    # bytes. Therefore we are creating our sockets in tmpdir so that
+    # they have a shorter path.
+    let(:test_socket_dir) { File.join(Dir.tmpdir, "sockets") }
+
+    before do
+      FileUtils::mkdir_p(test_socket_dir)
+    end
+
+    after do
+      FileUtils::rm_rf(test_socket_dir)
+    end
+
     let(:path) do
-      File.join(CHEF_SPEC_DATA, "testsocket")
+      File.join(test_socket_dir, "testsocket")
     end
 
     before(:each) do
+      path.bytesize.should <= 104
       UNIXServer.new(path)
     end
 
@@ -480,6 +507,39 @@ shared_examples_for "a configured file resource" do
     end
 
     it_behaves_like "file resource not pointing to a real file"
+  end
+
+  # Regression test for http://tickets.opscode.com/browse/CHEF-4082
+  context "when notification is configured" do
+    describe "when path is specified with normal seperator" do
+      before do
+        @notified_resource = Chef::Resource.new("punk", resource.run_context)
+        resource.notifies(:run, @notified_resource, :immediately)
+        resource.run_action(:create)
+      end
+
+      it "should notify the other resources correctly" do
+        resource.should be_updated_by_last_action
+        resource.run_context.immediate_notifications(resource).length.should == 1
+      end
+    end
+
+    describe "when path is specified with windows seperator", :windows_only do
+      let(:path) {
+        File.join(test_file_dir, make_tmpname(file_base)).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+      }
+
+      before do
+        @notified_resource = Chef::Resource.new("punk", resource.run_context)
+        resource.notifies(:run, @notified_resource, :immediately)
+        resource.run_action(:create)
+      end
+
+      it "should notify the other resources correctly" do
+        resource.should be_updated_by_last_action
+        resource.run_context.immediate_notifications(resource).length.should == 1
+      end
+    end
   end
 
   context "when the target file does not exist" do

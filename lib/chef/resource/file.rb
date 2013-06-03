@@ -96,7 +96,7 @@ class Chef
         set_or_return(
           :atomic_update,
           arg,
-          :equal_to => [ :move, :copy ]
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
 
