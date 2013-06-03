@@ -193,7 +193,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
       it "should return a tempfile in the result" do
         result = fetcher.fetch
-        result.raw_file.should equal(tempfile)
+        result.should equal(tempfile)
       end
 
     end
@@ -215,7 +215,7 @@ describe Chef::Provider::RemoteFile::FTP do
         ENV.should_receive(:[]=).with("SOCKS_SERVER", "socks5://bill:ted@socks.example.com:5000").ordered
         ENV.should_receive(:[]=).with("SOCKS_SERVER", current_socks_server).ordered
         result = fetcher.fetch
-        result.raw_file.should equal(tempfile)
+        result.should equal(tempfile)
       end
 
     end

@@ -20,7 +20,6 @@
 require 'chef/rest'
 require 'chef/digester'
 require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/result'
 require 'chef/provider/remote_file/cache_control_data'
 
 class Chef
@@ -69,7 +68,8 @@ class Chef
               raise e
             end
           end
-          return Chef::Provider::RemoteFile::Result.new(tempfile, cache_control_data.etag, cache_control_data.mtime)
+          
+          tempfile
         end
 
         private

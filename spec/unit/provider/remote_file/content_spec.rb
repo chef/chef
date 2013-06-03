@@ -84,32 +84,20 @@ describe Chef::Provider::RemoteFile::Content do
 
     describe "when the fetcher returns nil for the tempfile" do
       before do
-        @result = mock("Chef::Provider::RemoteFile::Result", :raw_file => nil, :etag => nil, :mtime => nil)
-        http_fetcher = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @result)
+        http_fetcher = mock("Chef::Provider::RemoteFile::HTTP", :fetch => nil)
         Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
       end
 
       it "should return nil for the tempfile" do
         content.tempfile.should be_nil
       end
-
-      it "should not set the etags on the new resource" do
-        new_resource.should_not_receive(:etag).with(@result.etag)
-        content.tempfile
-      end
-
-      it "should not set the mtime on the new resource" do
-        new_resource.should_not_receive(:mtime).with(@result.mtime)
-        content.tempfile
-      end
     end
 
-    describe "when the fetcher returns a result with a valid tempfile" do
+    describe "when the fetcher returns a valid tempfile" do
 
       let(:mtime) { Time.now }
       let(:tempfile) { mock("Tempfile") }
-      let(:result) { Chef::Provider::RemoteFile::Result.new(tempfile, "etag", mtime) }
-      let(:http_fetcher) { mock("Chef::Provider::RemoteFile::HTTP", :fetch => result) }
+      let(:http_fetcher) { mock("Chef::Provider::RemoteFile::HTTP", :fetch => tempfile) }
 
       before do
         Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
@@ -189,8 +177,7 @@ describe Chef::Provider::RemoteFile::Content do
       before do
         @tempfile = mock("Tempfile")
         mtime = Time.now
-        @result = mock("Chef::Provider::RemoteFile::Result", :raw_file => @tempfile, :etag => "etag", :mtime => mtime)
-        http_fetcher_works = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @result)
+        http_fetcher_works = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
         Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
       end
 
@@ -225,8 +212,7 @@ describe Chef::Provider::RemoteFile::Content do
       URI.should_not_receive(:parse).with(new_resource.source[1])
       @tempfile = mock("Tempfile")
       mtime = Time.now
-      @result = mock("Chef::Provider::RemoteFile::Result", :raw_file => @tempfile, :etag => "etag", :mtime => mtime)
-      http_fetcher_works = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @result)
+      http_fetcher_works = mock("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
       Chef::Provider::RemoteFile::Fetcher.should_receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(http_fetcher_works)
     end
 
