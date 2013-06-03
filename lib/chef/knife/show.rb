@@ -1,13 +1,14 @@
 require 'chef/chef_fs/knife'
-require 'chef/chef_fs/file_system'
-require 'chef/chef_fs/file_system/not_found_error'
 
 class Chef
   class Knife
     class Show < Chef::ChefFS::Knife
       banner "knife show [PATTERN1 ... PATTERNn]"
 
-      common_options
+      deps do
+        require 'chef/chef_fs/file_system'
+        require 'chef/chef_fs/file_system/not_found_error'
+      end
 
       option :local,
         :long => '--local',

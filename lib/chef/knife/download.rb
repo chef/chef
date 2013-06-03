@@ -1,12 +1,13 @@
 require 'chef/chef_fs/knife'
-require 'chef/chef_fs/command_line'
 
 class Chef
   class Knife
     class Download < Chef::ChefFS::Knife
       banner "knife download PATTERNS"
 
-      common_options
+      deps do
+        require 'chef/chef_fs/command_line'
+      end
 
       option :recurse,
         :long => '--[no-]recurse',

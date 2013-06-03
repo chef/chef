@@ -27,8 +27,8 @@ module KnifeSupport
         :skip_expires => true
       }
 
-      # This is Chef::Knife.run without load_commands and load_deps--we'll
-      # load stuff ourselves, thank you very much
+      # This is Chef::Knife.run without load_commands--we'll load stuff
+      # ourselves, thank you very much
       stdout = StringIO.new
       stderr = StringIO.new
       old_loggers = Chef::Log.loggers
@@ -37,6 +37,7 @@ module KnifeSupport
         puts "knife: #{args.join(' ')}" if DEBUG
         subcommand_class = Chef::Knife.subcommand_class_from(args)
         subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
+        subcommand_class.load_deps
         instance = subcommand_class.new(args)
 
         # Capture stdout/stderr

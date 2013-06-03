@@ -16,17 +16,23 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_server_root_dir'
-require 'chef/chef_fs/file_system/chef_repository_file_system_root_dir'
-require 'chef/chef_fs/file_pattern'
-require 'chef/chef_fs/path_utils'
-require 'chef/chef_fs/parallelizer'
-require 'chef/config'
+require 'chef/knife'
 
 class Chef
   module ChefFS
     class Knife < Chef::Knife
-      def self.common_options
+      # Workaround for CHEF-3932
+      def self.deps
+        super do
+          require 'chef/chef_fs/file_system/chef_server_root_dir'
+          require 'chef/chef_fs/file_system/chef_repository_file_system_root_dir'
+          require 'chef/chef_fs/file_pattern'
+          require 'chef/chef_fs/path_utils'
+          require 'chef/chef_fs/parallelizer'
+          require 'chef/config'
+          yield
+        end
+
         option :repo_mode,
           :long => '--repo-mode MODE',
           :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
@@ -38,6 +44,13 @@ class Chef
         option :concurrency,
           :long => '--concurrency THREADS',
           :description => 'Maximum number of simultaneous requests to send (default: 10)'
+      end
+
+      def self.inherited(c)
+        super
+        # Ensure we always get to do our includes, whether subclass calls deps or not
+        c.deps do
+        end
       end
 
       def configure_chef

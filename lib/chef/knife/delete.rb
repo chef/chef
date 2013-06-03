@@ -1,12 +1,13 @@
 require 'chef/chef_fs/knife'
-require 'chef/chef_fs/file_system'
 
 class Chef
   class Knife
     class Delete < Chef::ChefFS::Knife
       banner "knife delete [PATTERN1 ... PATTERNn]"
 
-      common_options
+      deps do
+        require 'chef/chef_fs/file_system'
+      end
 
       option :recurse,
         :short => '-r',

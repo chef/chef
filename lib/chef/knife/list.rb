@@ -1,13 +1,14 @@
 require 'chef/chef_fs/knife'
-require 'chef/chef_fs/file_system'
-require 'highline'
 
 class Chef
   class Knife
     class List < Chef::ChefFS::Knife
       banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn]"
 
-      common_options
+      deps do
+        require 'chef/chef_fs/file_system'
+        require 'highline'
+      end
 
       option :recursive,
         :short => '-R',
