@@ -15,16 +15,16 @@ class Chef
         :boolean => true,
         :default => false,
         :description => "Delete directories recursively."
-      option :remote_only,
-        :long => '--remote-only',
+      option :both,
+        :long => '--both',
         :boolean => true,
         :default => false,
-        :description => "Only delete the remote copy (leave the local copy)."
-      option :local_only,
-        :long => '--local-only',
+        :description => "Delete both the local and remote copies."
+      option :local,
+        :long => '--local',
         :boolean => true,
         :default => false,
-        :description => "Only delete the local copy (leave the remote copy)."
+        :description => "Delete the local copy (leave the remote copy)."
 
       def run
         if name_args.length == 0
@@ -35,15 +35,7 @@ class Chef
 
         # Get the matches (recursively)
         error = false
-        if config[:remote_only]
-          pattern_args.each do |pattern|
-            Chef::ChefFS::FileSystem.list(chef_fs, pattern).each do |result|
-              if delete_result(result)
-                error = true
-              end
-            end
-          end
-        elsif config[:local_only]
+        if config[:local]
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list(local_fs, pattern).each do |result|
               if delete_result(result)
@@ -51,10 +43,18 @@ class Chef
               end
             end
           end
-        else
+        elsif config[:both]
           pattern_args.each do |pattern|
             Chef::ChefFS::FileSystem.list_pairs(pattern, chef_fs, local_fs).each do |chef_result, local_result|
               if delete_result(chef_result, local_result)
+                error = true
+              end
+            end
+          end
+        else # Remote only
+          pattern_args.each do |pattern|
+            Chef::ChefFS::FileSystem.list(chef_fs, pattern).each do |result|
+              if delete_result(result)
                 error = true
               end
             end
