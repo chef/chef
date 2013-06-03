@@ -366,4 +366,21 @@ describe Chef::Knife do
     end
   end
 
+  describe "when inheriting from a class that inherits from Chef::Knife" do
+    # This requires a mixlib-cli with
+    # http://tickets.opscode.com/browse/MIXLIB-14 merged
+    it "inherits options from the superclass" do
+      class Example1 < Chef::Knife
+        option :a, :default => 'some value'
+        option :b, :default => 'other value'
+      end
+
+      class Example2 < Example1
+        option :c, :default => 'other'
+      end
+
+      Example2.new.options.keys.should == [:a, :b, :c]
+    end
+  end
+
 end
