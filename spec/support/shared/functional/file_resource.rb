@@ -497,15 +497,34 @@ shared_examples_for "a configured file resource" do
 
   # Regression test for http://tickets.opscode.com/browse/CHEF-4082
   context "when notification is configured" do
-    before do
-      @notified_resource = Chef::Resource.new("punk", resource.run_context)
-      resource.notifies(:run, @notified_resource, :immediately)
-      resource.run_action(:create)
+    describe "when path is specified with normal seperator" do
+      before do
+        @notified_resource = Chef::Resource.new("punk", resource.run_context)
+        resource.notifies(:run, @notified_resource, :immediately)
+        resource.run_action(:create)
+      end
+
+      it "should notify the other resources correctly" do
+        resource.should be_updated_by_last_action
+        resource.run_context.immediate_notifications(resource).length.should == 1
+      end
     end
 
-    it "should notify the other resources correctly" do
-      resource.should be_updated_by_last_action
-      resource.run_context.immediate_notifications(resource).length.should == 1
+    describe "when path is specified with windows seperator", :windows_only do
+      let(:path) {
+        File.join(test_file_dir, make_tmpname(file_base)).gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)
+      }
+
+      before do
+        @notified_resource = Chef::Resource.new("punk", resource.run_context)
+        resource.notifies(:run, @notified_resource, :immediately)
+        resource.run_action(:create)
+      end
+
+      it "should notify the other resources correctly" do
+        resource.should be_updated_by_last_action
+        resource.run_context.immediate_notifications(resource).length.should == 1
+      end
     end
   end
 
