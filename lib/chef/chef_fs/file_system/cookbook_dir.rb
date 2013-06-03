@@ -163,8 +163,8 @@ class Chef
           [ are_same, nil, nil ]
         end
 
-        def copy_from(other)
-          parent.upload_cookbook_from(other)
+        def copy_from(other, options = {})
+          parent.upload_cookbook_from(other, options)
         end
 
         def rest

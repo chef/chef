@@ -341,7 +341,7 @@ class Chef
                 if options[:dry_run]
                   ui.output "Would update #{dest_path}" if ui
                 else
-                  dest_entry.copy_from(src_entry)
+                  dest_entry.copy_from(src_entry, options)
                   ui.output "Updated #{dest_path}" if ui
                 end
               end
