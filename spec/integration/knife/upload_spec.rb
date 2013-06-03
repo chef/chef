@@ -368,6 +368,38 @@ EOM
           knife('diff --name-status /cookbooks').should_succeed ''
         end
       end
+
+      when_the_repository 'has a different file in the cookbook' do
+        file 'cookbooks/x/metadata.rb', 'version  "1.0.0"'
+
+        it 'knife upload --freeze freezes the cookbook' do
+          knife('upload --freeze /cookbooks/x').should_succeed <<EOM
+Updated /cookbooks/x
+EOM
+          # Modify a file and attempt to upload
+          file 'cookbooks/x/metadata.rb', 'version "1.0.0" # This is different'
+          knife('upload /cookbooks/x').should_fail "ERROR: /cookbooks failed to write: Cookbook x is frozen\n"
+        end
+      end
+    end
+
+    when_the_chef_server 'has a frozen cookbook' do
+      cookbook 'frozencook', '1.0.0', {
+        'metadata.rb' => 'version "1.0.0"'
+      }, :frozen => true
+
+      when_the_repository 'has an update to said cookbook' do
+        file 'cookbooks/frozencook/metadata.rb', 'version "1.0.0" # This is different'
+
+        it 'knife upload fails to upload the frozen cookbook' do
+          knife('upload /cookbooks/frozencook').should_fail "ERROR: /cookbooks failed to write: Cookbook frozencook is frozen\n"
+        end
+        it 'knife upload --force uploads the frozen cookbook' do
+          knife('upload --force /cookbooks/frozencook').should_succeed <<EOM
+Updated /cookbooks/frozencook
+EOM
+        end
+      end
     end
 
     when_the_repository 'has a cookbook' do
