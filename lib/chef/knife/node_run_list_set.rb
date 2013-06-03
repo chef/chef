@@ -30,7 +30,6 @@ class Chef
       banner "knife node run_list set NODE ENTRIES (options)"
 
       def run
-        node = Chef::Node.load(@name_args[0])
         if @name_args.size < 2
           ui.fatal "You must supply both a node name and a run list."
           show_usage
@@ -44,6 +43,7 @@ class Chef
           # Convert to array and remove the extra spaces
           entries = @name_args[1].split(',').map { |e| e.strip }
         end
+        node = Chef::Node.load(@name_args[0])
 
         set_run_list(node, entries)
 
