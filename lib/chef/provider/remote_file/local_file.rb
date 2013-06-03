@@ -19,7 +19,6 @@
 require 'uri'
 require 'tempfile'
 require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/result'
 
 class Chef
   class Provider
@@ -39,7 +38,7 @@ class Chef
           tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
           Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
           FileUtils.cp(uri.path, tempfile.path)
-          Chef::Provider::RemoteFile::Result.new(tempfile, nil, nil)
+          tempfile
         end
 
       end

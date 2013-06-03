@@ -459,8 +459,7 @@ BOOL WINAPI DeviceIoControl(
         # to be passed to the *W vesion of WinAPI File
         # functions
         def encode_path(path)
-          path.gsub!(::File::SEPARATOR, ::File::ALT_SEPARATOR)
-          (path_prepender << path).to_wstring
+          (path_prepender << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
         end
 
         def path_prepender

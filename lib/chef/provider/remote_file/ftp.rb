@@ -20,7 +20,6 @@ require 'uri'
 require 'tempfile'
 require 'net/ftp'
 require 'chef/provider/remote_file'
-require 'chef/provider/remote_file/result'
 require 'chef/file_content_management/tempfile'
 
 class Chef
@@ -85,10 +84,8 @@ class Chef
 
         def fetch
           with_connection do
-            tempfile = get
-            @result = Chef::Provider::RemoteFile::Result.new(tempfile, nil, nil)
+            get
           end
-          @result
         end
 
         def ftp

@@ -52,9 +52,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
       ::FileUtils.should_receive(:cp).with(uri.path, tempfile.path)
 
       result = fetcher.fetch
-      result.raw_file.should == tempfile
-      result.etag.should be_nil
-      result.mtime.should be_nil
+      result.should == tempfile
     end
 
   end

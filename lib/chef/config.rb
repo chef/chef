@@ -333,7 +333,7 @@ class Chef
     enable_selinux_file_permission_fixup true
 
     # Use atomic updates (i.e. move operation) while updating contents
-    # of the files resources. When set to false :copy operation is
+    # of the files resources. When set to false copy operation is
     # used to update files.
     file_atomic_update true
 
