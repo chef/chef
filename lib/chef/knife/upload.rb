@@ -25,7 +25,13 @@ class Chef
         :long => '--[no-]force',
         :boolean => true,
         :default => false,
-        :description => "Force upload of files even if they match (quicker and harmless, but doesn't print out what it changed)"
+        :description => "Force upload of files even if they match (quicker for many files).  Will overwrite frozen cookbooks."
+
+      option :freeze,
+        :long => '--[no-]freeze',
+        :boolean => true,
+        :default => false,
+        :description => "Freeze cookbooks that get uploaded."
 
       option :dry_run,
         :long => '--dry-run',
