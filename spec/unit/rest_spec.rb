@@ -497,7 +497,7 @@ describe Chef::REST do
 
       it "closes and unlinks the tempfile when the response is a redirect" do
         Tempfile.rspec_reset
-        tempfile = mock("die", :path => "/tmp/ragefist", :close => true)
+        tempfile = mock("die", :path => "/tmp/ragefist", :close => true, :binmode => true)
         tempfile.should_receive(:close!).at_least(2).times
         Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
 
