@@ -19,6 +19,7 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 require 'tmpdir'
+require 'shellwords'
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
 describe Chef::Resource::Git do
@@ -61,7 +62,7 @@ describe Chef::Resource::Git do
 
   before(:each) do
     @old_file_cache_path = Chef::Config[:file_cache_path]
-    shell_out!("git clone #{git_bundle_repo} example", :cwd => origin_repo_dir)
+    shell_out!("git clone \"#{git_bundle_repo}\" example", :cwd => origin_repo_dir)
     Chef::Config[:file_cache_path] = file_cache_path
   end
 
