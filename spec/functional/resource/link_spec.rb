@@ -293,7 +293,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
             File.open(@other_target, 'w') { |file| file.write('eek') }
             symlink(@other_target, target_file)
             symlink?(target_file).should be_true
-            readlink(target_file).should == @other_target
+            readlink(target_file).should == canonicalize(@other_target)
           end
           after(:each) do
             File.delete(@other_target)
@@ -310,7 +310,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
             nonexistent = File.join(test_file_dir, make_tmpname('nonexistent_spec'))
             symlink(nonexistent, target_file)
             symlink?(target_file).should be_true
-            readlink(target_file).should == nonexistent
+            readlink(target_file).should == canonicalize(nonexistent)
           end
           include_context 'create symbolic link succeeds'
           include_context 'delete succeeds'
@@ -384,7 +384,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
           File.open(@other_target, "w") { |file| file.write("eek") }
           symlink(@other_target, to)
           symlink?(to).should be_true
-          readlink(to).should == @other_target
+          readlink(to).should == canonicalize(@other_target)
         end
         after(:each) do
           File.delete(@other_target)
@@ -399,7 +399,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
           @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
           symlink(@other_target, to)
           symlink?(to).should be_true
-          readlink(to).should == @other_target
+          readlink(to).should == canonicalize(@other_target)
         end
         context 'and the link does not yet exist' do
           include_context 'create symbolic link succeeds'
@@ -469,7 +469,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
         before(:each) do
           symlink(to, target_file)
           symlink?(target_file).should be_true
-          readlink(target_file).should == to
+          readlink(target_file).should == canonicalize(to)
         end
         include_context 'create hard link succeeds'
         it_behaves_like 'delete errors out'
@@ -543,7 +543,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
           File.open(@other_target, "w") { |file| file.write("eek") }
           symlink(@other_target, to)
           symlink?(to).should be_true
-          readlink(to).should == @other_target
+          readlink(to).should == canonicalize(@other_target)
         end
         after(:each) do
           File.delete(@other_target)
@@ -555,7 +555,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
             # OS X gets angry about this sort of link.  Bug in OS X, IMO.
             pending('OS X/FreeBSD symlink? and readlink working on hard links to symlinks', :if => (os_x? or freebsd?)) do
               symlink?(target_file).should be_true
-              readlink(target_file).should == @other_target
+              readlink(target_file).should == canonicalize(@other_target)
             end
           end
           include_context 'delete is noop'
@@ -566,7 +566,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
           @other_target = File.join(test_file_dir, make_tmpname("other_spec"))
           symlink(@other_target, to)
           symlink?(to).should be_true
-          readlink(to).should == @other_target
+          readlink(to).should == canonicalize(@other_target)
         end
         context 'and the link does not yet exist' do
           it 'links to the target file' do
@@ -579,7 +579,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
                 File.exists?(target_file).should be_false
               end
               symlink?(target_file).should be_true
-              readlink(target_file).should == @other_target
+              readlink(target_file).should == canonicalize(@other_target)
             end
           end
           include_context 'delete is noop'
