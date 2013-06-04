@@ -50,7 +50,7 @@ describe Chef::Resource::Template do
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 
@@ -81,7 +81,7 @@ describe Chef::Resource::Template do
 
     include_context "diff disabled"
 
-    let!(:resource) do
+    let(:resource) do
       r = create_resource
       r.source "helper_test.erb"
       r
@@ -193,7 +193,7 @@ describe Chef::Resource::Template do
     }
 
     context "for all lines" do
-      let!(:resource) do
+      let(:resource) do
         r = create_resource
         r.source "all_windows_line_endings.erb"
         r
@@ -208,7 +208,7 @@ describe Chef::Resource::Template do
     end
 
     context "for some lines" do
-      let!(:resource) do
+      let(:resource) do
         r = create_resource
         r.source "some_windows_line_endings.erb"
         r
@@ -223,7 +223,7 @@ describe Chef::Resource::Template do
     end
 
     context "for no lines" do
-      let!(:resource) do
+      let(:resource) do
         r = create_resource
         r.source "no_windows_line_endings.erb"
         r

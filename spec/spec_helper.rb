@@ -88,6 +88,7 @@ RSpec.configure do |config|
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
+  config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?

@@ -55,7 +55,7 @@ describe Chef::Resource::CookbookFile do
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 
