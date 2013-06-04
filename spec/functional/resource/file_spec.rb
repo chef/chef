@@ -32,7 +32,7 @@ describe Chef::Resource::File do
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     r = create_resource
     r.content(expected_content)
     r

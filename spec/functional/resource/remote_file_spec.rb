@@ -33,7 +33,7 @@ describe Chef::Resource::RemoteFile do
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 

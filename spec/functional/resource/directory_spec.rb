@@ -32,7 +32,7 @@ describe Chef::Resource::Directory do
     Chef::Resource::Directory.new(path, run_context)
   end
 
-  let!(:resource) do
+  let(:resource) do
   	create_resource
   end
 

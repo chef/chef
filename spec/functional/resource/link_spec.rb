@@ -116,7 +116,7 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 
