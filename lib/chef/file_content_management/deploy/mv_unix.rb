@@ -37,9 +37,10 @@ class Chef
         def deploy(src, dst)
           # we are only responsible for content so restore the dst files perms
           Chef::Log.debug("reading modes from #{dst} file")
-          mode = ::File.stat(dst).mode & 07777
-          uid  = ::File.stat(dst).uid
-          gid  = ::File.stat(dst).gid
+          stat = ::File.stat(dst)
+          mode = stat.mode & 07777
+          uid  = stat.uid
+          gid  = stat.gid
 
           Chef::Log.debug("applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
 
