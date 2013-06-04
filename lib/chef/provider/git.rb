@@ -148,7 +148,7 @@ class Chef
 
           Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
-          clone_cmd = "git clone #{args.join(' ')} #{@new_resource.repository} #{Shellwords.escape @new_resource.destination}"
+          clone_cmd = "git clone #{args.join(' ')} \"#{@new_resource.repository}\" #{Shellwords.escape @new_resource.destination}"
           shell_out!(clone_cmd, run_options(:log_level => :info))
         end
       end
@@ -233,7 +233,7 @@ class Chef
                       else
                         @new_resource.revision + '*'
                       end
-        command = git('ls-remote', @new_resource.repository, rev_pattern)
+        command = git("ls-remote \"#{@new_resource.repository}\"", rev_pattern)
         @resolved_reference = shell_out!(command, run_options).stdout
         ref_lines = @resolved_reference.split("\n")
         refs = ref_lines.map { |line| line.split("\t") }
