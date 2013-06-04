@@ -48,7 +48,7 @@ describe Chef::Resource::RemoteDirectory do
     FileUtils.touch(@existing2)
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 
