@@ -521,7 +521,9 @@ shared_examples_for "a securable resource without existing target" do
       resource.run_action(:create)
 
       descriptor.dacl.each_with_index do |ace, index|
-        ace.inherited?.should == true
+        # On Windows Server 2003 OS creates a default non-inheritable
+        # ACL during file creation unless otherwise specified.
+        ace.inherited?.should == true unless windows_win2k3?
         ace.should == parent_acls.dacl[index]
       end
     end
