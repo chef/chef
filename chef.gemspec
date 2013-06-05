@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency "highline", ">= 1.6.9"
   s.add_dependency "erubis"
 
-  %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+  %w(rdoc sdoc rake rack rspec_junit_formatter chef-zero thin).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.12.0" }
 
   s.bindir       = "bin"
