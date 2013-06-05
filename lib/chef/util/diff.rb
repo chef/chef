@@ -86,7 +86,11 @@ class Chef
         # diff will set a non-zero return code even when there's
         # valid stdout results, if it encounters something unexpected
         # So as long as we have output, we'll show it.
-        if not result.stdout.empty?
+        #
+        # Also on some platforms (Solaris) diff outputs a single line
+        # when there are no differences found. Look for this line
+        # before analyzing diff output.
+        if !result.stdout.empty? && result.stdout != "No differences encountered\n"
           if result.stdout.length > diff_output_threshold
             return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
@@ -94,7 +98,7 @@ class Chef
             @diff.delete("\\ No newline at end of file")
             return "(diff available)"
           end
-        elsif not result.stderr.empty?
+        elsif !result.stderr.empty?
           return "Could not determine diff. Error: #{result.stderr}"
         else
           return "(no diff)"
