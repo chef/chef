@@ -21,7 +21,10 @@
 # ACL information on the dst file.
 #
 
-require 'chef/win32/security'
+require 'chef/platform/query_helpers'
+if Chef::Platform.windows?
+  require 'chef/win32/security'
+end
 
 class Chef
   class FileContentManagement
