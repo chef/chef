@@ -423,7 +423,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a blockdev",:unix_only, :requires_root do
+  context "when the target file is a blockdev",:unix_only, :requires_root, :not_supported_on_solaris do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
@@ -441,7 +441,7 @@ shared_examples_for "a configured file resource" do
     it_behaves_like "file resource not pointing to a real file"
   end
 
-  context "when the target file is a chardev",:unix_only, :requires_root do
+  context "when the target file is a chardev",:unix_only, :requires_root, :not_supported_on_solaris do
     include Chef::Mixin::ShellOut
     let(:path) do
       File.join(CHEF_SPEC_DATA, "testdev")
