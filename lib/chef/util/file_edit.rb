@@ -36,6 +36,11 @@ class Chef
         raise ArgumentError, "File is blank" unless (@contents = File.new(@original_pathname).readlines).length > 0
       end
 
+      # return if file has been edited
+      def file_edited?
+        file_edited
+      end
+
       #search the file line by line and match each line with the given regex
       #if matched, replace the whole line with newline.
       def search_file_replace_line(regex, newline)
