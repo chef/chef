@@ -50,6 +50,10 @@ class Chef
         attr_reader :environment
         attr_reader :repo_mode
 
+        def fs_description
+          "Chef server at #{chef_server_url} (user #{chef_username}), repo_mode = #{repo_mode}"
+        end
+
         def rest
           Chef::REST.new(chef_server_url, chef_username, chef_private_key)
         end
