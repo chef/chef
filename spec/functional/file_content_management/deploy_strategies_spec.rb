@@ -24,7 +24,12 @@ shared_examples_for "a content deploy strategy" do
     ( mode_int & 07777).to_s(8)
   end
 
-  let(:sandbox_dir) { Dir.mktmpdir }
+  let(:sandbox_dir) do
+    basename = make_tmpname("content-deploy-tests")
+    full_path = File.join(CHEF_SPEC_DATA, basename)
+    FileUtils.mkdir_p(full_path)
+    full_path
+  end
 
   after do
     FileUtils.rm_rf(sandbox_dir) if File.exist?(sandbox_dir)
@@ -36,6 +41,8 @@ shared_examples_for "a content deploy strategy" do
 
   describe "creating the file" do
 
+    ##
+    # UNIX Context
     let(:default_mode) { normalize_mode(0100666 - File.umask) }
 
     it "touches the file to create it (UNIX)", :unix_only do
@@ -47,13 +54,46 @@ shared_examples_for "a content deploy strategy" do
       normalize_mode(file_info.mode).should == default_mode
     end
 
+    ##
+    # Window Context
+    let(:parent_dir) { File.dirname(target_file_path) }
+
+    let(:parent_security_descriptor) do
+      security_obj = Chef::ReservedNames::Win32::Security::SecurableObject.new(parent_dir)
+      security_obj.security_descriptor(true)
+    end
+
+    let(:masks) do
+      Chef::ReservedNames::Win32::API::Security
+    end
+
+    def ace_inherits?(ace)
+      flags = ace.flags
+      (flags & masks::OBJECT_INHERIT_ACE) !=0
+    end
+
+    let(:parent_inheritable_aces) do
+      inheritable_aces = parent_security_descriptor.dacl.select do |ace|
+        ace_inherits?(ace)
+      end
+    end
+
     it "touches the file to create it (Windows)", :windows_only do
       content_deployer.create(target_file_path)
       File.should exist(target_file_path)
       file_info = File.stat(target_file_path)
       file_info.should be_owned
       file_info.should be_file
-      # What default permissions do we expect?
+
+      parent_aces = parent_inheritable_aces
+      security_obj = Chef::ReservedNames::Win32::Security::SecurableObject.new(target_file_path)
+
+      security_descriptor = security_obj.security_descriptor(true)
+      security_descriptor.dacl.each_with_index do |ace, index|
+        ace.inherited?.should == true unless windows_win2k3?
+        ace.mask.should == parent_aces[index].mask
+      end
+
     end
   end
 
