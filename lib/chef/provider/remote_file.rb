@@ -56,8 +56,8 @@ class Chef
           if matches_current_checksum?(raw_file)
             Chef::Log.debug "#{@new_resource} target and source checksums are the same - not updating"
           else
-            description = [] 
-            description << "copy file downloaded from #{@new_resource.source} into #{@new_resource.path}"
+            description = []
+            description << "copy file downloaded from #{source} into #{@new_resource.path}"
             description << diff_current(raw_file.path)
             converge_by(description) do
               backup_new_resource
@@ -66,7 +66,7 @@ class Chef
               raw_file.close!
             end
             # whyrun mode cleanup - the temp file will never be used,
-            # so close/unlink it here. 
+            # so close/unlink it here.
             if whyrun_mode?
               raw_file.close!
             end
