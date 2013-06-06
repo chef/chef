@@ -147,14 +147,11 @@ class Chef
       end
 
       def configure_repo_paths
-        # Infer chef_repo_path from cookbook_path if not speciifed
-        if !@chef_config[:chef_repo_path]
-          if @chef_config[:cookbook_path]
-            @chef_config[:chef_repo_path] = Array(@chef_config[:cookbook_path]).flatten.map { |path| File.expand_path('..', path) }
-          end
-        end
-
         # Smooth out some (for now) inappropriate defaults set by Chef
+        if @chef_config[:cookbook_path] == [ @chef_config.platform_specific_path("/var/chef/cookbooks"),
+                      @chef_config.platform_specific_path("/var/chef/site-cookbooks") ]
+          @chef_config[:cookbook_path] = nil
+        end
         if @chef_config[:data_bag_path] == @chef_config.platform_specific_path('/var/chef/data_bags')
           @chef_config[:data_bag_path] = nil
         end
@@ -163,6 +160,13 @@ class Chef
         end
         if @chef_config[:role_path] == @chef_config.platform_specific_path('/var/chef/roles')
           @chef_config[:role_path] = nil
+        end
+
+        # Infer chef_repo_path from cookbook_path if not speciifed
+        if !@chef_config[:chef_repo_path]
+          if @chef_config[:cookbook_path]
+            @chef_config[:chef_repo_path] = Array(@chef_config[:cookbook_path]).flatten.map { |path| File.expand_path('..', path) }
+          end
         end
 
         # Default to getting *everything* from the server.
