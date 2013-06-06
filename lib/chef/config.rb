@@ -22,6 +22,7 @@
 require 'chef/log'
 require 'chef/exceptions'
 require 'mixlib/config'
+require 'chef/util/selinux'
 
 class Chef
   class Config
@@ -326,5 +327,19 @@ class Chef
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
     user_home(ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+
+    # Enable file permission fixup for selinux. Fixup will be done
+    # only if selinux is enabled in the system.
+    enable_selinux_file_permission_fixup true
+
+    # Use atomic updates (i.e. move operation) while updating contents
+    # of the files resources. When set to false copy operation is
+    # used to update files.
+    file_atomic_update true
+
+    # If false file staging is will be done via tempfiles that are
+    # created under ENV['TMP'] otherwise tempfiles will be created in
+    # the directory that files are going to reside.
+    file_staging_uses_destdir false
   end
 end

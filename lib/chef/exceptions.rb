@@ -153,6 +153,9 @@ class Chef
     class InvalidEnvironmentPath < ArgumentError; end
     class EnvironmentNotFound < RuntimeError; end
 
+    # File-like resource found a non-file (socket, pipe, directory, etc) at its destination
+    class FileTypeMismatch < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

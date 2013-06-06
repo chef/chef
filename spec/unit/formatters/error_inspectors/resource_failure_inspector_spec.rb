@@ -83,14 +83,15 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @description = Chef::Formatters::ErrorDescription.new("Error Converging Resource:")
         @template_class = Class.new { include Chef::Mixin::Template }
         @template = @template_class.new
-        @context = {:chef => "cool"}
+        @context = Chef::Mixin::Template::TemplateContext.new({})
+        @context[:chef] = "cool"
 
         @resource = template("/tmp/foo.txt") do
           mode "0644"
         end
 
         @error = begin
-                   @template.render_template("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno", @context) {|r| r}
+                   @context.render_template_from_string("foo\nbar\nbaz\n<%= this_is_not_defined %>\nquin\nqunx\ndunno")
                  rescue  Chef::Mixin::Template::TemplateError => e
                    e
                  end
