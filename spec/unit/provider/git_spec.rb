@@ -82,7 +82,7 @@ describe Chef::Provider::Git do
   context "resolving revisions to a SHA" do
 
     before do
-      @git_ls_remote = "git ls-remote git://github.com/opscode/chef.git "
+      @git_ls_remote = "git ls-remote \"git://github.com/opscode/chef.git\" "
     end
 
     it "returns resource.revision as is if revision is already a full SHA" do
