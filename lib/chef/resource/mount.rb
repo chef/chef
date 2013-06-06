@@ -25,7 +25,7 @@ class Chef
       
       identity_attr :device
 
-      state_attrs :mount_point, :device_type, :fstype, :auth_username, :auth_password, :auth_domainname
+      state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
 
       def initialize(name, run_context=nil)
         super
@@ -42,9 +42,9 @@ class Chef
         @action = :mount
         @supports = { :remount => false }
         @allowed_actions.push(:mount, :umount, :remount, :enable, :disable)
-        @auth_username = nil
-        @auth_password = nil
-        @auth_domainname = nil
+        @username = nil
+        @password = nil
+        @domain = nil
       end
       
       def mount_point(arg=nil)
@@ -135,25 +135,25 @@ class Chef
         end
       end
 
-      def auth_username(arg=nil)
+      def username(arg=nil)
         set_or_return(
-          :auth_username,
+          :username,
           arg,
           :kind_of => [ String ]
         )
       end
 
-      def auth_password(arg=nil)
+      def password(arg=nil)
         set_or_return(
-          :auth_password,
+          :password,
           arg,
           :kind_of => [ String ]
         )
       end
 
-      def auth_domainname(arg=nil)
+      def domain(arg=nil)
         set_or_return(
-          :auth_domainname,
+          :domain,
           arg,
           :kind_of => [ String ]
         )
