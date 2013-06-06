@@ -25,7 +25,11 @@ require 'shellwords'
 describe Chef::Resource::Git do
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
-  let(:deploy_directory) { Dir.mktmpdir }
+  # Some versions of git complains when the deploy directory is
+  # already created. Here we intentionally don't create the deploy
+  # directory beforehand.
+  let(:base_dir_path) { Dir.mktmpdir }
+  let(:deploy_directory) { File.join(base_dir_path, make_tmpname("git_base")) }
 
   let(:node) do
     Chef::Node.new.tap do |n|

@@ -46,13 +46,15 @@ class Chef
         @action = "create"
         @allowed_actions.push(:create, :delete, :touch, :create_if_missing)
         @provider = Chef::Provider::File
+        @atomic_update = Chef::Config[:file_atomic_update]
+        @force_unlink = false
         @diff = nil
       end
 
 
       def content(arg=nil)
         set_or_return(
-                      :content,
+          :content,
           arg,
           :kind_of => String
         )
@@ -81,7 +83,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       def diff(arg=nil)
         set_or_return(
           :diff,
@@ -90,6 +92,21 @@ class Chef
         )
       end
 
+      def atomic_update(arg=nil)
+        set_or_return(
+          :atomic_update,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def force_unlink(arg=nil)
+        set_or_return(
+          :force_unlink,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
 
     end
   end

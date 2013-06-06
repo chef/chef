@@ -32,6 +32,7 @@ class Chef
       state_attrs :to, :owner, :group
 
       def initialize(name, run_context=nil)
+        verify_links_supported!
         super
         @resource_name = :link
         @to = nil
@@ -86,6 +87,22 @@ class Chef
       # make link quack like a file (XXX: not for public consumption)
       def path
         @target_file
+      end
+
+      private
+      def verify_links_supported!
+        # On certain versions of windows links are not supported. Make
+        # sure we are not on such a platform.
+
+        if Chef::Platform.windows?
+          require 'chef/win32/file'
+          begin
+            Chef::ReservedNames::Win32::File.verify_links_supported!
+          rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
+            Chef::Log.fatal("Link resource is not supported on this version of Windows")
+            raise e
+          end
+        end
       end
     end
   end

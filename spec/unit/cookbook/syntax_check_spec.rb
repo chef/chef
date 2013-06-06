@@ -33,9 +33,15 @@ describe Chef::Cookbook::SyntaxCheck do
     @defn_files = %w{client.rb server.rb}.map { |f| File.join(cookbook_path, 'definitions', f)}
     @recipes = %w{default.rb gigantor.rb one.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
     @ruby_files = @attr_files + @defn_files + @recipes
-
-    @template_files = %w{openldap_stuff.conf.erb openldap_variable_stuff.conf.erb test.erb}.map { |f| File.join(cookbook_path, 'templates', 'default', f)}
-
+    basenames = %w{ helpers_via_partial_test.erb
+                    helper_test.erb
+                    openldap_stuff.conf.erb
+                    openldap_variable_stuff.conf.erb
+                    test.erb
+                    some_windows_line_endings.erb
+                    all_windows_line_endings.erb
+                    no_windows_line_endings.erb }
+    @template_files = basenames.map { |f| File.join(cookbook_path, 'templates', 'default', f)}
   end
 
   it "creates a syntax checker given the cookbook name when Chef::Config.cookbook_path is set" do

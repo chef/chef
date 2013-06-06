@@ -42,29 +42,19 @@ describe Chef::Resource::Template do
     resource = Chef::Resource::Template.new(path, run_context)
     resource.source('openldap_stuff.conf.erb')
     resource.cookbook('openldap')
+
+    # NOTE: partials rely on `cookbook_name` getting set by chef internals and
+    # ignore the user-set `cookbook` attribute.
+    resource.cookbook_name = "openldap"
+
     resource
   end
 
-  let!(:resource) do
+  let(:resource) do
     create_resource
   end
 
-  let(:default_mode) do
-    # TODO: Lots of ugly here :(
-    # RemoteFile uses FileUtils.cp. FileUtils does a copy by opening the
-    # destination file and writing to it. Before 1.9.3, it does not preserve
-    # the mode of the copied file. In 1.9.3 and after, it does. So we have to
-    # figure out what the default mode ought to be via heuristic.
-
-    t = Tempfile.new("get-the-mode")
-    path = t.path
-    path_2 = t.path + "fileutils-mode-test"
-    FileUtils.cp(path, path_2)
-    t.close
-    m = File.stat(path_2).mode
-    (07777 & m).to_s(8)
-  end
-
+  let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
   it_behaves_like "a file resource"
 
@@ -86,4 +76,166 @@ describe Chef::Resource::Template do
       IO.read(path).should == expected_content
     end
   end
+
+  describe "when the template resource defines helper methods" do
+
+    include_context "diff disabled"
+
+    let(:resource) do
+      r = create_resource
+      r.source "helper_test.erb"
+      r
+    end
+
+    let(:expected_content) { "value from helper method\n" }
+
+    shared_examples "a template with helpers" do
+      it "generates expected content by calling helper methods" do
+        resource.run_action(:create)
+        IO.read(path).should == expected_content
+      end
+    end
+
+    context "using single helper syntax" do
+      before do
+        resource.helper(:helper_method) { "value from helper method" }
+      end
+
+      it_behaves_like "a template with helpers"
+    end
+
+    context "using single helper syntax referencing @node" do
+      before do
+        node.set[:helper_test_attr] = "value from helper method"
+        resource.helper(:helper_method) { "#{@node[:helper_test_attr]}" }
+      end
+
+      it_behaves_like "a template with helpers"
+    end
+
+    context "using an inline block to define helpers" do
+      before do
+        resource.helpers do
+          def helper_method
+            "value from helper method"
+          end
+        end
+      end
+
+      it_behaves_like "a template with helpers"
+    end
+
+    context "using an inline block referencing @node" do
+      before do
+        node.set[:helper_test_attr] = "value from helper method"
+
+        resource.helpers do
+          def helper_method
+            @node[:helper_test_attr]
+          end
+        end
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+
+    context "using a module from a library" do
+
+      module ExampleModule
+        def helper_method
+          "value from helper method"
+        end
+      end
+
+      before do
+        resource.helpers(ExampleModule)
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+    context "using a module from a library referencing @node" do
+
+      module ExampleModuleReferencingATNode
+        def helper_method
+          @node[:helper_test_attr]
+        end
+      end
+
+      before do
+        node.set[:helper_test_attr] = "value from helper method"
+
+        resource.helpers(ExampleModuleReferencingATNode)
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+
+    context "using helpers with partial templates" do
+      before do
+        resource.source("helpers_via_partial_test.erb")
+        resource.helper(:helper_method) { "value from helper method" }
+      end
+
+      it_behaves_like "a template with helpers"
+
+    end
+  end
+
+  describe "when template source contains windows style line endings" do
+
+    include_context "diff disabled"
+
+    let (:expected_content) {
+      "Template rendering libraries\r\nshould support\r\ndifferent line endings\r\n\r\n"
+    }
+
+    context "for all lines" do
+      let(:resource) do
+        r = create_resource
+        r.source "all_windows_line_endings.erb"
+        r
+      end
+
+      it "output should contain windows line endings" do
+        resource.run_action(:create)
+        IO.read(path).each_line do |line|
+          line.should end_with("\r\n")
+        end
+      end
+    end
+
+    context "for some lines" do
+      let(:resource) do
+        r = create_resource
+        r.source "some_windows_line_endings.erb"
+        r
+      end
+
+      it "output should contain windows line endings" do
+        resource.run_action(:create)
+        IO.read(path).each_line do |line|
+          line.should end_with("\r\n")
+        end
+      end
+    end
+
+    context "for no lines" do
+      let(:resource) do
+        r = create_resource
+        r.source "no_windows_line_endings.erb"
+        r
+      end
+
+      it "output should not contain windows line endings" do
+        resource.run_action(:create)
+        IO.read(path).each_line do |line|
+          line.should_not end_with("\r\n")
+        end
+      end
+    end
+  end
+
 end

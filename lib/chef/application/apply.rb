@@ -79,6 +79,8 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def reconfigure
+    parse_options
+    Chef::Config.merge!(config)
     configure_logging
   end
 

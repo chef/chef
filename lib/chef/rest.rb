@@ -83,6 +83,10 @@ class Chef
       @raw_key
     end
 
+    def last_response
+      @last_response
+    end
+
     # Send an HTTP GET request to the path
     #
     # Using this method to +fetch+ a file is considered deprecated.
@@ -163,6 +167,7 @@ class Chef
       retriable_rest_request(method, url, body, headers) do |rest_request|
         begin
           response = rest_request.call {|r| r.read_body}
+          @last_response = response
 
           Chef::Log.debug("---- HTTP Status and Header Data: ----")
           Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
@@ -251,6 +256,7 @@ class Chef
               tempfile = stream_to_tempfile(url, r)
             end
           end
+          @last_response = response
           if response.kind_of?(Net::HTTPSuccess)
             tempfile
           elsif redirect_location = redirected_to(response)
@@ -367,7 +373,7 @@ class Chef
     def stream_to_tempfile(url, response)
       tf = Tempfile.open("chef-rest")
       if Chef::Platform.windows?
-        tf.binmode #required for binary files on Windows platforms
+        tf.binmode # required for binary files on Windows platforms
       end
       Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
       # Stolen from http://www.ruby-forum.com/topic/166423
