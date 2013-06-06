@@ -146,6 +146,14 @@ class Chef
         )
       end
 
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => Integer
+        )
+      end
+
     end
   end
 end
