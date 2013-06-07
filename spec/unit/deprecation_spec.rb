@@ -51,7 +51,7 @@ describe Chef::Deprecation do
 
     method_snapshot.each do |class_name, old_methods|
       class_object = class_from_string(class_name)
-      current_methods = class_object.public_instance_methods
+      current_methods = class_object.public_instance_methods.map(&:to_sym)
 
       old_methods.each do |old_method|
         current_methods.should include(old_method.to_sym)
