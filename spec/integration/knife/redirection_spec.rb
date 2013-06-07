@@ -16,6 +16,7 @@ describe 'redirection' do
         app = lambda do |env|
           [302, {'Content-Type' => 'text','Location' => "#{@real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
         end
+        Thin::Logging.silent = true
         @redirector_server = Thin::Server.new('127.0.0.1', 9018, app, { :signals => false })
         @redirector_thread = Thread.new do
           begin
