@@ -95,6 +95,8 @@ class Chef
         # Could be super useful in a world with multiple repo paths
         args.map do |arg|
           if !@chef_fs_config.base_path && !Chef::ChefFS::PathUtils.is_absolute?(arg)
+            # Check if chef repo path is specified to give a better error message
+            @chef_fs_config.require_chef_repo_path
             ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
             exit(1)
           end

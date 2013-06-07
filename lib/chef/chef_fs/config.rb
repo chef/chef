@@ -101,7 +101,13 @@ class Chef
 
       # The current directory, relative to server root
       def base_path
-        @base_path ||= server_path(File.expand_path(@cwd))
+        @base_path ||= begin
+          if @chef_config[:chef_repo_path]
+            server_path(File.expand_path(@cwd))
+          else
+            nil
+          end
+        end
       end
 
       # Print the given server path, relative to the current directory
@@ -119,14 +125,18 @@ class Chef
         server_path
       end
 
+      def require_chef_repo_path
+        if !@chef_config[:chef_repo_path]
+          Chef::Log.error("Must specify either chef_repo_path or cookbook_path in Chef config file")
+          exit(1)
+        end
+      end
+
       private
 
       def object_paths
         @object_paths ||= begin
-          if !@chef_config[:chef_repo_path]
-            Chef::Log.error("Must specify either chef_repo_path or cookbook_path in Chef config file")
-            exit(1)
-          end
+          require_chef_repo_path
 
           result = {}
           case @chef_config[:repo_mode]
