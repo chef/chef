@@ -30,14 +30,14 @@ module IntegrationSupport
 
   def self.extended(base)
     base.before :each do
-      @old_repo_mode = nil
-      @old_versioned_cookbooks = nil
+      # We mess with Chef::Config a lot.  Save and restore it.
+      @old_chef_config = Chef::Config.configuration
+      Chef::Config.configuration = Chef::Config.configuration.dup
       Chef::Config.repo_mode = nil
       Chef::Config.versioned_cookbooks = nil
     end
     base.after :each do
-      Chef::Config.repo_mode = @old_repo_mode
-      Chef::Config.versioned_cookbooks = @old_versioned_cookbooks
+      Chef::Config.configuration = @old_chef_config
     end
   end
 
