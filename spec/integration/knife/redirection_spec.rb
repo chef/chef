@@ -1,4 +1,4 @@
-require 'thin'
+require 'puma'
 require 'support/shared/integration/integration_helper'
 require 'chef/knife/list'
 
@@ -16,18 +16,11 @@ describe 'redirection' do
         app = lambda do |env|
           [302, {'Content-Type' => 'text','Location' => "#{@real_chef_server_url}#{env['PATH_INFO']}" }, ['302 found'] ]
         end
-        Thin::Logging.silent = true
-        @redirector_server = Thin::Server.new('127.0.0.1', 9018, app, { :signals => false })
-        @redirector_thread = Thread.new do
-          begin
-            @redirector_server.start
-          rescue
-            @server_error = $!
-            Chef::Log.error("#{$!.message}\n#{$!.backtrace.join("\n")}")
-          end
-        end
+        @redirector_server = Puma::Server.new(app, Puma::Events.new(STDERR, STDOUT))
+        @redirector_server.add_tcp_listener("127.0.0.1", 9018)
+        @redirector_server.run
         Timeout::timeout(5) do
-          until @redirector_server.running? || @server_error
+          until @redirector_server.running
             sleep(0.01)
           end
           raise @server_error if @server_error
@@ -36,10 +29,7 @@ describe 'redirection' do
 
       after :each do
         Chef::Config.chef_server_url = @real_chef_server_url
-        @redirector_thread.kill
-        @redirector_thread.join(nil)
-        @redirector_thread = nil
-        @redirector_server = nil
+        @redirector_server.stop(true)
       end
 
       it 'knife list /roles returns the role' do
