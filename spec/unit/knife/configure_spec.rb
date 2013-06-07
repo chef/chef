@@ -103,7 +103,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the existing admin's private key: [#{default_admin_key}]"))
     if windows?
-      @knife.admin_client_key.capitalize.should == default_admin_key_win32
+      @knife.admin_client_key.capitalize.should == default_admin_key_win32.capitalize
     else
       @knife.admin_client_key.should == default_admin_key
     end
@@ -154,7 +154,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the validation key: [#{default_validator_key}]"))
     if windows?
-      @knife.validation_key.capitalize.should == default_validator_key_win32
+      @knife.validation_key.capitalize.should == default_validator_key_win32.capitalize
     else
       @knife.validation_key.should == default_validator_key
     end
