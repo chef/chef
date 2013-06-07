@@ -18,7 +18,7 @@
 
 
 require 'spec_helper'
-describe Chef::Provider::Git, :focus => true do
+describe Chef::Provider::Git do
 
   before(:each) do
     STDOUT.stub!(:tty?).and_return(true)
