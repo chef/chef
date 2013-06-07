@@ -140,7 +140,7 @@ class Chef
           end
 
           if windows_line_endings
-            output = output.gsub("\n","\r\n")
+            output = output.gsub(/\r?\n/,"\r\n")
           end
 
           output

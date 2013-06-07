@@ -43,6 +43,7 @@ class Chef
           output = context.render_template(template_location)
 
           tempfile = Tempfile.open("chef-rendered-template")
+          tempfile.binmode
           tempfile.write(output)
           tempfile.close
           tempfile

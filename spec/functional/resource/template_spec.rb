@@ -20,6 +20,10 @@ require 'spec_helper'
 
 describe Chef::Resource::Template do
 
+  def binread(file)
+    File.open(file,"rb") {|f| f.read }
+  end
+
   include_context Chef::Resource::File
 
   let(:file_base) { "template_spec" }
@@ -87,12 +91,12 @@ describe Chef::Resource::Template do
       r
     end
 
-    let(:expected_content) { "value from helper method\n" }
+    let(:expected_content) { "value from helper method" }
 
     shared_examples "a template with helpers" do
       it "generates expected content by calling helper methods" do
         resource.run_action(:create)
-        IO.read(path).should == expected_content
+        IO.binread(path).strip.should == expected_content
       end
     end
 
@@ -201,7 +205,7 @@ describe Chef::Resource::Template do
 
       it "output should contain windows line endings" do
         resource.run_action(:create)
-        IO.read(path).each_line do |line|
+        binread(path).each_line do |line|
           line.should end_with("\r\n")
         end
       end
@@ -216,7 +220,7 @@ describe Chef::Resource::Template do
 
       it "output should contain windows line endings" do
         resource.run_action(:create)
-        IO.read(path).each_line do |line|
+        binread(path).each_line do |line|
           line.should end_with("\r\n")
         end
       end
