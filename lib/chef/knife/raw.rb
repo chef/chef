@@ -7,7 +7,8 @@ class Chef
 
       deps do
         require 'json'
-        require 'chef/chef_fs/data_handler/data_handler_base'
+        require 'chef/rest'
+        require 'chef/config'
         require 'chef/chef_fs/raw_request'
       end
 
