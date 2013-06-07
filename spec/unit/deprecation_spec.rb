@@ -23,7 +23,7 @@ describe Chef::Deprecation do
 
   # Support code for Chef::Deprecation
 
-  def class_from_string(str)
+  def self.class_from_string(str)
     str.split('::').inject(Object) do |mod, class_name|
       mod.const_get(class_name)
     end
@@ -45,14 +45,14 @@ describe Chef::Deprecation do
     add_deprecation_warnings_for(DeprecatedMethods.instance_methods)
   end
 
-  it "defines all methods that were available in 11.0" do
-    method_snapshot_file = File.join(CHEF_SPEC_DATA, "file-providers-method-snapshot-chef-11-4.json")
-    method_snapshot = JSON.parse(File.open(method_snapshot_file).read())
+  method_snapshot_file = File.join(CHEF_SPEC_DATA, "file-providers-method-snapshot-chef-11-4.json")
+  method_snapshot = JSON.parse(File.open(method_snapshot_file).read())
 
-    method_snapshot.each do |class_name, old_methods|
-      class_object = class_from_string(class_name)
-      current_methods = class_object.public_instance_methods.map(&:to_sym)
+  method_snapshot.each do |class_name, old_methods|
+    class_object = class_from_string(class_name)
+    current_methods = class_object.public_instance_methods.map(&:to_sym)
 
+    it "defines all methods on #{class_object} that were available in 11.0" do
       old_methods.each do |old_method|
         current_methods.should include(old_method.to_sym)
       end
