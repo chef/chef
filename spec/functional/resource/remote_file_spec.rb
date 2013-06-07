@@ -20,6 +20,19 @@ require 'spec_helper'
 require 'tiny_server'
 
 describe Chef::Resource::RemoteFile do
+
+  let(:file_cache_path) { Dir.mktmpdir }
+
+  before(:each) do
+    @old_file_cache = Chef::Config[:file_cache_path]
+    Chef::Config[:file_cache_path] = file_cache_path
+  end
+
+  after(:each) do
+    Chef::Config[:file_cache_path] = @old_file_cache
+    FileUtils.rm_rf(file_cache_path)
+  end
+
   include_context Chef::Resource::File
 
   let(:file_base) { "remote_file_spec" }
