@@ -140,6 +140,10 @@ class Chef
           end
 
           if windows_line_endings
+            # Convert line endings from "\n" -> "\r\n". Also converts
+            # "\r\n" -> "\r\n".
+            # This makes the regex match on all of "\r\n", so we don't
+            # accidentally convert "\r\n" -> "\r\r\n".
             output = output.gsub(/\r?\n/,"\r\n")
           end
 
