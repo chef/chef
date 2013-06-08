@@ -21,6 +21,8 @@ require 'spec_helper'
 require 'cgi'
 describe Chef::Mixin::Template, "render_template" do
 
+  let(:sep) { Chef::Platform.windows? ? "\r\n" : "\n" }
+
   before :each do
     @context = Chef::Mixin::Template::TemplateContext.new({})
   end
@@ -64,7 +66,7 @@ describe Chef::Mixin::Template, "render_template" do
 
     it "should provide a render method" do
       output = @template_context.render_template_from_string("before {<%= render 'test.erb' %>} after")
-      output.should == "before {We could be diving for pearls!\n} after"
+      output.should == "before {We could be diving for pearls!#{sep}} after"
     end
 
     it "should render local files" do
@@ -84,7 +86,7 @@ describe Chef::Mixin::Template, "render_template" do
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
 
       output = @template_context.render_template_from_string("before {<%= render 'test.erb', :cookbook => 'openldap' %>} after")
-      output.should == "before {We could be diving for pearls!\n} after"
+      output.should == "before {We could be diving for pearls!#{sep}} after"
     end
 
     it "should render using the source argument if provided" do
@@ -138,7 +140,7 @@ describe Chef::Mixin::Template, "render_template" do
       path = File.expand_path(File.join(CHEF_SPEC_DATA, "partial_one.erb"))
 
       output = @template_context.render_template_from_string("before {<%= render '#{path}', :local => true %>} after")
-      output.should == "before {partial one We could be diving for pearls!\n calling home\n} after"
+      output.should == "before {partial one We could be diving for pearls!#{sep} calling home#{sep}} after"
     end
 
     describe "when customizing the template context" do
