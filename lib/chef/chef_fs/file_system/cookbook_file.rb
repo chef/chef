@@ -38,9 +38,20 @@ class Chef
           old_sign_on_redirect = rest.sign_on_redirect
           rest.sign_on_redirect = false
           begin
-            rest.get_rest(file[:url])
+            tmpfile = rest.get_rest(file[:url], true)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading #{file[:url]}: #{e}"
+          rescue Net::HTTPServerException => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "#{e.message} retrieving #{file[:url]}"
           ensure
             rest.sign_on_redirect = old_sign_on_redirect
+          end
+
+          begin
+            tmpfile.open
+            tmpfile.read
+          ensure
+            tmpfile.close!
           end
         end
 
@@ -66,11 +77,7 @@ class Chef
         private
 
         def calc_checksum(value)
-          begin
-            Digest::MD5.hexdigest(value)
-          rescue Chef::ChefFS::FileSystem::NotFoundError
-            nil
-          end
+          Digest::MD5.hexdigest(value)
         end
       end
     end

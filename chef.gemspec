@@ -32,6 +32,8 @@ Gem::Specification.new do |s|
 
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.12.0" }
+  s.add_development_dependency "chef-zero", "~> 1.4"
+  s.add_development_dependency "puma", "~> 1.6"
 
   s.bindir       = "bin"
   # chef-service-manager is a windows only executable.
