@@ -250,7 +250,7 @@ class Chef
                 tempfile = stream_to_tempfile(url, r, &block)
                 yield tempfile
               ensure
-                tempfile.close!
+                tempfile.close! if tempfile
               end
             else
               tempfile = stream_to_tempfile(url, r)
@@ -400,7 +400,7 @@ class Chef
       tf.close
       tf
     rescue Exception
-      tf.close!
+      tf.close! if tf
       raise
     end
 
