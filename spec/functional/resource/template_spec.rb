@@ -96,7 +96,7 @@ describe Chef::Resource::Template do
     shared_examples "a template with helpers" do
       it "generates expected content by calling helper methods" do
         resource.run_action(:create)
-        IO.binread(path).strip.should == expected_content
+        binread(path).strip.should == expected_content
       end
     end
 
