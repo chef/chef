@@ -192,7 +192,7 @@ describe Chef::Resource::Template do
 
     include_context "diff disabled"
 
-    let (:expected_content) {
+    let(:expected_content) {
       "Template rendering libraries\r\nshould support\r\ndifferent line endings\r\n\r\n"
     }
 
