@@ -45,7 +45,22 @@ module KnifeSupport
 
         # Don't print stuff
         Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
+        instance.config[:config_file] = File.join(CHEF_SPEC_DATA, "null_config.rb")
+
+
+        # Configure chef with a (mostly) blank knife.rb
+        # We set a global and then mutate it in our stub knife.rb so we can be
+        # extra sure that we're not loading someone's real knife.rb and then
+        # running test scenarios against a real chef server. If things don't
+        # smell right, abort.
+
+        $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
         instance.configure_chef
+
+        unless $__KNIFE_INTEGRATION_FAILSAFE_CHECK == "ole ole"
+          raise Exception, "Potential misconfiguration of integration tests detected. Aborting test."
+        end
+
         logger = Logger.new(stderr)
         logger.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg}\n" }
         Chef::Log.use_log_devices([logger])
