@@ -1,8 +1,8 @@
-Package Name: opscode.chef.client
+Package Name: chef
 Package VRMF: TBS
 Update: N
 Fileset
-  Fileset Name: opscode.chef.client.rte
+  Fileset Name: chef
   Fileset VRMF: TBS
   Fileset Description: Opscode Chef Client
   USRLIBLPPFiles
