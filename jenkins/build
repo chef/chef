@@ -92,7 +92,14 @@ cp omnibus.rb.example omnibus.rb
 
 # Aaand.. new ruby
 export PATH=/usr/local/bin:$PATH
-bundle install
+
+# horrible hack for solaris 9 to get ffi to compile in the bundle
+if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep 'Solaris 9')" ]; then
+  export CFLAGS=-U__STRICT_ANSI__
+fi
+
+# docs do not install on solaris 9
+bundle install --without docs
 
 if [ "$RELEASE_BUILD" = "true" ]; then
   bundle exec omnibus build project $project_name --no-timestamp
