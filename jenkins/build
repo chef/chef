@@ -95,7 +95,8 @@ export PATH=/usr/local/bin:$PATH
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
 if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep 'Solaris 9')" ]; then
-  export CFLAGS=-U__STRICT_ANSI__
+  # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
+  export CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
 fi
 
 # docs do not install on solaris 9
