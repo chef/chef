@@ -32,6 +32,11 @@ class Chef
           sorted_releases
         end
 
+        def action_deploy
+          validate_release_history!
+          super
+        end
+
         protected
 
         def release_created(release)
@@ -55,6 +60,14 @@ class Chef
             save_cache(cache)
           end
           cache
+        end
+
+        def validate_release_history!
+          sorted_releases do |release_list|
+            release_list.each do |path|
+              release_list.delete(path) unless ::File.exist?(path)
+            end
+          end
         end
 
         def sorted_releases_from_filesystem
