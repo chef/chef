@@ -510,6 +510,52 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       lambda { deploy_with_in_repo_symlinks.run_action(:deploy) }.should_not raise_error
     end
   end
+
+  context "when a previously deployed application has been nuked" do
+
+    shared_examples_for "a redeployed application" do
+
+      it "should redeploy the application" do
+        File.should be_directory(rel_path("releases"))
+        File.should be_directory(rel_path("shared"))
+        File.should be_directory(rel_path("releases/#{latest_rev}"))
+
+        File.should be_directory(rel_path("current/tmp"))
+        File.should be_directory(rel_path("current/config"))
+        File.should be_directory(rel_path("current/public"))
+
+        File.should be_symlink(rel_path("current"))
+        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+      end
+    end
+
+    # background: If a deployment is hosed and the user decides to rm -rf the
+    # deployment dir, deploy resource should detect that and nullify its cache.
+
+    context "by removing the entire deploy directory" do
+
+      before do
+        deploy_to_latest_rev.dup.run_action(:deploy)
+        FileUtils.rm_rf(deploy_directory)
+        deploy_to_latest_rev.dup.run_action(:deploy)
+      end
+
+      include_examples "a redeployed application"
+
+    end
+
+    context "by removing the current/ directory" do
+
+      before do
+        deploy_to_latest_rev.dup.run_action(:deploy)
+        FileUtils.rm(rel_path("current"))
+        deploy_to_latest_rev.dup.run_action(:deploy)
+      end
+
+      include_examples "a redeployed application"
+
+    end
+  end
 end
 
 
