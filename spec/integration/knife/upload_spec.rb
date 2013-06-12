@@ -1,6 +1,7 @@
 require 'support/shared/integration/integration_helper'
 require 'chef/knife/upload'
 require 'chef/knife/diff'
+require 'chef/knife/raw'
 
 describe 'knife upload' do
   extend IntegrationSupport
@@ -209,8 +210,36 @@ EOM
       end
     end
 
-    # Test upload of an item when the other end doesn't even have the container
     when_the_chef_server 'is empty' do
+      when_the_repository 'has a data bag item' do
+        file 'data_bags/x/y.json', { 'foo' => 'bar' }
+        it 'knife upload of the data bag uploads only the values in the data bag item and no other' do
+          knife('upload /data_bags/x/y.json').should_succeed <<EOM
+Created /data_bags/x
+Created /data_bags/x/y.json
+EOM
+          knife('diff --name-status /data_bags').should_succeed <<EOM
+EOM
+          JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.should == [ 'id', 'foo' ]
+        end
+      end
+
+      when_the_repository 'has a data bag item with keys chef_type and data_bag' do
+        file 'data_bags/x/y.json', { 'chef_type' => 'aaa', 'data_bag' => 'bbb' }
+        it 'upload preserves chef_type and data_bag' do
+          knife('upload /data_bags/x/y.json').should_succeed <<EOM
+Created /data_bags/x
+Created /data_bags/x/y.json
+EOM
+          knife('diff --name-status /data_bags').should_succeed ''
+          result = JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false)
+          result.keys.should == [ 'id', 'chef_type', 'data_bag' ]
+          result['chef_type'].should == 'aaa'
+          result['data_bag'].should == 'bbb'
+        end
+      end
+
+      # Test upload of an item when the other end doesn't even have the container
       when_the_repository 'has two data bag items' do
         file 'data_bags/x/y.json', {}
         file 'data_bags/x/z.json', {}
@@ -566,10 +595,10 @@ D\t/roles/x.json
 D\t/users/admin.json
 D\t/users/x.json
 EOM
-      end
+        end
 
-      it 'knife upload --purge deletes everything' do
-        knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+        it 'knife upload --purge deletes everything' do
+          knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /clients/chef-validator.json (purge is on)
 Deleted extra entry /clients/chef-webui.json (purge is on)
 Deleted extra entry /clients/x.json (purge is on)
@@ -581,10 +610,10 @@ Deleted extra entry /roles/x.json (purge is on)
 Deleted extra entry /users/admin.json (purge is on)
 Deleted extra entry /users/x.json (purge is on)
 EOM
-        knife('diff --name-status /').should_succeed <<EOM
+          knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
 EOM
-      end
+        end
       end
 
       when_the_repository 'has an identical copy of each thing' do

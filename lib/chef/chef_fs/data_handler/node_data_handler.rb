@@ -6,7 +6,7 @@ class Chef
     module DataHandler
       class NodeDataHandler < DataHandlerBase
         def normalize(node, entry)
-          result = super(node, {
+          result = normalize_hash(node, {
             'name' => remove_dot_json(entry.name),
             'json_class' => 'Chef::Node',
             'chef_type' => 'node',

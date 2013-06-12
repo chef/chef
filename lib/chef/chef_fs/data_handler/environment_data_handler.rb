@@ -6,7 +6,7 @@ class Chef
     module DataHandler
       class EnvironmentDataHandler < DataHandlerBase
         def normalize(environment, entry)
-          super(environment, {
+          normalize_hash(environment, {
             'name' => remove_dot_json(entry.name),
             'description' => '',
             'cookbook_versions' => {},
