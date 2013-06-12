@@ -166,7 +166,7 @@ describe Chef::Knife::CookbookDownload do
       it 'should return and set the version to the latest version' do
         @knife.config[:latest] = true
         @knife.should_receive(:available_versions).at_least(:once).
-                                                   and_return(['1.0.0', '2.0.0', '1.1.0'])
+                                                   and_return(['1.0.0', '1.1.0', '2.0.0'])
         @knife.determine_version
         @knife.version.to_s.should == '2.0.0'
       end
