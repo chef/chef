@@ -32,6 +32,9 @@ class Chef
       def run_start(version)
       end
 
+      def run_started(run_status)
+      end
+
       # Called at the end a successful Chef run.
       def run_completed(node)
       end

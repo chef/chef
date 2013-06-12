@@ -37,6 +37,8 @@ describe Chef::Provider::Service::Solaris do
     @pid = 2342
     @stdout_string = "state disabled"
     @stdout.stub!(:gets).and_return(@stdout_string)
+    @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
+    @provider.stub!(:shell_out!).and_return(@status)
   end
 
   it "should raise an error if /bin/svcs does not exist" do
@@ -84,21 +86,22 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when enabling the service" do
       before(:each) do
-        #@provider = Chef::Provider::Service::Solaris.new(@node, @new_resource)
         @provider.current_resource = @current_resource
         @current_resource.enabled(true)
       end
 
-      it "should call svcadm enable chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable chef"})
-        @provider.should_receive(:service_status).and_return(@current_resource)
-        @provider.enable_service.should be_true
+      it "should call svcadm enable -s chef" do
+        @new_resource.stub!(:enable_command).and_return("#{@new_resource.enable_command}")
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
+				@provider.enable_service.should be_true
+        @current_resource.enabled.should be_true
       end
 
-      it "should call svcadm enable chef for start_service" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm enable chef"})
-        @provider.should_receive(:service_status).and_return(@current_resource)
+      it "should call svcadm enable -s chef for start_service" do
+        @new_resource.stub!(:start_command).and_return("#{@new_resource.start_command}")
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm enable -s #{@current_resource.service_name}").and_return(@status)
         @provider.start_service.should be_true
+        @current_resource.enabled.should be_true
       end
 
     end
@@ -110,16 +113,16 @@ describe Chef::Provider::Service::Solaris do
         @current_resource.enabled(false)
       end
 
-      it "should call svcadm disable chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable chef"})
-        @provider.should_receive(:service_status).and_return(@current_resource)
-        @provider.disable_service.should be_false
+      it "should call svcadm disable -s chef" do
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef").and_return(@status)
+        @provider.disable_service.should be_true
+        @current_resource.enabled.should be_false
       end
 
-      it "should call svcadm disable chef for stop_service" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm disable chef"})
-        @provider.should_receive(:service_status).and_return(@current_resource)
-        @provider.stop_service.should be_false
+      it "should call svcadm disable -s chef for stop_service" do
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm disable -s chef")
+        @provider.stop_service.should be_true
+        @current_resource.enabled.should be_false
       end
 
     end
@@ -131,8 +134,8 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm refresh chef" do
-        @provider.should_receive(:run_command).with({:command => "/usr/sbin/svcadm refresh chef"}).and_return(@status)
-        @provider.reload_service.should be_true
+        @provider.should_receive(:shell_out!).with("/usr/sbin/svcadm refresh chef").and_return(@status)
+        @provider.reload_service
       end
 
     end

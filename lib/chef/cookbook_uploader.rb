@@ -110,7 +110,16 @@ class Chef
       # files are uploaded, so save the manifest
       cookbooks.each do |cb|
         save_url = opts[:force] ? cb.force_save_url : cb.save_url
-        rest.put_rest(save_url, cb)
+        begin
+          rest.put_rest(save_url, cb)
+        rescue Net::HTTPServerException => e
+          case e.response.code
+          when "409"
+            raise Chef::Exceptions::CookbookFrozen, "Version #{cb.version} of cookbook #{cb.name} is frozen. Use --force to override."
+          else
+            raise
+          end
+        end
       end
 
       Chef::Log.info("Upload complete!")

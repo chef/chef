@@ -123,7 +123,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "does not download the file" do
-          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt")
           @provider.run_action(:create)
         end
 
@@ -140,7 +140,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
         end
 
         it "should not download the file if the checksum is a partial match from the beginning" do
-          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt").and_return(@tempfile)
+          @rest.should_not_receive(:fetch).with("http://opscode.com/seattle.txt")
           @provider.run_action(:create)
         end
 

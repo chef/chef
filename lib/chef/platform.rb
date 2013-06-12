@@ -19,6 +19,7 @@
 require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/params_validate'
+require 'chef/version_constraint/platform'
 
 # This file depends on nearly every provider in chef, but requiring them
 # directly causes circular requires resulting in uninitialized constant errors.
@@ -111,11 +112,19 @@ class Chef
               :cron => Chef::Provider::Cron,
               :mdadm => Chef::Provider::Mdadm
             },
-            "6.0" => {
+            ">= 6.0" => {
               :service => Chef::Provider::Service::Insserv
             }
           },
           :xenserver   => {
+            :default => {
+              :service => Chef::Provider::Service::Redhat,
+              :cron => Chef::Provider::Cron,
+              :package => Chef::Provider::Package::Yum,
+              :mdadm => Chef::Provider::Mdadm
+            }
+          },
+          :xcp   => {
             :default => {
               :service => Chef::Provider::Service::Redhat,
               :cron => Chef::Provider::Cron,
@@ -252,7 +261,8 @@ class Chef
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Solaris,
             }
           },
           :solaris2 => {
@@ -260,19 +270,15 @@ class Chef
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Ips,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Solaris,
             },
-            "5.9" => {
+            ">= 5.9" => {
               :service => Chef::Provider::Service::Solaris,
               :package => Chef::Provider::Package::Solaris,
               :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
-            },
-            "5.10" => {
-              :service => Chef::Provider::Service::Solaris,
-              :package => Chef::Provider::Package::Solaris,
-              :cron => Chef::Provider::Cron::Solaris,
-              :group => Chef::Provider::Group::Usermod
+              :group => Chef::Provider::Group::Usermod,
+              :user => Chef::Provider::User::Solaris,
             }
           },
           :smartos => {
@@ -344,14 +350,20 @@ class Chef
         end
 
         if platforms.has_key?(name_sym)
-          if platforms[name_sym].has_key?(version)
-            Chef::Log.debug("Platform #{name.to_s} version #{version} found")
-            if platforms[name_sym].has_key?(:default)
-              provider_map.merge!(platforms[name_sym][:default])
-            end
-            provider_map.merge!(platforms[name_sym][version])
-          elsif platforms[name_sym].has_key?(:default)
+          platform_versions = platforms[name_sym].select {|k, v| k != :default }
+          if platforms[name_sym].has_key?(:default)
             provider_map.merge!(platforms[name_sym][:default])
+          end
+          platform_versions.each do |platform_version, provider|
+            begin
+              version_constraint = Chef::VersionConstraint::Platform.new(platform_version)
+              if version_constraint.include?(version)
+                Chef::Log.debug("Platform #{name.to_s} version #{version} found")
+                provider_map.merge!(provider)
+              end
+            rescue Chef::Exceptions::InvalidPlatformVersion
+              Chef::Log.debug("Chef::Version::Comparable does not know how to parse the platform version: #{version}")
+            end
           end
         else
           Chef::Log.debug("Platform #{name} not found, using all defaults. (Unsupported platform?)")

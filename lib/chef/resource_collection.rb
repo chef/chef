@@ -52,8 +52,12 @@ class Chef
         @resources << a
         @resources_by_name[a.to_s] = @resources.length - 1
       end
+      self
     end
 
+    # 'push' is an alias method to <<
+    alias_method :push, :<<
+     
     def insert(resource)
       is_chef_resource(resource)
       if @insert_after_idx
@@ -70,14 +74,6 @@ class Chef
       else
         @resources << resource
         @resources_by_name[resource.to_s] = @resources.length - 1
-      end
-    end
-
-    def push(*args)
-      args.flatten.each do |arg|
-        is_chef_resource(arg)
-        @resources.push(arg)
-        @resources_by_name[arg.to_s] = @resources.length - 1
       end
     end
 
@@ -206,7 +202,7 @@ class Chef
           resource_name = "#{resource_type}[#{name}]"
           results << lookup(resource_name)
         else
-          raise ArgumentError, "You must have a string like resource_type[name]!"
+          raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
         end
         return results
       end
