@@ -48,10 +48,12 @@ begin
   end
 rescue LoadError
   puts "sdoc is not available. (sudo) gem install sdoc to generate rdoc documentation."
+rescue TypeError
+  puts "sdoc is not working on ruby-2.0.0 and throwing an odd TypeError, rdoc generation will be disabled on ruby 2.0 until that gets fixed."
 end
 
 task :install => :package do
-  sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION} --no-rdoc --no-ri}
+  sh %{gem install pkg/#{GEM_NAME}-#{Chef::VERSION}.gem --no-rdoc --no-ri}
 end
 
 task :uninstall do
