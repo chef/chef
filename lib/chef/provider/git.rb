@@ -148,7 +148,7 @@ class Chef
           Chef::Log.info "#{@new_resource} cloning repo #{@new_resource.repository} to #{@new_resource.destination}"
 
           clone_cmd = "git clone #{args.join(' ')} \"#{@new_resource.repository}\" \"#{@new_resource.destination}\""
-          shell_out!(clone_cmd, run_options(:log_level => :info))
+          shell_out!(clone_cmd, run_options)
         end
       end
 
@@ -166,12 +166,12 @@ class Chef
           converge_by("enable git submodules for #{@new_resource}") do
             Chef::Log.info "#{@new_resource} synchronizing git submodules"
             command = "git submodule sync"
-            shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :info))
+            shell_out!(command, run_options(:cwd => @new_resource.destination))
 
             Chef::Log.info "#{@new_resource} enabling git submodules"
             # the --recursive flag means we require git 1.6.5+ now, see CHEF-1827
             command = "git submodule update --init --recursive"
-            shell_out!(command, run_options(:cwd => @new_resource.destination, :log_level => :info))
+            shell_out!(command, run_options(:cwd => @new_resource.destination))
           end
         end
       end
@@ -262,12 +262,6 @@ class Chef
         run_opts[:group] = @new_resource.group if @new_resource.group
         run_opts[:environment] = {"GIT_SSH" => @new_resource.ssh_wrapper} if @new_resource.ssh_wrapper
         run_opts[:log_tag] = @new_resource.to_s
-        run_opts[:log_level] ||= :debug
-        if run_opts[:log_level] == :info
-          if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
-            run_opts[:live_stream] = STDOUT
-          end
-        end
         run_opts
       end
 
