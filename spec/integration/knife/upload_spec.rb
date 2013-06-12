@@ -237,7 +237,7 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed <<EOM
 EOM
-          JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
+          JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.should == [ 'id', 'foo' ]
         end
       end
 
@@ -250,7 +250,7 @@ Created /data_bags/x/y.json
 EOM
           knife('diff --name-status /data_bags').should_succeed ''
           result = JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false)
-          result.keys.sort.should == [ 'chef_type', 'data_bag', 'id' ]
+          result.keys.should == [ 'id', 'chef_type', 'data_bag' ]
           result['chef_type'].should == 'aaa'
           result['data_bag'].should == 'bbb'
         end
