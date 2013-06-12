@@ -17,7 +17,7 @@ class Chef
           if entry.org
             defaults['orgname'] = entry.org
           end
-          result = super(client, defaults)
+          result = normalize_hash(client, defaults)
           # You can NOT send json_class, or it will fail
           result.delete('json_class')
           result

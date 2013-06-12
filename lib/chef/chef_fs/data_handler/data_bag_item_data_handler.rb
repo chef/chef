@@ -10,16 +10,17 @@ class Chef
           if data_bag_item['json_class'] == 'Chef::DataBagItem' && data_bag_item['raw_data']
             data_bag_item = data_bag_item['raw_data']
           end
-          # chef_type and data_bag only come back from PUT and POST, but we'll
-          # normalize them in in case someone is comparing with those results.
-          super(data_bag_item, {
-            'chef_type' => 'data_bag_item',
-            'data_bag' => entry.parent.name,
+          # chef_type and data_bag come back in PUT and POST results, but we don't
+          # use those in knife-essentials.
+          normalize_hash(data_bag_item, {
             'id' => remove_dot_json(entry.name)
           })
         end
 
         def normalize_for_post(data_bag_item, entry)
+          if data_bag_item['json_class'] == 'Chef::DataBagItem' && data_bag_item['raw_data']
+            data_bag_item = data_bag_item['raw_data']
+          end
           {
             "name" => "data_bag_item_#{entry.parent.name}_#{remove_dot_json(entry.name)}",
             "json_class" => "Chef::DataBagItem",

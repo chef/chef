@@ -5,7 +5,7 @@ class Chef
     module DataHandler
       class UserDataHandler < DataHandlerBase
         def normalize(user, entry)
-          super(user, {
+          normalize_hash(user, {
             'name' => remove_dot_json(entry.name),
             'admin' => false,
             'json_class' => 'Chef::WebUIUser',

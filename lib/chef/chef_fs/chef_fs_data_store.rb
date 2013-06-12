@@ -36,11 +36,7 @@ class Chef
         "Reading and writing data to #{chef_fs.fs_description}"
       end
 
-      def chef_fs
-        @chef_fs.call
-      end
-
-      MEMORY_PATHS = %w(sandboxes file_store)
+      attr_reader :chef_fs
 
       def create_dir(path, name, *options)
         if use_memory_store?(path)

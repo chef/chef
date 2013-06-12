@@ -27,7 +27,7 @@ class Chef
           normalize({}, entry)
         end
 
-        def normalize(object, defaults)
+        def normalize_hash(object, defaults)
           # Make a normalized result in the specified order for diffing
           result = {}
           defaults.each_pair do |key, default|
