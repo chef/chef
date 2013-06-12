@@ -244,7 +244,7 @@ class Chef
         command = render_template(read_template)
 
         if config[:use_sudo]
-          command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
+          command = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S #{command}" : "sudo #{command}"
         end
 
         command
