@@ -98,16 +98,18 @@ class Chef
       end
 
       def pattern_args_from(args)
+        args.map { |arg| pattern_arg_from(arg) }
+      end
+
+      def pattern_arg_from(arg)
         # TODO support absolute file paths and not just patterns?  Too much?
         # Could be super useful in a world with multiple repo paths
-        args.map do |arg|
-          if !@chef_fs_config.base_path && !Chef::ChefFS::PathUtils.is_absolute?(arg)
-            # Check if chef repo path is specified to give a better error message
-            ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
-            exit(1)
-          end
-          Chef::ChefFS::FilePattern.relative_to(@chef_fs_config.base_path, arg)
+        if !@chef_fs_config.base_path && !Chef::ChefFS::PathUtils.is_absolute?(arg)
+          # Check if chef repo path is specified to give a better error message
+          ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
+          exit(1)
         end
+        Chef::ChefFS::FilePattern.relative_to(@chef_fs_config.base_path, arg)
       end
 
       def format_path(entry)
@@ -159,6 +161,18 @@ EOM
       end
 
       def start_local_server
+        begin
+          require 'chef_zero/server'
+        rescue LoadError
+          STDERR.puts <<EOM
+  ERROR: chef-zero must be installed to use local-server mode!  To install:
+
+      gem install chef-zero
+
+EOM
+          exit(1)
+        end
+        require 'chef/chef_fs/chef_fs_data_store'
         server_options = {}
         server_options[:data_store] = ChefFSChefFSDataStore.new(local_fs)
         server_options[:log_level] = Chef::Log.level
