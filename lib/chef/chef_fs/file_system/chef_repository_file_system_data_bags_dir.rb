@@ -27,9 +27,8 @@ class Chef
           super(name, parent, path, Chef::ChefFS::DataHandler::DataBagItemDataHandler.new)
         end
 
-        def ignored?(entry)
-          return true if entry.dir? && entry.name.start_with?('.')
-          super(entry)
+        def can_have_child?(name, is_dir)
+          is_dir && !name.start_with?('.')
         end
       end
     end
