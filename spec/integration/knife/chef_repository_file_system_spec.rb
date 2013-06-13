@@ -186,8 +186,7 @@ EOM
       end
 
       it "knife list --local -Rfp / should NOT return them" do
-        pending "Decide whether this is a good idea" do
-          knife('list --local -Rfp /').should_succeed <<EOM
+        knife('list --local -Rfp /').should_succeed <<EOM
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/a.rb
@@ -220,7 +219,6 @@ EOM
 /cookbooks/cookbook1/templates/c/d.rb
 /cookbooks/cookbook1/templates/c/e.json
 EOM
-        end
       end
     end
 
