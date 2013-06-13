@@ -30,6 +30,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
   let(:observe_order_file) { Tempfile.new("deploy-resource-observe-operations") }
 
   before do
+    Chef::Log.level = :info
     @old_file_cache_path = Chef::Config[:file_cache_path]
     Chef::Config[:file_cache_path] = file_cache_path
   end
