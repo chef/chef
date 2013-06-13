@@ -228,6 +228,8 @@ class Chef
       end
 
       def cleanup!
+        release_created(release_path)
+
         chop = -1 - @new_resource.keep_releases
         all_releases[0..chop].each do |old_release|
           converge_by("remove old release #{old_release}") do
@@ -263,10 +265,11 @@ class Chef
       def copy_cached_repo
         target_dir_path = @new_resource.deploy_to + "/releases"
         converge_by("deploy from repo to #{@target_dir_path} ") do
+          FileUtils.rm_rf(target_dir_path) if ::File.exist?(target_dir_path)
           FileUtils.mkdir_p(target_dir_path)
           FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, :preserve => true)
           Chef::Log.info "#{@new_resource} copied the cached checkout to #{release_path}"
-          release_created(release_path)
+          #release_created(release_path)
         end
       end
 

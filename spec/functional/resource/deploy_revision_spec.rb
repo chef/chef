@@ -556,6 +556,50 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
 
     end
   end
+
+  context "when a deployment fails" do
+
+    def show_glob(tag)
+      pp tag => Dir.glob("#{deploy_directory}/**/*")
+    end
+
+    before do
+      # Chef::Log.init(STDERR)
+      # Chef::Log.level = :debug
+      # show_glob(:before_all)
+      lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Exception, %r{I am a failed deploy})
+      # show_glob(:after_failed_deploy)
+      deploy_to_latest_rev.dup.run_action(:deploy)
+      # show_glob(:after_success_deploy)
+
+      #actual_operations_order.should == %w[before_migrate migration before_symlink before_restart after_restart]
+      # pp :actual_operations_order => actual_operations_order
+    end
+
+    [:before_migrate, :before_symlink, :before_restart, :after_restart].each do |callback|
+    #[:after_restart].each do |callback|
+
+      context "in the `#{callback}' callback" do
+
+        let(:deploy_that_fails) do
+          resource = deploy_to_latest_rev.dup
+          errant_callback = lambda {|x| raise Exception, "I am a failed deploy" }
+          resource.send(callback, &errant_callback)
+          #resource.rollback_on_error(true)
+          resource
+        end
+
+        include_examples "a redeployed application"
+
+        # TODO: need to test that the redeploy was a deploy and not an implicit rollback.
+
+      end
+
+
+    end
+
+
+  end
 end
 
 
