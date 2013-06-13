@@ -68,6 +68,13 @@ class Chef
         @chef_fs_config = Chef::ChefFS::Config.new(Chef::Config)
 
         Chef::ChefFS::Parallelizer.threads = (Chef::Config[:concurrency] || 10) - 1
+
+        if Chef::Config[:chef_server_url].to_sym == :local
+          local_url = start_local_server
+          Chef::Config[:chef_server_url] = local_url
+          Chef::Config[:client_key] = nil
+          Chef::Config[:validation_key] = nil
+        end
       end
 
       def chef_fs
@@ -110,6 +117,56 @@ class Chef
 
       def parallelize(inputs, options = {}, &block)
         Chef::ChefFS::Parallelizer.parallelize(inputs, options, &block)
+      end
+
+      def locate_config_file
+        super
+        if !config[:config_file]
+          # If the config file doesn't already exist, find out where it should be,
+          # and create it.
+          repo_dir = discover_repo_dir(Dir.pwd)
+          if repo_dir
+            dot_chef = File.join(repo_dir, ".chef")
+            if !File.directory?(dot_chef)
+              Dir.mkdir(dot_chef)
+            end
+            knife_rb = File.join(dot_chef, "knife.rb")
+            if !File.exist?(knife_rb)
+              ui.warn("No configuration found.  Creating .chef/knife.rb in #{repo_dir} ...")
+              File.open(knife_rb, "w") do |file|
+                file.write <<EOM
+  chef_server_url 'local'
+  chef_repo_path File.dirname(File.dirname(__FILE__))
+  cookbook_path File.join(chef_repo_path, "cookbooks")
+EOM
+              end
+            end
+            config[:config_file] = knife_rb
+          end
+        end
+      end
+
+      def discover_repo_dir(dir)
+        %w(.chef cookbooks data_bags environments roles).each do |subdir|
+          return dir if File.directory?(File.join(dir, subdir))
+        end
+        # If this isn't it, check the parent
+        parent = File.dirname(dir)
+        if parent && parent != dir
+          discover_repo_dir(parent)
+        else
+          nil
+        end
+      end
+
+      def start_local_server
+        server_options = {}
+        server_options[:data_store] = ChefFSChefFSDataStore.new(local_fs)
+        server_options[:log_level] = Chef::Log.level
+        server_options[:port] = 8889
+        server = ChefZero::Server.new(server_options)
+        server.start_background
+        server.url
       end
     end
   end
