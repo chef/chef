@@ -37,6 +37,20 @@ class Chef
           super
         end
 
+        def cleanup!
+          super
+
+          known_releases = sorted_releases
+
+          Dir["#{new_resource.deploy_to}/releases/*"].each do |release_dir|
+            unless known_releases.include?(release_dir)
+              converge_by("Remove unknown release in #{release_dir}") do
+                FileUtils.rm_rf(release_dir)
+              end
+            end
+          end
+        end
+
         protected
 
         def release_created(release)

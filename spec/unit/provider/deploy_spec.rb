@@ -324,11 +324,11 @@ describe Chef::Provider::Deploy do
     @provider.copy_cached_repo
   end
 
-  it "calls the internal callback :release_created when copying the cached repo" do
+  it "calls the internal callback :release_created when cleaning up the releases" do
     FileUtils.stub!(:mkdir_p)
     FileUtils.stub!(:cp_r)
     @provider.should_receive(:release_created)
-    @provider.copy_cached_repo
+    @provider.cleanup!
   end
 
   it "chowns the whole release dir to user and group specified in the resource" do

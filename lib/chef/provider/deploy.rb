@@ -36,8 +36,8 @@ class Chef
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
 
-        # will resolve to ither git or svn based on resource attributes , 
-        # and will create a resource corresponding to that provider 
+        # will resolve to either git or svn based on resource attributes,
+        # and will create a resource corresponding to that provider
         @scm_provider = new_resource.scm_provider.new(new_resource, run_context)
 
         # @configuration is not used by Deploy, it is only for backwards compat with
@@ -77,11 +77,11 @@ class Chef
           #There is no reason to assume 2 deployments in a single chef run, hence fails in whyrun.
         end
 
-        [ @new_resource.before_migrate, @new_resource.before_symlink, 
+        [ @new_resource.before_migrate, @new_resource.before_symlink,
           @new_resource.before_restart, @new_resource.after_restart ].each do |script|
           requirements.assert(:deploy, :force_deploy) do |a|
             callback_file = "#{release_path}/#{script}"
-            a.assertion do 
+            a.assertion do
               if script && script.class == String
                 ::File.exist?(callback_file)
               else
@@ -98,7 +98,7 @@ class Chef
       def action_deploy
         save_release_state
         if deployed?(release_path )
-          if current_release?(release_path ) 
+          if current_release?(release_path )
             Chef::Log.debug("#{@new_resource} is the latest version")
           else
             rollback_to release_path
@@ -113,7 +113,7 @@ class Chef
 
       def action_force_deploy
         if deployed?(release_path)
-          converge_by("delete deployed app at #{release_path} prior to force-deploy") do 
+          converge_by("delete deployed app at #{release_path} prior to force-deploy") do
             Chef::Log.info("Already deployed app at #{release_path}, forcing.")
             FileUtils.rm_rf(release_path)
             Chef::Log.info("#{@new_resource} forcing deploy of already deployed app at #{release_path}")
@@ -228,6 +228,10 @@ class Chef
       end
 
       def cleanup!
+        converge_by("update release history data") do
+          release_created(release_path)
+        end
+
         chop = -1 - @new_resource.keep_releases
         all_releases[0..chop].each do |old_release|
           converge_by("remove old release #{old_release}") do
@@ -263,10 +267,10 @@ class Chef
       def copy_cached_repo
         target_dir_path = @new_resource.deploy_to + "/releases"
         converge_by("deploy from repo to #{@target_dir_path} ") do
+          FileUtils.rm_rf(release_path) if ::File.exist?(release_path)
           FileUtils.mkdir_p(target_dir_path)
           FileUtils.cp_r(::File.join(@new_resource.destination, "."), release_path, :preserve => true)
           Chef::Log.info "#{@new_resource} copied the cached checkout to #{release_path}"
-          release_created(release_path)
         end
       end
 
@@ -284,14 +288,14 @@ class Chef
       end
 
       def link_current_release_to_production
-        converge_by(["remove existing link at #{@new_resource.current_path}", 
+        converge_by(["remove existing link at #{@new_resource.current_path}",
                     "link release #{release_path} into production at #{@new_resource.current_path}"]) do
           FileUtils.rm_f(@new_resource.current_path)
           begin
             FileUtils.ln_sf(release_path, @new_resource.current_path)
-            rescue => e
-              raise Chef::Exceptions::FileNotFound.new("Cannot symlink current release to production: #{e.message}")
-            end
+          rescue => e
+            raise Chef::Exceptions::FileNotFound.new("Cannot symlink current release to production: #{e.message}")
+          end
           Chef::Log.info "#{@new_resource} linked release #{release_path} into production at #{@new_resource.current_path}"
         end
         enforce_ownership
@@ -313,7 +317,7 @@ class Chef
 
       def link_tempfiles_to_current_release
         dirs_info = @new_resource.create_dirs_before_symlink.join(",")
-        @new_resource.create_dirs_before_symlink.each do |dir| 
+        @new_resource.create_dirs_before_symlink.each do |dir|
           create_dir_unless_exists(release_path + "/#{dir}")
         end
         Chef::Log.info("#{@new_resource} created directories before symlinking: #{dirs_info}")
@@ -348,15 +352,15 @@ class Chef
 
       # Internal callback, called after copy_cached_repo.
       # Override if you need to keep state externally.
-      # Note that YOU are responsible for implementing whyrun-friendly behavior 
-      # in any actions you take in this callback. 
+      # Note that YOU are responsible for implementing whyrun-friendly behavior
+      # in any actions you take in this callback.
       def release_created(release_path)
       end
 
       # Note that YOU are responsible for using appropriate whyrun nomenclature
       # Override if you need to keep state externally.
-      # Note that YOU are responsible for implementing whyrun-friendly behavior 
-      # in any actions you take in this callback. 
+      # Note that YOU are responsible for implementing whyrun-friendly behavior
+      # in any actions you take in this callback.
       def release_deleted(release_path)
       end
 
@@ -439,9 +443,9 @@ class Chef
         yield
       rescue ::Exception => e
         if @new_resource.rollback_on_error
-          Chef::Log.warn "Error on deploying #{release_path}: #{e.message}" 
+          Chef::Log.warn "Error on deploying #{release_path}: #{e.message}"
           failed_release = release_path
-        
+
           if previous_release_path
             @release_path = previous_release_path
             rollback
@@ -452,7 +456,7 @@ class Chef
           end
           release_deleted(failed_release)
         end
-        
+
         raise
       end
 
