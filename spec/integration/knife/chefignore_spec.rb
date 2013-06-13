@@ -31,14 +31,10 @@ describe 'chefignore tests' do
 /cookbooks/cookbook1/x.json
 /data_bags/
 /data_bags/bag1/
-/data_bags/bag1/chefignore
 /data_bags/bag1/x.json
-/data_bags/chefignore
 /environments/
-/environments/chefignore
 /environments/x.json
 /roles/
-/roles/chefignore
 /roles/x.json
 EOM
       end

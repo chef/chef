@@ -223,9 +223,11 @@ EOM
           directory 'clients/blah.json'
           file 'clients2/blah.json', {}
           it 'knife show /clients/blah.json succeeds' do
-            pending "don't count directories in clients" do
-              knife('show --local /clients/blah.json').should_succeed ''
-            end
+            knife('show --local /clients/blah.json').should_succeed <<EOM
+/clients/blah.json:
+{
+}
+EOM
           end
         end
 
@@ -278,16 +280,14 @@ EOM
           file 'data_bags/blah', ''
           file 'data_bags2/blah/item.json', ''
           it 'knife list -Rfp data_bags shows files in blah' do
-            pending "Don't count files as data bags" do
-              knife('list --local -Rfp /data_bags').should_succeed <<EOM
+            knife('list --local -Rfp /data_bags').should_succeed <<EOM
 /data_bags/bag/
 /data_bags/bag/item.json
 /data_bags/bag2/
 /data_bags/bag2/item2.json
 /data_bags/blah/
-/data_bags/blah/item1.json
+/data_bags/blah/item.json
 EOM
-            end
           end
         end
 
@@ -310,9 +310,11 @@ EOM
           directory 'environments/blah.json'
           file 'environments2/blah.json', {}
           it 'knife show /environments/blah.json succeeds' do
-            pending "don't count directories in environments" do
-              knife('show --local /environments/blah.json').should_succeed ''
-            end
+            knife('show --local /environments/blah.json').should_succeed <<EOM
+/environments/blah.json:
+{
+}
+EOM
           end
         end
 
@@ -320,9 +322,11 @@ EOM
           directory 'nodes/blah.json'
           file 'nodes2/blah.json', {}
           it 'knife show /nodes/blah.json succeeds' do
-            pending "don't count directories in nodes" do
-              knife('show --local /nodes/blah.json').should_succeed ''
-            end
+            knife('show --local /nodes/blah.json').should_succeed <<EOM
+/nodes/blah.json:
+{
+}
+EOM
           end
         end
 
@@ -330,9 +334,11 @@ EOM
           directory 'roles/blah.json'
           file 'roles2/blah.json', {}
           it 'knife show /roles/blah.json succeeds' do
-            pending "don't count directories in roles" do
-              knife('show --local /roles/blah.json').should_succeed ''
-            end
+            knife('show --local /roles/blah.json').should_succeed <<EOM
+/roles/blah.json:
+{
+}
+EOM
           end
         end
 
@@ -340,9 +346,11 @@ EOM
           directory 'users/blah.json'
           file 'users2/blah.json', {}
           it 'knife show /users/blah.json succeeds' do
-            pending "don't count directories in users" do
-              knife('show --local /users/blah.json').should_succeed ''
-            end
+            knife('show --local /users/blah.json').should_succeed <<EOM
+/users/blah.json:
+{
+}
+EOM
           end
         end
 
