@@ -1,4 +1,4 @@
-cookbook 'omnibus', :locked_version => '1.0.6'
+cookbook 'omnibus', :locked_version => '1.0.8'
 cookbook 'apt', :locked_version => '1.9.2'
 cookbook 'build-essential', :locked_version => '1.4.0'
 cookbook 'git', :locked_version => '2.3.0'
