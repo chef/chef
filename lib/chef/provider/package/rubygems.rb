@@ -121,7 +121,7 @@ class Chef
           # Compatibility note: Rubygems 1.x uses Gem::Format, 2.0 moved this
           # code into Gem::Package.
           def spec_from_file(file)
-            if defined?(Gem::Format)
+            if defined?(Gem::Format) and Gem::Package.respond_to?(:open)
               Gem::Format.from_file_by_path(file).spec
             else
               Gem::Package.new(file).spec
