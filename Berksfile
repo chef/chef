@@ -1,3 +1,3 @@
 site :opscode
 
-cookbook "omnibus", "~> 1.0.4"
+cookbook "omnibus", "~> 1.0.6"
