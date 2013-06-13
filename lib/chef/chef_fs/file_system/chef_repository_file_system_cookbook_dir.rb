@@ -17,6 +17,7 @@
 #
 
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbook_entry'
+require 'chef/chef_fs/file_system/cookbook_dir'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/cookbook_version_loader'
 
@@ -47,6 +48,25 @@ class Chef
             Chef::Log.error("Could not read #{path_for_printing} into a Chef object: #{$!}")
           end
           nil
+        end
+
+        def children
+          Dir.entries(file_path).sort.
+              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+              map do |child_name|
+                segment_info = CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
+                ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
+              end.
+              select { |entry| !(entry.dir? && entry.children.size == 0) }
+        end
+
+        def can_have_child?(name, is_dir)
+          if is_dir
+            # Only the given directories will be uploaded.
+            return CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != 'root_files'
+          end
+
+          super(name, is_dir)
         end
 
         # Exposed as a class method so that it can be used elsewhere

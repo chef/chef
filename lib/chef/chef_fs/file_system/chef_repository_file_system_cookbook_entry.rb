@@ -23,20 +23,27 @@ class Chef
   module ChefFS
     module FileSystem
       class ChefRepositoryFileSystemCookbookEntry < ChefRepositoryFileSystemEntry
-        def initialize(name, parent, file_path = nil)
+        def initialize(name, parent, file_path = nil, ruby_only = false, recursive = false)
           super(name, parent, file_path)
+          @ruby_only = ruby_only
+          @recursive = recursive
         end
+
+        attr_reader :ruby_only
+        attr_reader :recursive
 
         def children
           Dir.entries(file_path).sort.
               select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-              map { |child_name| ChefRepositoryFileSystemCookbookEntry.new(child_name, self) }.
+              map { |child_name| ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, ruby_only, recursive) }.
               select { |entry| !(entry.dir? && entry.children.size == 0) }
         end
 
         def can_have_child?(name, is_dir)
           if is_dir
-            return name != '.' && name != '..'
+            return recursive && name != '.' && name != '..'
+          elsif ruby_only
+            return false if name[-3..-1] != '.rb'
           end
 
           # Check chefignore
