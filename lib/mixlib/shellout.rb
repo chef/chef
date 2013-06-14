@@ -290,8 +290,14 @@ module Mixlib
         when 'log_tag'
           self.log_tag = setting
         when 'environment', 'env'
+          # Set the LC_ALL from the parent process if the user wanted
+          # to use the default.
+          if setting && setting.has_key?("LC_ALL") && setting['LC_ALL'].nil?
+            setting['LC_ALL'] = ENV['LC_ALL']
+          end
           # passing :environment => nil means don't set any new ENV vars
           @environment = setting.nil? ? {} : @environment.dup.merge!(setting)
+
         else
           raise InvalidCommandOption, "option '#{option.inspect}' is not a valid option for #{self.class.name}"
         end

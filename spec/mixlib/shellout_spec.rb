@@ -383,6 +383,15 @@ describe Mixlib::ShellOut do
       context 'with LC_ALL set to nil' do
         let(:locale) { nil }
 
+        before do
+          @original_lc_all = ENV['LC_ALL']
+          ENV['LC_ALL'] = "en_US.UTF-8"
+        end
+
+        after do
+          ENV['LC_ALL'] = @original_lc_all
+        end
+
         context 'when running under Unix', :unix_only do
           let(:parent_locale) { ENV['LC_ALL'].to_s.strip }
 
