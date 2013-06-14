@@ -31,7 +31,7 @@ class Chef
         if IO.respond_to?(:binread)
           IO.binread(file)
         else
-          IO.read(file)
+          File.open(file, "rb") {|f| f.read }
         end
       end
 
