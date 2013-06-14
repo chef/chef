@@ -194,8 +194,11 @@ module Mixlib
           # create a file because error pipe will auto close when we
           # try to create a file since it's set to CLOEXEC.
           if n != @process_status_pipe.last.to_i
-            fd = File.for_fd(n) rescue nil
-            fd.close if fd
+            begin
+              fd = File.for_fd(n)
+              fd.close if fd
+            rescue
+            end
           end
         end
       end
