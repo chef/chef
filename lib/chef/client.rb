@@ -132,7 +132,7 @@ class Chef
     attr_reader :json_attribs
     attr_reader :run_status
     attr_reader :events
-    
+
     # Creates a new Chef::Client.
     def initialize(json_attribs=nil, args={})
       @json_attribs = json_attribs
@@ -180,12 +180,15 @@ class Chef
     # Do a full run for this Chef::Client.  Calls:
     # * do_run
     #
-    # This provides a wrapper around #do_run allowing the 
+    # This provides a wrapper around #do_run allowing the
     # run to be optionally forked.
     # === Returns
     # boolean:: Return value from #do_run. Should always returns true.
     def run
-      if(Chef::Config[:client_fork] && Process.respond_to?(:fork))
+      # win32-process gem exposes some form of :fork for Process
+      # class. So we are seperately ensuring that the platform we're
+      # running on is not windows before forking.
+      if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
         Chef::Log.info "Forking chef instance to converge..."
         pid = fork do
           Chef::Log.info "Forked instance now converging"
