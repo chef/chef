@@ -1013,5 +1013,19 @@ describe Mixlib::ShellOut do
         end
       end
     end
+
+    describe "#clean_parent_file_descriptors" do
+      # test for for_fd returning a valid File object, but close
+      # throwing EBADF.
+      it "should not throw an exception if fd.close throws EBADF" do
+        fd = mock('File')
+        fd.stub!(:close).at_least(:once).and_raise(Errno::EBADF)
+        File.should_receive(:for_fd).at_least(:once).and_return(fd)
+        shellout = Mixlib::ShellOut.new()
+        shellout.instance_variable_set(:@process_status_pipe, [ 98, 99 ])
+        lambda { shellout.send(:clean_parent_file_descriptors) }.should_not raise_error
+      end
+    end
+
   end
 end
