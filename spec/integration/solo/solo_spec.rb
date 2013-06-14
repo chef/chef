@@ -14,17 +14,26 @@ describe "chef-solo" do
       file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
       file 'cookbooks/x/recipes/default.rb', ''
 
-      it "should complete with success" do
-        config_file = canonicalize_path(File.join(@repository_dir, 'config', 'solo.rb'))
+      before do
+        @chef_file_cache = Dir.mktmpdir('file_cache')
+      end
 
+      after do
+        FileUtils.rm_rf(@chef_file_cache) if @chef_file_cache
+      end
+
+      it "should complete with success" do
         # prepare the solo config
         directory 'config'
-        file 'config/solo.rb', "cookbook_path \"#{File.join(@repository_dir, 'cookbooks')}\""
+        file 'config/solo.rb', <<EOM
+cookbook_path "#{File.join(@repository_dir, 'cookbooks')}"
+file_cache_path "#{@chef_file_cache}"
+EOM
+        config_file = canonicalize_path(File.join(@repository_dir, 'config', 'solo.rb'))
 
         chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
         result = shell_out("chef-solo -c \"#{config_file}\" -o 'x::default' -l debug", :cwd => chef_dir)
-
-        result.exitstatus.should == 0
+        result.error!
       end
 
     end
