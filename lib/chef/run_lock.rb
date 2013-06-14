@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require 'chef/mixin/create_path'
+require 'fcntl'
 
 class Chef
 
@@ -55,6 +56,10 @@ class Chef
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
       @runlock = File.open(runlock_file,'w+')
+      # if we support FD_CLOEXEC (linux, !windows), then use it.
+      if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+        @runlock.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
+      end
       unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
         # Another chef client running...
         runpid = runlock.read.strip.chomp
