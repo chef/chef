@@ -65,8 +65,8 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should provide a render method" do
-      output = @template_context.render_template_from_string("before {<%= render 'test.erb' %>} after")
-      output.should == "before {We could be diving for pearls!#{sep}} after"
+      output = @template_context.render_template_from_string("before {<%= render('test.erb').strip -%>} after")
+      output.should == "before {We could be diving for pearls!} after"
     end
 
     it "should render local files" do
@@ -85,8 +85,8 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render partials from a different cookbook" do
       @template_context[:template_finder] = Chef::Provider::TemplateFinder.new(@run_context, 'apache2', @node)
 
-      output = @template_context.render_template_from_string("before {<%= render 'test.erb', :cookbook => 'openldap' %>} after")
-      output.should == "before {We could be diving for pearls!#{sep}} after"
+      output = @template_context.render_template_from_string("before {<%= render('test.erb', :cookbook => 'openldap').strip %>} after")
+      output.should == "before {We could be diving for pearls!} after"
     end
 
     it "should render using the source argument if provided" do
@@ -139,8 +139,8 @@ describe Chef::Mixin::Template, "render_template" do
     it "should render nested partials" do
       path = File.expand_path(File.join(CHEF_SPEC_DATA, "partial_one.erb"))
 
-      output = @template_context.render_template_from_string("before {<%= render '#{path}', :local => true %>} after")
-      output.should == "before {partial one We could be diving for pearls!#{sep} calling home#{sep}} after"
+      output = @template_context.render_template_from_string("before {<%= render('#{path}', :local => true).strip %>} after")
+      output.should == "before {partial one We could be diving for pearls! calling home} after"
     end
 
     describe "when customizing the template context" do
