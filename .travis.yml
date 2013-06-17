@@ -1,4 +1,5 @@
 before_script: cd chef
+before_install: sudo apt-get install -qq gecode
 gemfile: chef/Gemfile
 
 rvm:
