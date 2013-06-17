@@ -1,4 +1,4 @@
-before_install: cd chef
+before_install: cd chef/lib/chef
 
 rvm:
   - 1.8.7
