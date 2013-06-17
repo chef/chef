@@ -1,10 +1,7 @@
-before_install: cd chef/lib/chef
-before_script: cd chef/lib/chef
-
 rvm:
   - 1.8.7
 #  - 1.9.2
   - 1.9.3
   - 2.0.0
 
-script: bundle exec rake spec
+script: sh -c 'cd test' && bundle exec rake spec
