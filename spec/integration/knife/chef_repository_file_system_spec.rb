@@ -136,8 +136,7 @@ EOM
       end
 
       it "knife list --local -Rfp / should NOT return them" do
-        pending "Decide whether this is a good/bad idea" do
-          knife('list --local -Rfp /').should_succeed <<EOM
+        knife('list --local -Rfp /').should_succeed <<EOM
 /data_bags/
 /data_bags/bag1/
 /data_bags/bag1/item1.json
@@ -146,7 +145,6 @@ EOM
 /roles/
 /roles/role1.json
 EOM
-        end
       end
     end
 
@@ -205,8 +203,7 @@ EOM
       end
 
       it "knife list --local -Rfp / should NOT return them" do
-        pending "Decide whether this is a good idea" do
-          knife('list --local -Rfp /').should_succeed <<EOM
+        knife('list --local -Rfp /').should_succeed <<EOM
 /cookbooks/
 /cookbooks/cookbook1/
 /cookbooks/cookbook1/a.rb
@@ -239,7 +236,6 @@ EOM
 /cookbooks/cookbook1/templates/c/d.rb
 /cookbooks/cookbook1/templates/c/e.json
 EOM
-        end
       end
     end
 
@@ -255,11 +251,9 @@ EOM
     when_the_repository "has a file in data_bags/" do
       file 'data_bags/file', ''
       it 'does not show up in list -Rfp' do
-        pending "don't show files when only directories are allowed" do
-          knife('list --local -Rfp /').should_succeed <<EOM
+        knife('list --local -Rfp /').should_succeed <<EOM
 /data_bags/
 EOM
-        end
       end
     end
   end

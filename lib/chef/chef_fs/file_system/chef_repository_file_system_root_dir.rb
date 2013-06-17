@@ -56,14 +56,6 @@ class Chef
           make_child_entry(name)
         end
 
-        def ignore_empty_directories?
-          false
-        end
-
-        def chefignore
-          nil
-        end
-
         def json_class
           nil
         end
