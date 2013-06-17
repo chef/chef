@@ -190,10 +190,12 @@ class Chef
           remote_status = shell_out!(check_remote_command, run_options(:cwd => @new_resource.destination, :returns => [0,1,2]))
           case remote_status.exitstatus
           when 0, 2
-            # In theory 2 should not happen unless somebody messed with
-            # the checkout manually, but using --replace-all option will fix it
+            # * Status 0 means that we already have a remote with this name, so we should update the url
+            #   if it doesn't match the url we want.
+            # * Status 2 means that we have multiple urls assigned to the same remote (not a good idea)
+            #   which we can fix by replacing them all with our target url (hence the --replace-all option)
 
-            unless remote_status.exitstatus != 2 && remote_status.stdout.strip.eql?(remote_url)
+            if multiple_remotes?(remote_status) || !remote_matches?(remote_url,remote_status)
               update_remote_url_command = "git config --replace-all remote.#{remote_name}.url #{remote_url}"
               shell_out!(update_remote_url_command, run_options(:cwd => @new_resource.destination))
             end
@@ -202,6 +204,14 @@ class Chef
             shell_out!(add_remote_command, run_options(:cwd => @new_resource.destination))
           end
         end
+      end
+
+      def multiple_remotes?(check_remote_command_result)
+        check_remote_command_result.exitstatus == 2
+      end
+
+      def remote_matches?(remote_url, check_remote_command_result)
+        check_remote_command_result.stdout.strip.eql?(remote_url)
       end
 
       def current_revision_matches_target_revision?

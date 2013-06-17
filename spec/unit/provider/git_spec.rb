@@ -486,4 +486,53 @@ SHAS
       @provider.add_remotes
     end
   end
+
+  describe "calling multiple_remotes?" do
+    before(:each) do
+      @command_response = double('shell_out')
+    end
+
+    describe "when check remote command returns with status 2" do
+      it "returns true" do
+        @command_response.stub(:exitstatus) { 2 }
+        @provider.multiple_remotes?(@command_response).should be_true
+      end
+    end
+
+    describe "when check remote command returns with status 0" do
+      it "returns false" do
+        @command_response.stub(:exitstatus) { 0 }
+        @provider.multiple_remotes?(@command_response).should be_false
+      end
+    end
+
+    describe "when check remote command returns with status 0" do
+      it "returns false" do
+        @command_response.stub(:exitstatus) { 1 }
+        @provider.multiple_remotes?(@command_response).should be_false
+      end
+    end
+  end
+
+  describe "calling remote_matches?" do
+    before(:each) do
+      @command_response = double('shell_out')
+    end
+
+    describe "when output of the check remote command matches the repository url" do
+      it "returns true" do
+        @command_response.stub(:exitstatus) { 0 }
+        @command_response.stub(:stdout) { @resource.repository }
+        @provider.remote_matches?(@resource.repository, @command_response).should be_true
+      end
+    end
+
+    describe "when output of the check remote command doesn't match the repository url" do
+      it "returns false" do
+        @command_response.stub(:exitstatus) { 0 }
+        @command_response.stub(:stdout) { @resource.repository + "test" }
+        @provider.remote_matches?(@resource.repository, @command_response).should be_false
+      end
+    end
+  end
 end
