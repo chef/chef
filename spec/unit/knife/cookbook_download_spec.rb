@@ -36,7 +36,7 @@ describe Chef::Knife::CookbookDownload do
     it 'should exit with a fatal error when there is no cookbook on the server' do
       @knife.name_args = ['foobar', nil]
       @knife.should_receive(:determine_version).and_return(nil)
-      @knife.ui.should_receive(:fatal).with(/versions found for cookbook/)
+      @knife.ui.should_receive(:fatal).with('No such cookbook found')
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
