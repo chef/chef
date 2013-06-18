@@ -56,10 +56,16 @@ class Chef
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info?
           opts[:live_stream] = STDOUT
         end
-        converge_by("execute #{@new_resource.command}") do 
+        converge_by(converge_identity) do
           result = shell_out!(@new_resource.command, opts)
           Chef::Log.info("#{@new_resource} ran successfully")
         end
+      end
+
+      protected
+
+      def converge_identity
+        "execute #{@new_resource.command}"
       end
 
       private
