@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #
 # Author:: Daniel DeLeo (<dan@opscode.com>)
 # Copyright:: Copyright (c) 2013 Opscode, Inc.
@@ -44,6 +45,10 @@ describe Chef::Resource::User, :unix_only, :requires_root do
     end
   end
 
+  def etc_shadow
+    File.open("/etc/shadow") {|f| f.read }
+  end
+
 
   before do
     # Tests only implemented for a subset of platforms currently.
@@ -87,30 +92,53 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   let(:manage_home) { false }
   let(:password) { nil }
   let(:system) { false }
+  let(:comment) { nil }
 
   let(:user_resource) do
     r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
     r.username(username)
     r.uid(uid)
     r.home(home)
+    r.comment(comment)
     r.manage_home(manage_home)
     r.password(password)
     r.system(system)
     r
   end
 
+  let(:skip) { false }
 
   describe "action :create" do
 
-    before do
-      user_resource.run_action(:create)
-    end
-
     context "when the user does not exist beforehand" do
+      before do
+        if reason = skip
+          pending(reason)
+        end
+        user_resource.run_action(:create)
+        user_resource.should be_updated_by_last_action
+      end
+
 
       it "ensures the user exists" do
         pw_entry.name.should == username
       end
+
+      #  On Debian, the only constraints are that usernames must neither start
+      #  with a dash ('-') nor plus ('+') nor tilde ('~') nor contain a colon
+      #  (':'), a comma (','), or a whitespace (space: ' ', end of line: '\n',
+      #  tabulation: '\t', etc.). Note that using a slash ('/') may break the
+      #  default algorithm for the definition of the user's home directory.
+
+      context "and the username contains a single quote" do
+        let(:skip) { "single quotes not properly escaped ATM" }
+        let(:username) { "t'bilisi" }
+
+        it "ensures the user exists" do
+          pw_entry.name.should == username
+        end
+      end
+
 
       context "when uid is set" do
         # Should verify uid not in use...
@@ -118,6 +146,42 @@ describe Chef::Resource::User, :unix_only, :requires_root do
 
         it "ensures the user has the given uid" do
           pw_entry.uid.should == "1999"
+        end
+      end
+
+      context "when comment is set" do
+        let(:comment) { "hello this is dog" }
+
+        it "ensures the comment is set" do
+          pw_entry.gecos.should == "hello this is dog"
+        end
+
+        context "in standard gecos format" do
+          let(:comment) { "Bobo T. Clown,some building,555-555-5555,@boboclown" }
+
+          it "ensures the comment is set" do
+            pw_entry.gecos.should == comment
+          end
+        end
+
+        context "to a string containing multibyte characters" do
+          let(:comment) { "(╯°□°）╯︵ ┻━┻" }
+
+          it "ensures the comment is set" do
+            actual = pw_entry.gecos
+            actual.force_encoding(Encoding::UTF_8) if "".respond_to?(:force_encoding)
+            actual.should == comment
+          end
+        end
+
+        context "to a string containing an apostrophe `'`" do
+          let(:skip) { "single quotes not properly escaped ATM" }
+          let(:comment) { "don't go" }
+
+          it "ensures the comment is set" do
+            pending "not working yet"
+            pw_entry.gecos.should == comment
+          end
         end
       end
 
@@ -146,7 +210,6 @@ describe Chef::Resource::User, :unix_only, :requires_root do
         let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
         it "sets the user's shadow password" do
           pw_entry.passwd.should == "x"
-          etc_shadow = File.open("/etc/shadow") {|f| f.read }
           expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
           etc_shadow.should include(expected_shadow)
         end
@@ -169,6 +232,167 @@ describe Chef::Resource::User, :unix_only, :requires_root do
           pw_entry.uid.to_i.should be < uid_min.to_i
         end
       end
-    end
-  end
+    end # when the user does not exist beforehand
+
+    context "when the user already exists" do
+
+      let(:expect_updated?) { true }
+
+      let(:existing_uid) { nil }
+      let(:existing_home) { nil }
+      let(:existing_manage_home) { false }
+      let(:existing_password) { nil }
+      let(:existing_system) { false }
+      let(:existing_comment) { nil }
+
+      let(:existing_user) do
+        r = Chef::Resource::User.new("TEST USER RESOURCE", run_context)
+        # username is identity attr, must match.
+        r.username(username)
+        r.uid(existing_uid)
+        r.home(existing_home)
+        r.comment(existing_comment)
+        r.manage_home(existing_manage_home)
+        r.password(existing_password)
+        r.system(existing_system)
+        r
+      end
+
+      before do
+        if reason = skip
+          pending(reason)
+        end
+        existing_user.run_action(:create)
+        existing_user.should be_updated_by_last_action
+        user_resource.run_action(:create)
+        user_resource.updated_by_last_action?.should == expect_updated?
+      end
+
+      context "and all properties are in the desired state" do
+        let(:uid) { 1999 }
+        let(:home) { "/home/bobo" }
+        let(:manage_home) { true }
+        # openssl passwd -1 "secretpassword"
+        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:system) { false }
+        let(:comment) { "hello this is dog" }
+
+        let(:existing_uid) { uid }
+        let(:existing_home) { home }
+        let(:existing_manage_home) { manage_home }
+        let(:existing_password) { password }
+        let(:existing_system) { false }
+        let(:existing_comment) { comment }
+
+        let(:expect_updated?) { false }
+
+        it "does not update the user" do
+          user_resource.should_not be_updated
+        end
+      end
+
+      context "and the uid is updated" do
+        let(:uid) { 1999 }
+        let(:existing_uid) { 1998 }
+
+        it "ensures the uid is set to the desired value" do
+          pw_entry.uid.should == "1999"
+        end
+      end
+
+      context "and the comment is updated" do
+        let(:comment) { "hello this is dog" }
+        let(:existing_comment) { "woof" }
+
+        it "ensures the comment field is set to the desired value" do
+          pw_entry.gecos.should == "hello this is dog"
+        end
+      end
+
+      context "and home directory is updated" do
+        let(:existing_home) { "/home/foo" }
+        let(:home) { "/home/bar" }
+        it "ensures the home directory is set to the desired value" do
+          pw_entry.home.should == "/home/bar"
+        end
+
+        context "and manage_home is enabled" do
+          let(:existing_manage_home) { true }
+          let(:manage_home) { true }
+          it "moves the home directory to the new location" do
+            File.should_not exist("/home/foo")
+            File.should exist("/home/bar")
+          end
+        end
+
+        context "and manage_home wasn't enabled but is now" do
+          let(:existing_manage_home) { false }
+          let(:manage_home) { true }
+
+          it "does not create the home directory in the desired location (XXX)" do
+            # This behavior seems contrary to expectation and non-convergent.
+            File.should_not exist("/home/foo")
+            File.should_not exist("/home/bar")
+          end
+        end
+
+        context "and manage_home was enabled but is not now" do
+          let(:existing_manage_home) { true }
+          let(:manage_home) { false }
+
+          it "leaves the old home directory around (XXX)" do
+            # Would it be better to remove the old home?
+            File.should exist("/home/foo")
+            File.should_not exist("/home/bar")
+          end
+        end
+      end
+
+      context "and a password is added" do
+        # openssl passwd -1 "secretpassword"
+        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+
+        it "ensures the password is set" do
+          pw_entry.passwd.should == "x"
+          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          etc_shadow.should include(expected_shadow)
+        end
+
+      end
+
+      context "and the password is updated" do
+        # openssl passwd -1 "OLDpassword"
+        let(:existing_password) { "$1$1dVmwm4z$CftsFn8eBDjDRUytYKkXB." }
+        # openssl passwd -1 "secretpassword"
+        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+
+        it "ensures the password is set to the desired value" do
+          pw_entry.passwd.should == "x"
+          expected_shadow = "chef-functional-test:$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/"
+          etc_shadow.should include(expected_shadow)
+        end
+      end
+
+      context "and the user is changed from not-system to system" do
+        let(:existing_system) { false }
+        let(:system) { true }
+
+        let(:expect_updated?) { false }
+
+        it "does not modify the user at all" do
+        end
+      end
+
+      context "and the user is changed from system to not-system" do
+        let(:existing_system) { true }
+        let(:system) { false }
+
+        let(:expect_updated?) { false }
+
+        it "does not modify the user at all" do
+        end
+      end
+
+    end # when the user already exists
+  end # action :create
 end
