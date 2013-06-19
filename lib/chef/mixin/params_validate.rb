@@ -16,7 +16,8 @@
 # limitations under the License.
 
 class Chef
-  
+  class DelayedEvaluator < Proc
+  end
   module Mixin
     module ParamsValidate
       
@@ -75,15 +76,27 @@ class Chef
         end
         opts
       end
-          
+      
+      def lazy(&block)
+        DelayedEvaluator.new(&block)
+      end
+
       def set_or_return(symbol, arg, validation)
         iv_symbol = "@#{symbol.to_s}".to_sym
-
         if arg == nil && self.instance_variable_defined?(iv_symbol) == true
-          self.instance_variable_get(iv_symbol)
+          ivar = self.instance_variable_get(iv_symbol)
+          if(ivar.is_a?(DelayedEvaluator))
+            validate({ symbol => ivar.call }, { symbol => validation })[symbol]
+          else
+            ivar
+          end
         else
-          opts = validate({ symbol => arg }, { symbol => validation })
-          self.instance_variable_set(iv_symbol, opts[symbol])
+          if(arg.is_a?(DelayedEvaluator))
+            val = arg
+          else
+            val = validate({ symbol => arg }, { symbol => validation })[symbol]
+          end
+          self.instance_variable_set(iv_symbol, val)
         end
       end
             
