@@ -66,7 +66,7 @@ class Chef
             raise_lock_error = false
             # we can get an exit code of 1 even when it's successful on rhel/centos (redhat bug 578534)
             if status.exitstatus == 1 && ['redhat', 'centos'].include?(node[:platform])
-              passwd_version_status = popen4('rpm -q passwd') do |pid, stdin, stdout, stderr|
+              popen4('rpm -q passwd') do |pid, stdin, stdout, stderr|
                 passwd_version = stdout.gets.chomp
 
                 unless passwd_version == 'passwd-0.73-1'
