@@ -317,7 +317,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with options' do
-        let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
+        let(:options) { {:cwd => '/tmp', :user => 'nobody', :password => "something"} }
 
         it "should set the command to the array of command and args" do
           shell_cmd.command.should eql(cmd)
@@ -427,13 +427,21 @@ describe Mixlib::ShellOut do
         end
       end
 
-      context "when user is set to Administrator" do
-        let(:user) { 'administrator' }
-        let(:domain) { ENV['COMPUTERNAME'].downcase }
-        let(:options) { { :domain => domain, :user => user, :password => 'vagrant' } }
+      context "when user is specified" do
+        before do
+          system("net user #{user} #{password} /add")
+        end
 
-        it "should run as Administrator" do
-          running_user.should eql("#{domain}\\#{user}")
+        after do
+          system("net user #{user} /delete")
+        end
+
+        let(:user) { 'testuser' }
+        let(:password) { 'testpassword' }
+        let(:options) { { :user => user, :password => password } }
+
+        it "should run as specified user" do
+          running_user.should eql("#{ENV['COMPUTERNAME'].downcase}\\#{user}")
         end
       end
     end
@@ -1023,7 +1031,7 @@ describe Mixlib::ShellOut do
       end
     end
 
-    describe "#clean_parent_file_descriptors" do
+    describe "#clean_parent_file_descriptors", :unix_only do
       # test for for_fd returning a valid File object, but close
       # throwing EBADF.
       it "should not throw an exception if fd.close throws EBADF" do
