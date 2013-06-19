@@ -25,9 +25,10 @@ class Chef
     # Helpers to take Chef::Config and create chef_fs and local_fs from it
     #
     class Config
-      def initialize(chef_config = Chef::Config, cwd = Dir.pwd)
+      def initialize(chef_config = Chef::Config, cwd = Dir.pwd, options = {})
         @chef_config = chef_config
         @cwd = cwd
+        @cookbook_version = options[:cookbook_version]
 
         # Default to getting *everything* from the server.
         if !@chef_config[:repo_mode]
@@ -39,13 +40,17 @@ class Chef
         end
       end
 
+      attr_reader :chef_config
+      attr_reader :cwd
+      attr_reader :cookbook_version
+
       def chef_fs
         @chef_fs ||= create_chef_fs
       end
 
       def create_chef_fs
         require 'chef/chef_fs/file_system/chef_server_root_dir'
-        Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", @chef_config)
+        Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
       end
 
       def local_fs

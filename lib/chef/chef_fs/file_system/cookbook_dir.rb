@@ -41,6 +41,7 @@ class Chef
             end
           else
             @cookbook_name = name
+            @version = root.cookbook_version # nil unless --cookbook-version specified in download/diff
           end
         end
 
