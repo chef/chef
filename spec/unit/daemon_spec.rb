@@ -154,30 +154,30 @@ describe Chef::Daemon do
         FileUtils.should_receive(:rm).with("/var/run/chef/chef-client.pid")
         Chef::Daemon.remove_pid_file
       end
-    
+
 
     end
 
     describe "when the pid file exists and the process is forked" do
-      
+
       before do
         File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
         Chef::Daemon.stub!(:forked?) { true }
       end
-      
+
       it "should not remove the file" do
         FileUtils.should_not_receive(:rm)
         Chef::Daemon.remove_pid_file
       end
-      
+
     end
-    
+
     describe "when the pid file exists and the process is not forked" do
       before do
         File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
         Chef::Daemon.stub!(:forked?) { false }
       end
-      
+
       it "should remove the file" do
         FileUtils.should_receive(:rm)
         Chef::Daemon.remove_pid_file
@@ -295,7 +295,7 @@ describe Chef::Daemon do
       it "should log an appropriate error message and fail miserably" do
         Process.stub!(:initgroups).and_raise(Errno::EPERM)
         error = "Operation not permitted"
-        if RUBY_PLATFORM.match("solaris2")
+        if RUBY_PLATFORM.match("solaris2") || RUBY_PLATFORM.match("aix")
           error = "Not owner"
         end
         Chef::Application.should_receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. #{error}")
