@@ -68,7 +68,7 @@ class Chef
           end
         end
 
-        @chef_fs_config = Chef::ChefFS::Config.new(Chef::Config)
+        @chef_fs_config = Chef::ChefFS::Config.new(Chef::Config, Dir.pwd, config)
 
         Chef::ChefFS::Parallelizer.threads = (Chef::Config[:concurrency] || 10) - 1
 
