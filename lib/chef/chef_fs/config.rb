@@ -171,6 +171,9 @@ class Chef
         if @chef_config[:role_path] == @chef_config.platform_specific_path('/var/chef/roles')
           @chef_config[:role_path] = nil
         end
+        if @chef_config[:environment_path] == @chef_config.platform_specific_path('/var/chef/environments')
+          @chef_config[:environment_path] = nil
+        end
 
         # Infer chef_repo_path from cookbook_path if not speciifed
         if !@chef_config[:chef_repo_path]
