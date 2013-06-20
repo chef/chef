@@ -419,25 +419,22 @@ describe Mixlib::ShellOut do
         # Need to adjust the username and domain if running as local system
         # to match how whoami returns the information
 
-        let(:local_system) { (ENV['USERNAME'].downcase == "#{ENV['COMPUTERNAME'].downcase}$") }
-        let(:domain) { local_system ? 'nt authority' : ENV['COMPUTERNAME'].downcase }
-        let(:user) { local_system ? 'system' : ENV['USERNAME'].downcase }
         it "should run as current user" do
-          running_user.should eql("#{domain}\\#{user}")
+          running_user.should eql("#{ENV['COMPUTERNAME'].downcase}\\#{ENV['USERNAME'].downcase}")
         end
       end
 
       context "when user is specified" do
         before do
-          system("net user #{user} #{password} /add")
+          system("net user #{user} #{password} /add").should == true
         end
 
         after do
-          system("net user #{user} /delete")
+          system("net user #{user} /delete").should == true
         end
 
         let(:user) { 'testuser' }
-        let(:password) { 'testpassword' }
+        let(:password) { 'testpass1!' }
         let(:options) { { :user => user, :password => password } }
 
         it "should run as specified user" do
