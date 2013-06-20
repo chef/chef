@@ -110,11 +110,11 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        changed = [ :comment, :home, :shell, :password ].keep_if do |user_attrib|
+        changed = [ :comment, :home, :shell, :password ].select do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
         end
 
-        changed += [ :uid, :gid ].keep_if do |user_attrib|
+        changed += [ :uid, :gid ].select do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
         end
 
