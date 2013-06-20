@@ -34,101 +34,107 @@
 #
 # See: https://github.com/net-ssh/net-ssh-multi/pull/4
 
-require 'net/ssh/multi'
+require 'net/ssh/multi/version'
 
-module Net
-  module SSH
-    module Multi
-      class Server
-        
-        # Make sure that server returns false if the ssh connection
-        # has failed.
-        def busy?(include_invisible=false)
-          !failed? && session && session.busy?(include_invisible)
-        end
-        
-      end
+if Net::SSH::Multi::Version::STRING == "1.1.0" || Net::SSH::Multi::Version::STRING == "1.2.0"
 
-      class Session
-        def next_session(server, force=false) #:nodoc:
-          # don't retry a failed attempt
-          return nil if server.failed?
+  require 'net/ssh/multi'
 
-          @session_mutex.synchronize do
-            if !force && concurrent_connections && concurrent_connections <= open_connections
-              connection = PendingConnection.new(server)
-              @pending_sessions << connection
-              return connection
-            end
+  module Net
+    module SSH
+      module Multi
+        class Server
 
-            # ===== PATCH START
-            # Only increment the open_connections count if the connection
-            # is not being forced. Incase of a force, it will already be
-            # incremented.
-            if !force
-              @open_connections += 1
-            end
-            # ===== PATCH END
+          # Make sure that server returns false if the ssh connection
+          # has failed.
+          def busy?(include_invisible=false)
+            !failed? && session && session.busy?(include_invisible)
           end
 
-          begin
-            server.new_session
+        end
 
-            # I don't understand why this should be necessary--StandardError is a
-            # subclass of Exception, after all--but without explicitly rescuing
-            # StandardError, things like Errno::* and SocketError don't get caught
-            # here!
-          rescue Exception, StandardError => e
-            server.fail!
-            @session_mutex.synchronize { @open_connections -= 1 }
+        class Session
+          def next_session(server, force=false) #:nodoc:
+            # don't retry a failed attempt
+            return nil if server.failed?
 
-            case on_error
-            when :ignore then
-              # do nothing
-            when :warn then
-              warn("error connecting to #{server}: #{e.class} (#{e.message})")
-            when Proc then
-              go = catch(:go) { on_error.call(server); nil }
-              case go
-              when nil, :ignore then # nothing
-              when :retry then retry
-              when :raise then raise
-              else warn "unknown 'go' command: #{go.inspect}"
+            @session_mutex.synchronize do
+              if !force && concurrent_connections && concurrent_connections <= open_connections
+                connection = PendingConnection.new(server)
+                @pending_sessions << connection
+                return connection
               end
-            else
-              raise
+
+              # ===== PATCH START
+              # Only increment the open_connections count if the connection
+              # is not being forced. Incase of a force, it will already be
+              # incremented.
+              if !force
+                @open_connections += 1
+              end
+              # ===== PATCH END
             end
 
-            return nil
-          end
-        end
+            begin
+              server.new_session
 
-        def realize_pending_connections! #:nodoc:
-          return unless concurrent_connections
+              # I don't understand why this should be necessary--StandardError is a
+              # subclass of Exception, after all--but without explicitly rescuing
+              # StandardError, things like Errno::* and SocketError don't get caught
+              # here!
+            rescue Exception, StandardError => e
+              server.fail!
+              @session_mutex.synchronize { @open_connections -= 1 }
 
-          server_list.each do |server|
-            server.close if !server.busy?(true)
-            server.update_session!
-          end
+              case on_error
+              when :ignore then
+                # do nothing
+              when :warn then
+                warn("error connecting to #{server}: #{e.class} (#{e.message})")
+              when Proc then
+                go = catch(:go) { on_error.call(server); nil }
+                case go
+                when nil, :ignore then # nothing
+                when :retry then retry
+                when :raise then raise
+                else warn "unknown 'go' command: #{go.inspect}"
+                end
+              else
+                raise
+              end
 
-          @connect_threads.delete_if { |t| !t.alive? }
-
-          count = concurrent_connections ? (concurrent_connections - open_connections) : @pending_sessions.length
-          count.times do
-            session = @pending_sessions.pop or break
-            # ===== PATCH START
-            # Increment the open_connections count here to prevent
-            # creation of connection thread again before that is
-            # incremented by the thread.
-            @session_mutex.synchronize { @open_connections += 1 }
-            # ===== PATCH END
-            @connect_threads << Thread.new do
-              session.replace_with(next_session(session.server, true))
+              return nil
             end
           end
+
+          def realize_pending_connections! #:nodoc:
+            return unless concurrent_connections
+
+            server_list.each do |server|
+              server.close if !server.busy?(true)
+              server.update_session!
+            end
+
+            @connect_threads.delete_if { |t| !t.alive? }
+
+            count = concurrent_connections ? (concurrent_connections - open_connections) : @pending_sessions.length
+            count.times do
+              session = @pending_sessions.pop or break
+              # ===== PATCH START
+              # Increment the open_connections count here to prevent
+              # creation of connection thread again before that is
+              # incremented by the thread.
+              @session_mutex.synchronize { @open_connections += 1 }
+              # ===== PATCH END
+              @connect_threads << Thread.new do
+                session.replace_with(next_session(session.server, true))
+              end
+            end
+          end
+
         end
-        
       end
     end
   end
+
 end
