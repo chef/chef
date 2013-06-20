@@ -21,6 +21,13 @@
 require 'spec_helper'
 
 describe Chef::Provider::User::Useradd do
+
+  subject(:provider) do
+    p = described_class.new(@new_resource, @run_context)
+    p.current_resource = @current_resource
+    p
+  end
+
   supported_useradd_options = {
     'comment' => "-c",
     'gid' => "-g",
@@ -28,5 +35,6 @@ describe Chef::Provider::User::Useradd do
     'shell' => "-s",
     'password' => "-p"
   }
+
   include_examples "a useradd-based user provider", supported_useradd_options
 end
