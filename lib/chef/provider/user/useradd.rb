@@ -17,12 +17,15 @@
 #
 
 require 'pathname'
+require 'chef/mixin/shell_out'
 require 'chef/provider/user'
 
 class Chef
   class Provider
     class User
       class Useradd < Chef::Provider::User
+        include Chef::Mixin::ShellOut
+
         UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:password, "-p"], [:shell, "-s"], [:uid, "-u"]]
 
         def create_user
@@ -30,7 +33,7 @@ class Chef
             useradd << universal_options
             useradd << useradd_options
           end
-          run_command(:command => command)
+          shell_out!(command)
         end
 
         def manage_user
@@ -38,7 +41,7 @@ class Chef
             command = compile_command("usermod") do |u|
               u << universal_options
             end
-            run_command(:command => command)
+            shell_out!(command)
           end
         end
 
@@ -46,32 +49,23 @@ class Chef
           command = "userdel"
           command << " -r" if managing_home_dir?
           command << " #{@new_resource.username}"
-          run_command(:command => command)
+          shell_out!(command)
         end
 
-        def check_lock
-          status = popen4("passwd -S #{@new_resource.username}") do |pid, stdin, stdout, stderr|
-            status_line = stdout.gets.split(' ')
-            case status_line[1]
-            when /^P/
-              @locked = false
-            when /^N/
-              @locked = false
-            when /^L/
-              @locked = true
-            end
-          end
+        def locked?
+          status = check_lock_status
+
+          status_line = status.stdout.split(' ')
+          @locked = status_line[1].start_with? "L"
 
           unless status.exitstatus == 0
             raise_lock_error = false
             # we can get an exit code of 1 even when it's successful on rhel/centos (redhat bug 578534)
             if status.exitstatus == 1 && ['redhat', 'centos'].include?(node[:platform])
-              passwd_version_status = popen4('rpm -q passwd') do |pid, stdin, stdout, stderr|
-                passwd_version = stdout.gets.chomp
+              passwd_version = shell_out!('rpm -q passwd').stdout.chomp
 
-                unless passwd_version == 'passwd-0.73-1'
-                  raise_lock_error = true
-                end
+              if passwd_version != 'passwd-0.73-1'
+                raise_lock_error = true
               end
             else
               raise_lock_error = true
@@ -84,11 +78,11 @@ class Chef
         end
 
         def lock_user
-          run_command(:command => "usermod -L #{@new_resource.username}")
+          shell_out!("usermod -L #{@new_resource.username}")
         end
 
         def unlock_user
-          run_command(:command => "usermod -U #{@new_resource.username}")
+          shell_out!("usermod -U #{@new_resource.username}")
         end
 
         def compile_command(base_command)
@@ -145,6 +139,12 @@ class Chef
 
         def managing_home_dir?
           @new_resource.manage_home || @new_resource.supports[:manage_home]
+        end
+
+        private
+
+        def check_lock_status
+          shell_out("passwd -S #{@new_resource.username}")
         end
 
       end

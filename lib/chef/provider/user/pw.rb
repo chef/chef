@@ -48,7 +48,7 @@ class Chef
           run_command(:command => command)
         end
         
-        def check_lock
+        def locked?
           case @current_resource.password
           when /^\*LOCKED\*/
             @locked = true

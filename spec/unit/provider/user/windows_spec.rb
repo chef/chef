@@ -151,12 +151,12 @@ describe Chef::Provider::User::Windows do
 
     it "should return true if user is locked" do
       @net_user.stub!(:check_enabled).and_return(true)
-      @provider.check_lock.should eql(true)
+      @provider.locked?.should eql(true)
     end
 
     it "should return false if user is not locked" do
       @net_user.stub!(:check_enabled).and_return(false)
-      @provider.check_lock.should eql(false)
+      @provider.locked?.should eql(false)
     end
   end
 
