@@ -51,6 +51,9 @@ describe Chef::Resource::User, :unix_only, :requires_root do
 
 
   before do
+    # Silence shell_out live stream
+    Chef::Log.level = :warn
+
     # Tests only implemented for a subset of platforms currently.
     user_provider = Chef::Platform.find_provider(OHAI_SYSTEM["platform"],
                                                  OHAI_SYSTEM["platform_version"],
@@ -63,7 +66,7 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   after do
     begin
       pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel -f -r #{username}")
+      shell_out!("userdel", "-f", "-r", username)
     rescue UserNotFound
       # nothing to remove
     end
@@ -131,7 +134,6 @@ describe Chef::Resource::User, :unix_only, :requires_root do
       #  default algorithm for the definition of the user's home directory.
 
       context "and the username contains a single quote" do
-        let(:skip) { "single quotes not properly escaped ATM" }
         let(:username) { "t'bilisi" }
 
         it "ensures the user exists" do
@@ -175,11 +177,9 @@ describe Chef::Resource::User, :unix_only, :requires_root do
         end
 
         context "to a string containing an apostrophe `'`" do
-          let(:skip) { "single quotes not properly escaped ATM" }
           let(:comment) { "don't go" }
 
           it "ensures the comment is set" do
-            pending "not working yet"
             pw_entry.gecos.should == comment
           end
         end
@@ -395,4 +395,117 @@ describe Chef::Resource::User, :unix_only, :requires_root do
 
     end # when the user already exists
   end # action :create
+
+  shared_context "user exists for lock/unlock" do
+    let(:user_locked_context?) { false }
+
+    def shadow_entry
+      etc_shadow.lines.select {|l| l.include?(username) }.first
+    end
+
+    def shadow_password
+      shadow_entry.split(':')[1]
+    end
+
+    before do
+      # create user and setup locked/unlocked state
+      user_resource.dup.run_action(:create)
+
+      if user_locked_context?
+        shell_out!("usermod -L #{username}")
+        shadow_password.should include("!")
+      elsif password
+        shadow_password.should_not include("!")
+      end
+    end
+  end
+
+  describe "action :lock" do
+    context "when the user does not exist" do
+      it "raises a sensible error" do
+        expect { user_resource.run_action(:lock) }.to raise_error(Chef::Exceptions::User)
+      end
+    end
+
+    context "when the user exists" do
+
+      include_context "user exists for lock/unlock"
+
+      before do
+        user_resource.run_action(:lock)
+      end
+
+      context "and the user is not locked" do
+        # user will be locked if it has no password
+        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+
+        it "locks the user's password" do
+          shadow_password.should include("!")
+        end
+      end
+
+      context "and the user is locked" do
+        # user will be locked if it has no password
+        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        let(:user_locked_context?) { true }
+        it "does not update the user" do
+          user_resource.should_not be_updated_by_last_action
+        end
+      end
+    end
+  end # action :lock
+
+  describe "action :unlock" do
+    context "when the user does not exist" do
+      it "raises a sensible error" do
+        expect { user_resource.run_action(:unlock) }.to raise_error(Chef::Exceptions::User)
+      end
+    end
+
+    context "when the user exists" do
+
+      include_context "user exists for lock/unlock"
+
+      before do
+        user_resource.run_action(:unlock)
+      end
+
+      context "and has no password" do
+
+        it "is marked as updated but doesn't modify the user (XXX)" do
+          # This should be an error instead; note that usermod still exits 0
+          # (which is probably why this case silently fails):
+          #
+          # DEBUG: ---- Begin output of usermod -U chef-functional-test ----
+          # DEBUG: STDOUT:
+          # DEBUG: STDERR: usermod: unlocking the user's password would result in a passwordless account.
+          # You should set a password with usermod -p to unlock this user's password.
+          # DEBUG: ---- End output of usermod -U chef-functional-test ----
+          # DEBUG: Ran usermod -U chef-functional-test returned 0
+          pw_entry.passwd.should == 'x'
+          shadow_password.should == "!"
+        end
+      end
+
+      context "and has a password" do
+        let(:password) { "$1$RRa/wMM/$XltKfoX5ffnexVF4dHZZf/" }
+        context "and the user is not locked" do
+          it "does not update the user" do
+            user_resource.should_not be_updated_by_last_action
+          end
+        end
+
+        context "and the user is locked" do
+          let(:user_locked_context?) { true }
+
+          it "unlocks the user's password" do
+            shadow_entry = etc_shadow.lines.select {|l| l.include?(username) }.first
+            shadow_password = shadow_entry.split(':')[1]
+            shadow_password.should_not include("!")
+          end
+        end
+      end
+    end
+  end # action :unlock
+
 end
