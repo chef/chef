@@ -66,7 +66,7 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   after do
     begin
       pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel -f -r #{username}")
+      shell_out!("userdel", "-f", "-r", username)
     rescue UserNotFound
       # nothing to remove
     end
@@ -134,7 +134,6 @@ describe Chef::Resource::User, :unix_only, :requires_root do
       #  default algorithm for the definition of the user's home directory.
 
       context "and the username contains a single quote" do
-        let(:skip) { "single quotes not properly escaped ATM" }
         let(:username) { "t'bilisi" }
 
         it "ensures the user exists" do
@@ -178,11 +177,9 @@ describe Chef::Resource::User, :unix_only, :requires_root do
         end
 
         context "to a string containing an apostrophe `'`" do
-          let(:skip) { "single quotes not properly escaped ATM" }
           let(:comment) { "don't go" }
 
           it "ensures the comment is set" do
-            pending "not working yet"
             pw_entry.gecos.should == comment
           end
         end

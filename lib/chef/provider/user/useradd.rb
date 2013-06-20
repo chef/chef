@@ -31,32 +31,32 @@ class Chef
 
         def create_user
           command = compile_command("useradd") do |useradd|
-            useradd << universal_options
-            useradd << useradd_options
+            useradd.concat(universal_options)
+            useradd.concat(useradd_options)
           end
-          shell_out!(command)
+          shell_out!(*command)
         end
 
         def manage_user
           if universal_options != ""
             command = compile_command("usermod") do |u|
-              u << universal_options
+              u.concat(universal_options)
             end
-            shell_out!(command)
+            shell_out!(*command)
           end
         end
 
         def remove_user
-          command = "userdel"
-          command << " -r" if managing_home_dir?
-          command << " #{@new_resource.username}"
-          shell_out!(command)
+          command = [ "userdel" ]
+          command << "-r" if managing_home_dir?
+          command << new_resource.username
+          shell_out!(*command)
         end
 
         def check_lock
           # we can get an exit code of 1 even when it's successful on
           # rhel/centos (redhat bug 578534). See additional error checks below.
-          passwd_s = shell_out!("passwd -S #{@new_resource.username}", :returns => [0,1])
+          passwd_s = shell_out!("passwd", "-S", new_resource.username, :returns => [0,1])
           status_line = passwd_s.stdout.split(' ')
           case status_line[1]
           when /^P/
@@ -80,60 +80,61 @@ class Chef
               raise_lock_error = true
             end
 
-            raise Chef::Exceptions::User, "Cannot determine if #{@new_resource} is locked!" if raise_lock_error
+            raise Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if raise_lock_error
           end
 
           @locked
         end
 
         def lock_user
-          shell_out!("usermod -L #{@new_resource.username}")
+          shell_out!("usermod", "-L", new_resource.username)
         end
 
         def unlock_user
-          shell_out!("usermod -U #{@new_resource.username}")
+          shell_out!("usermod", "-U", new_resource.username)
         end
 
         def compile_command(base_command)
+          base_command = Array(base_command)
           yield base_command
-          base_command << " #{@new_resource.username}"
+          base_command << new_resource.username
           base_command
         end
 
         def universal_options
           @universal_options ||=
             begin
-              opts = ''
+              opts = []
               # magic allows UNIVERSAL_OPTIONS to be overridden in a subclass
               self.class::UNIVERSAL_OPTIONS.each do |field, option|
                 update_options(field, option, opts)
               end
               if updating_home?
                 if managing_home_dir?
-                  Chef::Log.debug("#{@new_resource} managing the users home directory")
-                  opts << " -m -d '#{@new_resource.home}'"
+                  Chef::Log.debug("#{new_resource} managing the users home directory")
+                  opts << "-m" << "-d" << new_resource.home
                 else
-                  Chef::Log.debug("#{@new_resource} setting home to #{@new_resource.home}")
-                  opts << " -d '#{@new_resource.home}'"
+                  Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
+                  opts << "-d" << new_resource.home
                 end
               end
-              opts << " -o" if @new_resource.non_unique || @new_resource.supports[:non_unique]
+              opts << "-o" if new_resource.non_unique || new_resource.supports[:non_unique]
               opts
             end
         end
 
         def update_options(field, option, opts)
-          if @current_resource.send(field) != @new_resource.send(field)
-            if @new_resource.send(field)
-              Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field)}")
-              opts << " #{option} '#{@new_resource.send(field)}'"
+          if @current_resource.send(field) != new_resource.send(field)
+            if new_resource.send(field)
+              Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field)}")
+              opts << option << new_resource.send(field).to_s
             end
           end
         end
 
         def useradd_options
-          opts = ''
-          opts << " -r" if @new_resource.system
+          opts = []
+          opts << "-r" if new_resource.system
           opts
         end
 
@@ -142,12 +143,12 @@ class Chef
           # Pathname#cleanpath does a better job than ::File::expand_path (on both unix and windows)
           # ::File.expand_path("///tmp") == ::File.expand_path("/tmp") => false
           # ::File.expand_path("\\tmp") => "C:/tmp"
-          return true if @current_resource.home.nil? && @new_resource.home
-          @new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(@new_resource.home).cleanpath
+          return true if @current_resource.home.nil? && new_resource.home
+          new_resource.home and Pathname.new(@current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
         def managing_home_dir?
-          @new_resource.manage_home || @new_resource.supports[:manage_home]
+          new_resource.manage_home || new_resource.supports[:manage_home]
         end
 
       end
