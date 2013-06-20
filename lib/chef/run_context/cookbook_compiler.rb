@@ -84,7 +84,7 @@ class Chef
           seen_cookbooks = {}
           run_list_expansion.recipes.each do |recipe|
             cookbook = Chef::Recipe.parse_recipe_name(recipe).first
-            add_cookbook_with_deps(ordered_cookbooks, seen_cookbooks, cookbook)
+            add_cookbook_with_deps(ordered_cookbooks, seen_cookbooks, cookbook.to_sym)
           end
           Chef::Log.debug("Cookbooks to compile: #{ordered_cookbooks.inspect}")
           ordered_cookbooks
