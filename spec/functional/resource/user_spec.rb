@@ -51,6 +51,9 @@ describe Chef::Resource::User, :unix_only, :requires_root do
 
 
   before do
+    # Silence shell_out live stream
+    Chef::Log.level = :warn
+
     # Tests only implemented for a subset of platforms currently.
     user_provider = Chef::Platform.find_provider(OHAI_SYSTEM["platform"],
                                                  OHAI_SYSTEM["platform_version"],
