@@ -25,6 +25,7 @@ class Chef
       deps do
         require 'net/ssh'
         require 'net/ssh/multi'
+        require 'chef/monkey_patches/net-ssh-multi'
         require 'readline'
         require 'chef/exceptions'
         require 'chef/search/query'
