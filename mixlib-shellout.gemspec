@@ -5,7 +5,6 @@ Gem::Specification.new do |s|
   s.name = 'mixlib-shellout'
   s.version = Mixlib::ShellOut::VERSION
   s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
   s.extra_rdoc_files = ["README.md", "LICENSE" ]
   s.summary = "Run external commands on Unix or Windows"
   s.description = s.summary

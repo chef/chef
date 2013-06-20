@@ -317,7 +317,7 @@ describe Mixlib::ShellOut do
       end
 
       context 'with options' do
-        let(:options) { {:cwd => '/tmp', :user => 'nobody'} }
+        let(:options) { {:cwd => '/tmp', :user => 'nobody', :password => "something"} }
 
         it "should set the command to the array of command and args" do
           shell_cmd.command.should eql(cmd)
@@ -326,6 +326,7 @@ describe Mixlib::ShellOut do
         it "should evaluate the options" do
           shell_cmd.cwd.should eql('/tmp')
           shell_cmd.user.should eql('nobody')
+          shell_cmd.password.should eql('something')
         end
       end
     end
@@ -419,21 +420,26 @@ describe Mixlib::ShellOut do
         # Need to adjust the username and domain if running as local system
         # to match how whoami returns the information
 
-        let(:local_system) { (ENV['USERNAME'].downcase == "#{ENV['COMPUTERNAME'].downcase}$") }
-        let(:domain) { local_system ? 'nt authority' : ENV['COMPUTERNAME'].downcase }
-        let(:user) { local_system ? 'system' : ENV['USERNAME'].downcase }
         it "should run as current user" do
-          running_user.should eql("#{domain}\\#{user}")
+          running_user.should eql("#{ENV['COMPUTERNAME'].downcase}\\#{ENV['USERNAME'].downcase}")
         end
       end
 
-      context "when user is set to Administrator" do
-        let(:user) { 'administrator' }
-        let(:domain) { ENV['COMPUTERNAME'].downcase }
-        let(:options) { { :domain => domain, :user => user, :password => 'vagrant' } }
+      context "when user is specified" do
+        before do
+          system("net user #{user} #{password} /add").should == true
+        end
 
-        it "should run as Administrator" do
-          running_user.should eql("#{domain}\\#{user}")
+        after do
+          system("net user #{user} /delete").should == true
+        end
+
+        let(:user) { 'testuser' }
+        let(:password) { 'testpass1!' }
+        let(:options) { { :user => user, :password => password } }
+
+        it "should run as specified user" do
+          running_user.should eql("#{ENV['COMPUTERNAME'].downcase}\\#{user}")
         end
       end
     end
@@ -1023,7 +1029,7 @@ describe Mixlib::ShellOut do
       end
     end
 
-    describe "#clean_parent_file_descriptors" do
+    describe "#clean_parent_file_descriptors", :unix_only do
       # test for for_fd returning a valid File object, but close
       # throwing EBADF.
       it "should not throw an exception if fd.close throws EBADF" do
