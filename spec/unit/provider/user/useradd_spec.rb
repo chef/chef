@@ -169,7 +169,7 @@ describe Chef::Provider::User::Useradd do
 
     it "runs useradd with the computed command options" do
       command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -m -d '/Users/mud' adam"
-      @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+      @provider.should_receive(:shell_out!).with(command).and_return(true)
       @provider.create_user
     end
 
@@ -183,7 +183,7 @@ describe Chef::Provider::User::Useradd do
 
       it "should not include -m or -d in the command options" do
         command = "useradd -c 'Adam Jacob' -g '23' -p 'abracadabra' -s '/usr/bin/zsh' -u '1000' -r adam"
-        @provider.should_receive(:run_command).with({ :command => command }).and_return(true)
+        @provider.should_receive(:shell_out!).with(command).and_return(true)
         @provider.create_user
       end
 
@@ -200,19 +200,19 @@ describe Chef::Provider::User::Useradd do
 
     # CHEF-3423, -m must come before the username
     it "runs usermod with the computed command options" do
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -m -d '/Users/mud' adam" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("usermod -g '23' -m -d '/Users/mud' adam").and_return(true)
       @provider.manage_user
     end
 
     it "does not set the -r option to usermod" do
       @new_resource.system(true)
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' -m -d '/Users/mud' adam" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("usermod -g '23' -m -d '/Users/mud' adam").and_return(true)
       @provider.manage_user
     end
 
     it "CHEF-3429: does not set -m if we aren't changing the home directory" do
       @provider.should_receive(:updating_home?).and_return(false)
-      @provider.should_receive(:run_command).with({ :command => "usermod -g '23' adam" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("usermod -g '23' adam").and_return(true)
       @provider.manage_user
     end
   end
@@ -220,113 +220,103 @@ describe Chef::Provider::User::Useradd do
   describe "when removing a user" do
 
     it "should run userdel with the new resources user name" do
-      @provider.should_receive(:run_command).with({ :command => "userdel #{@new_resource.username}" }).and_return(true)
+      @provider.should_receive(:shell_out!).with("userdel #{@new_resource.username}").and_return(true)
       @provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -r if manage_home is true" do
       @new_resource.stub!(:supports).and_return({ :manage_home => true,
                                                   :non_unique => false})
-      @provider.should_receive(:run_command).with({ :command => "userdel -r #{@new_resource.username}"}).and_return(true)
+      @provider.should_receive(:shell_out!).with("userdel -r #{@new_resource.username}").and_return(true)
       @provider.remove_user
     end
 
     it "should run userdel with the new resources user name if non_unique is true" do
       @new_resource.stub!(:supports).and_return({ :manage_home => false,
                                                   :non_unique => true})
-      @provider.should_receive(:run_command).with({ :command => "userdel #{@new_resource.username}"}).and_return(true)
+      @provider.should_receive(:shell_out!).with("userdel #{@new_resource.username}").and_return(true)
       @provider.remove_user
     end
   end
 
   describe "when checking the lock" do
+    # lazy initialize so we can modify stdout and stderr strings
+    let(:passwd_s_status) do
+      mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => @stdout, :stderr => @stderr)
+    end
+
     before(:each) do
       # @node = Chef::Node.new
       # @new_resource = mock("Chef::Resource::User",
       #   :nil_object => true,
       #   :username => "adam"
       # )
-      @status = mock("Status", :exitstatus => 0)
       #@provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
-      @provider.stub!(:popen4).and_return(@status)
-      @stdin = mock("STDIN", :nil_object => true)
-      @stdout = mock("STDOUT", :nil_object => true)
-      @stdout.stub!(:gets).and_return("root P 09/02/2008 0 99999 7 -1")
-      @stderr = mock("STDERR", :nil_object => true)
-      @pid = mock("PID", :nil_object => true)
-    end
-
-    it "should call passwd -S to check the lock status" do
-      @provider.should_receive(:popen4).with("passwd -S #{@new_resource.username}").and_return(@status)
-      @provider.check_lock
-    end
-
-    it "should get the first line of passwd -S STDOUT" do
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
-      @stdout.should_receive(:gets).and_return("root P 09/02/2008 0 99999 7 -1")
-      @provider.check_lock
+      @stdout = "root P 09/02/2008 0 99999 7 -1"
+      @stderr = ""
     end
 
     it "should return false if status begins with P" do
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @provider.should_receive(:shell_out!).with("passwd -S #{@new_resource.username}", {:returns=>[0, 1]}).and_return(passwd_s_status)
       @provider.check_lock.should eql(false)
     end
 
     it "should return false if status begins with N" do
-      @stdout.stub!(:gets).and_return("root N")
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout = "root N"
+      @provider.should_receive(:shell_out!).with("passwd -S #{@new_resource.username}", {:returns=>[0, 1]}).and_return(passwd_s_status)
       @provider.check_lock.should eql(false)
     end
 
     it "should return true if status begins with L" do
-      @stdout.stub!(:gets).and_return("root L")
-      @provider.should_receive(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+      @stdout = "root L"
+      @provider.should_receive(:shell_out!).with("passwd -S #{@new_resource.username}", {:returns=>[0, 1]}).and_return(passwd_s_status)
       @provider.check_lock.should eql(true)
     end
 
     it "should raise a Chef::Exceptions::User if passwd -S fails on anything other than redhat/centos" do
       @node.automatic_attrs[:platform] = 'ubuntu'
-      @status.should_receive(:exitstatus).and_return(1)
+      @provider.should_receive(:shell_out!).with("passwd -S #{@new_resource.username}", {:returns=>[0, 1]}).and_return(passwd_s_status)
+      passwd_s_status.should_receive(:exitstatus).and_return(1)
       lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
     end
 
     ['redhat', 'centos'].each do |os|
       it "should not raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is version 0.73-1" do
         @node.automatic_attrs[:platform] = os
-        @stdout.stub!(:gets).and_return("passwd-0.73-1\n")
-        @status.should_receive(:exitstatus).twice.and_return(1)
-        @provider.should_receive(:popen4).with("passwd -S #{@new_resource.username}")
-        @provider.should_receive(:popen4).with("rpm -q passwd").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        passwd_s_status.should_receive(:exitstatus).and_return(1)
+        @provider.should_receive(:shell_out!).with("passwd -S #{@new_resource.username}", {:returns=>[0, 1]}).and_return(passwd_s_status)
+        rpm_status = mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-1\n", :stderr => "")
+        @provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
         lambda { @provider.check_lock }.should_not raise_error(Chef::Exceptions::User)
       end
 
       it "should raise a Chef::Exceptions::User if passwd -S exits with 1 on #{os} and the passwd package is not version 0.73-1" do
         @node.automatic_attrs[:platform] = os
-        @stdout.stub!(:gets).and_return("passwd-0.73-2\n")
-        @status.should_receive(:exitstatus).twice.and_return(1)
-        @provider.should_receive(:popen4).with("passwd -S #{@new_resource.username}")
-        @provider.should_receive(:popen4).with("rpm -q passwd").and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
+        passwd_s_status.should_receive(:exitstatus).and_return(1)
+        @provider.should_receive(:shell_out!).with("passwd -S #{@new_resource.username}", {:returns=>[0, 1]}).and_return(passwd_s_status)
+        rpm_status = mock("Mixlib::ShellOut command", :exitstatus => 0, :stdout => "passwd-0.73-2\n", :stderr => "")
+        @provider.should_receive(:shell_out!).with("rpm -q passwd").and_return(rpm_status)
         lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
       end
 
-      it "should raise a Chef::Exceptions::User if passwd -S exits with something other than 0 or 1 on #{os}" do
+      it "should raise a ShellCommandFailed exception if passwd -S exits with something other than 0 or 1 on #{os}" do
         @node.automatic_attrs[:platform] = os
-        @status.should_receive(:exitstatus).twice.and_return(2)
-        lambda { @provider.check_lock }.should raise_error(Chef::Exceptions::User)
+        @provider.should_receive(:shell_out!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+        lambda { @provider.check_lock }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
       end
     end
   end
 
   describe "when locking the user" do
     it "should run usermod -L with the new resources username" do
-      @provider.should_receive(:run_command).with({ :command => "usermod -L #{@new_resource.username}"})
+      @provider.should_receive(:shell_out!).with("usermod -L #{@new_resource.username}")
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run usermod -L with the new resources username" do
-      @provider.should_receive(:run_command).with({ :command => "usermod -U #{@new_resource.username}"})
+      @provider.should_receive(:shell_out!).with("usermod -U #{@new_resource.username}")
       @provider.unlock_user
     end
   end
