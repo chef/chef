@@ -6,6 +6,7 @@ gem "activesupport", :group => :compat_testing, :platform => "ruby"
 
 group(:docgen) do
   gem "ronn"
+  gem "yard"
 end
 
 group(:development, :test) do
