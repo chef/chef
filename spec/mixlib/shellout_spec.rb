@@ -326,6 +326,7 @@ describe Mixlib::ShellOut do
         it "should evaluate the options" do
           shell_cmd.cwd.should eql('/tmp')
           shell_cmd.user.should eql('nobody')
+          shell_cmd.password.should eql('something')
         end
       end
     end
