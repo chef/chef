@@ -118,5 +118,20 @@ end
 
 task :docs => "docs:all"
 
+begin
+  require 'yard'
+  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
+  namespace :yard do
+    desc "Create YARD documentation"
+
+    YARD::Rake::YardocTask.new(:html) do |t|
+      t.files = DOC_FILES
+      t.options = ['--format', 'html']
+    end
+  end
+
+rescue LoadError
+  puts "yard is not available. (sudo) gem install yard to generate yard documentation."
+end
 
 
