@@ -26,12 +26,7 @@ class Chef
       class ChefRepositoryFileSystemCookbooksDir < ChefRepositoryFileSystemEntry
         def initialize(name, parent, file_path)
           super(name, parent, file_path)
-          begin
-            @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
-          rescue Errno::EISDIR
-          rescue Errno::EACCES
-            # Work around a bug in Chefignore when chefignore is a directory
-          end
+          @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
         end
 
         attr_reader :chefignore
