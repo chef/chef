@@ -123,8 +123,7 @@ class Chef
       end
 
       def get_current_branch()
-        ref = git("symbolic-ref HEAD").stdout
-        ref.chomp.split('/')[2]
+        git("rev-parse --abbrev-ref HEAD").stdout
       end
 
       private
