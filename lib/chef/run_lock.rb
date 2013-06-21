@@ -58,7 +58,7 @@ class Chef
       unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
         # Another chef client running...
         runpid = runlock.read.strip.chomp
-        Chef::Log.info("Chef client #{runpid} is running, will wait for it to finish and then run.")
+        Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
         runlock.flock(File::LOCK_EX)
       end
       # We grabbed the run lock.  Save the pid.
