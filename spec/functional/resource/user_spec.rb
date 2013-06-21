@@ -49,6 +49,9 @@ describe Chef::Resource::User, :unix_only, :requires_root do
     File.open("/etc/shadow") {|f| f.read }
   end
 
+  def supports_quote_in_username?
+    OHAI_SYSTEM["platform_family"] == "debian"
+  end
 
   before do
     # Silence shell_out live stream
@@ -66,7 +69,7 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   after do
     begin
       pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel", "-f", "-r", username)
+      shell_out!("userdel", "-f", "-r", username, :returns => [0,12])
     rescue UserNotFound
       # nothing to remove
     end
@@ -134,6 +137,14 @@ describe Chef::Resource::User, :unix_only, :requires_root do
       #  default algorithm for the definition of the user's home directory.
 
       context "and the username contains a single quote" do
+        let(:skip) do
+          if supports_quote_in_username?
+            false
+          else
+            "Platform #{OHAI_SYSTEM["platform"]} not expected to support username w/ quote"
+          end
+        end
+
         let(:username) { "t'bilisi" }
 
         it "ensures the user exists" do
