@@ -66,7 +66,7 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   after do
     begin
       pw_entry # will raise if the user doesn't exist
-      shell_out!("userdel", "-f", "-r", username)
+      shell_out!("userdel", "-f", "-r", username, :returns => [0,12])
     rescue UserNotFound
       # nothing to remove
     end
