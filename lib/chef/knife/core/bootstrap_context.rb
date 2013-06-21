@@ -76,6 +76,7 @@ CONFIG
           if knife_config[:bootstrap_proxy]
             client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
             client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{no_proxy          "#{knife_config[:bootstrap_no_proxy]}"\n} if knife_config[:bootstrap_no_proxy]
           end
 
           if encrypted_data_bag_secret
