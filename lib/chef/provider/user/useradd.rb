@@ -112,7 +112,7 @@ class Chef
               if updating_home?
                 if managing_home_dir?
                   Chef::Log.debug("#{new_resource} managing the users home directory")
-                  opts << "-m" << "-d" << new_resource.home
+                  opts << "-d" << new_resource.home << "-m"
                 else
                   Chef::Log.debug("#{new_resource} setting home to #{new_resource.home}")
                   opts << "-d" << new_resource.home

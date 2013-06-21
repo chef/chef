@@ -105,7 +105,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set -m -d /homedir" do
-        provider.universal_options.should == %w[-m -d /wowaweea]
+        provider.universal_options.should == %w[-d /wowaweea -m]
         provider.useradd_options.should == []
       end
     end
@@ -118,7 +118,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should set -m -d /homedir" do
-        provider.universal_options.should eql(%w[-m -d /wowaweea])
+        provider.universal_options.should eql(%w[-d /wowaweea -m])
         provider.useradd_options.should == []
       end
     end
@@ -163,8 +163,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command.concat(["-p", 'abracadabra']) if supported_useradd_options.key?("password")
       command.concat([ "-s", '/usr/bin/zsh',
                        "-u", '1000',
-                       "-m",
                        "-d", '/Users/mud',
+                       "-m",
                        "adam" ])
       provider.should_receive(:shell_out!).with(*command).and_return(true)
       provider.create_user
@@ -203,11 +203,12 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     # CHEF-3423, -m must come before the username
+    # CHEF-4305, -d must come before -m to support CentOS/RHEL 5
     it "runs usermod with the computed command options" do
       command = ["usermod",
                   "-g", '23',
-                  "-m",
                   "-d", '/Users/mud',
+                  "-m",
                   "adam" ]
       provider.should_receive(:shell_out!).with(*command).and_return(true)
       provider.manage_user
@@ -217,8 +218,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       @new_resource.system(true)
       command = ["usermod",
                   "-g", '23',
-                  "-m",
                   "-d", '/Users/mud',
+                  "-m",
                   "adam" ]
       provider.should_receive(:shell_out!).with(*command).and_return(true)
       provider.manage_user
