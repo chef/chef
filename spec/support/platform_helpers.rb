@@ -1,3 +1,5 @@
+require 'fcntl'
+
 def ruby_19?
   !!(RUBY_VERSION =~ /^1.9/)
 end
@@ -44,6 +46,10 @@ end
 
 def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
+end
+
+def supports_cloexec?
+  Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
 end
 
 DEV_NULL = windows? ? 'NUL' : '/dev/null'
