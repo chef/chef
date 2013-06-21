@@ -57,8 +57,9 @@ class Chef
       create_path(File.dirname(runlock_file))
       @runlock = File.open(runlock_file,'w+')
       # if we support FD_CLOEXEC (linux, !windows), then use it.
+      # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not ruby-1.8.7/1.9.3
       if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
-        @runlock.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
+        runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
       end
       unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
         # Another chef client running...

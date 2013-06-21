@@ -168,6 +168,11 @@ describe Chef::RunLock do
       File.should exist(lockfile)
     end
 
+    it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+      run_lock.acquire
+      (run_lock.runlock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).should == Fcntl::FD_CLOEXEC
+    end
+
     it "allows only one chef client run per lockfile" do
       # First process, gets the lock and keeps it.
       p1 = fork do
