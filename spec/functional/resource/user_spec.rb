@@ -478,23 +478,40 @@ describe Chef::Resource::User, :unix_only, :requires_root do
       include_context "user exists for lock/unlock"
 
       before do
-        user_resource.run_action(:unlock)
+        begin
+          user_resource.run_action(:unlock)
+          @error = nil
+        rescue Exception => e
+          @error = e
+        end
       end
 
       context "and has no password" do
 
-        it "is marked as updated but doesn't modify the user (XXX)" do
-          # This should be an error instead; note that usermod still exits 0
-          # (which is probably why this case silently fails):
-          #
-          # DEBUG: ---- Begin output of usermod -U chef-functional-test ----
-          # DEBUG: STDOUT:
-          # DEBUG: STDERR: usermod: unlocking the user's password would result in a passwordless account.
-          # You should set a password with usermod -p to unlock this user's password.
-          # DEBUG: ---- End output of usermod -U chef-functional-test ----
-          # DEBUG: Ran usermod -U chef-functional-test returned 0
-          pw_entry.passwd.should == 'x'
-          shadow_password.should == "!"
+        # TODO: platform_family should be setup in spec_helper w/ tags
+        if OHAI_SYSTEM["platform_family"] == "suse"
+          # suse gets this right:
+          it "errors out trying to unlock the user" do
+            @error.should be_a(Mixlib::ShellOut::ShellCommandFailed)
+            @error.message.should include("Cannot unlock the password")
+          end
+        else
+
+          # borked on all other platforms:
+          it "is marked as updated but doesn't modify the user (XXX)" do
+            # This should be an error instead; note that usermod still exits 0
+            # (which is probably why this case silently fails):
+            #
+            # DEBUG: ---- Begin output of usermod -U chef-functional-test ----
+            # DEBUG: STDOUT:
+            # DEBUG: STDERR: usermod: unlocking the user's password would result in a passwordless account.
+            # You should set a password with usermod -p to unlock this user's password.
+            # DEBUG: ---- End output of usermod -U chef-functional-test ----
+            # DEBUG: Ran usermod -U chef-functional-test returned 0
+            @error.should be_nil
+            pw_entry.passwd.should == 'x'
+            shadow_password.should == "!"
+          end
         end
       end
 
