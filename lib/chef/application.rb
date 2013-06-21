@@ -91,6 +91,10 @@ class Chef::Application
       Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
     end
 
+    # Force client_fork to true iff we have been told to loop and have *not* been told
+    # anything else about client_fork.
+    Chef::Config[:client_fork] ||=
+      ( !Chef::Platform.windows? && Chef::Config[:interval] ) ? true : false
   end
 
   # Initialize and configure the logger.
@@ -175,7 +179,7 @@ class Chef::Application
   # Initializes Chef::Client instance and runs it
   def run_chef_client
     @chef_client = Chef::Client.new(
-      @chef_client_json, 
+      @chef_client_json,
       :override_runlist => config[:override_runlist]
     )
     @chef_client_json = nil
