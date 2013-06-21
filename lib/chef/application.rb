@@ -93,8 +93,10 @@ class Chef::Application
 
     # Force client_fork to true iff we have been told to loop and have *not* been told
     # anything else about client_fork.
-    Chef::Config[:client_fork] ||=
-      ( !Chef::Platform.windows? && Chef::Config[:interval] ) ? true : false
+    if Chef::Config[:client_fork].nil?
+      Chef::Config[:client_fork] =
+        ( !Chef::Platform.windows? && Chef::Config[:interval] ) ? true : false
+    end
   end
 
   # Initialize and configure the logger.
