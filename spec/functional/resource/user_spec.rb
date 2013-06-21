@@ -203,8 +203,15 @@ describe Chef::Resource::User, :unix_only, :requires_root do
           pw_entry.home.should == "/home/#{username}"
         end
 
-        it "does not create the home dir without `manage_home'" do
-          File.should_not exist("/home/#{username}")
+        if OHAI_SYSTEM["platform_family"] == "rhel"
+          # Inconsistent behavior. See: CHEF-2205
+          it "creates the home dir when not explicitly asked to on RHEL (XXX)" do
+            File.should exist("/home/#{username}")
+          end
+        else
+          it "does not create the home dir without `manage_home'" do
+            File.should_not exist("/home/#{username}")
+          end
         end
 
         context "and manage_home is enabled" do
