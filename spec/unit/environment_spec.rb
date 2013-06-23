@@ -263,7 +263,9 @@ describe Chef::Environment do
   describe "self.validate_cookbook_version" do
     it "should validate correct version numbers" do
       Chef::Environment.validate_cookbook_version("= 1.2.3").should == true
+      Chef::Environment.validate_cookbook_version("=1.2.3").should == true
       Chef::Environment.validate_cookbook_version(">= 0.0.3").should == true
+      Chef::Environment.validate_cookbook_version(">=0.0.3").should == true
       # A lone version is allowed, interpreted as implicit '='
       Chef::Environment.validate_cookbook_version("1.2.3").should == true
     end
@@ -271,9 +273,13 @@ describe Chef::Environment do
     it "should return false when an invalid version is given" do
       Chef::Environment.validate_cookbook_version(Chef::CookbookVersion.new("meta")).should == false
       Chef::Environment.validate_cookbook_version("= 1.2.3a").should == false
+      Chef::Environment.validate_cookbook_version("=1.2.3a").should == false
       Chef::Environment.validate_cookbook_version("= 1").should == false
+      Chef::Environment.validate_cookbook_version("=1").should == false
       Chef::Environment.validate_cookbook_version("= a").should == false
+      Chef::Environment.validate_cookbook_version("=a").should == false
       Chef::Environment.validate_cookbook_version("= 1.2.3.4").should == false
+      Chef::Environment.validate_cookbook_version("=1.2.3.4").should == false
     end
 
     describe "in solo mode" do

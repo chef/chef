@@ -20,8 +20,8 @@ require 'chef/version_constraint'
 
 describe Chef::VersionConstraint do
   describe "validation" do
-    bad_version = ["> >", ">= 1.2.z", "> 1.2.3 < 5.0", "> 1.2.3, < 5.0"]
-    bad_op = ["<3.0.1", ">$ 1.2.3", "! 3.4"]
+    bad_version = [">= 1.2.z", "> 1.2.3 < 5.0", "> 1.2.3, < 5.0"]
+    bad_op = ["> >", ">$ 1.2.3", "! 3.4"]
     o_error = Chef::Exceptions::InvalidVersionConstraint
     v_error = Chef::Exceptions::InvalidCookbookVersion
     bad_version.each do |s|
@@ -62,6 +62,18 @@ describe Chef::VersionConstraint do
   it "should work with Chef::Version classes" do
     vc = Chef::VersionConstraint.new("1.0")
     vc.version.should be_an_instance_of(Chef::Version)
+  end
+
+  it "should allow ops without space separator" do
+    Chef::VersionConstraint.new("=1.2.3").should eql(Chef::VersionConstraint.new("= 1.2.3"))
+    Chef::VersionConstraint.new(">1.2.3").should eql(Chef::VersionConstraint.new("> 1.2.3"))
+    Chef::VersionConstraint.new("<1.2.3").should eql(Chef::VersionConstraint.new("< 1.2.3"))
+    Chef::VersionConstraint.new(">=1.2.3").should eql(Chef::VersionConstraint.new(">= 1.2.3"))
+    Chef::VersionConstraint.new("<=1.2.3").should eql(Chef::VersionConstraint.new("<= 1.2.3"))
+  end
+
+  it "should allow ops with multiple spaces" do
+    Chef::VersionConstraint.new("=  1.2.3").should eql(Chef::VersionConstraint.new("= 1.2.3"))
   end
 
   describe "include?" do

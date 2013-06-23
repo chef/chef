@@ -502,6 +502,7 @@ describe Chef::Cookbook::Metadata do
       @meta.long_description "I have a long arm!"
       @meta.supports :ubuntu, "> 8.04"
       @meta.depends "bobo", "= 1.0"
+      @meta.depends "bubu", "=1.0"
       @meta.depends "bobotclown", "= 1.1"
       @meta.recommends "snark", "< 3.0"
       @meta.suggests "kindness", "> 2.0"
