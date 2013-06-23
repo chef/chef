@@ -21,7 +21,7 @@ class Chef
     DEFAULT_CONSTRAINT = ">= 0.0.0"
     STANDARD_OPS = %w(< > <= >=)
     OPS = %w(< > = <= >= ~>)
-    PATTERN = /^(#{OPS.join('|')}) (.+)$/
+    PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
     VERSION_CLASS = Chef::Version
 
     attr_reader :op, :version
