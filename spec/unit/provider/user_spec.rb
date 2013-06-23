@@ -152,11 +152,11 @@ describe Chef::Provider::User do
         @new_resource.password "some new password"
         Etc.stub!(:getpwnam).and_return(user)
       end
-      
+
       unless shadow_lib_unavail?
         context "and we have the ruby-shadow gem" do
           pending "and we are not root (rerun this again as root)", :requires_unprivileged_user => true 
-  
+
           context "and we are root", :requires_root => true do
             it "should pass assertions when ruby-shadow can be loaded" do
               @provider.action = 'create'
@@ -382,7 +382,6 @@ describe Chef::Provider::User do
     end
   end
 
-
   describe "action_lock" do
     before(:each) do
       @provider.stub!(:load_current_resource)
@@ -488,18 +487,6 @@ describe Chef::Provider::User do
   describe "action_unlock_user" do
     before(:each) do
       @provider.stub!(:load_current_resource)
-      # @node = Chef::Node.new
-      # @new_resource = mock("Chef::Resource::User", 
-      #   :null_object => true
-      # )
-      # @current_resource = mock("Chef::Resource::User", 
-      #   :null_object => true
-      # )
-      # @provider = Chef::Provider::User.new(@node, @new_resource)
-      # @provider.current_resource = @current_resource
-      # @provider.user_exists = true
-      # @provider.stub!(:locked?).and_return(true)
-      # @provider.stub!(:unlock_user).and_return(true)
     end
 
     it "should unlock the user if it exists and is locked" do
