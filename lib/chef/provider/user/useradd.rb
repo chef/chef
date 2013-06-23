@@ -78,11 +78,27 @@ class Chef
         end
 
         def lock_user
-          shell_out!("usermod -L #{@new_resource.username}")
+          shell_out!("usermod #{@new_resource.username} -e 1")
         end
 
         def unlock_user
+          shell_out!("usermod #{@new_resource.username} -p *")
+        end
+
+        def lock_pass
+          shell_out!("usermod -L #{@new_resource.username}")
+        end
+
+        def unlock_pass
           shell_out!("usermod -U #{@new_resource.username}")
+        end
+
+        def deprecated_lock
+          lock_pass
+        end
+
+        def deprecated_unlock
+          unlock_pass
         end
 
         def compile_command(base_command)

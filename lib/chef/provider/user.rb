@@ -99,7 +99,7 @@ class Chef
           a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." + 
                    "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
-        requirements.assert(:modify, :lock, :unlock) do |a|
+        requirements.assert(:modify, :lock, :unlock, :lock_user, :unlock_user, :lock_pass, :unlock_pass) do |a|
           a.assertion { @user_exists }
           a.failure_message(Chef::Exceptions::User, "Cannot modify user #{@new_resource} - does not exist!")
           a.whyrun("Assuming user #{@new_resource} would have been created")
@@ -168,6 +168,24 @@ class Chef
       end
 
       def action_lock
+        Chef::Log.warn("action :lock is deprecated and will be removed in a future version. Please use :lock_user or :lock_pass.")
+        deprecated_lock
+      end
+
+      def deprecated_lock
+        lock_user
+      end
+
+      def action_unlock
+        Chef::Log.warn("action :unlock is deprecated and will be removed in a future version. Please use :unlock_user or :unlock_pass.")
+        deprecated_unlock
+      end
+
+      def deprecated_unlock
+        unlock_user
+      end
+
+      def action_lock_user
         if locked?
           Chef::Log.debug("#{@new_resource} already locked - nothing to do")
         else
@@ -186,7 +204,7 @@ class Chef
         raise NotImplementedError
       end
 
-      def action_unlock
+      def action_unlock_user
         if locked?
           converge_by("unlock user #{@new_resource}") do
             unlock_user
@@ -198,6 +216,28 @@ class Chef
       end
 
       def unlock_user
+        raise NotImplementedError
+      end
+
+      def action_lock_pass
+        converge_by("unlock user password #{@new_resource}") do
+          lock_pass
+          Chef::Log.info("#{@new_resource} password locked")
+        end
+      end
+
+      def lock_pass
+        raise NotImplementedError
+      end
+
+      def action_unlock_pass
+        converge_by("unlock user password #{@new_resource}") do
+          unlock_pass
+          Chef::Log.info("#{@new_resource} password unlocked")
+        end
+      end
+
+      def unlock_pass
         raise NotImplementedError
       end
 

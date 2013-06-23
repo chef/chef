@@ -44,7 +44,7 @@ class Chef
           :manage_home => false,
           :non_unique => false
         }
-        @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock)
+        @allowed_actions.push(:create, :remove, :modify, :manage, :lock, :unlock, :lock_pass, :unlock_pass, :lock_user, :unlock_user)
       end
       
       def username(arg=nil)

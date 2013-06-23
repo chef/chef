@@ -387,16 +387,92 @@ describe Chef::Provider::User do
     before(:each) do
       @provider.stub!(:load_current_resource)
     end
+
+    it "should emit a deprecation notice and call lock_user" do
+      Chef::Log.should_receive(:warn).with("action :lock is deprecated and will be removed in a future version. Please use :lock_user or :lock_pass.")
+      @provider.should_receive(:deprecated_lock).and_return(true)
+      @provider.action_lock
+    end
+
+    it "should raise a Chef::Exceptions::User for a user that does not exist" do
+      @provider.user_exists = false
+      @provider.action = :lock
+      lambda { @provider.run_action }.should raise_error(Chef::Exceptions::User)
+    end
+  end
+
+  describe "action_unlock" do
+    before(:each) do
+      @provider.stub!(:load_current_resource)
+    end
+
+    it "should emit a deprecation notice and call unlock_user" do
+      Chef::Log.should_receive(:warn).with("action :unlock is deprecated and will be removed in a future version. Please use :unlock_user or :unlock_pass.")
+      @provider.should_receive(:deprecated_unlock).and_return(true)
+      @provider.action_unlock
+    end
+
+    it "should raise a Chef::Exceptions::User for a user that does not exist" do
+      @provider.user_exists = false
+      @provider.action = :unlock
+      lambda { @provider.run_action }.should raise_error(Chef::Exceptions::User)
+    end
+  end
+
+  describe "action_lock_pass" do
+    before(:each) do
+      @provider.stub!(:load_current_resource)
+    end
+
+    it "should lock the user password if it exists" do
+      @provider.should_receive(:unlock_pass).and_return(true)
+      @provider.action_unlock_pass
+    end
+
+    it "should raise a Chef::Exceptions::User unlock the password for a user that does not exist" do
+      @provider.user_exists = false
+      @provider.action = :lock_pass
+      lambda { @provider.run_action }.should raise_error(Chef::Exceptions::User)
+    end
+  end
+
+  describe "action_unlock_pass" do
+    before(:each) do
+      @provider.stub!(:load_current_resource)
+    end
+
+    it "should unlock the user password if it exists" do
+      @provider.should_receive(:unlock_pass).and_return(true)
+      @provider.action_unlock_pass
+    end
+
+    it "should raise a Chef::Exceptions::User unlock the password for a user that does not exist" do
+      @provider.user_exists = false
+      @provider.action = :unlock_pass
+      lambda { @provider.run_action }.should raise_error(Chef::Exceptions::User)
+    end
+  end
+
+  describe "action_lock_user" do
+    before(:each) do
+      @provider.stub!(:load_current_resource)
+    end
+
+    it "should do nothing if user is already locked" do
+      @provider.stub!(:locked?).and_return(true)
+      @provider.should_not_receive(:lock_user)
+      @provider.action_lock_user
+    end
     it "should lock the user if it exists and is unlocked" do
       @provider.stub!(:locked?).and_return(false)
       @provider.should_receive(:lock_user).and_return(true)
-      @provider.action_lock
+      @provider.action_lock_user
     end
 
     it "should set the new resources updated flag to true if lock_user is called" do
       @provider.stub!(:locked?).and_return(false)
       @provider.should_receive(:lock_user)
-      @provider.action_lock
+      @provider.action_lock_user
       @provider.set_updated_status
       @new_resource.should be_updated
     end
@@ -409,7 +485,7 @@ describe Chef::Provider::User do
     end
   end
 
-  describe "action_unlock" do
+  describe "action_unlock_user" do
     before(:each) do
       @provider.stub!(:load_current_resource)
       # @node = Chef::Node.new
@@ -429,14 +505,14 @@ describe Chef::Provider::User do
     it "should unlock the user if it exists and is locked" do
       @provider.stub!(:locked?).and_return(true)
       @provider.should_receive(:unlock_user).and_return(true)
-      @provider.action_unlock
+      @provider.action_unlock_user
       @provider.set_updated_status
       @new_resource.should be_updated
     end
 
     it "should raise a Chef::Exceptions::User if we try and unlock a user that does not exist" do
       @provider.user_exists = false
-      @provider.action = :unlock
+      @provider.action = :unlock_user
       lambda { @provider.run_action }.should raise_error(Chef::Exceptions::User)
     end
   end
@@ -463,6 +539,20 @@ describe Chef::Provider::User do
       Etc.should_receive(:getgrnam).with("999").and_return(@group)
       @provider.convert_group_name
       @new_resource.gid.should == 999
+    end
+  end
+
+  describe "deprecated_lock" do
+    it "should call lock_user" do
+      @provider.should_receive(:lock_user).and_return(true)
+      @provider.deprecated_lock
+    end
+  end
+
+  describe "deprecated_unlock" do
+    it "should call lock_user" do
+      @provider.should_receive(:unlock_user).and_return(true)
+      @provider.deprecated_unlock
     end
   end
 end

@@ -313,17 +313,45 @@ describe Chef::Provider::User::Useradd do
     end
   end
 
+  describe "when using the deprecated lock method" do
+    it "should lock the password" do
+      @provider.should_receive(:lock_pass).and_return(true)
+      @provider.deprecated_lock
+    end
+  end
+
+  describe "when using the deprecated unlock method" do
+    it "should lock the password" do
+      @provider.should_receive(:unlock_pass).and_return(true)
+      @provider.deprecated_unlock
+    end
+  end
+
   describe "when locking the user" do
-    it "should run usermod -L with the new resources username" do
-      @provider.should_receive(:shell_out!).with("usermod -L #{@new_resource.username}")
+    it "should run usermod -e 1 with the new resources username" do
+      @provider.should_receive(:shell_out!).with("usermod #{@new_resource.username} -e 1")
       @provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
+    it "should run usermod -p * with the new resources username" do
+      @provider.should_receive(:shell_out!).with("usermod #{@new_resource.username} -p *")
+      @provider.unlock_user
+    end
+  end
+
+  describe "when locking the password" do
+    it "should run usermod -L with the new resources username" do
+      @provider.should_receive(:shell_out!).with("usermod -L #{@new_resource.username}")
+      @provider.lock_pass
+    end
+  end
+
+  describe "when unlocking the password" do
     it "should run usermod -L with the new resources username" do
       @provider.should_receive(:shell_out!).with("usermod -U #{@new_resource.username}")
-      @provider.unlock_user
+      @provider.unlock_pass
     end
   end
 

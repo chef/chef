@@ -341,17 +341,17 @@ describe Chef::Provider::User::Solaris do
     end
   end
 
-  describe "when locking the user" do
+  describe "when locking the password" do
     it "should run usermod -L with the new resources username" do
       @provider.should_receive(:shell_out!).with("usermod -L #{@new_resource.username}")
-      @provider.lock_user
+      @provider.lock_pass
     end
   end
 
-  describe "when unlocking the user" do
+  describe "when unlocking the password" do
     it "should run usermod -L with the new resources username" do
       @provider.should_receive(:shell_out!).with("usermod -U #{@new_resource.username}")
-      @provider.unlock_user
+      @provider.unlock_pass
     end
   end
 
