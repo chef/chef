@@ -19,22 +19,94 @@
 require 'spec_helper'
 require 'functional/resource/batch_spec.rb'
 
-describe Chef::Resource::WindowsScript::Powershell, :windows_only do
-  let(:script_content) { "whoami" }
-
+describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
+  let(:successful_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe" }
+  let(:failed_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe /badargument" }
+  let(:processor_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTURE" }
+  let(:native_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTUREW6432" }  
   let!(:resource) do
-    r = Chef::Resource::WindowsScript::Powershell.new("Powershell resource functional test", run_context)
-    r.code(script_content)
+    r = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", run_context)
+    r.code(successful_executable_script_content)
     r
   end
+
+  before(:each) do
+    resource.architecture nil
+  end
+  
 
   include_context Chef::Resource::WindowsScript    
   
   context "when the run action is invoked on Windows" do
     it "executes the script code" do
-      resource.code(script_content + " > #{script_output_path}")
+      resource.code(successful_executable_script_content + " > #{script_output_path}")
       resource.returns(0)
       resource.run_action(:run)
     end
-  end  
+
+    it "executes a script with a 64-bit process on a 64-bit OS, otherwise a 32-bit process" do
+      resource.code(native_architecture_script_content + " > #{script_output_path}")
+      resource.returns(0)
+      resource.run_action(:run)
+
+      source_contains_case_insensitive_content?( get_script_output, ENV['PROCESSOR_ARCHITECTURE'] )
+    end
+  end
+
+  context "when running on a 32-bit version of Windows", :windows32_only do
+
+    it "executes a script with a 32-bit process if a processor architecture :i386 is specified" do
+      resource.code(native_architecture_script_content + " > #{script_output_path}")
+      resource.architecture(:i386)
+      resource.returns(0)
+      resource.run_action(:run)
+
+      source_contains_case_insensitive_content?( get_script_content, 'x86' )
+    end
+
+    it "executes raises an exception if :x86_64 process architecture is specified" do
+      resource.code(native_architecture_script_content + " > #{script_output_path}")
+      resource.architecture(:x86_64)
+      resource.returns(0)
+      resource.run_action(:run).should raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+
+      source_contains_case_insensitive_content?( get_script_output, 'x86' )
+    end
+  end
+
+  context "when running on a 64-bit version of Windows", :windows64_only do
+    it "executes a script with a 64-bit process if :x86_64 arch is specified" do
+      resource.code(native_architecture_script_content + " > #{script_output_path}")
+      resource.architecture(:x86_64)
+      resource.returns(0)
+      resource.run_action(:run)
+
+      source_contains_case_insensitive_content?( get_script_output, 'x64' )
+    end
+    
+    it "executes a script with a 32-bit process if :i386 arch is specified" do
+      resource.code(native_architecture_script_content + " > #{script_output_path}")
+      resource.architecture(:i386)
+      resource.returns(0)
+      resource.run_action(:run)
+
+      source_contains_case_insensitive_content?( get_script_output, 'x86' )
+    end
+  end
+  
+
+  def get_script_output
+    script_output = nil
+    
+    ::File.open(script_output_path) do | output_file |
+      script_output = output_file.read
+      output_file.close
+    end
+
+    script_output
+  end
+
+  def source_contains_case_insensitive_content?( source, content )
+    source.downcase.include?(content.downcase)
+  end
 end
