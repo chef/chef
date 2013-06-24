@@ -154,6 +154,13 @@ class Chef
         end
       end
 
+      # Implementation components *should* follow symlinks when managing access
+      # control (e.g., use chmod instead of lchmod even if the path we're
+      # managing is a symlink).
+      def manage_symlink_access?
+        false
+      end
+
       private
 
       def content
