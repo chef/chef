@@ -398,5 +398,35 @@ E
     @first_resource.should be_updated
   end
 
+  it "should not run delayed notifications if run failed and notify_on_failure is set to false" do
+
+    Chef::Config[:notify_on_failure] = false
+    @first_resource.action = :nothing
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    third_resource = FailureResource.new("explode", @run_context)
+    second_resource.action = :purr
+    second_resource.notifies(:purr, @first_resource, :delayed)
+
+    @run_context.resource_collection << second_resource
+    @run_context.resource_collection << third_resource
+
+    expect{@runner.converge}.to raise_error(FailureProvider::ChefClientFail)
+    expect(@first_resource).to_not be_updated
+  end
+
+  it "should run delayed notifications if run failed and notify_on_failure is set to true" do
+    Chef::Config[:notify_on_failure] = true
+    @first_resource.action = :nothing
+    second_resource = Chef::Resource::Cat.new("peanut", @run_context)
+    second_resource.notifies(:purr, @first_resource, :delayed)
+    third_resource = FailureResource.new("explode", @run_context)
+    second_resource.action = :purr
+
+    @run_context.resource_collection << second_resource
+    @run_context.resource_collection << third_resource
+
+    expect{@runner.converge}.to raise_error(FailureProvider::ChefClientFail)
+    expect(@first_resource).to be_updated
+  end
 end
 

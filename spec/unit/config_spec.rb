@@ -243,6 +243,10 @@ describe Chef::Config do
     end
   end
 
+  it "sets the notify_on_failure to true by default" do
+    expect(Chef::Config[:notify_on_failure]).to be_true
+  end
+
   describe "Chef::Config[:encrypted_data_bag_secret]" do
     db_secret_default_path =
       Chef::Config.platform_specific_path("/etc/chef/encrypted_data_bag_secret")
