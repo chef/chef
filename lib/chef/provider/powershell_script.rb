@@ -20,7 +20,7 @@ require 'chef/provider/windows_script'
 
 class Chef
   class Provider
-    class Powershell < Chef::Provider::WindowsScript
+    class PowershellScript < Chef::Provider::WindowsScript
 
       def initialize (new_resource, run_context)
         super(new_resource, run_context, '.ps1')

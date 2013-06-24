@@ -17,7 +17,7 @@
 #
 
 require 'spec_helper'
-describe Chef::Provider::Powershell, "action_run" do
+describe Chef::Provider::PowershellScript, "action_run" do
 
   before(:each) do
     @node = Chef::Node.new
@@ -26,9 +26,9 @@ describe Chef::Provider::Powershell, "action_run" do
     @node.default["kernel"][:machine] = :x86_64.to_s
     
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource = Chef::Resource::Powershell.new('run some powershell code', @run_context)
+    @new_resource = Chef::Resource::PowershellScript.new('run some powershell code', @run_context)
 
-    @provider = Chef::Provider::Powershell.new(@new_resource, @run_context)
+    @provider = Chef::Provider::PowershellScript.new(@new_resource, @run_context)
   end
 
   it "should set the -command flag as the last flag" do
