@@ -347,10 +347,19 @@ describe Chef::Resource::User, :unix_only, :requires_root do
           let(:existing_manage_home) { false }
           let(:manage_home) { true }
 
-          it "does not create the home directory in the desired location (XXX)" do
-            # This behavior seems contrary to expectation and non-convergent.
-            File.should_not exist("/home/foo")
-            File.should_not exist("/home/bar")
+          if OHAI_SYSTEM["platform_family"] == "rhel"
+            # Inconsistent behavior. See: CHEF-2205
+            it "created the home dir b/c of CHEF-2205 so it still exists" do
+              # This behavior seems contrary to expectation and non-convergent.
+              File.should_not exist("/home/foo")
+              File.should exist("/home/bar")
+            end
+          else
+            it "does not create the home dir in the desired location (XXX)" do
+              # This behavior seems contrary to expectation and non-convergent.
+              File.should_not exist("/home/foo")
+              File.should_not exist("/home/bar")
+            end
           end
         end
 
