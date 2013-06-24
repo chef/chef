@@ -55,22 +55,20 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   context "when running on a 32-bit version of Windows", :windows32_only do
 
-    it "executes a script with a 32-bit process if a processor architecture :i386 is specified" do
+    it "executes a script with a 32-bit process if process architecture :i386 is specified" do
       resource.code(native_architecture_script_content + " > #{script_output_path}")
       resource.architecture(:i386)
       resource.returns(0)
       resource.run_action(:run)
 
-      source_contains_case_insensitive_content?( get_script_content, 'x86' )
+      source_contains_case_insensitive_content?( get_script_output, 'x86' )
     end
 
-    it "executes raises an exception if :x86_64 process architecture is specified" do
-      resource.code(native_architecture_script_content + " > #{script_output_path}")
-      resource.architecture(:x86_64)
-      resource.returns(0)
-      resource.run_action(:run).should raise_error Chef::Exceptions::Win32ArchitectureIncorrect
-
-      source_contains_case_insensitive_content?( get_script_output, 'x86' )
+    it "raises an exception if :x86_64 process architecture is specified" do
+      begin
+        resource.architecture(:x86_64).should raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+      rescue Chef::Exceptions::Win32ArchitectureIncorrect
+      end
     end
   end
 
