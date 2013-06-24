@@ -39,7 +39,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   #array index duals as structure offset
   USER_INFO_3 = [
     [:name, nil],
-    [:password, nil],
+    [:password, ""],
     [:password_age, 0],
     [:priv, 0], #"The NetUserAdd and NetUserSetInfo functions ignore this member"
     [:home_dir, nil],
@@ -183,12 +183,14 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def disable_account
     user_modify do |user|
       user[:flags] |= UF_ACCOUNTDISABLE
+      user[:password] = nil
     end
   end
 
   def enable_account
     user_modify do |user|
       user[:flags] &= ~UF_ACCOUNTDISABLE
+      user[:password] = nil
     end
   end
 
