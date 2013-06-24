@@ -186,6 +186,20 @@
             "i686"
         ]
     ],
+    "build_os=freebsd-9-1,machine_architecture=x64,role=oss-builder": [
+        [
+            "freebsd",
+            "9",
+            "amd64"
+         ]
+    ],
+    "build_os=freebsd-9-1,machine_architecture=x86,role=oss-builder": [
+        [
+            "freebsd",
+            "9",
+            "i386"
+         ]
+    ],
     "build_os=windows-2008r2,machine_architecture=x64,role=oss-builder": [
 	[
 	    "windows",
