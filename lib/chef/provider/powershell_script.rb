@@ -37,7 +37,7 @@ class Chef
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
       def NormalizeScriptExitStatus( code )
-        @code = EXIT_STATUS_RESET_SCRIPT + code + EXIT_STATUS_NORMALIZATION_SCRIPT
+        @code = (! code.nil?) ? ( EXIT_STATUS_RESET_SCRIPT + code + EXIT_STATUS_NORMALIZATION_SCRIPT ) : nil
       end
 
       public

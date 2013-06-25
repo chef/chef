@@ -31,8 +31,8 @@ describe Chef::Provider::PowershellScript, "action_run" do
     @provider = Chef::Provider::PowershellScript.new(@new_resource, @run_context)
   end
 
-  it "should set the -command flag as the last flag" do
-    @provider.flags.split(' ').pop.should == "-Command"
+  it "should set the -File flag as the last flag" do
+    @provider.flags.split(' ').pop.should == "-File"
   end
 
 end
