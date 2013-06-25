@@ -102,19 +102,15 @@ class Chef
           end
         end
 
-        # Make sure if the destination already exists that it is a normal file
-        #   for :create_if_missing, we're assuming the user wanted to avoid blowing away the non-file here
-        #   for :touch, we can modify perms of whatever is at this path, regardless of its type
-        #   for :delete, we can blow away whatever is here, regardless of its type
-        #   for :create, we have a problem with devining the users intent, so we raise an exception
-        unless @new_resource.force_unlink
-          requirements.assert(:create) do |a|
-            # File should either not exist or be a real file in order
-            # to match this assertion.
-            a.assertion { !::File.exists?(@new_resource.path) || real_file?(@new_resource.path) }
-            a.failure_message(Chef::Exceptions::FileTypeMismatch, "File #{@new_resource.path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove")
-            a.whyrun("Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource")
-          end
+        error, reason, whyrun_message = inspect_existing_fs_entry
+        requirements.assert(:create) do |a|
+          a.assertion { error.nil? }
+          a.failure_message(error, reason)
+          a.whyrun(whyrun_message)
+          # Subsequent attempts to read the fs entry at the path (e.g., for
+          # calculating checksums) could blow up, so give up trying to continue
+          # why-running.
+          a.block_action!
         end
       end
 
@@ -163,6 +159,85 @@ class Chef
 
       private
 
+      # Handles resource requirements for action :create when some fs entry
+      # already exists at the destination path. For actions other than create,
+      # we don't care what kind of thing is at the destination path because:
+      # * for :create_if_missing, we're assuming the user wanted to avoid blowing away the non-file here
+      # * for :touch, we can modify perms of whatever is at this path, regardless of its type
+      # * for :delete, we can blow away whatever is here, regardless of its type
+      #
+      # For the action :create case, we need to deal with user-selectable
+      # behavior to see if we're in an error condition.
+      # * If there's no file at the destination path currently, we're cool to
+      #   create it.
+      # * If the fs entry that currently exists at the destination is a regular
+      #   file, we're cool to update it with new content.
+      # * If the fs entry is a symlink AND the resource has
+      #   `manage_symlink_source` enabled, we need to verify that the symlink is
+      #   a valid pointer to a real file. If it is, we can manage content and
+      #   permissions on the symlink source, otherwise, error.
+      # * If `manage_symlink_source` is not enabled, fall through.
+      # * If force_unlink is true, action :create will unlink whatever is in the way.
+      # * If force_unlink is false, we're in an exceptional situation, so we
+      #   want to error.
+      #
+      # Note that this method returns values to be used with requirement
+      # assertions, which then decide whether or not to raise or issue a
+      # warning for whyrun mode.
+      def inspect_existing_fs_entry
+        path = @new_resource.path
+
+        if !l_exist?(path)
+          [nil, nil, nil]
+        elsif real_file?(path)
+          [nil, nil, nil]
+        elsif file_class.symlink?(path) && @new_resource.manage_symlink_source
+          verify_symlink_sanity(path)
+        elsif file_class.symlink?(@new_resource.path) && @new_resource.manage_symlink_source.nil?
+          Chef::Log.warn("File #{path} managed by #{@new_resource} is really a symlink. Managing the source file instead.")
+          Chef::Log.warn("Disable this warning by setting `manage_symlink_source true` on the resource")
+          Chef::Log.warn("In a future Chef release, 'manage_symlink_source' will not be enabled by default")
+          verify_symlink_sanity(path)
+        elsif @new_resource.force_unlink
+          [nil, nil, nil]
+        else
+          [ Chef::Exceptions::FileTypeMismatch,
+            "File #{path} exists, but is a #{file_type_string(@new_resource.path)}, set force_unlink to true to remove",
+            "Assuming #{file_type_string(@new_resource.path)} at #{@new_resource.path} would have been removed by a previous resource"
+          ]
+        end
+      end
+
+      # Returns values suitable for use in a requirements assertion statement
+      # when managing symlink source. If we're managing symlink source we can
+      # hit 3 error cases:
+      # 1. Symlink to nowhere: File.realpath(symlink) -> raise Errno::ENOENT
+      # 2. Symlink loop: File.realpath(symlink) -> raise Errno::ELOOP
+      # 3. Symlink to not-a-real-file: File.realpath(symlink) -> (directory|blockdev|etc.)
+      # If any of the above apply, returns a 3-tuple of Exception class,
+      # exception message, whyrun message; otherwise returns a 3-tuple of nil.
+      def verify_symlink_sanity(path)
+        real_path = ::File.realpath(path)
+        if real_file?(real_path)
+          [nil, nil, nil]
+        else
+          [ Chef::Exceptions::FileTypeMismatch,
+            "File #{path} exists, but is a symlink to #{real_path} which is a #{file_type_string(real_path)}. " +
+            "Disable manage_symlink_source and set force_unlink to remove it.",
+            "Assuming symlink #{path} or source file #{real_path} would have been fixed by a previous resource"
+          ]
+        end
+      rescue Errno::ELOOP
+        [ Chef::Exceptions::InvalidSymlink,
+          "Symlink at #{path} (pointing to #{::File.readlink(path)}) exists but attempting to resolve it creates a loop",
+          "Assuming symlink loop would be fixed by a previous resource" ]
+      rescue Errno::ENOENT
+        [ Chef::Exceptions::InvalidSymlink,
+          "Symlink at #{path} (pointing to #{::File.readlink(path)}) exists but attempting to resolve it leads to a nonexistent file",
+          "Assuming symlink source would be created by a previous resource" ]
+      end
+
+
       def content
         @content ||= begin
            load_current_resource if @current_resource.nil?
@@ -191,6 +266,12 @@ class Chef
 
       def real_file?(path)
         !file_class.symlink?(path) && ::File.file?(path)
+      end
+
+      # Similar to File.exist?, but also returns true in the case that the
+      # named file is a broken symlink.
+      def l_exist?(path)
+        ::File.exist?(path) || file_class.symlink?(path)
       end
 
       def unlink(path)
@@ -246,7 +327,7 @@ class Chef
 
       def update_file_contents
         do_backup unless file_created?
-        deployment_strategy.deploy(tempfile.path, @new_resource.path)
+        deployment_strategy.deploy(tempfile.path, ::File.realpath(@new_resource.path))
         Chef::Log.info("#{@new_resource} updated file contents #{@new_resource.path}")
         @new_resource.checksum(checksum(@new_resource.path)) # for reporting
       end
@@ -280,7 +361,7 @@ class Chef
         if resource_updated? && Chef::Config[:enable_selinux_file_permission_fixup]
           if selinux_enabled?
             converge_by("restore selinux security context") do
-              restore_security_context(@new_resource.path, recursive)
+              restore_security_context(::File.realpath(@new_resource.path), recursive)
             end
           else
             Chef::Log.debug "selinux utilities can not be found. Skipping selinux permission fixup."
