@@ -92,3 +92,16 @@ describe Chef::Provider::Group::Windows do
     end
   end
 end
+
+describe Chef::Provider::Group::Windows, "NetGroup" do
+  before do
+    @node = Chef::Node.new
+    @events = Chef::EventDispatch::Dispatcher.new
+    @run_context = Chef::RunContext.new(@node, {}, @events)
+    @new_resource = Chef::Resource::Group.new("Remote Desktop Users")
+  end
+  it 'sets group_name correctly' do
+    Chef::Util::Windows::NetGroup.should_receive(:new).with("Remote Desktop Users")
+    Chef::Provider::Group::Windows.new(@new_resource, @run_context)
+  end
+end
