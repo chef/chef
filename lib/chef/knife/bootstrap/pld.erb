@@ -1,4 +1,4 @@
-bash -c '
+sh -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
 if [ ! -f /usr/bin/chef-client ]; then
@@ -28,6 +28,14 @@ EOP
 <% end -%>
 <% end -%>
 
+# create client if none present
+if [ ! -e /etc/chef/client.rb ]; then
+cat > /etc/chef/client.rb <<'EOP'
+<%= config_content %>
+EOP
+fi
+
+# update existing config
 <% unless @chef_config[:validation_client_name] == "chef-validator" -%>
 [  `grep -qx "validation_client_name \"<%= @chef_config[:validation_client_name] %>\"" /etc/chef/client.rb` ] || echo "validation_client_name \"<%= @chef_config[:validation_client_name] %>\"" >> /etc/chef/client.rb
 <% end -%>
