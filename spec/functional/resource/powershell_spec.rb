@@ -31,9 +31,11 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
   let(:cmdlet_exit_code_success_content) { "get-item ." }
   let(:windows_process_exit_code_success_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe $env:systemroot" }
   let(:windows_process_exit_code_not_found_content) { "findstr /notavalidswitch" }
-  let(:arbitrary_nonzero_process_exit_code) { 314159265 }
+  # Note that process exit codes on 32-bit Win2k3 cannot
+  # exceed maximum value of signed integer
+  let(:arbitrary_nonzero_process_exit_code) { 4193 }
   let(:arbitrary_nonzero_process_exit_code_content) { "exit #{arbitrary_nonzero_process_exit_code}" }
-  let(:invalid_powershell_interpreter_flag) { "-thisflagisinvalid" }
+  let(:invalid_powershell_interpreter_flag) { "/thisflagisinvalid" }
   let(:valid_powershell_interpreter_flag) { "-Sta" }  
   let!(:resource) do
     r = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
