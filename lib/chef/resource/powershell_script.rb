@@ -16,20 +16,16 @@
 # limitations under the License.
 #
 
-require 'chef/provider/windows_script'
+require 'chef/resource/windows_script'
 
 class Chef
-  class Provider
-    class Powershell < Chef::Provider::WindowsScript
+  class Resource
+    class PowershellScript < Chef::Resource::WindowsScript
 
-      def initialize (new_resource, run_context)
-        super(new_resource, run_context, '.ps1')
+      def initialize(name, run_context=nil)
+        super(name, run_context, :powershell_script, "powershell.exe")
       end
       
-      def flags
-        @new_resource.flags.nil? ? '-ExecutionPolicy RemoteSigned -Command' : @new_resource.flags + '-ExecutionPolicy RemoteSigned -Command'
-      end
-        
     end
   end
 end
