@@ -37,9 +37,14 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   #[:symbol_name, default_val]
   #default_val duals as field type
   #array index duals as structure offset
+
+  #OC-8391
+  #Changing [:password, nil], to [:password, ""],
+  #if :password is set to nil, windows user creation api ignores the password policy applied
+  #thus initializing it with empty string value.
   USER_INFO_3 = [
     [:name, nil],
-    [:password, nil],
+    [:password, ""],
     [:password_age, 0],
     [:priv, 0], #"The NetUserAdd and NetUserSetInfo functions ignore this member"
     [:home_dir, nil],
@@ -183,12 +188,18 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   def disable_account
     user_modify do |user|
       user[:flags] |= UF_ACCOUNTDISABLE
+      #This does not set the password to nil. It (for some reason) means to ignore updating the field.
+      #please refer to https://github.com/jmccann/chef/commit/ff732aab4f7e79f215567bcc3dc4e4f7295207ee#commitcomment-3413715
+      user[:password] = nil
     end
   end
 
   def enable_account
     user_modify do |user|
       user[:flags] &= ~UF_ACCOUNTDISABLE
+      #This does not set the password to nil. It (for some reason) means to ignore updating the field.
+      #please refer to https://github.com/jmccann/chef/commit/ff732aab4f7e79f215567bcc3dc4e4f7295207ee#commitcomment-3413715
+      user[:password] = nil
     end
   end
 
