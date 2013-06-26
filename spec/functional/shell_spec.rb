@@ -18,8 +18,9 @@
 
 require 'spec_helper'
 require 'chef/version'
+require 'chef/shell'
 
-describe Chef::Shell do
+describe Shell do
 
   # chef-shell's unit tests are by necessity very mock-heavy, and frequently do
   # not catch cases where chef-shell fails to boot because of changes in

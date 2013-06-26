@@ -53,7 +53,12 @@ end
 
 require 'chef'
 require 'chef/knife'
-Chef::Knife.load_commands
+
+Dir['lib/chef/knife/**/*.rb'].
+  map {|f| f.gsub('lib/', '') }.
+  map {|f| f.gsub(%r[\.rb$], '') }.
+  each {|f| require f }
+
 require 'chef/mixins'
 require 'chef/dsl'
 require 'chef/application'
@@ -75,6 +80,7 @@ require 'spec/support/platform_helpers'
 Dir["spec/support/**/*.rb"].
   reject { |f| f =~ %r{^spec/support/platforms} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
+  map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
 
 RSpec.configure do |config|

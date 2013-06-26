@@ -205,17 +205,21 @@ class Chef
       end
 
       def stat
-        if File.symlink?(file)
+        if manage_symlink_attrs?
           @stat ||= File.lstat(file)
         else
           @stat ||= File.stat(file)
         end
       end
 
+      def manage_symlink_attrs?
+        @provider.manage_symlink_access?
+      end
+
       private
 
       def chmod(mode, file)
-        if File.symlink?(file)
+        if manage_symlink_attrs?
           begin
             File.lchmod(mode, file)
           rescue NotImplementedError
@@ -227,7 +231,7 @@ class Chef
       end
 
       def chown(uid, gid, file)
-        if ::File.symlink?(file)
+        if manage_symlink_attrs?
           File.lchown(uid, gid, file)
         else
           File.chown(uid, gid, file)
