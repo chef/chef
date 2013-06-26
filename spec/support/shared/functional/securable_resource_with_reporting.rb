@@ -1,4 +1,25 @@
 
+ALL_EXPANDED_PERMISSIONS = ["generic read",
+                            "generic write",
+                            "generic execute",
+                            "generic all",
+                            "delete",
+                            "read permissions",
+                            "change permissions",
+                            "take ownership",
+                            "synchronize",
+                            "access system security",
+                            "read data / list directory",
+                            "write data / add file",
+                            "append data / add subdirectory",
+                            "read extended attributes",
+                            "write extended attributes",
+                            "execute / traverse",
+                            "delete child",
+                            "read attributes",
+                            "write attributes"]
+
+
 shared_examples_for "a securable resource with reporting" do
 
   include_context "diff disabled"
@@ -239,26 +260,6 @@ shared_examples_for "a securable resource with reporting" do
     before do
       pending "windows reporting not yet fully supported"
     end
-
-    ALL_EXPANDED_PERMISSIONS = ["generic read",
-                                "generic write",
-                                "generic execute",
-                                "generic all",
-                                "delete",
-                                "read permissions",
-                                "change permissions",
-                                "take ownership",
-                                "synchronize",
-                                "access system security",
-                                "read data / list directory",
-                                "write data / add file",
-                                "append data / add subdirectory",
-                                "read extended attributes",
-                                "write extended attributes",
-                                "execute / traverse",
-                                "delete child",
-                                "read attributes",
-                                "write attributes"]
 
 
     context "when the target file doesn't exist" do
