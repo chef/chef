@@ -546,6 +546,42 @@ shared_examples_for "a configured file resource" do
 
       end
 
+      context "when the symlink points to a symlink which points to a real file" do
+
+        let(:wrong_content) { "this is the wrong content" }
+        let(:link_to_file_path) { File.join(CHEF_SPEC_DATA, "points-to-real-file") }
+        let(:link_to_link_path) { File.join(CHEF_SPEC_DATA, "points-to-next-link") }
+
+        before do
+          # point resource at link:
+          resource.path(link_to_link_path)
+          # create symlinks for test context
+          File.symlink(path, link_to_file_path)
+          File.symlink(link_to_file_path, link_to_link_path)
+
+          # Create source (real) file
+          File.open(path, "wb") { |f| f.write(wrong_content) }
+        end
+
+        include_context "setup broken permissions"
+
+        include_examples "a securable resource with existing target"
+
+        after(:each) do
+          # shared examples should not change our test setup of a file resource
+          # pointing at a symlink:
+          resource.path.should == link_to_link_path
+          FileUtils.rm_rf(link_to_file_path)
+          FileUtils.rm_rf(link_to_link_path)
+        end
+
+        it "does not replace the symlink with a real file" do
+          resource.run_action(:create)
+          File.should be_symlink(link_to_link_path)
+          File.should be_symlink(link_to_file_path)
+        end
+
+      end
     end
   end
 
