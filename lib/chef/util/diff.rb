@@ -75,8 +75,13 @@ class Chef
 
         begin
           # -u: Unified diff format
+          # LC_ALL: in ruby 1.9 we want to set nil which is a magic option to mixlib-shellout to
+          #         pass through the LC_ALL locale.  in ruby 1.8 we force to 7-bit 'C' locale
+          #         (which is the mixlib-shellout default for all rubies all the time).
           Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
-          result = shell_out("diff -u #{old_file} #{new_file}")
+          env = ( Object.const_defined? :Encoding ) ? nil : 'C'
+          result = shell_out("diff -u #{old_file} #{new_file}", :env => {'LC_ALL' => env})
+
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that
           # an exception can be thrown even using shell_out instead of shell_out!
@@ -94,8 +99,12 @@ class Chef
           if result.stdout.length > diff_output_threshold
             return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
-            @diff = result.stdout.split("\n")
-            @diff.delete("\\ No newline at end of file")
+            diff_str = result.stdout
+            if diff_str.respond_to?(:encoding)
+              # we will post this as JSON which needs UTF-8, so we force to UTF-8 here as part of the API
+              diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
+            end
+            @diff = diff_str.split("\n")
             return "(diff available)"
           end
         elsif !result.stderr.empty?
@@ -106,10 +115,17 @@ class Chef
       end
 
       def is_binary?(path)
-        ::File.open(path) do |file|
-          buff = file.read(Chef::Config[:diff_filesize_threshold])
+        File.open(path) do |file|
+          # NB: IO.read() returns ASCII-8BIT, we use File.readlines to get Encoding.default_external
+          # XXX: this slurps into RAM, but we should have already checked our diff has a reasonable size
+          buff = file.readlines.join
           buff = "" if buff.nil?
-          return buff !~ /^[\r[:print:]]*$/
+          begin
+            return buff !~ /\A[\s[:print:]]*\z/m
+          rescue ArgumentError => e
+            return true if e.message =~ /invalid byte sequence/
+            raise
+          end
         end
       end
 
