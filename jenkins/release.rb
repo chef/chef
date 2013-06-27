@@ -74,7 +74,9 @@ class ArtifactCollection
   end
 
   def package_paths
-    @package_paths ||= Dir['**/pkg/*'].reject {|path| path.include?("BUILD_VERSION") }
+    @package_paths ||= Dir['**/pkg/*'].
+      reject {|path| path.include?("BUILD_VERSION") }.
+      reject {|path| path.include?("metadata.json") }
   end
 
   def artifacts
@@ -409,8 +411,10 @@ E
 
     let(:directory_contents) do
       %w[
+        build_os=centos-5,machine_architecture=x64,role=oss-builder/pkg/demoproject-10.22.0-1.el5.x86_64.rpm.metadata.json
         build_os=centos-5,machine_architecture=x64,role=oss-builder/pkg/demoproject-10.22.0-1.el5.x86_64.rpm
         build_os=centos-5,machine_architecture=x64,role=oss-builder/pkg/BUILD_VERSION
+        build_os=centos-5,machine_architecture=x86,role=oss-builder/pkg/demoproject-10.22.0-1.el5.i686.rpm.metadata.json
         build_os=centos-5,machine_architecture=x86,role=oss-builder/pkg/demoproject-10.22.0-1.el5.i686.rpm
         build_os=centos-5,machine_architecture=x86,role=oss-builder/pkg/BUILD_VERSION
       ]
