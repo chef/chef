@@ -46,7 +46,7 @@ describe Chef::Knife::Exec do
 
   pending "executes a script in the context of the chef-shell main context", :ruby_18_only
 
-  it "executes a script in the context of the chef-shell main context", :ruby_19_only do
+  it "executes a script in the context of the chef-shell main context", :ruby_gte_19_only do
     @node = Chef::Node.new
     @node.name("ohai-world")
     response = {"rows" => [@node],"start" => 0,"total" => 1}

@@ -1,5 +1,17 @@
 require 'fcntl'
 
+def ruby_gte_20?
+  RUBY_VERSION.to_f >= 2.0
+end
+
+def ruby_gte_19?
+  RUBY_VERSION.to_f >= 1.9
+end
+
+def ruby_20?
+  !!(RUBY_VERSION =~ /^2.0/)
+end
+
 def ruby_19?
   !!(RUBY_VERSION =~ /^1.9/)
 end
