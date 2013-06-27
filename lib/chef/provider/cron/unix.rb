@@ -24,7 +24,7 @@ require 'chef/provider'
 class Chef
   class Provider
     class Cron
-      class Solaris < Chef::Provider::Cron
+      class Unix < Chef::Provider::Cron
 
         private
 

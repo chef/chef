@@ -20,7 +20,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Cron::Solaris do
+describe Chef::Provider::Cron::Unix do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -30,7 +30,7 @@ describe Chef::Provider::Cron::Solaris do
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
 
-    @provider = Chef::Provider::Cron::Solaris.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Cron::Unix.new(@new_resource, @run_context)
   end
 
   it "should inherit from Chef::Provider:Cron" do
