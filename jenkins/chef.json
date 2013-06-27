@@ -139,6 +139,7 @@
             "11.10",
             "x86_64"
         ]
+    ],
     "build_os=ubuntu-12-04,machine_architecture=x64,role=oss-builder": [
         [
             "ubuntu",
@@ -150,6 +151,7 @@
             "12.10",
             "x86_64"
         ]
+    ],
     "build_os=ubuntu-13-04,machine_architecture=x64,role=oss-builder": [
         [
             "ubuntu",
@@ -168,6 +170,7 @@
             "11.10",
             "i686"
         ]
+    ],
     "build_os=ubuntu-12-04,machine_architecture=x86,role=oss-builder": [
         [
             "ubuntu",
@@ -179,6 +182,7 @@
             "12.10",
             "i686"
         ]
+    ],
     "build_os=ubuntu-13-04,machine_architecture=x86,role=oss-builder": [
         [
             "ubuntu",
