@@ -759,7 +759,7 @@ class Chef
                 @rpmdb << pkg
               end
 
-              error = status.stderr.readlines
+              error = status.stderr
             rescue Mixlib::ShellOut::CommandTimeout => e
               Chef::Log.error("#{helper} exceeded timeout #{Chef::Config[:yum_timeout]}")
               raise(e)
