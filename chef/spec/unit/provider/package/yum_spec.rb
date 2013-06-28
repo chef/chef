@@ -39,7 +39,6 @@ describe Chef::Provider::Package::Yum do
     )
     Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
     @provider = Chef::Provider::Package::Yum.new(@new_resource, @run_context)
-    @stderr = StringIO.new
     @pid = mock("PID")
   end
 
@@ -542,7 +541,7 @@ describe Chef::Provider::Package::Yum do
     it "should call action_upgrade in the parent if the candidate version is nil" do
       @provider.load_current_resource
       @current_resource = Chef::Resource::Package.new('cups')
-      @provider.candidate_version = nil 
+      @provider.candidate_version = nil
       @provider.should_not_receive(:upgrade_package)
       @provider.action_upgrade
     end
@@ -1155,7 +1154,7 @@ describe Chef::Provider::Package::Yum::RPMDbPackage do
 
   describe "repoid" do
     it "should return the source repository repoid" do
-      @rpm_x.repoid.should be == "base" 
+      @rpm_x.repoid.should be == "base"
       @rpm_y.repoid.should be == "extras"
       @rpm_z.repoid.should be == "other"
     end
@@ -1544,7 +1543,10 @@ describe Chef::Provider::Package::Yum::YumCache do
   end
 
   before(:each) do
-    yum_dump_good_output = <<EOF
+    @stdin = mock("STDIN", :nil_object => true)
+    @stdout = mock("STDOUT", :nil_object => true)
+
+    @stdout_good = <<EOF
 [option installonlypkgs] kernel kernel-bigmem kernel-enterprise
 erlang-mochiweb 0 1.4.1 5.el5 x86_64 ['erlang-mochiweb = 1.4.1-5.el5', 'mochiweb = 1.4.1-5.el5'] i installed
 zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
@@ -1561,16 +1563,7 @@ znc-modtcl 0 0.098 1.el5 x86_64 [] a base
 znc-test.beta1 0 0.098 1.el5 x86_64 [] a extras
 znc-test.test.beta1 0 0.098 1.el5 x86_64 [] a base
 EOF
-
-    yum_dump_bad_output_separators = <<EOF
-zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
-zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] i base bad
-zlib-devel 0 1.2.3 3 i386 [] a extras
-bad zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] i installed
-znc-modtcl 0 0.098 1.el5 x86_64 [] a base bad
-EOF
-
-    yum_dump_bad_output_type = <<EOF
+    @stdout_bad_type = <<EOF
 zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
 zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] c base
 zlib-devel 0 1.2.3 3 i386 [] a extras
@@ -1578,33 +1571,21 @@ zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] bad installed
 znc-modtcl 0 0.098 1.el5 x86_64 [] a base
 EOF
 
-    yum_dump_error = <<EOF
+    @stdout_bad_separators = <<EOF
+zip 0 2.31 2.el5 x86_64 ['zip = 2.31-2.el5'] r base
+zlib 0 1.2.3 3 x86_64 ['zlib = 1.2.3-3', 'libz.so.1()(64bit)'] i base bad
+zlib-devel 0 1.2.3 3 i386 [] a extras
+bad zlib-devel 0 1.2.3 3 x86_64 ['zlib-devel = 1.2.3-3'] i installed
+znc-modtcl 0 0.098 1.el5 x86_64 [] a base bad
+EOF
+
+    @stdout_no_output = ""
+
+    @stderr = <<EOF
 yum-dump Config Error: File contains no section headers.
 file: file://///etc/yum.repos.d/CentOS-Base.repo, line: 12
 'qeqwewe\n'
 EOF
-
-    @stdin = mock("STDIN", :nil_object => true)
-    @stdout = mock("STDOUT", :nil_object => true)
-    @stdout_good = mock("STDOUT", :nil_object => true)
-    s = @stdout_good.stub!(:each_line)
-    yum_dump_good_output.split("\n").each do |line|
-      s.and_yield(line)
-    end
-    @stdout_bad_type = mock("STDOUT", :nil_object => true)
-    s = @stdout_bad_type.stub!(:each_line)
-    yum_dump_bad_output_type.split("\n").each do |line|
-      s.and_yield(line)
-    end
-    @stdout_bad_separators = mock("STDOUT", :nil_object => true)
-    s = @stdout_bad_separators.stub!(:each_line)
-    yum_dump_bad_output_separators.split("\n").each do |line|
-      s.and_yield(line)
-    end
-    @stdout_no_output = mock("STDOUT", :nil_object => true)
-    @stdout_no_output.stub!(:each_line).and_return(nil)
-    @stderr = mock("STDERR", :nil_object => true)
-    @stderr.stub!(:readlines).and_return(yum_dump_error.split("\n"))
     @status = mock("Status", :exitstatus => 0, :stdin => @stdin, :stdout => @stdout_good, :stderr => @stderr)
 
     # new singleton each time
@@ -1808,7 +1789,7 @@ EOF
     end
 
     it "should return nil when no match for package-version, no arch" do
-      @yc.package_repository("zisofs-tools", "pretend", nil).should be == nil 
+      @yc.package_repository("zisofs-tools", "pretend", nil).should be == nil
       @yc.package_repository("zisofs-tools", "pretend").should be == nil
       @yc.package_repository("pretend", "1.0.6-3.2.2").should be == nil
     end
