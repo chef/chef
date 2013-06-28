@@ -2,7 +2,8 @@
   rotate 12
   weekly
   compress
+  missingok
   postrotate
-    /etc/init.d/chef-expander condrestart >/dev/null || :
+    /etc/init.d/chef-expander restart >/dev/null || :
   endscript
 }
