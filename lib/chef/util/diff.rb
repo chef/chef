@@ -83,8 +83,8 @@ class Chef
           #         pass through the LC_ALL locale.  in ruby 1.8 we force to 7-bit 'C' locale
           #         (which is the mixlib-shellout default for all rubies all the time).
           Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
-          env = ( Object.const_defined? :Encoding ) ? nil : 'C'
-          result = shell_out("diff -u #{old_file} #{new_file}", :env => {'LC_ALL' => env})
+          locale = ( Object.const_defined? :Encoding ) ? nil : 'C'
+          result = shell_out("diff -u #{old_file} #{new_file}", :env => {'LC_ALL' => locale})
 
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that
