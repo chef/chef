@@ -18,7 +18,7 @@ describe "Chef Provider for Cron" do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Cron.new("Chef functional test cron", @run_context)
-    @new_resource.user "u0011729"
+    @new_resource.user  ohai[:current_user]
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
     
