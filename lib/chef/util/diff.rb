@@ -104,9 +104,14 @@ class Chef
             return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
             diff_str = result.stdout
-            if diff_str.respond_to?(:encoding)
-              # in ruby 1.9 diff_str will be ASCII-8BIT, in 2.0 it will be default_external (e.g. UTF-8)
-              # we will post this as JSON which needs UTF-8, so we force to UTF-8 here as part of the API
+            if  Object.const_defined? :Encoding  # ruby >= 1.9
+              if ( diff_str.encoding == Encoding::ASCII_8BIT &&
+                diff_str.encoding != Encoding.default_external &&
+                RUBY_VERSION.to_f < 2.0 )
+                # @todo mixlib-shellout under ruby 1.9 hands back an ASCII-8BIT encoded string, which needs to
+                # be fixed to the default external encoding -- this should be moved into mixlib-shellout
+                diff_str = diff_str.force_encoding(Encoding.default_external)
+              end
               diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
             end
             @diff = diff_str.split("\n")
