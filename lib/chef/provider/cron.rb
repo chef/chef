@@ -45,6 +45,7 @@ class Chef
         crontab_lines = []
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
         @current_resource.user(@new_resource.user)
+        @cron_exists = false
         if crontab = read_crontab
           cron_found = false
           crontab.each_line do |line|
