@@ -22,6 +22,10 @@ class Chef
     class Diff
       include Chef::Mixin::ShellOut
 
+      # @todo: to_a, to_s, to_json, inspect defs, accessors for @diff and @error
+      # @todo: move coercion to UTF-8 into to_json
+      # @todo: replace shellout to diff -u with diff-lcs gem
+
       def for_output
         # formatted output to a terminal uses arrays of strings and returns error strings
         @diff.nil? ? [ @error ] : @diff
@@ -101,6 +105,7 @@ class Chef
           else
             diff_str = result.stdout
             if diff_str.respond_to?(:encoding)
+              # in ruby 1.9 diff_str will be ASCII-8BIT, in 2.0 it will be default_external (e.g. UTF-8)
               # we will post this as JSON which needs UTF-8, so we force to UTF-8 here as part of the API
               diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
             end
