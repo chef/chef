@@ -56,7 +56,7 @@ class Chef
     def parse(str="")
       @major, @minor, @patch =
         case str.to_s
-        when /^(\d+)\.(\d+)\.(\d+)$/
+        when /^(\d+)\.(\d+)\.(\d+)(\.rc)(\.\d+)?$/
           [ $1.to_i, $2.to_i, $3.to_i ]
         when /^(\d+)\.(\d+)$/
           [ $1.to_i, $2.to_i, 0 ]
