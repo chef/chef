@@ -51,7 +51,7 @@ describe Chef::Knife::Exec do
     @node.name("ohai-world")
     response = {"rows" => [@node],"start" => 0,"total" => 1}
     @api.get(%r{^/search/node}, 200, response.to_json)
-    code = "$output.puts nodes.all.inspect"
+    code = "$output.puts nodes.all"
     @knife.config[:exec] = code
     @knife.run
     $output.string.should match(%r{node\[ohai-world\]})
