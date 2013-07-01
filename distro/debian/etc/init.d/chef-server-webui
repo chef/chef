@@ -21,7 +21,7 @@ MAINPID=/var/run/chef/server-webui.main.pid
 NAME=chef-server-webui
 DESC=chef-server-webui
 
-test -x $DAEMON || exit 0
+test -x $DAEMON || exit 1
 
 . /lib/lsb/init-functions
 
