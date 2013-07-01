@@ -126,9 +126,8 @@ class Chef
 
       def is_binary?(path)
         File.open(path) do |file|
-          # NB: IO.read() returns ASCII-8BIT, we use File.readlines to get Encoding.default_external
           # XXX: this slurps into RAM, but we should have already checked our diff has a reasonable size
-          buff = file.readlines.join
+          buff = file.read
           buff = "" if buff.nil?
           begin
             return buff !~ /\A[\s[:print:]]*\z/m
