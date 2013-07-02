@@ -22,6 +22,10 @@ class Chef
     class Diff
       include Chef::Mixin::ShellOut
 
+      # @todo: to_a, to_s, to_json, inspect defs, accessors for @diff and @error
+      # @todo: move coercion to UTF-8 into to_json
+      # @todo: replace shellout to diff -u with diff-lcs gem
+
       def for_output
         # formatted output to a terminal uses arrays of strings and returns error strings
         @diff.nil? ? [ @error ] : @diff
@@ -75,8 +79,13 @@ class Chef
 
         begin
           # -u: Unified diff format
+          # LC_ALL: in ruby 1.9 we want to set nil which is a magic option to mixlib-shellout to
+          #         pass through the LC_ALL locale.  in ruby 1.8 we force to 7-bit 'C' locale
+          #         (which is the mixlib-shellout default for all rubies all the time).
           Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
-          result = shell_out("diff -u #{old_file} #{new_file}")
+          locale = ( Object.const_defined? :Encoding ) ? nil : 'C'
+          result = shell_out("diff -u #{old_file} #{new_file}", :env => {'LC_ALL' => locale})
+
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that
           # an exception can be thrown even using shell_out instead of shell_out!
@@ -94,8 +103,18 @@ class Chef
           if result.stdout.length > diff_output_threshold
             return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
-            @diff = result.stdout.split("\n")
-            @diff.delete("\\ No newline at end of file")
+            diff_str = result.stdout
+            if  Object.const_defined? :Encoding  # ruby >= 1.9
+              if ( diff_str.encoding == Encoding::ASCII_8BIT &&
+                diff_str.encoding != Encoding.default_external &&
+                RUBY_VERSION.to_f < 2.0 )
+                # @todo mixlib-shellout under ruby 1.9 hands back an ASCII-8BIT encoded string, which needs to
+                # be fixed to the default external encoding -- this should be moved into mixlib-shellout
+                diff_str = diff_str.force_encoding(Encoding.default_external)
+              end
+              diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
+            end
+            @diff = diff_str.split("\n")
             return "(diff available)"
           end
         elsif !result.stderr.empty?
@@ -106,10 +125,16 @@ class Chef
       end
 
       def is_binary?(path)
-        ::File.open(path) do |file|
-          buff = file.read(Chef::Config[:diff_filesize_threshold])
+        File.open(path) do |file|
+          # XXX: this slurps into RAM, but we should have already checked our diff has a reasonable size
+          buff = file.read
           buff = "" if buff.nil?
-          return buff !~ /^[\r[:print:]]*$/
+          begin
+            return buff !~ /\A[\s[:print:]]*\z/m
+          rescue ArgumentError => e
+            return true if e.message =~ /invalid byte sequence/
+            raise
+          end
         end
       end
 
