@@ -44,6 +44,20 @@ build do
       @micro_version = versions[2]
       @build_version = build_version.split("-")[1] || self.project.build_iteration
 
+      # Find path in which chef gem is installed to.
+      # Note that install_dir is something like: c:\\opscode\\chef
+      chef_path_regex = "#{install_dir.gsub(File::ALT_SEPARATOR, File::SEPARATOR)}/**/gems/chef*"
+      chef_gem_paths = Dir[chef_path_regex].select{ |path| File.directory?(path) }
+      raise "Expected one but found #{chef_gem_paths.length} installation directories for chef gem using: #{chef_path_regex}. Found paths: #{chef_gem_paths.inspect}." unless chef_gem_paths.length == 1
+      @chef_gem_path = chef_gem_paths.first
+
+      # Convert the chef gem path to a relative path based on install_dir
+      # We are going to use this path in the startup command of chef
+      # service. So we need to change file seperators to make windows
+      # happy.
+      @chef_gem_path.gsub!(File::SEPARATOR, File::ALT_SEPARATOR)
+      @chef_gem_path.slice!(install_dir.gsub(File::SEPARATOR, File::ALT_SEPARATOR) + File::ALT_SEPARATOR)
+
       @guid = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 
       erb = ERB.new(file.read)

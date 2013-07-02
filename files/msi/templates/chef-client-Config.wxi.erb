@@ -11,6 +11,7 @@
   <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.MicroVersion).$(var.BuildVersion)" ?>
   <!-- Full version number minus BuildVersion..mainly for UI -->
   <?define DisplayVersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.MicroVersion)" ?>
+  <?define ChefGemPath="<%= @chef_gem_path %>" ?>
   <!--
     Upgrade code HAS to be the same for all updates.
     Once you've chosen it don't change it.
