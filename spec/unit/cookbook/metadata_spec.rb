@@ -177,24 +177,25 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "describing dependencies" do
+  describe "describing dependencies (includes version trasnformation)" do
     dep_types = {
-      :depends     => [ :dependencies, "foo::bar", "> 0.2" ],
-      :recommends  => [ :recommendations, "foo::bar", ">= 0.2" ],
-      :suggests    => [ :suggestions, "foo::bar", "> 0.2" ],
-      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2" ],
-      :provides    => [ :providing, "foo::bar", "<= 0.2" ],
-      :replaces    => [ :replacing, "foo::bar", "= 0.2.1" ],
+      :depends     => [ :dependencies, "foo::bar", "> 0.2", "> 0.2.0" ],
+      :recommends  => [ :recommendations, "foo::bar", ">= 0.2", ">= 0.2.0" ],
+      :suggests    => [ :suggestions, "foo::bar", "> 0.2", "> 0.2.0" ],
+      :conflicts   => [ :conflicting, "foo::bar", "~> 0.2", "~> 0.2.0" ],
+      :provides    => [ :providing, "foo::bar", "<= 0.2", "<= 0.2.0" ],
+      :replaces    => [ :replacing, "foo::bar", "= 0.2.1", "= 0.2.1" ],
     }
     dep_types.sort { |a,b| a.to_s <=> b.to_s }.each do |dep, dep_args|
       check_with = dep_args.shift
+      transformed_version = dep_args.pop
       describe dep do
         it "should be set-able via #{dep}" do
-          @meta.send(dep, *dep_args).should == Chef::VersionConstraint.new(dep_args[1]).to_s
+          @meta.send(dep, *dep_args).should == transformed_version
         end
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
-          @meta.send(check_with).should == { dep_args[0] => Chef::VersionConstraint.new(dep_args[1]).to_s }
+          @meta.send(check_with).should == { dep_args[0] => transformed_version }
         end
       end
     end
