@@ -115,6 +115,7 @@ class Chef
               diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
             end
             @diff = diff_str.split("\n")
+            @diff.delete("\\ No newline at end of file")
             return "(diff available)"
           end
         elsif !result.stderr.empty?
