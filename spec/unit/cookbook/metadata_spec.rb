@@ -140,7 +140,7 @@ describe Chef::Cookbook::Metadata do
   describe "adding a supported platform" do
     it "should support adding a supported platform with a single expression" do
       @meta.supports("ubuntu", ">= 8.04")
-      @meta.platforms["ubuntu"].should == '>= 8.04'
+      @meta.platforms["ubuntu"].should == '>= 8.4.0'
     end
   end
 
@@ -190,11 +190,11 @@ describe Chef::Cookbook::Metadata do
       check_with = dep_args.shift
       describe dep do
         it "should be set-able via #{dep}" do
-          @meta.send(dep, *dep_args).should == dep_args[1]
+          @meta.send(dep, *dep_args).should == Chef::VersionConstraint.new(dep_args[1]).to_s
         end
         it "should be get-able via #{check_with}" do
           @meta.send(dep, *dep_args)
-          @meta.send(check_with).should == { dep_args[0] => dep_args[1] }
+          @meta.send(check_with).should == { dep_args[0] => Chef::VersionConstraint.new(dep_args[1]).to_s }
         end
       end
     end
