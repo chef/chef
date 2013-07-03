@@ -5,12 +5,12 @@ class Chef
         api_request(chef_rest, :GET, chef_rest.create_url(api_path), {}, nil, :parse_json => true)
       end
 
-      def self.raw_request(chef_rest, api_path, options)
-        api_request(chef_rest, :GET, chef_rest.create_url(api_path), {}, nil)
+      def self.raw_request(chef_rest, api_path)
+        api_request(chef_rest, :GET, chef_rest.create_url(api_path))
       end
 
       def self.api_request(chef_rest, method, url, headers={}, data=nil, options = {})
-        json_body = data ? data : nil
+        json_body = data || nil
         #        json_body = data ? Chef::JSONCompat.to_json(data) : nil
         # Force encoding to binary to fix SSL related EOFErrors
         # cf. http://tickets.opscode.com/browse/CHEF-2363
@@ -32,7 +32,7 @@ class Chef
           elsif redirect_location = redirected_to(response)
             if [:GET, :HEAD].include?(method)
               chef_rest.follow_redirect do
-                api_request(chef_rest, method, chef_rest.create_url(redirect_location), headers, nil, convert_json)
+                api_request(chef_rest, method, chef_rest.create_url(redirect_location), headers, nil, options)
               end
             else
               raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
