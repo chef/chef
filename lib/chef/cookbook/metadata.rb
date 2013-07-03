@@ -242,7 +242,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def supports(platform, *version_args)
         version = new_args_format(:supports, platform, version_args)
-        validate_version_constraint(:supports, platform, version)
+        version = validate_version_constraint(:supports, platform, version)
         @platforms[platform] = version
         @platforms[platform]
       end
@@ -259,7 +259,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def depends(cookbook, *version_args)
         version = new_args_format(:depends, cookbook, version_args)
-        validate_version_constraint(:depends, cookbook, version)
+        version = validate_version_constraint(:depends, cookbook, version)
         @dependencies[cookbook] = version
         @dependencies[cookbook]
       end
@@ -276,7 +276,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def recommends(cookbook, *version_args)
         version = new_args_format(:recommends, cookbook,  version_args)
-        validate_version_constraint(:recommends, cookbook, version)
+        version = validate_version_constraint(:recommends, cookbook, version)
         @recommendations[cookbook] = version
         @recommendations[cookbook]
       end
@@ -293,7 +293,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def suggests(cookbook, *version_args)
         version = new_args_format(:suggests, cookbook, version_args)
-        validate_version_constraint(:suggests, cookbook, version)
+        version = validate_version_constraint(:suggests, cookbook, version)
         @suggestions[cookbook] = version
         @suggestions[cookbook]
       end
@@ -310,7 +310,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def conflicts(cookbook, *version_args)
         version = new_args_format(:conflicts, cookbook, version_args)
-        validate_version_constraint(:conflicts, cookbook, version)
+        version = validate_version_constraint(:conflicts, cookbook, version)
         @conflicting[cookbook] = version
         @conflicting[cookbook]
       end
@@ -331,7 +331,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def provides(cookbook, *version_args)
         version = new_args_format(:provides, cookbook, version_args)
-        validate_version_constraint(:provides, cookbook, version)
+        version = validate_version_constraint(:provides, cookbook, version)
         @providing[cookbook] = version
         @providing[cookbook]
       end
@@ -347,7 +347,7 @@ class Chef
       # versions<Array>:: Returns the list of versions for the platform
       def replaces(cookbook, *version_args)
         version = new_args_format(:replaces, cookbook, version_args)
-        validate_version_constraint(:replaces, cookbook, version)
+        version = validate_version_constraint(:replaces, cookbook, version)
         @replacing[cookbook] = version
         @replacing[cookbook]
       end
@@ -525,7 +525,7 @@ OBSOLETED
       end
 
       def validate_version_constraint(caller_name, dep_name, constraint_str)
-        Chef::VersionConstraint.new(constraint_str)
+        Chef::VersionConstraint.new(constraint_str).to_s
       rescue Chef::Exceptions::InvalidVersionConstraint => e
         Log.debug(e)
 
