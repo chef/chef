@@ -146,7 +146,8 @@ shared_examples_for Chef::Provider::File do
         # mock up the filesystem to behave like unix
         setup_normal_file
         stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-        File.should_receive(:stat).with(resource.path).at_least(:once).and_return(stat_struct)
+        resource_real_path = File.realpath(resource.path)
+        File.should_receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
         Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
         Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
       end
@@ -270,7 +271,8 @@ shared_examples_for Chef::Provider::File do
       # mock up the filesystem to behave like unix
       setup_normal_file
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-      File.stub!(:stat).with(resource.path).and_return(stat_struct)
+      resource_real_path = File.realpath(resource.path)
+      File.stub!(:stat).with(resource_real_path).and_return(stat_struct)
       Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
       Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
       provider.send(:load_resource_attributes_from_file, resource)
