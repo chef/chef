@@ -179,7 +179,7 @@ class Chef
           # mode
           #
           # If no failure_message is provided (above), then execution 
-          # will be allowed to continue in both whyrun an dnon-whyrun
+          # will be allowed to continue in both whyrun and non-whyrun
           # mode
           #
           # With a service resource that requires /etc/init.d/service-name to exist:
@@ -201,7 +201,7 @@ class Chef
           # 
           # An example from the template provider: if the source template doesn't exist 
           # we can't parse it in the action_create block of template - something that we do 
-          # even in whyrun mode.  Because the soruce template may have been created in an earlier 
+          # even in whyrun mode.  Because the source template may have been created in an earlier 
           # step, we still want to keep going in whyrun mode.
           # 
           # assert(:create, :create_if_missing) do |a|
