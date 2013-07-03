@@ -45,20 +45,23 @@ class Chef
           tempcron.flush
           tempcron.chmod(0644)
           exit_status = 0
+          error_message = ""
           begin
             status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
             exit_status = status.exitstatus
           rescue Chef::Exceptions::Exec => e
             Chef::Log.debug(e.message)
             exit_status = 1
+            error_message = e.message
           rescue ArgumentError => e
             # usually raised on invalid user.
             Chef::Log.debug(e.message)
             exit_status = 1
+            error_message = e.message
           end          
           tempcron.close!
           if exit_status > 0
-            raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}"
+            raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"
           end
         end
 
