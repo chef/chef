@@ -25,6 +25,7 @@ class Chef
     class CookbookTest < Knife
 
       deps do
+        require 'chef/cookbook_loader'
         require 'chef/cookbook/syntax_check'
       end
 
