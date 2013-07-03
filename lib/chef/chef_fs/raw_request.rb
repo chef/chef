@@ -2,15 +2,15 @@ class Chef
   module ChefFS
     module RawRequest
       def self.raw_json(chef_rest, api_path)
-        JSON.parse(raw_request(chef_rest, api_path), :create_additions => false)
+        api_request(chef_rest, :GET, chef_rest.create_url(api_path), {}, nil, :parse_json => true)
       end
 
-      def self.raw_request(chef_rest, api_path)
-        api_request(chef_rest, :GET, chef_rest.create_url(api_path), {}, false)
+      def self.raw_request(chef_rest, api_path, options)
+        api_request(chef_rest, :GET, chef_rest.create_url(api_path), {}, nil)
       end
 
-      def self.api_request(chef_rest, method, url, headers={}, data=false)
-        json_body = data
+      def self.api_request(chef_rest, method, url, headers={}, data=nil, options = {})
+        json_body = data ? data : nil
         #        json_body = data ? Chef::JSONCompat.to_json(data) : nil
         # Force encoding to binary to fix SSL related EOFErrors
         # cf. http://tickets.opscode.com/browse/CHEF-2363
@@ -24,11 +24,15 @@ class Chef
           response_body = chef_rest.decompress_body(response)
 
           if response.kind_of?(Net::HTTPSuccess)
-            response_body
+            if options[:parse_json] && response['content-type'] =~ /json/
+              JSON.parse(response_body, :create_additions => false)
+            else
+              response_body
+            end
           elsif redirect_location = redirected_to(response)
             if [:GET, :HEAD].include?(method)
               chef_rest.follow_redirect do
-                api_request(chef_rest, method, chef_rest.create_url(redirect_location))
+                api_request(chef_rest, method, chef_rest.create_url(redirect_location), headers, nil, convert_json)
               end
             else
               raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
@@ -63,11 +67,11 @@ class Chef
         response['location']
       end
 
-      def self.build_headers(chef_rest, method, url, headers={}, json_body=false, raw=false)
+      def self.build_headers(chef_rest, method, url, headers={}, json_body=nil, raw=nil)
         #        headers                 = @default_headers.merge(headers)
         #headers['Accept']       = "application/json" unless raw
         headers['Accept']       = "application/json" unless raw
-        headers["Content-Type"] = 'application/json' if json_body
+        headers['Content-Type'] = 'application/json' if json_body
         headers['Content-Length'] = json_body.bytesize.to_s if json_body
         headers[Chef::REST::RESTRequest::ACCEPT_ENCODING] = Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE
         headers.merge!(chef_rest.authentication_headers(method, url, json_body)) if chef_rest.sign_requests?
