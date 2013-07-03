@@ -74,7 +74,7 @@ class Chef
         # Let children resources override constructing the @current_resource
         @current_resource ||= Chef::Resource::File.new(@new_resource.name)
         @current_resource.path(@new_resource.path)
-        if real_file?(@current_resource.path) && ::File.exists?(@current_resource.path)
+        if ::File.exists?(@current_resource.path) && ::File.file?(::File.realpath(@current_resource.path))
           if @action != :create_if_missing && @current_resource.respond_to?(:checksum)
             @current_resource.checksum(checksum(@current_resource.path))
           end
@@ -292,6 +292,7 @@ class Chef
             converge_by(description) do
               unlink(@new_resource.path)
             end
+            @current_resource.checksum = nil
             @file_unlinked = true
           end
         end

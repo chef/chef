@@ -21,7 +21,8 @@ require 'chef/scan_access_control'
 describe Chef::ScanAccessControl do
 
   before do
-    @new_resource = Chef::Resource::File.new("/tmp/foo/bar/baz/qux")
+    @new_resource = Chef::Resource::File.new("/tmp/foo/bar/baz/link")
+    @real_file = "/tmp/foo/bar/real/file"
     @current_resource = Chef::Resource::File.new(@new_resource.path)
     @scanner = Chef::ScanAccessControl.new(@new_resource, @current_resource)
   end
@@ -49,7 +50,8 @@ describe Chef::ScanAccessControl do
 
     before do
       @stat = mock("File::Stat for #{@new_resource.path}", :uid => 0, :gid => 0, :mode => 00100644)
-      File.should_receive(:stat).with(@new_resource.path).and_return(@stat)
+      File.should_receive(:realpath).with(@new_resource.path).and_return(@real_file)
+      File.should_receive(:stat).with(@real_file).and_return(@stat)
       File.should_receive(:exist?).with(@new_resource.path).and_return(true)
     end
 

@@ -523,14 +523,7 @@ shared_examples_for "a configured file resource" do
           resource.path(link_path)
           # create symlinks for test context
           File.symlink(path, link_path)
-
-          # Create source (real) file
-          File.open(path, "wb") { |f| f.write(wrong_content) }
         end
-
-        include_context "setup broken permissions"
-
-        include_examples "a securable resource with existing target"
 
         after(:each) do
           # shared examples should not change our test setup of a file resource
@@ -539,9 +532,56 @@ shared_examples_for "a configured file resource" do
           FileUtils.rm_rf(link_path)
         end
 
-        it "does not replace the symlink with a real file" do
-          resource.run_action(:create)
-          File.should be_symlink(link_path)
+        context "and the permissions are incorrect" do
+          before do
+            # Create source (real) file
+            File.open(path, "wb") { |f| f.write(expected_content) }
+          end
+
+
+          include_context "setup broken permissions"
+
+          include_examples "a securable resource with existing target"
+
+          it "does not replace the symlink with a real file" do
+            resource.run_action(:create)
+            File.should be_symlink(link_path)
+          end
+
+        end
+
+        context "and the content is incorrect" do
+          before do
+            # Create source (real) file
+            File.open(path, "wb") { |f| f.write(wrong_content) }
+          end
+
+          it "updates the source file content" do
+            pending
+          end
+
+          it "marks the resource as updated" do
+            resource.run_action(:create)
+            resource.should be_updated_by_last_action
+          end
+
+          it "does not replace the symlink with a real file" do
+            resource.run_action(:create)
+            File.should be_symlink(link_path)
+          end
+        end
+
+        context "and the content and permissions are correct" do
+          let(:expect_updated?) { false }
+
+          before do
+            # Create source (real) file
+            File.open(path, "wb") { |f| f.write(expected_content) }
+          end
+          include_context "setup correct permissions"
+
+          include_examples "a securable resource with existing target"
+
         end
 
       end
