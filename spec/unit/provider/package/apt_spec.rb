@@ -227,6 +227,70 @@ SHOWPKG_STDOUT
 
       @provider.install_package("irssi", "0.8.12-7")
     end
+
+    it "should run apt-get update and retry if there is a failure during apt-get install and auto_update is true" do
+      @new_resource.stub!(:auto_update).and_return(true)
+      
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "apt-get -q -y install irssi=0.8.12-7",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+
+      @provider.stub!(:run_command_with_systems_locale).with({
+        :command => "apt-get -q -y install irssi=0.8.12-6",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      }).and_raise(Chef::Exceptions::Exec)
+
+      @provider.should_receive(:update_aptitude_cache)
+
+      stdout =<<-PKG_STATUS
+irssi:
+  Installed: (none)
+  Candidate: 0.8.12-7
+  Version table:
+     0.8.14-1ubuntu4 0
+        500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
+PKG_STATUS
+      pkg = mock(:stdout => stdout,:exitstatus => 0)
+      @provider.should_receive(:shell_out!).and_return(pkg)
+
+      @current_resource.version "0.8.12-7"
+
+      @provider.install_package("irssi", "0.8.12-6")
+    end
+
+    it "should not run apt-get update if there is a failure during apt-get install and auto_update is false" do
+      @new_resource.stub!(:auto_update).and_return(false)
+
+      @provider.stub!(:run_command_with_systems_locale).with({
+        :command => "apt-get -q -y install irssi=0.8.12-7",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      }).and_raise(Chef::Exceptions::Exec)
+
+      @provider.should_not_receive(:update_aptitude_cache)
+      lambda { @provider.install_package("irssi", "0.8.12-7") }.should raise_error(Chef::Exceptions::Exec)
+
+    end
+
+  end
+
+  describe Chef::Provider::Package::Apt, "update_aptitude_cache" do
+
+    it "should run apt-get update" do
+      @provider.should_receive(:run_command_with_systems_locale).with({
+        :command => "apt-get update",
+        :environment => {
+          "DEBIAN_FRONTEND" => "noninteractive"
+        }
+      })
+      @provider.update_aptitude_cache()
+    end
   end
 
   describe Chef::Provider::Package::Apt, "upgrade_package" do
