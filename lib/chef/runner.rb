@@ -82,8 +82,13 @@ class Chef
       end
 
     rescue Exception => e
-      Chef::Log.info "Running queued delayed notifications before re-raising exception"
-      run_delayed_notifications(e)
+      if Chef::Config[:notify_on_failure]
+       Chef::Log.info "Running queued delayed notifications before re-raising exception"
+        run_delayed_notifications(e)
+      else
+        Chef::Log.info("skipping delayed notifications as Chef::Config[:notify_on_failure] is set to false")
+        raise e
+      end
     else
       run_delayed_notifications(nil)
       true

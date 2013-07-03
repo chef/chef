@@ -342,5 +342,8 @@ class Chef
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
     file_staging_uses_destdir false
+
+    # if false , delayed notification wont be run upon chef run failure
+    notify_on_failure true
   end
 end
