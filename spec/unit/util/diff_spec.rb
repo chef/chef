@@ -364,7 +364,7 @@ describe Chef::Util::Diff, :uses_diff => true do
     end
 
     it "calling for_output should return a unified diff" do
-      differ.for_output.size.should eql(7)
+      differ.for_output.size.should eql(5)
       differ.for_output.join("\\n").should match(/\A--- .*\\n\+\+\+ .*\\n@@/m)
     end
 
