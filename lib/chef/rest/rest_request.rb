@@ -23,6 +23,7 @@
 require 'uri'
 require 'net/http'
 require 'chef/rest/cookie_jar'
+require 'chef/monkey_patches/uri'
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
