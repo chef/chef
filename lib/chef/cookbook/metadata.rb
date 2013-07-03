@@ -468,15 +468,6 @@ class Chef
         @groupings                    = o[GROUPINGS] if o.has_key?(GROUPINGS)
         @recipes                      = o[RECIPES] if o.has_key?(RECIPES)
         @version                      = o[VERSION] if o.has_key?(VERSION)
-        #
-        # XXX: When a client (berkshelf in particular) uploads metadata without a name field, the hosted chef
-        #      ruby server will subsequently return empty string ("") for the metadata.name.  In erchef uploading
-        #      metadata without a name field will simply not store or retrieve a name field so we get @name = nil.
-        #      During the migration from ruby to erchef, metadata.name of "" was migrated faithfully even though it
-        #      fails validation, and erchef will return this, so we still have to handle this case unless the
-        #      database is sanitized to remove metadata.name == "".
-        #
-        @name = nil if !@name.nil? && @name.empty?
         self
       end
 
