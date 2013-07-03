@@ -115,7 +115,7 @@ CRONTAB
       @status.stub!(:exitstatus).and_return(1)
       lambda do
         @provider.send(:write_crontab, "Foo")
-      end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+      end.should raise_error(Chef::Exceptions::Cron, /Error updating state of #{@new_resource.name}, exit: 1/)
     end
   end
 end

@@ -108,7 +108,7 @@ describe "Chef Provider for Cron" do
     def create_and_validate
       @provider.load_current_resource
       @provider.cron_exists.should be_false
-      expect { @provider.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+      expect { @provider.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{@new_resource.name}, exit: 1/)
     end
 
     it "should not create cron with invalid minute" do
