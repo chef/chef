@@ -1,1 +1,0 @@
-default[:wine] = 'captain socks'
