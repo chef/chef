@@ -36,6 +36,8 @@ class Chef
         state_attrs :checksum, :owner, :group, :mode
       end
 
+      attr_writer :checksum
+
       provides :file, :on_platforms => :all
 
       def initialize(name, run_context=nil)
