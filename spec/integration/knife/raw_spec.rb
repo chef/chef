@@ -180,7 +180,7 @@ EOM
         @raw_server.stop(true)
       end
 
-      it 'knife raw /blah returns the prettified json' do
+      it 'knife raw /blah returns the prettified json', :pending => (RUBY_VERSION < "1.9") do
         knife('raw /blah').should_succeed <<EOM
 {
   "x": "y",
@@ -196,7 +196,7 @@ EOM
       end
     end
 
-    context 'When a server returns text'do
+    context 'When a server returns text' do
       before :each do
         @real_chef_server_url = Chef::Config.chef_server_url
         Chef::Config.chef_server_url = "http://127.0.0.1:9018"
