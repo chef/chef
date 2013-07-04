@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Chef grp_provider for group" do
+describe "Chef provider for group" do
 	# Order the tests for proper cleanup and execution
   RSpec.configure do |config|
     config.order_groups_and_examples do |list|
@@ -32,7 +32,6 @@ describe "Chef grp_provider for group" do
 		@run_context = Chef::RunContext.new(@node, {}, @events)
     @new_grp = Chef::Resource::Group.new("Chef functional test group", @run_context)
     @new_grp.gid("someId1234")
-    puts "#{@ohai[:platform]}"
     @groupProviderClass = Chef::Platform.find_provider(@ohai[:platform], @ohai[:version], @new_grp)
     @grp_provider = @groupProviderClass.new(@new_grp, @run_context)
   end
@@ -47,28 +46,31 @@ describe "Chef grp_provider for group" do
 			@grp_provider.group_exists.should be_true
 		end	
 
-		context "group name with special characters" ,:windows_only do
+		context "group name with special characters" do
 			before(:each) do
 				@new_grp = Chef::Resource::Group.new("!@#!!!!!!", @run_context)
 				@new_grp.gid("someId1234")
 				@groupProviderClass = Chef::Platform.find_provider(@ohai[:platform], @ohai[:version], @new_grp)
 				@grp_provider = @groupProviderClass.new(@new_grp, @run_context)
 			end
+			after do
+				@grp_provider.run_action(:remove)
+			end
 			it " - should not create a group" do
 				expect {@grp_provider.run_action(:create)}.to raise_error
 			end
 		end
 
-		context "group name with 252 characters", :windows_only do
+		context "group name with 256 characters" do
 			before(:each) do
-				grp_name = "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+				grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
 				@new_grp = Chef::Resource::Group.new(grp_name, @run_context)
 				@new_grp.gid("someId1234")
 				@groupProviderClass = Chef::Platform.find_provider(@ohai[:platform], @ohai[:version], @new_grp)
 				@grp_provider = @groupProviderClass.new(@new_grp, @run_context)
 			end
-			after(:each) do
-				
+			after do
+				@grp_provider.run_action(:remove)
 			end
 			it " - should not create a group" do
 				@grp_provider.load_current_resource
@@ -79,13 +81,16 @@ describe "Chef grp_provider for group" do
 			end
 		end
 
-		context "group name with more than 252 characters", :windows_only do
+		context "group name with more than 256 characters" do
 			before(:each) do
-				grp_name = "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
+				grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQQQQQQQQQQQQ"
 				@new_grp = Chef::Resource::Group.new(grp_name, @run_context)
 				@new_grp.gid("someId1234")
 				@groupProviderClass = Chef::Platform.find_provider(@ohai[:platform], @ohai[:version], @new_grp)
 				@grp_provider = @groupProviderClass.new(@new_grp, @run_context)
+			end
+			after do
+				@grp_provider.run_action(:remove)
 			end
 			it " - should not create a group" do
 				expect {@grp_provider.run_action(:create)}.to raise_error
