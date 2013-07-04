@@ -244,6 +244,11 @@ describe Chef::Role do
     end
   end
 
+  ROLE_DSL=<<-EOR
+name "ceiling_cat"
+description "like Aliens, but furry"
+EOR
+
   describe "when loading from disk" do
     it "should return a Chef::Role object from JSON" do
       File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(true)
@@ -256,10 +261,6 @@ describe Chef::Role do
       File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.json')).exactly(1).times.and_return(false)
       File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(2).times.and_return(true)
       File.should_receive(:readable?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(1).times.and_return(true)
-      ROLE_DSL=<<-EOR
-name "ceiling_cat"
-description "like Aliens, but furry"
-EOR
       IO.should_receive(:read).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).and_return(ROLE_DSL)
       @role.should be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -270,6 +271,64 @@ EOR
       File.should_receive(:exists?).with(File.join(Chef::Config[:role_path], 'lolcat.rb')).exactly(1).times.and_return(false)
       lambda {@role.class.from_disk("lolcat")}.should raise_error(Chef::Exceptions::RoleNotFound)
     end
+  end
+
+  describe "when loading from disk and role_path is an array" do
+
+    before(:all) do
+      @old_config = Chef::Config[:role_path]
+      Chef::Config[:role_path] = ['/path1', '/path/path2']
+    end
+
+    it "should return a Chef::Role object from JSON" do
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.json')).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(File.join('/path1', 'lolcat.json')).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+    end
+
+    it "should return a Chef::Role object from JSON when role is in the second path" do
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.rb')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.json')).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(File.join('/path/path2', 'lolcat.json')).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+    end
+
+    it "should return a Chef::Role object from a Ruby DSL" do
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.rb')).exactly(2).times.and_return(true)
+      File.should_receive(:readable?).with(File.join('/path1', 'lolcat.rb')).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(File.join('/path1', 'lolcat.rb')).and_return(ROLE_DSL)
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+    end
+
+    it "should return a Chef::Role object from a Ruby DSL when role is in the second path" do
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.rb')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.rb')).exactly(2).times.and_return(true)
+      File.should_receive(:readable?).with(File.join('/path/path2', 'lolcat.rb')).exactly(1).times.and_return(true)
+      IO.should_receive(:read).with(File.join('/path/path2', 'lolcat.rb')).and_return(ROLE_DSL)
+      @role.should be_a_kind_of(Chef::Role)
+      @role.class.from_disk("lolcat")
+    end
+
+    it "should raise an exception if the file does not exist" do
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path1', 'lolcat.rb')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.json')).exactly(1).times.and_return(false)
+      File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.rb')).exactly(1).times.and_return(false)
+      lambda {@role.class.from_disk("lolcat")}.should raise_error(Chef::Exceptions::RoleNotFound)
+    end
+
+
+    after(:all) do
+      Chef::Config[:role_path] = @old_config
+    end
+
   end
 end
 

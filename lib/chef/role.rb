@@ -233,20 +233,25 @@ class Chef
     # Load a role from disk - prefers to load the JSON, but will happily load
     # the raw rb files as well.
     def self.from_disk(name, force=nil)
-      js_file = File.join(Chef::Config[:role_path], "#{name}.json")
-      rb_file = File.join(Chef::Config[:role_path], "#{name}.rb")
+      paths = Chef::Config[:role_path]
+      paths = [paths] if paths.is_a? String
 
-      if File.exists?(js_file) || force == "json"
-        # from_json returns object.class => json_class in the JSON.
-        Chef::JSONCompat.from_json(IO.read(js_file))
-      elsif File.exists?(rb_file) || force == "ruby"
-        role = Chef::Role.new
-        role.name(name)
-        role.from_file(rb_file)
-        role
-      else
-        raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
+      paths.each do |p|
+        js_file = File.join(p, "#{name}.json")
+        rb_file = File.join(p, "#{name}.rb")
+
+        if File.exists?(js_file) || force == "json"
+          # from_json returns object.class => json_class in the JSON.
+          return Chef::JSONCompat.from_json(IO.read(js_file))
+        elsif File.exists?(rb_file) || force == "ruby"
+          role = Chef::Role.new
+          role.name(name)
+          role.from_file(rb_file)
+          return role
+        end
       end
+
+      raise Chef::Exceptions::RoleNotFound, "Role '#{name}' could not be loaded from disk"
     end
 
   end
