@@ -48,6 +48,7 @@ describe Chef::Provider::Group::Usermod do
         "netbsd" => "-G",
         "solaris" => "-a -G",
         "suse" => "-a -G",
+        "opensuse" => "-a -G",
         "smartos" => "-G"
       }
 

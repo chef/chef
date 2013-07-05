@@ -28,6 +28,7 @@ describe "Chef::Platform supports" do
     :centos,
     :fedora,
     :suse,
+    :opensuse,
     :redhat,
     :oracle,
     :gentoo,
