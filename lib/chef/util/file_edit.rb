@@ -36,6 +36,11 @@ class Chef
         @contents = File.new(@original_pathname).readlines
       end
 
+      # return if file has been edited
+      def file_edited?
+        file_edited
+      end
+
       #search the file line by line and match each line with the given regex
       #if matched, replace the whole line with newline.
       def search_file_replace_line(regex, newline)
