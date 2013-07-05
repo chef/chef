@@ -191,12 +191,13 @@ class Chef
       if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
         Chef::Log.info "Forking chef instance to converge..."
         pid = fork do
+          [:INT, :TERM].each {|s| trap(s, "EXIT") }
           client_solo = Chef::Config[:solo] ? "chef-solo" : "chef-client"
           $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
           begin
             Chef::Log.debug "Forked instance now converging"
             do_run
-          rescue Exception => e
+          rescue Exception
             exit 1
           else
             exit 0
