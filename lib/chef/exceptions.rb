@@ -160,6 +160,8 @@ class Chef
     # the symlink that is there either loops or points to a nonexistent file
     class InvalidSymlink < RuntimeError; end
 
+    class ChildConvergeError < RuntimeError; end
+
     class MissingRole < RuntimeError
       NULL = Object.new
 

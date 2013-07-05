@@ -191,19 +191,40 @@ class Chef
       if(Chef::Config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?)
         Chef::Log.info "Forking chef instance to converge..."
         pid = fork do
-          Chef::Log.info "Forked instance now converging"
-          do_run
-          exit
+          [:INT, :TERM].each {|s| trap(s, "EXIT") }
+          client_solo = Chef::Config[:solo] ? "chef-solo" : "chef-client"
+          $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
+          begin
+            Chef::Log.debug "Forked instance now converging"
+            do_run
+          rescue Exception
+            exit 1
+          else
+            exit 0
+          end
         end
-        Chef::Log.info "Fork successful. Waiting for new chef pid: #{pid}"
+        Chef::Log.debug "Fork successful. Waiting for new chef pid: #{pid}"
         result = Process.waitpid2(pid)
-        raise "Forked convergence run failed" unless result.last.success?
-        Chef::Log.info "Forked child successfully reaped (pid: #{pid})"
+        handle_child_exit(result)
+        Chef::Log.debug "Forked child successfully reaped (pid: #{pid})"
         true
       else
         do_run
       end
     end
+
+    def handle_child_exit(pid_and_status)
+      status = pid_and_status[1]
+      return true if status.success?
+      message = if status.signaled?
+        "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
+      else
+        "Chef run process exited unsuccessfully (exit code #{status.exitstatus})"
+      end
+      raise Exceptions::ChildConvergeError, message
+    end
+
+
 
     # Configures the Chef::Cookbook::FileVendor class to fetch file from the
     # server or disk as appropriate, creates the run context for this run, and
@@ -488,6 +509,7 @@ class Chef
           run_status.exception = e
           run_failed
         end
+        Chef::Application.debug_stacktrace(e)
         @events.run_failed(e)
         raise
       ensure
