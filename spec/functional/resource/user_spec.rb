@@ -505,7 +505,7 @@ describe Chef::Resource::User, :unix_only, :requires_root do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if OHAI_SYSTEM["platform_family"] == "suse"
+        if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
           # suse gets this right:
           it "errors out trying to unlock the user" do
             @error.should be_a(Mixlib::ShellOut::ShellCommandFailed)
