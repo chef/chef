@@ -15,8 +15,6 @@ describe Chef::Provider::Mount::Mount do
   end
   include Chef::Mixin::ShellOut
   before(:each) do
-    # stub stdout for shellout commands. TODO
-    # $stdout.reopen("out.txt", "w")
     shell_out!("mkfs -q /dev/ram1 512")
     shell_out!("mkdir -p /tmp/foo")
     @node = Chef::Node.new
@@ -42,8 +40,16 @@ describe Chef::Provider::Mount::Mount do
       @provider.current_resource.mounted.should be_true
     end
   end
+
   describe "testcase 2: when the target state is a mounted filesystem" do
-    it "should unmount the filesystem if it is mounted" do
+    it "should not mount the filesystem if it is mounted" do
+      @provider.should_not_receive(:mount_fs)
+      @provider.run_action(:mount)
+    end
+  end
+
+  describe "testcase 3: when the target state is a unmounted filesystem" do
+    it "should umount the filesystem if it is mounted" do
       @provider.load_current_resource
       @provider.current_resource.mounted.should be_true
       @provider.should_receive(:umount_fs).and_call_original
@@ -52,4 +58,12 @@ describe Chef::Provider::Mount::Mount do
       @provider.current_resource.mounted.should be_false
     end
   end
+
+  describe "testcase 4: when the target state is a unmounted filesystem" do
+    it "should not umount the filesystem if it is not mounted" do
+      @provider.should_not_receive(:umount_fs)
+      @provider.run_action(:umount)
+    end
+  end
+
 end
