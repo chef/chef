@@ -54,7 +54,20 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 3: when the target state is a unmounted filesystem" do
+  describe "testcase 3: when the filesystem should be remounted and the resource supports remounting" do
+    before do
+      @new_resource.supports[:remount] = true
+    end
+    
+    it "should remount the filesystem if it is mounted" do
+      @provider.should_receive(:remount_fs).and_call_original
+      @provider.run_action(:remount)
+      @provider.load_current_resource
+      @provider.current_resource.mounted.should be_true
+    end
+  end
+
+  describe "testcase 4: when the target state is a unmounted filesystem" do
     it "should umount the filesystem if it is mounted" do
       @provider.load_current_resource
       @provider.current_resource.mounted.should be_true
@@ -65,11 +78,22 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 4: when the target state is a unmounted filesystem" do
+  describe "testcase 5: when the target state is a unmounted filesystem" do
     it "should not umount the filesystem if it is not mounted" do
       @provider.should_not_receive(:umount_fs)
       @provider.run_action(:umount)
     end
   end
 
+  describe "testcase 6: when the resource supports remounting" do
+    before do
+      @new_resource.supports[:remount] = true
+    end
+    it "should not remount the filesystem if it is not mounted" do
+      @provider.should_not_receive(:remount_fs)
+      @provider.run_action(:remount)
+    end
+  end
+
 end
+
