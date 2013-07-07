@@ -13,6 +13,11 @@ describe Chef::Provider::Mount::Mount do
       list.sort_by { |item| item.description }
     end
   end
+
+  # Load ohai only once
+  ohai = Ohai::System.new
+  ohai.all_plugins
+
   include Chef::Mixin::ShellOut
   before(:each) do
     shell_out!("mkfs -q /dev/ram1 512")
@@ -26,7 +31,8 @@ describe Chef::Provider::Mount::Mount do
     @new_resource.name        "/tmp/foo"
     @new_resource.fstype      "tmpfs"
     
-    @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
+    providerClass = Chef::Platform.find_provider(ohai[:platform], ohai[:version], @new_resource)
+    @provider = providerClass.new(@new_resource, @run_context)
   end
 
   describe "testcase 1: when the target state is a mounted filesystem" do
