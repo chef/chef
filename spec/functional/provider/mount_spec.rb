@@ -142,7 +142,7 @@ describe Chef::Provider::Mount::Mount do
   describe "testcase H: when enabling the filesystem to be mounted" do
     it "should enable the mount if it is enabled and mount options have changed" do
       @new_resource.options     "nodev"
-      @provider.should_receive(:mount_options_unchanged?).and_call_original
+      @provider.should_receive(:mount_options_unchanged?).twice.and_call_original
       @provider.should_receive(:enable_fs).and_call_original
       @provider.run_action(:enable)
       @provider.load_current_resource
