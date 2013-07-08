@@ -17,55 +17,37 @@
 #
 
 require 'chef/provider/mount'
-require 'chef/log'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
 
-        def initialize(new_resource, run_context)
-          super
-          @real_device = nil
-          @fstype = nil
-        end
-        attr_accessor :real_device
+        # Override for aix specific handling
 
-        def load_current_resource
-          @current_resource = Chef::Resource::Mount.new(@new_resource.name)
-          @current_resource.mount_point(@new_resource.mount_point)
-          @current_resource.device(@new_resource.device)
-          mounted?
-          enabled?
-        end
-
-
-
-          
         def enabled?
-      # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
+          # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
           enabled = false
           cmd ="lsfs -c"	
           lsfs = Mixlib::ShellOut.new(cmd)
           lsfs.run_command
           fsentries = lsfs.stdout.split("\n")
           fsentries.each do | line |
-                case line
-          when /^#\s/
-          next
-          when /^#{Regexp.escape(@new_resource.mount_point)}+:+#{device_fstab_regex}/
-            enabled = true
-            fields = line.split(":")
-            @current_resource.fstype(fields[3])
-            @current_resource.options(fields[5])
-            Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
-         next
-         when /^{Regexp.escape(@new_resource.mount_point)}/
-           enabled=false
-           Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
-         end
-         end
+            case line
+            when /^#\s/
+            next
+            when /^#{Regexp.escape(@new_resource.mount_point)}+:+#{device_fstab_regex}/
+              enabled = true
+              fields = line.split(":")
+              @current_resource.fstype(fields[3])
+              @current_resource.options(fields[5])
+              Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
+            next
+            when /^{Regexp.escape(@new_resource.mount_point)}/
+              enabled=false
+              Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
+            end
+          end
           @current_resource.enabled(enabled)
         end
 
@@ -141,7 +123,6 @@ class Chef
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
           end
-
         end
 
     end
