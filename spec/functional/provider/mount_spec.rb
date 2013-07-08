@@ -20,19 +20,42 @@ describe Chef::Provider::Mount::Mount do
 
   include Chef::Mixin::ShellOut
   before(:each) do
-    shell_out!("mkfs -q /dev/ram1 512")
-    shell_out!("mkdir -p /tmp/foo")
+    # TODO - this can better be written if we have resource/provider for ramdisk.
+    if ohai[:platform] == 'aix'
+      @ramdisk = shell_out!("mkramdisk 512").stdout
+
+      # identify device, for /dev/rramdisk0 it is /dev/ramdisk0
+      @device = @ramdisk.tr("\n","").gsub(/(?<=\/dev\/)r(?=ramdisk\d*)/, '')
+
+      @fstype = "jfs"
+      shell_out!("mkfs  -V #{@fstype} #{@device}")
+    else
+      @device = "/dev/ram1"
+      @fstype = "tmpfs"
+      shell_out!("mkfs -q #{@device} 512")
+    end
+    @mount_point = "/tmp/testmount"
+    shell_out("rm -rf #{@mount_point}")
+    shell_out!("mkdir -p #{@mount_point}")
+
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     
-    @new_resource = Chef::Resource::Mount.new('/tmp/foo')
-    @new_resource.device      "/dev/ram1"
-    @new_resource.name        "/tmp/foo"
-    @new_resource.fstype      "tmpfs"
-    
+    @new_resource = Chef::Resource::Mount.new(@mount_point)
+    @new_resource.device      @device
+    @new_resource.name        @mount_point
+    @new_resource.fstype      @fstype
+    @new_resource.options     "nointegrity" if ohai[:platform] == 'aix'
+
     providerClass = Chef::Platform.find_provider(ohai[:platform], ohai[:version], @new_resource)
     @provider = providerClass.new(@new_resource, @run_context)
+  end
+
+  after(:each) do
+    if ohai[:platform] == 'aix'
+      shell_out("rmramdisk #{@ramdisk}")
+    end
   end
 
   describe "testcase 1: when the target state is a mounted filesystem" do
