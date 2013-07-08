@@ -43,7 +43,7 @@ class Chef
               @current_resource.options(fields[5])
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
             next
-            when /^{Regexp.escape(@new_resource.mount_point)}/
+            when /^#{Regexp.escape(@new_resource.mount_point)}/
               enabled=false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
             end
@@ -101,27 +101,45 @@ class Chef
             disable_fs
           end
           ::File.open("/etc/filesystems", "a") do |fstab|
-            fstab.puts("#{@new_resource.mount_point}: ")
+            fstab.puts("#{@new_resource.mount_point}:")
             if network_device?
                device_details = device_fstab.split(":")
-               fstab.puts(" nodename = #{device_details[0]} ")
-               fstab.puts(" dev = #{device_details[1]} ")
+               fstab.puts("\tnodename\t\t= #{device_details[0]}")
+               fstab.puts("\tdev\t\t= #{device_details[1]}")
             else
-               fstab.puts(" dev = #{device_fstab} ")
+               fstab.puts("\tdev\t\t= #{device_fstab}")
             end 
-            fstab.puts(" vfs = #{@new_resource.fstype} ")
-            fstab.puts(" mount = true ")
-            fstab.puts " options = #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            fstab.puts("\tvfs\t\t= #{@new_resource.fstype}")
+            fstab.puts("\tmount\t\t= false")
+            fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
 
         def disable_fs
+          contents = []
           if @current_resource.enabled
-            command = "imfs -x -l #{device_fstab}"
-            shell_out!(command)
+            found_device = false
+           ::File.open("/etc/filesystems", "r").each_line do |line|
+              case line
+              when /^\/[\/\w]+:$/
+                if line =~ /#{Regexp.escape(@new_resource.mount_point)}+:/
+                  found_device = true
+									#puts ".......found device {@new_resource.mount_point}"
+                else
+                  found_device = false
+                end
+              end
+              if !found_device
+                contents << line
+              end
+            end
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
+          end
+          #puts contents
+          ::File.open("/etc/filesystems", "w") do |fstab|
+            contents.each { |line| fstab.puts line}
           end
         end
 
