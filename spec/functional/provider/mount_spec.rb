@@ -19,7 +19,7 @@ describe Chef::Provider::Mount::Mount do
   ohai.all_plugins
 
   include Chef::Mixin::ShellOut
-  before(:each) do
+  before(:all) do
     # TODO - this can better be written if we have resource/provider for ramdisk.
     if ohai[:platform] == 'aix'
       @ramdisk = shell_out!("mkramdisk 512").stdout
@@ -37,7 +37,9 @@ describe Chef::Provider::Mount::Mount do
     @mount_point = "/tmp/testmount"
     shell_out("rm -rf #{@mount_point}")
     shell_out!("mkdir -p #{@mount_point}")
+  end
 
+  before(:each) do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
@@ -52,13 +54,13 @@ describe Chef::Provider::Mount::Mount do
     @provider = providerClass.new(@new_resource, @run_context)
   end
 
-  after(:each) do
+  after(:all) do
     if ohai[:platform] == 'aix'
       shell_out("rmramdisk #{@ramdisk}")
     end
   end
 
-  describe "testcase 1: when the target state is a mounted filesystem" do
+  describe "testcase A: when the target state is a mounted filesystem" do
     it "should mount the filesystem if it isn't mounted" do
       @provider.load_current_resource
       @provider.current_resource.enabled.should be_false
@@ -70,14 +72,14 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 2: when the target state is a mounted filesystem" do
+  describe "testcase B: when the target state is a mounted filesystem" do
     it "should not mount the filesystem if it is mounted" do
       @provider.should_not_receive(:mount_fs)
       @provider.run_action(:mount)
     end
   end
 
-  describe "testcase 3: when the filesystem should be remounted and the resource supports remounting" do
+  describe "testcase C: when the filesystem should be remounted and the resource supports remounting" do
     before do
       @new_resource.supports[:remount] = true
     end
@@ -90,7 +92,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 4: when the target state is a unmounted filesystem" do
+  describe "testcase D: when the target state is a unmounted filesystem" do
     it "should umount the filesystem if it is mounted" do
       @provider.load_current_resource
       @provider.current_resource.mounted.should be_true
@@ -101,14 +103,14 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 5: when the target state is a unmounted filesystem" do
+  describe "testcase E: when the target state is a unmounted filesystem" do
     it "should not umount the filesystem if it is not mounted" do
       @provider.should_not_receive(:umount_fs)
       @provider.run_action(:umount)
     end
   end
 
-  describe "testcase 6: when the resource supports remounting" do
+  describe "testcase F: when the resource supports remounting" do
     before do
       @new_resource.supports[:remount] = true
     end
@@ -118,7 +120,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 7: when enabling the filesystem to be mounted" do
+  describe "testcase G: when enabling the filesystem to be mounted" do
     # setup the mount for further tests.
     before do
       @provider.run_action(:mount)
@@ -133,7 +135,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 8: when enabling the filesystem to be mounted" do
+  describe "testcase H: when enabling the filesystem to be mounted" do
     it "should enable the mount if it is enabled and mount options have changed" do
       @new_resource.options     "nodev"
       @provider.should_receive(:mount_options_unchanged?).and_call_original
@@ -144,7 +146,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 9: when enabling the filesystem to be mounted" do
+  describe "testcase I: when enabling the filesystem to be mounted" do
     it "should not enable the mount if it is enabled and mount options have not changed" do
       @new_resource.options     "nodev"
       @provider.load_current_resource
@@ -154,7 +156,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 10: when the target state is to disable the mount" do
+  describe "testcase J: when the target state is to disable the mount" do
     it "should disable the mount if it is enabled" do
       @provider.should_receive(:disable_fs).and_call_original
       @provider.run_action(:disable)
@@ -163,7 +165,7 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
-  describe "testcase 10: when the target state is to disable the mount" do
+  describe "testcase K: when the target state is to disable the mount" do
     # cleanup at the end
     after do
       @provider.run_action(:umount)
