@@ -61,8 +61,12 @@ describe Chef::Provider::Mount::Mount do
   end
 
   describe "testcase A: when the target state is a mounted filesystem" do
-    it "should mount the filesystem if it isn't mounted" do
+    before do
+      # sanity umount for any old runs
       @provider.load_current_resource
+      @provider.run_action(:umount)
+    end
+    it "should mount the filesystem if it isn't mounted" do
       @provider.current_resource.enabled.should be_false
       @provider.current_resource.mounted.should be_false
       @provider.should_receive(:mount_fs).and_call_original
