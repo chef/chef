@@ -118,5 +118,61 @@ describe Chef::Provider::Mount::Mount do
     end
   end
 
+  describe "testcase 7: when enabling the filesystem to be mounted" do
+    # setup the mount for further tests.
+    before do
+      @provider.run_action(:mount)
+    end
+
+    it "should enable the mount if it isn't enable" do
+      @provider.should_not_receive(:mount_options_unchanged?)
+      @provider.should_receive(:enable_fs).and_call_original
+      @provider.run_action(:enable)
+      @provider.load_current_resource
+      @provider.current_resource.enabled.should be_true
+    end
+  end
+
+  describe "testcase 8: when enabling the filesystem to be mounted" do
+    it "should enable the mount if it is enabled and mount options have changed" do
+      @new_resource.options     "nodev"
+      @provider.should_receive(:mount_options_unchanged?).and_call_original
+      @provider.should_receive(:enable_fs).and_call_original
+      @provider.run_action(:enable)
+      @provider.load_current_resource
+      @provider.current_resource.enabled.should be_true
+    end
+  end
+
+  describe "testcase 9: when enabling the filesystem to be mounted" do
+    it "should not enable the mount if it is enabled and mount options have not changed" do
+      @new_resource.options     "nodev"
+      @provider.load_current_resource
+      @provider.should_receive(:mount_options_unchanged?).and_call_original
+      @provider.should_not_receive(:enable_fs)
+      @provider.run_action(:enable)
+    end
+  end
+
+  describe "testcase 10: when the target state is to disable the mount" do
+    it "should disable the mount if it is enabled" do
+      @provider.should_receive(:disable_fs).and_call_original
+      @provider.run_action(:disable)
+      @provider.load_current_resource
+      @provider.current_resource.enabled.should be_false
+    end
+  end
+
+  describe "testcase 10: when the target state is to disable the mount" do
+    # cleanup at the end
+    after do
+      @provider.run_action(:umount)
+    end
+
+    it "should not disable the mount if it isn't enabled" do
+      @provider.should_not_receive(:disable_fs)
+      @provider.run_action(:disable)
+    end
+  end
 end
 
