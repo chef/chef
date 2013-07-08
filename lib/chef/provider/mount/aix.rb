@@ -28,7 +28,7 @@ class Chef
         def initialize(new_resource, run_context)
           super
           @real_device = nil
-          @node_name = nil
+          @fstype = nil
         end
         attr_accessor :real_device
 
@@ -51,15 +51,14 @@ class Chef
           lsfs.run_command
           fsentries = lsfs.stdout.split("\n")
           fsentries.each do | line |
-            fields = line.split(":")
                 case line
           when /^#\s/
           next
           when /^#{Regexp.escape(@new_resource.mount_point)}+:+#{device_fstab_regex}/
             enabled = true
-            @current_resource.node_name = fields[2]
-            @current_resource.fstype = fields[3]
-            @current_resource.options = fields[5]
+            fields = line.split(":")
+            @current_resource.fstype(fields[3])
+            @current_resource.options(fields[5])
             Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
          next
          when /^{Regexp.escape(@new_resource.mount_point)}/
@@ -75,7 +74,6 @@ class Chef
           shell_out!("mount").stdout.each_line do |line|
             case line
              when /#{device_mount_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
-               puts "Hello1 ... #{device_mount_regex}"
                mounted = true
                Chef::Log.debug("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
                puts #{mounted}
@@ -92,7 +90,6 @@ class Chef
             mountable?
             command = "mount -v #{@new_resource.fstype}"
             command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
-            command << " -n #{@new_resource.node_name}" unless @new_resource.node_name.nil? || @new_resource.options.empty?
             command << case @new_resource.device_type
             when :device
               " #{device_real}"
@@ -107,6 +104,44 @@ class Chef
           else
             Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
+        end
+
+       def enable_fs
+          if @current_resource.enabled && mount_options_unchanged?
+            Chef::Log.debug("#{@new_resource} is already enabled - nothing to do
+")
+            return nil
+          end
+
+          if @current_resource.enabled
+            # The current options don't match what we have, so
+            # disable, then enable.
+            disable_fs
+          end
+          ::File.open("/etc/filesystems", "a") do |fstab|
+            fstab.puts("#{@new_resource.mount_point}: ")
+            if network_device?
+               device_details = device_fstab.split(":")
+               fstab.puts(" nodename = #{device_details[0]} ")
+               fstab.puts(" dev = #{device_details[1]} ")
+            else
+               fstab.puts(" dev = #{device_fstab} ")
+            end 
+            fstab.puts(" vfs = #{@new_resource.fstype} ")
+            fstab.puts(" mount = true ")
+            fstab.puts " options = #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
+          end
+        end
+
+        def disable_fs
+          if @current_resource.enabled
+            command = "imfs -x -l #{device_fstab}"
+            shell_out!(command)
+          else
+            Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
+          end
+
         end
 
     end
