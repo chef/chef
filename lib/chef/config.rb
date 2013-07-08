@@ -189,7 +189,7 @@ class Chef
     chef_server_url   "https://localhost:443"
 
     rest_timeout 300
-    yum_timeout 120
+    yum_timeout 900
     solo  false
     splay nil
     why_run false
