@@ -24,6 +24,15 @@ class Chef
       class Aix < Chef::Provider::Mount::Mount
 
         # Override for aix specific handling
+        def initialize(new_resource, run_context)
+          super
+         if @new_resource.options[0] == "defaults"
+           @new_resource.options.clear
+        end
+         if @new_resource.fstype == "auto"
+           @new_resource.fstype = nil
+         end
+       end
 
         def enabled?
           # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
@@ -54,8 +63,14 @@ class Chef
         def mounted?
           mounted = false
           shell_out!("mount").stdout.each_line do |line|
+            if network_device?
+              device_details = device_fstab.split(":")
+              search_device = device_details[1]
+            else
+              search_device = device_fstab_regex  
+            end    
             case line
-             when /#{device_mount_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
+             when /#{search_device}\s+#{Regexp.escape(@new_resource.mount_point)}/
                mounted = true
                Chef::Log.debug("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
                puts #{mounted}
@@ -71,7 +86,12 @@ class Chef
           unless @current_resource.mounted
             mountable?
             command = "mount -v #{@new_resource.fstype}"
-            command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            #command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+
+            if !(@new_resource.options.nil? || @new_resource.options.empty?)
+              command << " -o #{@new_resource.options.join(',')}"
+            end
+
             command << case @new_resource.device_type
             when :device
               " #{device_real}"
@@ -87,6 +107,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
+
 
        def enable_fs
           if @current_resource.enabled && mount_options_unchanged?
@@ -125,7 +146,6 @@ class Chef
               when /^\/[\/\w]+:$/
                 if line =~ /#{Regexp.escape(@new_resource.mount_point)}+:/
                   found_device = true
-									#puts ".......found device {@new_resource.mount_point}"
                 else
                   found_device = false
                 end
@@ -137,7 +157,6 @@ class Chef
           else
             Chef::Log.debug("#{@new_resource} is not enabled - nothing to do")
           end
-          #puts contents
           ::File.open("/etc/filesystems", "w") do |fstab|
             contents.each { |line| fstab.puts line}
           end
