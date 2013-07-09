@@ -449,6 +449,9 @@ class Chef
     # Report Handlers
     default :report_handlers, []
 
+    # Event Handlers
+    default :event_handlers, []
+
     # Exception Handlers
     default :exception_handlers, []
 
