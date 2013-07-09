@@ -20,7 +20,7 @@ class Chef
 
           newcron = ""
           newcron << "# Chef Name: #{new_resource.name}\n"
-          newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} "
+          newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday}"
 
           newcron << " #{@new_resource.command}\n"
           newcron
