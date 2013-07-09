@@ -65,20 +65,6 @@ class Chef
           end
         end
 
-        def get_crontab_entry
-          newcron = ""
-          newcron << "# Chef Name: #{new_resource.name}\n"
-          newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} "
-
-          [ :mailto, :path, :shell, :home ].each do |v|
-            newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}; " if @new_resource.send(v)
-          end
-          @new_resource.environment.each do |name, value|
-            newcron << "#{name}=#{value}; "
-          end
-          newcron << " #{@new_resource.command}\n"
-          newcron
-        end
       end
     end
   end
