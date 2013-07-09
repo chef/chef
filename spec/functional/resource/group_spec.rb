@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Chef provider for group" do
+describe "Chef provider for group", :requires_root do
 	# Order the tests for proper cleanup and execution
 	RSpec.configure do |config|
 		config.order_groups_and_examples do |list|
