@@ -86,7 +86,6 @@ class Chef
           unless @current_resource.mounted
             mountable?
             command = "mount -v #{@new_resource.fstype}"
-            #command << " -o #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
 
             if !(@new_resource.options.nil? || @new_resource.options.empty?)
               command << " -o #{@new_resource.options.join(',')}"
@@ -108,6 +107,13 @@ class Chef
           end
         end
 
+       def remount_command
+         if !(@new_resource.options.nil? || @new_resource.options.empty?)
+           return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
+         else
+           return "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
+         end
+       end
 
        def enable_fs
           if @current_resource.enabled && mount_options_unchanged?
@@ -125,8 +131,8 @@ class Chef
             fstab.puts("#{@new_resource.mount_point}:")
             if network_device?
                device_details = device_fstab.split(":")
-               fstab.puts("\tnodename\t\t= #{device_details[0]}")
                fstab.puts("\tdev\t\t= #{device_details[1]}")
+               fstab.puts("\tnodename\t\t= #{device_details[0]}")
             else
                fstab.puts("\tdev\t\t= #{device_fstab}")
             end 
