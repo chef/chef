@@ -31,6 +31,7 @@ $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 
 require "chef/shell"
 
-#irb --noreadline      Don't use Readline extension module
-IRB.conf[:USE_READLINE] = false if (ENV['OS'] == 'Windows_NT')
+# On Windows only, enable irb --noreadline because of input problems --
+# See CHEF-3284.
+IRB.conf[:USE_READLINE] = false if RUBY_PLATFORM =~ /mswin|mingw|windows/
 Shell.start
