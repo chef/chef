@@ -177,7 +177,7 @@ describe Chef::Cookbook::Metadata do
     end
   end
 
-  describe "describing dependencies (includes version trasnformation)" do
+  describe "describing dependencies (includes version transformation)" do
     dep_types = {
       :depends     => [ :dependencies, "foo::bar", "> 0.2", "> 0.2.0" ],
       :recommends  => [ :recommendations, "foo::bar", ">= 0.2", ">= 0.2.0" ],
