@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::Group, :requires_root  do
+describe Chef::Resource::Group, :requires_root_or_running_windows	  do
   include Chef::Mixin::ShellOut
 
   OHAI_SYSTEM = Ohai::System.new
@@ -56,27 +56,29 @@ describe Chef::Resource::Group, :requires_root  do
 		context "group name with 256 characters", :windows_only do
 			before(:each) do
 				grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
-				@new_grp = Chef::Resource::Group.new(grp_name, @run_context)
+				@new_grp = Chef::Resource::Group.new(grp_name, run_context)
 			end
 			after do
 				@new_grp.run_action(:remove)
 			end
 			it " - should create a group" do
-				grp_resource.run_action(:create)
-				grp_resource.should be_updated_by_last_action
+				@new_grp.run_action(:create)
+				provider = @new_grp.provider_for_action(@new_grp.action)
+				provider.load_current_resource
+				provider.group_exists.should be_true
 			end
 		end
 
 		context "group name with more than 256 characters", :windows_only do
 			before(:each) do
 				grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQQQQQQQQQQQQ"
-				@new_grp = Chef::Resource::Group.new(grp_name, @run_context)
-			end
-			after do
-				@new_grp.run_action(:remove)
+				@new_grp = Chef::Resource::Group.new(grp_name, run_context)
 			end
 			it " - should not create a group" do
-				expect {@new_grp.run_action(:create)}.to raise_error
+				#@new_grp = Chef::Resource::Group.new(grp_name, @run_context)
+				provider = @new_grp.provider_for_action(@new_grp.action)
+				provider.load_current_resource
+				provider.group_exists.should be_false
 			end
 		end
 
