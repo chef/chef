@@ -67,9 +67,6 @@ class Chef
         if new_resource.cookbook_name
           as_hash["cookbook_name"] = new_resource.cookbook_name
           as_hash["cookbook_version"] = new_resource.cookbook_version.version
-        else
-          as_hash["cookbook_name"] = ""
-          as_hash["cookbook_version"] = "0.0.0"
         end
 
         as_hash
