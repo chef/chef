@@ -42,15 +42,30 @@ describe Chef::Resource::Group, :requires_root_or_running_windows	  do
 		user_resource.run_action(:remove)
 	end
 
-	let(:grp_resource) do
-		Chef::Resource::Group.new("chef-test-group", run_context)
+	def provider(resource)
+		provider = resource.provider_for_action(resource.action)
+		provider.load_current_resource
+		provider
+	end
+
+	def resource_should_exist(resource)
+		provider(resource).group_exists.should be_true
+	end
+
+	def resource_should_not_exist(resource)
+		provider(resource).group_exists.should be_false
+	end
+
+
+	before do
+		@grp_resource = Chef::Resource::Group.new("chef-test-group", run_context)
 	end
 
 	context "group create action" do
 
 		it " - should create a group" do
-			grp_resource.run_action(:create)
-			grp_resource.should be_updated_by_last_action
+			@grp_resource.run_action(:create)
+			resource_should_exist(@grp_resource)
 		end
 
 		context "group name with 256 characters", :windows_only do
@@ -63,9 +78,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows	  do
 			end
 			it " - should create a group" do
 				@new_grp.run_action(:create)
-				provider = @new_grp.provider_for_action(@new_grp.action)
-				provider.load_current_resource
-				provider.group_exists.should be_true
+				resource_should_exist(@new_grp)
 			end
 		end
 
@@ -75,10 +88,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows	  do
 				@new_grp = Chef::Resource::Group.new(grp_name, run_context)
 			end
 			it " - should not create a group" do
-				#@new_grp = Chef::Resource::Group.new(grp_name, @run_context)
-				provider = @new_grp.provider_for_action(@new_grp.action)
-				provider.load_current_resource
-				provider.group_exists.should be_false
+				@new_grp.run_action(:create)
+				resource_should_not_exist(@new_grp)
 			end
 		end
 
@@ -115,10 +126,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows	  do
 
 		context "group remove action" do
 			it "should remove the group" do
-				grp_resource.run_action(:remove)
-				provider = grp_resource.provider_for_action(grp_resource.action)
-				provider.load_current_resource
-				provider.group_exists.should be_false
+				@grp_resource.run_action(:remove)
+				resource_should_not_exist(@grp_resource)
 			end
 		end
 	end
