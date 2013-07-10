@@ -32,5 +32,5 @@ $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 require "chef/shell"
 
 #irb --noreadline      Don't use Readline extension module
-IRB.conf[:USE_READLINE] = false if (ENV['OS'] == 'Windows_NT')
+IRB.conf[:USE_READLINE] = false if Chef::Platform.windows?
 Shell.start
