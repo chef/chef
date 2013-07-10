@@ -33,5 +33,5 @@ require "chef/shell"
 
 # On Windows only, enable irb --noreadline because of input problems --
 # See CHEF-3284.
-IRB.conf[:USE_READLINE] = false if RUBY_PLATFORM =~ /mswin|mingw|windows/
+IRB.conf[:USE_READLINE] = false if Chef::Platform::windows?
 Shell.start
