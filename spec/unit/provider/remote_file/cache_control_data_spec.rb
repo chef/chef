@@ -108,6 +108,15 @@ describe Chef::Provider::RemoteFile::CacheControlData do
         cache_control_data.mtime.should == mtime
       end
     end
+
+    context "and the cached checksum data is corrupted" do
+      let(:cache_json_data) { '{"foo",,"bar" []}' }
+
+      it "returns empty cache control data" do
+        cache_control_data.etag.should be_nil
+        cache_control_data.mtime.should be_nil
+      end
+    end
   end
 
   describe "when saving to disk" do
