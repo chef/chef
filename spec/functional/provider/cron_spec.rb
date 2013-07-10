@@ -22,8 +22,8 @@ describe "Chef Provider for Cron" do
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
     
-    providerClass = Chef::Platform.find_provider(ohai[:platform], ohai[:version], @new_resource)
-    @provider = providerClass.new(@new_resource, @run_context)
+    @providerClass = Chef::Platform.find_provider(ohai[:platform], ohai[:version], @new_resource)
+    @provider = @providerClass.new(@new_resource, @run_context)
   end
 
   describe "testcase 1: create action" do
@@ -52,13 +52,18 @@ describe "Chef Provider for Cron" do
     def create_and_validate
       @provider.load_current_resource
       @provider.cron_exists.should be_false
-      @provider.run_action(:create)
-      # Verify if the cron is created successfully
-      @provider.load_current_resource
-      @provider.cron_exists.should be_true
+      if @providerClass == Chef::Provider::Cron::Aix
+         expect {@provider.run_action(:create)}.to raise_error(Chef::Exceptions::Cron, "Aix cron entry does not support environment variables. Please set them in script and use script in cron.")
+      else
+        @provider.run_action(:create)
+        # Verify if the cron is created successfully
+        @provider.load_current_resource
+        @provider.cron_exists.should be_true
+      end
     end
 
     def validate_cron_attribute(attribute, expected_value)
+      return if @providerClass == Chef::Provider::Cron::Aix
       # Test if the attribute exists as attribute or on command
       current_resource = @provider.current_resource
       new_val = current_resource.send(attribute.to_sym)
