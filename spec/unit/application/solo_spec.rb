@@ -88,6 +88,28 @@ describe Chef::Application::Solo do
         end
       end
 
+      describe "and the json_attribs include json_class: Chef::Node" do
+        before do
+          Chef::Config[:json_attribs] = "/etc/chef/dna.json"
+          @json = StringIO.new(
+            {
+              "json_class" => "Chef::Node",
+              "normal" => {
+                "a" => "b"
+              },
+              "run_list" => ["recipe[foo]"]
+            }.to_json
+          )
+          @app.stub!(:open).with("/etc/chef/dna.json").and_return(@json)
+        end
+
+        it "should parse the json out of the file" do
+          @app.reconfigure
+          @app.instance_variable_get(:@chef_client_json).should include("a" => "b")
+          @app.instance_variable_get(:@chef_client_json).should include("run_list")
+        end
+      end
+
       describe "when parsing fails" do
         before do
           Chef::Config[:json_attribs] = "/etc/chef/dna.json"
