@@ -23,6 +23,7 @@ class Chef
     class CookbookSiteShare < Knife
 
       deps do
+        require 'chef/cookbook_loader'
         require 'chef/cookbook_uploader'
         require 'chef/cookbook_site_streaming_uploader'
       end
