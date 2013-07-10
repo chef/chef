@@ -38,7 +38,7 @@ describe Chef::Resource::Group, :requires_root  do
 		user_resource.run_action(:create)
 	end
 
-	let(:remove_user0
+	let(:remove_user) do
 		user_resource.run_action(:remove)
 	end
 
