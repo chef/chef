@@ -455,12 +455,12 @@ describe Chef::ResourceReporter do
         @first_update_report["result"].should == "create"
       end
 
-      it "includes a default (blank) cookbook name" do
-        @first_update_report["cookbook_name"].should == ""
+      it "does not include a cookbook name for the resource" do
+        @first_update_report.should_not have_key("cookbook_name")
       end
 
-      it "includes a default (0.0.0) cookbook version" do
-        @first_update_report["cookbook_version"].should == "0.0.0"
+      it "does not include a cookbook version for the resource" do
+        @first_update_report.should_not have_key("cookbook_version")
       end
     end
 
