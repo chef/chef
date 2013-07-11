@@ -31,7 +31,7 @@ describe Chef::Mixin::ShellOut do
     let(:cmd) { "echo '#{rand(1000)}'" }
 
     let(:output) { StringIO.new }
-    let(:capture_log_output) { Chef::Log.logger = Logger.new(output)  }
+    let!(:capture_log_output) { Chef::Log.logger = Logger.new(output)  }
     let(:assume_deprecation_log_level) { Chef::Log.stub!(:level).and_return(:warn) }
 
     context 'without options' do
