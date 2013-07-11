@@ -160,6 +160,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :environment,
+    :short        => '-E ENVIRONMENT',
+    :long         => '--environment ENVIRONMENT',
+    :description  => 'Set the Chef Environment on the node'
+
   attr_reader :chef_solo_json
 
   def initialize
