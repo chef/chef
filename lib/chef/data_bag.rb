@@ -82,14 +82,23 @@ class Chef
     end
 
     def self.list(inflate=false)
-      if inflate
-        # Can't search for all data bags like other objects, fall back to N+1 :(
-        list(false).inject({}) do |response, bag_and_uri|
-          response[bag_and_uri.first] = load(bag_and_uri.first)
-          response
+      if Chef::Config[:solo]
+        unless File.directory?(Chef::Config[:data_bag_path])
+          raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{Chef::Config[:data_bag_path]}' is invalid"
         end
+
+        names = Dir.glob(File.join(Chef::Config[:data_bag_path], "*")).map{|f|File.basename(f)}.sort
+        names.inject({}) {|h, n| h[n] = n; h}
       else
-        Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+        if inflate
+          # Can't search for all data bags like other objects, fall back to N+1 :(
+          list(false).inject({}) do |response, bag_and_uri|
+            response[bag_and_uri.first] = load(bag_and_uri.first)
+            response
+          end
+        else
+          Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("data")
+        end
       end
     end
 

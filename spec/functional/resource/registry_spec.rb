@@ -112,14 +112,18 @@ describe Chef::Resource::RegistryKey, :windows_only do
   #Reporting setup
   before do
     @node.name("windowsbox")
+
     @rest_client = mock("Chef::REST (mock)")
-    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/ABC123");
+    @rest_client.stub!(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}");
     @rest_client.stub!(:raw_http_request).and_return({"result"=>"ok"});
-    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/ABC123"});
+    @rest_client.stub!(:post_rest).and_return({"uri"=>"https://example.com/reports/nodes/windowsbox/runs/#{@run_id}"});
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
-    @resource_reporter.node_load_completed(@node, :expanded_run_list, :config)
+    @run_id = @resource_reporter.run_id
+    @run_status = Chef::RunStatus.new(@node, @events)
+
+    @resource_reporter.run_started(@run_status)
 
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = mock("Cookbook::Version", :version => "1.2.3")
@@ -537,7 +541,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["resources"][0]["type"].should == "registry_key"
       @report["resources"][0]["name"].should == resource_name
       @report["resources"][0]["id"].should == reg_parent + '\ReportKey'
-      #Not testing for before or after values to match since 
+      #Not testing for before or after values to match since
       #after -> new_resource.values and
       #before -> current_resource.values
       @report["resources"][0]["result"].should == "delete_key"

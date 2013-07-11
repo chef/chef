@@ -17,6 +17,7 @@
 #
 
 require 'chef/chef_fs'
+require 'pathname'
 
 class Chef
   module ChefFS
@@ -24,13 +25,13 @@ class Chef
 
       # If you are in 'source', this is what you would have to type to reach 'dest'
       # relative_to('/a/b/c/d/e', '/a/b/x/y') == '../../c/d/e'
-      # relative_to('/a/b', '/a/b') == ''
+      # relative_to('/a/b', '/a/b') == '.'
       def self.relative_to(dest, source)
         # Skip past the common parts
         source_parts = Chef::ChefFS::PathUtils.split(source)
         dest_parts = Chef::ChefFS::PathUtils.split(dest)
         i = 0
-        until i >= source_parts.length || i >= dest_parts.length || source_parts[i] != source_parts[i]
+        until i >= source_parts.length || i >= dest_parts.length || source_parts[i] != dest_parts[i]
           i+=1
         end
         # dot-dot up from 'source' to the common ancestor, then
@@ -56,9 +57,34 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS::windows? ? '[/\\]' : '/'
+        Chef::ChefFS::windows? ? '[\/\\\\]' : '/'
       end
 
+      # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
+      # or /x/y/*/blah when /x/y/z/blah exists), call File.realpath on the biggest
+      # part that actually exists.
+      #
+      # If /x is a symlink to /blarghle, and has no subdirectories, then:
+      # PathUtils.realest_path('/x/y/z') == '/blarghle/y/z'
+      # PathUtils.realest_path('/x/*/z') == '/blarghle/*/z'
+      # PathUtils.realest_path('/*/y/z') == '/*/y/z'
+      def self.realest_path(path)
+        path = Pathname.new(path)
+        begin
+          path.realpath.to_s
+        rescue Errno::ENOENT
+          dirname = path.dirname
+          if dirname
+            PathUtils.join(realest_path(dirname), path.basename.to_s)
+          else
+            path.to_s
+          end
+        end
+      end
+
+      def self.is_absolute?(path)
+        path =~ /^#{regexp_path_separator}/
+      end
     end
   end
 end

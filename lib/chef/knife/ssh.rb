@@ -25,6 +25,7 @@ class Chef
       deps do
         require 'net/ssh'
         require 'net/ssh/multi'
+        require 'chef/monkey_patches/net-ssh-multi'
         require 'readline'
         require 'chef/exceptions'
         require 'chef/search/query'
@@ -79,6 +80,12 @@ class Chef
         :long => "--ssh-gateway GATEWAY",
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
+
+      option :forward_agent,
+        :short => "-A",
+        :long => "--forward-agent",
+        :description => "Enable SSH agent forwarding",
+        :boolean => true
 
       option :identity_file,
         :short => "-i IDENTITY_FILE",
@@ -182,6 +189,7 @@ class Chef
           session_opts[:keys] = File.expand_path(config[:identity_file]) if config[:identity_file]
           session_opts[:keys_only] = true if config[:identity_file]
           session_opts[:password] = config[:ssh_password] if config[:ssh_password]
+          session_opts[:forward_agent] = config[:forward_agent]
           session_opts[:port] = config[:ssh_port] || Chef::Config[:knife][:ssh_port] || ssh_config[:port]
           session_opts[:logger] = Chef::Log.logger if Chef::Log.level == :debug
 

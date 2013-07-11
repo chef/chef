@@ -39,10 +39,10 @@ describe Chef::Knife::Configure do
   end
 
   let(:default_admin_key) { "/etc/chef-server/admin.pem" }
-  let(:default_admin_key_win32) { "C:#{default_admin_key}" }
+  let(:default_admin_key_win32) { File.expand_path(default_admin_key) }
 
   let(:default_validator_key) { "/etc/chef-server/chef-validator.pem" }
-  let(:default_validator_key_win32) { "C:#{default_validator_key}" }
+  let(:default_validator_key_win32) { File.expand_path(default_validator_key) }
 
   let(:default_server_url) { "https://#{fqdn}:443" }
 
@@ -103,7 +103,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the existing admin's private key: [#{default_admin_key}]"))
     if windows?
-      @knife.admin_client_key.should == default_admin_key_win32
+      @knife.admin_client_key.capitalize.should == default_admin_key_win32.capitalize
     else
       @knife.admin_client_key.should == default_admin_key
     end
@@ -115,7 +115,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key:"))
     if windows?
-      @knife.admin_client_key.should == 'C:/home/you/.chef/my-webui.pem'
+      @knife.admin_client_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-webui\.pem$}
     else
       @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
     end
@@ -154,7 +154,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should match(Regexp.escape("Please enter the location of the validation key: [#{default_validator_key}]"))
     if windows?
-      @knife.validation_key.should == default_validator_key_win32
+      @knife.validation_key.capitalize.should == default_validator_key_win32.capitalize
     else
       @knife.validation_key.should == default_validator_key
     end
@@ -165,7 +165,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the validation key:"))
     if windows?
-      @knife.validation_key.should == 'C:/home/you/.chef/my-validation.pem'
+      @knife.validation_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-validation\.pem$}
     else
       @knife.validation_key.should == '/home/you/.chef/my-validation.pem'
     end
@@ -190,9 +190,9 @@ describe Chef::Knife::Configure do
     @knife.chef_server.should == 'http://localhost:5000'
     @knife.admin_client_name.should == 'my-webui'
     if windows?
-      @knife.admin_client_key.should == 'C:/home/you/.chef/my-webui.pem'
-      @knife.validation_key.should == 'C:/home/you/.chef/my-validation.pem'
-      @knife.new_client_key.should == 'C:/home/you/a-new-user.pem'
+      @knife.admin_client_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-webui\.pem$}
+      @knife.validation_key.should match %r{^[A-Za-z]:/home/you/\.chef/my-validation\.pem$}
+      @knife.new_client_key.should match %r{^[A-Za-z]:/home/you/a-new-user\.pem$}
     else
       @knife.admin_client_key.should == '/home/you/.chef/my-webui.pem'
       @knife.validation_key.should == '/home/you/.chef/my-validation.pem'

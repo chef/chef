@@ -18,12 +18,12 @@
 # limitations under the License.
 #
 
-# TODO test that these work when you are logged on as a user joined to a domain (rather than local computer)
-# TODO test that you can set users from other domains
-
 require 'etc'
 
 shared_context "setup correct permissions" do
+  if windows?
+    include_context "use Windows permissions"
+  end
 
   # I could not get this to work with :requires_unprivileged_user for whatever
   # reason. The setup when running as root is the same as non-root, except we
@@ -39,10 +39,20 @@ shared_context "setup correct permissions" do
     File.chown(Etc.getpwnam('nobody').uid, 1337, path)
   end
 
-  # FIXME: windows
+  before :each, :windows_only do
+    so = SecurableObject.new(path)
+    so.owner = SID.Administrator
+    so.group = SID.Administrators
+    dacl = ACL.create(denied_acl(SID.Guest, expected_modify_perms) +
+                      allowed_acl(SID.Guest, expected_read_perms))
+    so.dacl = dacl
+  end
 end
 
 shared_context "setup broken permissions" do
+  if windows?
+    include_context "use Windows permissions"
+  end
 
   before :each, :unix_only do
     File.chmod(0644, path)
@@ -52,13 +62,21 @@ shared_context "setup broken permissions" do
     File.chown(0, 0, path)
   end
 
-  # FIXME: windows
+  before :each, :windows_only do
+    so = SecurableObject.new(path)
+    so.owner = SID.Guest
+    so.group = SID.Everyone
+    dacl = ACL.create(allowed_acl(SID.Guest, expected_modify_perms))
+    so.set_dacl(dacl, true)
+  end
 end
 
 shared_context "use Windows permissions", :windows_only do
   if windows?
     SID ||= Chef::ReservedNames::Win32::Security::SID
     ACE ||= Chef::ReservedNames::Win32::Security::ACE
+    ACL ||= Chef::ReservedNames::Win32::Security::ACL
+    SecurableObject ||= Chef::ReservedNames::Win32::Security::SecurableObject
   end
 
   def get_security_descriptor(path)
@@ -126,7 +144,7 @@ shared_context "use Windows permissions", :windows_only do
   end
 end
 
-shared_examples_for "a securable resource" do
+shared_examples_for "a securable resource with existing target" do
 
   include_context "diff disabled"
 
@@ -211,9 +229,64 @@ shared_examples_for "a securable resource" do
   context "on Windows", :windows_only do
     include_context "use Windows permissions"
 
-    before(:each) do
-      resource.run_action(:delete)
+    describe "when setting owner" do
+      before do
+        resource.owner('Administrator')
+        resource.run_action(:create)
+      end
+
+      it "should set the owner" do
+        descriptor.owner.should == SID.Administrator
+      end
+
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
+      end
     end
+
+    describe "when setting group" do
+      before do
+        resource.group('Administrators')
+        resource.run_action(:create)
+      end
+
+      it "should set the group" do
+        descriptor.group.should == SID.Administrators
+      end
+
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
+      end
+    end
+
+    describe "when setting rights and deny_rights" do
+      before do
+        resource.deny_rights(:modify, 'Guest')
+        resource.rights(:read, 'Guest')
+        resource.run_action(:create)
+      end
+
+      it "should set the rights and deny_rights" do
+        explicit_aces.should == denied_acl(SID.Guest, expected_modify_perms) + allowed_acl(SID.Guest, expected_read_perms)
+      end
+
+      it "is marked as updated only if changes are made" do
+        resource.updated_by_last_action?.should == expect_updated?
+      end
+    end
+  end
+end
+
+shared_examples_for "a securable resource without existing target" do
+
+  include_context "diff disabled"
+
+  context "on Unix", :unix_only do
+    pending "if we need any securable resource tests on Unix without existing target resource."
+  end
+
+  context "on Windows", :windows_only do
+    include_context "use Windows permissions"
 
     it "sets owner to Administrators on create if owner is not specified" do
       File.exist?(path).should == false
@@ -428,5 +501,33 @@ shared_examples_for "a securable resource" do
       end
     end
 
+    it "does not inherit aces if inherits is set to false" do
+      # We need at least one ACE if we're creating a securable without
+      # inheritance
+      resource.rights(:full_control, 'Administrators')
+      resource.inherits(false)
+      resource.run_action(:create)
+
+      descriptor.dacl.each do | ace |
+        ace.inherited?.should == false
+      end
+    end
+
+    it "has the inheritable acls of parent directory if no acl is specified" do
+      File.exist?(path).should == false
+
+      parent_acls = parent_inheritable_acls
+
+      resource.run_action(:create)
+
+      descriptor.dacl.each_with_index do |ace, index|
+        # On Windows Server 2003 OS creates a default non-inheritable
+        # ACL during file creation unless otherwise specified.
+        ace.inherited?.should == true unless windows_win2k3?
+        ace.should == parent_acls.dacl[index]
+      end
+    end
+
   end
 end
+

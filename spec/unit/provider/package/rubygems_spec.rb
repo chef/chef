@@ -107,6 +107,37 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     @gem_env.candidate_version_from_remote(Gem::Dependency.new('rspec', '>= 0')).should == Gem::Version.new('1.3.0')
   end
 
+  context "when rubygems was upgraded from 1.8->2.0" do
+    # https://github.com/rubygems/rubygems/issues/404
+    # tl;dr rubygems 1.8 and 2.0 can both be in the load path, which means that
+    # require "rubygems/format" will load even though rubygems 2.0 doesn't have
+    # that file.
+
+    before do
+      if defined?(Gem::Format)
+        # tests are running under rubygems 1.8, or 2.0 upgraded from 1.8
+        @remove_gem_format = false
+      else
+        Gem.const_set(:Format, Object.new)
+        @remove_gem_format = true
+      end
+      Gem::Package.stub!(:respond_to?).with(:open).and_return(false)
+    end
+
+    after do
+      if @remove_gem_format
+        Gem.send(:remove_const, :Format)
+      end
+    end
+
+    it "finds a matching gem candidate version on rubygems 2.0+ with some rubygems 1.8 code loaded" do
+      package = mock("Gem::Package", :spec => "a gemspec from package")
+      Gem::Package.should_receive(:new).with("/path/to/package.gem").and_return(package)
+      @gem_env.spec_from_file("/path/to/package.gem").should == "a gemspec from package"
+    end
+
+  end
+
   it "gives the candidate version as nil if none is found" do
     dep = Gem::Dependency.new('rspec', '>= 0')
     latest = []

@@ -43,7 +43,8 @@ class Chef
 
       def parse_ignore_file
         ignore_globs = []
-        if File.exist?(@ignore_file) && File.readable?(@ignore_file)
+        if File.exist?(@ignore_file) && File.readable?(@ignore_file) &&
+          (File.file?(@ignore_file) || File.symlink?(@ignore_file))
           File.foreach(@ignore_file) do |line|
             ignore_globs << line.strip unless line =~ COMMENTS_AND_WHITESPACE
           end

@@ -136,6 +136,21 @@ describe Chef::Resource::Mount do
     @resource.supports.should == support_hash
   end
 
+  it "should allow you to set username" do
+    @resource.username("Administrator")
+    @resource.username.should == "Administrator"
+  end
+
+  it "should allow you to set password" do
+    @resource.password("Jetstream123!")
+    @resource.password.should == "Jetstream123!"
+  end
+
+  it "should allow you to set domain" do
+    @resource.domain("TEST_DOMAIN")
+    @resource.domain.should == "TEST_DOMAIN"
+  end
+
   describe "when it has mount point, device type, and fstype" do
     before do 
       @resource.device("charmander")
@@ -154,5 +169,27 @@ describe Chef::Resource::Mount do
     it "returns the device as its identity" do
       @resource.identity.should == "charmander"
     end
+  end
+
+  describe "when it has username, password and domain" do
+    before do 
+      @resource.mount_point("T:")
+      @resource.device("charmander")
+      @resource.username("Administrator")
+      @resource.password("Jetstream123!")
+      @resource.domain("TEST_DOMAIN")
+    end
+
+    it "describes its state" do
+      state = @resource.state
+      puts state
+      state[:mount_point].should == "T:"
+      state[:username].should == "Administrator"
+      state[:password].should == "Jetstream123!"
+      state[:domain].should == "TEST_DOMAIN"
+      state[:device_type].should eql(:device)
+      state[:fstype].should == "auto"
+    end
+
   end
 end

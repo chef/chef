@@ -52,7 +52,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
 
   context "Windows Operating System version" do
     it "should match the version from WMI" do
-      @current_os_version.include?(@version.marketing_name).should == true
+      @current_os_version.should include(@version.marketing_name)
     end
   end
  

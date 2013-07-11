@@ -1,11 +1,9 @@
-require 'chef/chef_fs/file_system/chef_server_root_dir'
-require 'chef/config'
-require 'chef/rest'
+require 'chef/platform'
 
 class Chef
   module ChefFS
     def self.windows?
-      false
+      Chef::Platform.windows?
     end
   end
 end

@@ -32,6 +32,8 @@ Gem::Specification.new do |s|
 
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.12.0" }
+  s.add_development_dependency "chef-zero", "~> 1.4"
+  s.add_development_dependency "puma", "~> 1.6"
 
   s.bindir       = "bin"
   # chef-service-manager is a windows only executable.
@@ -40,5 +42,5 @@ Gem::Specification.new do |s|
   s.executables  = %w( chef-client chef-solo knife chef-shell shef chef-apply chef-service-manager )
 
   s.require_path = 'lib'
-  s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*")
+  s.files = %w(Rakefile LICENSE README.md CONTRIBUTING.md) + Dir.glob("{distro,lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }
 end

@@ -162,7 +162,7 @@ class Chef
       # Called when a resource action has been skipped b/c of a conditional
       def resource_skipped(resource, action, conditional)
         # TODO: more info about conditional
-        puts " (skipped due to #{conditional.positivity})"
+        puts " (skipped due to #{conditional.short_description})"
       end
 
       # Called after #load_current_resource has run.

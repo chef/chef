@@ -2,7 +2,8 @@
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Christopher Brown (<cb@opscode.com>)
 # Author:: AJ Christensen (<aj@opscode.com>)
-# Author:: Mark Mzyk (mmzyk@opscode.com)
+# Author:: Mark Mzyk (<mmzyk@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -19,7 +20,9 @@
 # limitations under the License.
 
 require 'chef/log'
+require 'chef/exceptions'
 require 'mixlib/config'
+require 'chef/util/selinux'
 
 class Chef
   class Config
@@ -103,7 +106,7 @@ class Chef
           f = File.new(location.to_str, "a")
           f.sync = true
         rescue Errno::ENOENT
-          raise Chef::Exceptions::ConfigurationError("Failed to open or create log file at #{location.to_str}")
+          raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
           f
       end
@@ -186,6 +189,7 @@ class Chef
     chef_server_url   "https://localhost:443"
 
     rest_timeout 300
+    yum_timeout 900
     solo  false
     splay nil
     why_run false
@@ -206,6 +210,8 @@ class Chef
     role_path platform_specific_path("/var/chef/roles")
 
     data_bag_path platform_specific_path("/var/chef/data_bags")
+
+    environment_path platform_specific_path("/var/chef/environments")
 
     # Where should chef-solo download recipes from?
     recipe_url nil
@@ -315,12 +321,26 @@ class Chef
 
       fatal_windows_admin_check false
     else
-      user_valid_regex [ /^([-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-      group_valid_regex [ /^([-a-zA-Z0-9_.\\ ]+)$/, /^\d+$/ ]
+      user_valid_regex [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      group_valid_regex [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
     end
 
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
     user_home(ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+
+    # Enable file permission fixup for selinux. Fixup will be done
+    # only if selinux is enabled in the system.
+    enable_selinux_file_permission_fixup true
+
+    # Use atomic updates (i.e. move operation) while updating contents
+    # of the files resources. When set to false copy operation is
+    # used to update files.
+    file_atomic_update true
+
+    # If false file staging is will be done via tempfiles that are
+    # created under ENV['TMP'] otherwise tempfiles will be created in
+    # the directory that files are going to reside.
+    file_staging_uses_destdir false
   end
 end

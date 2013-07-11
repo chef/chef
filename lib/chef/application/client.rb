@@ -209,6 +209,7 @@ class Chef::Application::Client < Chef::Application
 
   def initialize
     super
+    @exit_gracefully = false
   end
 
   # Reconfigure the chef client
@@ -274,6 +275,12 @@ class Chef::Application::Client < Chef::Application
         Chef::Log.info("SIGUSR1 received, waking up")
         SELF_PIPE[1].putc('.') # wakeup master process from select
       end
+
+      trap("TERM") do
+        Chef::Log.info("SIGTERM received, exiting gracefully")
+        @exit_gracefully = true
+        SELF_PIPE[1].putc('.')
+      end
     end
 
     if Chef::Config[:version]
@@ -286,6 +293,7 @@ class Chef::Application::Client < Chef::Application
 
     loop do
       begin
+        Chef::Application.exit!("Exiting", 0) if @exit_gracefully
         if Chef::Config[:splay]
           splay = rand Chef::Config[:splay]
           Chef::Log.debug("Splay sleep #{splay} seconds")
@@ -308,7 +316,6 @@ class Chef::Application::Client < Chef::Application
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Application.debug_stacktrace(e)
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           unless SELF_PIPE.empty?
             client_sleep Chef::Config[:interval]
@@ -318,7 +325,6 @@ class Chef::Application::Client < Chef::Application
           end
           retry
         else
-          Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       end

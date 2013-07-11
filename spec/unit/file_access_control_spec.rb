@@ -36,7 +36,7 @@ describe Chef::FileAccessControl do
         @run_context = Chef::RunContext.new(@node, {}, @events)
         @current_resource = Chef::Resource::File.new('/tmp/different_file.txt')
         @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context)
-        @provider = mock("File provider", :requirements => @provider_requirements)
+        @provider = mock("File provider", :requirements => @provider_requirements, :manage_symlink_access? => false)
 
         @fac = Chef::FileAccessControl.new(@current_resource, @resource, @provider)
       end
@@ -105,7 +105,14 @@ describe Chef::FileAccessControl do
       @fac.target_uid.should == 4294967286
     end
 
+    it "wants to update the owner when the current owner is nil (creating a file)" do
+      @current_resource.owner(nil)
+      @resource.owner(2342)
+      @fac.should_update_owner?.should be_true
+    end
+
     it "wants to update the owner when the current owner doesn't match desired" do
+      @current_resource.owner(3224)
       @resource.owner(2342)
       @fac.should_update_owner?.should be_true
     end
@@ -171,6 +178,12 @@ describe Chef::FileAccessControl do
       lambda { @fac.target_gid; @provider_requirements.run(:create) }.should raise_error(ArgumentError)
     end
 
+    it "wants to update the group when the current group is nil (creating a file)" do
+      @resource.group(2342)
+      @current_resource.group(nil)
+      @fac.should_update_group?.should be_true
+    end
+
     it "wants to update the group when the current group doesn't match the target group" do
       @resource.group(2342)
       @current_resource.group(815)
@@ -232,7 +245,14 @@ describe Chef::FileAccessControl do
       fac.should_update_mode?.should be_false
     end
 
+    it "wants to update the mode when the current mode is nil (creating a file)" do
+      @resource.mode("0400")
+      @current_resource.mode(nil)
+      @fac.should_update_mode?.should be_true
+    end
+
     it "wants to update the mode when the desired mode does not match the current mode" do
+      @resource.mode("0400")
       @current_resource.mode("0644")
       @fac.should_update_mode?.should be_true
     end

@@ -40,9 +40,25 @@ $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $:.unshift(File.expand_path("../lib", __FILE__))
 $:.unshift(File.dirname(__FILE__))
 
+if ENV["COVERAGE"]
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter "/spec/"
+    add_group "Remote File", "remote_file"
+    add_group "Resources", "/resource/"
+    add_group "Providers", "/provider/"
+    add_group "Knife", "knife"
+  end
+end
+
 require 'chef'
 require 'chef/knife'
-Chef::Knife.load_commands
+
+Dir['lib/chef/knife/**/*.rb'].
+  map {|f| f.gsub('lib/', '') }.
+  map {|f| f.gsub(%r[\.rb$], '') }.
+  each {|f| require f }
+
 require 'chef/mixins'
 require 'chef/dsl'
 require 'chef/application'
@@ -64,6 +80,7 @@ require 'spec/support/platform_helpers'
 Dir["spec/support/**/*.rb"].
   reject { |f| f =~ %r{^spec/support/platforms} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
+  map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
 
 RSpec.configure do |config|
@@ -77,12 +94,19 @@ RSpec.configure do |config|
   # Add jruby filters here
   config.filter_run_excluding :windows_only => true unless windows?
   config.filter_run_excluding :not_supported_on_win2k3 => true if windows_win2k3?
+  config.filter_run_excluding :not_supported_on_solaris => true if solaris?
+  config.filter_run_excluding :win2k3_only => true unless windows_win2k3?
   config.filter_run_excluding :windows64_only => true unless windows64?
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
+  config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
+  config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
+  config.filter_run_excluding :ruby_20_only => true unless ruby_20?
+  config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
   config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?

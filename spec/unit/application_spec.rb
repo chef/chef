@@ -242,7 +242,6 @@ describe Chef::Application do
         end
       end
 
-
     end
   end
 
@@ -291,6 +290,60 @@ describe Chef::Application do
 
     it "should raise an error" do
       lambda { @app.run_application }.should raise_error(Chef::Exceptions::Application)
+    end
+  end
+
+  describe "configuration errors" do
+    before do
+      Process.stub!(:exit).and_return(true)
+    end
+
+    def raises_informative_fatals_on_configure_chef
+      config_file_regexp = Regexp.new @app.config[:config_file]
+      Chef::Log.should_receive(:fatal).with(config_file_regexp).and_return(true)
+      @app.configure_chef
+    end
+
+    def warns_informatively_on_configure_chef
+      config_file_regexp = Regexp.new @app.config[:config_file]
+      Chef::Log.should_receive(:warn).at_least(:once).with(config_file_regexp).and_return(true)
+      Chef::Log.should_receive(:warn).any_number_of_times.and_return(true)
+      @app.configure_chef
+    end
+
+    it "should warn for bad config file path" do
+      @app.config[:config_file] = "/tmp/non-existing-dir/file"
+      warns_informatively_on_configure_chef
+    end
+
+    it "should raise informative fatals for bad config file url" do
+      non_existing_url = "http://its-stubbed.com/foo.rb"
+      @app.config[:config_file] = non_existing_url
+      Chef::REST.any_instance.stub(:fetch).with(non_existing_url).and_raise(SocketError)
+      raises_informative_fatals_on_configure_chef
+    end
+
+    describe "when config file exists but contains errors" do
+      def create_config_file(text)
+        @config_file = Tempfile.new("rspec-chef-config")
+        @config_file.write(text)
+        @config_file.close
+        @app.config[:config_file] = @config_file.path
+      end
+
+      after(:each) do
+        @config_file.unlink
+      end
+
+      it "should raise informative fatals for missing log file dir" do
+        create_config_file('log_location "/tmp/non-existing-dir/logfile"')
+        raises_informative_fatals_on_configure_chef
+      end
+
+      it "should raise informative fatals for badly written config" do
+        create_config_file("text that should break the config parsing")
+        raises_informative_fatals_on_configure_chef
+      end
     end
   end
 end

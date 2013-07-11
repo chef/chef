@@ -108,6 +108,21 @@ describe Chef::Provider::Route do
       @provider.run_action(:add)
       @new_resource.should_not be_updated
     end
+
+    it "should not delete config file for :add action (CHEF-3332)" do
+      @node.automatic_attrs[:platform] = 'centos'
+  
+      route_file = StringIO.new
+      File.should_receive(:new).and_return(route_file)
+      @resource_add = Chef::Resource::Route.new('192.168.1.0/24 via 192.168.0.1')
+      @run_context.resource_collection << @resource_add
+      @provider.stub!(:run_command).and_return(true)
+  
+      @resource_add.action(:add)
+      @provider.run_action(:add)
+      route_file.string.split("\n").should have(1).items
+      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+    end
   end
 
   describe Chef::Provider::Route, "action_delete" do
@@ -140,12 +155,12 @@ describe Chef::Provider::Route do
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      @provider.generate_command(:add).should match(/\svia\s#{@new_resource.gateway}\s/)
+      @provider.generate_command(:add).should match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
       @new_resource.stub!(:gateway).and_return(nil)
-      @provider.generate_command(:add).should_not match(/\svia\s#{@new_resource.gateway}\s/)
+      @provider.generate_command(:add).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
   end
 
@@ -161,12 +176,12 @@ describe Chef::Provider::Route do
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      @provider.generate_command(:delete).should match(/\svia\s#{@new_resource.gateway}\s/)
+      @provider.generate_command(:delete).should match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
       @new_resource.stub!(:gateway).and_return(nil)
-      @provider.generate_command(:delete).should_not match(/\svia\s#{@new_resource.gateway}\s/)
+      @provider.generate_command(:delete).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\s/)
     end
   end
 
@@ -181,11 +196,11 @@ describe Chef::Provider::Route do
     end
 
     it "should include ' via $gateway ' when a gateway is specified" do
-      @provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway}).should match(/\svia\s#{@new_resource.gateway}\n/)
+      @provider.config_file_contents(:add, { :target => @new_resource.target, :gateway => @new_resource.gateway}).should match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
     end
 
     it "should not include ' via $gateway ' when a gateway is not specified" do
-      @provider.generate_command(:add).should_not match(/\svia\s#{@new_resource.gateway}\n/)
+      @provider.generate_command(:add).should_not match(/\svia\s#{Regexp.escape(@new_resource.gateway.to_s)}\n/)
     end
   end
 
@@ -217,11 +232,12 @@ describe Chef::Provider::Route do
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.2.0/24 via 192.168.0.1')
       @run_context.resource_collection << Chef::Resource::Route.new('192.168.3.0/24 via 192.168.0.1')
 
+      @provider.action = :add
       @provider.generate_config
       route_file.string.split("\n").should have(3).items
-      route_file.string.should match(/^192.168.1.0\/24 via 192.168.0.1$/)
-      route_file.string.should match(/^192.168.2.0\/24 via 192.168.0.1$/)
-      route_file.string.should match(/^192.168.3.0\/24 via 192.168.0.1$/)
+      route_file.string.should match(/^192\.168\.1\.0\/24 via 192\.168\.0\.1$/)
+      route_file.string.should match(/^192\.168\.2\.0\/24 via 192\.168\.0\.1$/)
+      route_file.string.should match(/^192\.168\.3\.0\/24 via 192\.168\.0\.1$/)
     end
   end
 end

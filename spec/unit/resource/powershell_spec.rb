@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Resource::Powershell do
+describe Chef::Resource::PowershellScript do
 
   before(:each) do
     node = Chef::Node.new
@@ -28,18 +28,18 @@ describe Chef::Resource::Powershell do
 
     run_context = Chef::RunContext.new(node, nil, nil)
 
-    @resource = Chef::Resource::Powershell.new("powershell_unit_test", run_context)
+    @resource = Chef::Resource::PowershellScript.new("powershell_unit_test", run_context)
 
   end  
 
-  it "should create a new Chef::Resource::Powershell" do
-    @resource.should be_a_kind_of(Chef::Resource::Powershell)
+  it "should create a new Chef::Resource::PowershellScript" do
+    @resource.should be_a_kind_of(Chef::Resource::PowershellScript)
   end
   
   context "windowsscript" do
     let(:resource_instance) { @resource }
     let(:resource_instance_name ) { @resource.command }
-    let(:resource_name) { :powershell }
+    let(:resource_name) { :powershell_script }
     let(:interpreter_file_name) { 'powershell.exe' }
 
     it_should_behave_like "a Windows script resource"  

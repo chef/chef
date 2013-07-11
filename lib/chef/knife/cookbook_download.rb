@@ -61,6 +61,10 @@ class Chef
           exit 1
         elsif @version.nil?
           @version = determine_version
+          if @version.nil?
+            ui.fatal("No such cookbook found")
+            exit 1
+          end
         end
 
         ui.info("Downloading #{@cookbook_name} cookbook version #{@version}")
@@ -95,10 +99,13 @@ class Chef
       end
 
       def determine_version
-        if available_versions.size == 1
+
+        if available_versions.nil?
+          nil
+        elsif available_versions.size == 1
           @version = available_versions.first
         elsif config[:latest]
-          @version = available_versions.map { |v| Chef::Version.new(v) }.sort.last
+          @version = available_versions.last
         else
           ask_which_version
         end
@@ -106,10 +113,11 @@ class Chef
 
       def available_versions
         @available_versions ||= begin
-          versions = Chef::CookbookVersion.available_versions(@cookbook_name).map do |version|
-            Chef::Version.new(version)
+          versions = Chef::CookbookVersion.available_versions(@cookbook_name)
+          unless versions.nil?
+            versions.map! { |version| Chef::Version.new(version) }
+            versions.sort!
           end
-          versions.sort!
           versions
         end
         @available_versions

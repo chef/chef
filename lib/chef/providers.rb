@@ -37,7 +37,7 @@ require 'chef/provider/ohai'
 require 'chef/provider/mdadm'
 require 'chef/provider/mount'
 require 'chef/provider/package'
-require 'chef/provider/powershell'
+require 'chef/provider/powershell_script'
 require 'chef/provider/remote_directory'
 require 'chef/provider/remote_file'
 require 'chef/provider/route'
@@ -102,5 +102,18 @@ require 'chef/provider/mount/windows'
 require 'chef/provider/deploy/revision'
 require 'chef/provider/deploy/timestamped'
 
+require 'chef/provider/remote_file/ftp'
+require 'chef/provider/remote_file/http'
+require 'chef/provider/remote_file/local_file'
+require 'chef/provider/remote_file/fetcher'
+
 require "chef/provider/lwrp_base"
 require 'chef/provider/registry_key'
+
+require 'chef/provider/file/content'
+require 'chef/provider/remote_file/content'
+require 'chef/provider/cookbook_file/content'
+require 'chef/provider/template/content'
+
+require 'chef/provider/ifconfig/redhat'
+require 'chef/provider/ifconfig/debian'

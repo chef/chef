@@ -42,7 +42,7 @@ describe Chef::Resource::RemoteFile do
 
   describe "source" do
     it "does not have a default value for 'source'" do
-      @resource.source.should be_nil
+      @resource.source.should eql([])
     end
 
     it "should accept a URI for the remote file source" do
@@ -64,7 +64,7 @@ describe Chef::Resource::RemoteFile do
       lambda { @resource.source("not-a-uri") }.should raise_error(Chef::Exceptions::InvalidRemoteFileURI)
     end
 
-    it "should raise and exception when source is an empty array" do
+    it "should raise an exception when source is an empty array" do
       lambda { @resource.source([]) }.should raise_error(ArgumentError)
     end
 
@@ -80,7 +80,48 @@ describe Chef::Resource::RemoteFile do
       @resource.checksum.should == nil
     end
   end
-  
+
+  describe "ftp_active_mode" do
+    it "should accept a boolean for the ftp_active_mode object" do
+      @resource.ftp_active_mode true
+      @resource.ftp_active_mode.should be_true
+    end
+
+    it "should default to false" do
+      @resource.ftp_active_mode.should be_false
+    end
+  end
+
+  describe "conditional get options" do
+    it "defaults to using etags and last modified" do
+      @resource.use_etags.should be_true
+      @resource.use_last_modified.should be_true
+    end
+
+    it "enable or disables etag and last modified options as a group" do
+      @resource.use_conditional_get(false)
+      @resource.use_etags.should be_false
+      @resource.use_last_modified.should be_false
+
+      @resource.use_conditional_get(true)
+      @resource.use_etags.should be_true
+      @resource.use_last_modified.should be_true
+    end
+
+    it "disables etags indivdually" do
+      @resource.use_etags(false)
+      @resource.use_etags.should be_false
+      @resource.use_last_modified.should be_true
+    end
+
+    it "disables last modified individually" do
+      @resource.use_last_modified(false)
+      @resource.use_last_modified.should be_false
+      @resource.use_etags.should be_true
+    end
+
+  end
+
   describe "when it has group, mode, owner, source, and checksum" do
     before do 
       if Chef::Platform.windows?
@@ -119,5 +160,4 @@ describe Chef::Resource::RemoteFile do
       end
     end
   end
- 
 end

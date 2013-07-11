@@ -136,7 +136,7 @@ describe Chef::Application::Solo do
       end
 
       it "should untar the target file to the parent of the cookbook path" do
-        Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvfC #{Dir.tmpdir}/chef-solo/recipes.tgz #{Dir.tmpdir}/chef-solo"}).and_return(true)
+        Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvf #{Dir.tmpdir}/chef-solo/recipes.tgz -C #{Dir.tmpdir}/chef-solo"}).and_return(true)
         @app.reconfigure
       end
     end

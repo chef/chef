@@ -22,6 +22,7 @@ require 'spec_helper'
 describe Chef::Resource::Link do
 
   before(:each) do
+    Chef::Resource::Link.any_instance.should_receive(:verify_links_supported!).and_return(true)
     @resource = Chef::Resource::Link.new("fakey_fakerton")
   end
 

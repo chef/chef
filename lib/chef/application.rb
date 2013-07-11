@@ -34,10 +34,6 @@ class Chef::Application
 
     @chef_client = nil
     @chef_client_json = nil
-    trap("TERM") do
-      Chef::Application.fatal!("SIGTERM received, stopping", 1)
-    end
-
     trap("INT") do
       Chef::Application.fatal!("SIGINT received, stopping", 2)
     end
@@ -88,11 +84,11 @@ class Chef::Application
 
       Chef::Config.merge!(config)
     rescue SocketError => error
-      Chef::Application.fatal!("Error getting config file #{Chef::Config[:config_file]}", 2)
+      Chef::Application.fatal!("Error getting config file #{config[:config_file]}", 2)
     rescue Chef::Exceptions::ConfigurationError => error
-      Chef::Application.fatal!("Error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
+      Chef::Application.fatal!("Error processing config file #{config[:config_file]} with error #{error.message}", 2)
     rescue Exception => error
-      Chef::Application.fatal!("Unknown error processing config file #{Chef::Config[:config_file]} with error #{error.message}", 2)
+      Chef::Application.fatal!("Unknown error processing config file #{config[:config_file]} with error #{error.message}", 2)
     end
 
   end
