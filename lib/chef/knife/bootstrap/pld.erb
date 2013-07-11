@@ -53,4 +53,8 @@ cat > /etc/chef/first-boot.json <<'EOP'
 <%= first_boot.to_json %>
 EOP
 
+# fix for locale issues
+# also http://tickets.opscode.com/browse/OHAI-245
+export LC_ALL=en_US.utf8
+
 <%= start_chef %>'
