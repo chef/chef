@@ -408,7 +408,7 @@ describe Chef::ResourceReporter do
 
       it "includes the error inspector output in the event data" do
         @report["data"]["exception"].should have_key("description")
-        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
+        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "RSpec::Mocks::Mock: Object not found"}]})
       end
 
     end
