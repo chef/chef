@@ -211,13 +211,26 @@ class Chef
       end
 
       def print_data(host, data)
-        if data =~ /\n/
-          data.split(/\n/).each { |d| print_data(host, d) }
+        @buffers ||= {}
+        if leftover = @buffers[host]
+          @buffers[host] = nil
+          print_data(host, leftover + data)
         else
-          padding = @longest - host.length
-          str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
-          ui.msg(str)
+          if newline_index = data.index("\n")
+            line = data.slice!(0...newline_index)
+            data.slice!(0)
+            print_line(host, line)
+            print_data(host, data)
+          else
+            @buffers[host] = data
+          end
         end
+      end
+
+      def print_line(host, data)
+        padding = @longest - host.length
+        str = ui.color(host, :cyan) + (" " * (padding + 1)) + data
+        ui.msg(str)
       end
 
       def ssh_command(command, subsession=nil)
@@ -232,6 +245,7 @@ class Chef
             ch.on_data do |ichannel, data|
               print_data(ichannel[:host], data)
               if data =~ /^knife sudo password: /
+                print_data(ichannel[:host], "\n")
                 ichannel.send_data("#{get_password}\n")
               end
             end
