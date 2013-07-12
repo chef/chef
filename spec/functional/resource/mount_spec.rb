@@ -38,17 +38,17 @@ describe Chef::Resource::Mount do
   before(:all) do
     # TODO - this can better be written if we have resource/provider for ramdisk.
     if OHAI_SYSTEM[:platform] == 'aix'
-      @ramdisk = shell_out!("mkramdisk 512").stdout
+      @ramdisk = shell_out!("mkramdisk 16M").stdout
 
       # identify device, for /dev/rramdisk0 it is /dev/ramdisk0
       @device = @ramdisk.tr("\n","").gsub(/\/rramdisk/, '/ramdisk')
 
-      @fstype = "jfs"
+      @fstype = "jfs2"
       shell_out!("mkfs  -V #{@fstype} #{@device}")
     else
       @device = "/dev/ram1"
       @fstype = "tmpfs"
-      shell_out!("sudo mkfs -q #{@device} 512")
+      shell_out!("mkfs -q #{@device} 512")
     end
     @mount_point = "/tmp/testmount"
     shell_out("rm -rf #{@mount_point}")
@@ -71,7 +71,7 @@ describe Chef::Resource::Mount do
     new_resource.device      @device
     new_resource.name        @mount_point
     new_resource.fstype      @fstype
-    new_resource.options     "nointegrity" if OHAI_SYSTEM[:platform] == 'aix'
+    new_resource.options     "log=NULL" if OHAI_SYSTEM[:platform] == 'aix'
     new_resource
   end
 
@@ -109,6 +109,7 @@ describe Chef::Resource::Mount do
   describe "testcase C: when the filesystem should be remounted and the resource supports remounting" do
     it "should remount the filesystem if it is mounted" do
       new_resource.supports[:remount] = true
+      new_resource.options     "rw,log=NULL" if OHAI_SYSTEM[:platform] == 'aix'
       new_resource.run_action(:remount)
       new_resource.should be_updated
       current_resource.mounted.should be_true
@@ -162,7 +163,7 @@ describe Chef::Resource::Mount do
     it "should not enable the mount if it is enabled and mount options have not changed" do
       new_resource.options     "nodev"
       new_resource.run_action(:enable)
-      new_resource.should_not be_updated
+      new_resource.should_not be_updated_by_last_action
     end
   end
 
