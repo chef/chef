@@ -37,21 +37,27 @@ class Chef
         def enabled?
           # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
           enabled = false
-          cmd ="lsfs -c"	
-          lsfs = Mixlib::ShellOut.new(cmd)
-          lsfs.run_command
-          fsentries = lsfs.stdout.split("\n")
-          fsentries.each do | line |
+          
+          # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
+          # search only for current mount point
+          shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do | line |
             case line
             when /^#\s/
             next
-            when /^#{Regexp.escape(@new_resource.mount_point)}+:+#{device_fstab_regex}/
+            when /^#{Regexp.escape(@new_resource.mount_point)}:#{device_fstab_regex}:(\S+):(\[\S+\])?:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
+              # mount point entry with ipv6 address for nodename (ipv6 address use ':')
               enabled = true
-              fields = line.split(":")
-              @current_resource.fstype(fields[3])
-              @current_resource.options(fields[5])
+              @current_resource.fstype($1)
+              @current_resource.options($5)
               Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
-            next
+              next
+            when /^#{Regexp.escape(@new_resource.mount_point)}:#{device_fstab_regex}::(\S+):(\S+)?:(\S+)?:(\S+):(\S+):(\S+):(\S+)/
+              # mount point entry with hostname or ipv4 address
+              enabled = true
+              @current_resource.fstype($1)
+              @current_resource.options($5)
+              Chef::Log.debug("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/filesystems")
+              next
             when /^#{Regexp.escape(@new_resource.mount_point)}/
               enabled=false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/filesystems")
@@ -125,6 +131,7 @@ class Chef
           if @current_resource.enabled
             # The current options don't match what we have, so
             # disable, then enable.
+            fs_updating = true
             disable_fs
           end
           ::File.open("/etc/filesystems", "a") do |fstab|
@@ -141,6 +148,7 @@ class Chef
             fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
+          @new_resource.updated_by_last_action(true) if fs_updating  # mark since this is an update to already enabled fs
         end
 
         def disable_fs
