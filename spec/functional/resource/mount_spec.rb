@@ -161,7 +161,11 @@ describe Chef::Resource::Mount do
 
   describe "testcase I: when enabling the filesystem to be mounted" do
     it "should not enable the mount if it is enabled and mount options have not changed" do
-      new_resource.options     "nodev"
+      if OHAI_SYSTEM[:platform] == 'aix'
+        new_resource.options     "rw,nodev"
+      else
+        new_resource.options     "nodev"
+      end
       new_resource.run_action(:enable)
       new_resource.should_not be_updated_by_last_action
     end
