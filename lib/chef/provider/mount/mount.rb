@@ -145,12 +145,14 @@ class Chef
           if @current_resource.enabled
             # The current options don't match what we have, so
             # disable, then enable.
+            fs_updating = true
             disable_fs
           end
           ::File.open("/etc/fstab", "a") do |fstab|
             fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? "defaults" : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
+          @new_resource.updated_by_last_action(true) if fs_updating  # mark since this is an update to already enabled fs
         end
 
         def disable_fs
@@ -250,7 +252,7 @@ class Chef
         
         def mount_options_unchanged?
           @current_resource.fstype == @new_resource.fstype and
-          @current_resource.options == @new_resource.options and
+          @current_resource.options.sort == @new_resource.options.sort and
           @current_resource.dump == @new_resource.dump and
           @current_resource.pass == @new_resource.pass
         end
