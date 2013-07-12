@@ -28,13 +28,12 @@ IF EXIST .\src\chef\chef (
   cd .\src\chef
 )
 
-rem # install all of the development gems
-mkdir .\bundle
+rem # use rspec and gems from omnibus
 set PATH=C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;%PATH%
-call bundle install --without server --without docgen --path bundle || GOTO :error
 
 rem # run the tests -- exclude spec/stress on windows
-call bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
+rem # we do not bundle exec here in order to test against the gems in the omnibus package
+call rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
 
 rem # uninstall chef
 call msiexec /qb /x %omnibus_package% || GOTO :error
