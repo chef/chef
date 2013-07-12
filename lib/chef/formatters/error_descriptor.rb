@@ -31,7 +31,7 @@ class Chef
       end
 
       def section(heading, text)
-        @sections << [heading, text]
+        @sections << {heading => text}
       end
 
       def display(out)
@@ -40,7 +40,9 @@ class Chef
         out.puts "=" * 80
         out.puts "\n"
         sections.each do |section|
-          display_section(section, out)
+          section.each do |heading, text|
+            display_section(heading, text, out)
+          end
         end
       end
 
@@ -53,8 +55,7 @@ class Chef
 
       private
 
-      def display_section(section, out)
-        heading, text = section
+      def display_section(heading, text, out)
         out.puts heading
         out.puts "-" * heading.size
         out.puts text
