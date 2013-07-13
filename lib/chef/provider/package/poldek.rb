@@ -33,16 +33,17 @@ class Chef
             @current_resource = Chef::Resource::Package.new(@new_resource.name)
             @current_resource.package_name(@new_resource.package_name)
             @current_resource.version(nil)
-            check_package_state(@new_resource.package_name)
+            check_package_state
             @current_resource # modified by check_package_state
         end
 
-        def check_package_state(name)
-            Chef::Log.debug("#{@new_resource} checking package #{name}")
+        def check_package_state()
+            Chef::Log.debug("#{@new_resource} checking package #{@new_resource.package_name}")
+
             installed = false
             @current_resource.version(nil)
 
-            out = shell_out!("rpm -q #{name}", :env => nil, :returns => [0,1])
+            out = shell_out!("rpm -q #{@new_resource.package_name}", :env => nil, :returns => [0,1])
             if out.stdout
                 Chef::Log.debug("rpm STDOUT: #{out.stdout}");
                 version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
@@ -52,18 +53,27 @@ class Chef
                 end
             end
 
-            if !installed
-                out = shell_out!("poldek -q --uniq --skip-installed #{expand_options(@new_resource.options)} --cmd 'ls #{name}'", :env => nil, :returns => [0,1,255])
-                if out.stdout
-                    Chef::Log.debug("poldek STDOUT: #{out.stdout}");
-                    version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
-                    if version
-                        @candidate_version = version
-                    end
+            return installed
+        end
+
+        def candidate_version
+            Chef::Log.debug("poldek check candidate version for #{@new_resource.package_name}");
+            return @candidate_version if @candidate_version
+
+            update_indexes
+            cmd = "poldek -q --uniq --skip-installed #{expand_options(@new_resource.options)} --cmd 'ls #{@new_resource.package_name}'"
+            out = shell_out!(cmd, :env => nil, :returns => [0,1,255])
+            if out.stdout
+                Chef::Log.debug("poldek STDOUT: #{out.stdout}");
+                version = out.stdout[/^#{@new_resource.package_name}-(.+)/, 1]
+                if version
+                    @candidate_version = version
                 end
             end
-
-            return installed
+            unless @candidate_version
+                raise Chef::Exceptions::Package, "poldek does not have a version of package #{@new_resource.package_name}"
+            end
+            @candidate_version
         end
 
         def install_package(name, version)
