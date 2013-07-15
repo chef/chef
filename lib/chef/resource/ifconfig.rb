@@ -44,6 +44,7 @@ class Chef
         @network = nil
         @bootproto = nil
         @onparent = nil
+        @is_vip = false
       end
 
       def target(arg=nil)
@@ -139,6 +140,14 @@ class Chef
           :onparent,
           arg,
           :kind_of => String
+        )
+      end
+
+      def is_vip(arg=nil)
+        set_or_return(
+          :is_vip,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
         )
       end
     end
