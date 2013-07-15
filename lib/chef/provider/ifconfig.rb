@@ -103,10 +103,7 @@ class Chef
         # check to see if load_current_resource found interface in ifconfig
         unless @current_resource.inet_addr
           unless @new_resource.device == "lo"
-            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+            command = add_command
           end
           converge_by ("run #{command} to add #{@new_resource}") do
             run_command(
@@ -143,7 +140,7 @@ class Chef
       def action_delete
         # check to see if load_current_resource found the interface
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+          command = delete_command
           converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
               :command => command
@@ -160,7 +157,7 @@ class Chef
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+          command = disable_command
           converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
               :command => command
@@ -197,6 +194,23 @@ class Chef
           end
         end
         Chef::Log.info("#{@new_resource} deleted configuration file")
+      end
+
+      private
+      def add_command
+        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command << " netmask #{@new_resource.mask}" if @new_resource.mask
+        command << " metric #{@new_resource.metric}" if @new_resource.metric
+        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command
+      end
+
+      def disable_command
+        "ifconfig #{@new_resource.device} down"
+      end
+
+      def delete_command
+        "ifconfig #{@new_resource.device} down"
       end
 
     end
