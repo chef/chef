@@ -69,6 +69,43 @@ class Chef
         end
 
         private
+        # add can be used in two scenarios, add first inet addr or add VIP
+        # http://www-01.ibm.com/support/docview.wss?uid=swg21294045
+        def add_command
+          # ifconfig changes are temporary, chdev persist across reboots.
+          if @current_resource.inet_addr
+            # adding a VIP
+            command = "chdev -l #{@new_resource.device}  -a alias4=#{@new_resource.name}"
+            command << ",#{@new_resource.mask}" if @new_resource.mask
+          else
+            command = "chdev -l #{@new_resource.device} -a netaddr=#{@new_resource.name}"
+            command << " -a netmask=#{@new_resource.mask}" if @new_resource.mask
+            # TODO - how to? chdev fails, ifconfig effect is till reboot.
+            # command << " -a metric=#{@new_resource.metric}" if @new_resource.metric
+            command << " -a mtu=#{@new_resource.mtu}" if @new_resource.mtu
+          end
+          command
+        end
+
+        def disable_command
+          if @new_resource.is_vip
+            raise "VIPs cannot be disabled"
+          else
+            super
+          end
+        end
+
+        def delete_command
+          # ifconfig changes are temporary, chdev persist across reboots.
+          "chdev -l #{@new_resource.device} -a state=down"
+        end
+
+        def delete_vip_command
+          command = "chdev -l #{@new_resource.device}  -a delalias4=#{@new_resource.name}"
+          command << ",#{@new_resource.mask}" if @new_resource.mask
+          command
+        end
+
         def hex_to_dec_netmask(netmask)
           # example '0xffff0000' -> '255.255.0.0'
           dec = netmask[2..3].to_i(16).to_s(10)
