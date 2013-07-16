@@ -393,37 +393,6 @@ describe Chef::Util::Diff, :uses_diff => true do
     end
   end
 
-  describe "when errors are thrown from shell_out" do
-    before do
-      differ.stub!(:shell_out).and_raise('boom')
-      differ.diff(old_file, new_file)
-    end
-
-    it "calling for_output should return the error message" do
-      expect(differ.for_output).to eql(["Could not determine diff. Error: boom"])
-    end
-
-    it "calling for_reporting should be nil" do
-      expect(differ.for_reporting).to be_nil
-    end
-  end
-
-  describe "when shell_out returns stderr output" do
-    before do
-      @result = mock('result', :stdout => "", :stderr => "boom")
-      differ.stub!(:shell_out).and_return(@result)
-      differ.diff(old_file, new_file)
-    end
-
-    it "calling for_output should return the error message" do
-      expect(differ.for_output).to eql(["Could not determine diff. Error: boom"])
-    end
-
-    it "calling for_reporting should be nil" do
-      expect(differ.for_reporting).to be_nil
-    end
-  end
-
   describe "when checking if files are binary or text" do
 
     it "should identify zero-length files as text" do
