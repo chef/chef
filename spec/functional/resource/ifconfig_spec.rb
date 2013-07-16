@@ -22,9 +22,6 @@ describe Chef::Resource::Ifconfig, :unix_only do
 
   let(:new_resource) do
     new_resource = Chef::Resource::Ifconfig.new('10.10.0.1', run_context)
-    new_resource.mask        '255.255.0.0'
-    new_resource.metric       "1"
-    new_resource.mtu          "1600"
     new_resource
   end
 
@@ -55,4 +52,15 @@ describe Chef::Resource::Ifconfig, :unix_only do
     end
   end
 
+  describe "#action_add", ohai[:platform] != :aix do
+    after do
+      new_resource.run_action(:delete)
+    end
+    it "should add interface eth0:10 (vip)" do
+      new_resource.device "eth0:10"
+      new_resource.run_action(:add)
+      expect(current_resource.device).to eql("eth0:10")
+      expect(current_resource.inet_addr).to eql("10.10.0.1")
+    end
+  end
 end
