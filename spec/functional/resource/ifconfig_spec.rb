@@ -23,8 +23,8 @@ describe Chef::Resource::Ifconfig, :unix_only do
   let(:new_resource) do
     new_resource = Chef::Resource::Ifconfig.new('10.10.0.1', run_context)
     new_resource.mask        '255.255.0.0'
-    new_resource.metric       1
-    new_resource.mtu          1600
+    new_resource.metric       "1"
+    new_resource.mtu          "1600"
     new_resource
   end
 
@@ -46,7 +46,7 @@ describe Chef::Resource::Ifconfig, :unix_only do
     end
   end
 
-  describe Chef::Provider::Ifconfig, "load_current_resource" do
+  describe "#load_current_resource" do
     # test en0 interface
     it 'should load given interface' do
       new_resource.device network_interface_en0
@@ -54,4 +54,5 @@ describe Chef::Resource::Ifconfig, :unix_only do
       expect(current_resource.inet_addr).to match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)
     end
   end
+
 end
