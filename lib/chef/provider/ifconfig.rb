@@ -104,17 +104,16 @@ class Chef
         unless @current_resource.inet_addr
           unless @new_resource.device == "lo"
             command = add_command
-          end
-          converge_by ("run #{command} to add #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} added")
+            converge_by ("run #{command} to add #{@new_resource}") do
+              run_command(
+                :command => command
+              )
+              Chef::Log.info("#{@new_resource} added")
+              # Write out the config files
+              generate_config
+            end
           end
         end
-
-        # Write out the config files
-        generate_config
       end
 
       def action_enable
@@ -126,13 +125,12 @@ class Chef
             command << " netmask #{@new_resource.mask}" if @new_resource.mask
             command << " metric #{@new_resource.metric}" if @new_resource.metric
             command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
-          end
-
-          converge_by ("run #{command} to enable #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} enabled")
+            converge_by ("run #{command} to enable #{@new_resource}") do
+              run_command(
+                :command => command
+              )
+              Chef::Log.info("#{@new_resource} enabled")
+            end
           end
         end
       end
