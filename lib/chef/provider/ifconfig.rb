@@ -76,7 +76,7 @@ class Chef
               @interface = @interfaces.fetch(@new_resource.device)
 
               @current_resource.target(@new_resource.target)
-              @current_resource.device(@int_name)
+              @current_resource.device(@new_resource.device)
               @current_resource.inet_addr(@interface["inet_addr"])
               @current_resource.hwaddr(@interface["hwaddr"])
               @current_resource.bcast(@interface["bcast"])
