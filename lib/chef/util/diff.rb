@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+require 'diff/lcs'
+require 'diff/lcs/hunk'
+
 class Chef
   class Util
     class Diff
