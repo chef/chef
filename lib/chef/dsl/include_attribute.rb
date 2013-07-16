@@ -42,6 +42,19 @@ class Chef
         true
       end
 
+      # Load the specified attribute file, even if we've already
+      # processed it during this Chef run.
+      def include_attribute!(*attr_file_specs)
+        attr_file_specs.flatten.each do |attr_file_spec|
+          cookbook_name, attr_file = parse_attribute_file_spec(attr_file_spec)
+          Chef::Log.debug("Forced Loading Attribute #{cookbook_name}::#{attr_file}")
+          run_context.loaded_attribute(cookbook_name, attr_file)
+          attr_file_path = run_context.resolve_attribute(cookbook_name, attr_file)
+          node.from_file(attr_file_path)
+        end
+        true
+      end
+
       # Takes a attribute file specification, like "apache2" or "mysql::server"
       # and converts it to a 2 element array of [cookbook_name, attribute_file_name]
       def parse_attribute_file_spec(file_spec)
