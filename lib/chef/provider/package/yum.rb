@@ -947,6 +947,7 @@ class Chef
         end # YumCache
 
         include Chef::Mixin::GetSourceFromPackage
+        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super
