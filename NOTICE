@@ -18,4 +18,4 @@ Chef incorporates code modified from Open4 (http://www.codeforpeople.com/lib/rub
 
 Chef incorporates code modified from deep_merge (http://trac.misuse.org/science/wiki/DeepMerge), which is Copyright (c) 2008 Steve Midgley
 
-Ohai incorporates code modified from diff-lcs (http://diff-lcs.rubyforge.org/), which is Copyright (c) 2004–2013 Austin Ziegler
+Chef incorporates code modified from diff-lcs (http://diff-lcs.rubyforge.org/), which is Copyright (c) 2004–2013 Austin Ziegler
