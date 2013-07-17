@@ -1,10 +1,9 @@
 before_script: cd chef
 before_install: sudo apt-get install -qq libgecode-dev
-gemfile: chef/Gemfile
 
 rvm:
   - 1.8.7
   - 1.9.3
   - 2.0.0
 
-script: '(cd chef && bundle exec rspec chef --format progress)'
+script: bundle exec rspec --format progress
