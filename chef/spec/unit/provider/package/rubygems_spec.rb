@@ -225,7 +225,7 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   it "determines the installed versions of gems from the source index (part2: the unmockening)" do
     $stdout.stub!(:write)
     path_to_gem = if windows?
-      `where gem`.split[-1]
+      `where gem`.split[1]
     else
       `which gem`.strip
     end
