@@ -252,7 +252,7 @@ class Chef
         
         def mount_options_unchanged?
           @current_resource.fstype == @new_resource.fstype and
-          @current_resource.options.sort == @new_resource.options.sort and
+          @current_resource.options == @new_resource.options and
           @current_resource.dump == @new_resource.dump and
           @current_resource.pass == @new_resource.pass
         end
