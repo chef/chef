@@ -121,10 +121,7 @@ class Chef
         # enables, but does not manage config files
         unless @current_resource.inet_addr
           unless @new_resource.device == "lo"
-            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+            command = enable_command
             converge_by ("run #{command} to enable #{@new_resource}") do
               run_command(
                 :command => command
@@ -196,6 +193,14 @@ class Chef
 
       private
       def add_command
+        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command << " netmask #{@new_resource.mask}" if @new_resource.mask
+        command << " metric #{@new_resource.metric}" if @new_resource.metric
+        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command
+      end
+
+      def enable_command
         command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
         command << " netmask #{@new_resource.mask}" if @new_resource.mask
         command << " metric #{@new_resource.metric}" if @new_resource.metric

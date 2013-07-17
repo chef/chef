@@ -87,9 +87,23 @@ class Chef
           command
         end
 
+        def enable_command
+          if @current_resource.inet_addr
+            # add alias
+            command = "ifconfig #{@new_resource.device} inet #{@new_resource.name}"
+            command << " netmask #{@new_resource.mask}" if @new_resource.mask
+            command << " metric #{@new_resource.metric}" if @new_resource.metric
+            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+            command << " alias"
+          else
+            command = super  
+          end
+          command
+        end
+
         def disable_command
           if @new_resource.is_vip
-            raise "VIPs cannot be disabled"
+            "ifconfig #{@new_resource.device} inet #{@new_resource.name} delete"
           else
             super
           end
