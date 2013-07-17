@@ -7,4 +7,4 @@ rvm:
   - 1.9.3
   - 2.0.0
 
-script: (cd chef && bundle exec rspec chef --format progress)
+script: '(cd chef && bundle exec rspec chef --format progress)'
