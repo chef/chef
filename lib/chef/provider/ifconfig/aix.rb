@@ -75,7 +75,7 @@ class Chef
           raise Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action" if @new_resource.metric
           if @current_resource.inet_addr || @new_resource.is_vip
             # adding a VIP
-            command = "chdev -l #{@new_resource.device}  -a alias4=#{@new_resource.name}"
+            command = "chdev -l #{@new_resource.device} -a alias4=#{@new_resource.name}"
             command << ",#{@new_resource.mask}" if @new_resource.mask
           else
             command = "chdev -l #{@new_resource.device} -a netaddr=#{@new_resource.name}"
