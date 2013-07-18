@@ -101,8 +101,8 @@ class Chef
 
       def action_add
         # check to see if load_current_resource found interface in ifconfig
-        unless @current_resource.inet_addr
-          unless @new_resource.device == "lo"
+        if @current_resource.inet_addr.nil? || @new_resource.is_vip
+          unless @new_resource.device == loopback_device
             command = add_command
             converge_by ("run #{command} to add #{@new_resource}") do
               run_command(
@@ -119,8 +119,8 @@ class Chef
       def action_enable
         # check to see if load_current_resource found ifconfig
         # enables, but does not manage config files
-        unless @current_resource.inet_addr
-          unless @new_resource.device == "lo"
+        if @current_resource.inet_addr.nil? || @new_resource.is_vip
+          unless @new_resource.device == loopback_device
             command = enable_command
             converge_by ("run #{command} to enable #{@new_resource}") do
               run_command(
@@ -215,7 +215,10 @@ class Chef
       def delete_command
         "ifconfig #{@new_resource.device} down"
       end
-
+  
+      def loopback_device
+        'lo'
+      end
     end
   end
 end
