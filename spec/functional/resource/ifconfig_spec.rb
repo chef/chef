@@ -36,7 +36,7 @@ describe Chef::Resource::Ifconfig, :unix_only do
     provider.load_current_resource
   end
 
-  def network_interface_for_test
+  def lo_interface_for_test
     # use loopback interface for tests
     case ohai[:platform]
     when :aix
@@ -46,19 +46,34 @@ describe Chef::Resource::Ifconfig, :unix_only do
     end
   end
 
-  def network_interface_alias
+  # **Caution: any updates to core interfaces can be risky.
+  def en0_interface_for_test
     case ohai[:platform]
     when :aix
-      network_interface_for_test
+      'en0'
     else
-      network_interface_for_test + ":10"
+      'eth0'
+    end
+  end
+
+  def network_interface_alias(interface)
+    case ohai[:platform]
+    when :aix
+      interface
+    else
+      interface + ":10"
     end
   end
 
   # platform specific test setup and validation routines
 
   def setup_add_interface(resource)
-    resource.device network_interface_alias
+    resource.device network_interface_alias(en0_interface_for_test)
+    resource.is_vip = true if ohai[:platform] == :aix
+  end
+
+  def setup_enable_interface(resource)
+    resource.device network_interface_alias(lo_interface_for_test)
     resource.is_vip = true if ohai[:platform] == :aix
   end
 
@@ -71,19 +86,29 @@ describe Chef::Resource::Ifconfig, :unix_only do
   end
 
   def interface_persistence_should_exists(interface)
-    # TODO: for AIX query ODM
+    case ohai[:platform]
+    when :aix
+      expect(shell_out("lsattr -E -l #{@interface} | grep 10.10.0.1").exitstatus).to eq(0)
+      break
+    else
+    end
   end
 
   def interface_persistence_should_not_exists(interface)
-    # TODO: for AIX query ODM
+    case ohai[:platform]
+    when :aix
+      expect(shell_out("lsattr -E -l #{@interface} | grep 10.10.0.1").exitstatus).to eq(1)
+      break
+    else
+    end
   end
 
   # Actual tests
 
   describe "#load_current_resource" do
     it 'should load given interface' do
-      new_resource.device network_interface_for_test
-      expect(current_resource.device).to eql(network_interface_for_test)
+      new_resource.device lo_interface_for_test
+      expect(current_resource.device).to eql(lo_interface_for_test)
       expect(current_resource.inet_addr).to match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)
     end
   end
@@ -95,34 +120,31 @@ describe Chef::Resource::Ifconfig, :unix_only do
     it "should add interface (vip)" do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)
-      interface_should_exists(network_interface_alias)
-      interface_persistence_should_exists(network_interface_alias)
+      interface_should_exists(network_interface_alias(en0_interface_for_test))
+      interface_persistence_should_exists(network_interface_alias(en0_interface_for_test))
     end
   end
 
   describe "#action_enable", ohai[:platform] != :aix do
     after do
-      new_resource.run_action(:delete)
+      new_resource.run_action(:disable)
     end
     it "should enable interface (vip)" do
-      setup_add_interface(new_resource)
+      setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
-      interface_should_exists(network_interface_alias)
+      interface_should_exists(network_interface_alias(lo_interface_for_test))
     end
   end
 
   describe "#action_disable", ohai[:platform] != :aix do
     before do
-      setup_add_interface(new_resource)
-      new_resource.run_action(:add)
-    end
-    after do
-      new_resource.run_action(:delete)
+      setup_enable_interface(new_resource)
+      new_resource.run_action(:enable)
     end
     it "should disable interface (vip)" do
       new_resource.run_action(:disable)
       new_resource.should be_updated_by_last_action
-      interface_should_not_exists(network_interface_alias)
+      interface_should_not_exists(network_interface_alias(lo_interface_for_test))
     end
   end
 
@@ -134,8 +156,8 @@ describe Chef::Resource::Ifconfig, :unix_only do
     it "should delete interface (vip)" do
       new_resource.run_action(:delete)
       new_resource.should be_updated_by_last_action
-      interface_should_not_exists(network_interface_alias)
-      interface_persistence_should_not_exists(network_interface_alias)
+      interface_should_not_exists(network_interface_alias(en0_interface_for_test))
+      interface_persistence_should_not_exists(network_interface_alias(en0_interface_for_test))
     end
   end
 end
