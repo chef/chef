@@ -78,6 +78,7 @@ class Chef
       url = url.strip
       configure do |c|
         c[:chef_server_url] = url
+        c[:search_url] = url
       end
       url
     end

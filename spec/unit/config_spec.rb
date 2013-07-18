@@ -35,6 +35,10 @@ describe Chef::Config do
       Chef::Config.chef_server_url.should == "https://junglist.gen.nz"
     end
 
+    it "aliases search_url to chef_server_url" do
+      Chef::Config[:search_url].should == "https://junglist.gen.nz"
+    end
+
     context "when the url has a leading space" do
       before do
         Chef::Config.chef_server_url = " https://junglist.gen.nz"
