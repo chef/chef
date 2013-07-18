@@ -57,8 +57,7 @@ class Chef
                     # read up interface info
                     @current_resource.inet_addr($1) if line =~ /inet\s(\S+)\s/
                     @current_resource.bcast($1) if line =~ /broadcast\s(\S+)/
-                    @current_resource.mask(hex_to_dec_netmask($1)) if line =~ /netmask\s(\S+)\s/ # TODO - convert hex to dec
-                    # TODO @current_resource.mtu = lsattr -EO -a mtu -l <interface>
+                    @current_resource.mask(hex_to_dec_netmask($1)) if line =~ /netmask\s(\S+)\s/
                   end
                 end
               end
@@ -73,6 +72,7 @@ class Chef
         # http://www-01.ibm.com/support/docview.wss?uid=swg21294045
         def add_command
           # ifconfig changes are temporary, chdev persist across reboots.
+          raise Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action" if @new_resource.metric
           if @current_resource.inet_addr
             # adding a VIP
             command = "chdev -l #{@new_resource.device}  -a alias4=#{@new_resource.name}"
@@ -80,8 +80,6 @@ class Chef
           else
             command = "chdev -l #{@new_resource.device} -a netaddr=#{@new_resource.name}"
             command << " -a netmask=#{@new_resource.mask}" if @new_resource.mask
-            # TODO - how to? chdev fails, ifconfig effect is till reboot.
-            # command << " -a metric=#{@new_resource.metric}" if @new_resource.metric
             command << " -a mtu=#{@new_resource.mtu}" if @new_resource.mtu
           end
           command
