@@ -200,4 +200,48 @@ IFCONFIG
     end
   end
 
+  describe "#action_delete" do
+
+    it "should not delete an interface if it does not exist" do
+      @new_resource.device "en10"
+      @provider.stub!(:load_current_resource) do
+        @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
+        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+      end
+
+      @provider.should_not_receive(:run_command)
+
+      @provider.run_action(:delete)
+      @new_resource.should_not be_updated
+    end
+
+    context "interface exists" do
+      before do
+        @new_resource.device "en10"
+        @provider.stub!(:load_current_resource) do
+          @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
+          current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
+          current_resource.device @new_resource.device
+          @provider.instance_variable_set("@current_resource", current_resource)
+        end
+      end
+
+      it "should delete an interface if it exists" do
+        command = "chdev -l #{@new_resource.device} -a state=down"
+        @provider.should_receive(:run_command).with(:command => command)
+
+        @provider.run_action(:delete)
+        @new_resource.should be_updated
+      end
+
+      it "should delete a VIP if it exists" do
+        @new_resource.is_vip true
+        command = "chdev -l #{@new_resource.device}  -a delalias4=#{@new_resource.name}"
+        @provider.should_receive(:run_command).with(:command => command)
+
+        @provider.run_action(:delete)
+        @new_resource.should be_updated
+      end
+    end
+  end
 end
