@@ -155,4 +155,49 @@ IFCONFIG
     end
   end
 
+  describe "#action_disable" do
+
+    it "should not disable an interface if it does not exist" do
+      @new_resource.device "en10"
+      @provider.stub!(:load_current_resource) do
+        @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
+        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+      end
+
+      @provider.should_not_receive(:run_command)
+
+      @provider.run_action(:disable)
+      @new_resource.should_not be_updated
+    end
+
+    context "interface exists" do
+      before do
+        @new_resource.device "en10"
+        @provider.stub!(:load_current_resource) do
+          @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
+          current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
+          current_resource.device @new_resource.device
+          @provider.instance_variable_set("@current_resource", current_resource)
+        end
+      end
+
+      it "should disable an interface if it exists" do
+        command = "ifconfig #{@new_resource.device} down"
+        @provider.should_receive(:run_command).with(:command => command)
+
+        @provider.run_action(:disable)
+        @new_resource.should be_updated
+      end
+
+      it "should disable VIP" do
+        @new_resource.is_vip true
+        command = "ifconfig #{@new_resource.device} inet 10.0.0.1 delete"
+        @provider.should_receive(:run_command).with(:command => command)
+
+        @provider.run_action(:disable)
+        @new_resource.should be_updated
+      end
+    end
+  end
+
 end
