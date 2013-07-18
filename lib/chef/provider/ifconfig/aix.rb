@@ -73,7 +73,7 @@ class Chef
         def add_command
           # ifconfig changes are temporary, chdev persist across reboots.
           raise Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action" if @new_resource.metric
-          if @current_resource.inet_addr
+          if @current_resource.inet_addr || @new_resource.is_vip
             # adding a VIP
             command = "chdev -l #{@new_resource.device}  -a alias4=#{@new_resource.name}"
             command << ",#{@new_resource.mask}" if @new_resource.mask
@@ -86,7 +86,7 @@ class Chef
         end
 
         def enable_command
-          if @current_resource.inet_addr
+          if @current_resource.inet_addr || @new_resource.is_vip
             # add alias
             command = "ifconfig #{@new_resource.device} inet #{@new_resource.name}"
             command << " netmask #{@new_resource.mask}" if @new_resource.mask
@@ -109,13 +109,17 @@ class Chef
 
         def delete_command
           # ifconfig changes are temporary, chdev persist across reboots.
-          "chdev -l #{@new_resource.device} -a state=down"
+          if @new_resource.is_vip
+            command = "chdev -l #{@new_resource.device}  -a delalias4=#{@new_resource.name}"
+            command << ",#{@new_resource.mask}" if @new_resource.mask
+          else
+            command = "chdev -l #{@new_resource.device} -a state=down"
+          end
+          command
         end
 
-        def delete_vip_command
-          command = "chdev -l #{@new_resource.device}  -a delalias4=#{@new_resource.name}"
-          command << ",#{@new_resource.mask}" if @new_resource.mask
-          command
+        def loopback_device
+          "lo0"
         end
 
         def hex_to_dec_netmask(netmask)
