@@ -206,7 +206,7 @@ class Chef
         Chef::Log.debug "Fork successful. Waiting for new chef pid: #{pid}"
         result = Process.waitpid2(pid)
         handle_child_exit(result)
-        Chef::Log.debug "Forked child successfully reaped (pid: #{pid})"
+        Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
         do_run
