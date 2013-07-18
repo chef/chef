@@ -36,7 +36,7 @@ describe Chef::Checksum::Storage::Filesystem do
     @storage.file_location.should == "/var/chef/checksums/3f/3fafecfb15585ede6b840158cbc2f399"
   end
 
-  it "has the path the the file's subdirectory in the checksum repo" do
+  it "has the path to the file's subdirectory in the checksum repo" do
     @storage.checksum_repo_directory.should == "/var/chef/checksums/3f"
   end
 

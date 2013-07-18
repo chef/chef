@@ -61,7 +61,7 @@ PS
       @provider.load_current_resource
     end
   
-    it "should set running to true if the the status command returns 0" do
+    it "should set running to true if the status command returns 0" do
       @provider.stub!(:shell_out).with("/usr/sbin/invoke-rc.d #{@current_resource.service_name} status").and_return(@status)
       @provider.load_current_resource
       @current_resource.running.should be_true
