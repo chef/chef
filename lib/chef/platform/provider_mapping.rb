@@ -320,7 +320,8 @@ class Chef
           },
           :aix => {
             :default => {
-              :group => Chef::Provider::Group::Aix
+              :group => Chef::Provider::Group::Aix,
+              :ifconfig => Chef::Provider::Ifconfig::Aix
             }
           },
           :default  => {
