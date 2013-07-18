@@ -78,6 +78,18 @@ IFCONFIG
       @new_resource.should be_updated
     end
 
+    it "should raise exception if metric attribute is set" do
+      @new_resource.device "en0"
+      @new_resource.metric "1"
+      @provider.stub!(:load_current_resource) do
+        @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
+        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+      end
+
+      expect{@provider.run_action(:add)}.to raise_error(Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action")
+    end
+
+
     context "VIP" do
       before do
         @provider.stub!(:load_current_resource) do
