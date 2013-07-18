@@ -39,7 +39,7 @@ describe Chef::Resource::Ifconfig, :unix_only do
   def lo_interface_for_test
     # use loopback interface for tests
     case ohai[:platform]
-    when :aix
+    when "aix"
       'lo0'
     else
       'lo'
@@ -49,7 +49,7 @@ describe Chef::Resource::Ifconfig, :unix_only do
   # **Caution: any updates to core interfaces can be risky.
   def en0_interface_for_test
     case ohai[:platform]
-    when :aix
+    when "aix"
       'en0'
     else
       'eth0'
@@ -58,7 +58,7 @@ describe Chef::Resource::Ifconfig, :unix_only do
 
   def network_interface_alias(interface)
     case ohai[:platform]
-    when :aix
+    when "aix"
       interface
     else
       interface + ":10"
@@ -69,12 +69,12 @@ describe Chef::Resource::Ifconfig, :unix_only do
 
   def setup_add_interface(resource)
     resource.device network_interface_alias(en0_interface_for_test)
-    resource.is_vip = true if ohai[:platform] == :aix
+    resource.is_vip true if ohai[:platform] == "aix"
   end
 
   def setup_enable_interface(resource)
-    resource.device network_interface_alias(lo_interface_for_test)
-    resource.is_vip = true if ohai[:platform] == :aix
+    resource.device network_interface_alias(en0_interface_for_test)
+    resource.is_vip true if ohai[:platform] == "aix"
   end
 
   def interface_should_exists(interface)
@@ -87,18 +87,16 @@ describe Chef::Resource::Ifconfig, :unix_only do
 
   def interface_persistence_should_exists(interface)
     case ohai[:platform]
-    when :aix
+    when "aix"
       expect(shell_out("lsattr -E -l #{@interface} | grep 10.10.0.1").exitstatus).to eq(0)
-      break
     else
     end
   end
 
   def interface_persistence_should_not_exists(interface)
     case ohai[:platform]
-    when :aix
+    when "aix"
       expect(shell_out("lsattr -E -l #{@interface} | grep 10.10.0.1").exitstatus).to eq(1)
-      break
     else
     end
   end
@@ -113,7 +111,7 @@ describe Chef::Resource::Ifconfig, :unix_only do
     end
   end
 
-  describe "#action_add", ohai[:platform] != :aix do
+  describe "#action_add" do
     after do
       new_resource.run_action(:delete)
     end
@@ -125,18 +123,18 @@ describe Chef::Resource::Ifconfig, :unix_only do
     end
   end
 
-  describe "#action_enable", ohai[:platform] != :aix do
+  describe "#action_enable" do
     after do
       new_resource.run_action(:disable)
     end
     it "should enable interface (vip)" do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
-      interface_should_exists(network_interface_alias(lo_interface_for_test))
+      interface_should_exists(network_interface_alias(en0_interface_for_test))
     end
   end
 
-  describe "#action_disable", ohai[:platform] != :aix do
+  describe "#action_disable" do
     before do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
@@ -144,11 +142,11 @@ describe Chef::Resource::Ifconfig, :unix_only do
     it "should disable interface (vip)" do
       new_resource.run_action(:disable)
       new_resource.should be_updated_by_last_action
-      interface_should_not_exists(network_interface_alias(lo_interface_for_test))
+      interface_should_not_exists(network_interface_alias(en0_interface_for_test))
     end
   end
 
-  describe "#action_delete", ohai[:platform] != :aix do
+  describe "#action_delete" do
     before do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)
