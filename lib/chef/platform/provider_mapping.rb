@@ -321,7 +321,8 @@ class Chef
           :aix => {
             :default => {
               :group => Chef::Provider::Group::Aix,
-              :mount => Chef::Provider::Mount::Aix
+              :mount => Chef::Provider::Mount::Aix,
+              :ifconfig => Chef::Provider::Ifconfig::Aix
             }
           },
           :default  => {
