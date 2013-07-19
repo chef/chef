@@ -16,62 +16,67 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require 'functional/resource/base'
 require 'chef/mixin/shell_out'
+require 'tmpdir'
 
-describe Chef::Resource::Mount do
+# run this test only for following platforms.
+include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
 
-  # Order the tests for proper cleanup and execution
-  RSpec.configure do |config|
-    config.order_groups_and_examples do |list|
-      list.sort_by { |item| item.description }
+describe Chef::Resource::Mount, :external => include_flag do
+
+  include Chef::Mixin::ShellOut
+
+  # Platform specific setup, cleanup and validation helpers.
+
+  def setup_device_for_mount
+    # use ramdisk for creating a test device for mount.
+    # This can cleaner if we have chef resource/provider for ramdisk.
+    case ohai[:platform]
+    when "aix"
+      ramdisk = shell_out!("mkramdisk 16M").stdout
+
+      # identify device, for /dev/rramdisk0 it is /dev/ramdisk0
+      device = ramdisk.tr("\n","").gsub(/\/rramdisk/, '/ramdisk')
+
+      fstype = "jfs2"
+      shell_out!("mkfs  -V #{fstype} #{device}")
+    when "ubuntu", "centos"
+      device = "/dev/ram1"
+      fstype = "tmpfs"
+      shell_out!("mkfs -q #{device} 512")
+    else
+    end
+    [device, fstype]
+  end
+
+  def cleanup_device(device)
+    case ohai[:platform]
+    when "aix"
+      ramdisk = device.gsub(/\/ramdisk/, '/rramdisk')
+      shell_out("rmramdisk #{ramdisk}")
+    else
     end
   end
 
-  # User provider is platform-dependent, we need platform ohai data:
-  OHAI_SYSTEM = Ohai::System.new
-  OHAI_SYSTEM.require_plugin("os")
-  OHAI_SYSTEM.require_plugin("platform")
-  OHAI_SYSTEM.require_plugin("passwd")
-
-  include Chef::Mixin::ShellOut
+  # Actual tests begin here.
   before(:all) do
-    # TODO - this can better be written if we have resource/provider for ramdisk.
-    if OHAI_SYSTEM[:platform] == 'aix'
-      @ramdisk = shell_out!("mkramdisk 16M").stdout
+    @device, @fstype = setup_device_for_mount
 
-      # identify device, for /dev/rramdisk0 it is /dev/ramdisk0
-      @device = @ramdisk.tr("\n","").gsub(/\/rramdisk/, '/ramdisk')
-
-      @fstype = "jfs2"
-      shell_out!("mkfs  -V #{@fstype} #{@device}")
-    else
-      @device = "/dev/ram1"
-      @fstype = "tmpfs"
-      shell_out!("mkfs -q #{@device} 512")
-    end
-    @mount_point = "/tmp/testmount"
-    shell_out("rm -rf #{@mount_point}")
-    shell_out!("mkdir -p #{@mount_point}")
+    @mount_point = Dir.mktmpdir("testmount")
   end
 
   after(:all) do
-    if OHAI_SYSTEM[:platform] == 'aix'
-      shell_out("rmramdisk #{@ramdisk}")
-    end
+    Dir.rmdir(@mount_point)
+    cleanup_device(@device)
   end
 
   let(:new_resource) do
-    node = Chef::Node.new
-    node.default[:platform] = OHAI_SYSTEM[:platform]
-    node.default[:platform_version] = OHAI_SYSTEM[:platform_version]
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
     new_resource = Chef::Resource::Mount.new(@mount_point, run_context)
     new_resource.device      @device
     new_resource.name        @mount_point
     new_resource.fstype      @fstype
-    new_resource.options     "log=NULL" if OHAI_SYSTEM[:platform] == 'aix'
+    new_resource.options     "log=NULL" if ohai[:platform] == 'aix'
     new_resource
   end
 
@@ -109,7 +114,7 @@ describe Chef::Resource::Mount do
   describe "testcase C: when the filesystem should be remounted and the resource supports remounting" do
     it "should remount the filesystem if it is mounted" do
       new_resource.supports[:remount] = true
-      new_resource.options     "rw,log=NULL" if OHAI_SYSTEM[:platform] == 'aix'
+      new_resource.options     "rw,log=NULL" if ohai[:platform] == 'aix'
       new_resource.run_action(:remount)
       new_resource.should be_updated
       current_resource.mounted.should be_true
@@ -161,8 +166,8 @@ describe Chef::Resource::Mount do
 
   describe "testcase I: when enabling the filesystem to be mounted" do
     it "should not enable the mount if it is enabled and mount options have not changed" do
-      if OHAI_SYSTEM[:platform] == 'aix'
-        new_resource.options     "rw,nodev"
+      if ohai[:platform] == 'aix'
+        new_resource.options     "nodev,rw"
       else
         new_resource.options     "nodev"
       end
