@@ -38,3 +38,4 @@ def run_context
     Chef::RunContext.new(node, {}, events)
   end
 end
+
