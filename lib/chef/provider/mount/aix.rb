@@ -80,7 +80,6 @@ class Chef
             when /#{search_device}\s+#{Regexp.escape(@new_resource.mount_point)}/
               mounted = true
               Chef::Log.debug("Special device #{device_logstring} mounted as #{@new_resource.mount_point}")
-              puts #{mounted}
             when /^[\/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+/
               mounted = false
               Chef::Log.debug("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
@@ -131,7 +130,6 @@ class Chef
           if @current_resource.enabled
             # The current options don't match what we have, so
             # disable, then enable.
-            fs_updating = true
             disable_fs
           end
           ::File.open("/etc/filesystems", "a") do |fstab|
@@ -148,7 +146,6 @@ class Chef
             fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
-          @new_resource.updated_by_last_action(true) if fs_updating  # mark since this is an update to already enabled fs
         end
 
         def disable_fs
