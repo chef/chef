@@ -173,9 +173,7 @@ SHAS
       {
         :user => deploy_user,
         :environment => { "GIT_SSH" => wrapper },
-        :log_level => :info,
         :log_tag => "git[web2.0 app]",
-        :live_stream => STDOUT,
       }
     end
     before do
