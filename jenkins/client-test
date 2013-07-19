@@ -50,20 +50,10 @@ else # makeself installer
     sudo ./pkg/chef*.sh || true
 fi
 
-# extract the chef source code
-mkdir -p src/chef
-gzip -dc src/chef*.tar.gz | (tar -C src/chef -xf -)
+# we test using the specs packaged in the gem
+cd /opt/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-[0-9]*
 
-# COMPAT HACK - Chef 11 finally has the core Chef code in the root of the
-# project repo. Since the Chef Client pipeline needs to build/test Chef 10.x
-# and 11 releases our test script need to handle both cases gracefully.
-if [ -d "src/chef/chef" ]; then
-  cd src/chef/chef
-else
-  cd src/chef
-fi
-
-# test against the rspec and gems in the ominbus build
+# test against the rspec and gems in the omnibus build
 export PATH=/opt/chef/bin:/opt/chef/embedded/bin:$PATH
 
 # we do not bundle exec here in order to test against gems in the omnibus build
