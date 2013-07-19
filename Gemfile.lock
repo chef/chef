@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 8ab0ba5673fb99ffb3f63531d9b81cf60d8e2a06
+  revision: 32360f0732efe52e34e5d8964cbe988dc37da556
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -18,7 +18,7 @@ GEM
     clamp (0.6.1)
     ffi (1.9.0)
     ffi (1.9.0-x86-mingw32)
-    fpm (0.4.39)
+    fpm (0.4.41)
       arr-pm (~> 0.0.8)
       backports (>= 2.6.2)
       cabin (>= 0.6.0)
@@ -50,7 +50,7 @@ GEM
       mixlib-shellout
       systemu
       yajl-ruby
-    omnibus (1.1.1)
+    omnibus (1.2.0)
       fpm (~> 0.4.33)
       mixlib-config (~> 1.1.2)
       mixlib-shellout (~> 1.0)
@@ -79,5 +79,5 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  omnibus (~> 1.1.1)
+  omnibus (~> 1.2.0)
   omnibus-software!
