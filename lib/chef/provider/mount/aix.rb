@@ -157,7 +157,7 @@ class Chef
             found_device = false
             ::File.open("/etc/filesystems", "r").each_line do |line|
               case line
-              when /^\/[\/\w]+:$/
+              when /^\/.+:\s*$/
                 if line =~ /#{Regexp.escape(@new_resource.mount_point)}+:/
                   found_device = true
                 else
