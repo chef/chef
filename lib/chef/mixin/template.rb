@@ -139,7 +139,7 @@ class Chef
             raise TemplateError.new(e, template, context)
           end
 
-          if windows_line_endings
+          if windows_line_endings && RUBY_PLATFORM =~ /mswin|mingw32|windows/
             # Convert line endings from "\n" -> "\r\n". Also converts
             # "\r\n" -> "\r\n".
             # This makes the regex match on all of "\r\n", so we don't
