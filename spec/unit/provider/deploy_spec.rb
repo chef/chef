@@ -43,6 +43,20 @@ describe Chef::Provider::Deploy do
     @provider.should respond_to(:action_rollback)
   end
 
+  context "when the deploy resource has a timeout attribute" do
+    let(:ten_seconds) { 10 }
+    before { @resource.timeout(ten_seconds) }
+    it "relays the timeout to the scm resource" do
+      @provider.scm_provider.new_resource.timeout.should == ten_seconds
+    end
+  end
+
+  context "when the deploy resource has no timeout attribute" do
+    it "should not set a timeout on the scm resource" do
+      @provider.scm_provider.new_resource.timeout.should be_nil
+    end
+  end
+
   context "when the deploy_to dir does not exist yet" do
     before do
       FileUtils.should_receive(:mkdir_p).with(@resource.deploy_to).ordered
