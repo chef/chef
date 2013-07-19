@@ -59,16 +59,59 @@ describe Chef::Resource::Mount, :external => include_flag do
     end
   end
 
-  # Actual tests begin here.
-  before(:all) do
-    @device, @fstype = setup_device_for_mount
-
-    @mount_point = Dir.mktmpdir("testmount")
+  def cleanup_mount(mount_point)
+    if windows?
+    else
+      shell_out("umount #{mount_point}")
+    end
   end
 
-  after(:all) do
-    Dir.rmdir(@mount_point)
-    cleanup_device(@device)
+  # platform specific validations.
+  def mount_should_exists(mount_point, device, fstype = nil, options = nil)
+    if windows?
+    else
+      # unix only validations
+      validation_cmd = "mount | grep #{mount_point} | grep #{device} "
+      validation_cmd << " | grep #{fstype} " unless fstype.nil?
+      validation_cmd << " | grep #{options.join(',')} " unless options.nil? || options.empty?
+      puts "validation_cmd = #{validation_cmd}"
+      expect(shell_out(validation_cmd).exitstatus).to eq(0)
+    end        
+  end
+
+  def mount_should_not_exists(mount_point)
+    if windows?
+    else
+      expect(shell_out("mount | grep #{mount_point}").exitstatus).to eq(1)
+    end
+  end
+
+  def unix_mount_config_file
+    case ohai[:platform]
+    when 'aix'
+      mount_config = "/etc/filesystems"
+    else
+      mount_config = "/etc/fstab"
+    end
+  end    
+
+  def mount_should_be_enabled(mount_point, device)
+    if windows?
+    else
+      case ohai[:platform]
+      when 'aix'
+        expect(shell_out("cat #{unix_mount_config_file} | grep \"#{mount_point}:\" ").exitstatus).to eq(0)
+      else      
+        expect(shell_out("cat #{unix_mount_config_file} | grep \"#{mount_point}\" | grep \"#{device}\" ").exitstatus).to eq(0)
+      end
+    end        
+  end
+
+  def mount_should_be_disabled(mount_point)
+    if windows?
+    else
+      expect(shell_out("cat #{unix_mount_config_file} | grep \"#{mount_point}:\"").exitstatus).to eq(1)
+    end
   end
 
   let(:new_resource) do
@@ -90,109 +133,92 @@ describe Chef::Resource::Mount, :external => include_flag do
     provider.current_resource
   end
 
-  describe "testcase A: when the target state is a mounted filesystem" do
-    before do
-      # sanity umount for any old runs
-      new_resource.run_action(:umount)
+  # Actual tests begin here.
+  before(:all) do
+    @device, @fstype = setup_device_for_mount
+
+    @mount_point = Dir.mktmpdir("testmount")
+  end
+
+  after(:all) do
+    Dir.rmdir(@mount_point)
+    cleanup_device(@device)
+  end
+
+
+
+  describe "when the target state is a mounted filesystem" do
+    after do
+      cleanup_mount(new_resource.mount_point)
     end
+
     it "should mount the filesystem if it isn't mounted" do
       current_resource.enabled.should be_false
       current_resource.mounted.should be_false
       new_resource.run_action(:mount)
       new_resource.should be_updated
-      current_resource.mounted.should be_true
+      mount_should_exists(new_resource.mount_point, new_resource.device)
     end
+
   end
 
-  describe "testcase B: when the target state is a mounted filesystem" do
-    it "should not mount the filesystem if it is mounted" do
-      new_resource.run_action(:mount)
-      new_resource.should_not be_updated
+  describe "when the filesystem should be remounted and the resource supports remounting" do
+    after do
+      cleanup_mount(new_resource.mount_point)
     end
-  end
 
-  describe "testcase C: when the filesystem should be remounted and the resource supports remounting" do
     it "should remount the filesystem if it is mounted" do
+      new_resource.run_action(:mount)
+      mount_should_exists(new_resource.mount_point, new_resource.device)
+
       new_resource.supports[:remount] = true
-      new_resource.options     "rw,log=NULL" if ohai[:platform] == 'aix'
+      new_resource.options "rw,log=NULL" if ohai[:platform] == 'aix'
       new_resource.run_action(:remount)
-      new_resource.should be_updated
-      current_resource.mounted.should be_true
+
+      mount_should_exists(new_resource.mount_point, new_resource.device, nil, (ohai[:platform] == 'aix') ? new_resource.options : nil)
     end
   end
 
-  describe "testcase D: when the target state is a unmounted filesystem" do
+  describe "when the target state is a unmounted filesystem" do
     it "should umount the filesystem if it is mounted" do
-      current_resource.mounted.should be_true
+      new_resource.run_action(:mount)
+      mount_should_exists(new_resource.mount_point, new_resource.device)
+
       new_resource.run_action(:umount)
-      new_resource.should be_updated
-      current_resource.mounted.should be_false
+
+      mount_should_not_exists(new_resource.mount_point)
     end
   end
 
-  describe "testcase E: when the target state is a unmounted filesystem" do
-    it "should not umount the filesystem if it is not mounted" do
-      new_resource.run_action(:umount)
-      new_resource.should_not be_updated
+  describe "when enabling the filesystem to be mounted" do
+    before do
+      new_resource.run_action(:mount)
     end
-  end
 
-  describe "testcase F: when the resource supports remounting" do
-    it "should not remount the filesystem if it is not mounted" do
-      new_resource.supports[:remount] = true
-      new_resource.run_action(:remount)
-      new_resource.should_not be_updated
+    after do
+      new_resource.run_action(:disable)
+      cleanup_mount(new_resource.mount_point)
     end
-  end
 
-  describe "testcase G: when enabling the filesystem to be mounted" do
     it "should enable the mount if it isn't enable" do
-      # setup the mount for further tests.
+      new_resource.run_action(:enable)
+      mount_should_be_enabled(new_resource.mount_point, new_resource.device)
+    end
+  end
+
+  describe "when the target state is to disable the mount" do
+    before do
       new_resource.run_action(:mount)
       new_resource.run_action(:enable)
-      new_resource.should be_updated
-      current_resource.enabled.should be_true
     end
-  end
 
-  describe "testcase H: when enabling the filesystem to be mounted" do
-    it "should enable the mount if it is enabled and mount options have changed" do
-      new_resource.options     "nodev"
-      new_resource.run_action(:enable)
-      new_resource.should be_updated
-      current_resource.enabled.should be_true
+    after do
+      cleanup_mount(new_resource.mount_point)
     end
-  end
 
-  describe "testcase I: when enabling the filesystem to be mounted" do
-    it "should not enable the mount if it is enabled and mount options have not changed" do
-      if ohai[:platform] == 'aix'
-        new_resource.options     "nodev,rw"
-      else
-        new_resource.options     "nodev"
-      end
-      new_resource.run_action(:enable)
-      new_resource.should_not be_updated_by_last_action
-    end
-  end
-
-  describe "testcase J: when the target state is to disable the mount" do
     it "should disable the mount if it is enabled" do
       new_resource.run_action(:disable)
-      new_resource.should be_updated
-      current_resource.enabled.should be_false
-    end
-  end
-
-  describe "testcase K: when the target state is to disable the mount" do
-    # cleanup at the end
-    after do
-      new_resource.run_action(:umount)
-    end
-
-    it "should not disable the mount if it isn't enabled" do
-      new_resource.run_action(:disable)
-      new_resource.should_not be_updated
+      mount_should_be_disabled(new_resource.mount_point)
     end
   end
 end
