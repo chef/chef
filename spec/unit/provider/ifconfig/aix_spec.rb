@@ -50,7 +50,7 @@ IFCONFIG
   describe "#load_current_resource" do 
     before do 
       status = double("Status", :exitstatus => 0)
-      @provider.should_receive(:popen4).with("ifconfig -a").and_yield(@pid,@stdin,@ifconfig_output,@stderr).and_return(status)
+      @provider.should_receive(:popen4).with("ifconfig -a").and_yield(@pid,@stdin,StringIO.new(@ifconfig_output),@stderr).and_return(status)
       @new_resource.device "en0"
     end
     it "should load given interface with attributes." do
