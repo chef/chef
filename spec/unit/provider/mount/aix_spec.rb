@@ -81,14 +81,14 @@ ENABLED
 
   describe "when discovering the current fs state" do
     it "should set current_resource.mounted to true if device is already mounted" do
-      stub_mounted(@provider, @mounted_output)
+      stub_mounted_enabled(@provider, @mounted_output, "")
       @provider.load_current_resource
 
       expect(@provider.current_resource.mounted).to be_true
     end
 
     it "should set current_resource.mounted to false if device is not mounted" do
-      stub_mounted(@provider, @unmounted_output)
+      stub_mounted_enabled(@provider, @unmounted_output, "")
 
       @provider.load_current_resource
 
@@ -96,7 +96,7 @@ ENABLED
     end
 
     it "should set current_resource.mounted to false if the mount point is used for another device" do
-      stub_mounted(@provider, @conflict_mounted_output)
+      stub_mounted_enabled(@provider, @conflict_mounted_output, "")
 
       @provider.load_current_resource
 
@@ -119,7 +119,7 @@ ENABLED
 
   describe "mount_fs" do
     it "should mount resource if it is not mounted" do
-      stub_mounted(@provider, @unmounted_output)
+      stub_mounted_enabled(@provider, @unmounted_output, "")
 
       @provider.should_receive(:shell_out!).with("mount -v #{@new_resource.fstype} #{@new_resource.device} #{@new_resource.mount_point}")
 
@@ -127,7 +127,7 @@ ENABLED
     end
 
     it "should not mount resource if it is already mounted" do
-      stub_mounted(@provider, @mounted_output)
+      stub_mounted_enabled(@provider, @mounted_output, "")
 
       @provider.should_not_receive(:mount_fs)
 
@@ -137,7 +137,7 @@ ENABLED
 
   describe "umount_fs" do
     it "should umount resource if it is already mounted" do
-      stub_mounted(@provider, @mounted_output)
+      stub_mounted_enabled(@provider, @mounted_output, "")
 
       @provider.should_receive(:shell_out!).with("umount #{@new_resource.mount_point}")
 
@@ -145,7 +145,7 @@ ENABLED
     end
 
     it "should not umount resource if it is not mounted" do
-      stub_mounted(@provider, @unmounted_output)
+      stub_mounted_enabled(@provider, @unmounted_output, "")
 
       @provider.should_not_receive(:umount_fs)
 
@@ -156,7 +156,7 @@ ENABLED
   describe "remount_fs" do
     it "should remount resource if it is already mounted and it supports remounting" do
       @new_resource.supports({:remount => true})
-      stub_mounted(@provider, @mounted_output)
+      stub_mounted_enabled(@provider, @mounted_output, "")
 
       @provider.should_receive(:shell_out!).with("mount -o remount #{@new_resource.device} #{@new_resource.mount_point}")
 
@@ -166,7 +166,7 @@ ENABLED
     it "should remount with new mount options if it is already mounted and it supports remounting" do
       @new_resource.supports({:remount => true})
       @new_resource.options("nodev,rw")
-      stub_mounted(@provider, @mounted_output)
+      stub_mounted_enabled(@provider, @mounted_output, "")
 
       @provider.should_receive(:shell_out!).with("mount -o remount,nodev,rw #{@new_resource.device} #{@new_resource.mount_point}")
 
@@ -227,7 +227,7 @@ ETCFILESYSTEMS
     end
 
     it "should not disable mount if it is not mounted" do
-      stub_mounted(@provider, @unmounted_output)
+      stub_mounted_enabled(@provider, @unmounted_output, "")
 
       @provider.should_not_receive(:disable_fs)
 
