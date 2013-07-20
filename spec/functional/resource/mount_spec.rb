@@ -23,7 +23,7 @@ require 'tmpdir'
 # run this test only for following platforms.
 include_flag = !(['ubuntu', 'centos', 'aix'].include?(ohai[:platform]))
 
-describe Chef::Resource::Mount, :external => include_flag do
+describe Chef::Resource::Mount, :requires_root, :external => include_flag do
 
   include Chef::Mixin::ShellOut
 
