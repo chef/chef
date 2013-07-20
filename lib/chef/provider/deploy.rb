@@ -189,9 +189,9 @@ class Chef
       end
 
       def migrate
-        run_symlinks_before_migrate
 
         if @new_resource.migrate
+          run_symlinks_before_migrate  
           enforce_ownership
 
           environment = @new_resource.environment
