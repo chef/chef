@@ -19,7 +19,7 @@
 require 'functional/resource/base'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::Ifconfig, :unix_only do
+describe Chef::Resource::Ifconfig, :requires_root, :unix_only do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
