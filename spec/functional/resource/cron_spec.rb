@@ -20,7 +20,7 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::Cron, :unix_only do
+describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   include Chef::Mixin::ShellOut
 
