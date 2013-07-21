@@ -86,6 +86,12 @@ class Chef
             end
           end
 
+          # Reduce existing priority back to an integer if appropriate, picking
+          # runlevel 2 as a baseline
+          if priority[2] && [2..5].all? { |runlevel| priority[runlevel] == priority[2] }
+            priority = priority[2].last
+          end
+
           unless @rcd_status.exitstatus == 0
             @priority_success = false
           end
@@ -103,6 +109,20 @@ class Chef
           }
 
           enabled
+        end
+
+        # Override method from parent to ensure priority is up-to-date
+        def action_enable
+          if @current_resource.enabled && @current_resource.priority == @new_resource.priority
+            Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
+          else
+            converge_by("enable service #{@new_resource}") do
+              enable_service
+              Chef::Log.info("#{@new_resource} enabled")
+            end
+          end
+          load_new_resource_state
+          @new_resource.enabled(true)
         end
 
         def enable_service()

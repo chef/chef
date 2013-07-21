@@ -228,6 +228,60 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
 
   end
 
+  describe "action_enable" do
+    shared_examples_for "the service is up to date" do
+      it "does not enable the service" do
+        @provider.should_not_receive(:enable_service)
+        @provider.action_enable
+        @provider.set_updated_status
+        @provider.new_resource.should_not be_updated
+      end
+    end
+
+    shared_examples_for "the service is not up to date" do
+      it "enables the service and sets the resource as updated" do
+        @provider.should_receive(:enable_service).and_return(true)
+        @provider.action_enable
+        @provider.set_updated_status
+        @provider.new_resource.should be_updated
+      end
+    end
+
+    context "when the service is disabled" do
+      before do
+        @current_resource.enabled(false)
+      end
+
+      it_behaves_like "the service is not up to date"
+    end
+
+    context "when the service is enabled" do
+      before do
+        @current_resource.enabled(true)
+      end
+
+      context "and the service sets no priority" do
+        it_behaves_like "the service is up to date"
+      end
+
+      context "and the service requests the same priority as is set" do
+        before do
+          @current_resource.priority(80)
+          @new_resource.priority(80)
+        end
+        it_behaves_like "the service is up to date"
+      end
+
+      context "and the service requests a different priority than is set" do
+        before do
+          @current_resource.priority(20)
+          @new_resource.priority(80)
+        end
+        it_behaves_like "the service is not up to date"
+      end
+    end
+  end
+
   describe "enable_service" do
     let(:service_name) { @new_resource.service_name }
     context "when the service doesn't set a priority" do
