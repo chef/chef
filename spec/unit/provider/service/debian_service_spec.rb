@@ -18,7 +18,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Service::Debian, :focus => true do
+describe Chef::Provider::Service::Debian do
   before(:each) do
     @node = Chef::Node.new
     @node.automatic_attrs[:command] = {:ps => 'fuuuu'}
