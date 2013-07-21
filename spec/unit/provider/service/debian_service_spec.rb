@@ -282,15 +282,20 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
     end
   end
 
+  def expect_commands(provider, commands)
+    commands.each do |command|
+      provider.should_receive(:run_command).with({:command => command})
+    end
+  end
+
   describe "enable_service" do
     let(:service_name) { @new_resource.service_name }
     context "when the service doesn't set a priority" do
       it "calls update-rc.d 'service_name' defaults" do
-        [ "/usr/sbin/update-rc.d -f #{service_name} remove",
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d #{service_name} defaults"
-        ].each do |command|
-          @provider.should_receive(:run_command).with({:command => command})
-        end
+        ])
         @provider.enable_service
       end
     end
@@ -301,11 +306,10 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
       end
 
       it "calls update-rc.d 'service_name' defaults" do
-        [ "/usr/sbin/update-rc.d -f #{service_name} remove",
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d #{service_name} defaults 75 25"
-        ].each do |command|
-          @provider.should_receive(:run_command).with({:command => command})
-        end
+        ])
         @provider.enable_service
       end
     end
@@ -316,11 +320,10 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
       end
 
       it "calls update-rc.d 'service_name' with those priorities" do
-        [ "/usr/sbin/update-rc.d -f #{service_name} remove",
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d #{service_name} start 20 2 . stop 55 3 . "
-        ].each do |command|
-          @provider.should_receive(:run_command).with({:command => command})
-        end
+        ])
         @provider.enable_service
       end
     end
@@ -330,11 +333,10 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
     let(:service_name) { @new_resource.service_name }
     context "when the service doesn't set a priority" do
       it "calls update-rc.d -f 'service_name' remove + stop with default priority" do
-        [ "/usr/sbin/update-rc.d -f #{service_name} remove",
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d -f #{service_name} stop 80 2 3 4 5 ."
-        ].each do |command|
-          @provider.should_receive(:run_command).with({:command => command})
-        end
+        ])
         @provider.disable_service
       end
     end
@@ -345,11 +347,10 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
       end
 
       it "calls update-rc.d -f 'service_name' remove + stop with the specified priority" do
-        [ "/usr/sbin/update-rc.d -f #{service_name} remove",
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d -f #{service_name} stop #{100 - @new_resource.priority} 2 3 4 5 ."
-        ].each do |command|
-          @provider.should_receive(:run_command).with({:command => command})
-        end
+        ])
         @provider.disable_service
       end
     end
