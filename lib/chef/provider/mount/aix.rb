@@ -26,14 +26,14 @@ class Chef
         # Override for aix specific handling
         def initialize(new_resource, run_context)
           super
-         # options and fstype are set to "defaults" and "auto" respectively in the Mount Resource class. These options are not valid for AIX, override them.
+          # options and fstype are set to "defaults" and "auto" respectively in the Mount Resource class. These options are not valid for AIX, override them.
           if @new_resource.options[0] == "defaults"
             @new_resource.options.clear
           end
           if @new_resource.fstype == "auto"
             @new_resource.fstype = nil
           end
-       end
+        end
 
         def enabled?
           # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
@@ -113,15 +113,15 @@ class Chef
           end
         end
 
-       def remount_command
-         if !(@new_resource.options.nil? || @new_resource.options.empty?)
-           return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
-         else
-           return "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
-         end
-       end
+        def remount_command
+          if !(@new_resource.options.nil? || @new_resource.options.empty?)
+            return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
+          else
+            return "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
+          end
+        end
 
-       def enable_fs
+        def enable_fs
           if @current_resource.enabled && mount_options_unchanged?
             Chef::Log.debug("#{@new_resource} is already enabled - nothing to do")
             return nil
@@ -135,11 +135,11 @@ class Chef
           ::File.open("/etc/filesystems", "a") do |fstab|
             fstab.puts("#{@new_resource.mount_point}:")
             if network_device?
-               device_details = device_fstab.split(":")
-               fstab.puts("\tdev\t\t= #{device_details[1]}")
-               fstab.puts("\tnodename\t\t= #{device_details[0]}")
+              device_details = device_fstab.split(":")
+              fstab.puts("\tdev\t\t= #{device_details[1]}")
+              fstab.puts("\tnodename\t\t= #{device_details[0]}")
             else
-               fstab.puts("\tdev\t\t= #{device_fstab}")
+              fstab.puts("\tdev\t\t= #{device_fstab}")
             end 
             fstab.puts("\tvfs\t\t= #{@new_resource.fstype}")
             fstab.puts("\tmount\t\t= false")
