@@ -5,8 +5,8 @@ require 'functional/resource/base'
 describe Chef::Resource::Group do
  
   def group_should_exist(resource)
-    case @OHAI_SYSTEM[:platform]
-    when "ubuntu", "linux"
+    case @OHAI_SYSTEM[:platform_family]
+    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       expect { Etc::getgrnam(resource.name) }.to_not raise_error(ArgumentError, "can't find group for #{resource.name}")
       expect(resource.name).to eq(Etc::getgrnam(resource.name).name)
     when "windows"
@@ -15,8 +15,8 @@ describe Chef::Resource::Group do
   end
 
   def user_exist_in_group?(resource, user)
-   case @OHAI_SYSTEM[:platform]
-    when "ubuntu", "linux"
+   case @OHAI_SYSTEM[:platform_family]
+    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       Etc::getgrnam(resource.name).mem.include?(user)
     when "windows"
       Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members.include?(user)
@@ -24,8 +24,8 @@ describe Chef::Resource::Group do
   end
  
   def group_should_not_exist(resource)
-   case @OHAI_SYSTEM[:platform]
-    when "ubuntu", "linux"
+   case @OHAI_SYSTEM[:platform_family]
+    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       expect { Etc::getgrnam(resource.name) }.to raise_error(ArgumentError, "can't find group for #{resource.name}")
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members }.to raise_error(ArgumentError, "The group name could not be found.")
