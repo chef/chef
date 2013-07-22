@@ -23,18 +23,6 @@ class Chef
     class Mount
       class Aix < Chef::Provider::Mount::Mount
 
-        # Override for aix specific handling
-        def initialize(new_resource, run_context)
-          super
-          # options and fstype are set to "defaults" and "auto" respectively in the Mount Resource class. These options are not valid for AIX, override them.
-          if @new_resource.options[0] == "defaults"
-            @new_resource.options.clear
-          end
-          if @new_resource.fstype == "auto"
-            @new_resource.fstype = nil
-          end
-        end
-
         def enabled?
           # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
           enabled = false
@@ -92,11 +80,10 @@ class Chef
           unless @current_resource.mounted
             mountable?
             command = "mount -v #{@new_resource.fstype}"
-
-            if !(@new_resource.options.nil? || @new_resource.options.empty?)
-              command << " -o #{@new_resource.options.join(',')}"
-            end
-
+            
+            options = aix_mount_options
+            command << " -o #{options.join(',')}" if !options.nil?
+            
             command << case @new_resource.device_type
             when :device
               " #{device_real}"
@@ -114,10 +101,10 @@ class Chef
         end
 
         def remount_command
-          if !(@new_resource.options.nil? || @new_resource.options.empty?)
-            return "mount -o remount,#{@new_resource.options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
-          else
+          if aix_mount_options.nil?
             return "mount -o remount #{@new_resource.device} #{@new_resource.mount_point}"
+          else
+            return "mount -o remount,#{aix_mount_options.join(',')} #{@new_resource.device} #{@new_resource.mount_point}"
           end
         end
 
@@ -143,7 +130,8 @@ class Chef
             end 
             fstab.puts("\tvfs\t\t= #{@new_resource.fstype}")
             fstab.puts("\tmount\t\t= false")
-            fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
+            options = aix_mount_options
+            fstab.puts "\toptions\t\t= #{options.join(',')}" unless options.nil?
             Chef::Log.debug("#{@new_resource} is enabled at #{@new_resource.mount_point}")
           end
         end
@@ -173,7 +161,17 @@ class Chef
           end
         end
 
+        private
+        def aix_mount_options
+          # options and fstype are set to "defaults" and "auto" respectively in the Mount Resource class. These options are not valid for AIX, override them.
+          if !@new_resource.options.nil? && !@new_resource.options.empty? && @new_resource.options[0] == "defaults"
+            # user has not set any options for this resource and "defaults" is not supported in aix.
+            nil
+          else
+            @new_resource.options
+          end
+        end
+      end
     end
-   end
   end
 end
