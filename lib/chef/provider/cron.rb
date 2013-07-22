@@ -45,6 +45,7 @@ class Chef
         crontab_lines = []
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
         @current_resource.user(@new_resource.user)
+        @cron_exists = false
         if crontab = read_crontab
           cron_found = false
           crontab.each_line do |line|
@@ -93,14 +94,7 @@ class Chef
         newcron = String.new
         cron_found = false
 
-        newcron << "# Chef Name: #{new_resource.name}\n"
-        [ :mailto, :path, :shell, :home ].each do |v|
-          newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
-        end
-        @new_resource.environment.each do |name, value|
-          newcron << "#{name}=#{value}\n"
-        end
-        newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+        newcron = get_crontab_entry
 
         if @cron_exists
           unless cron_different?
@@ -208,6 +202,19 @@ class Chef
         if status.exitstatus > 0
           raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
         end
+      end
+
+      def get_crontab_entry
+        newcron = ""
+        newcron << "# Chef Name: #{new_resource.name}\n"
+        [ :mailto, :path, :shell, :home ].each do |v|
+          newcron << "#{v.to_s.upcase}=#{@new_resource.send(v)}\n" if @new_resource.send(v)
+        end
+        @new_resource.environment.each do |name, value|
+          newcron << "#{name}=#{value}\n"
+        end
+        newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+        newcron
       end
     end
   end
