@@ -88,41 +88,9 @@ IFCONFIG
 
       expect{@provider.run_action(:add)}.to raise_error(Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action")
     end
-
-
-    context "VIP" do
-      before do
-        @provider.stub!(:load_current_resource) do
-          @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
-          current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
-          current_resource.inet_addr '12.12.11.1'
-          @provider.instance_variable_set("@current_resource", current_resource)
-        end
-        @new_resource.device "en0"
-      end
-
-      it "should add an VIP if interface already exists and is_vip is true" do
-        @new_resource.is_vip true
-        command = "chdev -l #{@new_resource.device} -a alias4=#{@new_resource.name}"
-        @provider.should_receive(:run_command).with(:command => command)
-
-        @provider.run_action(:add)
-        @new_resource.should be_updated
-      end
-
-
-      it "should not add an VIP if is_vip is false" do
-        @new_resource.is_vip false
-        @provider.should_not_receive(:run_command)
-
-        @provider.run_action(:add)
-        @new_resource.should_not be_updated
-      end
-    end
   end
 
   describe "#action_enable" do
-
     it "should enable an interface if it does not exist" do
       @new_resource.device "en10"
       @provider.stub!(:load_current_resource) do
@@ -134,36 +102,6 @@ IFCONFIG
 
       @provider.run_action(:enable)
       @new_resource.should be_updated
-    end
-
-    context "VIP" do
-      before do
-        @provider.stub!(:load_current_resource) do
-          @provider.instance_variable_set("@status", double("Status", :exitstatus => 0))
-          current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
-          current_resource.inet_addr '12.12.11.1'
-          @provider.instance_variable_set("@current_resource", current_resource)
-        end
-        @new_resource.device "en0"
-      end
-
-      it "should enable an VIP if interface already exists and is_vip is true" do
-        @new_resource.is_vip true
-        command = "ifconfig #{@new_resource.device} inet #{@new_resource.name} alias"
-        @provider.should_receive(:run_command).with(:command => command)
-
-        @provider.run_action(:enable)
-        @new_resource.should be_updated
-      end
-
-
-      it "should not add an VIP if is_vip is false" do
-        @new_resource.is_vip false
-        @provider.should_not_receive(:run_command)
-
-        @provider.run_action(:enable)
-        @new_resource.should_not be_updated
-      end
     end
   end
 
@@ -201,14 +139,6 @@ IFCONFIG
         @new_resource.should be_updated
       end
 
-      it "should disable VIP" do
-        @new_resource.is_vip true
-        command = "ifconfig #{@new_resource.device} inet 10.0.0.1 delete"
-        @provider.should_receive(:run_command).with(:command => command)
-
-        @provider.run_action(:disable)
-        @new_resource.should be_updated
-      end
     end
   end
 
@@ -240,15 +170,6 @@ IFCONFIG
 
       it "should delete an interface if it exists" do
         command = "chdev -l #{@new_resource.device} -a state=down"
-        @provider.should_receive(:run_command).with(:command => command)
-
-        @provider.run_action(:delete)
-        @new_resource.should be_updated
-      end
-
-      it "should delete a VIP if it exists" do
-        @new_resource.is_vip true
-        command = "chdev -l #{@new_resource.device}  -a delalias4=#{@new_resource.name}"
         @provider.should_receive(:run_command).with(:command => command)
 
         @provider.run_action(:delete)
