@@ -27,7 +27,8 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Platform specific validation routines.
   def cron_should_exists(cron_name, command)
     case ohai[:platform]
-    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
+    when "aix", "solaris"
+>>>>>>> cron functional tests.
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
     else
@@ -38,7 +39,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   def cron_should_not_exists(cron_name)
     case ohai[:platform]
-    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
+    when "aix", "solaris"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
     else
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
@@ -48,7 +49,8 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Actual tests
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
-    new_resource.user  'root'
+    new_resource.user  ohai[:current_user]
+>>>>>>> cron functional tests.
     new_resource.minute "30"
     new_resource.command "/bin/true"
     new_resource
@@ -83,8 +85,12 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
   end
 
+<<<<<<< HEAD
   exclude_solaris = ["solaris", "opensolaris", "solaris2", "omnios"].include?(ohai[:platform])
   describe "create action with various attributes", :external => exclude_solaris do
+=======
+  describe "create action with various attributes" do
+>>>>>>> cron functional tests.
     def create_and_validate_with_attribute(resource, attribute, value)
       if ohai[:platform] == 'aix'
          expect {resource.run_action(:create)}.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
