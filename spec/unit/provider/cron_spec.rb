@@ -563,7 +563,7 @@ HOME=/home/foo
         @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
-# Chef Name: something else
+# Chef Name: cronhole some stuff
 * 5 * * * /bin/true
 
 # Another comment
@@ -581,6 +581,7 @@ CRONTAB
       end
 
       it "should log nothing changed" do
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'") 
         Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
       end
