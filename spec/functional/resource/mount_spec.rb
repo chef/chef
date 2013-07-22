@@ -43,6 +43,13 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
       shell_out!("mkfs  -V #{fstype} #{device}")
     when "ubuntu", "centos"
       device = "/dev/ram1"
+      shell_out("ls -1 /dev/ram*").stdout.each_line do |d|
+        if shell_out("mount | grep #{d}").exitstatus == "1"
+          # this device is not mounted, so use it.
+          device = d
+          break
+        end
+      end
       fstype = "tmpfs"
       shell_out!("mkfs -q #{device} 512")
     else
