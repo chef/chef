@@ -72,7 +72,7 @@ describe Chef::Provider::Ifconfig do
       @provider.stub!(:load_current_resource)
       @provider.should_not_receive(:run_command)
       @current_resource.inet_addr "10.0.0.1"
-      @provider.should_receive(:generate_config)
+      @provider.should_not_receive(:generate_config)
 
       @provider.run_action(:add)
       @new_resource.should_not be_updated
