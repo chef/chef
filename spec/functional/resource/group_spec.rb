@@ -1,134 +1,167 @@
+
 require 'spec_helper'
-require 'chef/mixin/shell_out'
+require 'functional/resource/base'
 
-describe Chef::Resource::Group, :requires_root_or_running_windows	  do
-  include Chef::Mixin::ShellOut
-
-  OHAI_SYSTEM = Ohai::System.new
-  OHAI_SYSTEM.require_plugin("os")
-  OHAI_SYSTEM.require_plugin("platform")
-
-	# Order the tests for proper cleanup and execution
-	RSpec.configure do |config|
-		config.order_groups_and_examples do |list|
-			list.sort_by { |item| item.description }
-		end
-	end
-
-  let(:events) do
-    Chef::EventDispatch::Dispatcher.new
+describe Chef::Resource::Group do
+ 
+  def group_should_exist(resource)
+    case @OHAI_SYSTEM[:platform]
+    when "ubuntu", "linux"
+      expect { Etc::getgrnam(resource.name) }.to_not raise_error(ArgumentError, "can't find group for #{resource.name}")
+      expect(resource.name).to eq(Etc::getgrnam(resource.name).name)
+    when "windows"
+      expect { Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members }.to_not raise_error(ArgumentError, "The group name could not be found.")
+    end
   end
 
-  let(:node) do
-    n = Chef::Node.new
-    n.consume_external_attrs(OHAI_SYSTEM.data.dup, {})
-    n
+  def user_exist_in_group?(resource, user)
+   case @OHAI_SYSTEM[:platform]
+    when "ubuntu", "linux"
+      Etc::getgrnam(resource.name).mem.include?(user)
+    when "windows"
+      Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members.include?(user)
+    end
+  end
+ 
+  def group_should_not_exist(resource)
+   case @OHAI_SYSTEM[:platform]
+    when "ubuntu", "linux"
+      expect { Etc::getgrnam(resource.name) }.to raise_error(ArgumentError, "can't find group for #{resource.name}")
+    when "windows"
+      expect { Chef::Util::Windows::NetGroup.new(resource.group_name).local_get_members }.to raise_error(ArgumentError, "The group name could not be found.")
+    end
   end
 
-  let(:run_context) do
-    Chef::RunContext.new(node, {}, events)
+  def get_user_provider(username)
+    usr = Chef::Resource::User.new("#{username}", @run_context)
+    usr.password("Chef2UncleNed!")
+    userProviderClass = Chef::Platform.find_provider(@OHAI_SYSTEM[:platform], @OHAI_SYSTEM[:version], usr)
+    usr_provider = userProviderClass.new(usr, @run_context)
   end
 
-  let(:user_resource) do
-  	r = Chef::Resource::User.new("test-user-resource", run_context)
-  	r
+  def create_user(username)
+    get_user_provider(username).run_action(:create)
   end
 
-	let(:create_user) do
-		user_resource.run_action(:create)
-	end
+  def remove_user(username)
+    get_user_provider(username).run_action(:remove)
+  end
 
-	let(:remove_user) do
-		user_resource.run_action(:remove)
-	end
+  before do
+    ohai
+    run_context
+    @grp_resource = Chef::Resource::Group.new("test-group-#{SecureRandom.random_number(9999)}", @run_context)
+  end
+ 
+  context "group create action" do
+    after(:each) do
+     @grp_resource.run_action(:remove) 
+    end
 
-	def provider(resource)
-		provider = resource.provider_for_action(resource.action)
-		provider.load_current_resource
-		provider
-	end
+    it "create a group" do
+      @grp_resource.run_action(:create)
+      group_should_exist(@grp_resource)
+    end
 
-	def resource_should_exist(resource)
-		provider(resource).group_exists.should be_true
-	end
+    context "group name with 256 characters", :windows_only do
+        before(:each) do
+          grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
+          @new_grp = Chef::Resource::Group.new(grp_name, @run_context)
+        end
+        after do
+          @new_grp.run_action(:remove)
+        end
+        it " create a group" do
+          @new_grp.run_action(:create)
+          group_should_exist(@new_grp)
+        end
+    end
+    context "group name with more than 256 characters", :windows_only do
+        before(:each) do
+          grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQQQQQQQQQQQQ"
+          @new_grp = Chef::Resource::Group.new(grp_name, @run_context)
+        end
+        it " not create a group" do
+          expect { @new_grp.run_action(:create) }.to raise_error
+          group_should_not_exist(@new_grp)
+        end
+    end
+  end
 
-	def resource_should_not_exist(resource)
-		provider(resource).group_exists.should be_false
-	end
+  context "group remove action" do
+    before(:each) do
+      @grp_resource.run_action(:create)
+    end
 
+    it "remove a group" do
+      @grp_resource.run_action(:remove)
+      group_should_not_exist(@grp_resource)
+    end
+  end
 
-	before do
-		@grp_resource = Chef::Resource::Group.new("chef-test-group", run_context)
-	end
+  context "group modify action" do
+    before(:each) do
+      @grp_resource.run_action(:create)
+    end
 
-	context "group create action" do
+    after(:each) do
+     @grp_resource.run_action(:remove) 
+    end
 
-		it " - should create a group" do
-			@grp_resource.run_action(:create)
-			resource_should_exist(@grp_resource)
-		end
+    it "add user to group" do
+      user1 = "user1-#{SecureRandom.random_number(9999)}"
+      user2 = "user2-#{SecureRandom.random_number(9999)}"
+      
+      create_user(user1)
+      @grp_resource.members(user1)
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
+      @grp_resource.run_action(:modify)
+      group_should_exist(@grp_resource)
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_true
 
-		context "group name with 256 characters", :windows_only do
-			before(:each) do
-				grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
-				@new_grp = Chef::Resource::Group.new(grp_name, run_context)
-			end
-			after do
-				@new_grp.run_action(:remove)
-			end
-			it " - should create a group" do
-				@new_grp.run_action(:create)
-				resource_should_exist(@new_grp)
-			end
-		end
+      create_user(user2)
+      expect(user_exist_in_group?(@grp_resource, user2)).to be_false
+      @grp_resource.members(user2)
+      @grp_resource.run_action(:modify)
+      group_should_exist(@grp_resource)
 
-		context "group name with more than 256 characters", :windows_only do
-			before(:each) do
-				grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQQQQQQQQQQQQ"
-				@new_grp = Chef::Resource::Group.new(grp_name, run_context)
-			end
-			it " - should not create a group" do
-				@new_grp.run_action(:create)
-				resource_should_not_exist(@new_grp)
-			end
-		end
+      #default append is false, so modify action remove old member user1 from group and add new member user2
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
+      expect(user_exist_in_group?(@grp_resource, user2)).to be_true
+      remove_user(user1)
+      remove_user(user2)
+    end
+    
 
-		context "add user to group" do
-			after do
-				remove_user
-			end
-			it " - should add a user to the group" do
-				create_user
-				grp_resource.members(user_resource.username)
-				grp_resource.append(true)
-				grp_resource.run_action(:modify)
-				grp_resource.members.length > 0
-			end
-		end
+    it "append user to a group" do
+      user1 = "user1-#{SecureRandom.random_number(9999)}"
+      user2 = "user2-#{SecureRandom.random_number(9999)}"
+      create_user(user1)
+      @grp_resource.members(user1)
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
+      #default append attribute is false
+      @grp_resource.run_action(:modify)
+      group_should_exist(@grp_resource)
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_true
+      #set append attribute to true
+      @grp_resource.append(true)
+      create_user(user2)
+      expect(user_exist_in_group?(@grp_resource, user2)).to be_false
+      @grp_resource.members(user2)
+      @grp_resource.run_action(:modify)
+      group_should_exist(@grp_resource)
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_true
+      expect(user_exist_in_group?(@grp_resource, user2)).to be_true
+      remove_user(user1)
+      remove_user(user2)
+    end
 
-		context "add non existent user to group" do
-			it " - should not update the members" do
-				grp_resource.members("NotAUser")
-				grp_resource.append(true)
-				expect {grp_resource.run_action(:modify)}.to raise_error
-			end
-		end
-
-		context "change gid of the group", :windows_only do
-			before(:each) do
-				grp_resource.gid("1234567890")
-			end
-			it " - should change gid of the group" do
-				grp_resource.run_action(:manage)
-				grp_resource.gid.should == "1234567890"
-			end
-		end
-
-		context "group remove action" do
-			it "should remove the group" do
-				@grp_resource.run_action(:remove)
-				resource_should_not_exist(@grp_resource)
-			end
-		end
-	end
+    it "raise error on add non-existent user to group" do
+      user1 = "user1-#{SecureRandom.random_number(9999)}"
+      @grp_resource.members(user1)
+      @grp_resource.append(true)
+      expect(user_exist_in_group?(@grp_resource, user1)).to be_false
+      expect { @grp_resource.run_action(:modify) }.to raise_error
+    end
+  end
 end
