@@ -316,7 +316,6 @@ class Chef::Application::Client < Chef::Application
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Application.debug_stacktrace(e)
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           unless SELF_PIPE.empty?
             client_sleep Chef::Config[:interval]
@@ -326,7 +325,6 @@ class Chef::Application::Client < Chef::Application
           end
           retry
         else
-          Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       end

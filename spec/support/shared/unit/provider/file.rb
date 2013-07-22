@@ -31,12 +31,17 @@ def file_symlink_class
   end
 end
 
+def normalized_path
+  File.expand_path(resource_path)
+end
+
 def setup_normal_file
   File.stub!(:exists?).with(resource_path).and_return(true)
   File.stub!(:directory?).with(resource_path).and_return(false)
   File.stub!(:directory?).with(enclosing_directory).and_return(true)
   File.stub!(:writable?).with(resource_path).and_return(true)
   file_symlink_class.stub!(:symlink?).with(resource_path).and_return(false)
+  file_symlink_class.stub!(:symlink?).with(normalized_path).and_return(false)
 end
 
 def setup_missing_file
@@ -49,10 +54,11 @@ end
 
 def setup_symlink
   File.stub!(:exists?).with(resource_path).and_return(true)
-  File.stub!(:directory?).with(resource_path).and_return(false)
+  File.stub!(:directory?).with(normalized_path).and_return(false)
   File.stub!(:directory?).with(enclosing_directory).and_return(true)
   File.stub!(:writable?).with(resource_path).and_return(true)
   file_symlink_class.stub!(:symlink?).with(resource_path).and_return(true)
+  file_symlink_class.stub!(:symlink?).with(normalized_path).and_return(true)
 end
 
 def setup_unwritable_file
@@ -140,7 +146,8 @@ shared_examples_for Chef::Provider::File do
         # mock up the filesystem to behave like unix
         setup_normal_file
         stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-        File.should_receive(:stat).with(resource.path).at_least(:once).and_return(stat_struct)
+        resource_real_path = File.realpath(resource.path)
+        File.should_receive(:stat).with(resource_real_path).at_least(:once).and_return(stat_struct)
         Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
         Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
       end
@@ -264,7 +271,8 @@ shared_examples_for Chef::Provider::File do
       # mock up the filesystem to behave like unix
       setup_normal_file
       stat_struct = mock("::File.stat", :mode => 0600, :uid => 0, :gid => 0, :mtime => 10000)
-      File.stub!(:stat).with(resource.path).and_return(stat_struct)
+      resource_real_path = File.realpath(resource.path)
+      File.stub!(:stat).with(resource_real_path).and_return(stat_struct)
       Etc.stub!(:getgrgid).with(0).and_return(mock("Group Ent", :name => "wheel"))
       Etc.stub!(:getpwuid).with(0).and_return(mock("User Ent", :name => "root"))
       provider.send(:load_resource_attributes_from_file, resource)
@@ -377,7 +385,7 @@ shared_examples_for Chef::Provider::File do
             provider.should_receive(:diff).at_least(:once).and_return(diff)
             provider.should_receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)
             provider.should_receive(:checksum).with(resource_path).and_return(tempfile_sha256)
-            provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, resource_path)
+            provider.deployment_strategy.should_receive(:deploy).with(tempfile_path, normalized_path)
           end
           context "when the file was created" do
             before { provider.should_receive(:file_created?).at_least(:once).and_return(true) }
@@ -459,12 +467,12 @@ shared_examples_for Chef::Provider::File do
             end
 
             it "restores security context on the file" do
-              provider.should_receive(:restore_security_context).with(resource_path, false)
+              provider.should_receive(:restore_security_context).with(normalized_path, false)
               provider.send(:do_selinux)
             end
 
             it "restores security context recursively when told so" do
-              provider.should_receive(:restore_security_context).with(resource_path, true)
+              provider.should_receive(:restore_security_context).with(normalized_path, true)
               provider.send(:do_selinux, true)
             end
           end

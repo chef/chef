@@ -408,9 +408,60 @@ describe Chef::ResourceReporter do
 
       it "includes the error inspector output in the event data" do
         @report["data"]["exception"].should have_key("description")
-        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[["Unexpected Error:", "RSpec::Mocks::Mock: Object not found"]]})
+        @report["data"]["exception"]["description"].should include({"title"=>"Error expanding the run_list:", "sections"=>[{"Unexpected Error:" => "RSpec::Mocks::Mock: Object not found"}]})
       end
 
+    end
+
+    context "when new_resource does not have a cookbook_name" do
+      before do
+        @bad_resource = Chef::Resource::File.new("/tmp/a-file.txt")
+        @bad_resource.cookbook_name = nil
+
+        @resource_reporter.resource_action_start(@bad_resource, :create)
+        @resource_reporter.resource_current_state_loaded(@bad_resource, :create, @current_resource)
+        @resource_reporter.resource_updated(@bad_resource, :create)
+        @resource_reporter.resource_completed(@bad_resource)
+        @run_status.stop_clock
+        @report = @resource_reporter.prepare_run_data
+        @first_update_report = @report["resources"].first
+      end
+
+      it "includes an updated resource's initial state" do
+        @first_update_report["before"].should == @current_resource.state
+      end
+
+      it "includes an updated resource's final state" do
+        @first_update_report["after"].should == @new_resource.state
+      end
+
+      it "includes the resource's name" do
+        @first_update_report["name"].should == @new_resource.name
+      end
+
+      it "includes the resource's id attribute" do
+        @first_update_report["id"].should == @new_resource.identity
+      end
+
+      it "includes the elapsed time for the resource to converge" do
+        # TODO: API takes integer number of milliseconds as a string. This
+        # should be an int.
+        @first_update_report.should have_key("duration")
+        @first_update_report["duration"].to_i.should be_within(100).of(0)
+      end
+
+      it "includes the action executed by the resource" do
+        # TODO: rename as "action"
+        @first_update_report["result"].should == "create"
+      end
+
+      it "does not include a cookbook name for the resource" do
+        @first_update_report.should_not have_key("cookbook_name")
+      end
+
+      it "does not include a cookbook version for the resource" do
+        @first_update_report.should_not have_key("cookbook_version")
+      end
     end
 
   end

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH=/usr/local/bin:$PATH
+export PATH=$PATH:/usr/local/bin
 
 ruby -v;
 # remove the Gemfile.lock and try again if bundler fails.

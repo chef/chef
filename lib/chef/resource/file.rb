@@ -36,6 +36,8 @@ class Chef
         state_attrs :checksum, :owner, :group, :mode
       end
 
+      attr_writer :checksum
+
       provides :file, :on_platforms => :all
 
       def initialize(name, run_context=nil)
@@ -48,6 +50,7 @@ class Chef
         @provider = Chef::Provider::File
         @atomic_update = Chef::Config[:file_atomic_update]
         @force_unlink = false
+        @manage_symlink_source = nil
         @diff = nil
       end
 
@@ -103,6 +106,14 @@ class Chef
       def force_unlink(arg=nil)
         set_or_return(
           :force_unlink,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def manage_symlink_source(arg=nil)
+        set_or_return(
+          :manage_symlink_source,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )

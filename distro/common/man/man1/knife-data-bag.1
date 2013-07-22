@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KNIFE\-DATA\-BAG" "1" "February 2013" "Chef 11.2.0" "Chef Manual"
+.TH "KNIFE\-DATA\-BAG" "1" "July 2013" "Chef 11.8.0.alpha.0" "Chef Manual"
 .
 .SH "NAME"
 \fBknife\-data\-bag\fR \- Store arbitrary data on a Chef Server
@@ -105,20 +105,7 @@ Data Bag Items may be encrypted to keep their contents secret\. This may be desi
 Data Bag Item encryption uses the AES\-256 CBC symmetric key algorithm\.
 .
 .P
-\fBCAVEATS:\fR Keys are not encrypted; only values are encrypted\. The "id" of a Data Bag Item is not encrypted, since it is used by Chef Server to store the item in its database\. For example, given the following data bag item:
-.
-.IP "" 4
-.
-.nf
-
-{"id": "important_passwords", "secret_password": "opensesame"}
-.
-.fi
-.
-.IP "" 0
-.
-.P
-The key "secret_password" will be visible to an evesdropper, but the value "opensesame" will be protected\. Both the key "id" and its value "important_passwords" will be visible to an evesdropper\.
+\fBCAVEATS:\fR Keys are not encrypted; only values are encrypted\. The "id" of a Data Bag Item is not encrypted, since it is used by Chef Server to store the item in its database\. For example, given the following data bag item: {"id": "important_passwords", "secret_password": "opensesame"} The key "secret_password" will be visible to an evesdropper, but the value "opensesame" will be protected\. Both the key "id" and its value "important_passwords" will be visible to an evesdropper\.
 .
 .P
 Chef Server does not provide a secure mechanism for distributing encryption keys\.

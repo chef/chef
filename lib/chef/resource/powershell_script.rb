@@ -20,10 +20,10 @@ require 'chef/resource/windows_script'
 
 class Chef
   class Resource
-    class Powershell < Chef::Resource::WindowsScript
+    class PowershellScript < Chef::Resource::WindowsScript
 
       def initialize(name, run_context=nil)
-        super(name, run_context, :powershell, "powershell.exe")
+        super(name, run_context, :powershell_script, "powershell.exe")
       end
       
     end

@@ -369,45 +369,259 @@ shared_examples_for "a configured file resource" do
       File.join(CHEF_SPEC_DATA, "file-test-target")
     }
 
-    before do
-      FileUtils.touch(symlink_target)
-    end
 
-    after do
-      FileUtils.rm_rf(symlink_target)
-    end
-
-    before(:each) do
-      if windows?
-        Chef::ReservedNames::Win32::File.symlink(symlink_target, path)
-      else
-        File.symlink(symlink_target, path)
-      end
-    end
-
-    after(:each) do
-      FileUtils.rm_rf(path)
-    end
-
-    describe "when symlink target has correct content" do
+    describe "when configured not to manage symlink's target" do
       before(:each) do
-        File.open(symlink_target, "wb") { |f| f.print expected_content }
-      end
+        # configure not to manage symlink source
+        resource.manage_symlink_source(false)
 
-      it_behaves_like "file resource not pointing to a real file"
-    end
+        # create symlinks for test context
+        FileUtils.touch(symlink_target)
 
-    describe "when symlink target has the wrong content" do
-      before(:each) do
-        File.open(symlink_target, "wb") { |f| f.print "This is so wrong!!!" }
+        if windows?
+          Chef::ReservedNames::Win32::File.symlink(symlink_target, path)
+        else
+          File.symlink(symlink_target, path)
+        end
       end
 
       after(:each) do
-        # symlink should never be followed
-        binread(symlink_target).should == "This is so wrong!!!"
+        FileUtils.rm_rf(symlink_target)
+        FileUtils.rm_rf(path)
       end
 
-      it_behaves_like "file resource not pointing to a real file"
+      describe "when symlink target has correct content" do
+        before(:each) do
+          File.open(symlink_target, "wb") { |f| f.print expected_content }
+        end
+
+        it_behaves_like "file resource not pointing to a real file"
+      end
+
+      describe "when symlink target has the wrong content" do
+        before(:each) do
+          File.open(symlink_target, "wb") { |f| f.print "This is so wrong!!!" }
+        end
+
+        after(:each) do
+          # symlink should never be followed
+          binread(symlink_target).should == "This is so wrong!!!"
+        end
+
+        it_behaves_like "file resource not pointing to a real file"
+      end
+    end
+
+    # Unix-only for now. Windows behavior may differ because of how ACL
+    # management handles symlinks. Since symlinks are rare on Windows and this
+    # feature primarily exists to support the case where a well-known file
+    # (e.g., resolv.conf) has been converted to a symlink, we're okay with the
+    # discrepancy.
+    context "when configured to manage the symlink source", :unix_only do
+
+      before do
+        resource.manage_symlink_source(true)
+      end
+
+      context "but the symlink is part of a loop" do
+        let(:link1_path) { File.join(CHEF_SPEC_DATA, "points-to-link2") }
+        let(:link2_path) { File.join(CHEF_SPEC_DATA, "points-to-link1") }
+
+        before do
+          # point resource at link1:
+          resource.path(link1_path)
+          # create symlinks for test context
+          File.symlink(link1_path, link2_path)
+          File.symlink(link2_path, link1_path)
+        end
+
+        after(:each) do
+          FileUtils.rm_rf(link1_path)
+          FileUtils.rm_rf(link2_path)
+        end
+
+        it "raises an InvalidSymlink error" do
+          lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::InvalidSymlink)
+        end
+
+        it "issues a warning/assumption in whyrun mode" do
+          begin
+            Chef::Config[:why_run] = true
+            resource.run_action(:create) # should not raise
+          ensure
+            Chef::Config[:why_run] = false
+          end
+        end
+      end
+
+      context "but the symlink points to a nonexistent file" do
+        let(:link_path) { File.join(CHEF_SPEC_DATA, "points-to-nothing") }
+        let(:not_existent_source) { File.join(CHEF_SPEC_DATA, "i-am-not-here") }
+
+        before do
+          resource.path(link_path)
+          # create symlinks for test context
+          File.symlink(not_existent_source, link_path)
+          FileUtils.rm_rf(not_existent_source)
+        end
+
+        after(:each) do
+          FileUtils.rm_rf(link_path)
+        end
+        it "raises an InvalidSymlink error" do
+          lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::InvalidSymlink)
+        end
+
+        it "issues a warning/assumption in whyrun mode" do
+          begin
+            Chef::Config[:why_run] = true
+            resource.run_action(:create) # should not raise
+          ensure
+            Chef::Config[:why_run] = false
+          end
+        end
+      end
+
+      context "but the symlink is points to a non-file fs entry" do
+        let(:link_path) { File.join(CHEF_SPEC_DATA, "points-to-dir") }
+        let(:not_a_file_path) { File.join(CHEF_SPEC_DATA, "dir-at-end-of-symlink") }
+
+        before do
+          # point resource at link1:
+          resource.path(link_path)
+          # create symlinks for test context
+          File.symlink(not_a_file_path, link_path)
+          Dir.mkdir(not_a_file_path)
+        end
+
+        after(:each) do
+          FileUtils.rm_rf(link_path)
+          FileUtils.rm_rf(not_a_file_path)
+        end
+
+        it "raises an InvalidSymlink error" do
+          lambda { resource.run_action(:create) }.should raise_error(Chef::Exceptions::FileTypeMismatch)
+        end
+
+        it "issues a warning/assumption in whyrun mode" do
+          begin
+            Chef::Config[:why_run] = true
+            resource.run_action(:create) # should not raise
+          ensure
+            Chef::Config[:why_run] = false
+          end
+        end
+      end
+
+      context "when the symlink source is a real file" do
+
+        let(:wrong_content) { "this is the wrong content" }
+        let(:link_path) { File.join(CHEF_SPEC_DATA, "points-to-real-file") }
+
+        before do
+          # point resource at link:
+          resource.path(link_path)
+          # create symlinks for test context
+          File.symlink(path, link_path)
+        end
+
+        after(:each) do
+          # shared examples should not change our test setup of a file resource
+          # pointing at a symlink:
+          resource.path.should == link_path
+          FileUtils.rm_rf(link_path)
+        end
+
+        context "and the permissions are incorrect" do
+          before do
+            # Create source (real) file
+            File.open(path, "wb") { |f| f.write(expected_content) }
+          end
+
+
+          include_context "setup broken permissions"
+
+          include_examples "a securable resource with existing target"
+
+          it "does not replace the symlink with a real file" do
+            resource.run_action(:create)
+            File.should be_symlink(link_path)
+          end
+
+        end
+
+        context "and the content is incorrect" do
+          before do
+            # Create source (real) file
+            File.open(path, "wb") { |f| f.write(wrong_content) }
+          end
+
+          it "updates the source file content" do
+            pending
+          end
+
+          it "marks the resource as updated" do
+            resource.run_action(:create)
+            resource.should be_updated_by_last_action
+          end
+
+          it "does not replace the symlink with a real file" do
+            resource.run_action(:create)
+            File.should be_symlink(link_path)
+          end
+        end
+
+        context "and the content and permissions are correct" do
+          let(:expect_updated?) { false }
+
+          before do
+            # Create source (real) file
+            File.open(path, "wb") { |f| f.write(expected_content) }
+          end
+          include_context "setup correct permissions"
+
+          include_examples "a securable resource with existing target"
+
+        end
+
+      end
+
+      context "when the symlink points to a symlink which points to a real file" do
+
+        let(:wrong_content) { "this is the wrong content" }
+        let(:link_to_file_path) { File.join(CHEF_SPEC_DATA, "points-to-real-file") }
+        let(:link_to_link_path) { File.join(CHEF_SPEC_DATA, "points-to-next-link") }
+
+        before do
+          # point resource at link:
+          resource.path(link_to_link_path)
+          # create symlinks for test context
+          File.symlink(path, link_to_file_path)
+          File.symlink(link_to_file_path, link_to_link_path)
+
+          # Create source (real) file
+          File.open(path, "wb") { |f| f.write(wrong_content) }
+        end
+
+        include_context "setup broken permissions"
+
+        include_examples "a securable resource with existing target"
+
+        after(:each) do
+          # shared examples should not change our test setup of a file resource
+          # pointing at a symlink:
+          resource.path.should == link_to_link_path
+          FileUtils.rm_rf(link_to_file_path)
+          FileUtils.rm_rf(link_to_link_path)
+        end
+
+        it "does not replace the symlink with a real file" do
+          resource.run_action(:create)
+          File.should be_symlink(link_to_link_path)
+          File.should be_symlink(link_to_file_path)
+        end
+
+      end
     end
   end
 

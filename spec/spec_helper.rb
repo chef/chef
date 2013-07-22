@@ -53,7 +53,12 @@ end
 
 require 'chef'
 require 'chef/knife'
-Chef::Knife.load_commands
+
+Dir['lib/chef/knife/**/*.rb'].
+  map {|f| f.gsub('lib/', '') }.
+  map {|f| f.gsub(%r[\.rb$], '') }.
+  each {|f| require f }
+
 require 'chef/mixins'
 require 'chef/dsl'
 require 'chef/application'
@@ -75,6 +80,7 @@ require 'spec/support/platform_helpers'
 Dir["spec/support/**/*.rb"].
   reject { |f| f =~ %r{^spec/support/platforms} }.
   map { |f| f.gsub(%r{.rb$}, '') }.
+  map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
 
 RSpec.configure do |config|
@@ -98,6 +104,9 @@ RSpec.configure do |config|
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
   config.filter_run_excluding :ruby_19_only => true unless ruby_19?
+  config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
+  config.filter_run_excluding :ruby_20_only => true unless ruby_20?
+  config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
   config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
   config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'

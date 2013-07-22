@@ -99,7 +99,6 @@ class Chef
               Chef::Log.error("#{e.class}: #{e}")
             rescue Exception => e
               Chef::Log.error("#{e.class}: #{e}")
-              Chef::Application.debug_stacktrace(e)
             end
           end
         end

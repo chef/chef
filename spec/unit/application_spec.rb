@@ -20,6 +20,8 @@ require 'spec_helper'
 
 describe Chef::Application do
   before do
+    @original_argv = ARGV.dup
+    ARGV.clear
     @original_conf = Chef::Config.configuration
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
@@ -29,6 +31,7 @@ describe Chef::Application do
 
   after do
     Chef::Config.configuration.replace(@original_conf)
+    ARGV.replace(@original_argv)
   end
 
   describe "reconfigure" do
