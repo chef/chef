@@ -68,54 +68,18 @@ class Chef
         end
 
         private
-        # add can be used in two scenarios, add first inet addr or add VIP
-        # http://www-01.ibm.com/support/docview.wss?uid=swg21294045
         def add_command
           # ifconfig changes are temporary, chdev persist across reboots.
           raise Chef::Exceptions::Ifconfig, "interface metric attribute cannot be set for :add action" if @new_resource.metric
-          if @current_resource.inet_addr || @new_resource.is_vip
-            # adding a VIP
-            command = "chdev -l #{@new_resource.device} -a alias4=#{@new_resource.name}"
-            command << ",#{@new_resource.mask}" if @new_resource.mask
-          else
-            command = "chdev -l #{@new_resource.device} -a netaddr=#{@new_resource.name}"
-            command << " -a netmask=#{@new_resource.mask}" if @new_resource.mask
-            command << " -a mtu=#{@new_resource.mtu}" if @new_resource.mtu
-          end
+          command = "chdev -l #{@new_resource.device} -a netaddr=#{@new_resource.name}"
+          command << " -a netmask=#{@new_resource.mask}" if @new_resource.mask
+          command << " -a mtu=#{@new_resource.mtu}" if @new_resource.mtu
           command
-        end
-
-        def enable_command
-          if @current_resource.inet_addr || @new_resource.is_vip
-            # add alias
-            command = "ifconfig #{@new_resource.device} inet #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
-            command << " alias"
-          else
-            command = super  
-          end
-          command
-        end
-
-        def disable_command
-          if @new_resource.is_vip
-            "ifconfig #{@new_resource.device} inet #{@new_resource.name} delete"
-          else
-            super
-          end
         end
 
         def delete_command
           # ifconfig changes are temporary, chdev persist across reboots.
-          if @new_resource.is_vip
-            command = "chdev -l #{@new_resource.device}  -a delalias4=#{@new_resource.name}"
-            command << ",#{@new_resource.mask}" if @new_resource.mask
-          else
-            command = "chdev -l #{@new_resource.device} -a state=down"
-          end
-          command
+          "chdev -l #{@new_resource.device} -a state=down"
         end
 
         def loopback_device

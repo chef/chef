@@ -72,12 +72,10 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
 
   def setup_add_interface(resource)
     resource.device network_interface_alias(en0_interface_for_test)
-    resource.is_vip true if ohai[:platform] == "aix"
   end
 
   def setup_enable_interface(resource)
     resource.device network_interface_alias(en0_interface_for_test)
-    resource.is_vip true if ohai[:platform] == "aix"
   end
 
   def interface_should_exists(interface)
@@ -114,7 +112,8 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_add" do
+  exclude_test = ohai[:platform] != 'ubuntu'
+  describe "#action_add", :external => exclude_test do
     after do
       new_resource.run_action(:delete)
     end
@@ -126,7 +125,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_enable" do
+  describe "#action_enable", :external => exclude_test do
     after do
       new_resource.run_action(:disable)
     end
@@ -137,7 +136,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_disable" do
+  describe "#action_disable", :external => exclude_test do
     before do
       setup_enable_interface(new_resource)
       new_resource.run_action(:enable)
@@ -149,7 +148,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :external => include_flag do
     end
   end
 
-  describe "#action_delete" do
+  describe "#action_delete", :external => exclude_test do
     before do
       setup_add_interface(new_resource)
       new_resource.run_action(:add)
