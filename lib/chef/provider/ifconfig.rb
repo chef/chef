@@ -76,7 +76,7 @@ class Chef
               @interface = @interfaces.fetch(@new_resource.device)
 
               @current_resource.target(@new_resource.target)
-              @current_resource.device(@int_name)
+              @current_resource.device(@new_resource.device)
               @current_resource.inet_addr(@interface["inet_addr"])
               @current_resource.hwaddr(@interface["hwaddr"])
               @current_resource.bcast(@interface["bcast"])
@@ -101,41 +101,33 @@ class Chef
 
       def action_add
         # check to see if load_current_resource found interface in ifconfig
-        unless @current_resource.inet_addr
-          unless @new_resource.device == "lo"
-            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
-          end
-          converge_by ("run #{command} to add #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} added")
+        if @current_resource.inet_addr.nil? || @new_resource.is_vip
+          unless @new_resource.device == loopback_device
+            command = add_command
+            converge_by ("run #{command} to add #{@new_resource}") do
+              run_command(
+                :command => command
+              )
+              Chef::Log.info("#{@new_resource} added")
+              # Write out the config files
+              generate_config
+            end
           end
         end
-
-        # Write out the config files
-        generate_config
       end
 
       def action_enable
         # check to see if load_current_resource found ifconfig
         # enables, but does not manage config files
-        unless @current_resource.inet_addr
-          unless @new_resource.device == "lo"
-            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
-          end
-
-          converge_by ("run #{command} to enable #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} enabled")
+        if @current_resource.inet_addr.nil? || @new_resource.is_vip
+          unless @new_resource.device == loopback_device
+            command = enable_command
+            converge_by ("run #{command} to enable #{@new_resource}") do
+              run_command(
+                :command => command
+              )
+              Chef::Log.info("#{@new_resource} enabled")
+            end
           end
         end
       end
@@ -143,7 +135,7 @@ class Chef
       def action_delete
         # check to see if load_current_resource found the interface
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+          command = delete_command
           converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
               :command => command
@@ -160,7 +152,7 @@ class Chef
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+          command = disable_command
           converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
               :command => command
@@ -199,6 +191,34 @@ class Chef
         Chef::Log.info("#{@new_resource} deleted configuration file")
       end
 
+      private
+      def add_command
+        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command << " netmask #{@new_resource.mask}" if @new_resource.mask
+        command << " metric #{@new_resource.metric}" if @new_resource.metric
+        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command
+      end
+
+      def enable_command
+        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command << " netmask #{@new_resource.mask}" if @new_resource.mask
+        command << " metric #{@new_resource.metric}" if @new_resource.metric
+        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command
+      end
+
+      def disable_command
+        "ifconfig #{@new_resource.device} down"
+      end
+
+      def delete_command
+        "ifconfig #{@new_resource.device} down"
+      end
+  
+      def loopback_device
+        'lo'
+      end
     end
   end
 end
