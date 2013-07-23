@@ -1,11 +1,29 @@
+#
+# Author:: Chirag Jog (<chirag@clogeny.com>)
+# Author:: Siddheshwar More (<siddheshwar.more@clogeny.com>)
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 require 'spec_helper'
 require 'functional/resource/base'
 
-describe Chef::Resource::Group, :requires_root do
+describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def group_should_exist(resource)
-    case @OHAI_SYSTEM[:platform_family]
+    case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       expect { Etc::getgrnam(resource.name) }.to_not raise_error(ArgumentError, "can't find group for #{resource.name}")
       expect(resource.name).to eq(Etc::getgrnam(resource.name).name)
@@ -15,7 +33,7 @@ describe Chef::Resource::Group, :requires_root do
   end
 
   def user_exist_in_group?(resource, user)
-    case @OHAI_SYSTEM[:platform_family]
+    case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       Etc::getgrnam(resource.name).mem.include?(user)
     when "windows"
@@ -24,7 +42,7 @@ describe Chef::Resource::Group, :requires_root do
   end
 
   def group_should_not_exist(resource)
-    case @OHAI_SYSTEM[:platform_family]
+    case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch"
       expect { Etc::getgrnam(resource.name) }.to raise_error(ArgumentError, "can't find group for #{resource.name}")
     when "windows"
@@ -33,31 +51,26 @@ describe Chef::Resource::Group, :requires_root do
   end
 
   def compare_gid(resource, gid)
-    case @OHAI_SYSTEM[:platform_family]
+    case ohai[:platform_family]
     when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch", "mac_os_x"
       resource.gid == Etc::getgrnam(resource.name).gid
     end
   end
 
-  def get_user_provider(username)
-    usr = Chef::Resource::User.new("#{username}", @run_context)
-    usr.password("Chef2UncleNed!")
-    userProviderClass = Chef::Platform.find_provider(@OHAI_SYSTEM[:platform], @OHAI_SYSTEM[:version], usr)
-    usr_provider = userProviderClass.new(usr, @run_context)
+  def get_user_resource(username)
+    usr = Chef::Resource::User.new("#{username}", run_context)
   end
 
   def create_user(username)
-    get_user_provider(username).run_action(:create)
+    get_user_resource(username).run_action(:create)
   end
 
   def remove_user(username)
-    get_user_provider(username).run_action(:remove)
+    get_user_resource(username).run_action(:remove)
   end
 
   before do
-    ohai
-    run_context
-    @grp_resource = Chef::Resource::Group.new("test-group-#{SecureRandom.random_number(9999)}", @run_context)
+    @grp_resource = Chef::Resource::Group.new("test-group-#{SecureRandom.random_number(9999)}", run_context)
   end
 
   context "group create action" do
@@ -73,7 +86,7 @@ describe Chef::Resource::Group, :requires_root do
     context "group name with 256 characters", :windows_only do
       before(:each) do
         grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
-        @new_grp = Chef::Resource::Group.new(grp_name, @run_context)
+        @new_grp = Chef::Resource::Group.new(grp_name, run_context)
       end
       after do
         @new_grp.run_action(:remove)
@@ -86,7 +99,7 @@ describe Chef::Resource::Group, :requires_root do
     context "group name with more than 256 characters", :windows_only do
       before(:each) do
         grp_name = "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQQQQQQQQQQQQ"
-        @new_grp = Chef::Resource::Group.new(grp_name, @run_context)
+        @new_grp = Chef::Resource::Group.new(grp_name, run_context)
       end
       it " not create a group" do
         expect { @new_grp.run_action(:create) }.to raise_error

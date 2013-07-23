@@ -115,7 +115,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
   config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
-  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' || ENV['LOGIN'] == 'root' || ENV['USER'] == 'Administrator'
+  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
   config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
