@@ -83,7 +83,8 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
   end
 
-  describe "create action with various attributes" do
+  exclude_solaris = ohai[:platform] == "solaris"
+  describe "create action with various attributes", :external => exclude_solaris do
     def create_and_validate_with_attribute(resource, attribute, value)
       if ohai[:platform] == 'aix'
          expect {resource.run_action(:create)}.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
