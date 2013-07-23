@@ -107,6 +107,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  config.filter_run_excluding :unix_only_but_not_osx => true unless (unix? and not os_x?)
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
