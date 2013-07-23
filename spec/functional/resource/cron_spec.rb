@@ -27,7 +27,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Platform specific validation routines.
   def cron_should_exists(cron_name, command)
     case ohai[:platform]
-    when "aix", "solaris"
+    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
     else
@@ -38,7 +38,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   def cron_should_not_exists(cron_name)
     case ohai[:platform]
-    when "aix", "solaris"
+    when "aix", "solaris", "opensolaris", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
     else
       expect(shell_out("crontab -l -u #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
