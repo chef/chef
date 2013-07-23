@@ -196,10 +196,17 @@ class Chef
       end
 
       def write_crontab(crontab)
+        write_exception = false
         status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-          stdin.write crontab
+          begin
+            stdin.write crontab
+          rescue Errno::EPIPE => e
+            # popen4 could yield while child has already died.
+            write_exception = true
+            Chef::Log.debug("#{e.message}")
+          end
         end
-        if status.exitstatus > 0
+        if status.exitstatus > 0 || write_exception
           raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{status.exitstatus}"
         end
       end
