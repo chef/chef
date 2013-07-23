@@ -83,7 +83,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
   end
 
-  exclude_solaris = ohai[:platform] == "solaris"
+  exclude_solaris = ["solaris", "opensolaris", "solaris2", "omnios"].include?(ohai[:platform])
   describe "create action with various attributes", :external => exclude_solaris do
     def create_and_validate_with_attribute(resource, attribute, value)
       if ohai[:platform] == 'aix'
