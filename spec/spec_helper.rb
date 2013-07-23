@@ -115,33 +115,10 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
   config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
-  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' or ENV['USER'] == 'Administrator'
+  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
   config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
-
-  running_platform_arch = `uname -m`.strip
-
-  config.filter_run_excluding :arch => lambda {|target_arch|
-    running_platform_arch != target_arch
-  }
-
-  # Functional Resource tests that are provider-specific:
-  # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
-  config.filter_run_excluding :provider => lambda {|criteria|
-    type, target_provider = criteria.first
-
-    platform = TEST_PLATFORM.dup
-    platform_version = TEST_PLATFORM_VERSION.dup
-
-    begin
-      provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
-      provider_for_running_platform != target_provider
-    rescue ArgumentError # no provider for platform
-      true
-    end
-  }
-
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
 end
