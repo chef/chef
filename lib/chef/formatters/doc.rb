@@ -20,19 +20,19 @@ class Chef
         puts "Starting Chef Client, version #{version}"
       end
 
-      def run_completed(node)
+      def run_completed(node, elapsed_time)
         if Chef::Config[:why_run]
           puts "Chef Client finished, #{@updated_resources} resources would have been updated"
         else
-          puts "Chef Client finished, #{@updated_resources} resources updated"
+          puts "Chef Client finished, #{@updated_resources} resources updated in #{elapsed_time}"
         end
       end
 
-      def run_failed(exception)
+      def run_failed(exception, elapsed_time)
         if Chef::Config[:why_run]
           puts "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts "Chef Client failed. #{@updated_resources} resources updated"
+          puts "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time}"
         end
       end
 
