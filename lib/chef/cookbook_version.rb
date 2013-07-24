@@ -416,6 +416,7 @@ class Chef
         end
 
         fqdn = node[:fqdn]
+        hostname = node[:hostname]
 
         # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
         search_versions = []
@@ -427,7 +428,8 @@ class Chef
         end
 
         # Most specific to least specific places to find the path
-        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path) ]
+        search_path = [ File.join(segment.to_s, "host-#{fqdn}", path),
+                        File.join(segment.to_s, "host-#{hostname}", path) ]
         search_versions.each do |v|
           search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
         end
