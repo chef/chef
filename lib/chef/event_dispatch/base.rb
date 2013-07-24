@@ -36,11 +36,11 @@ class Chef
       end
 
       # Called at the end a successful Chef run.
-      def run_completed(node)
+      def run_completed(node, elapsed_time)
       end
 
       # Called at the end of a failed Chef run.
-      def run_failed(exception)
+      def run_failed(exception, elapsed_time)
       end
 
       # Called right after ohai runs.

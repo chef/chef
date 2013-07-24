@@ -196,12 +196,12 @@ class Chef
       end
     end
 
-    def run_completed(node)
+    def run_completed(node, elapsed_time)
       @status = "success"
       post_reporting_data
     end
 
-    def run_failed(exception)
+    def run_failed(exception, elapsed_time)
       @exception = exception
       @status = "failure"
       # If we failed before we received the run_started callback, there's not much we can do
