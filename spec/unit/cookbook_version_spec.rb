@@ -180,9 +180,21 @@ describe Chef::CookbookVersion do
         attribute_file["checksum"].should match(MD5)
         attribute_file["specificity"].should == "default"
 
-        manifest["files"].should have(1).cookbook_file
+        manifest["files"].should have(3).cookbook_file
 
         cookbook_file = manifest["files"].first
+        cookbook_file["name"].should == "node-specific-file.tgz"
+        cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
+        cookbook_file["checksum"].should match(MD5)
+        cookbook_file["specificity"].should == "host-sample.node"
+
+        cookbook_file = manifest["files"].at(2)
+        cookbook_file["name"].should == "host-specific-file.tgz"
+        cookbook_file["path"].should == "files/host-sample.example.com/host-specific-file.tgz"
+        cookbook_file["checksum"].should match(MD5)
+        cookbook_file["specificity"].should == "host-sample.example.com"
+
+        cookbook_file = manifest["files"].at(1)
         cookbook_file["name"].should == "giant_blob.tgz"
         cookbook_file["path"].should == "files/default/giant_blob.tgz"
         cookbook_file["checksum"].should match(MD5)
@@ -219,6 +231,51 @@ describe Chef::CookbookVersion do
         readme["path"].should == "README.rdoc"
         readme["checksum"].should match(MD5)
         readme["specificity"].should == "default"
+      end
+
+      it "determines whether a template is available for a given node" do
+        @cookbook_version.should have_template_for_node(@node, "configuration.erb")
+        @cookbook_version.should_not have_template_for_node(@node, "missing.erb")
+      end
+
+      it "determines whether a cookbook_file is available for a given node" do
+        @cookbook_version.should have_cookbook_file_for_node(@node, "giant_blob.tgz")
+        @cookbook_version.should_not have_cookbook_file_for_node(@node, "missing.txt")
+      end
+
+      describe "loads an existing cookbook_file with " do
+        it "default specificity" do
+          node = Chef::Node.new.tap do |n|
+            n.name("sample.node")
+            n.automatic_attrs[:fqdn] = "sample.example.com"
+            n.automatic_attrs[:hostname] = "sample.node"
+            n.automatic_attrs[:platform] = "ubuntu"
+            n.automatic_attrs[:platform_version] = "10.04"
+          end
+          @cookbook_version.preferred_manifest_record(node, :files, "giant_blob.tgz")["specificity"].should == "default"
+        end
+ 
+        it "host specificity" do
+          node = Chef::Node.new.tap do |n|
+            n.name("sample.node")
+            n.automatic_attrs[:fqdn] = "sample.example.com"
+            n.automatic_attrs[:hostname] = "sample.node"
+            n.automatic_attrs[:platform] = "ubuntu"
+            n.automatic_attrs[:platform_version] = "10.04"
+          end
+          @cookbook_version.preferred_manifest_record(node, :files, "host-specific-file.tgz")["specificity"].should == "host-sample.example.com"
+        end
+ 
+        it "node specificity" do
+          node = Chef::Node.new.tap do |n|
+            n.name("sample.node")
+            n.automatic_attrs[:fqdn] = "sample.example.com"
+            n.automatic_attrs[:hostname] = "sample.node"
+            n.automatic_attrs[:platform] = "ubuntu"
+            n.automatic_attrs[:platform_version] = "10.04"
+          end
+          @cookbook_version.preferred_manifest_record(node, :files, "node-specific-file.tgz")["specificity"].should == "host-sample.node"
+        end
       end
 
       it "determines whether a template is available for a given node" do
@@ -309,9 +366,21 @@ describe Chef::CookbookVersion do
         attribute_file["checksum"].should match(MD5)
         attribute_file["specificity"].should == "default"
 
-        manifest["files"].should have(1).cookbook_file
+        manifest["files"].should have(3).cookbook_file
 
         cookbook_file = manifest["files"].first
+        cookbook_file["name"].should == "node-specific-file.tgz"
+        cookbook_file["path"].should == "files/host-sample.node/node-specific-file.tgz"
+        cookbook_file["checksum"].should match(MD5)
+        cookbook_file["specificity"].should == "host-sample.node"
+
+        cookbook_file = manifest["files"].at(2)
+        cookbook_file["name"].should == "host-specific-file.tgz"
+        cookbook_file["path"].should == "files/host-sample.example.com/host-specific-file.tgz"
+        cookbook_file["checksum"].should match(MD5)
+        cookbook_file["specificity"].should == "host-sample.example.com"
+
+        cookbook_file = manifest["files"].at(1)
         cookbook_file["name"].should == "giant_blob.tgz"
         cookbook_file["path"].should == "files/default/giant_blob.tgz"
         cookbook_file["checksum"].should match(MD5)
