@@ -97,7 +97,7 @@ describe Chef::ResourceReporter do
       before do
         @resource_reporter.run_started(@run_status)
         @exception = Exception.new
-        @resource_reporter.run_failed(@exception)
+        @resource_reporter.run_failed(@exception, 100)
       end
 
       it "sets the run status to 'failure'" do
@@ -386,7 +386,7 @@ describe Chef::ResourceReporter do
         @exception.stub!(:message).and_return("Object not found")
         @exception.stub!(:backtrace).and_return(@backtrace)
         @resource_reporter.run_list_expand_failed(@node, @exception)
-        @resource_reporter.run_failed(@exception)
+        @resource_reporter.run_failed(@exception, 100)
         @report = @resource_reporter.prepare_run_data
       end
 
@@ -492,7 +492,7 @@ describe Chef::ResourceReporter do
       it "does not send a resource report to the server" do
         @resource_reporter.run_started(@run_status)
         @rest_client.should_not_receive(:post_rest)
-        @resource_reporter.run_completed(@node)
+        @resource_reporter.run_completed(@node, 100)
       end
 
       it "prints an error about the 404" do
@@ -521,7 +521,7 @@ describe Chef::ResourceReporter do
       it "does not send a resource report to the server" do
         @resource_reporter.run_started(@run_status)
         @rest_client.should_not_receive(:post_rest)
-        @resource_reporter.run_completed(@node)
+        @resource_reporter.run_completed(@node, 100)
       end
 
       it "prints an error about the error" do
@@ -597,7 +597,7 @@ describe Chef::ResourceReporter do
           response
         end
 
-        @resource_reporter.run_completed(@node)
+        @resource_reporter.run_completed(@node, 100)
       end
     end
   end
