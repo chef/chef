@@ -24,7 +24,7 @@ class Chef
         if Chef::Config[:why_run]
           puts "Chef Client finished, #{@updated_resources} resources would have been updated"
         else
-          puts "Chef Client finished, #{@updated_resources} resources updated in #{elapsed_time}"
+          puts "Chef Client finished, #{@updated_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
@@ -32,7 +32,7 @@ class Chef
         if Chef::Config[:why_run]
           puts "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
-          puts "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time}"
+          puts "Chef Client failed. #{@updated_resources} resources updated in #{elapsed_time} seconds"
         end
       end
 
