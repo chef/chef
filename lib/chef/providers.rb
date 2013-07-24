@@ -97,6 +97,7 @@ require 'chef/provider/group/usermod'
 require 'chef/provider/group/windows'
 
 require 'chef/provider/mount/mount'
+require 'chef/provider/mount/aix'
 require 'chef/provider/mount/windows'
 
 require 'chef/provider/deploy/revision'
@@ -117,3 +118,4 @@ require 'chef/provider/template/content'
 
 require 'chef/provider/ifconfig/redhat'
 require 'chef/provider/ifconfig/debian'
+require 'chef/provider/ifconfig/aix'
