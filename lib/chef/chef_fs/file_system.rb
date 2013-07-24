@@ -394,13 +394,24 @@ class Chef
         rescue DefaultEnvironmentCannotBeModifiedError => e
           ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
         rescue OperationFailedError => e
-          ui.error "#{format_path.call(e.entry)} failed to #{e.operation}: #{e.message}" if ui
+          error_msg = "#{format_path.call(e.entry)} failed to #{e.operation}: #{e.message}"
+          error_cause = get_error_cause(e)
+          error_msg += " cause: #{error_cause}" if error_cause
+          ui.error error_msg if ui
           error = true
         rescue OperationNotAllowedError => e
           ui.error "#{format_path.call(e.entry)} #{e.reason}." if ui
           error = true
         end
         error
+      end
+
+      def self.get_error_cause(error)
+        if error.respond_to?('cause') && error.cause.instance_of?(Net::HTTPServerException)
+          error.cause.response.body
+        else
+          nil
+        end
       end
 
       def self.get_or_create_parent(entry, options, ui, format_path)
