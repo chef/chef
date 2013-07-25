@@ -97,32 +97,14 @@ build do
     command "mklink C:\\opscode\\chef\\bin\\#{target} C:\\opscode\\chef\\embedded\\mingw\\bin\\#{to}"
   end
 
+  # XXX: doing a normal bundle_bust here results in gems installed into the outer bundle...
+  command "bundle install", :env => { "PATH" => "#{install_dir}/embedded/bin;#{install_dir}/embedded/mingw/bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem", "BUNDLE_BIN_PATH" => "#{install_dir}/embedded/bin/bundle" , "BUNDLE_GEMFILE" => nil, "GEM_HOME" => "#{install_dir}/embedded/lib/ruby/gems/1.9.1", "GEM_PATH" => "#{install_dir}/embedded/lib/ruby/gems/1.9.1", "RUBYOPT" => nil }
+
   rake "gem"
 
   gem ["install pkg/chef*.gem",
        "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" ")
-
-  aux_gems = {
-    "ffi"           => "1.3.1",
-    "win32-api"     => "1.4.8",
-    "win32-service" => "0.7.2",
-    "rdp-ruby-wmi"  => "0.3.1",
-    "win32-dir"     => "0.4.1",
-    "win32-event"   => "0.6.0",
-    "win32-mutex"   => "0.4.0",
-    "win32-process" => "0.7.1",
-    "win32-service" => "0.7.2",
-    "windows-api"   => "0.4.2",
-    "windows-pr"    => "1.2.2"
-  }
-
-
-
-  aux_gems.each do |gem_name, version|
-    gem ["install", gem_name, "-v", version, "--no-rdoc --no-ri"].join(" ")
-  end
-
 
   # render batch files
   #
