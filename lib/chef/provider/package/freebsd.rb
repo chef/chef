@@ -37,7 +37,7 @@ class Chef
 
         def current_installed_version
           pkg_info = shell_out!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0,1])
-          pkg_info.stdout[/^#{package_name}-(.+)/, 1]
+          pkg_info.stdout.slice((package_name.length()+1)..-1)
         end
 
         def port_path
