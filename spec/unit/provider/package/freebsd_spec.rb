@@ -211,6 +211,34 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
     end
   end
 
+  # CHEF-4371
+  # There are some port names that contain special characters such as +'s.  This breaks the regular expression used to determine what
+  # version of a package is currently installed and to get the port_path.
+  #  Example package name: bonnie++
+
+  describe Chef::Provider::Package::Freebsd, "bonnie++ (package with a plus in the name :: CHEF-4371)" do
+    before(:each) do
+      @new_resource     = Chef::Resource::Package.new("bonnie++")
+      @current_resource = Chef::Resource::Package.new("bonnie++")
+      @provider = Chef::Provider::Package::Freebsd.new(@new_resource, @run_context)
+      @provider.current_resource = @current_resource
+    end
+
+    it "should return the port path for a valid port name" do
+      whereis = OpenStruct.new(:stdout => "bonnie++: /usr/ports/benchmarks/bonnie++")
+      @provider.should_receive(:shell_out!).with("whereis -s bonnie++", :env => nil).and_return(whereis)
+      @provider.stub!(:port_name).and_return("bonnie++")
+      @provider.port_path.should == "/usr/ports/benchmarks/bonnie++"
+    end
+
+    it "should return the version number when it is installed" do
+      pkg_info = OpenStruct.new(:stdout => "bonnie++-1.96")
+      @provider.should_receive(:shell_out!).with('pkg_info -E "bonnie++*"', :env => nil, :returns => [0,1]).and_return(pkg_info)
+      @provider.stub!(:package_name).and_return("bonnie++")
+      @provider.current_installed_version.should == "1.96"
+    end
+  end
+
   # A couple of examples to show up the difficulty of determining the command to install the binary package given the port:
   # PORT DIRECTORY                        INSTALLED PACKAGE NAME  COMMAND TO INSTALL PACKAGE
   # /usr/ports/lang/perl5.8               perl-5.8.8_1            pkg_add -r perl
