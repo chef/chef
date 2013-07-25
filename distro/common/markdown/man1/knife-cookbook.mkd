@@ -121,7 +121,7 @@ __knife cookbook create cookbook__ _(options)_
     name of copyright holder
   * `-i`, `--license license`:
     license for cookbook, apachev2 or none
-  * `-e`, `--email email`:
+  * `-m`, `--email email`:
     email address of cookbook maintainer
 
 this is a helper command that creates a new cookbook directory in the
@@ -156,7 +156,7 @@ the cookbook and follow any restrictions they describe. when using
 are pre-filled. the `none` license will be treated as
 non-redistributable.
 
-specify `-e` or `--email` with the email address of the cookbook's
+specify `-m` or `--email` with the email address of the cookbook's
 maintainer. if this value is not specified, an all-caps string
 `your_email` is used which can easily be changed with find/replace.
 
