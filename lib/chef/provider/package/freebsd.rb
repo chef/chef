@@ -37,7 +37,7 @@ class Chef
 
         def current_installed_version
           pkg_info = shell_out!("pkg_info -E \"#{package_name}*\"", :env => nil, :returns => [0,1])
-          pkg_info.stdout.slice((package_name.length()+1)..-1)
+          pkg_info.stdout[/^#{Regexp.escape(package_name)}-(.+)/, 1]
         end
 
         def port_path
@@ -52,7 +52,7 @@ class Chef
           # Otherwise look up the path to the ports directory using 'whereis'
           else
             whereis = shell_out!("whereis -s #{@new_resource.package_name}", :env => nil)
-            unless path = whereis.stdout.split[1]
+            unless path = whereis.stdout[/^#{Regexp.escape(@new_resource.package_name)}:\s+(.+)$/, 1]
               raise Chef::Exceptions::Package, "Could not find port with the name #{@new_resource.package_name}"
             end
             path
