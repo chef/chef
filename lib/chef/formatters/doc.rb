@@ -8,19 +8,27 @@ class Chef
     # "specdoc"
     class Doc < Formatters::Base
 
+      attr_reader :start_time, :end_time
       cli_name(:doc)
+      
 
       def initialize(out, err)
         super
 
         @updated_resources = 0
+        @start_time = Time.now
+      end
+
+      def elapsed_time
+        end_time - start_time
       end
 
       def run_start(version)
         puts "Starting Chef Client, version #{version}"
       end
 
-      def run_completed(node, elapsed_time)
+      def run_completed(node)
+        @end_time = Time.now
         if Chef::Config[:why_run]
           puts "Chef Client finished, #{@updated_resources} resources would have been updated"
         else
@@ -28,7 +36,8 @@ class Chef
         end
       end
 
-      def run_failed(exception, elapsed_time)
+      def run_failed(exception)
+        @end_time = Time.now
         if Chef::Config[:why_run]
           puts "Chef Client failed. #{@updated_resources} resources would have been updated"
         else
