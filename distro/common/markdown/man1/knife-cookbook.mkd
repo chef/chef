@@ -117,7 +117,7 @@ __knife cookbook create cookbook__ _(options)_
     the directory where the cookbook will be created
   * `-r`, `--readme-format format`:
     format of the readme file md, mkd, txt, rdoc
-  * `-c`, `--copyright copyright`:
+  * `-C`, `--copyright copyright`:
     name of copyright holder
   * `-i`, `--license license`:
     license for cookbook, apachev2 or none
@@ -143,7 +143,7 @@ supported readme formats are 'md' (default), 'mkd', 'txt', 'rdoc'. the
 readme file will be written with the specified extension and a set of
 helpful starting headers.
 
-specify `-c` or `--copyright` with the name of the copyright holder as
+specify `-C` or `--copyright` with the name of the copyright holder as
 your name or your company/organization name in a quoted string. if this
 value is not specified an all-caps string `your_company_name` is used
 which can be easily changed with find/replace.
