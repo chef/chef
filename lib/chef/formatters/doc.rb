@@ -8,7 +8,8 @@ class Chef
     # "specdoc"
     class Doc < Formatters::Base
 
-      attr_reader :start_time. :end_time
+      attr_reader :start_time, :end_time
+
       cli_name(:doc)
       
 
