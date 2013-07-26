@@ -100,6 +100,11 @@ class Chef
         :description => "Execute the bootstrap via sudo",
         :boolean => true
 
+      option :use_su,
+        :long => "--su",
+        :description => "Execute the bootstrap via su",
+        :boolean => false
+
       option :use_sudo_password,
         :long => "--use-sudo-password",
         :description => "Execute the bootstrap via sudo with password",
@@ -243,7 +248,9 @@ class Chef
       def ssh_command
         command = render_template(read_template)
 
-        if config[:use_sudo]
+        if config[:use_su]
+          command = "su -c #{command}"
+        elsif config[:use_sudo]
           command = config[:use_sudo_password] ? "echo #{config[:ssh_password]} | sudo -S #{command}" : "sudo #{command}"
         end
 
