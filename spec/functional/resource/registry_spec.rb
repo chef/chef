@@ -510,7 +510,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @registry.key_exists?(reg_parent + '\OpscodeTest').should == false
     end
 
-    it "raises an exception if the the key has subkeys and recursive == false" do
+    it "raises an exception if the key has subkeys and recursive == false" do
       @new_resource.key(reg_parent)
       @new_resource.recursive(false)
       lambda{@new_resource.run_action(:delete_key)}.should raise_error(Chef::Exceptions::Win32RegNoRecursive)

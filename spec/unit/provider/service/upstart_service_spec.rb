@@ -97,7 +97,7 @@ describe Chef::Provider::Service::Upstart do
       before do
       end
 
-      it "should set running to true if the the status command returns 0" do
+      it "should set running to true if the status command returns 0" do
         @stdout = StringIO.new("rsyslog start/running")
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
@@ -113,7 +113,7 @@ describe Chef::Provider::Service::Upstart do
     end
 
     describe "when the status command uses the old format" do
-      it "should set running to true if the the status command returns 0" do
+      it "should set running to true if the status command returns 0" do
         @stdout = StringIO.new("rsyslog (start) running, process 32225")
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
         @provider.load_current_resource
