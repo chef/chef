@@ -789,16 +789,18 @@ F
 
         # create a new constructor that wraps the old one and adds the actions
         # specified in the DSL
-        old_init = instance_method(:initialize)
+        alias_method :old_init, :initialize
 
-        define_method(:initialize) do |name, *optional_args|
-          args_run_context = optional_args.shift
-          @resource_name = rname.to_sym
-          old_init.bind(self).call(name, args_run_context)
+        new_init =<<INIT
+        def initialize(name, run_context=nil)
+          @resource_name = "#{rname}".to_sym
+          old_init(name, run_context)
           @action = self.class.action_to_set_default || @action
           allowed_actions.push(self.class.actions_to_create).flatten!
-        end
-      end
+       end
+INIT
+      class_eval(new_init)
+    end
 
       # register new class as a Chef::Resource
       class_name = convert_to_class_name(rname)
