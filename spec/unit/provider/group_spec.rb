@@ -117,7 +117,7 @@ describe Chef::Provider::User do
       @provider.run_action(:create)
     end
   
-    it "should set the the new_resources updated flag when it creates the group" do
+    it "should set the new_resources updated flag when it creates the group" do
       @provider.group_exists = false
       @provider.stub!(:create_group)
       @provider.run_action(:create)
@@ -138,7 +138,7 @@ describe Chef::Provider::User do
       @provider.run_action(:create)
     end
   
-    it "should set the the new_resources updated flag when it creates the group if we call manage_group" do
+    it "should set the new_resources updated flag when it creates the group if we call manage_group" do
       @provider.group_exists = true
       @provider.stub!(:compare_group).and_return(true)
       @provider.stub!(:manage_group).and_return(true)
