@@ -51,10 +51,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def compare_gid(resource, gid)
-    case ohai[:platform_family]
-    when "debian", "fedora", "rhel", "suse", "gentoo", "slackware", "arch", "mac_os_x"
-      resource.gid == Etc::getgrnam(resource.name).gid
-    end
+    return resource.gid == Etc::getgrnam(resource.name).gid if unix?
   end
 
   def get_user_resource(username)
