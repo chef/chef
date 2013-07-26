@@ -1,4 +1,4 @@
 ## Chef Expander ##
-source :rubygems
+source 'https://rubygems.org'
 
 gemspec
