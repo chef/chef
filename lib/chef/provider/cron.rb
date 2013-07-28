@@ -85,7 +85,7 @@ class Chef
 
       def cron_different?
         CRON_ATTRIBUTES.any? do |cron_var|
-          !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
+          @new_resource.send(cron_var) != @current_resource.send(cron_var)
         end
       end
 
