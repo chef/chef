@@ -563,7 +563,7 @@ HOME=/home/foo
         @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
 
-# Chef Name: something else
+# Chef Name: cronhole some stuff
 * 5 * * * /bin/true
 
 # Another comment
@@ -581,6 +581,7 @@ CRONTAB
       end
 
       it "should log nothing changed" do
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'") 
         Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
       end
@@ -808,5 +809,22 @@ MAILTO=foo@example.com
         @provider.send(:write_crontab, "Foo")
       end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
     end
+
+    it "should raise an exception if the command die's and parent tries to write" do
+      class WriteErrPipe
+        def write(str)
+          raise Errno::EPIPE, "Test"
+        end
+      end
+      @status.stub!(:exitstatus).and_return(1)
+      @provider.stub!(:popen4).and_yield(1234, WriteErrPipe.new, StringIO.new, StringIO.new).and_return(@status)
+
+      Chef::Log.should_receive(:debug).with("Broken pipe - Test")
+
+      lambda do
+        @provider.send(:write_crontab, "Foo")
+      end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+    end
+
   end
 end
