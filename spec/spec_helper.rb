@@ -87,6 +87,8 @@ Dir["spec/support/**/*.rb"].
 OHAI_SYSTEM = Ohai::System.new
 OHAI_SYSTEM.require_plugin("os")
 OHAI_SYSTEM.require_plugin("platform")
+TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
+TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
 
 RSpec.configure do |config|
   config.include(Matchers)
@@ -116,15 +118,26 @@ RSpec.configure do |config|
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
 
+  running_platform_arch = `uname -m`.strip
+
+  config.filter_run_excluding :architecture => lambda {|target_arch|
+    running_platform_arch != target_arch
+  }
+
   # Functional Resource tests that are provider-specific:
   # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
   config.filter_run_excluding :provider => lambda {|criteria|
     type, target_provider = criteria.first
 
-    platform = OHAI_SYSTEM["platform"],
-    platform_version = OHAI_SYSTEM["platform_version"]
-    provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
-    provider_for_running_platform != target_provider
+    platform = TEST_PLATFORM.dup
+    platform_version = TEST_PLATFORM_VERSION.dup
+
+    begin
+      provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
+      provider_for_running_platform != target_provider
+    rescue ArgumentError # no provider for platform
+      true
+    end
   }
 
   config.run_all_when_everything_filtered = true
