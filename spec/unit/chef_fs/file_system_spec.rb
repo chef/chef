@@ -131,25 +131,5 @@ describe Chef::ChefFS::FileSystem do
         Chef::ChefFS::FileSystem.resolve_path(fs, '/y/x/w').path.should == '/y/x/w'
       end
     end
-
-    context 'get_error_cause' do
-      context 'error has a cause attribute and cause attribute is instance of Net::HTTPServerException' do
-        it 'return error cause' do
-          allow_message_expectations_on_nil
-          response_body = '{"error":["Invalid key test in request body"]}'
-          @response.stub(:body).and_return(response_body)
-          exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
-          error = Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, exception)
-          Chef::ChefFS::FileSystem.get_error_cause(error).should == response_body
-        end
-      end
-
-      context 'error has not a cause property' do
-        it 'return nil' do
-          error = Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self)
-          Chef::ChefFS::FileSystem.get_error_cause(error).should == nil
-        end
-      end
-    end
   end
 end
