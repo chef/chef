@@ -116,7 +116,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  context "group modify action", :unix_only_but_not_osx do
+  context "group modify action", :buggy_platforms do
     before(:each) do
       @grp_resource.run_action(:create)
     end
