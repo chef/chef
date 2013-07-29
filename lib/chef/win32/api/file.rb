@@ -471,6 +471,13 @@ BOOL WINAPI DeviceIoControl(
         # ensures the handle is closed on exit of the block
         def file_search_handle(path, &block)
           begin
+            # Workaround for CHEF-4419:
+            # Make sure paths starting with "/" has a drive letter
+            # assigned from the current working diretory.
+            # Note: In chef 11.8 and beyond this issue will be fixed with a
+            # broader fix to map all the paths starting with "/" to
+            # SYSTEM_DRIVE on windows.
+            path = ::File.expand_path(path) if path.start_with? "/"
             path = encode_path(path)
             find_data = WIN32_FIND_DATA.new
             handle = FindFirstFileW(path, find_data)
