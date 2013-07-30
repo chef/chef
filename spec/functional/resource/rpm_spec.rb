@@ -21,7 +21,7 @@ require 'chef/mixin/shell_out'
 
 # run this test only for following platforms.
 exclude_test = !['aix', 'centos', 'redhat', 'suse'].include?(ohai[:platform])
-describe Chef::Resource::RpmPackage, :requires_root ,:external => exclude_test do
+describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
@@ -57,10 +57,12 @@ describe Chef::Resource::RpmPackage, :requires_root ,:external => exclude_test d
     when "aix"
       FileUtils.cp 'spec/functional/assets/glib-1.2.10-2.aix4.3.ppc.rpm' , "/tmp/glib-1.2.10-2.aix4.3.ppc.rpm"
       @pkg_name = "glib"
+      @pkg_version = "1.2.10-2"
       @pkg_path = "/tmp/glib-1.2.10-2.aix4.3.ppc.rpm"
     when "centos", "redhat", "suse"
       FileUtils.cp 'spec/functional/assets/mytest-1.0-1.noarch.rpm' , "/tmp/mytest-1.0-1.noarch.rpm"
       @pkg_name = "mytest"
+      @pkg_version = "1.0-1"
       @pkg_path = "/tmp/mytest-1.0-1.noarch.rpm"
     end
   end
@@ -76,13 +78,12 @@ describe Chef::Resource::RpmPackage, :requires_root ,:external => exclude_test d
     end
 
     after(:each) do
-     new_resource.run_action(:remove)
+      shell_out("rpm -qa | grep #{@pkg_name}-#{@pkg_version} | xargs rpm -e")
     end
   end
-
   context "package remove action" do
     before(:each) do
-     new_resource.run_action(:install)
+      shell_out("rpm -i #{@pkg_path.sub(%r{^/tmp/}, "")}")
     end
 
     it "should remove an existing package" do
