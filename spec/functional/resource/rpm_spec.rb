@@ -83,7 +83,7 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
   end
   context "package remove action" do
     before(:each) do
-      shell_out("rpm -i #{@pkg_path.sub(%r{^/tmp/}, "")}")
+      shell_out("rpm -i #{@pkg_path}")
     end
 
     it "should remove an existing package" do
