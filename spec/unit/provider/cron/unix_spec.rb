@@ -86,7 +86,7 @@ CRONTAB
   describe "write_crontab" do
     before :each do
       @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:run_command).and_return(@status)
+      @provider.stub!(:run_command_and_return_stdout_stderr).and_return(@status, String.new, String.new)
       @tempfile = mock("foo", :path => "/tmp/foo", :close => true)
       Tempfile.stub!(:new).and_return(@tempfile)
       @tempfile.should_receive(:flush)
@@ -95,13 +95,13 @@ CRONTAB
     end
 
     it "should call crontab for the user" do
-      @provider.should_receive(:run_command).with(hash_including(:user => @new_resource.user))
+      @provider.should_receive(:run_command_and_return_stdout_stderr).with(hash_including(:user => @new_resource.user))
       @tempfile.should_receive(:<<).with("Foo")
       @provider.send(:write_crontab, "Foo")
     end
 
     it "should call crontab with a file containing the crontab" do
-      @provider.should_receive(:run_command) do |args|
+      @provider.should_receive(:run_command_and_return_stdout_stderr) do |args|
         (args[:command] =~ %r{\A/usr/bin/crontab (/\S+)\z}).should be_true
         $1.should == "/tmp/foo"
         @status
