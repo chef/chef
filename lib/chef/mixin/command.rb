@@ -56,8 +56,17 @@ class Chef
       # === Returns
       # Returns the exit status of args[:command]
       def run_command(args={})         
-        command_output = ""
+        status, stdout, stderr = run_command_and_return_stdout_stderr(args)
         
+        status
+      end
+
+      # works same as above, except that it returns stdout and stderr
+      # requirement => platforms like solaris 9,10 has wierd issues where
+      # even in command failure the exit code is zero, so we need to lookup stderr.
+      def run_command_and_return_stdout_stderr(args={})
+        command_output = ""
+
         args[:ignore_failure] ||= false
         args[:output_on_failure] ||= false
 
@@ -73,10 +82,10 @@ class Chef
         command_output << "STDOUT: #{stdout}"
         command_output << "STDERR: #{stderr}"
         handle_command_failures(status, command_output, args)
-        
-        status
+
+        return status, stdout, stderr
       end
-      
+
       def output_of_command(command, args)
         Chef::Log.debug("Executing #{command}")
         stderr_string, stdout_string, status = "", "", nil

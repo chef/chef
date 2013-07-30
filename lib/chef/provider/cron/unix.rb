@@ -47,8 +47,13 @@ class Chef
           exit_status = 0
           error_message = ""
           begin
-            status = run_command(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
+            status, stdout, stderr = run_command_and_return_stdout_stderr(:command => "/usr/bin/crontab #{tempcron.path}",:user => @new_resource.user)
             exit_status = status.exitstatus
+            # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
+            if stderr.include?("errors detected in input, no crontab file generated")
+              error_message = stderr
+              exit_status = 1
+            end
           rescue Chef::Exceptions::Exec => e
             Chef::Log.debug(e.message)
             exit_status = 1
