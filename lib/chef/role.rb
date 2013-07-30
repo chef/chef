@@ -238,7 +238,7 @@ class Chef
 
       if File.exists?(js_file) || force == "json"
         # from_json returns object.class => json_class in the JSON.
-        Chef::JSONCompat.from_json(IO.read(js_file))
+        Chef::Role.json_create(Chef::JSONCompat.from_json(IO.read(js_file)))
       elsif File.exists?(rb_file) || force == "ruby"
         role = Chef::Role.new
         role.name(name)
