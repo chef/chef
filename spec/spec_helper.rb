@@ -83,6 +83,11 @@ Dir["spec/support/**/*.rb"].
   map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
 
+
+OHAI_SYSTEM = Ohai::System.new
+OHAI_SYSTEM.require_plugin("os")
+OHAI_SYSTEM.require_plugin("platform")
+
 RSpec.configure do |config|
   config.include(Matchers)
   config.filter_run :focus => true
@@ -110,6 +115,17 @@ RSpec.configure do |config|
   config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
+
+  # Functional Resource tests that are provider-specific:
+  # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
+  config.filter_run_excluding :provider => lambda {|criteria|
+    type, target_provider = criteria.first
+
+    platform = OHAI_SYSTEM["platform"],
+    platform_version = OHAI_SYSTEM["platform_version"]
+    provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
+    provider_for_running_platform != target_provider
+  }
 
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
