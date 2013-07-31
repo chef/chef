@@ -33,7 +33,7 @@ class Chef
 
         def template_finder
           @template_finder ||= begin
-            TemplateFinder.new(run_context, cookbook_name, node)
+            Chef::Provider::TemplateFinder.new(run_context, cookbook_name, node)
           end
         end
 
