@@ -265,7 +265,7 @@ describe Chef::Resource::Package, metadata do
 
         end
 
-        context "with a preseed template is specified" do
+        context "with a preseed template" do
 
           let(:package_resource) do
             r = base_resource
@@ -279,9 +279,6 @@ describe Chef::Resource::Package, metadata do
           end
 
           it "preseeds the package, then installs it" do
-            pending("CHEF-4406")
-            Chef::Log.init(STDERR)
-            Chef::Log.level = :debug
             package_resource.run_action(:install)
             cmd = shell_out!("debconf-show chef-integration-test")
             cmd.stdout.should include('chef-integration-test/sample-var: "FROM TEMPLATE"')
