@@ -1,6 +1,6 @@
 #
-# Author:: Toomas Pelberg (<toomasp@gmx.net>)
-# Copyright:: Copyright (c) 2010 Opscode, Inc.
+# Author:: Deepali Jagtap (<deepali.jagtap@clogeny.com>)
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require 'chef/provider/package/aix'
 
 class Chef
   class Resource
-    class AixPackage < Chef::Resource::Package
+    class BffPackage < Chef::Resource::Package
         
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
