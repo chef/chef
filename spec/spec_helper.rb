@@ -120,7 +120,7 @@ RSpec.configure do |config|
 
   running_platform_arch = `uname -m`.strip
 
-  config.filter_run_excluding :architecture => lambda {|target_arch|
+  config.filter_run_excluding :arch => lambda {|target_arch|
     running_platform_arch != target_arch
   }
 
