@@ -56,6 +56,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def get_user_resource(username)
     usr = Chef::Resource::User.new("#{username}", run_context)
+    usr.password("Jetsream123!")
+    usr
   end
 
   def create_user(username)
@@ -182,7 +184,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  context "group manage action", :unix_only do
+  context "group manage action", :unix_only, :buggy_platforms do
     before(:each) do
       @grp_resource.run_action(:create)
     end
