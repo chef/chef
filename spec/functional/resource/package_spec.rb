@@ -286,8 +286,76 @@ describe Chef::Resource::Package, metadata do
           end
 
         end
+      end # installing w/ preseed
+    end # when package not installed
 
+    context "and the desired version of the package is installed" do
+
+      before do
+        v_1_1_package = File.expand_path("apt/chef-integration-test_1.1-1_amd64.deb", CHEF_SPEC_DATA)
+        shell_out!("dpkg -i #{v_1_1_package}")
       end
+
+      it "does nothing for action :install" do
+        package_resource.run_action(:install)
+        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        package_resource.should_not be_updated_by_last_action
+      end
+
+      it "does nothing for action :upgrade" do
+        package_resource.run_action(:upgrade)
+        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        package_resource.should_not be_updated_by_last_action
+      end
+
+      it "removes the package for action :remove" do
+        package_resource.run_action(:remove)
+        shell_out!("dpkg -l chef-integration-test", :returns => [1])
+        package_resource.should be_updated_by_last_action
+      end
+
+      it "removes the package for action :purge" do
+        package_resource.run_action(:purge)
+        shell_out!("dpkg -l chef-integration-test", :returns => [1])
+        package_resource.should be_updated_by_last_action
+      end
+
+    end
+
+    context "and an older version of the package is installed" do
+      before do
+        v_1_0_package = File.expand_path("apt/chef-integration-test_1.0-1_amd64.deb", CHEF_SPEC_DATA)
+        shell_out!("dpkg -i #{v_1_0_package}")
+      end
+
+      it "does nothing for action :install" do
+        package_resource.run_action(:install)
+        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        package_resource.should_not be_updated_by_last_action
+      end
+
+      it "upgrades the package for action :upgrade" do
+        package_resource.run_action(:upgrade)
+        dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
+        package_resource.should be_updated_by_last_action
+      end
+
+      context "and the resource specifies the new version" do
+        let(:package_resource) do
+          r = base_resource
+          r.version("1.1-1")
+          r
+        end
+
+        it "upgrades the package for action :install" do
+          package_resource.run_action(:install)
+          dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
+          dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
+          package_resource.should be_updated_by_last_action
+        end
+      end
+
     end
 
   end
