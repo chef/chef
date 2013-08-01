@@ -65,6 +65,7 @@ require 'chef/provider/package/yum'
 require 'chef/provider/package/zypper'
 require 'chef/provider/package/solaris'
 require 'chef/provider/package/smartos'
+require 'chef/provider/package/aix'
 
 require 'chef/provider/service/arch'
 require 'chef/provider/service/debian'
