@@ -39,6 +39,7 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
     # mytest rpm package works in centos, redhat and in suse without any dependency issues.
     when "centos", "redhat", "suse"
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(0)
+      ::File.exists?("/opt/mytest/mytest.sh") # The mytest rpm package contains the mytest.sh file
     end
   end
 
@@ -48,6 +49,7 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
       expect(shell_out("rpm -qa | grep glib").exitstatus).to eq(0)
     when "centos", "redhat", "suse"
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(1)
+      !::File.exists?("/opt/mytest/mytest.sh")
     end
   end
 
@@ -55,15 +57,15 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
     case ohai[:platform]
     # Due to dependency issues , different rpm pkgs are used in different platforms.
     when "aix"
-      FileUtils.cp 'spec/functional/assets/glib-1.2.10-2.aix4.3.ppc.rpm' , "/tmp/glib-1.2.10-2.aix4.3.ppc.rpm"
       @pkg_name = "glib"
       @pkg_version = "1.2.10-2"
       @pkg_path = "/tmp/glib-1.2.10-2.aix4.3.ppc.rpm"
+      FileUtils.cp 'spec/functional/assets/glib-1.2.10-2.aix4.3.ppc.rpm' , @pkg_path
     when "centos", "redhat", "suse"
-      FileUtils.cp 'spec/functional/assets/mytest-1.0-1.noarch.rpm' , "/tmp/mytest-1.0-1.noarch.rpm"
       @pkg_name = "mytest"
       @pkg_version = "1.0-1"
       @pkg_path = "/tmp/mytest-1.0-1.noarch.rpm"
+      FileUtils.cp 'spec/functional/assets/mytest-1.0-1.noarch.rpm' , @pkg_path
     end
   end
 
@@ -81,6 +83,7 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
       shell_out("rpm -qa | grep #{@pkg_name}-#{@pkg_version} | xargs rpm -e")
     end
   end
+
   context "package remove action" do
     before(:each) do
       shell_out("rpm -i #{@pkg_path}")
@@ -89,6 +92,26 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
     it "should remove an existing package" do
       new_resource.run_action(:remove)
       rpm_pkg_should_not_be_installed(new_resource)
+    end
+  end
+
+  # This Can be tested for AIX when multiple version of same package will be available.
+  context "package upgrade action", :external => (ohai[:platform] == 'aix') do
+    before(:each) do
+      shell_out("rpm -i #{@pkg_path}")
+      @pkg_version = "2.0-1"
+      @pkg_path = "/tmp/mytest-2.0-1.noarch.rpm"
+      FileUtils.cp 'spec/functional/assets/mytest-2.0-1.noarch.rpm' , @pkg_path
+    end
+
+    it "should upgrade a package" do
+      new_resource.run_action(:install)
+      rpm_pkg_should_be_installed(new_resource)
+    end
+
+    after(:each) do
+      shell_out("rpm -qa | grep #{@pkg_name}-#{@pkg_version} | xargs rpm -e")
+      FileUtils.rm @pkg_path
     end
   end
 end
