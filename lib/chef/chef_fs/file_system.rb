@@ -143,6 +143,11 @@ class Chef
           found_result = true
           new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
           child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
+          # Create the internal representation of the fact that the parent will now exist
+          if !new_dest_parent.nil? and !new_dest_parent.parent.nil? and\
+              !new_dest_parent.parent.children.include? new_dest_parent
+            new_dest_parent.parent.children << new_dest_parent
+          end
           error ||= child_error
         end
         if !found_result && pattern.exact_path
@@ -289,7 +294,7 @@ class Chef
                   ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
                 end
               else
-                Chef::Log.info("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
               end
             end
 
@@ -407,7 +412,7 @@ class Chef
         parent = entry.parent
         if parent && !parent.exists?
           parent_path = format_path.call(parent) if ui
-          parent_parent = get_or_create_parent(entry.parent, options, ui, format_path)
+          parent_parent = get_or_create_parent(parent, options, ui, format_path)
           if options[:dry_run]
             ui.output "Would create #{parent_path}" if ui
           else
