@@ -45,6 +45,7 @@ require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'ohai'
 require 'rbconfig'
+require 'mixlib/shellout'
 
 class Chef
   # == Chef::Client
@@ -209,7 +210,27 @@ class Chef
         Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
-        do_run
+        if Chef::Config[:client_fork]
+          begin
+            # Pass all parent params except - fork, interval and splay
+            ARGV.delete_at(ARGV.index("--interval")+1) unless ARGV.index("--interval").nil?
+            ARGV.delete_at(ARGV.index("-i")+1) unless ARGV.index("-i").nil?
+            ARGV.delete_at(ARGV.index("--splay")+1) unless ARGV.index("--splay").nil?
+            ARGV.delete_at(ARGV.index("-s")+1) unless ARGV.index("-s").nil?
+            cli = (ARGV - ["--interval", "-i", "--splay", "-s", "--fork", "-f"]).join(" ")
+            Chef::Log.info "(#{Process.ppid}) Starting chef-client in new process: --no-fork #{cli}"
+            process = Mixlib::ShellOut.new("chef-client --no-fork #{cli}")
+            process.run_command
+          rescue Exception => e
+            Chef::Log.error e
+          end
+          Chef::Log.info "#{process.stdout}"
+          Chef::Log.warn "#{process.stderr}"
+        else
+          Chef::Log.info "PID of chef-client: #{Process.ppid}"
+          Chef::Config.keys.each { |k| Chef::Log.debug "#{k} #{Chef::Config[k]}" unless (Chef::Config[k].nil?)}
+          do_run
+        end
       end
     end
 
