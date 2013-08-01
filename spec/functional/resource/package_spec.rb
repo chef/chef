@@ -166,11 +166,6 @@ describe Chef::Resource::Package, metadata do
       base_resource
     end
 
-    # it "results in a usable apt server" do
-    #   shell_out!("apt-get install -q -y --force-yes chef-integration-test ", :env => { "DEBIAN_FRONTEND" => "noninteractive" })
-    #   shell_out!("dpkg -l chef-integration-test")
-    # end
-
     context "when the package is not yet installed" do
       it "installs the package with action :install" do
         package_resource.run_action(:install)
