@@ -25,11 +25,9 @@ describe Chef::Provider::Package::Apt do
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::Package.new("irssi", @run_context)
-    @current_resource = Chef::Resource::Package.new("irssi", @run_context)
 
     @status = mock("Status", :exitstatus => 0)
     @provider = Chef::Provider::Package::Apt.new(@new_resource, @run_context)
-    Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @stdin = StringIO.new
     @stdout =<<-PKG_STATUS
 irssi:
@@ -39,34 +37,21 @@ irssi:
      0.8.14-1ubuntu4 0
         500 http://us.archive.ubuntu.com/ubuntu/ lucid/main Packages
 PKG_STATUS
-    @stderr = StringIO.new
-    @pid = 12345
+    @stderr = ""
     @shell_out = OpenStruct.new(:stdout => @stdout,:stdin => @stdin,:stderr => @stderr,:status => @status,:exitstatus => 0)
   end
 
   describe "when loading current resource" do
 
     it "should create a current resource with the name of the new_resource" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      Chef::Resource::Package.should_receive(:new).and_return(@current_resource)
-      @provider.load_current_resource
-    end
-
-    it "should set the current resources package name to the new resources package name" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @current_resource.should_receive(:package_name).with(@new_resource.package_name)
-      @provider.load_current_resource
-    end
-
-    it "should run apt-cache policy with the package name" do
       @provider.should_receive(:shell_out!).with("apt-cache policy #{@new_resource.package_name}").and_return(@shell_out)
       @provider.load_current_resource
-    end
 
-    it "should set the installed version to nil on the current resource if package state is not installed" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @current_resource.should_receive(:version).with(nil).and_return(true)
-      @provider.load_current_resource
+      current_resource = @provider.current_resource
+      current_resource.should be_a(Chef::Resource::Package)
+      current_resource.name.should == "irssi"
+      current_resource.package_name.should == "irssi"
+      current_resource.version.should be_nil
     end
 
     it "should set the installed version if package has one" do
@@ -84,13 +69,8 @@ sudo:
 INSTALLED
       @provider.should_receive(:shell_out!).and_return(@shell_out)
       @provider.load_current_resource
-      @current_resource.version.should == "1.7.2p1-1ubuntu5.3"
+      @provider.current_resource.version.should == "1.7.2p1-1ubuntu5.3"
       @provider.candidate_version.should eql("1.7.2p1-1ubuntu5.3")
-    end
-
-    it "should return the current resouce" do
-      @provider.should_receive(:shell_out!).and_return(@shell_out)
-      @provider.load_current_resource.should eql(@current_resource)
     end
 
     # libmysqlclient-dev is a real package in newer versions of debian + ubuntu
@@ -192,160 +172,144 @@ SHOWPKG_STDOUT
 
   end
 
-  describe "install_package" do
-    it "should run apt-get install with the package name and version" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y install irssi=0.8.12-7",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @provider.install_package("irssi", "0.8.12-7")
+  context "after loading the current resource" do
+    before do
+      @current_resource = Chef::Resource::Package.new("irssi", @run_context)
+      @provider.current_resource = @current_resource
     end
 
-    it "should run apt-get install with the package name and version and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes install irssi=0.8.12-7",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @new_resource.stub!(:options).and_return("--force-yes")
+    describe "install_package" do
+      it "should run apt-get install with the package name and version" do
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y install irssi=0.8.12-7",
+               :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
+        @provider.install_package("irssi", "0.8.12-7")
+      end
 
-      @provider.install_package("irssi", "0.8.12-7")
+      it "should run apt-get install with the package name and version and options if specified" do
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y --force-yes install irssi=0.8.12-7",
+               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+        @new_resource.options("--force-yes")
+        @provider.install_package("irssi", "0.8.12-7")
+      end
+
+      it "should run apt-get install with the package name and version and default_release if there is one and provider is explicitly defined" do
+        @new_resource = nil
+        @new_resource = Chef::Resource::AptPackage.new("irssi", @run_context)
+        @new_resource.default_release("lenny-backports")
+
+        @provider.new_resource = @new_resource
+
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y -o APT::Default-Release=lenny-backports install irssi=0.8.12-7",
+                :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+
+        @provider.install_package("irssi", "0.8.12-7")
+      end
     end
 
-    it "should run apt-get install with the package name and version and default_release if there is one and provider is explicitly defined" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y -o APT::Default-Release=lenny-backports install irssi=0.8.12-7",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @new_resource.stub!(:default_release).and_return("lenny-backports")
-      @new_resource.stub!(:provider).and_return("Chef::Provider::Package::Apt")
+    describe Chef::Provider::Package::Apt, "upgrade_package" do
 
-      @provider.install_package("irssi", "0.8.12-7")
-    end
-  end
-
-  describe Chef::Provider::Package::Apt, "upgrade_package" do
-
-    it "should run install_package with the name and version" do
-      @provider.should_receive(:install_package).with("irssi", "0.8.12-7")
-      @provider.upgrade_package("irssi", "0.8.12-7")
-    end
-  end
-
-  describe Chef::Provider::Package::Apt, "remove_package" do
-
-    it "should run apt-get remove with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y remove irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @provider.remove_package("irssi", "0.8.12-7")
+      it "should run install_package with the name and version" do
+        @provider.should_receive(:install_package).with("irssi", "0.8.12-7")
+        @provider.upgrade_package("irssi", "0.8.12-7")
+      end
     end
 
-    it "should run apt-get remove with the package name and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes remove irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @new_resource.stub!(:options).and_return("--force-yes")
+    describe Chef::Provider::Package::Apt, "remove_package" do
 
-      @provider.remove_package("irssi", "0.8.12-7")
-    end
-  end
+      it "should run apt-get remove with the package name" do
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y remove irssi",
+               :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
+        @provider.remove_package("irssi", "0.8.12-7")
+      end
 
-  describe "when purging a package" do
+      it "should run apt-get remove with the package name and options if specified" do
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y --force-yes remove irssi",
+               :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+        @new_resource.options("--force-yes")
 
-    it "should run apt-get purge with the package name" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y purge irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @provider.purge_package("irssi", "0.8.12-7")
+        @provider.remove_package("irssi", "0.8.12-7")
+      end
     end
 
-    it "should run apt-get purge with the package name and options if specified" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "apt-get -q -y --force-yes purge irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      })
-      @new_resource.stub!(:options).and_return("--force-yes")
+    describe "when purging a package" do
 
-      @provider.purge_package("irssi", "0.8.12-7")
-    end
-  end
+      it "should run apt-get purge with the package name" do
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y purge irssi",
+               :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+        @provider.purge_package("irssi", "0.8.12-7")
+      end
 
-  describe "when preseeding a package" do
-    before(:each) do
-      @provider.stub!(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
-      @provider.stub!(:run_command_with_systems_locale).and_return(true)
-    end
+      it "should run apt-get purge with the package name and options if specified" do
+        @provider.should_receive(:shell_out!).
+          with("apt-get -q -y --force-yes purge irssi",
+          :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+        @new_resource.options("--force-yes")
 
-    it "should get the full path to the preseed response file" do
-      @provider.should_receive(:get_preseed_file).with("irssi", "0.8.12-7").and_return("/tmp/irssi-0.8.12-7.seed")
-      file = @provider.get_preseed_file("irssi", "0.8.12-7")
-      @provider.preseed_package(file)
+        @provider.purge_package("irssi", "0.8.12-7")
+      end
     end
 
-    it "should run debconf-set-selections on the preseed file if it has changed" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "debconf-set-selections /tmp/irssi-0.8.12-7.seed",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      }).and_return(true)
-      file = @provider.get_preseed_file("irssi", "0.8.12-7")
-      @provider.preseed_package(file)
+    describe "when preseeding a package" do
+      before(:each) do
+        @provider.stub!(:get_preseed_file).and_return("/tmp/irssi-0.8.12-7.seed")
+      end
+
+      it "should get the full path to the preseed response file" do
+        @provider.should_receive(:get_preseed_file).with("irssi", "0.8.12-7").and_return("/tmp/irssi-0.8.12-7.seed")
+        file = @provider.get_preseed_file("irssi", "0.8.12-7")
+
+        @provider.should_receive(:shell_out!).
+          with("debconf-set-selections /tmp/irssi-0.8.12-7.seed",
+          :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
+
+        @provider.preseed_package(file)
+      end
+
+      it "should run debconf-set-selections on the preseed file if it has changed" do
+        @provider.should_receive(:shell_out!).
+          with("debconf-set-selections /tmp/irssi-0.8.12-7.seed",
+          :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil})
+        file = @provider.get_preseed_file("irssi", "0.8.12-7")
+        @provider.preseed_package(file)
+      end
+
+      it "should not run debconf-set-selections if the preseed file has not changed" do
+        @provider.stub(:check_package_state)
+        @current_resource.version "0.8.11"
+        @new_resource.response_file "/tmp/file"
+        @provider.stub!(:get_preseed_file).and_return(false)
+        @provider.should_not_receive(:run_command_with_systems_locale)
+        @provider.run_action(:reconfig)
+      end
     end
 
-    it "should not run debconf-set-selections if the preseed file has not changed" do
-      @provider.stub(:check_package_state)
-      @current_resource.version "0.8.11"
-      @new_resource.response_file "/tmp/file"
-      @provider.stub!(:get_preseed_file).and_return(false)
-      @provider.should_not_receive(:run_command_with_systems_locale)
-      @provider.run_action(:reconfig)
-    end
-  end
+    describe "when reconfiguring a package" do
+      before(:each) do
+        @provider.stub!(:run_command_with_systems_locale).and_return(true)
+      end
 
-  describe "when reconfiguring a package" do
-    before(:each) do
-      @provider.stub!(:run_command_with_systems_locale).and_return(true)
+      it "should run dpkg-reconfigure package" do
+        @provider.should_receive(:shell_out!).
+          with("dpkg-reconfigure irssi",
+          :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+        @provider.reconfig_package("irssi", "0.8.12-7")
+      end
     end
 
-    it "should run dpkg-reconfigure package" do
-      @provider.should_receive(:run_command_with_systems_locale).with({
-        :command => "dpkg-reconfigure irssi",
-        :environment => {
-          "DEBIAN_FRONTEND" => "noninteractive"
-        }
-      }).and_return(true)
-      @provider.reconfig_package("irssi", "0.8.12-7")
-    end
-  end
-
-  describe "when installing a virtual package" do
-    it "should install the package without specifying a version" do
-        @provider.is_virtual_package = true
-        @provider.should_receive(:run_command_with_systems_locale).with({
-          :command => "apt-get -q -y install libmysqlclient-dev",
-          :environment => {
-            "DEBIAN_FRONTEND" => "noninteractive"
-          }
-        })
-        @provider.install_package("libmysqlclient-dev", "not_a_real_version")
+    describe "when installing a virtual package" do
+      it "should install the package without specifying a version" do
+          @provider.is_virtual_package = true
+          @provider.should_receive(:shell_out!).
+            with("apt-get -q -y install libmysqlclient-dev",
+                 :env => {"DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
+          @provider.install_package("libmysqlclient-dev", "not_a_real_version")
+      end
     end
   end
 end

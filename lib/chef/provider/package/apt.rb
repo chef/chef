@@ -90,12 +90,7 @@ class Chef
         def install_package(name, version)
           package_name = "#{name}=#{version}"
           package_name = name if @is_virtual_package
-          run_command_with_systems_locale(
-            :command => "apt-get -q -y#{expand_options(default_release_options)}#{expand_options(@new_resource.options)} install #{package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          run_noninteractive("apt-get -q -y#{expand_options(default_release_options)}#{expand_options(@new_resource.options)} install #{package_name}")
         end
 
         def upgrade_package(name, version)
@@ -104,41 +99,27 @@ class Chef
 
         def remove_package(name, version)
           package_name = "#{name}"
-          run_command_with_systems_locale(
-            :command => "apt-get -q -y#{expand_options(@new_resource.options)} remove #{package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} remove #{package_name}")
         end
 
         def purge_package(name, version)
-          run_command_with_systems_locale(
-            :command => "apt-get -q -y#{expand_options(@new_resource.options)} purge #{@new_resource.package_name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          run_noninteractive("apt-get -q -y#{expand_options(@new_resource.options)} purge #{@new_resource.package_name}")
         end
 
         def preseed_package(preseed_file)
           Chef::Log.info("#{@new_resource} pre-seeding package installation instructions")
-          run_command_with_systems_locale(
-            :command => "debconf-set-selections #{preseed_file}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          run_noninteractive("debconf-set-selections #{preseed_file}")
         end
 
         def reconfig_package(name, version)
           Chef::Log.info("#{@new_resource} reconfiguring")
-          run_command_with_systems_locale(
-            :command => "dpkg-reconfigure #{name}",
-            :environment => {
-              "DEBIAN_FRONTEND" => "noninteractive"
-            }
-          )
+          run_noninteractive("dpkg-reconfigure #{name}")
+        end
+
+        private
+
+        def run_noninteractive(command)
+          shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         end
 
       end
