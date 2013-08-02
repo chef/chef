@@ -262,6 +262,10 @@ describe Chef::Resource::Package, metadata do
 
         context "with a preseed template" do
 
+          # NOTE: in the fixtures, there is also a cookbook_file named
+          # "preseed-template.seed". This implicitly tests that templates are
+          # preferred over cookbook_files when both are present.
+
           let(:package_resource) do
             r = base_resource
             r.cookbook_name = "preseed"
