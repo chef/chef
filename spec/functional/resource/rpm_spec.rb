@@ -46,7 +46,7 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
   def rpm_pkg_should_not_be_installed(resource)
     case ohai[:platform]
     when "aix"
-      expect(shell_out("rpm -qa | grep glib").exitstatus).to eq(0)
+      expect(shell_out("rpm -qa | grep glib").exitstatus).to eq(1)
     when "centos", "redhat", "suse"
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(1)
       !::File.exists?("/opt/mytest/mytest.sh")
