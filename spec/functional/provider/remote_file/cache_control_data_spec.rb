@@ -73,7 +73,9 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       let(:uri) { uri_exceeds_file_system_limit }
 
       it "writes data to the cache" do
-        cache_control_data.save
+        lambda do
+          cache_control_data.save
+        end.should_not raise_error
       end
 
       it "writes the data to the cache and the same data can be read back" do
