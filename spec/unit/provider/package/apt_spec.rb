@@ -120,7 +120,6 @@ libmysqlclient-dev:
 RPKG_STDOUT
       real_package = mock(:stdout => real_package_out,:exitstatus => 0)
       @provider.should_receive(:shell_out!).with("apt-cache policy libmysqlclient-dev").and_return(real_package)
-      @provider.should_not_receive(:run_command_with_systems_locale)
       @provider.load_current_resource
     end
 
@@ -284,16 +283,12 @@ SHOWPKG_STDOUT
         @current_resource.version "0.8.11"
         @new_resource.response_file "/tmp/file"
         @provider.stub!(:get_preseed_file).and_return(false)
-        @provider.should_not_receive(:run_command_with_systems_locale)
+        @provider.should_not_receive(:shell_out!)
         @provider.run_action(:reconfig)
       end
     end
 
     describe "when reconfiguring a package" do
-      before(:each) do
-        @provider.stub!(:run_command_with_systems_locale).and_return(true)
-      end
-
       it "should run dpkg-reconfigure package" do
         @provider.should_receive(:shell_out!).
           with("dpkg-reconfigure irssi",
