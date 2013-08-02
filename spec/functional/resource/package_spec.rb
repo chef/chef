@@ -95,15 +95,6 @@ metadata = { :unix_only => true,
 describe Chef::Resource::Package, metadata do
   include Chef::Mixin::ShellOut
 
-  def chef_test_dpkg_installed?
-    shell_out("dpkg -l chef-integration-test").status.success?
-  end
-
-  def dpkg_should_be_installed(pkg_name)
-    shell_out!("dpkg -l #{pkg_name}")
-  end
-
-
   context "with a remote package source" do
 
     include AptServer
