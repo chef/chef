@@ -1,0 +1,11 @@
+chef-integration-test (1.1-1) unstable; urgency=low
+
+  * New upstream release (1.1)
+
+ -- Joshua Timberman <joshua@opscode.com>  Thu, 30 Sep 2010 10:09:34 -0600
+
+chef-integration-test (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #CHEF-1718)
+
+ -- Joshua Timberman <joshua@opscode.com>  Thu, 30 Sep 2010 09:53:45 -0600

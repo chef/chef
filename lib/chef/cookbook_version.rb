@@ -265,6 +265,18 @@ class Chef
       end
     end
 
+    # Query whether a template file +template_filename+ is available. File
+    # specificity for the given +node+ is obeyed in the lookup.
+    def has_template_for_node?(node, template_filename)
+      !!find_preferred_manifest_record(node, :templates, template_filename)
+    end
+
+    # Query whether a cookbook_file file +cookbook_filename+ is available. File
+    # specificity for the given +node+ is obeyed in the lookup.
+    def has_cookbook_file_for_node?(node, cookbook_filename)
+      !!find_preferred_manifest_record(node, :files, cookbook_filename)
+    end
+
     # Determine the most specific manifest record for the given
     # segment/filename, given information in the node. Throws
     # FileNotFound if there is no such segment and filename in the
@@ -278,14 +290,7 @@ class Chef
     #   :checksum => "1234"
     # }
     def preferred_manifest_record(node, segment, filename)
-      preferences = preferences_for_path(node, segment, filename)
-
-      # ensure that we generate the manifest, which will also generate
-      # @manifest_records_by_path
-      manifest
-
-      # in order of prefernce, look for the filename in the manifest
-      found_pref = preferences.find {|preferred_filename| @manifest_records_by_path[preferred_filename] }
+      found_pref = find_preferred_manifest_record(node, segment, filename)
       if found_pref
         @manifest_records_by_path[found_pref]
       else
@@ -566,6 +571,17 @@ class Chef
     end
 
     private
+
+    def find_preferred_manifest_record(node, segment, filename)
+      preferences = preferences_for_path(node, segment, filename)
+
+      # ensure that we generate the manifest, which will also generate
+      # @manifest_records_by_path
+      manifest
+
+      # in order of prefernce, look for the filename in the manifest
+      preferences.find {|preferred_filename| @manifest_records_by_path[preferred_filename] }
+    end
 
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location

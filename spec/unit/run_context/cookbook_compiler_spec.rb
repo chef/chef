@@ -17,23 +17,7 @@
 #
 
 require 'spec_helper'
-
-# Keeps track of what file got loaded in what order.
-module LibraryLoadOrder
-  extend self
-
-  def load_order
-    @load_order ||= []
-  end
-
-  def reset!
-    @load_order = nil
-  end
-
-  def record(file)
-    load_order << file
-  end
-end
+require 'support/lib/library_load_order'
 
 # These tests rely on fixture data in spec/data/run_context/cookbooks.
 #
