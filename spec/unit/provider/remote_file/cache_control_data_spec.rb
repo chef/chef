@@ -164,6 +164,42 @@ describe Chef::Provider::RemoteFile::CacheControlData do
         cache_control_data.save
       end
     end
+
+    # Cover the very long remote file path case -- see CHEF-4422 where
+    # local cache file names generated from the long uri exceeded
+    # local file system path limits resulting in exceptions from
+    # file system API's on both Windows and Unix systems.
+    context "and the URI results in a file cache path that exceeds 102 characters in length" do
+      let(:truncated_friendly_file_name_length) { 64 }
+      let(:md5_hex_length) { 32 }
+      let(:json_file_extension_length) { 5 }
+      let(:cache_file_path_limit) { truncated_friendly_file_name_length + 1 + md5_hex_length + json_file_extension_length } # {friendly}-{md5hex}.json == 102
+      let(:long_remote_path) { "http://www.bing.com/" +  ('0' * (truncated_friendly_file_name_length * 2 )) }
+      let(:uri) { URI.parse(long_remote_path) }
+      let(:truncated_remote_uri) { URI.parse(long_remote_path[0...truncated_friendly_file_name_length]) }
+      let(:truncated_file_cache_path) do
+        cache_control_data_truncated = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(truncated_remote_uri, current_file_checksum)
+        cache_control_data_truncated.send('sanitized_cache_file_basename')[0...truncated_friendly_file_name_length]
+      end
+
+      it "truncates the file cache path to 102 characters" do
+        normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
+
+        Chef::FileCache.should_receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)              
+
+        cache_control_data.save
+
+        normalized_cache_path.length.should == cache_file_path_limit
+      end
+
+      it "uses a file cache path that starts with the first 64 characters of the URI" do
+        normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
+
+        truncated_file_cache_path.length.should == truncated_friendly_file_name_length
+        normalized_cache_path.start_with?(truncated_file_cache_path).should == true
+      end
+    end
+
   end
 
 end
