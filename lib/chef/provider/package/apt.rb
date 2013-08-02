@@ -118,6 +118,9 @@ class Chef
 
         private
 
+        # Runs command via shell_out with magic environment to disable
+        # interactive prompts. Command is run with default localization rather
+        # than forcing locale to "C", so command output may not be stable.
         def run_noninteractive(command)
           shell_out!(command, :env => { "DEBIAN_FRONTEND" => "noninteractive", "LC_ALL" => nil })
         end
