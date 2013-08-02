@@ -21,6 +21,14 @@ require 'uri'
 
 describe Chef::Provider::RemoteFile::CacheControlData do
 
+  before do
+    @original_config = Chef::Config.hash_dup    
+  end
+
+  after do
+    Chef::Config.configuration = @original_config if @original_config    
+  end
+  
   before(:each) do
     Chef::Config[:file_cache_path] = Dir.mktmpdir
   end
