@@ -192,7 +192,7 @@ describe Chef::Resource::Package, metadata do
         it "raises a reasonable error for action :install" do
           expect do
             package_resource.run_action(:install)
-          end.to raise_error(Chef::Exceptions::Exec)
+          end.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
 
       end
@@ -298,15 +298,37 @@ describe Chef::Resource::Package, metadata do
         package_resource.should_not be_updated_by_last_action
       end
 
+      # Verify that the package is removed by running `dpkg -l PACKAGE`
+      # On Ubuntu 12.10 and newer, the command exits 1.
+      #
+      # On Ubuntu 12.04 and older, the `dpkg -l` command will exit 0 and
+      # display a package status message like this:
+      #
+      # Desired=Unknown/Install/Remove/Purge/Hold
+      # | Status=Not/Inst/Cfg-files/Unpacked/Failed-cfg/Half-inst/trig-aWait/Trig-pend
+      # |/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+      # ||/ Name                              Version                                   Description
+      # +++-=================================-=========================================-============================================
+      # un  chef-integration-test             <none>                                    (no description available)
+      def pkg_should_be_removed
+        # will raise if exit code != 0,1
+        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0,1])
+
+        if pkg_check.exitstatus == 0
+          pkg_check.stdout.should =~ /un[\s]+chef-integration-test/
+        end
+      end
+
+
       it "removes the package for action :remove" do
         package_resource.run_action(:remove)
-        shell_out!("dpkg -l chef-integration-test", :returns => [1])
+        pkg_should_be_removed
         package_resource.should be_updated_by_last_action
       end
 
       it "removes the package for action :purge" do
         package_resource.run_action(:purge)
-        shell_out!("dpkg -l chef-integration-test", :returns => [1])
+        pkg_should_be_removed
         package_resource.should be_updated_by_last_action
       end
 
