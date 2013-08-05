@@ -213,15 +213,10 @@ class Chef
       else
         if Chef::Config[:client_fork]
           begin
-            # Pass all parent params except - fork, interval and splay
-            cli = ARGV
-            cli.delete_at(cli.index("--interval")+1) unless cli.index("--interval").nil?
-            cli.delete_at(cli.index("-i")+1) unless cli.index("-i").nil?
-            cli.delete_at(cli.index("--splay")+1) unless cli.index("--splay").nil?
-            cli.delete_at(cli.index("-s")+1) unless cli.index("-s").nil?
-            cli = (cli - ["--interval", "-i", "--splay", "-s", "--fork", "-f"]).join(" ")
-            Chef::Log.info "(#{Process.ppid}) Starting chef-client in new process: --no-fork #{cli}"
+            cli = get_cli_params(ARGV)
+            Chef::Log.debug "Forking chef instance to converge..."
             result = shell_out("chef-client --no-fork #{cli}")
+            Chef::Log.debug "Forked child successfully reaped (pid: #{Process.pid})"
           rescue Mixlib::ShellOut::ShellCommandFailed
             Chef::Log.warn "Not able to start chef-client in new process"
           rescue Exception => e
@@ -230,10 +225,20 @@ class Chef
           Chef::Log.info "#{result.stdout}"
           Chef::Log.warn "#{result.stderr}"
         else
-          Chef::Log.info "PID of chef-client: #{Process.ppid}"
+          Chef::Log.debug "Fork successful. Waiting for new chef pid: #{Process.pid}. Parent pid: #{Process.ppid}"
           do_run
         end
       end
+    end
+
+    def get_cli_params(argv)
+      # Pass all parent params except - fork, interval and splay
+      cli = ARGV
+      cli.delete_at(cli.index("--interval")+1) unless cli.index("--interval").nil?
+      cli.delete_at(cli.index("-i")+1) unless cli.index("-i").nil?
+      cli.delete_at(cli.index("--splay")+1) unless cli.index("--splay").nil?
+      cli.delete_at(cli.index("-s")+1) unless cli.index("-s").nil?
+      cli = (cli - ["--interval", "-i", "--splay", "-s", "--fork", "-f"]).join(" ")
     end
 
     def handle_child_exit(pid_and_status)
