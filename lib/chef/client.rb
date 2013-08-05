@@ -214,9 +214,9 @@ class Chef
         if Chef::Config[:client_fork]
           begin
             cli = get_cli_params(ARGV)
-            Chef::Log.debug "Forking chef instance to converge..."
+            Chef::Log.info "Forking chef instance to converge..."
             result = shell_out("chef-client --no-fork #{cli}")
-            Chef::Log.debug "Forked child successfully reaped (pid: #{Process.pid})"
+            Chef::Log.info "Forked child successfully reaped (pid: #{Process.pid})"
           rescue Mixlib::ShellOut::ShellCommandFailed
             Chef::Log.warn "Not able to start chef-client in new process"
           rescue Exception => e
@@ -225,7 +225,7 @@ class Chef
           Chef::Log.info "#{result.stdout}"
           Chef::Log.warn "#{result.stderr}"
         else
-          Chef::Log.debug "Fork successful. Waiting for new chef pid: #{Process.pid}. Parent pid: #{Process.ppid}"
+          Chef::Log.info "Fork successful. Waiting for new chef pid: #{Process.pid}"
           do_run
         end
       end
