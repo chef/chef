@@ -25,17 +25,17 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
-     new_resource = Chef::Resource::RpmPackage.new(@pkg_name, run_context)
-     new_resource.source @pkg_path
-     new_resource
+    new_resource = Chef::Resource::RpmPackage.new(@pkg_name, run_context)
+    new_resource.source @pkg_path
+    new_resource
   end
 
   def rpm_pkg_should_be_installed(resource)
     case ohai[:platform]
     # Due to dependency issues , different rpm pkgs are used in different platforms.
-    # glib rpm package works in aix, without any dependency issues.
+    # dummy rpm package works in aix, without any dependency issues.
     when "aix"
-      expect(shell_out("rpm -qa | grep glib").exitstatus).to eq(0)
+      expect(shell_out("rpm -qa | grep dummy").exitstatus).to eq(0)
     # mytest rpm package works in centos, redhat and in suse without any dependency issues.
     when "centos", "redhat", "suse"
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(0)
@@ -46,7 +46,7 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
   def rpm_pkg_should_not_be_installed(resource)
     case ohai[:platform]
     when "aix"
-      expect(shell_out("rpm -qa | grep glib").exitstatus).to eq(1)
+      expect(shell_out("rpm -qa | grep dummy").exitstatus).to eq(1)
     when "centos", "redhat", "suse"
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(1)
       !::File.exists?("/opt/mytest/mytest.sh")
@@ -57,10 +57,10 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
     case ohai[:platform]
     # Due to dependency issues , different rpm pkgs are used in different platforms.
     when "aix"
-      @pkg_name = "glib"
-      @pkg_version = "1.2.10-2"
-      @pkg_path = "/tmp/glib-1.2.10-2.aix4.3.ppc.rpm"
-      FileUtils.cp 'spec/functional/assets/glib-1.2.10-2.aix4.3.ppc.rpm' , @pkg_path
+      @pkg_name = "dummy"
+      @pkg_version = "1-0"
+      @pkg_path = "/tmp/dummy-1-0.aix6.1.noarch.rpm"
+      FileUtils.cp 'spec/functional/assets/dummy-1-0.aix6.1.noarch.rpm' , @pkg_path
     when "centos", "redhat", "suse"
       @pkg_name = "mytest"
       @pkg_version = "1.0-1"
@@ -95,13 +95,18 @@ describe Chef::Resource::RpmPackage, :requires_root, :external => exclude_test d
     end
   end
 
-  # This Can be tested for AIX when multiple version of same package will be available.
-  context "package upgrade action", :external => (ohai[:platform] == 'aix') do
+  context "package upgrade action" do
     before(:each) do
       shell_out("rpm -i #{@pkg_path}")
-      @pkg_version = "2.0-1"
-      @pkg_path = "/tmp/mytest-2.0-1.noarch.rpm"
-      FileUtils.cp 'spec/functional/assets/mytest-2.0-1.noarch.rpm' , @pkg_path
+      if ohai[:platform] == 'aix'
+        @pkg_version = "2-0"
+        @pkg_path = "/tmp/dummy-2-0.aix6.1.noarch.rpm"
+        FileUtils.cp 'spec/functional/assets/dummy-2-0.aix6.1.noarch.rpm' , @pkg_path
+      else
+        @pkg_version = "2.0-1"
+        @pkg_path = "/tmp/mytest-2.0-1.noarch.rpm"
+        FileUtils.cp 'spec/functional/assets/mytest-2.0-1.noarch.rpm' , @pkg_path
+      end
     end
 
     it "should upgrade a package" do
