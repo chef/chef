@@ -111,8 +111,7 @@ describe Chef::Provider::Package::Aix do
 
     it "should lookup the candidate_version if the variable is not already set" do
       @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:popen4).and_return(@status)
-      @provider.should_receive(:popen4)
+      @provider.should_receive(:popen4).and_return(@status)
       @provider.candidate_version
     end
 
