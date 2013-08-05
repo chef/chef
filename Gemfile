@@ -28,7 +28,7 @@ platforms :mswin, :mingw do
   gem "win32-dir", "0.4.1"
   gem "win32-event", "0.6.0"
   gem "win32-mutex", "0.4.0"
-  gem "win32-process", "0.7.2"
+  gem "win32-process", "0.6.5"
   gem "win32-service", "0.7.2"
 end
 
