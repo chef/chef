@@ -211,32 +211,34 @@ class Chef
         Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
-        if Chef::Platform.windows?
-          if Chef::Config[:client_fork]
-            begin
-              cli = get_cli_params(ARGV)
-              Chef::Log.debug "Forking chef instance to converge... (#{cli})"
-              result = shell_out("chef-client --no-fork #{cli}")
-              Chef::Log.debug "Forked child successfully reaped (pid: #{Process.pid})"
-            rescue Mixlib::ShellOut::ShellCommandFailed
-              Chef::Log.warn "Not able to start chef-client in new process"
-            rescue Exception => e
-              Chef::Log.error e
-            end
-            Chef::Log.info "#{result.stdout}"
-            Chef::Log.warn "#{result.stderr}"
-          else
-            Chef::Log.debug "Fork successful. Waiting for new chef pid: #{Process.pid}"
-            do_run
+        # If windows machine with fork option set
+        if Chef::Platform.windows? && Chef::Config[:client_fork]
+          begin
+            cli = get_cli_params(ARGV)
+            Chef::Log.debug "Forking chef instance to converge... (#{cli})"
+            result = shell_out("chef-client --no-fork #{cli}")
+            Chef::Log.debug "Forked child successfully reaped (pid: #{Process.pid})"
+          rescue Mixlib::ShellOut::ShellCommandFailed
+            Chef::Log.warn "Not able to start chef-client in new process"
+          rescue Exception => e
+            Chef::Log.error e
           end
+          Chef::Log.info "#{result.stdout}"
+          Chef::Log.warn "#{result.stderr}"
         else
+          # For all other cases, just invoke the do_run method
+          Chef::Log.debug "Chef-client pid: #{Process.pid}"
           do_run
-        end
+         end
       end
     end
 
     def get_cli_params(argv)
       # Pass all parent params except - fork, interval, splay, logfile
+      # The forked process on windows should get all the parent process config options
+      # but not the fork/interval/splay option as it would generate an infitine loop.
+      # logfile option not passed, as the child process output will be logged in the
+      # parent process logfile.
       cli = ARGV
       cli.delete_at(cli.index("--interval")+1) unless cli.index("--interval").nil?
       cli.delete_at(cli.index("-i")+1) unless cli.index("-i").nil?
