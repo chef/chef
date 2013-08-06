@@ -242,8 +242,6 @@ shared_examples_for Chef::Client do
           block.call
         end
       else if(Chef::Config[:client_fork] && windows?)
-        #Chef::REST.should_receive(:new).with(Chef::Config[:chef_server_url], @fqdn, Chef::Config[:client_key]).exactly(:twice).and_return(mock_chef_rest_for_node)
-        #@client.should_receive(:shell_out).and_return(run_chef_in_shell_out)
         result = Object.new
         @client.should_receive(:shell_out).and_return(result)
         result.stub(:stdout)
