@@ -338,10 +338,10 @@ describe Chef::Provider::Deploy do
     @provider.enforce_ownership
   end
 
-  it "skips the migration when resource.migrate => false but runs symlinks before migration" do
+  it "skips the migration when resource.migrate => false" do
     @resource.migrate false
     @provider.should_not_receive :run_command
-    @provider.should_receive :run_symlinks_before_migrate
+    @provider.should_not_receive :run_symlinks_before_migrate
     @provider.migrate
   end
 
