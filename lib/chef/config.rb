@@ -321,7 +321,7 @@ class Chef
 
       fatal_windows_admin_check false
     else
-      user_valid_regex [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      user_valid_regex [ /^([-a-zA-Z0-9_.]+([\\@][-a-zA-Z0-9_.]+)?)$/, /^\d+$/ ]
       group_valid_regex [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
     end
 
