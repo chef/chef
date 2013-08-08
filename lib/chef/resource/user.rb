@@ -51,7 +51,7 @@ class Chef
         set_or_return(
           :username,
           arg,
-          :kind_of => [ String ]
+          :regex => Chef::Config[:user_valid_regex]
         )
       end
       
