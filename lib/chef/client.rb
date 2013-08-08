@@ -239,7 +239,7 @@ class Chef
       # but not the fork/interval/splay option as it would generate an infitine loop.
       # logfile option not passed, as the child process output will be logged in the
       # parent process logfile.
-      cli = ARGV
+      cli = ARGV.dup
       cli.delete_at(cli.index("--interval")+1) unless cli.index("--interval").nil?
       cli.delete_at(cli.index("-i")+1) unless cli.index("-i").nil?
       cli.delete_at(cli.index("--splay")+1) unless cli.index("--splay").nil?
