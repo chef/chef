@@ -143,11 +143,6 @@ class Chef
           found_result = true
           new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
           child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
-          # Create the internal representation of the fact that the parent will now exist
-          if !new_dest_parent.nil? and !new_dest_parent.parent.nil? and\
-              !new_dest_parent.parent.children.include? new_dest_parent
-            new_dest_parent.parent.children << new_dest_parent
-          end
           error ||= child_error
         end
         if !found_result && pattern.exact_path

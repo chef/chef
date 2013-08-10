@@ -89,6 +89,8 @@ class Chef
             end
           end
 
+          @children = nil
+
           result
         end
 

@@ -47,13 +47,14 @@ class Chef
         end
 
         def create_child(child_name, file_contents=nil)
-          result = FileSystemEntry.new(child_name, self)
+          child = FileSystemEntry.new(child_name, self)
           if file_contents
-            result.write(file_contents)
+            child.write(file_contents)
           else
-            Dir.mkdir(result.file_path)
+            Dir.mkdir(child.file_path)
           end
-          result
+          @children = nil
+          child
         end
 
         def dir?
