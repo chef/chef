@@ -254,9 +254,9 @@ class Chef
     def save_updated_node
       unless Chef::Config[:solo]
         Chef::Log.debug("Saving the current state of node #{node_name}")
-        if(@original_runlist)
-          @node.run_list(*@original_runlist)
-          @node.automatic_attrs[:runlist_override_history] = {Time.now.to_i => @override_runlist.inspect}
+        if(@node.override_runlist)
+          @node.automatic_attrs[:runlist_override_history] = {Time.now.to_i => @node.override_runlist.inspect}
+          @node.override_runlist.reset!
         end
         @node.save
       end
@@ -303,11 +303,10 @@ class Chef
       @node.consume_external_attrs(ohai.data, @json_attribs)
 
       unless(@override_runlist.empty?)
-        @original_runlist = @node.run_list.run_list_items.dup
         runlist_override_sanity_check!
-        @node.run_list(*@override_runlist)
+        @node.override_runlist(*@override_runlist)
         Chef::Log.warn "Run List override has been provided."
-        Chef::Log.warn "Original Run List: [#{@original_runlist.join(', ')}]"
+        Chef::Log.warn "Original Run List: [#{@node.primary_runlist}]"
         Chef::Log.warn "Overridden Run List: [#{@node.run_list}]"
       end
 

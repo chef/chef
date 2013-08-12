@@ -42,7 +42,7 @@ class Chef
 
     def_delegators :attributes, :keys, :each_key, :each_value, :key?, :has_key?
 
-    attr_accessor :recipe_list, :run_state, :run_list
+    attr_accessor :recipe_list, :run_state, :override_runlist
 
     # RunContext will set itself as run_context via this setter when
     # initialized. This is needed so DSL::IncludeAttribute (in particular,
@@ -63,7 +63,8 @@ class Chef
       @name = nil
 
       @chef_environment = '_default'
-      @run_list = Chef::RunList.new
+      @primary_runlist = Chef::RunList.new
+      @override_runlist = Chef::RunList.new
 
       @attributes = Chef::Node::Attribute.new({}, {}, {}, {})
 
@@ -252,10 +253,19 @@ class Chef
       run_list.include?("role[#{role_name}]")
     end
 
+    def primary_runlist
+      @primary_runlist
+    end
+
+    def override_runlist(*args)
+      args.length > 0 ? @override_runlist.reset!(args) : @override_runlist
+    end
+
     # Returns an Array of roles and recipes, in the order they will be applied.
     # If you call it with arguments, they will become the new list of roles and recipes.
     def run_list(*args)
-      args.length > 0 ? @run_list.reset!(args) : @run_list
+      rl = @override_runlist.empty? ? @primary_runlist : @override_runlist
+      args.length > 0 ? rl.reset!(args) : rl
     end
 
     # Returns true if this Node expects a given role, false if not.
@@ -395,7 +405,7 @@ class Chef
         "default" => attributes.combined_default,
         "override" => attributes.combined_override,
         #Render correctly for run_list items so malformed json does not result
-        "run_list" => run_list.run_list.map { |item| item.to_s }
+        "run_list" => @primary_runlist.run_list.map { |item| item.to_s }
       }
       result
     end
