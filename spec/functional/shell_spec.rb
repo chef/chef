@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require 'functional/resource/base'
 require 'chef/version'
 require 'chef/shell'
 require 'chef/mixin/command/unix'
@@ -47,20 +47,60 @@ describe Shell do
       buffer
     end
 
-    def run_chef_shell_with(options)
-      config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-      path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-      output = ''
-      status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
-        read_until(stdout, "chef >")
-        yield stdout, stdin if block_given?
-        stdin.write("'done'\n")
-        output = read_until(stdout, '=> "done"')
-        stdin.print("exit\n")
-        read_until(stdout, "\n")
-      end
+    def wait_or_die(pid)
+      start = Time.new
 
-      [output, status.exitstatus]
+      until exitstatus = Process.waitpid2(pid, Process::WNOHANG)
+        if Time.new - start > 5
+          STDERR.puts("chef-shell tty did not exit cleanly, killing it")
+          Process.kill(:KILL, pid)
+        end
+        sleep 0.01
+      end
+      exitstatus[1]
+    end 
+
+    def run_chef_shell_with(options)
+      case ohai[:platform]
+      when "aix"
+        config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
+        path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+        output = ''
+        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
+          read_until(stdout, "chef >")
+          yield stdout, stdin if block_given?
+          stdin.write("'done'\n")
+          output = read_until(stdout, '=> "done"')
+          stdin.print("exit\n")
+          read_until(stdout, "\n")
+        end
+
+        [output, status.exitstatus]
+      else
+        # Windows ruby installs don't (always?) have PTY,
+        # so hide the require here
+        begin
+          require 'pty'
+          config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
+          path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+          reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
+          read_until(reader, "chef >")
+          yield reader, writer if block_given?
+          writer.puts('"done"')
+          output = read_until(reader, '=> "done"')
+          writer.print("exit\n")
+          read_until(reader, "exit")
+          read_until(reader, "\n")
+          read_until(reader, "\n")
+          writer.close
+
+          exitstatus = wait_or_die(pid)
+
+          [output, exitstatus]
+        rescue PTY::ChildExited => e
+          [output, e.status]
+        end
+      end
     end
 
     it "boots correctly with -lauto" do
@@ -78,7 +118,5 @@ describe Shell do
       output.should include("===fatal===")
       expect(exitstatus).to eq(0)
     end
-
   end
-
 end
