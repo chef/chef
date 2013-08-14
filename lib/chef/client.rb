@@ -45,7 +45,6 @@ require 'chef/resource_reporter'
 require 'chef/run_lock'
 require 'ohai'
 require 'rbconfig'
-require 'chef/mixin/shell_out'
 
 class Chef
   # == Chef::Client
@@ -53,7 +52,6 @@ class Chef
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
     include Chef::Mixin::PathSanity
-    include Chef::Mixin::ShellOut
 
     # Clears all notifications for client run status events.
     # Primarily for testing purposes.
@@ -211,42 +209,9 @@ class Chef
         Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
-        # If windows machine with fork option set
-        if Chef::Platform.windows? && Chef::Config[:client_fork]
-          begin
-            cli = get_cli_params(ARGV)
-            Chef::Log.debug "Forking chef instance to converge... (#{cli})"
-            result = shell_out("chef-client --no-fork #{cli}")
-            Chef::Log.debug "Forked child successfully reaped (pid: #{Process.pid})"
-          rescue Mixlib::ShellOut::ShellCommandFailed
-            Chef::Log.warn "Not able to start chef-client in new process"
-          rescue Exception => e
-            Chef::Log.error e
-          end
-          Chef::Log.info "#{result.stdout}"
-          Chef::Log.warn "#{result.stderr}"
-        else
-          # For all other cases, just invoke the do_run method
-          Chef::Log.debug "Chef-client pid: #{Process.pid}"
-          do_run
-         end
+        Chef::Log.debug "Chef-client pid: #{Process.pid}"
+        do_run
       end
-    end
-
-    def get_cli_params(argv)
-      # Pass all parent params except - fork, interval, splay, logfile
-      # The forked process on windows should get all the parent process config options
-      # but not the fork/interval/splay option as it would generate an infitine loop.
-      # logfile option not passed, as the child process output will be logged in the
-      # parent process logfile.
-      cli = ARGV.dup
-      cli.delete_at(cli.index("--interval")+1) unless cli.index("--interval").nil?
-      cli.delete_at(cli.index("-i")+1) unless cli.index("-i").nil?
-      cli.delete_at(cli.index("--splay")+1) unless cli.index("--splay").nil?
-      cli.delete_at(cli.index("-s")+1) unless cli.index("-s").nil?
-      cli.delete_at(cli.index("--logfile")+1) unless cli.index("--logfile").nil?
-      cli.delete_at(cli.index("-L")+1) unless cli.index("-L").nil?
-      cli = (cli - ["--interval", "-i", "--splay", "-s", "--fork", "-f", "--logfile", "L"]).join(" ")
     end
 
     def handle_child_exit(pid_and_status)

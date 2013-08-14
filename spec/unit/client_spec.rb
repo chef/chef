@@ -173,7 +173,6 @@ shared_examples_for Chef::Client do
       mock_chef_rest_for_node_save = mock("Chef::REST (node save)")
       mock_chef_runner = mock("Chef::Runner")
 
-      unless (Chef::Config[:client_fork] && windows?)
       # --Client.register
       #   Make sure Client#register thinks the client key doesn't
       #   exist, so it tries to register and create one.
@@ -219,7 +218,6 @@ shared_examples_for Chef::Client do
       # Post conditions: check that node has been filled in correctly
       @client.should_receive(:run_started)
       @client.should_receive(:run_completed_successfully)
-      end
 
       if(Chef::Config[:client_fork] && !windows?)
         require 'stringio'
@@ -241,12 +239,6 @@ shared_examples_for Chef::Client do
         @client.should_receive(:fork) do |&block|
           block.call
         end
-      else if(Chef::Config[:client_fork] && windows?)
-        result = Object.new
-        @client.should_receive(:shell_out).and_return(result)
-        result.stub(:stdout)
-        result.stub(:stderr)
-      end
       end
 
       # This is what we're testing.
@@ -259,24 +251,22 @@ shared_examples_for Chef::Client do
     end
 
     it "should remove the run_lock on failure of #load_node" do
-      unless (Chef::Config[:client_fork] && windows?)
-        @run_lock = mock("Chef::RunLock", :acquire => true)
-        Chef::RunLock.stub!(:new).and_return(@run_lock)
+      @run_lock = mock("Chef::RunLock", :acquire => true)
+      Chef::RunLock.stub!(:new).and_return(@run_lock)
 
-        @events = mock("Chef::EventDispatch::Dispatcher").as_null_object
-        Chef::EventDispatch::Dispatcher.stub!(:new).and_return(@events)
+      @events = mock("Chef::EventDispatch::Dispatcher").as_null_object
+      Chef::EventDispatch::Dispatcher.stub!(:new).and_return(@events)
 
-        # @events is created on Chef::Client.new, so we need to recreate it after mocking
-        @client = Chef::Client.new
-        @client.stub!(:load_node).and_raise(Exception)
-        @run_lock.should_receive(:release)
-        if(Chef::Config[:client_fork] && !windows?)
-          @client.should_receive(:fork) do |&block|
-            block.call
-          end
+      # @events is created on Chef::Client.new, so we need to recreate it after mocking
+      @client = Chef::Client.new
+      @client.stub!(:load_node).and_raise(Exception)
+      @run_lock.should_receive(:release)
+      if(Chef::Config[:client_fork] && !windows?)
+        @client.should_receive(:fork) do |&block|
+          block.call
         end
-        lambda { @client.run }.should raise_error(Exception)
       end
+      lambda { @client.run }.should raise_error(Exception)
     end
 
     describe "when notifying other objects of the status of the chef run" do
