@@ -176,7 +176,19 @@ describe Chef::CookbookVersion do
       attribute_file["checksum"].should match(MD5)
       attribute_file["specificity"].should == "default"
 
-      manifest["files"].should have(1).cookbook_file
+      manifest["files"].should have(3).cookbook_file
+
+      cookbook_file = manifest["files"].first
+      cookbook_file["name"].should == "giant_blob.tgz"
+      cookbook_file["path"].should == "files/default/giant_blob.tgz"
+      cookbook_file["checksum"].should match(MD5)
+      cookbook_file["specificity"].should == "default"
+
+      cookbook_file = manifest["files"].at(1)
+      cookbook_file["name"].should == "host-specific-file.txt"
+      cookbook_file["path"].should == "files/default/giant_blob.tgz"
+      cookbook_file["checksum"].should match(MD5)
+      cookbook_file["specificity"].should == "default"
 
       cookbook_file = manifest["files"].first
       cookbook_file["name"].should == "giant_blob.tgz"
