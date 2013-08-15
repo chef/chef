@@ -76,14 +76,13 @@ describe Chef::DataBag do
       Chef::REST.stub!(:new).and_return(@rest)
     end
 
-    it "should update the data bag when it already exists" do
-      @rest.should_receive(:put_rest).with("data/piggly_wiggly", @data_bag)
+    it "should silently proceed when the data bag already exists" do
+      exception = mock("409 error", :code => "409")
+      @rest.should_receive(:post_rest).and_raise(Net::HTTPServerException.new("foo", exception))
       @data_bag.save
     end
 
-    it "should create the data bag when it is not found" do
-      exception = mock("404 error", :code => "404")
-      @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
+    it "should create the data bag" do
       @rest.should_receive(:post_rest).with("data", @data_bag)
       @data_bag.save
     end
@@ -96,7 +95,6 @@ describe Chef::DataBag do
         Chef::Config[:why_run] = false
       end
       it "should not save" do
-        @rest.should_not_receive(:put_rest)
         @rest.should_not_receive(:post_rest)
         @data_bag.save
       end
