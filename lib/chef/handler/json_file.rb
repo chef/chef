@@ -39,13 +39,19 @@ class Chef
         end
 
         build_report_dir
-        savetime = Time.now.strftime("%Y%m%d%H%M%S")
-        File.open(File.join(config[:path], "chef-run-report-#{savetime}.json"), "w") do |file|
-          
+
+        filename = if config[:filename]
+          config[:filename]
+        else
+          savetime = Time.now.strftime("%Y%m%d%H%M%S")
+         "chef-run-report-#{savetime}.json"
+        end
+
+        File.open(File.join(config[:path], filename), "w") do |file|
           #ensure start time and end time are output in the json properly in the event activesupport happens to be on the system
           run_data = data
           run_data[:start_time] = run_data[:start_time].to_s
-          run_data[:end_time] = run_data[:end_time].to_s          
+          run_data[:end_time] = run_data[:end_time].to_s
 
           file.puts Chef::JSONCompat.to_json_pretty(run_data)
         end
