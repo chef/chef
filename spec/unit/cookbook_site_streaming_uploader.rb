@@ -57,5 +57,71 @@ describe Chef::CookbookSiteStreamingUploader do
 
   end # create_build_dir
 
+  describe "make_request" do
+
+    before(:each) do
+      @uri = "http://cookbooks.dummy.com/api/v1/cookbooks"
+      @secret_filename = File.join(CHEF_SPEC_DATA, 'ssl/private_key.pem')
+      @rsa_key = File.read(@secret_filename)
+      response = Net::HTTPResponse.new('1.0', '200', 'OK')
+      Net::HTTP.any_instance.stub(:request).and_return(response)
+    end
+
+    it "should send an http request" do
+      Net::HTTP.any_instance.should_receive(:request)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+    end
+
+    it "should read the private key file" do
+      File.should_receive(:read).with(@secret_filename).and_return(@rsa_key)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+    end
+
+    it "should add the authentication signed header" do
+      Mixlib::Authentication::SigningObject.any_instance.should_receive(:sign).and_return({})
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+    end
+
+    it "should be able to send post requests" do
+      post = Net::HTTP::Post.new(@uri, {})
+
+      Net::HTTP::Post.should_receive(:new).once.and_return(post)
+      Net::HTTP::Put.should_not_receive(:new)
+      Net::HTTP::Get.should_not_receive(:new)
+      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, 'bill', @secret_filename)
+    end
+
+    it "should be able to send put requests" do
+      put = Net::HTTP::Put.new(@uri, {})
+
+      Net::HTTP::Post.should_not_receive(:new)
+      Net::HTTP::Put.should_receive(:new).once.and_return(put)
+      Net::HTTP::Get.should_not_receive(:new)
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename)
+    end
+
+    it "should be able to receive files to attach as argument" do
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
+        :myfile => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')), # a dummy file
+      })
+    end
+
+    it "should be able to receive strings to attach as argument" do
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
+        :mystring => 'Lorem ipsum',
+      })
+    end
+
+    it "should be able to receive strings and files as argument at the same time" do
+      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, 'bill', @secret_filename, {
+        :myfile1 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
+        :mystring1 => 'Lorem ipsum',
+        :myfile2 => File.new(File.join(CHEF_SPEC_DATA, 'config.rb')),
+        :mystring2 => 'Dummy text',
+      })
+    end
+
+  end # make_request
+
 end
 
