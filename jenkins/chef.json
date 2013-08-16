@@ -52,12 +52,22 @@
             "debian",
             "6",
             "x86_64"
+        ],
+        [
+            "debian",
+            "7",
+            "x86_64"
         ]
     ],
     "build_os=debian-6,machine_architecture=x86,role=oss-builder": [
         [
             "debian",
             "6",
+            "i686"
+        ],
+        [
+            "debian",
+            "7",
             "i686"
         ]
     ],
