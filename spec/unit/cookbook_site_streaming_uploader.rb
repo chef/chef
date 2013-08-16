@@ -165,5 +165,36 @@ describe Chef::CookbookSiteStreamingUploader do
 
   end # StringPart
 
+  describe "MultipartStream" do
+    before(:each) do
+      @string1 = "stream1"
+      @string2 = "stream2"
+      @stream1 = Chef::CookbookSiteStreamingUploader::StringPart.new(@string1)
+      @stream2 = Chef::CookbookSiteStreamingUploader::StringPart.new(@string2)
+      @parts = [ @stream1, @stream2 ]
+
+      @multipart_stream = Chef::CookbookSiteStreamingUploader::MultipartStream.new(@parts)
+    end
+
+    it "should create a MultipartStream" do
+      @multipart_stream.should be_instance_of(Chef::CookbookSiteStreamingUploader::MultipartStream)
+    end
+
+    it "should expose its size" do
+      @multipart_stream.size.should eql(@stream1.size + @stream2.size)
+    end
+
+    it "should read with how_much" do
+      @multipart_stream.read(10).should eql("#{@string1}#{@string2}"[0, 10])
+    end
+
+    it "should read receiving destination buffer as second argument (CHEF-4456: Ruby 2 compat)" do
+      dst_buf = ''
+      @multipart_stream.read(10, dst_buf)
+      dst_buf.should eql("#{@string1}#{@string2}"[0, 10])
+    end
+
+  end # MultipartStream
+
 end
 
