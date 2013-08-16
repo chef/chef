@@ -123,5 +123,27 @@ describe Chef::CookbookSiteStreamingUploader do
 
   end # make_request
 
+  describe "StreamPart" do
+    before(:each) do
+      @file = File.new(File.join(CHEF_SPEC_DATA, 'config.rb'))
+      @stream_part = Chef::CookbookSiteStreamingUploader::StreamPart.new(@file, File.size(@file))
+    end
+
+    it "should create a StreamPart" do
+      @stream_part.should be_instance_of(Chef::CookbookSiteStreamingUploader::StreamPart)
+    end
+
+    it "should expose its size" do
+      @stream_part.size.should eql(File.size(@file))
+    end
+
+    it "should read with offset and how_much" do
+      content = @file.read(4)
+      @file.rewind
+      @stream_part.read(0, 4).should eql(content)
+    end
+
+  end # StreamPart
+
 end
 
