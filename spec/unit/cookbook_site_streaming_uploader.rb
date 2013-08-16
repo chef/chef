@@ -145,5 +145,25 @@ describe Chef::CookbookSiteStreamingUploader do
 
   end # StreamPart
 
+  describe "StringPart" do
+    before(:each) do
+      @str = 'What a boring string'
+      @string_part = Chef::CookbookSiteStreamingUploader::StringPart.new(@str)
+    end
+
+    it "should create a StringPart" do
+      @string_part.should be_instance_of(Chef::CookbookSiteStreamingUploader::StringPart)
+    end
+
+    it "should expose its size" do
+      @string_part.size.should eql(@str.size)
+    end
+
+    it "should read with offset and how_much" do
+      @string_part.read(2, 4).should eql(@str[2, 4])
+    end
+
+  end # StringPart
+
 end
 
