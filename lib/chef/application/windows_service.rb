@@ -27,11 +27,13 @@ require 'chef/rest'
 require 'mixlib/cli'
 require 'socket'
 require 'win32/daemon'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Application
     class WindowsService < ::Win32::Daemon
       include Mixlib::CLI
+      include Chef::Mixin::ShellOut
 
       option :config_file,
         :short => "-c CONFIG",
@@ -161,33 +163,16 @@ class Chef
       # Initializes Chef::Client instance and runs it
       def run_chef_client
         begin
-          #cli = get_cli_params(ARGV)
-          Chef::Log.debug "Forking chef instance to converge..."
+          Chef::Log.info "Starting chef-client in a new process"
           result = shell_out("chef-client --no-fork")
-          Chef::Log.debug "Forked child successfully reaped (pid: #{Process.pid})"
+          Chef::Log.info "Child process successfully reaped (pid: #{Process.pid})"
+          Chef::Log.info "#{result.stdout}"
+          Chef::Log.warn "#{result.stderr}"
         rescue Mixlib::ShellOut::ShellCommandFailed
           Chef::Log.warn "Not able to start chef-client in new process"
-        rescue Exception => e
+        rescue => e
           Chef::Log.error e
         end
-        Chef::Log.info "#{result.stdout}"
-        Chef::Log.warn "#{result.stderr}"
-      end
-
-      def get_cli_params(argv)
-        # Pass all parent params except - fork, interval, splay, logfile
-        # The forked process on windows should get all the parent process config options
-        # but not the fork/interval/splay option as it would generate an infitine loop.
-        # logfile option not passed, as the child process output will be logged in the
-        # parent process logfile.
-        cli = ARGV.dup
-        cli.delete_at(cli.index("--interval")+1) unless cli.index("--interval").nil?
-        cli.delete_at(cli.index("-i")+1) unless cli.index("-i").nil?
-        cli.delete_at(cli.index("--splay")+1) unless cli.index("--splay").nil?
-        cli.delete_at(cli.index("-s")+1) unless cli.index("-s").nil?
-        cli.delete_at(cli.index("--logfile")+1) unless cli.index("--logfile").nil?
-        cli.delete_at(cli.index("-L")+1) unless cli.index("-L").nil?
-        cli = (cli - ["--interval", "-i", "--splay", "-s", "--fork", "-f", "--logfile", "L"]).join(" ")
       end
 
       def apply_config(config_file_path)

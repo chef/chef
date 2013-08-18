@@ -30,9 +30,10 @@ describe Chef::Client do
   include Chef::Mixin::ShellOut
   context "fork", :windows_only do
     it "creates a new process" do
-      shell_out("chef-client --log_level debug --logfile test1.log")
+      pending "Test for chef client for windows as a service"
+      shell_out("ruby.exe ..\\..\\lib\\chef\\application\\windows_service.rb --logfile test1.log")
       result1 = shell_out("grep 'Chef-client pid:' test1.log")
-      result2 = shell_out("grep 'Forked child successfully reaped' test1.log")
+      result2 = shell_out("grep 'Child process successfully reaped' test1.log")
       pid_child = get_pid(result1.stdout)
       pid_parent = get_pid(result2.stdout)
       pid_child.should_not == pid_parent
