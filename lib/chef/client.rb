@@ -209,7 +209,6 @@ class Chef
         Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
-        Chef::Log.debug "Chef-client pid: #{Process.pid}"
         do_run
       end
     end
@@ -475,6 +474,7 @@ class Chef
         run_context = nil
         @events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        Chef::Log.info "Chef-client pid: #{Process.pid}"
         enforce_path_sanity
         run_ohai
         @events.ohai_completed(node)
