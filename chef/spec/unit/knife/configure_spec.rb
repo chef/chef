@@ -109,7 +109,7 @@ describe Chef::Knife::Configure do
     @knife.ask_user_for_config
     @out.string.should_not match(Regexp.escape("Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]"))
     if windows?
-      @knife.admin_client_key.capitalize.should_not == 'C:/etc//chef/webui.pem'
+      @knife.admin_client_key.should_not == 'C:/etc//chef/webui.pem'
     else
       @knife.admin_client_key.should_not == '/etc/chef/webui.pem' 
     end
