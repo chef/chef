@@ -16,9 +16,10 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require 'functional/resource/base'
 require 'chef/version'
 require 'chef/shell'
+require 'chef/mixin/command/unix'
 
 describe Shell do
 
@@ -26,6 +27,7 @@ describe Shell do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
   describe "smoke tests", :unix_only => true do
+    include Chef::Mixin::Command::Unix
 
     def read_until(io, expected_value)
       start = Time.new
@@ -56,35 +58,55 @@ describe Shell do
         sleep 0.01
       end
       exitstatus[1]
-    end
+    end 
 
     def run_chef_shell_with(options)
-      # Windows ruby installs don't (always?) have PTY,
-      # so hide the require here
-      require 'pty'
-      config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-      path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-      reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
-      read_until(reader, "chef >")
-      yield reader, writer if block_given?
-      writer.puts('"done"')
-      output = read_until(reader, '=> "done"')
-      writer.print("exit\n")
-      read_until(reader, "exit")
-      read_until(reader, "\n")
-      read_until(reader, "\n")
-      writer.close
+      case ohai[:platform]
+      when "aix"
+        config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
+        path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+        output = ''
+        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
+          read_until(stdout, "chef >")
+          yield stdout, stdin if block_given?
+          stdin.write("'done'\n")
+          output = read_until(stdout, '=> "done"')
+          stdin.print("exit\n")
+          read_until(stdout, "\n")
+        end
 
-      exitstatus = wait_or_die(pid)
+        [output, status.exitstatus]
+      else
+        # Windows ruby installs don't (always?) have PTY,
+        # so hide the require here
+        begin
+          require 'pty'
+          config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
+          path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
+          reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
+          read_until(reader, "chef >")
+          yield reader, writer if block_given?
+          writer.puts('"done"')
+          output = read_until(reader, '=> "done"')
+          writer.print("exit\n")
+          read_until(reader, "exit")
+          read_until(reader, "\n")
+          read_until(reader, "\n")
+          writer.close
 
-      [output, exitstatus]
-    rescue PTY::ChildExited => e
-      [output, e.status]
+          exitstatus = wait_or_die(pid)
+
+          [output, exitstatus]
+        rescue PTY::ChildExited => e
+          [output, e.status]
+        end
+      end
     end
 
     it "boots correctly with -lauto" do
       output, exitstatus = run_chef_shell_with("-lauto")
-      exitstatus.should be_success
+      output.should include("done")
+      expect(exitstatus).to eq(0)
     end
 
     it "sets the log_level from the command line" do
@@ -94,9 +116,7 @@ describe Shell do
         read_until(out, show_log_level_code)
       end
       output.should include("===fatal===")
-      exitstatus.should be_success
+      expect(exitstatus).to eq(0)
     end
-
   end
-
 end
