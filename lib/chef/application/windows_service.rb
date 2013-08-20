@@ -162,12 +162,19 @@ class Chef
 
       # Initializes Chef::Client instance and runs it
       def run_chef_client
+        # The chef client will be started in a new process. We have used shell_out to start the chef-client.
+        # The log_location and config_file of the parent process is passed to the new chef-client process.
+        # We need to add the --no-fork, as by default it is set to fork=true.
         begin
           Chef::Log.info "Starting chef-client in a new process"
-          result = shell_out("chef-client --no-fork")
+          # Starts a new process and waits till the process exits
+          result = shell_out("chef-client --no-fork -c #{Chef::Config[:config_file]} -L #{Chef::Config[:log_location]}")
+          # Once process exits, we log the following messages
           Chef::Log.info "Child process successfully reaped (pid: #{Process.pid})"
-          Chef::Log.info "#{result.stdout}"
-          Chef::Log.warn "#{result.stderr}"
+          # stdout is the std output of the child process
+          Chef::Log.debug "#{result.stdout}"
+          # stderr is the error from the output process
+          Chef::Log.debug "#{result.stderr}"
         rescue Mixlib::ShellOut::ShellCommandFailed
           Chef::Log.warn "Not able to start chef-client in new process"
         rescue => e
