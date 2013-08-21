@@ -85,6 +85,8 @@ class Chef
             end
             newfile.flush
           end
+          self.file_edited = false
+          return true
         end
         self.file_edited = false
       end

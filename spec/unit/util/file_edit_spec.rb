@@ -132,4 +132,15 @@ HOSTS
       newfile[1].should_not match(/replacement/)
     end
   end
+
+  describe 'write_file' do
+    it 'should returns true when file was edited' do
+      @fedit.search_file_replace("localhost", "replacement")
+      expect(@fedit.write_file).to be_true
+    end
+
+    it 'should returns false when file was not edited' do
+      expect(@fedit.write_file).to be_false
+    end
+  end
 end
