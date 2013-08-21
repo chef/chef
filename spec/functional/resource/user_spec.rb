@@ -20,14 +20,14 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::User, :unix_only, :requires_root do
+metadata = { :unix_only => true,
+  :requires_root => true,
+  :provider => {:user => Chef::Provider::User::Useradd}
+}
+
+describe Chef::Resource::User, metadata do
 
   include Chef::Mixin::ShellOut
-
-  # User provider is platform-dependent, we need platform ohai data:
-  OHAI_SYSTEM = Ohai::System.new
-  OHAI_SYSTEM.require_plugin("os")
-  OHAI_SYSTEM.require_plugin("platform")
 
 
   # Utility code for /etc/passwd interaction, avoid any caching of user records:
@@ -56,14 +56,6 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   before do
     # Silence shell_out live stream
     Chef::Log.level = :warn
-
-    # Tests only implemented for a subset of platforms currently.
-    user_provider = Chef::Platform.find_provider(OHAI_SYSTEM["platform"],
-                                                 OHAI_SYSTEM["platform_version"],
-                                                 :user)
-    unless user_provider == Chef::Provider::User::Useradd
-      pending "Only the useradd provider is supported at this time"
-    end
   end
 
   after do
