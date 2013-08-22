@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,52 @@ require 'erubis'
 class Chef
   module Mixin
     module Template
-      
+
+      # A compatibility wrapper around IO.binread so it works on Ruby 1.8.7.
+      # --
+      # Used in the TemplateContext class, but that method namespace is shared
+      # with user code, so we want to avoid adding methods there when possible.
+      def self.binread(file)
+        if IO.respond_to?(:binread)
+          IO.binread(file)
+        else
+          File.open(file, "rb") {|f| f.read }
+        end
+      end
+
+      # == ChefContext
+      # ChefContext was previously used to mix behavior into Erubis::Context so
+      # that it would be available to templates. This behavior has now moved to
+      # TemplateContext, but this module is still mixed in to the
+      # TemplateContext class so that any user code that modified ChefContext
+      # will continue to work correctly.
       module ChefContext
+      end
+
+      # == TemplateContext
+      # TemplateContext is the base context class for all templates in Chef. It
+      # defines user-facing extensions to the base Erubis::Context to provide
+      # enhanced features. Individual instances of TemplateContext can be
+      # extended to add logic to a specific template.
+      #
+      class TemplateContext < Erubis::Context
+
+        include ChefContext
+
+        attr_reader :_extension_modules
+
+        def initialize(variables)
+          super
+          @_extension_modules = []
+        end
+
+        ###
+        # USER FACING API
+        ###
+
+        # Returns the current node object, or raises an error if it's not set.
+        # Provides API consistency, allowing users to reference the node object
+        # by the bare `node` everywhere.
         def node
           return @node if @node
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
@@ -56,59 +100,105 @@ class Chef
         def render(partial_name, options = {})
           raise "You cannot render partials in this context" unless @template_finder
 
-          if variables = options.delete(:variables)
-            context = {}
-            context.merge!(variables)
-            context[:node] = @node
-            context[:template_finder] = @template_finder
-          else
-            context = self.dup
-          end
+          partial_variables = options.delete(:variables) || _public_instance_variables
+          partial_context = self.class.new(partial_variables)
+          partial_context._extend_modules(@_extension_modules)
 
           template_location = @template_finder.find(partial_name, options)
-          eruby = Erubis::Eruby.new(IO.read(template_location))
-          output = eruby.evaluate(context)
+          _render_template(Mixin::Template.binread(template_location), partial_context)
+        end
+
+        def render_template(template_location)
+          _render_template(Mixin::Template.binread(template_location), self)
+        end
+
+        def render_template_from_string(template)
+          _render_template(template, self)
+        end
+
+        ###
+        # INTERNAL PUBLIC API
+        ###
+
+        def _render_template(template, context)
+          # CHEF-2991
+          # Erubis always emits unix line endings during template
+          # rendering. This results in automatic conversion of windows
+          # line endings to linux line endings if the original template
+          # contains windows line endings. In order to fix this we
+          # determine the line ending style of the template before
+          # rendering and convert the line endings of the output if needed
+          # If template contains any windows line endings we emit
+          # the template result with windows line endings.
+          windows_line_endings = template.include? "\r\n"
+
+          begin
+            eruby = Erubis::Eruby.new(template)
+            output = eruby.evaluate(context)
+          rescue Object => e
+            raise TemplateError.new(e, template, context)
+          end
+
+          if windows_line_endings
+            # Convert line endings from "\n" -> "\r\n". Also converts
+            # "\r\n" -> "\r\n".
+            # This makes the regex match on all of "\r\n", so we don't
+            # accidentally convert "\r\n" -> "\r\r\n".
+            output = output.gsub(/\r?\n/,"\r\n")
+          end
+
+          output
+        end
+
+        def _extend_modules(module_names)
+          module_names.each do |mod|
+            context_methods = [:node, :render, :render_template, :render_template_from_string]
+            context_methods.each do |core_method|
+              if mod.method_defined?(core_method) or mod.private_method_defined?(core_method)
+                Chef::Log.warn("Core template method `#{core_method}' overridden by extension module #{mod}")
+              end
+            end
+            extend(mod)
+            @_extension_modules << mod
+          end
+        end
+
+        # Collects instance variables set on the current object as a Hash
+        # suitable for creating a new TemplateContext. Instance variables that
+        # are only valid for this specific instance are omitted from the
+        # collection.
+        def _public_instance_variables
+          all_ivars = instance_variables
+          all_ivars.delete(:@_extension_modules)
+          all_ivars.inject({}) do |ivar_map, ivar_symbol_name|
+            value = instance_variable_get(ivar_symbol_name)
+            name_without_at = ivar_symbol_name.to_s[1..-1].to_sym
+            ivar_map[name_without_at] = value
+            ivar_map
+          end
         end
       end
-      
-      ::Erubis::Context.send(:include, ChefContext)
-      
-      # Render a template with Erubis.  Takes a template as a string, and a 
-      # context hash.  
-      def render_template(template, context)
-        begin
-          eruby = Erubis::Eruby.new(template)
-          output = eruby.evaluate(context)
-        rescue Object => e
-          raise TemplateError.new(e, template, context)
-        end
-        Tempfile.open("chef-rendered-template") do |tempfile|
-          tempfile.print(output)
-          tempfile.close
-          yield tempfile
-        end
-      end
-      
+
       class TemplateError < RuntimeError
         attr_reader :original_exception, :context
         SOURCE_CONTEXT_WINDOW = 2
-        
+
         def initialize(original_exception, template, context)
           @original_exception, @template, @context = original_exception, template, context
         end
-        
+
         def message
           @original_exception.message
         end
-        
+
         def line_number
           @line_number ||= $1.to_i if original_exception.backtrace.find {|line| line =~ /\(erubis\):(\d+)/ }
         end
-        
+
         def source_location
           "on line ##{line_number}"
         end
-        
+
         def source_listing
           @source_listing ||= begin
             lines = @template.split(/\n/)
@@ -129,7 +219,7 @@ class Chef
             output.join("\n")
           end
         end
-        
+
         def to_s
           "\n\n#{self.class} (#{message}) #{source_location}:\n\n" +
             "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"

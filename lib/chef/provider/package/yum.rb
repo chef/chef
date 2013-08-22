@@ -16,8 +16,10 @@
 # limitations under the License.
 #
 
+require 'chef/config'
 require 'chef/provider/package'
 require 'chef/mixin/command'
+require 'chef/mixin/shell_out'
 require 'chef/resource/package'
 require 'singleton'
 require 'chef/mixin/get_source_from_package'
@@ -645,6 +647,7 @@ class Chef
         # Cache for our installed and available packages, pulled in from yum-dump.py
         class YumCache
           include Chef::Mixin::Command
+          include Chef::Mixin::ShellOut
           include Singleton
 
           def initialize
@@ -705,9 +708,11 @@ class Chef
             error = nil
 
             helper = ::File.join(::File.dirname(__FILE__), 'yum-dump.py')
+            status = nil
 
-            status = popen4("/usr/bin/python #{helper}#{opts}", :waitlast => true) do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
+            begin
+              status = shell_out!("/usr/bin/python #{helper}#{opts}", :timeout => Chef::Config[:yum_timeout])
+              status.stdout.each_line do |line|
                 one_line = true
 
                 line.chomp!
@@ -754,7 +759,10 @@ class Chef
                 @rpmdb << pkg
               end
 
-              error = stderr.readlines
+              error = status.stderr
+            rescue Mixlib::ShellOut::CommandTimeout => e
+              Chef::Log.error("#{helper} exceeded timeout #{Chef::Config[:yum_timeout]}")
+              raise(e)
             end
 
             if status.exitstatus != 0
@@ -939,6 +947,7 @@ class Chef
         end # YumCache
 
         include Chef::Mixin::GetSourceFromPackage
+        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super
@@ -981,7 +990,7 @@ class Chef
         end
 
         def yum_command(command)
-          status, stdout, stderr = output_of_command(command, {})
+          status, stdout, stderr = output_of_command(command, {:timeout => Chef::Config[:yum_timeout]})
 
           # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
           # considered fatal - meaning the rpm is still successfully installed. These issue
@@ -998,7 +1007,7 @@ class Chef
               if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
                 Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
                                "so running install again to verify.")
-                status, stdout, stderr = output_of_command(command, {})
+                status, stdout, stderr = output_of_command(command, {:timeout => Chef::Config[:yum_timeout]})
                 break
               end
             end
@@ -1062,13 +1071,11 @@ class Chef
             end
 
             Chef::Log.debug("#{@new_resource} checking rpm status")
-            status = popen4("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}") do |pid, stdin, stdout, stderr|
-              stdout.each do |line|
-                case line
-                when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                  @current_resource.package_name($1)
-                  @new_resource.version($2)
-                end
+            shell_out!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
+              case line
+              when /([\w\d_.-]+)\s([\w\d_.-]+)/
+                @current_resource.package_name($1)
+                @new_resource.version($2)
               end
             end
           end

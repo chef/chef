@@ -86,7 +86,7 @@ class Chef
         # Converts a Chef::Node object to a string suitable for output to a
         # terminal. If config[:medium_output] or config[:long_output] are set
         # the volume of output is adjusted accordingly. Uses colors if enabled
-        # in the the ui object.
+        # in the ui object.
         def summarize(data)
           if data.kind_of?(Chef::Node)
             node = data

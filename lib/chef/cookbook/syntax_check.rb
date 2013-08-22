@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'pathname'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/checksum'
 
@@ -84,14 +85,14 @@ class Chef
       # validated.
       attr_reader :validated_files
 
-      # Creates a new SyntaxCheck given the +cookbook_pathname+ and a +cookbook_path+.
+      # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.
-      def self.for_cookbook(cookbook_pathname, cookbook_path=nil)
+      def self.for_cookbook(cookbook_name, cookbook_path=nil)
         cookbook_path ||= Chef::Config.cookbook_path
         unless cookbook_path
-          raise ArgumentError, "Cannot find cookbook #{cookbook_pathname} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
+          raise ArgumentError, "Cannot find cookbook #{cookbook_name} unless Chef::Config.cookbook_path is set or an explicit cookbook path is given"
         end
-        new(File.join(cookbook_path, cookbook_pathname.to_s))
+        new(File.join(cookbook_path, cookbook_name.to_s))
       end
 
       # Create a new SyntaxCheck object
@@ -102,8 +103,22 @@ class Chef
         @validated_files = PersistentSet.new
       end
 
+      def chefignore
+        @chefignore ||= Chefignore.new(File.dirname(cookbook_path))
+      end
+
+      def remove_ignored_files(file_list)
+        return file_list unless chefignore.ignores.length > 0
+        file_list.reject do |full_path|
+          cookbook_pn = Pathname.new cookbook_path
+          full_pn = Pathname.new full_path
+          relative_pn = full_pn.relative_path_from cookbook_pn
+          chefignore.ignored? relative_pn.to_s
+        end
+      end
+
       def ruby_files
-        Dir[File.join(cookbook_path, '**', '*.rb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.rb')]
       end
 
       def untested_ruby_files
@@ -118,7 +133,7 @@ class Chef
       end
 
       def template_files
-        Dir[File.join(cookbook_path, '**', '*.erb')]
+        remove_ignored_files Dir[File.join(cookbook_path, '**', '*.erb')]
       end
 
       def untested_template_files

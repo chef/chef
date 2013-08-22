@@ -127,7 +127,12 @@ class Chef
     end
 
     def stat
-      @stat ||= @new_resource.instance_of?(Chef::Resource::Link) ? ::File.lstat(@new_resource.path) : ::File.stat(@new_resource.path)
+      @stat ||= if @new_resource.instance_of?(Chef::Resource::Link)
+        ::File.lstat(@new_resource.path)
+      else
+        realpath = ::File.realpath(@new_resource.path)
+        ::File.stat(realpath)
+      end
     end
   end
 end

@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should run zypper info with the package name" do
-      @provider.should_receive(:popen4).with("zypper info #{@new_resource.package_name}").and_return(@status)
+      @provider.should_receive(:popen4).with("zypper --non-interactive info #{@new_resource.package_name}").and_return(@status)
       @provider.load_current_resource
     end
 

@@ -1,4 +1,25 @@
 
+ALL_EXPANDED_PERMISSIONS = ["generic read",
+                            "generic write",
+                            "generic execute",
+                            "generic all",
+                            "delete",
+                            "read permissions",
+                            "change permissions",
+                            "take ownership",
+                            "synchronize",
+                            "access system security",
+                            "read data / list directory",
+                            "write data / add file",
+                            "append data / add subdirectory",
+                            "read extended attributes",
+                            "write extended attributes",
+                            "execute / traverse",
+                            "delete child",
+                            "read attributes",
+                            "write attributes"]
+
+
 shared_examples_for "a securable resource with reporting" do
 
   include_context "diff disabled"
@@ -15,6 +36,18 @@ shared_examples_for "a securable resource with reporting" do
   # let(:default_mode) { ((0100666 - File.umask) & 07777).to_s(8) }
 
   describe "reading file security metadata for reporting on unix", :unix_only => true do
+    # According to POSIX standard created files get either the
+    # effective gid of the process or inherits the gid of the parent
+    # directory based on file system. Since it's hard to guess what
+    # would happen on each platform we create a dummy file and see
+    # what the group name should be.
+    before do
+      FileUtils.touch(path)
+      @expected_gid = File.stat(path).gid
+      @expected_group_name = Etc.getgrgid(@expected_gid).name
+      FileUtils.rm_rf(path)
+    end
+
     context "when the target file doesn't exist" do
       before do
         resource.action(:create)
@@ -31,7 +64,7 @@ shared_examples_for "a securable resource with reporting" do
           resource.run_action(:create)
           # TODO: most stable way to specify?
           resource.owner.should == Etc.getpwuid(Process.uid).name
-          resource.group.should == Etc.getgrgid(Process.gid).name
+          resource.group.should == @expected_group_name
           resource.mode.should == "0#{default_mode}"
         end
       end
@@ -140,7 +173,7 @@ shared_examples_for "a securable resource with reporting" do
         it "sets the current values on current resource as strings" do
           # TODO: most stable way to specify?
           current_resource.owner.should == Etc.getpwuid(Process.uid).name
-          current_resource.group.should == Etc.getgrgid(Process.gid).name
+          current_resource.group.should == @expected_group_name
           current_resource.mode.should == "0#{((0100666 - File.umask) & 07777).to_s(8)}"
         end
       end
@@ -173,28 +206,23 @@ shared_examples_for "a securable resource with reporting" do
       end
 
       context "and group is specified with a String (group name)" do
-
-        let(:expected_group_name) { Etc.getgrgid(Process.gid).name }
-
         before do
-          resource.group(expected_group_name)
+          resource.group(@expected_group_name)
         end
 
         it "sets the group on new_resource to the group name (String) of the group" do
-          current_resource.group.should == expected_group_name
+          current_resource.group.should == @expected_group_name
         end
 
       end
 
       context "and group is specified with an Integer (gid)" do
-        let(:expected_gid) { Process.gid }
-
         before do
-          resource.group(expected_gid)
+          resource.group(@expected_gid)
         end
 
         it "sets the group on new_resource to the gid (Integer)" do
-          current_resource.group.should == expected_gid
+          current_resource.group.should == @expected_gid
         end
 
       end
@@ -232,26 +260,6 @@ shared_examples_for "a securable resource with reporting" do
     before do
       pending "windows reporting not yet fully supported"
     end
-
-    ALL_EXPANDED_PERMISSIONS = ["generic read",
-                                "generic write",
-                                "generic execute",
-                                "generic all",
-                                "delete",
-                                "read permissions",
-                                "change permissions",
-                                "take ownership",
-                                "synchronize",
-                                "access system security",
-                                "read data / list directory",
-                                "write data / add file",
-                                "append data / add subdirectory",
-                                "read extended attributes",
-                                "write extended attributes",
-                                "execute / traverse",
-                                "delete child",
-                                "read attributes",
-                                "write attributes"]
 
 
     context "when the target file doesn't exist" do

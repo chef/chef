@@ -39,6 +39,15 @@ class Chef
     class Ifconfig < Chef::Provider
       include Chef::Mixin::Command
 
+      attr_accessor :config_template
+      attr_accessor :config_path
+
+      def initialize(new_resource, run_context)
+        super(new_resource, run_context)
+        @config_template = nil
+        @config_path = nil
+      end
+
       def whyrun_supported?
         true
       end
@@ -67,7 +76,7 @@ class Chef
               @interface = @interfaces.fetch(@new_resource.device)
 
               @current_resource.target(@new_resource.target)
-              @current_resource.device(@int_name)
+              @current_resource.device(@new_resource.device)
               @current_resource.inet_addr(@interface["inet_addr"])
               @current_resource.hwaddr(@interface["hwaddr"])
               @current_resource.bcast(@interface["bcast"])
@@ -93,40 +102,32 @@ class Chef
       def action_add
         # check to see if load_current_resource found interface in ifconfig
         unless @current_resource.inet_addr
-          unless @new_resource.device == "lo"
-            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
-          end
-          converge_by ("run #{command} to add #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} added")
+          unless @new_resource.device == loopback_device
+            command = add_command
+            converge_by ("run #{command} to add #{@new_resource}") do
+              run_command(
+                :command => command
+              )
+              Chef::Log.info("#{@new_resource} added")
+              # Write out the config files
+              generate_config
+            end
           end
         end
-
-        # Write out the config files
-        generate_config
       end
 
       def action_enable
         # check to see if load_current_resource found ifconfig
         # enables, but does not manage config files
         unless @current_resource.inet_addr
-          unless @new_resource.device == "lo"
-            command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
-            command << " netmask #{@new_resource.mask}" if @new_resource.mask
-            command << " metric #{@new_resource.metric}" if @new_resource.metric
-            command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
-          end
-
-          converge_by ("run #{command} to enable #{@new_resource}") do
-            run_command(
-              :command => command
-            )
-            Chef::Log.info("#{@new_resource} enabled")
+          unless @new_resource.device == loopback_device
+            command = enable_command
+            converge_by ("run #{command} to enable #{@new_resource}") do
+              run_command(
+                :command => command
+              )
+              Chef::Log.info("#{@new_resource} enabled")
+            end
           end
         end
       end
@@ -134,7 +135,7 @@ class Chef
       def action_delete
         # check to see if load_current_resource found the interface
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+          command = delete_command
           converge_by ("run #{command} to delete #{@new_resource}") do
             run_command(
               :command => command
@@ -151,7 +152,7 @@ class Chef
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
         if @current_resource.device
-          command = "ifconfig #{@new_resource.device} down"
+          command = disable_command
           converge_by ("run #{command} to disable #{@new_resource}") do
             run_command(
               :command => command
@@ -163,52 +164,61 @@ class Chef
         end
       end
 
+      def can_generate_config?
+        ! @config_template.nil? and ! @config_path.nil?
+      end
+
       def generate_config
+        return unless can_generate_config?
         b = binding
-        case node[:platform]
-        when "centos","redhat","fedora"
-          content = %{
-<% if @new_resource.device %>DEVICE=<%= @new_resource.device %><% end %>
-<% if @new_resource.onboot %>ONBOOT=<%= @new_resource.onboot %><% end %>
-<% if @new_resource.bootproto %>BOOTPROTO=<%= @new_resource.bootproto %><% end %>
-<% if @new_resource.target %>IPADDR=<%= @new_resource.target %><% end %>
-<% if @new_resource.mask %>NETMASK=<%= @new_resource.mask %><% end %>
-<% if @new_resource.network %>NETWORK=<%= @new_resource.network %><% end %>
-<% if @new_resource.bcast %>BROADCAST=<%= @new_resource.bcast %><% end %>
-<% if @new_resource.onparent %>ONPARENT=<%= @new_resource.onparent %><% end %>
-          }
-          template = ::ERB.new(content)
-          network_file_name = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          converge_by ("generate configuration file : #{network_file_name}") do
-            network_file = ::File.new(network_file_name, "w")
-            network_file.puts(template.result(b))
-            network_file.close
-          end
-          Chef::Log.info("#{@new_resource} created configuration file")
-        when "debian","ubuntu"
-          # template
-        when "slackware"
-          # template
+        template = ::ERB.new(@config_template)
+        converge_by ("generate configuration file : #{@config_path}") do
+          network_file = ::File.new(@config_path, "w")
+          network_file.puts(template.result(b))
+          network_file.close
         end
+        Chef::Log.info("#{@new_resource} created configuration file")
       end
 
       def delete_config
+        return unless can_generate_config?
         require 'fileutils'
-        case node[:platform]
-        when "centos","redhat","fedora"
-          ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"
-          if ::File.exist?(ifcfg_file)
-            converge_by ("delete the #{ifcfg_file}") do
-              FileUtils.rm_f(ifcfg_file, :verbose => false)
-            end
+        if ::File.exist?(@config_path)
+          converge_by ("delete the #{@config_path}") do
+            FileUtils.rm_f(@config_path, :verbose => false)
           end
-        when "debian","ubuntu"
-          # delete configs
-        when "slackware"
-          # delete configs
         end
+        Chef::Log.info("#{@new_resource} deleted configuration file")
       end
 
+      private
+      def add_command
+        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command << " netmask #{@new_resource.mask}" if @new_resource.mask
+        command << " metric #{@new_resource.metric}" if @new_resource.metric
+        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command
+      end
+
+      def enable_command
+        command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
+        command << " netmask #{@new_resource.mask}" if @new_resource.mask
+        command << " metric #{@new_resource.metric}" if @new_resource.metric
+        command << " mtu #{@new_resource.mtu}" if @new_resource.mtu
+        command
+      end
+
+      def disable_command
+        "ifconfig #{@new_resource.device} down"
+      end
+
+      def delete_command
+        "ifconfig #{@new_resource.device} down"
+      end
+  
+      def loopback_device
+        'lo'
+      end
     end
   end
 end

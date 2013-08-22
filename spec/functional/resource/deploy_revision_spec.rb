@@ -30,6 +30,7 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
   let(:observe_order_file) { Tempfile.new("deploy-resource-observe-operations") }
 
   before do
+    Chef::Log.level = :info
     @old_file_cache_path = Chef::Config[:file_cache_path]
     Chef::Config[:file_cache_path] = file_cache_path
   end
@@ -276,6 +277,11 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
       it "is marked updated" do
         deploy_to_previous_rev.should be_updated_by_last_action
       end
+
+      it "leaves the old copy of the app around for rollback" do
+        File.should exist(File.join(deploy_directory, "releases", previous_rev))
+      end
+
     end
 
     describe "back to a previously deployed revision (implicit rollback)" do
@@ -509,6 +515,180 @@ describe Chef::Resource::DeployRevision, :unix_only => true do
     it "should not raise an exception calling File.utime on symlinks" do
       lambda { deploy_with_in_repo_symlinks.run_action(:deploy) }.should_not raise_error
     end
+  end
+
+  context "when a previously deployed application has been nuked" do
+
+    shared_examples_for "a redeployed application" do
+
+      it "should redeploy the application" do
+        File.should be_directory(rel_path("releases"))
+        File.should be_directory(rel_path("shared"))
+        File.should be_directory(rel_path("releases/#{latest_rev}"))
+
+        File.should be_directory(rel_path("current/tmp"))
+        File.should be_directory(rel_path("current/config"))
+        File.should be_directory(rel_path("current/public"))
+
+        File.should be_symlink(rel_path("current"))
+        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+      end
+    end
+
+    # background: If a deployment is hosed and the user decides to rm -rf the
+    # deployment dir, deploy resource should detect that and nullify its cache.
+
+    context "by removing the entire deploy directory" do
+
+      before do
+        deploy_to_latest_rev.dup.run_action(:deploy)
+        FileUtils.rm_rf(deploy_directory)
+        deploy_to_latest_rev.dup.run_action(:deploy)
+      end
+
+      include_examples "a redeployed application"
+
+    end
+
+    context "by removing the current/ directory" do
+
+      before do
+        deploy_to_latest_rev.dup.run_action(:deploy)
+        FileUtils.rm(rel_path("current"))
+        deploy_to_latest_rev.dup.run_action(:deploy)
+      end
+
+      include_examples "a redeployed application"
+
+    end
+  end
+
+  context "when a deployment fails" do
+
+    shared_examples_for "a recovered deployment" do
+
+      it "should redeploy the application" do
+        File.should be_directory(rel_path("releases"))
+        File.should be_directory(rel_path("shared"))
+        File.should be_directory(rel_path("releases/#{latest_rev}"))
+
+        File.should be_directory(rel_path("current/tmp"))
+        File.should be_directory(rel_path("current/config"))
+        File.should be_directory(rel_path("current/public"))
+
+        File.should be_symlink(rel_path("current"))
+        File.readlink(rel_path("current")).should == rel_path("releases/#{latest_rev}")
+
+        # if callbacks ran, we know the app was deployed and not merely rolled
+        # back to a (busted) prior deployment.
+        callback_order.should == [:before_migrate,
+                                  :before_symlink,
+                                  :before_restart,
+                                  :after_restart ]
+      end
+    end
+
+    let!(:callback_order) { [] }
+
+    let(:deploy_to_latest_with_callback_tracking) do
+      resource = deploy_to_latest_rev.dup
+      tracker = callback_order
+      resource.before_migrate { tracker << :before_migrate }
+      resource.before_symlink { tracker << :before_symlink }
+      resource.before_restart { tracker << :before_restart }
+      resource.after_restart  { tracker << :after_restart }
+      resource
+    end
+
+    [:before_migrate, :before_symlink, :before_restart, :after_restart].each do |callback|
+
+      context "in the `#{callback}' callback" do
+        before do
+          lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Exception, %r{I am a failed deploy})
+          deploy_to_latest_with_callback_tracking.run_action(:deploy)
+        end
+
+
+        let(:deploy_that_fails) do
+          resource = deploy_to_latest_rev.dup
+          errant_callback = lambda {|x| raise Exception, "I am a failed deploy" }
+          resource.send(callback, &errant_callback)
+          resource
+        end
+
+        include_examples "a recovered deployment"
+
+      end
+
+    end
+
+    context "in the service restart step" do
+
+      let(:deploy_that_fails) do
+        resource = deploy_to_latest_rev.dup
+        resource.restart_command("RUBYOPT=\"\" ruby -e 'exit 1'")
+        resource
+      end
+
+      before do
+        lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Chef::Exceptions::Exec)
+        deploy_to_latest_with_callback_tracking.run_action(:deploy)
+      end
+
+      include_examples "a recovered deployment"
+    end
+
+    context "when cloning the app code" do
+
+      class BadTimeScmProvider
+        def initialize(new_resource, run_context)
+        end
+
+        def load_current_resource
+        end
+
+        def revision_slug
+          "5"
+        end
+
+        def run_action(action)
+          raise RuntimeError, "network error"
+        end
+      end
+
+      let(:deploy_that_fails) do
+        resource = deploy_to_latest_rev.dup
+        resource.scm_provider(BadTimeScmProvider)
+        resource
+      end
+
+      before do
+        lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(RuntimeError, /network error/)
+        deploy_to_latest_with_callback_tracking.run_action(:deploy)
+      end
+
+      include_examples "a recovered deployment"
+    end
+
+    context "and then is deployed to a different revision" do
+
+      let(:deploy_that_fails) do
+        resource = deploy_to_previous_rev.dup
+        resource.after_restart {|x| raise Exception, "I am a failed deploy" }
+        resource
+      end
+
+      before do
+        lambda { deploy_that_fails.run_action(:deploy) }.should raise_error(Exception, %r{I am a failed deploy})
+        deploy_to_latest_rev.run_action(:deploy)
+      end
+
+      it "removes the unsuccessful deploy after a later successful deploy" do
+        ::File.should_not exist(File.join(deploy_directory, "releases", previous_rev))
+      end
+
+    end
+
   end
 end
 

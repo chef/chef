@@ -16,52 +16,74 @@
 # limitations under the License.
 #
 
-require 'chef/chef_fs/file_system/chef_server_root_dir'
-require 'chef/chef_fs/file_system/chef_repository_file_system_root_dir'
-require 'chef/chef_fs/file_pattern'
-require 'chef/chef_fs/path_utils'
-require 'chef/config'
+require 'chef/knife'
 
 class Chef
   module ChefFS
     class Knife < Chef::Knife
-      def self.common_options
-        option :repo_mode,
-          :long => '--repo-mode MODE',
-          :default => "default",
-          :description => "Specifies the local repository layout.  Values: default or full"
+      # Workaround for CHEF-3932
+      def self.deps
+        super do
+          require 'chef/config'
+          require 'chef/chef_fs/parallelizer'
+          require 'chef/chef_fs/config'
+          require 'chef/chef_fs/file_pattern'
+          require 'chef/chef_fs/path_utils'
+          yield
+        end
       end
 
-      def base_path
-        @base_path ||= begin
-          relative_to_base = Chef::ChefFS::PathUtils::relative_to(File.expand_path(Dir.pwd), chef_repo)
-          relative_to_base == '.' ? '/' : "/#{relative_to_base}"
+      def self.inherited(c)
+        super
+        # Ensure we always get to do our includes, whether subclass calls deps or not
+        c.deps do
         end
+
+        option :repo_mode,
+          :long => '--repo-mode MODE',
+          :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
+
+        option :chef_repo_path,
+          :long => '--chef-repo-path PATH',
+          :description => 'Overrides the location of chef repo. Default is specified by chef_repo_path in the config'
+
+        option :concurrency,
+          :long => '--concurrency THREADS',
+          :description => 'Maximum number of simultaneous requests to send (default: 10)'
+      end
+
+      def configure_chef
+        super
+        Chef::Config[:repo_mode] = config[:repo_mode] if config[:repo_mode]
+        Chef::Config[:concurrency] = config[:concurrency].to_i if config[:concurrency]
+
+        # --chef-repo-path overrides all other paths
+        if config[:chef_repo_path]
+          Chef::Config[:chef_repo_path] = config[:chef_repo_path]
+          Chef::ChefFS::Config::PATH_VARIABLES.each do |variable_name|
+            Chef::Config[variable_name.to_sym] = chef_repo_paths.map { |path| File.join(path, "#{variable_name[0..-6]}s") }
+          end
+        end
+
+        @chef_fs_config = Chef::ChefFS::Config.new(Chef::Config)
+
+        Chef::ChefFS::Parallelizer.threads = (Chef::Config[:concurrency] || 10) - 1
       end
 
       def chef_fs
-        @chef_fs ||= Chef::ChefFS::FileSystem::ChefServerRootDir.new("remote", Chef::Config, config[:repo_mode])
+        @chef_fs_config.chef_fs
       end
 
-      def chef_repo
-        @chef_repo ||= File.expand_path(File.join(Chef::Config.cookbook_path, ".."))
-      end
-
-      def format_path(path)
-        if path[0,base_path.length] == base_path
-          if path == base_path
-            return "."
-          elsif path[base_path.length] == "/"
-            return path[base_path.length + 1, path.length - base_path.length - 1]
-          elsif base_path == "/" && path[0] == "/"
-            return path[1, path.length - 1]
-          end
-        end
-        path
+      def create_chef_fs
+        @chef_fs_config.create_chef_fs
       end
 
       def local_fs
-        @local_fs ||= Chef::ChefFS::FileSystem::ChefRepositoryFileSystemRootDir.new(chef_repo)
+        @chef_fs_config.local_fs
+      end
+
+      def create_local_fs
+        @chef_fs_config.create_local_fs
       end
 
       def pattern_args
@@ -69,9 +91,26 @@ class Chef
       end
 
       def pattern_args_from(args)
-        args.map { |arg| Chef::ChefFS::FilePattern::relative_to(base_path, arg) }.to_a
+        # TODO support absolute file paths and not just patterns?  Too much?
+        # Could be super useful in a world with multiple repo paths
+        args.map do |arg|
+          if !@chef_fs_config.base_path && !Chef::ChefFS::PathUtils.is_absolute?(arg)
+            # Check if chef repo path is specified to give a better error message
+            @chef_fs_config.require_chef_repo_path
+            ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
+            exit(1)
+          end
+          Chef::ChefFS::FilePattern.relative_to(@chef_fs_config.base_path, arg)
+        end
       end
 
+      def format_path(entry)
+        @chef_fs_config.format_path(entry)
+      end
+
+      def parallelize(inputs, options = {}, &block)
+        Chef::ChefFS::Parallelizer.parallelize(inputs, options, &block)
+      end
     end
   end
 end

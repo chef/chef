@@ -41,7 +41,7 @@ class Chef
           version=''
           oud_version=''
           Chef::Log.debug("#{@new_resource} checking zypper")
-          status = popen4("zypper info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
+          status = popen4("zypper --non-interactive info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
               when /^Version: (.+)$/

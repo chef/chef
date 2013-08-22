@@ -19,12 +19,17 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 require 'tmpdir'
+require 'shellwords'
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
 describe Chef::Resource::Git do
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
-  let(:deploy_directory) { Dir.mktmpdir }
+  # Some versions of git complains when the deploy directory is
+  # already created. Here we intentionally don't create the deploy
+  # directory beforehand.
+  let(:base_dir_path) { Dir.mktmpdir }
+  let(:deploy_directory) { File.join(base_dir_path, make_tmpname("git_base")) }
 
   let(:node) do
     Chef::Node.new.tap do |n|
@@ -59,9 +64,19 @@ describe Chef::Resource::Git do
   let(:rev_testing) { "972d153654503bccec29f630c5dd369854a561e8" }
   let(:rev_head) { "d294fbfd05aa7709ad9a9b8ef6343b17d355bf5f"}
 
+  let(:git_user_config) do
+    <<-E
+[user]
+  name = frodoTbaggins
+  email = frodo@shire.org
+E
+  end
+
   before(:each) do
+    Chef::Log.level = :warn # silence git command live streams
     @old_file_cache_path = Chef::Config[:file_cache_path]
-    shell_out!("git clone #{git_bundle_repo} example", :cwd => origin_repo_dir)
+    shell_out!("git clone \"#{git_bundle_repo}\" example", :cwd => origin_repo_dir)
+    File.open("#{origin_repo}/.git/config", "a+") {|f| f.print(git_user_config) }
     Chef::Config[:file_cache_path] = file_cache_path
   end
 
@@ -78,6 +93,21 @@ describe Chef::Resource::Git do
   before(:all) do
     @ohai = Ohai::System.new
     @ohai.require_plugin("os")
+  end
+
+  context "working with pathes with special characters" do
+    let(:path_with_spaces) { "#{origin_repo_dir}/path with spaces" }
+
+    before(:each) do
+      FileUtils.mkdir(path_with_spaces)
+      FileUtils.cp(git_bundle_repo, path_with_spaces)
+    end
+
+    it "clones a repository with a space in the path" do
+      Chef::Resource::Git.new(deploy_directory, run_context).tap do |r|
+        r.repository "#{path_with_spaces}/example-repo.gitbundle"
+      end.run_action(:sync)
+    end
   end
 
   context "when deploying from an annotated tag" do

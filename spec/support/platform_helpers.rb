@@ -1,3 +1,17 @@
+require 'fcntl'
+
+def ruby_gte_20?
+  RUBY_VERSION.to_f >= 2.0
+end
+
+def ruby_gte_19?
+  RUBY_VERSION.to_f >= 1.9
+end
+
+def ruby_20?
+  !!(RUBY_VERSION =~ /^2.0/)
+end
+
 def ruby_19?
   !!(RUBY_VERSION =~ /^1.9/)
 end
@@ -46,4 +60,34 @@ def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
 end
 
+def aix?
+  !!(RUBY_PLATFORM =~ /aix/)
+end
+
+def supports_cloexec?
+  Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+end
+
 DEV_NULL = windows? ? 'NUL' : '/dev/null'
+
+def selinux_enabled?
+  # This code is currently copied from lib/chef/util/selinux to make
+  # specs independent of product.
+  selinuxenabled_path = which("selinuxenabled")
+  if selinuxenabled_path
+    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0,1])
+    cmd_result = cmd.run_command
+    case cmd_result.exitstatus
+    when 1
+      return false
+    when 0
+      return true
+    else
+      raise RuntimeError, "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
+    end
+  else
+    # We assume selinux is not enabled if selinux utils are not
+    # installed.
+    return false
+  end
+end

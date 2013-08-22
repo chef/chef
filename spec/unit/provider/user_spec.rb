@@ -261,7 +261,7 @@ describe Chef::Provider::User do
       @provider.action_create
     end
 
-    it "should set the the new_resources updated flag when it creates the user if we call manage_user" do
+    it "should set the new_resources updated flag when it creates the user if we call manage_user" do
       @provider.user_exists = true
       @provider.stub!(:compare_user).and_return(true)
       @provider.stub!(:manage_user).and_return(true)

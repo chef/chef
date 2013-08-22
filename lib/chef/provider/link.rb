@@ -112,20 +112,27 @@ class Chef
         end
         if @new_resource.link_type == :symbolic
           if access_controls.requires_changes?
-            converge_by(access_controls.describe_changes) do 
+            converge_by(access_controls.describe_changes) do
               access_controls.set_all
             end
           end
-       end
+        end
       end
 
       def action_delete
         if @current_resource.to # Exists
-          converge_by ("delete link at #{@new_resource.target_file}") do
+          converge_by("delete link at #{@new_resource.target_file}") do
             ::File.delete(@new_resource.target_file)
             Chef::Log.info("#{@new_resource} deleted")
           end
         end
+      end
+
+      # Implementation components *should not* follow symlinks when managing
+      # access control (e.g., use lchmod instead of chmod) if the resource is a
+      # symlink.
+      def manage_symlink_access?
+        @new_resource.link_type == :symbolic
       end
     end
   end

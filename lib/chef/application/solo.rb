@@ -160,6 +160,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :environment,
+    :short        => '-E ENVIRONMENT',
+    :long         => '--environment ENVIRONMENT',
+    :description  => 'Set the Chef Environment on the node'
+
   attr_reader :chef_solo_json
 
   def initialize
@@ -215,7 +220,7 @@ class Chef::Application::Solo < Chef::Application
           f.write(r.read)
         end
       end
-      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
+      Chef::Mixin::Command.run_command(:command => "tar zxvf #{path} -C #{recipes_path}")
     end
   end
 
@@ -253,7 +258,6 @@ class Chef::Application::Solo < Chef::Application
           sleep Chef::Config[:interval]
           retry
         else
-          Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       end

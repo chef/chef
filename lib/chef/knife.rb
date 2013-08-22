@@ -150,7 +150,7 @@ class Chef
       commands_to_show.sort.each do |category, commands|
         next if category =~ /deprecated/i
         msg "** #{category.upcase} COMMANDS **"
-        commands.each do |command|
+        commands.sort.each do |command|
           msg subcommands[command].banner if subcommands[command]
         end
         msg

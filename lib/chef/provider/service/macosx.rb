@@ -24,11 +24,17 @@ class Chef
       class Macosx < Chef::Provider::Service::Simple
         include Chef::Mixin::ShellOut
 
-        PLIST_DIRS = %w{~/Library/LaunchAgents
-                         /Library/LaunchAgents
+        def self.gather_plist_dirs
+          locations = %w{/Library/LaunchAgents
                          /Library/LaunchDaemons
                          /System/Library/LaunchAgents
                          /System/Library/LaunchDaemons }
+
+          locations << "#{ENV['HOME']}/Library/LaunchAgents" if ENV['HOME']
+          locations
+        end
+
+        PLIST_DIRS = gather_plist_dirs
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
@@ -42,28 +48,28 @@ class Chef
 
         def define_resource_requirements
           #super
-          requirements.assert(:enable) do |a| 
+          requirements.assert(:enable) do |a|
             a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :enable"
           end
 
-          requirements.assert(:disable) do |a| 
+          requirements.assert(:disable) do |a|
             a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :disable"
           end
 
-          requirements.assert(:reload) do |a| 
+          requirements.assert(:reload) do |a|
             a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
           end
 
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { @plist_size < 2 } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @plist_size < 2 }
             a.failure_message Chef::Exceptions::Service, "Several plist files match service name. Please use full service name."
           end
 
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { @plist_size > 0 } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @plist_size > 0 }
             # No failrue here in original code - so we also will not
             # fail. Instead warn that the service is potentially missing
-            a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do 
+            a.whyrun "Assuming that the service would have been previously installed and is currently disabled." do
               @current_resource.enabled(false)
               @current_resource.running(false)
             end

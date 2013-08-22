@@ -24,12 +24,14 @@ class Chef
   module ChefFS
     module FileSystem
       class RestListDir < BaseFSDir
-        def initialize(name, parent, api_path = nil)
+        def initialize(name, parent, api_path = nil, data_handler = nil)
           super(name, parent)
           @api_path = api_path || (parent.api_path == "" ? name : "#{parent.api_path}/#{name}")
+          @data_handler = data_handler
         end
 
         attr_reader :api_path
+        attr_reader :data_handler
 
         def child(name)
           result = @children.select { |child| child.name == name }.first if @children
@@ -43,28 +45,55 @@ class Chef
 
         def children
           begin
-            @children ||= rest.get_rest(api_path).keys.map do |key|
+            @children ||= Chef::ChefFS::RawRequest.raw_json(rest, api_path).keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
-          rescue Net::HTTPServerException
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "Timeout retrieving children: #{e}"
+          rescue Net::HTTPServerException => e
             if $!.response.code == "404"
-              raise Chef::ChefFS::FileSystem::NotFoundError.new($!), "#{path_for_printing} not found"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
             else
-              raise
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e), "HTTP error retrieving children: #{e}"
             end
           end
         end
 
-        # NOTE if you change this significantly, you will likely need to change
-        # DataBagDir.create_child as well.
         def create_child(name, file_contents)
-          json = Chef::JSONCompat.from_json(file_contents).to_hash
-          base_name = name[0,name.length-5]
-          if json.include?('name') && json['name'] != base_name
-            raise "Name in #{path_for_printing}/#{name} must be '#{base_name}' (is '#{json['name']}')"
+          begin
+            object = JSON.parse(file_contents, :create_additions => false)
+          rescue JSON::ParserError => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Parse error reading JSON creating child '#{name}': #{e}"
           end
-          rest.post_rest(api_path, json)
-          _make_child_entry(name, true)
+
+          result = _make_child_entry(name, true)
+
+          if data_handler
+            object = data_handler.normalize_for_post(object, result)
+            data_handler.verify_integrity(object, result) do |error|
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self), "Error creating '#{name}': #{error}"
+            end
+          end
+
+          begin
+            rest.post_rest(api_path, object)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Timeout creating '#{name}': #{e}"
+          rescue Net::HTTPServerException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            elsif $!.response.code == "409"
+              raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self, e), "Failure creating '#{name}': #{path}/#{name} already exists"
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Failure creating '#{name}': #{e.message}"
+            end
+          end
+
+          result
+        end
+
+        def org
+          parent.org
         end
 
         def environment

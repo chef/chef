@@ -99,7 +99,6 @@ class Chef
               Chef::Log.error("#{e.class}: #{e}")
             rescue Exception => e
               Chef::Log.error("#{e.class}: #{e}")
-              Chef::Application.debug_stacktrace(e)
             end
           end
         end
@@ -242,7 +241,7 @@ class Chef
       def configure_chef(startup_parameters)
         # Bit of a hack ahead:
         # It is possible to specify a service's binary_path_name with arguments, like "foo.exe -x argX".
-        # It is also possible to specify startup parameters separately, either via the the Services manager
+        # It is also possible to specify startup parameters separately, either via the Services manager
         # or by using the registry (I think).
 
         # In order to accommodate all possible sources of parameterization, we first parse any command line

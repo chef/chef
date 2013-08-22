@@ -1,5 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright (c) 2008 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -17,6 +18,7 @@
 #
 
 require 'spec_helper'
+require 'chef/exceptions'
 
 describe Chef::Config do
   before(:all) do
@@ -208,6 +210,16 @@ describe Chef::Config do
         Chef::Config.platform_specific_path("/var/chef/data_bags")
       Chef::Config[:data_bag_path].should == data_bag_path
     end
+
+    it "Chef::Config[:environment_path] defaults to /var/chef/environments" do
+      environment_path = if windows?
+        "C:\\chef\\environments"
+      else
+        "/var/chef/environments"
+      end
+
+      Chef::Config[:environment_path].should == environment_path
+    end
   end
 
   describe "Chef::Config[:user_home]" do
@@ -257,6 +269,13 @@ describe Chef::Config do
       it "sets the value to nil" do
         Chef::Config[:encrypted_data_bag_secret].should be_nil
       end
+    end
+  end
+
+  describe "Chef::Config[:log_location]" do
+    it "raises ConfigurationError when log_location directory is missing" do
+      missing_path = "/tmp/non-existing-dir/file"
+      expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
   end
 

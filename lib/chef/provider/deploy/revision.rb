@@ -32,6 +32,25 @@ class Chef
           sorted_releases
         end
 
+        def action_deploy
+          validate_release_history!
+          super
+        end
+
+        def cleanup!
+          super
+
+          known_releases = sorted_releases
+
+          Dir["#{new_resource.deploy_to}/releases/*"].each do |release_dir|
+            unless known_releases.include?(release_dir)
+              converge_by("Remove unknown release in #{release_dir}") do
+                FileUtils.rm_rf(release_dir)
+              end
+            end
+          end
+        end
+
         protected
 
         def release_created(release)
@@ -55,6 +74,14 @@ class Chef
             save_cache(cache)
           end
           cache
+        end
+
+        def validate_release_history!
+          sorted_releases do |release_list|
+            release_list.each do |path|
+              release_list.delete(path) unless ::File.exist?(path)
+            end
+          end
         end
 
         def sorted_releases_from_filesystem
