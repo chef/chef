@@ -113,7 +113,7 @@ class Chef
       # <false>:: If the users are identical
       def compare_user
         [ :uid, :gid, :comment, :home, :shell, :password ].any? do |user_attrib|
-          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
         end
       end
 
