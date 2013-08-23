@@ -124,7 +124,7 @@ class Chef
         end
 
         def update_options(field, option, opts)
-          if @current_resource.send(field) != new_resource.send(field)
+          if @current_resource.send(field).to_s != new_resource.send(field).to_s
             if new_resource.send(field)
               Chef::Log.debug("#{new_resource} setting #{field} to #{new_resource.send(field)}")
               opts << option << new_resource.send(field).to_s
