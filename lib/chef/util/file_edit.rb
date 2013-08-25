@@ -102,25 +102,32 @@ class Chef
         #loop through contents and do the appropriate operation depending on 'command' and 'method'
         new_contents = []
 
+        matched = false
+
         contents.each do |line|
           if line.match(exp)
-            self.file_edited = true
+            matched = true
             case
             when command == 'r'
               new_contents << ((method == 1) ? replace : line.gsub!(exp, replace))
+              self.file_edited = true
             when command == 'd'
               if method == 2
                 new_contents << line.gsub!(exp, "")
               end
+              self.file_edited = true
             when command == 'i'
               new_contents << line
-              new_contents << replace unless method == 2
+              unless method == 2
+                new_contents << replace
+                self.file_edited = true
+              end
             end
           else
             new_contents << line
           end
         end
-        if command == 'i' && method == 2 && ! file_edited
+        if command == 'i' && method == 2 && ! matched
           new_contents << replace
           self.file_edited = true
         end
