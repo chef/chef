@@ -54,6 +54,7 @@ describe Chef::Resource::User, metadata do
   end
 
   before do
+    pending "porting implementation for user provider in aix" if OHAI_SYSTEM[:platform] == 'aix'
     # Silence shell_out live stream
     Chef::Log.level = :warn
   end
