@@ -167,8 +167,16 @@ class Chef
         # We need to add the --no-fork, as by default it is set to fork=true.
         begin
           Chef::Log.info "Starting chef-client in a new process"
+          # Pass config params to the new process
+          config_params = " --no-fork"
+          config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
+          config_params += " -L #{Chef::Config[:log_location].path}" unless Chef::Config[:log_location] == STDOUT
+          config_params += " -l #{Chef::Config[:log_level]}" unless  Chef::Config[:log_level].nil?
+          config_params += " -S #{Chef::Config[:chef_server_url]}" unless  Chef::Config[:chef_server_url].nil?
+          config_params += " --force-formatter" if Chef::Config[:force_formatter]
+          config_params += " --force-logger" if Chef::Config[:force_logger]
           # Starts a new process and waits till the process exits
-          result = shell_out("chef-client --no-fork -c #{Chef::Config[:config_file]} -L #{Chef::Config[:log_location]}")
+          result = shell_out("chef-client #{config_params}")
           # Once process exits, we log the following messages
           Chef::Log.info "Child process successfully reaped (pid: #{Process.pid})"
           # stdout is the std output of the child process
