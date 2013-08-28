@@ -147,7 +147,7 @@ class Chef
                  @action_nodes = q.search(:node, @name_args[0])[0]
                  @action_nodes.each do |item|
                    # we should skip the loop to next iteration if the item returned by the search is nil
-                   next if item.nil? 
+                   next if item.nil?
                    # if a command line attribute was not passed, and we have a cloud public_hostname, use that.
                    # see #configure_attribute for the source of config[:attribute] and config[:override_attribute]
                    if !config[:override_attribute] && item[:cloud] and item[:cloud][:public_hostname]
@@ -338,17 +338,39 @@ class Chef
         exec("screen -c #{tf.path}")
       end
 
-      def tmux
-        ssh_dest = lambda do |server|
+      def tmux_ssh_command(server)
           identity = "-i #{config[:identity_file]} " if config[:identity_file]
           prefix = server.user ? "#{server.user}@" : ""
           "'ssh #{identity}#{prefix}#{server.host}'"
-        end
+      end
 
+      def tmux_split
+        begin
+          tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
+          shell_out!("tmux new-session -d -s #{tmux_name} #{tmux_ssh_command(session.servers_for.first)}")
+          if session.servers_for.size > 1
+            session.servers_for[1..-1].map do |server|
+              tmuxcmd = "-t #{tmux_name} #{tmux_ssh_command(server)}"
+              cmd = shell_out("tmux split-window #{tmuxcmd} \\; select-layout tiled")
+              if cmd.exitstatus > 0
+                # failure to split-window means it was already split
+                # too many times - make a new window and continue.
+                shell_out!("tmux new-window #{tmuxcmd}")
+              end
+            end
+          end
+          # Attach the session and attempt to set active window back to the first window
+          # we created.  May not work, if the user has configured a non-default base-index for tmux
+          exec("tmux attach-session -t #{tmux_name} \\; select-window -t 0")
+        rescue Chef::Exceptions::Exec
+        end
+      end
+
+      def tmux
         new_window_cmds = lambda do
           if session.servers_for.size > 1
             [""] + session.servers_for[1..-1].map do |server|
-              "new-window -a -n '#{server.host}' #{ssh_dest.call(server)}"
+              "new-window -a -n '#{server.host}' #{tmux_ssh_command(server)}"
             end
           else
             []
@@ -359,7 +381,7 @@ class Chef
         begin
           server = session.servers_for.first
           cmd = ["tmux new-session -d -s #{tmux_name}",
-                 "-n '#{server.host}'", ssh_dest.call(server),
+                 "-n '#{server.host}'", tmux_ssh_command(server),
                  new_window_cmds.call].join(" ")
           shell_out!(cmd)
           exec("tmux attach-session -t #{tmux_name}")
@@ -397,7 +419,7 @@ class Chef
         # Thus we can differentiate between a config file value and a command line override at this point by checking config[:attribute]
         # We can tell here if fqdn was passed from the command line, rather than being the default, by checking config[:attribute]
         # However, after here, we cannot tell these things, so we must preserve config[:attribute]
-        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute] 
+        config[:override_attribute] = config[:attribute] || Chef::Config[:knife][:ssh_attribute]
         config[:attribute] = (Chef::Config[:knife][:ssh_attribute] ||
                               config[:attribute] ||
                               "fqdn").strip
@@ -458,6 +480,8 @@ class Chef
           interactive
         when "screen"
           screen
+        when "tmux-split"
+          tmux_split
         when "tmux"
           tmux
         when "macterm"
