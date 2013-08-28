@@ -50,6 +50,14 @@ class Chef
       configuration.inspect
     end
 
+    def self.platform_path_separator
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        File::ALT_SEPARATOR || '\\'
+      else
+        File::SEPARATOR
+      end
+    end
+
     def self.platform_specific_path(path)
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
@@ -112,6 +120,57 @@ class Chef
       end
     end
 
+    # This will also cause role_path, data_bag_path, environment_path, etc. to get values
+    config_attr_default :chef_repo_path do
+      if self.configuration[:cookbook_path]
+        if self.configuration[:cookbook_path].respond_to?(:map)
+          self.configuration[:cookbook_path].map do |path|
+            File.expand_path('..', path)
+          end
+        else
+          File.expand_path('..', self.configuration[:cookbook_path])
+        end
+      else
+        platform_specific_path("/var/chef")
+      end
+    end
+
+    def self._derive_path_from_chef_repo_path(child_path)
+      if chef_repo_path.respond_to?(:map)
+        chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
+      else
+        "#{chef_repo_path}#{platform_path_separator}#{child_path}"
+      end
+    end
+
+    config_attr_default(:acl_path) { _derive_path_from_chef_repo_path('acls') }
+
+    config_attr_default(:client_path) { _derive_path_from_chef_repo_path('clients') }
+
+    config_attr_default(:cookbook_path) do
+      if self.configuration[:chef_repo_path]
+        _derive_path_from_chef_repo_path('cookbooks')
+      else
+        # If nothing else is specified, we are [ /var/chef/cookbooks, /var/chef/site-cookbooks ]
+        Array(_derive_path_from_chef_repo_path('cookbooks')).flatten + 
+          Array(_derive_path_from_chef_repo_path('site-cookbooks')).flatten
+      end
+    end
+
+    config_attr_default(:container_path) { _derive_path_from_chef_repo_path('containers') }
+
+    config_attr_default(:data_bag_path) { _derive_path_from_chef_repo_path('data_bags') }
+
+    config_attr_default(:environment_path) { _derive_path_from_chef_repo_path('environments') }
+
+    config_attr_default(:group_path) { _derive_path_from_chef_repo_path('groups') }
+
+    config_attr_default(:node_path) { _derive_path_from_chef_repo_path('nodes') }
+
+    config_attr_default(:role_path) { _derive_path_from_chef_repo_path('roles') }
+
+    config_attr_default(:user_path) { _derive_path_from_chef_repo_path('users') }
+
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     enforce_path_sanity(true)
 
@@ -121,19 +180,17 @@ class Chef
     # The number of times the client should retry when registering with the server
     client_registration_retries 5
 
-    # Where the cookbooks are located. Meaning is somewhat context dependent between
-    # knife, chef-client, and chef-solo.
-    cookbook_path [ platform_specific_path("/var/chef/cookbooks"),
-                    platform_specific_path("/var/chef/site-cookbooks") ]
-
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     script_path []
 
     # Where cookbook files are stored on the server (by content checksum)
-    checksum_path "/var/chef/checksums"
+    checksum_path '/var/chef/checksums'
 
     # Where chef's cache files should be stored
-    file_cache_path platform_specific_path("/var/chef/cache")
+    file_cache_path '/var/chef/cache'
+
+    # Where backups of chef-managed files should go
+    file_backup_path '/var/chef/backup'
 
     # By default, chef-client (or solo) creates a lockfile in
     # `file_cache_path`/chef-client-running.pid
@@ -143,9 +200,6 @@ class Chef
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
     lockfile nil
-
-    # Where backups of chef-managed files should go
-    file_backup_path platform_specific_path("/var/chef/backup")
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -205,13 +259,6 @@ class Chef
     ssl_verify_mode :verify_none
     ssl_ca_path nil
     ssl_ca_file nil
-
-    # Where should chef-solo look for role files?
-    role_path platform_specific_path("/var/chef/roles")
-
-    data_bag_path platform_specific_path("/var/chef/data_bags")
-
-    environment_path platform_specific_path("/var/chef/environments")
 
     # Where should chef-solo download recipes from?
     recipe_url nil
@@ -302,7 +349,7 @@ class Chef
     syntax_check_cache_path nil
 
     # Deprecated:
-    cache_options({ :path => platform_specific_path("/var/chef/cache/checksums") })
+    cache_options({ :path => _derive_path_from_chef_repo_path("cache#{platform_path_separator}checksums") })
 
     # Set to false to silence Chef 11 deprecation warnings:
     chef11_deprecation_warnings true
