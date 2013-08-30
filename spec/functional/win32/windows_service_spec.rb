@@ -20,6 +20,13 @@ if Chef::Platform.windows?
   require 'chef/application/windows_service'
 end
 
+def get_pid(result)
+  result = result.split
+  result = result[result.length-1]
+  result = result.split(")")
+  result[0]
+end
+
 describe "Chef::Application::WindowsService", :windows_only do
   let (:instance) {Chef::Application::WindowsService.new}
   before do
@@ -27,6 +34,7 @@ describe "Chef::Application::WindowsService", :windows_only do
   end
   it "runs chef-client in new process" do
     pending "state/loop testing issue"
+    Chef::Config[:log_location] = "test1.log"
     instance.should_receive(:configure_chef).twice
     instance.service_init
     (instance.instance_variable_get(:@service_signal)).stub(:wait)
@@ -34,5 +42,11 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.should_receive(:run_chef_client).and_call_original
     instance.should_receive(:shell_out).and_call_original
     instance.service_main
+    result1 = shell_out("grep 'Chef-client pid:' test1.log")
+    result2 = shell_out("grep 'Child process successfully reaped' test1.log")
+    pid_child = get_pid(result1.stdout)
+    pid_parent = get_pid(result2.stdout)
+    shell_out("rm test1.log")
+    pid_child.should_not == pid_parent
   end
 end
