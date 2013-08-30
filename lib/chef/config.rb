@@ -116,12 +116,16 @@ class Chef
         rescue Errno::ENOENT
           raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
-          f
+        f
       end
     end
 
-    # This will also cause role_path, data_bag_path, environment_path, etc. to get values
-    config_attr_default :chef_repo_path do
+    # The root where all local chef object data is stored.  cookbooks, data bags,
+    # environments are all assumed to be in separate directories under this.
+    # chef-solo uses these directories for input data.  knife commands
+    # that upload or download files (such as knife upload, knife role from file,
+    # etc.) work.
+    default :chef_repo_path do
       if self.configuration[:cookbook_path]
         if self.configuration[:cookbook_path].respond_to?(:map)
           self.configuration[:cookbook_path].map do |path|
@@ -135,7 +139,7 @@ class Chef
       end
     end
 
-    def self._derive_path_from_chef_repo_path(child_path)
+    def self.derive_path_from_chef_repo_path(child_path)
       if chef_repo_path.respond_to?(:map)
         chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
       else
@@ -143,33 +147,57 @@ class Chef
       end
     end
 
-    config_attr_default(:acl_path) { _derive_path_from_chef_repo_path('acls') }
+    # Location of acls on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/acls.
+    # Only applies to Enterprise Chef commands.
+    default(:acl_path) { derive_path_from_chef_repo_path('acls') }
 
-    config_attr_default(:client_path) { _derive_path_from_chef_repo_path('clients') }
+    # Location of clients on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/acls.
+    default(:client_path) { derive_path_from_chef_repo_path('clients') }
 
-    config_attr_default(:cookbook_path) do
+    # Location of cookbooks on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
+    # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
+    default(:cookbook_path) do
       if self.configuration[:chef_repo_path]
-        _derive_path_from_chef_repo_path('cookbooks')
+        derive_path_from_chef_repo_path('cookbooks')
       else
-        # If nothing else is specified, we are [ /var/chef/cookbooks, /var/chef/site-cookbooks ]
-        Array(_derive_path_from_chef_repo_path('cookbooks')).flatten + 
-          Array(_derive_path_from_chef_repo_path('site-cookbooks')).flatten
+        Array(derive_path_from_chef_repo_path('cookbooks')).flatten + 
+          Array(derive_path_from_chef_repo_path('site-cookbooks')).flatten
       end
     end
 
-    config_attr_default(:container_path) { _derive_path_from_chef_repo_path('containers') }
+    # Location of containers on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/containers.
+    # Only applies to Enterprise Chef commands.
+    default(:container_path) { derive_path_from_chef_repo_path('containers') }
 
-    config_attr_default(:data_bag_path) { _derive_path_from_chef_repo_path('data_bags') }
+    # Location of data bags on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/data_bags.
+    default(:data_bag_path) { derive_path_from_chef_repo_path('data_bags') }
 
-    config_attr_default(:environment_path) { _derive_path_from_chef_repo_path('environments') }
+    # Location of environments on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/environments.
+    default(:environment_path) { derive_path_from_chef_repo_path('environments') }
 
-    config_attr_default(:group_path) { _derive_path_from_chef_repo_path('groups') }
+    # Location of groups on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/groups.
+    # Only applies to Enterprise Chef commands.
+    default(:group_path) { derive_path_from_chef_repo_path('groups') }
 
-    config_attr_default(:node_path) { _derive_path_from_chef_repo_path('nodes') }
+    # Location of nodes on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/nodes.
+    default(:node_path) { derive_path_from_chef_repo_path('nodes') }
 
-    config_attr_default(:role_path) { _derive_path_from_chef_repo_path('roles') }
+    # Location of roles on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/roles.
+    default(:role_path) { derive_path_from_chef_repo_path('roles') }
 
-    config_attr_default(:user_path) { _derive_path_from_chef_repo_path('users') }
+    # Location of users on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/users.
+    # Does not apply to Enterprise Chef commands.
+    default(:user_path) { derive_path_from_chef_repo_path('users') }
 
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     enforce_path_sanity(true)
@@ -349,7 +377,7 @@ class Chef
     syntax_check_cache_path nil
 
     # Deprecated:
-    cache_options({ :path => _derive_path_from_chef_repo_path("cache#{platform_path_separator}checksums") })
+    cache_options({ :path => platform_specific_path("/var/chef/cache/checksums") })
 
     # Set to false to silence Chef 11 deprecation warnings:
     chef11_deprecation_warnings true
