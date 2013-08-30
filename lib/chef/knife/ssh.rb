@@ -338,53 +338,92 @@ class Chef
         exec("screen -c #{tf.path}")
       end
 
-      def tmux_ssh_command(server)
+      def tmux_split(use_panes)
+        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
+        first_window_name = nil
+        tmux_ssh_command = lambda do |server|
           identity = "-i #{config[:identity_file]} " if config[:identity_file]
           prefix = server.user ? "#{server.user}@" : ""
           "'ssh #{identity}#{prefix}#{server.host}'"
-      end
+        end
 
-      def tmux_split
+        rename_window = lambda do |pane_start, pane_end|
+          if pane_start == pane_end
+            window_name = "'host #{pane_start}'"
+          else
+            window_name = "'hosts #{pane_start}-#{pane_end}'"
+          end
+          first_window_name ||= window_name
+          shell_out!("tmux rename-window -t #{tmux_name} #{window_name}")
+        end
+
         begin
-          tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
-          shell_out!("tmux new-session -d -s #{tmux_name} #{tmux_ssh_command(session.servers_for.first)}")
+          tmux_opts = Chef::Config[:knife][:ssh_tmux] || {}
+          # Default panes to use 'tiled' layout as this will allow for the highest
+          # number of panes per window
+          pane_layout = tmux_opts.fetch(:pane_layout, "tiled")
+          use_panes = use_panes || tmux_opts.fetch(:use_panes, false)
+          sync_panes = tmux_opts.fetch(:sync_panes, true)
+          sync_panes_keybind = tmux_opts.fetch(:sync_panes_key, "s")
+          sync_panes_state = sync_panes ? "on" : "off"
+
+          # Track the first window name - so we can get back to it.
+          # if we're using panes we'll have to figure out this name,
+          # since we will be renaming the window
+          first = session.servers_for.first
+          first_window_name = "'#{first.host}'" unless use_panes
+
+          command = []
+          # Create an initial session and start it with the first ssh request.
+          command << "tmux new-session -d -n '#{first.host}' -s #{tmux_name}  #{tmux_ssh_command.call(first)}"
+          # we'll set meaningful window names ourselves, don't let tmux try to figure it out.
+          command << "setw automatic-rename off"
+          command << "setw allow-rename off"
+          if use_panes
+            command << "setw synchronize-panes #{sync_panes_state}"
+            command << "bind-key #{sync_panes_keybind} set synchronize-panes"
+            # We will display an info message about the 's' key binding. Give the user time to see it.
+            # This also has the side effect of helping our final 'refresh-client' command to work correctly
+            # in clearing out artifacts that may result from rapid creation of a potentially large number of
+            # panes.
+            command << "set display-time 3000"
+          end
+          shell_out!(command.join(" \\; "))
           if session.servers_for.size > 1
+            pane_start = 1
+            pane_count = 1
             session.servers_for[1..-1].map do |server|
-              tmuxcmd = "-t #{tmux_name} #{tmux_ssh_command(server)}"
-              cmd = shell_out("tmux split-window #{tmuxcmd} \\; select-layout tiled")
-              if cmd.exitstatus > 0
-                # failure to split-window means it was already split
-                # too many times - make a new window and continue.
-                shell_out!("tmux new-window #{tmuxcmd}")
+              tmuxcmd = "-t #{tmux_name} #{tmux_ssh_command.call(server)}"
+              if use_panes
+                # Issuing a select-layout command after each split-window will force tmux
+                # to rebalance the panes - ensuring we can fit the maximum number of panes in
+                # each window.
+                response = shell_out("tmux split-window #{tmuxcmd} \\; select-layout #{pane_layout}")
+                if response.exitstatus > 0
+                  # failure to split-window means it was already split too many times. Set a meaninful name
+                  # for this window and then create a new one.
+                  rename_window.call(pane_start, pane_count)
+                  pane_start = pane_count + 1
+                  command = []
+                  command << "tmux new-window -t #{tmux_name} -n '#{server.host}' #{tmux_ssh_command.call(server)}"
+                  command << "setw synchronize-panes #{sync_panes_state}"
+                  shell_out!(command.join(" \\; "))
+                end
+                pane_count = pane_count + 1
+              else
+                # If we're not using panes, just add a new window for each session.
+                shell_out!("tmux new-window -t #{tmux_name} -n '#{server.host}' #{tmux_ssh_command.call(server)}")
               end
             end
           end
-          # Attach the session and attempt to set active window back to the first window
-          # we created.  May not work, if the user has configured a non-default base-index for tmux
-          exec("tmux attach-session -t #{tmux_name} \\; select-window -t 0")
-        rescue Chef::Exceptions::Exec
-        end
-      end
-
-      def tmux
-        new_window_cmds = lambda do
-          if session.servers_for.size > 1
-            [""] + session.servers_for[1..-1].map do |server|
-              "new-window -a -n '#{server.host}' #{tmux_ssh_command(server)}"
-            end
-          else
-            []
-          end.join(" \\; ")
-        end
-
-        tmux_name = "'knife ssh #{@name_args[0].gsub(/:/,'=')}'"
-        begin
-          server = session.servers_for.first
-          cmd = ["tmux new-session -d -s #{tmux_name}",
-                 "-n '#{server.host}'", tmux_ssh_command(server),
-                 new_window_cmds.call].join(" ")
-          shell_out!(cmd)
-          exec("tmux attach-session -t #{tmux_name}")
+          rename_window.call(pane_start, pane_count) if use_panes
+          command = []
+          command << "tmux attach-session -t #{tmux_name}"
+          command << "select-window -t #{first_window_name}"
+          command << "display-message 'use PREFIX + #{sync_panes_keybind} to toggle synchronized panes'" if use_panes
+          # Sometimes artifacts appeared in testing - this tends to clear them
+          command << "refresh-client"
+          exec(command.join(" \\; "))
         rescue Chef::Exceptions::Exec
         end
       end
@@ -481,9 +520,12 @@ class Chef
         when "screen"
           screen
         when "tmux-split"
-          tmux_split
+          # use tmux with split-windows enabled
+          tmux_split true
         when "tmux"
-          tmux
+          # use tmux with split-windows disabled unless otherwise specified
+          # in user's knife config
+          tmux_split false
         when "macterm"
           macterm
         when "cssh"
