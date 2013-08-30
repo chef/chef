@@ -69,6 +69,24 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 
 	end
 
+  describe "candidate_version" do
+    it "should return the candidate_version variable if already setup" do
+      @provider.candidate_version = "2.1.1"
+      @provider.should_not_receive(:shell_out!)
+      @provider.candidate_version
+    end
+
+    it "should lookup the candidate_version if the variable is not already set" do
+      search = mock()
+      search.should_receive(:each_line).
+        and_yield("something-varnish-1.1.1  something varnish like\n").
+        and_yield("varnish-2.3.4 actual varnish\n")
+      @shell_out = mock('shell_out!', :stdout => search)
+      @provider.should_receive(:shell_out!).with('/opt/local/bin/pkgin se varnish', :env => nil, :returns => [0,1]).and_return(@shell_out)
+      @provider.candidate_version.should == "2.3.4"
+    end
+  end
+
 	describe "when manipulating a resource" do
 	
 		it "run pkgin and install the package" do
