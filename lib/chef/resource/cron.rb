@@ -43,6 +43,7 @@ class Chef
         @path = nil
         @shell = nil
         @home = nil
+        @time = nil
         @environment = {}
       end
 
@@ -128,6 +129,14 @@ class Chef
           :weekday,
           converted_arg,
           :kind_of => String
+        )
+      end
+      
+      def time(arg=nil)
+        set_or_return(
+          :time,
+          arg,
+          :equal_to => Chef::Provider::Cron::SPECIAL_TIME_VALUES
         )
       end
 

@@ -25,10 +25,12 @@ class Chef
     class Cron < Chef::Provider
       include Chef::Mixin::Command
 
+      SPECIAL_TIME_VALUES = [:reboot, :yearly, :annually, :monthly, :weekly, :daily, :midnight, :hourly]
+      CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :time, :command, :mailto, :path, :shell, :home, :environment]
+      
       CRON_PATTERN = /\A([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+)\s([-0-9*,\/]+|[a-zA-Z]{3})\s([-0-9*,\/]+|[a-zA-Z]{3})\s(.*)/
+      SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/
       ENV_PATTERN = /\A(\S+)=(\S*)/
-
-      CRON_ATTRIBUTES = [:minute, :hour, :day, :month, :weekday, :command, :mailto, :path, :shell, :home, :environment]
 
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
@@ -58,6 +60,12 @@ class Chef
             when ENV_PATTERN
               set_environment_var($1, $2) if cron_found
               next
+            when SPECIAL_PATTERN
+              if cron_found
+                @current_resource.time($2.to_sym)
+                @current_resource.command($3)
+                cron_found=false
+              end
             when CRON_PATTERN
               if cron_found
                 @current_resource.minute($1)
@@ -220,7 +228,11 @@ class Chef
         @new_resource.environment.each do |name, value|
           newcron << "#{name}=#{value}\n"
         end
-        newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+        if @new_resource.time
+          newcron << "@#{@new_resource.time} #{@new_resource.command}\n"
+        else
+          newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday} #{@new_resource.command}\n"
+        end
         newcron
       end
     end
