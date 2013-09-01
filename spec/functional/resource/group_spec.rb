@@ -118,7 +118,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  context "group modify action", :buggy_platforms do
+  context "group modify action", :unsupported_group_provider_platform do
     before(:each) do
       @grp_resource.run_action(:create)
     end
@@ -184,7 +184,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
   end
 
-  context "group manage action", :unix_only, :buggy_platforms do
+  context "group manage action", :unix_only, :unsupported_group_provider_platform do
     before(:each) do
       @grp_resource.run_action(:create)
     end
