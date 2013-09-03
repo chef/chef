@@ -91,3 +91,7 @@ def selinux_enabled?
     return false
   end
 end
+
+def suse?
+  File.exists?("/etc/SuSE-release")
+end
