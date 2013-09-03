@@ -366,6 +366,7 @@ class Chef
           sync_panes = tmux_opts.fetch(:sync_panes, true)
           sync_panes_keybind = tmux_opts.fetch(:sync_panes_key, "s")
           sync_panes_state = sync_panes ? "on" : "off"
+          show_sync_message = tmux_opts.fetch(:show_sync_info_message, true)
 
           # Track the first window name - so we can get back to it.
           # if we're using panes we'll have to figure out this name,
@@ -382,11 +383,8 @@ class Chef
           if use_panes
             command << "setw synchronize-panes #{sync_panes_state}"
             command << "bind-key #{sync_panes_keybind} set synchronize-panes"
-            # We will display an info message about the 's' key binding. Give the user time to see it.
-            # This also has the side effect of helping our final 'refresh-client' command to work correctly
-            # in clearing out artifacts that may result from rapid creation of a potentially large number of
-            # panes.
-            command << "set display-time 3000"
+            # We may display an info message about the 's' key binding. Give the user time to see it.
+            command << "set display-time 3000" if show_sync_message
           end
           shell_out!(command.join(" \\; "))
           if session.servers_for.size > 1
@@ -420,9 +418,21 @@ class Chef
           command = []
           command << "tmux attach-session -t #{tmux_name}"
           command << "select-window -t #{first_window_name}"
-          command << "display-message 'use PREFIX + #{sync_panes_keybind} to toggle synchronized panes'" if use_panes
-          # Sometimes artifacts appeared in testing - this tends to clear them
-          command << "refresh-client"
+          if use_panes
+            # When we're using panes, we also need to force a refresh-client: testing has shown
+            # that adding multiple split windows in rapid succession can introduce artifacts.  However,
+            # issuing a refresh-client command immediately after attaching does not behave consistently -
+            # we need to force a delay after attaching, but before refreshing.
+            if show_sync_message
+              command << "display-message 'use PREFIX + #{sync_panes_keybind} to toggle synchronized panes'"
+              # In this case the delay associated with displaying the message is enough to ensure proper refresh.
+              command << "refresh-client"
+            else
+              # Otherwise, force a fast 'sleep' so that the server can process that we've attached, so that refresh-client
+              # is effective.
+              command << "if-shell 'sleep .05' refresh-client"
+            end
+          end
           exec(command.join(" \\; "))
         rescue Chef::Exceptions::Exec
         end
