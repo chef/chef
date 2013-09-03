@@ -18,6 +18,7 @@
 require 'spec_helper'
 if Chef::Platform.windows?
   require 'chef/application/windows_service'
+  include Chef::Mixin::ShellOut
 end
 
 def get_pid(result)
@@ -33,12 +34,14 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.stub(:parse_options)
   end
   it "runs chef-client in new process" do
-    pending "state/loop testing issue"
-    Chef::Config[:log_location] = "test1.log"
+    tempfilename = Tempfile.new("log")
+    Chef::Config[:log_location] = tempfilename.path
+    Chef::Config[:log_level] = :info
     instance.should_receive(:configure_chef).twice
     instance.service_init
-    (instance.instance_variable_get(:@service_signal)).stub(:wait)
-#    instance.should_receive(:state).and_return(String.new("RUNNING"))
+    instance.stub(:running?).and_return(true, false)
+    instance.instance_variable_get(:@service_signal).stub(:wait)
+    instance.stub(:state).and_return(4)
     instance.should_receive(:run_chef_client).and_call_original
     instance.should_receive(:shell_out).and_call_original
     instance.service_main
@@ -46,7 +49,7 @@ describe "Chef::Application::WindowsService", :windows_only do
     result2 = shell_out("grep 'Child process successfully reaped' test1.log")
     pid_child = get_pid(result1.stdout)
     pid_parent = get_pid(result2.stdout)
-    shell_out("rm test1.log")
+    tempfilename.unlink
     pid_child.should_not == pid_parent
   end
 end
