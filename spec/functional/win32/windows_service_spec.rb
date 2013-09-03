@@ -45,8 +45,8 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.should_receive(:run_chef_client).and_call_original
     instance.should_receive(:shell_out).and_call_original
     instance.service_main
-    result1 = shell_out("grep 'Chef-client pid:' test1.log")
-    result2 = shell_out("grep 'Child process successfully reaped' test1.log")
+    result1 = shell_out("grep 'Chef-client pid:' #{tempfilename.path}")
+    result2 = shell_out("grep 'Child process successfully reaped' #{tempfilename.path}")
     pid_child = get_pid(result1.stdout)
     pid_parent = get_pid(result2.stdout)
     tempfilename.unlink
