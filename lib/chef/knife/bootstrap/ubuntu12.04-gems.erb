@@ -1,7 +1,7 @@
 bash -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
-if [ ! -f /usr/bin/chef-client -a -f /usr/local/bin/chef-client ]; then
+if [ ! -f /usr/bin/chef-client -a ! -f /usr/local/bin/chef-client ]; then
   aptitude update
   # Shamelessley stolen from leonard.io.  Thanks!
   aptitude install -y ruby1.9.3 ruby1.9.1-dev build-essential wget rubygems
