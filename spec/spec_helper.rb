@@ -107,6 +107,8 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  # Remove this filter once these issues are fixed: OC-9764, OC-9765, OC-9766, OC-9767
+  config.filter_run_excluding :unsupported_group_provider_platform => true if (os_x? or solaris? or freebsd? or suse?)
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
@@ -115,6 +117,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
   config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
   config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
+  config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
 
