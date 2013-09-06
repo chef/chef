@@ -415,6 +415,17 @@ class Chef
           end
         end
 
+        begin
+          platform_family = Chef::Platform.find_platform_family(node)
+        rescue ArgumentError => e
+          # Skip platform_family if it was not found by find_platform_and_version
+          if e.message =~ /Cannot find a platform_family/
+            platform_family = "/unknown_platform_family/"
+          else
+            raise
+          end
+        end
+
         fqdn = node[:fqdn]
 
         # Break version into components, eg: "5.7.1" => [ "5.7.1", "5.7", "5" ]
@@ -432,6 +443,7 @@ class Chef
           search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
         end
         search_path << File.join(segment.to_s, platform.to_s, path)
+        search_path << File.join(segment.to_s, platform_family.to_s, path)
         search_path << File.join(segment.to_s, "default", path)
 
         search_path
