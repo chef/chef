@@ -388,6 +388,18 @@ class Chef
         provider_map
       end
 
+      def find_platform_family(node)
+        platform_family = nil
+
+        if node[:platform_family]
+          platform_family = node[:platform_family]
+        end
+
+        raise ArgumentError, "Cannot find a platform_family for #{node}" unless platform_family
+
+        return platform_family
+      end
+
       def find_platform_and_version(node)
         platform = nil
         version = nil
