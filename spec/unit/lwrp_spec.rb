@@ -107,7 +107,7 @@ describe "LWRP" do
     end
 
     it "should set the specified action as the default action" do
-      Chef::Resource::LwrpFoo.new("blah").action.should == :pass_buck
+      Chef::Resource::LwrpFoo.new("blah").action.should == [ :pass_buck ]
     end
 
     it "should create a method for each attribute" do

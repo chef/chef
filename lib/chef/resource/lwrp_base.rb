@@ -123,7 +123,7 @@ class Chef
       def initialize(name, run_context=nil)
         super(name, run_context)
         @resource_name = self.class.resource_name.to_sym
-        @action = self.class.default_action
+        @action = Array(self.class.default_action)
         allowed_actions.push(self.class.valid_actions).flatten!
       end
 
