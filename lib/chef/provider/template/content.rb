@@ -39,6 +39,7 @@ class Chef
           context = TemplateContext.new(@new_resource.variables)
           context[:node] = @run_context.node
           context[:template_finder] = template_finder
+          context[:resource] = @new_resource
           context._extend_modules(@new_resource.helper_modules)
           output = context.render_template(template_location)
 
