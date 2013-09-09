@@ -84,7 +84,7 @@ module Mixlib
         self
       rescue Exception
         # do our best to kill zombies
-        Process.waitpid2(@child_pid, Process::WNOHANG) rescue nil
+        Process.waitpid2(@child_pid) rescue nil
         raise
       ensure
         # no matter what happens, turn the GC back on, and hope whatever busted

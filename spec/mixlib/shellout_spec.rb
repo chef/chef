@@ -777,6 +777,38 @@ describe Mixlib::ShellOut do
         end
       end
 
+      context "when running a command that doesn't exist" do
+
+        let(:cmd) { "/bin/this-is-not-a-real-command" }
+
+        def shell_out_cmd
+          Mixlib::ShellOut.new(cmd)
+        end
+
+        it "reaps zombie processes after exec fails [OHAI-455]" do
+          # NOTE: depending on ulimit settings, GC, etc., before the OHAI-455 patch,
+          # ohai could also exhaust the available file descriptors when creating this
+          # many zombie processes. A regression _could_ cause Errno::EMFILE but this
+          # probably won't be consistent on different environments.
+          created_procs = 0
+          100.times do
+            begin
+              shell_out_cmd.run_command
+            rescue Errno::ENOENT
+              created_procs += 1
+            end
+          end
+          created_procs.should == 100
+          reaped_procs = 0
+          begin
+            loop { Process.wait(-1); reaped_procs += 1 }
+          rescue Errno::ECHILD
+          end
+          reaped_procs.should == 0
+        end
+      end
+
+
       context 'with open files for parent process' do
         before do
           @test_file = Tempfile.new('fd_test')
