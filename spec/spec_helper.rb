@@ -6,7 +6,6 @@ require 'tmpdir'
 require 'tempfile'
 require 'timeout'
 
-require 'ap'
 
 WATCH = lambda { |x| ap x } unless defined?(WATCH)
 
