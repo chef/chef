@@ -176,7 +176,7 @@ class Chef
             super
           # Upstart always provides restart functionality so we don't need to mimic it with stop/sleep/start.
           # Older versions of upstart would fail on restart if the service was currently stopped, check for that. LP:430883
-          else @new_resource.supports[:restart]
+          else
             if @current_resource.running
               run_command_with_systems_locale(:command => "/sbin/restart #{@job}")
             else
