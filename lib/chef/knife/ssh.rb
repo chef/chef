@@ -81,6 +81,13 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key.strip }
 
+      option :ssh_config,
+        :short => "-F CONFIG",
+        :long => "--ssh-config CONFIG",
+        :description => "The ssh config file setting(true, false or files)",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_config] = key.strip },
+        :default => true
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
@@ -126,7 +133,7 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port } : {}
+          gw_opts = gw_port ? { :port => gw_port, :config => use_ssh_config } : { :config => config[:ssh_config] }
 
           session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
         end
@@ -181,7 +188,7 @@ class Chef
           Chef::Log.debug("Adding #{item}")
           session_opts = {}
 
-          ssh_config = Net::SSH.configuration_for(item)
+          ssh_config = Net::SSH.configuration_for(item, config[:ssh_config] )
 
           # Chef::Config[:knife][:ssh_user] is parsed in #configure_user and written to config[:ssh_user]
           user = config[:ssh_user] || ssh_config[:user]
@@ -198,6 +205,7 @@ class Chef
             session_opts[:user_known_hosts_file] = "/dev/null"
           end
 
+          session_opts[:config] = config[:ssh_config]
           session.use(hostspec, session_opts)
 
           @longest = item.length if item.length > @longest
@@ -418,6 +426,15 @@ class Chef
                              Chef::Config[:knife][:ssh_user])
       end
 
+      def configure_ssh_config
+        config[:ssh_config] = config.key?(:ssh_config) ?
+            case config[:ssh_config]
+              when 'true' then true
+              when "''", '""','','false', 'nil', nil, false then false
+              else config[:ssh_config]
+            end : true
+      end
+
       def configure_identity_file
         config[:identity_file] = get_stripped_unfrozen_value(config[:identity_file] ||
                              Chef::Config[:knife][:ssh_identity_file])
@@ -435,6 +452,7 @@ class Chef
         configure_attribute
         configure_user
         configure_identity_file
+        configure_ssh_config
         configure_gateway
         configure_session
 
