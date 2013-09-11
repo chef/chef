@@ -19,10 +19,14 @@
 # without interfering with the regular build/test.
 
 name "angrychef"
+maintainer "Opscode, Inc."
+homepage "http://www.opscode.com"
 
+replaces        "angrychef"
 install_path    "/opt/angrychef"
 build_version   Omnibus::BuildVersion.full
-build_iteration "4"
+build_iteration 4
 
-dependencies ["preparation","chef","version-manifest"]
-
+dependency "preparation"
+dependency "chef"
+dependency "version-manifest"
