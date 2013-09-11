@@ -30,13 +30,12 @@ end
 
 describe "Chef::Application::WindowsService", :windows_only do
   let (:instance) {Chef::Application::WindowsService.new}
-  before do
-    instance.stub(:parse_options)
-  end
+
   it "runs chef-client in new process" do
     tempfilename = Tempfile.new("log")
     Chef::Config[:log_location] = tempfilename.path
     Chef::Config[:log_level] = :info
+    instance.stub(:parse_options)
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.stub(:running?).and_return(true, false)
