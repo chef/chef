@@ -59,6 +59,13 @@ class Chef
         :description => "The ssh gateway",
         :proc => Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
 
+      option :ssh_config,
+        :short => "-F CONFIG",
+        :long => "--ssh-config CONFIG",
+        :description => "The ssh config file setting(true, false or files)",
+        :proc => Proc.new { |key| Chef::Config[:knife][:ssh_config] = key.strip },
+        :default => true
+
       option :forward_agent,
         :short => "-A",
         :long => "--forward-agent",
