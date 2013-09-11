@@ -40,6 +40,10 @@ class Chef
         :default => true,
         :description => 'Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff'
 
+      option :cookbook_version,
+        :long => '--cookbook-version VERSION',
+        :description => 'Version of cookbook to download (if there are multiple versions and cookbook_versions is false)'
+
       def run
         if name_args.length == 0
           show_usage
