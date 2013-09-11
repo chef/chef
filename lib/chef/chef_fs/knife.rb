@@ -60,7 +60,7 @@ class Chef
         # --chef-repo-path overrides all other paths
         if config[:chef_repo_path]
           Chef::Config[:chef_repo_path] = config[:chef_repo_path]
-          Chef::ChefFS::Config::PATH_VARIABLES.each do |variable_name|
+          Chef::Config::PATH_VARIABLES.each do |variable_name|
             Chef::Config[variable_name.to_sym] = chef_repo_paths.map { |path| File.join(path, "#{variable_name[0..-6]}s") }
           end
         end
@@ -96,7 +96,6 @@ class Chef
         args.map do |arg|
           if !@chef_fs_config.base_path && !Chef::ChefFS::PathUtils.is_absolute?(arg)
             # Check if chef repo path is specified to give a better error message
-            @chef_fs_config.require_chef_repo_path
             ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path")
             exit(1)
           end
