@@ -29,6 +29,8 @@ class Chef
 
     extend Mixlib::Config
 
+    config_strict_mode false
+
     # Manages the chef secret session key
     # === Returns
     # <newkey>:: A new or retrieved session key
