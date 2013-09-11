@@ -215,10 +215,10 @@ class Chef
     checksum_path '/var/chef/checksums'
 
     # Where chef's cache files should be stored
-    file_cache_path '/var/chef/cache'
+    file_cache_path platform_specific_path('/var/chef/cache')
 
     # Where backups of chef-managed files should go
-    file_backup_path '/var/chef/backup'
+    file_backup_path platform_specific_path('/var/chef/backup')
 
     # By default, chef-client (or solo) creates a lockfile in
     # `file_cache_path`/chef-client-running.pid
