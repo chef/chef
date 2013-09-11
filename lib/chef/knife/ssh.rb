@@ -133,7 +133,9 @@ class Chef
         if config[:ssh_gateway]
           gw_host, gw_user = config[:ssh_gateway].split('@').reverse
           gw_host, gw_port = gw_host.split(':')
-          gw_opts = gw_port ? { :port => gw_port, :config => use_ssh_config } : { :config => config[:ssh_config] }
+          gw_opts = { :config => config[:ssh_config] }
+          gw_opts[:port] = gw_port        if gw_port
+          gw_opts[:keys] = config[:keys]  if config[:keys]
 
           session.via(gw_host, gw_user || config[:ssh_user], gw_opts)
         end

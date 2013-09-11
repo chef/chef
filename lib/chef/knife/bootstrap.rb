@@ -225,11 +225,13 @@ class Chef
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = Chef::Config[:knife][:ssh_port] || config[:ssh_port]
         ssh.config[:ssh_gateway] = Chef::Config[:knife][:ssh_gateway] || config[:ssh_gateway]
+        ssh.config[:ssh_config] = Chef::Config[:knife][:ssh_config] || config[:ssh_config]
         ssh.config[:forward_agent] = Chef::Config[:knife][:forward_agent] || config[:forward_agent]
         ssh.config[:identity_file] = Chef::Config[:knife][:identity_file] || config[:identity_file]
         ssh.config[:manual] = true
         ssh.config[:host_key_verify] = Chef::Config[:knife][:host_key_verify] || config[:host_key_verify]
         ssh.config[:on_error] = :raise
+        ssh.config[:keys] = %w(~/.ssh/id_dsa ~/.ssh/id_rsa ~/.ssh/id_ecdsa ~/.ssh2/id_dsa ~/.ssh2/id_rsa ~/.ssh2/id_ecdsa)+Array(ssh.config[:identity_file])
         ssh
       end
 
