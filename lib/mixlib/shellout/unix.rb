@@ -82,8 +82,16 @@ module Mixlib
           end
         end
         self
+      rescue Errno::ENOENT
+        # When ENOENT happens, we can be reasonably sure that the child process
+        # is going to exit quickly, so we use the blocking variant of waitpid2
+        Process.waitpid2(@child_pid) rescue nil
+        raise
       rescue Exception
-        # do our best to kill zombies
+        # For exceptions other than ENOENT, such as timeout, we can't be sure
+        # how long the child process will live, so we use the non-blocking
+        # variant of waitpid2. This can result in zombie processes when the
+        # child later dies. See MIXLIB-16 for proposed enhancement.
         Process.waitpid2(@child_pid, Process::WNOHANG) rescue nil
         raise
       ensure
