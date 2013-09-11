@@ -171,10 +171,6 @@ class Chef
           config_params = " --no-fork"
           config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
           config_params += " -L #{Chef::Config[:log_location].path}" unless Chef::Config[:log_location] == STDOUT
-          config_params += " -l #{Chef::Config[:log_level]}" unless  Chef::Config[:log_level].nil?
-          config_params += " -S #{Chef::Config[:chef_server_url]}" unless  Chef::Config[:chef_server_url].nil?
-          config_params += " --force-formatter" if Chef::Config[:force_formatter]
-          config_params += " --force-logger" if Chef::Config[:force_logger]
           # Starts a new process and waits till the process exits
           result = shell_out("chef-client #{config_params}")
           # Once process exits, we log the following messages
@@ -183,8 +179,8 @@ class Chef
           Chef::Log.debug "#{result.stdout}"
           # stderr is the error from the output process
           Chef::Log.debug "#{result.stderr}"
-        rescue Mixlib::ShellOut::ShellCommandFailed
-          Chef::Log.warn "Not able to start chef-client in new process"
+        rescue Mixlib::ShellOut::ShellCommandFailed => e
+          Chef::Log.warn "Not able to start chef-client in new process (#{e})"
         rescue => e
           Chef::Log.error e
         end
