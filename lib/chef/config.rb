@@ -127,12 +127,12 @@ class Chef
     # etc.) work.
     default :chef_repo_path do
       if self.configuration[:cookbook_path]
-        if self.configuration[:cookbook_path].respond_to?(:map)
+        if self.configuration[:cookbook_path].kind_of?(String)
+          File.expand_path('..', self.configuration[:cookbook_path])
+        else
           self.configuration[:cookbook_path].map do |path|
             File.expand_path('..', path)
           end
-        else
-          File.expand_path('..', self.configuration[:cookbook_path])
         end
       else
         platform_specific_path("/var/chef")
@@ -140,10 +140,10 @@ class Chef
     end
 
     def self.derive_path_from_chef_repo_path(child_path)
-      if chef_repo_path.respond_to?(:map)
-        chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
-      else
+      if chef_repo_path.kind_of?(String)
         "#{chef_repo_path}#{platform_path_separator}#{child_path}"
+      else
+        chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
       end
     end
 
