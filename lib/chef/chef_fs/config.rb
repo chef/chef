@@ -28,10 +28,16 @@ class Chef
       def initialize(chef_config = Chef::Config, cwd = Dir.pwd)
         @chef_config = chef_config
         @cwd = cwd
-        configure_repo_paths
-      end
 
-      PATH_VARIABLES = %w(acl_path client_path cookbook_path container_path data_bag_path environment_path group_path node_path role_path user_path)
+        # Default to getting *everything* from the server.
+        if !@chef_config[:repo_mode]
+          if @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
+            @chef_config[:repo_mode] = 'hosted_everything'
+          else
+            @chef_config[:repo_mode] = 'everything'
+          end
+        end
+      end
 
       def chef_fs
         @chef_fs ||= create_chef_fs
@@ -125,19 +131,10 @@ class Chef
         server_path
       end
 
-      def require_chef_repo_path
-        if !@chef_config[:chef_repo_path]
-          Chef::Log.error("Must specify either chef_repo_path or cookbook_path in Chef config file")
-          exit(1)
-        end
-      end
-
       private
 
       def object_paths
         @object_paths ||= begin
-          require_chef_repo_path
-
           result = {}
           case @chef_config[:repo_mode]
           when 'static'
@@ -153,51 +150,6 @@ class Chef
             result[object_name] = paths.map { |path| File.expand_path(path) }
           end
           result
-        end
-      end
-
-      def configure_repo_paths
-        # Smooth out some (for now) inappropriate defaults set by Chef
-        if @chef_config[:cookbook_path] == [ @chef_config.platform_specific_path("/var/chef/cookbooks"),
-                      @chef_config.platform_specific_path("/var/chef/site-cookbooks") ]
-          @chef_config[:cookbook_path] = nil
-        end
-        if @chef_config[:data_bag_path] == @chef_config.platform_specific_path('/var/chef/data_bags')
-          @chef_config[:data_bag_path] = nil
-        end
-        if @chef_config[:node_path] == '/var/chef/node'
-          @chef_config[:node_path] = nil
-        end
-        if @chef_config[:role_path] == @chef_config.platform_specific_path('/var/chef/roles')
-          @chef_config[:role_path] = nil
-        end
-
-        # Infer chef_repo_path from cookbook_path if not speciifed
-        if !@chef_config[:chef_repo_path]
-          if @chef_config[:cookbook_path]
-            @chef_config[:chef_repo_path] = Array(@chef_config[:cookbook_path]).flatten.map { |path| File.expand_path('..', path) }
-          end
-        end
-
-        # Default to getting *everything* from the server.
-        if !@chef_config[:repo_mode]
-          if @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
-            @chef_config[:repo_mode] = 'hosted_everything'
-          else
-            @chef_config[:repo_mode] = 'everything'
-          end
-        end
-
-        # Infer any *_path variables that are not specified
-        if @chef_config[:chef_repo_path]
-          PATH_VARIABLES.each do |variable_name|
-            chef_repo_paths = Array(@chef_config[:chef_repo_path]).flatten
-            variable = variable_name.to_sym
-            if !@chef_config[variable]
-              # cookbook_path -> cookbooks
-              @chef_config[variable] = chef_repo_paths.map { |path| File.join(path, "#{variable_name[0..-6]}s") }
-            end
-          end
         end
       end
     end

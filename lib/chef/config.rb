@@ -29,6 +29,8 @@ class Chef
 
     extend Mixlib::Config
 
+    config_strict_mode false
+
     # Manages the chef secret session key
     # === Returns
     # <newkey>:: A new or retrieved session key
@@ -48,6 +50,14 @@ class Chef
 
     def self.inspect
       configuration.inspect
+    end
+
+    def self.platform_path_separator
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        File::ALT_SEPARATOR || '\\'
+      else
+        File::SEPARATOR
+      end
     end
 
     def self.platform_specific_path(path)
@@ -108,9 +118,88 @@ class Chef
         rescue Errno::ENOENT
           raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
-          f
+        f
       end
     end
+
+    # The root where all local chef object data is stored.  cookbooks, data bags,
+    # environments are all assumed to be in separate directories under this.
+    # chef-solo uses these directories for input data.  knife commands
+    # that upload or download files (such as knife upload, knife role from file,
+    # etc.) work.
+    default :chef_repo_path do
+      if self.configuration[:cookbook_path]
+        if self.configuration[:cookbook_path].kind_of?(String)
+          File.expand_path('..', self.configuration[:cookbook_path])
+        else
+          self.configuration[:cookbook_path].map do |path|
+            File.expand_path('..', path)
+          end
+        end
+      else
+        platform_specific_path("/var/chef")
+      end
+    end
+
+    def self.derive_path_from_chef_repo_path(child_path)
+      if chef_repo_path.kind_of?(String)
+        "#{chef_repo_path}#{platform_path_separator}#{child_path}"
+      else
+        chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
+      end
+    end
+
+    # Location of acls on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/acls.
+    # Only applies to Enterprise Chef commands.
+    default(:acl_path) { derive_path_from_chef_repo_path('acls') }
+
+    # Location of clients on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/acls.
+    default(:client_path) { derive_path_from_chef_repo_path('clients') }
+
+    # Location of cookbooks on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
+    # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
+    default(:cookbook_path) do
+      if self.configuration[:chef_repo_path]
+        derive_path_from_chef_repo_path('cookbooks')
+      else
+        Array(derive_path_from_chef_repo_path('cookbooks')).flatten + 
+          Array(derive_path_from_chef_repo_path('site-cookbooks')).flatten
+      end
+    end
+
+    # Location of containers on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/containers.
+    # Only applies to Enterprise Chef commands.
+    default(:container_path) { derive_path_from_chef_repo_path('containers') }
+
+    # Location of data bags on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/data_bags.
+    default(:data_bag_path) { derive_path_from_chef_repo_path('data_bags') }
+
+    # Location of environments on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/environments.
+    default(:environment_path) { derive_path_from_chef_repo_path('environments') }
+
+    # Location of groups on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/groups.
+    # Only applies to Enterprise Chef commands.
+    default(:group_path) { derive_path_from_chef_repo_path('groups') }
+
+    # Location of nodes on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/nodes.
+    default(:node_path) { derive_path_from_chef_repo_path('nodes') }
+
+    # Location of roles on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/roles.
+    default(:role_path) { derive_path_from_chef_repo_path('roles') }
+
+    # Location of users on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/users.
+    # Does not apply to Enterprise Chef commands.
+    default(:user_path) { derive_path_from_chef_repo_path('users') }
 
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
     enforce_path_sanity(true)
@@ -121,19 +210,17 @@ class Chef
     # The number of times the client should retry when registering with the server
     client_registration_retries 5
 
-    # Where the cookbooks are located. Meaning is somewhat context dependent between
-    # knife, chef-client, and chef-solo.
-    cookbook_path [ platform_specific_path("/var/chef/cookbooks"),
-                    platform_specific_path("/var/chef/site-cookbooks") ]
-
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     script_path []
 
     # Where cookbook files are stored on the server (by content checksum)
-    checksum_path "/var/chef/checksums"
+    checksum_path '/var/chef/checksums'
 
     # Where chef's cache files should be stored
-    file_cache_path platform_specific_path("/var/chef/cache")
+    file_cache_path platform_specific_path('/var/chef/cache')
+
+    # Where backups of chef-managed files should go
+    file_backup_path platform_specific_path('/var/chef/backup')
 
     # By default, chef-client (or solo) creates a lockfile in
     # `file_cache_path`/chef-client-running.pid
@@ -143,9 +230,6 @@ class Chef
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
     lockfile nil
-
-    # Where backups of chef-managed files should go
-    file_backup_path platform_specific_path("/var/chef/backup")
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -205,13 +289,6 @@ class Chef
     ssl_verify_mode :verify_none
     ssl_ca_path nil
     ssl_ca_file nil
-
-    # Where should chef-solo look for role files?
-    role_path platform_specific_path("/var/chef/roles")
-
-    data_bag_path platform_specific_path("/var/chef/data_bags")
-
-    environment_path platform_specific_path("/var/chef/environments")
 
     # Where should chef-solo download recipes from?
     recipe_url nil
