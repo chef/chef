@@ -63,6 +63,12 @@ describe Chef::Provider::HttpRequest do
         @provider.run_action(:get)
         @new_resource.should be_updated
       end
+
+      it "should construct the url properly with query params" do
+        @new_resource.url "http://www.opscode.com/?query=existing"
+        @rest.should_receive(:get).with("http://www.opscode.com/?message=is cool&query=existing", false, {})
+        @provider.run_action(:get)
+      end
     end
 
     describe "action_put" do
