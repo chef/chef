@@ -30,8 +30,9 @@ class Chef
       banner "knife role env_run_list remove [ROLE] [ENVIRONMENT] [ENTRIES] (options)"
 
       def run
-        node = Chef::Role.load(@name_args[0])
-        entries = @name_args[1].split(',')
+        role = Chef::Role.load(@name_args[0])
+        environment= Chef::Environment.load(@name_args[1])
+        entries = @name_args[2].split(',')
 
         entries.each { |e| role.env_run_list.remove(e) }
 
@@ -45,4 +46,3 @@ class Chef
     end
   end
 end
-
