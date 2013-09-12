@@ -1,5 +1,6 @@
 #
 # Author:: Mike Fiedler (<miketheman@gmail.com>)
+# Author:: William Albenzi (<walbenzi@gmail.com>)
 # Copyright:: Copyright (c) 2013 Mike Fiedler
 # License:: Apache License, Version 2.0
 #
@@ -20,18 +21,18 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class NodeRunListSet < Knife
+    class RoleEnvRunListSet < Knife
 
       deps do
-        require 'chef/node'
+        require 'chef/role'
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list set NODE ENTRIES (options)"
+      banner "knife role run_list set ROLE ENVIRONMENT ENTRIES (options)"
 
       def run
         if @name_args.size < 2
-          ui.fatal "You must supply both a node name and a run list."
+          ui.fatal "You must supply both a role name and an environment run list."
           show_usage
           exit 1
         elsif @name_args.size > 2
@@ -43,22 +44,22 @@ class Chef
           # Convert to array and remove the extra spaces
           entries = @name_args[1].split(',').map { |e| e.strip }
         end
-        node = Chef::Node.load(@name_args[0])
+        role = Chef::Role.load(@name_args[0])
 
-        set_run_list(node, entries)
+        set_env_run_list(role, entries)
 
-        node.save
+        role.save
 
-        config[:run_list] = true
+        config[:env_run_list] = true
 
-        output(format_for_display(node))
+        output(format_for_display(role))
       end
 
-      # Clears out any existing run_list_items and sets them to the
+      # Clears out any existing env_run_list_items and sets them to the
       # specified entries
-      def set_run_list(node, entries)
-        node.run_list.run_list_items.clear
-        entries.each { |e| node.run_list << e }
+      def set_env_run_list(role, entries)
+        role.env_run_list.env_run_list_items.clear
+        entries.each { |e| role.env_run_list << e }
       end
 
     end

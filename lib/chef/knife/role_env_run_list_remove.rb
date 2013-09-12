@@ -20,26 +20,26 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class NodeRunListRemove < Knife
+    class RoleEnvRunListRemove < Knife
 
       deps do
-        require 'chef/node'
+        require 'chef/role'
         require 'chef/json_compat'
       end
 
-      banner "knife node run_list remove [NODE] [ENTRIES] (options)"
+      banner "knife role env_run_list remove [ROLE] [ENVIRONMENT] [ENTRIES] (options)"
 
       def run
-        node = Chef::Node.load(@name_args[0])
+        node = Chef::Role.load(@name_args[0])
         entries = @name_args[1].split(',')
 
-        entries.each { |e| node.run_list.remove(e) }
+        entries.each { |e| role.env_run_list.remove(e) }
 
         node.save
 
-        config[:run_list] = true
+        config[:env_run_list] = true
 
-        output(format_for_display(node))
+        output(format_for_display(role))
       end
 
     end
