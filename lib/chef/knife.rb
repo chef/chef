@@ -170,7 +170,9 @@ class Chef
       subcommand_class.load_deps
       instance = subcommand_class.new(args)
       instance.configure_chef
+      Chef::Application.setup_server_connectivity
       instance.run_with_pretty_exceptions
+      Chef::Application.destroy_server_connectivity
     end
 
     def self.guess_category(args)
