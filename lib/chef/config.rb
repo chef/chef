@@ -387,7 +387,7 @@ class Chef
     default :chef11_deprecation_warnings, true
 
     # Arbitrary knife configuration data
-    default :knife, Hash.new
+    config_context :knife
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
