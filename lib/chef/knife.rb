@@ -170,9 +170,7 @@ class Chef
       subcommand_class.load_deps
       instance = subcommand_class.new(args)
       instance.configure_chef
-      Chef::Application.setup_server_connectivity
       instance.run_with_pretty_exceptions
-      Chef::Application.destroy_server_connectivity
     end
 
     def self.guess_category(args)
@@ -460,14 +458,19 @@ class Chef
       stdout.puts("USAGE: " + self.opt_parser.to_s)
     end
 
-    def run_with_pretty_exceptions
+    def run_with_pretty_exceptions(raise_exception = false)
       unless self.respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
-      run
+      Chef::Application.setup_server_connectivity
+      begin
+        run
+      ensure
+        Chef::Application.destroy_server_connectivity
+      end
     rescue Exception => e
-      raise if Chef::Config[:verbosity] == 2
+      raise if raise_exception || Chef::Config[:verbosity] == 2
       humanize_exception(e)
       exit 100
     end
