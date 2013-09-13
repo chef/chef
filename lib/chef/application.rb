@@ -178,7 +178,7 @@ class Chef::Application
       @chef_client_json, 
       :override_runlist => config[:override_runlist]
     )
-    @chef_client_json = nil
+    @chef_client_json = nil unless Chef::Config[:solo]
 
     @chef_client.run
     @chef_client = nil
