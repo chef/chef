@@ -37,8 +37,21 @@ describe Chef::Knife::RoleEnvRunListAdd do
   describe "run" do
 
     it "should load the role with a QA environment" do
-      Chef::role.should_receive(:load).with("adam")
-      @knife.run
+      Chef::Role.should_receive(:load).with("adam")
+      @knife.run  #Now this fails as below
+        # Failures:
+        # 
+        #   1) Chef::Knife::RoleEnvRunListAdd run should load the role with a QA environment
+        #      Failure/Error: @knife.run
+        #      NoMethodError:
+        #        undefined method `<<' for {"_default"=>}:Hash
+        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:49:in `block in add_to_env_run_list'
+        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:49:in `each'
+        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:49:in `add_to_env_run_list'
+        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:65:in `run'
+        #      # /Users/walbenzi/work/sandbox/chef/spec/unit/knife/role_env_run_list_add_spec.rb:41:in `block (3 levels) in <top (required)>'
+        # 
+
     end
 
 #    it "should add to the run list" do
