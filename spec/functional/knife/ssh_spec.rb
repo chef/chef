@@ -22,16 +22,14 @@ require 'tiny_server'
 describe Chef::Knife::Ssh do
 
   before(:all) do
-    @original_config = Chef::Config.hash_dup
-    @original_knife_config = Chef::Config[:knife].dup
+    Chef::Config.reset
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
   after(:all) do
-    Chef::Config.configuration = @original_config
-    Chef::Config[:knife] = @original_knife_config
+    Chef::Config.reset
     @server.stop
   end
 

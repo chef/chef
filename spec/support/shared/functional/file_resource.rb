@@ -18,45 +18,49 @@
 
 shared_context "deploying with move" do
   before do
-    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = true
   end
 
   after do
-    Chef::Config[:file_atomic_update] = @original_atomic_update
+    Chef::Config.delete(:file_staging_uses_destdir)
+    Chef::Config.delete(:file_backup_path)
   end
 end
 
 shared_context "deploying with copy" do
   before do
-    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = false
   end
 
   after do
-    Chef::Config[:file_atomic_update] = @original_atomic_update
+    Chef::Config.delete(:file_staging_uses_destdir)
+    Chef::Config.delete(:file_backup_path)
   end
 end
 
 shared_context "deploying via tmpdir" do
   before do
-    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
     Chef::Config[:file_staging_uses_destdir] = false
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 
   after do
-    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
+    Chef::Config.delete(:file_staging_uses_destdir)
+    Chef::Config.delete(:file_backup_path)
   end
 end
 
 shared_context "deploying via destdir" do
   before do
-    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
     Chef::Config[:file_staging_uses_destdir] = true
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 
   after do
-    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
+    Chef::Config.delete(:file_staging_uses_destdir)
+    Chef::Config.delete(:file_backup_path)
   end
 end
 
@@ -75,7 +79,6 @@ shared_examples_for "a file with the wrong content" do
   context "when running action :create" do
     context "with backups enabled" do
       before do
-        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
         resource.run_action(:create)
       end
 
@@ -99,7 +102,6 @@ shared_examples_for "a file with the wrong content" do
 
     context "with backups disabled" do
       before do
-        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
         resource.backup(0)
         resource.run_action(:create)
       end
