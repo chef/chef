@@ -255,8 +255,11 @@ class Chef
 
     default :pid_file, nil
 
-    default :start_chef_zero, false
-    default :chef_zero_port,  8889
+    config_context :chef_zero do
+      config_strict_mode true
+      default :enabled, false
+      default :port, 8889
+    end
     default :chef_server_url,   "https://localhost:443"
 
     default :rest_timeout, 300

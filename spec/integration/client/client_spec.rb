@@ -12,7 +12,7 @@ describe "chef-client" do
 
       it "should complete with success" do
         file 'config/client.rb', <<EOM
-start_chef_zero true
+chef_zero.enabled true
 client_key "#{path_to('config/client.pem')}"
 validation_key nil
 cookbook_path "#{path_to('cookbooks')}"

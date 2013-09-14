@@ -227,13 +227,13 @@ EOM
     end
   end
 
-  context 'When start_chef_zero is true' do
+  context 'When chef_zero.enabled is true' do
     before(:each) do
       if ChefZero::RSpec.server
         ChefZero::RSpec.server.stop
         ChefZero::RSpec.server = nil
       end
-      Chef::Config.start_chef_zero = true
+      Chef::Config.chef_zero.enabled = true
       Chef::Config.client_key = nil
     end
 
@@ -262,8 +262,8 @@ EOM
 EOM
       end
 
-      context 'And chef_zero_port is 9999' do
-        before(:each) { Chef::Config.chef_zero_port = 9999 }
+      context 'And chef_zero.port is 9999' do
+        before(:each) { Chef::Config.chef_zero.port = 9999 }
  
         it 'knife raw /roles/x should retrieve the role' do
           knife('raw /nodes/x').should_succeed <<EOM
