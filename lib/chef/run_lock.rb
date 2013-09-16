@@ -34,15 +34,9 @@ class Chef
 
     # Create a new instance of RunLock
     # === Arguments
-    # * config::: This will generally be the `Chef::Config`, but any Hash-like
-    #   object with Symbol keys will work. See 'Parameters' section.
-    # === Parameters/Config
-    # * :lockfile::: if set, this will be used as the full path to the lockfile.
-    # * :file_cache_path::: if `:lockfile` is not set, the lock file will be
-    #   named "chef-client-running.pid" and be placed in the directory given by
-    #   `:file_cache_path`
-    def initialize(config)
-      @runlock_file = config[:lockfile] || "#{config[:file_cache_path]}/chef-client-running.pid"
+    # * :lockfile::: the full path to the lockfile.
+    def initialize(lockfile)
+      @runlock_file = lockfile
       @runlock = nil
     end
 

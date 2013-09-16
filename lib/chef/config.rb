@@ -222,14 +222,12 @@ class Chef
     # Where backups of chef-managed files should go
     default :file_backup_path, platform_specific_path('/var/chef/backup')
 
-    # By default, chef-client (or solo) creates a lockfile in
-    # `file_cache_path`/chef-client-running.pid
-    # If `lockfile` is explicitly set, this path will be used instead.
+    # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default :lockfile, nil
+    default(:lockfile) { "#{file_cache_path}#{platform_path_separator}chef-client-running.pid" }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
