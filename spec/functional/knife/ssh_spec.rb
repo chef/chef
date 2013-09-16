@@ -149,9 +149,9 @@ describe Chef::Knife::Ssh do
         Chef::Config[:knife][:ssh_user] = nil
       end
 
-      it "uses the default" do
+      it "uses the default (current user)" do
         @knife.run
-        @knife.config[:ssh_user].should == "root"
+        @knife.config[:ssh_user].should == nil
       end
     end
   end
