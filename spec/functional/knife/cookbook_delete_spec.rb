@@ -21,13 +21,13 @@ require 'tiny_server'
 
 describe Chef::Knife::CookbookDelete do
   before(:all) do
-    @original_config = Chef::Config.hash_dup
-
     @server = TinyServer::Manager.new
     @server.start
   end
 
   before(:each) do
+    Chef::Config.reset
+
     @knife = Chef::Knife::CookbookDelete.new
     @api = TinyServer::API.instance
     @api.clear
@@ -38,7 +38,8 @@ describe Chef::Knife::CookbookDelete do
   end
 
   after(:all) do
-    Chef::Config.configuration = @original_config
+    # Be a good citizen
+    Chef::Config.reset
     @server.stop
   end
 

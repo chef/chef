@@ -25,6 +25,7 @@ require 'spec_helper'
 
 describe Chef::Knife do
   before(:each) do
+    Chef::Config.reset
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"
@@ -203,7 +204,6 @@ describe Chef::Knife do
         KnifeSpecs::TestYourself.option(:opt_with_default,
                                         :short => "-D VALUE",
                                         :default => "default-value")
-        Chef::Config[:knife] = {}
       end
 
       it "prefers the default value if no config or command line value is present" do
@@ -226,7 +226,6 @@ describe Chef::Knife do
         knife_command.config[:opt_with_default].should == "from-cli"
       end
     end
-
 
   end
 

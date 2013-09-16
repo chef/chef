@@ -30,14 +30,10 @@ module IntegrationSupport
 
   def self.extended(base)
     base.before :each do
-      # We mess with Chef::Config a lot.  Save and restore it.
-      @old_chef_config = Chef::Config.configuration
-      Chef::Config.configuration = Chef::Config.configuration.dup
-      Chef::Config.repo_mode = nil
-      Chef::Config.versioned_cookbooks = nil
+      Chef::Config.reset
     end
-    base.after :each do
-      Chef::Config.configuration = @old_chef_config
+    base.after :all do
+      Chef::Config.reset
     end
   end
 
@@ -145,7 +141,7 @@ module IntegrationSupport
     _m = { :versioned_cookbooks => true }.merge(_metadata)
     context 'with versioned cookbooks', _m do
       before(:each) { Chef::Config[:versioned_cookbooks] = true }
-      after(:each)  { Chef::Config[:versioned_cookbooks] = false }
+      after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
       instance_eval(&block)
     end
   end
@@ -155,6 +151,7 @@ module IntegrationSupport
     context 'with versioned cookbooks', _m do
       # Just make sure this goes back to default
       before(:each) { Chef::Config[:versioned_cookbooks] = false }
+      after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
       instance_eval(&block)
     end
   end
