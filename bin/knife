@@ -19,6 +19,8 @@
 # limitations under the License.
 
 require 'rubygems'
+require 'safe_yaml'
+SafeYAML::OPTIONS[:suppress_warnings] = true
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 require 'chef/application/knife'
 
