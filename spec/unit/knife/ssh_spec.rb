@@ -21,13 +21,8 @@ require 'net/ssh'
 require 'net/ssh/multi'
 
 describe Chef::Knife::Ssh do
-  before(:all) do
-    Chef::Config.reset
+  before(:each) do
     Chef::Config[:client_key] = CHEF_SPEC_DATA + "/ssl/private_key.pem"
-  end
-
-  after(:all) do
-    Chef::Config.reset
   end
 
   before do

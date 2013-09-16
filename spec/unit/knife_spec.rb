@@ -25,7 +25,6 @@ require 'spec_helper'
 
 describe Chef::Knife do
   before(:each) do
-    Chef::Config.reset
     Chef::Log.logger = Logger.new(StringIO.new)
 
     Chef::Config[:node_name]  = "webmonkey.example.com"

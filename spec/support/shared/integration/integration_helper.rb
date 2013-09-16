@@ -28,15 +28,6 @@ require 'spec_helper'
 module IntegrationSupport
   include ChefZero::RSpec
 
-  def self.extended(base)
-    base.before :each do
-      Chef::Config.reset
-    end
-    base.after :all do
-      Chef::Config.reset
-    end
-  end
-
   def when_the_repository(description, *args, &block)
     context "When the local repository #{description}", *args do
       before :each do

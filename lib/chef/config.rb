@@ -386,8 +386,20 @@ class Chef
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true
 
-    # Arbitrary knife configuration data
-    config_context :knife
+    # knife configuration data
+    config_context :knife do
+      default :ssh_port, nil
+      default :ssh_user, nil
+      default :ssh_attribute, nil
+      default :ssh_gateway, nil
+      default :bootstrap_version, nil
+      default :bootstrap_proxy, nil
+      default :identity_file, nil
+      default :host_key_verify, nil
+      default :forward_agent, nil
+      default :sort_status_reverse, nil
+      default :hints, {}
+    end
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name

@@ -22,14 +22,12 @@ require 'tiny_server'
 describe Chef::Knife::Ssh do
 
   before(:all) do
-    Chef::Config.reset
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
   after(:all) do
-    Chef::Config.reset
     @server.stop
   end
 
@@ -151,9 +149,9 @@ describe Chef::Knife::Ssh do
         Chef::Config[:knife][:ssh_user] = nil
       end
 
-      it "uses the default" do
+      it "uses the default (current user)" do
         @knife.run
-        @knife.config[:ssh_user].should == "root"
+        @knife.config[:ssh_user].should == nil
       end
     end
   end

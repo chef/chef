@@ -193,7 +193,8 @@ describe Chef::Application do
     end
 
     it "should initialise the chef logger level" do
-      Chef::Log.should_receive(:level=).with(Chef::Config[:log_level]).and_return(true)
+      # By default, Chef translates :auto to :warn
+      Chef::Log.should_receive(:level=).with(:warn).and_return(true)
       @app.configure_logging
     end
 
