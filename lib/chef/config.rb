@@ -398,7 +398,7 @@ class Chef
       default :host_key_verify, nil
       default :forward_agent, nil
       default :sort_status_reverse, nil
-      config_context :hints
+      default :hints, {}
     end
 
     # Those lists of regular expressions define what chef considers a
