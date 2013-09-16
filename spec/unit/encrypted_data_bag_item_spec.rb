@@ -74,12 +74,7 @@ describe Chef::EncryptedDataBagItem::Encryptor  do
   describe "when using version 2 format" do
 
     before do
-      Chef::Config.reset
       Chef::Config[:data_bag_encrypt_version] = 2
-    end
-
-    after do
-      Chef::Config.reset
     end
 
     it "creates a version 2 encryptor" do
@@ -179,12 +174,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
     context "and version 2 format is required" do
       before do
-        Chef::Config.reset
         Chef::Config[:data_bag_decrypt_minimum_version] = 2
-      end
-
-      after do
-        Chef::Config.reset
       end
 
       it "raises an error attempting to decrypt" do
@@ -210,12 +200,7 @@ describe Chef::EncryptedDataBagItem::Decryptor do
 
     context "and version 1 format is required" do
       before do
-        Chef::Config.reset
         Chef::Config[:data_bag_decrypt_minimum_version] = 1
-      end
-
-      after do
-        Chef::Config.reset
       end
 
       it "raises an error attempting to decrypt" do

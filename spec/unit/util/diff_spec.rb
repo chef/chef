@@ -21,15 +21,6 @@ require 'spec_helper'
 require 'tmpdir'
 
 describe Chef::Util::Diff, :uses_diff => true do
-  before :each do
-    Chef::Config.reset
-  end
-
-  after :all do
-    # Be a good citizen
-    Chef::Config.reset
-  end
-
   let!(:old_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:old_file) { old_tempfile.path }

@@ -22,14 +22,12 @@ require 'tiny_server'
 describe Chef::Knife::Ssh do
 
   before(:all) do
-    Chef::Config.reset
     Chef::Knife::Ssh.load_deps
     @server = TinyServer::Manager.new
     @server.start
   end
 
   after(:all) do
-    Chef::Config.reset
     @server.stop
   end
 

@@ -202,7 +202,6 @@ describe Chef::Resource::Package, metadata do
         let(:file_cache_path) { Dir.mktmpdir }
 
         before do
-          Chef::Config.reset
           Chef::Config[:file_cache_path] = file_cache_path
           debconf_reset = 'chef-integration-test chef-integration-test/sample-var string "INVALID"'
           shell_out!("echo #{debconf_reset} |debconf-set-selections")
@@ -210,11 +209,6 @@ describe Chef::Resource::Package, metadata do
 
         after do
           FileUtils.rm_rf(file_cache_path)
-        end
-
-        after :all do
-          # Be a good citizen
-          Chef::Config.reset
         end
 
         context "with a preseed file" do

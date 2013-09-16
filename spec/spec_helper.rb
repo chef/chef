@@ -67,6 +67,8 @@ require 'chef/applications'
 require 'chef/shell'
 require 'chef/util/file_edit'
 
+require 'chef/config'
+
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
 require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
@@ -145,4 +147,8 @@ RSpec.configure do |config|
 
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
+
+  config.before(:each) do
+    Chef::Config.reset
+  end
 end

@@ -26,8 +26,6 @@ describe Chef::Knife::Exec do
   end
 
   before(:each) do
-    Chef::Config.reset
-
     @knife = Chef::Knife::Exec.new
     @api = TinyServer::API.instance
     @api.clear
@@ -40,8 +38,6 @@ describe Chef::Knife::Exec do
   end
 
   after(:all) do
-    # Be a good citizen
-    Chef::Config.reset
     @server.stop
   end
 
