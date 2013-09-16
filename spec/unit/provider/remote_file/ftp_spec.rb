@@ -200,14 +200,15 @@ describe Chef::Provider::RemoteFile::FTP do
 
     context "and proxying is enabled" do
       before do
-        @original_config = Chef::Config.hash_dup
+        Chef::Config.reset
         Chef::Config[:ftp_proxy] = "socks5://socks.example.com:5000"
         Chef::Config[:ftp_proxy_user] = "bill"
         Chef::Config[:ftp_proxy_pass] = "ted"
       end
 
       after do
-        Chef::Config.configuration = @original_config
+        # Be a good citizen
+        Chef::Config.reset
       end
 
       it "fetches the file via the proxy" do

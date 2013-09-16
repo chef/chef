@@ -38,7 +38,6 @@ module KnifeSupport
 
     # Work on machines where we can't access /var
     checksums_cache_dir = Dir.mktmpdir('checksums') do |checksums_cache_dir|
-      old_cache_options = Chef::Config[:cache_options]
       Chef::Config[:cache_options] = {
         :path => checksums_cache_dir,
         :skip_expires => true
@@ -94,7 +93,8 @@ module KnifeSupport
       ensure
         Chef::Log.use_log_devices(old_loggers)
         Chef::Log.level = old_log_level
-        Chef::Config[:cache_options] = old_cache_options
+        Chef::Config.delete(:cache_options)
+        Chef::Config.delete(:concurrency)
       end
 
       KnifeResult.new(stdout.string, stderr.string, exit_code)

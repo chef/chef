@@ -45,7 +45,7 @@ describe Chef::Mixin::Securable do
   describe "unix-specific behavior" do
     before(:each) do
       platform_mock :unix do
-        @original_config = Chef::Config.hash_dup
+        Chef::Config.reset
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
         @securable = Object.new
@@ -55,7 +55,7 @@ describe Chef::Mixin::Securable do
     end
 
     after(:each) do
-      Chef::Config.configuration = @original_config
+      Chef::Config.reset
     end
 
     it "should accept a group name or id for group with spaces and backslashes" do
@@ -120,12 +120,8 @@ describe Chef::Mixin::Securable do
       end
     end
 
-    after(:all) do
-      Chef::Config.configuration = @original_config if @original_config
-    end
-
     after(:each) do
-      Chef::Config.configuration = @original_config if @original_config
+      Chef::Config.reset
     end
 
     it "should not accept a group name or id for group with spaces and multiple backslashes" do

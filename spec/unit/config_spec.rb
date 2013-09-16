@@ -22,8 +22,16 @@ require 'chef/exceptions'
 
 describe Chef::Config do
   before(:all) do
-    @original_config = Chef::Config.hash_dup
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
+  end
+
+  before :each do
+    Chef::Config.reset
+  end
+
+  after :all do
+    # Be a good citizen
+    Chef::Config.reset
   end
 
   describe "config attribute writer: chef_server_url" do
@@ -277,9 +285,5 @@ describe Chef::Config do
       missing_path = "/tmp/non-existing-dir/file"
       expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
-  end
-
-  after(:each) do
-    Chef::Config.configuration = @original_config
   end
 end
