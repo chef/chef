@@ -104,7 +104,6 @@ describe Chef::Mixin::Securable do
   describe "windows-specific behavior" do
     before(:each) do
       platform_mock :windows do
-        @original_config = Chef::Config.hash_dup
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "config.rb")
         load File.join(File.dirname(__FILE__), "..", "..", "..", "lib", "chef", "mixin", "securable.rb")
         SECURABLE_CLASS = Class.new do

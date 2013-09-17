@@ -82,23 +82,13 @@ class Chef
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
-    config_attr_writer :chef_server_url do |url|
-      url = url.strip
-      configure do |c|
-        c[:chef_server_url] = url
-      end
-      url
-    end
+    configurable(:chef_server_url).writes_value { |url| url.strip }
 
     # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
     # it up here and get a real method written so that things get dispatched
     # properly.
-    config_attr_writer :daemonize do |v|
-      configure do |c|
-        c[:daemonize] = v
-      end
-    end
+    configurable(:daemonize).writes_value { |v| v }
 
     # Override the config dispatch to set the value of log_location configuration option
     #
@@ -255,6 +245,7 @@ class Chef
     default :http_retry_count, 5
     default :http_retry_delay, 5
     default :interval, nil
+    default :once, nil
     default :json_attribs, nil
     default :log_location, STDOUT
     # toggle info level log items that can create a lot of output

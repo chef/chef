@@ -20,14 +20,6 @@ require 'spec_helper'
 
 describe Chef::Provider::File::Content do
 
-  before(:all) do
-    @original_config = Chef::Config.configuration
-  end
-
-  after(:all) do
-    Chef::Config.configuration.replace(@original_config)
-  end
-
   #
   # mock setup
   #

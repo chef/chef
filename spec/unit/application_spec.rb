@@ -22,7 +22,6 @@ describe Chef::Application do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    @original_conf = Chef::Config.configuration
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
     Dir.stub!(:chdir).and_return(0)
@@ -30,7 +29,6 @@ describe Chef::Application do
   end
 
   after do
-    Chef::Config.configuration.replace(@original_conf)
     ARGV.replace(@original_argv)
   end
 
@@ -98,8 +96,6 @@ describe Chef::Application do
 
     describe "when a config_file is present" do
       before do
-        Chef::Config.configuration.delete('rspec_ran')
-
         @config_file = Tempfile.new("rspec-chef-config")
         @config_file.puts("rspec_ran('true')")
         @config_file.close
@@ -149,8 +145,6 @@ describe Chef::Application do
 
     describe "when the config_file is an URL" do
       before do
-        Chef::Config.configuration.delete('rspec_ran')
-
         @app.config[:config_file] = "http://example.com/foo.rb"
 
         @config_file = Tempfile.new("rspec-chef-config")
