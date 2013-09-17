@@ -19,23 +19,13 @@ require 'spec_helper'
 
 describe Chef::Application::Solo do
   before do
-    @original_config = Chef::Config.configuration
-
-
     @app = Chef::Application::Solo.new
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
     Chef::Config[:recipe_url] = false
     Chef::Config[:json_attribs] = false
-    Chef::Config[:splay] = nil
     Chef::Config[:solo] = true
-  end
-
-  after do
-    Chef::Config[:solo] = nil
-    Chef::Config.configuration.replace(@original_config)
-    Chef::Config[:solo] = false
   end
 
   describe "configuring the application" do

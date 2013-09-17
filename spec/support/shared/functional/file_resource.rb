@@ -21,24 +21,12 @@ shared_context "deploying with move" do
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = true
   end
-
-  after do
-    Chef::Config.delete(:file_staging_uses_destdir)
-    Chef::Config.delete(:file_backup_path)
-    Chef::Config.delete(:file_atomic_update)
-  end
 end
 
 shared_context "deploying with copy" do
   before do
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = false
-  end
-
-  after do
-    Chef::Config.delete(:file_staging_uses_destdir)
-    Chef::Config.delete(:file_backup_path)
-    Chef::Config.delete(:file_atomic_update)
   end
 end
 
@@ -47,24 +35,12 @@ shared_context "deploying via tmpdir" do
     Chef::Config[:file_staging_uses_destdir] = false
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
-
-  after do
-    Chef::Config.delete(:file_staging_uses_destdir)
-    Chef::Config.delete(:file_backup_path)
-    Chef::Config.delete(:file_atomic_update)
-  end
 end
 
 shared_context "deploying via destdir" do
   before do
     Chef::Config[:file_staging_uses_destdir] = true
     Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-  end
-
-  after do
-    Chef::Config.delete(:file_staging_uses_destdir)
-    Chef::Config.delete(:file_backup_path)
-    Chef::Config.delete(:file_atomic_update)
   end
 end
 

@@ -21,13 +21,6 @@ require 'spec_helper'
 require 'tmpdir'
 
 describe Chef::Util::Backup do
-  before(:all) do
-    @original_config = Chef::Config.configuration
-  end
-
-  after(:all) do
-    Chef::Config.configuration.replace(@original_config)
-  end
 
   let (:tempfile) do
     Tempfile.new("chef-util-backup-spec-test")

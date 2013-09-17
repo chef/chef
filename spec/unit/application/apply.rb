@@ -20,19 +20,11 @@ require 'spec_helper'
 describe Chef::Application::Apply do
 
   before do
-    @original_config = Chef::Config.configuration
     @app = Chef::Application::Recipe.new
     @app.stub!(:configure_logging).and_return(true)
     @recipe_text = "package 'nyancat'"
     Chef::Config[:solo] = true
   end
-
-  after do
-    Chef::Config[:solo] = nil
-    Chef::Config.configuration.replace(@original_config)
-    Chef::Config[:solo] = false
-  end
-
 
   describe "configuring the application" do
     it "should set solo mode to true" do

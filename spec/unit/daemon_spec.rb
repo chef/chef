@@ -20,7 +20,6 @@ require 'ostruct'
 
 describe Chef::Daemon do
   before do
-    @original_config = Chef::Config.configuration
     if windows?
       mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
       mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
@@ -31,10 +30,6 @@ describe Chef::Daemon do
       Process::GID.stub!(:change_privilege).and_return 11
       Process::UID.stub!(:change_privilege).and_return 11
     end
-  end
-
-  after do
-    Chef::Config.configuration.replace(@original_config)
   end
 
   describe ".running?" do
@@ -77,10 +72,6 @@ describe Chef::Daemon do
         Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
       end
 
-      after do
-        Chef::Config.configuration.replace(@original_config)
-      end
-
       it "should return the supplied value" do
         Chef::Daemon.pid_file.should eql("/var/run/chef/chef-client.pid")
       end
@@ -89,7 +80,6 @@ describe Chef::Daemon do
     describe "without the pid_file option set" do
 
       before do
-        Chef::Config[:pid_file] = nil
         Chef::Daemon.name = "chef-client"
       end
 
@@ -230,10 +220,6 @@ describe Chef::Daemon do
     end
 
     describe "when just the user option is supplied" do
-      before do
-        Chef::Config[:group] = nil
-      end
-
       it "should log an appropriate info message" do
         Chef::Log.should_receive(:info).with("About to change privilege to aj")
         Chef::Daemon.change_privilege
