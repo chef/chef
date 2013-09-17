@@ -467,7 +467,7 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
-      runlock = RunLock.new(Chef::Config)
+      runlock = RunLock.new(Chef::Config.lockfile)
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin

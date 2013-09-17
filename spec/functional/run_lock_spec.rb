@@ -31,7 +31,6 @@ describe Chef::RunLock do
       "/tmp/#{Kernel.rand(Time.now.to_i + Process.pid)}"
     end
 
-    let(:file_cache_path){ "/var/chef/cache" }
     let(:lockfile){ "#{random_temp_root}/this/long/path/does/not/exist/chef-client-running.pid" }
 
     # make sure to start with a clean slate.
@@ -161,7 +160,7 @@ describe Chef::RunLock do
 
     ##
     # Run lock is the system under test
-    let!(:run_lock) { Chef::RunLock.new(:file_cache_path => file_cache_path, :lockfile => lockfile) }
+    let!(:run_lock) { Chef::RunLock.new(lockfile) }
 
     it "creates the full path to the lockfile" do
       lambda { run_lock.acquire }.should_not raise_error(Errno::ENOENT)
