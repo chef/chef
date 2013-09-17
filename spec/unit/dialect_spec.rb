@@ -35,7 +35,7 @@ end
 describe Chef::Dialect do
   describe 'find_by_extension' do
     it 'should find a registered extension' do
-      Chef::Dialect.find_by_extension(:recipe, 'test1').should == TestDialect1
+      Chef::Dialect.find_by_extension(:recipe, 'test1').should be_an_instance_of(TestDialect1)
     end
 
     it 'should raise an exception on unregistered extension' do
@@ -43,13 +43,13 @@ describe Chef::Dialect do
     end
 
     it 'should allow higher quality to take priority' do
-      Chef::Dialect.find_by_extension(:recipe, 'test2').should == TestDialect2Plus
+      Chef::Dialect.find_by_extension(:recipe, 'test2').should be_an_instance_of(TestDialect2Plus)
     end
   end
 
   describe 'find_by_mime_type' do
     it 'should find a registered MIME type' do
-      Chef::Dialect.find_by_mime_type(:recipe, 'test/one').should == TestDialect1
+      Chef::Dialect.find_by_mime_type(:recipe, 'test/one').should be_an_instance_of(TestDialect1)
     end
 
     it 'should raise an exception on unregistered MIME type' do
@@ -57,7 +57,7 @@ describe Chef::Dialect do
     end
 
     it 'should allow higher quality to take priority' do
-      Chef::Dialect.find_by_mime_type(:recipe, 'test/two').should == TestDialect2Plus
+      Chef::Dialect.find_by_mime_type(:recipe, 'test/two').should be_an_instance_of(TestDialect2Plus)
     end
   end
 end

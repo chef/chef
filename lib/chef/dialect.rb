@@ -27,7 +27,7 @@ class Chef
       end
 
       def register_dialect(flavor, extension, mime_type, quality=1)
-        Chef::Dialect.dialects << {:extension => extension, :mime_type => mime_type, :quality => quality, :flavor => flavor, :dialect => self}
+        Chef::Dialect.dialects << {:extension => extension, :mime_type => mime_type, :quality => quality, :flavor => flavor, :dialect => self.new}
       end
 
       def find_by_extension(flavor, extension)
