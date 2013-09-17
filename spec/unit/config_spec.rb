@@ -29,11 +29,6 @@ describe Chef::Config do
     Chef::Config.reset
   end
 
-  after :all do
-    # Be a good citizen
-    Chef::Config.reset
-  end
-
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
