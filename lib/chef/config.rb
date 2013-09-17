@@ -75,9 +75,7 @@ class Chef
       formatters << [name, file_path]
     end
 
-    def self.formatters
-      @formatters ||= []
-    end
+    default :formatters, []
 
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
