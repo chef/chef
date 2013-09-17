@@ -23,4 +23,8 @@ class Chef::Dialect::Ruby < Chef::Dialect
   def compile_recipe(recipe, filename)
     recipe.from_file(filename)
   end
+
+  def compile_attributes(node, filename)
+    node.from_file(filename)
+  end
 end
