@@ -234,7 +234,12 @@ class Chef
         raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
       end
 
-      recipe.from_file(recipe_filename)
+      begin
+        dialect = Chef::Dialect.find_by_extension(:recipe, recipe_filename)
+      rescue Chef::Exceptions::DialectNotFound
+        raise Chef::Exceptions::DialectNotFound, "could not find a recipe dialect for #{recipe_filename}"
+      end
+      dialect.compile_recipe(recipe, recipe_filename)
       recipe
     end
 

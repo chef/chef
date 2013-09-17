@@ -31,6 +31,10 @@ class Chef
       end
 
       def find_by_extension(flavor, extension)
+        # Allow passing in a full file path for ease-of-use
+        extension = File.basename(extension)
+        extname = File.extname(extension)
+        extension = extname if extname != ''
         find {|d| d[:flavor] == flavor && d[:extension] == extension}
       end
 
