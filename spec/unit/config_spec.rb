@@ -25,10 +25,6 @@ describe Chef::Config do
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
   end
 
-  before :each do
-    Chef::Config.reset
-  end
-
   describe "config attribute writer: chef_server_url" do
     before do
       Chef::Config.chef_server_url = "https://junglist.gen.nz"
@@ -85,22 +81,18 @@ describe Chef::Config do
       #   log_level = info or defualt
       # end
       #
-    before do
-      @config_class = Class.new(Chef::Config)
-    end
-
     it "has an empty list of formatters by default" do
-      @config_class.formatters.should == []
+      Chef::Config.formatters.should == []
     end
 
     it "configures a formatter with a short name" do
-      @config_class.add_formatter(:doc)
-      @config_class.formatters.should == [[:doc, nil]]
+      Chef::Config.add_formatter(:doc)
+      Chef::Config.formatters.should == [[:doc, nil]]
     end
 
     it "configures a formatter with a file output" do
-      @config_class.add_formatter(:doc, "/var/log/formatter.log")
-      @config_class.formatters.should == [[:doc, "/var/log/formatter.log"]]
+      Chef::Config.add_formatter(:doc, "/var/log/formatter.log")
+      Chef::Config.formatters.should == [[:doc, "/var/log/formatter.log"]]
     end
 
   end

@@ -75,9 +75,7 @@ class Chef
       formatters << [name, file_path]
     end
 
-    def self.formatters
-      @formatters ||= []
-    end
+    default :formatters, []
 
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
@@ -217,10 +215,10 @@ class Chef
     default :checksum_path, '/var/chef/checksums'
 
     # Where chef's cache files should be stored
-    default :file_cache_path, platform_specific_path('/var/chef/cache')
+    default(:file_cache_path) { platform_specific_path('/var/chef/cache') }
 
     # Where backups of chef-managed files should go
-    default :file_backup_path, platform_specific_path('/var/chef/backup')
+    default(:file_backup_path) { platform_specific_path('/var/chef/backup') }
 
     # The chef-client (or solo) lockfile.
     #
@@ -313,7 +311,7 @@ class Chef
     #
     # The chef-server will look up the public key for the client using the
     # `node_name` of the client.
-    default :client_key, platform_specific_path("/etc/chef/client.pem")
+    default(:client_key) { platform_specific_path("/etc/chef/client.pem") }
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
@@ -349,7 +347,7 @@ class Chef
     # chef-client will not be able to authenticate to the server.
     #
     # The `validation_key` is never used if the `client_key` exists.
-    default :validation_key, platform_specific_path("/etc/chef/validation.pem")
+    default(:validation_key) { platform_specific_path("/etc/chef/validation.pem") }
     default :validation_client_name, "chef-validator"
 
     # Zypper package provider gpg checks. Set to true to enable package
@@ -375,7 +373,7 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default :cache_options, { :path => platform_specific_path("/var/chef/cache/checksums") }
+    default(:cache_options) { { :path => platform_specific_path("/var/chef/cache/checksums") } }
 
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true
