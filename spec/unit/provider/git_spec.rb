@@ -173,7 +173,7 @@ SHAS
       {
         :user => deploy_user,
         :environment => { "GIT_SSH" => wrapper },
-        :log_tag => "git[web2.0 app]",
+        :log_tag => "git[web2.0 app]"
       }
     end
     before do
@@ -182,8 +182,7 @@ SHAS
     end
     context "without a timeout set" do
       it "clones a repo with default git options" do
-        @provider.should_receive(:shell_out!)
-                 .with(expected_cmd, default_options)
+        @provider.should_receive(:shell_out!).with(expected_cmd, default_options)
         @provider.clone
       end
     end
@@ -191,8 +190,7 @@ SHAS
       let (:seconds) { 10 }
       before { @resource.timeout(seconds) }
       it "clones a repo with amended git options" do
-        @provider.should_receive(:shell_out!)
-                 .with(expected_cmd, default_options.merge(:timeout => seconds))
+        @provider.should_receive(:shell_out!).with(expected_cmd, default_options.merge(:timeout => seconds))
         @provider.clone
       end
     end
