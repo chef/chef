@@ -443,7 +443,7 @@ class Chef
           search_path << File.join(segment.to_s, "#{platform}-#{v}", path)
         end
         search_path << File.join(segment.to_s, platform.to_s, path)
-        search_path << File.join(segment.to_s, platform_family.to_s, path)
+        search_path << File.join(segment.to_s, "family-#{platform_family.to_s}", path)
         search_path << File.join(segment.to_s, "default", path)
 
         search_path
