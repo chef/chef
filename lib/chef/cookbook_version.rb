@@ -591,7 +591,7 @@ class Chef
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(filenames)
-      filenames.select{|filename| filename =~ /\.rb$/}.inject({}){|memo, filename| memo[File.basename(filename, '.rb')] = filename ; memo }
+      filenames.inject({}){|memo, filename| memo[File.basename(filename, File.extname(filename))] = filename ; memo }
     end
 
     # See #manifest for a description of the manifest return value.

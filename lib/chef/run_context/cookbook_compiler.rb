@@ -101,7 +101,7 @@ class Chef
       end
 
       # Loads attributes files from cookbooks. Attributes files are loaded
-      # according to #cookbook_order; within a cookbook, +default.rb+ is loaded
+      # according to #cookbook_order; within a cookbook, +default.*+ is loaded
       # first, then the remaining attributes files in lexical sort order.
       def compile_attributes
         @events.attribute_load_start(count_files_by_segment(:attributes))
@@ -153,7 +153,7 @@ class Chef
 
       def load_attributes_from_cookbook(cookbook_name)
         list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find {|path| File.basename(path) == "default.rb" }
+        if default_file = list_of_attr_files.find {|path| File.basename(path, File.extname(path)) == "default" }
           list_of_attr_files.delete(default_file)
           load_attribute_file(cookbook_name.to_s, default_file)
         end
@@ -165,7 +165,7 @@ class Chef
 
       def load_attribute_file(cookbook_name, filename)
         Chef::Log.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-        attr_file_basename = ::File.basename(filename, ".rb")
+        attr_file_basename = ::File.basename(filename, File.extname(filename))
         node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
       rescue Exception => e
         @events.attribute_file_load_failed(filename, e)

@@ -44,9 +44,9 @@ class Chef
       end
 
       def load_cookbooks
-        load_as(:attribute_filenames, 'attributes', '*.rb')
+        load_as(:attribute_filenames, 'attributes', '*')
         load_as(:definition_filenames, 'definitions', '*.rb')
-        load_as(:recipe_filenames, 'recipes', '*.rb')
+        load_as(:recipe_filenames, 'recipes', '*')
         load_as(:library_filenames, 'libraries', '*.rb')
         load_recursively_as(:template_filenames, "templates", "*")
         load_recursively_as(:file_filenames, "files", "*")
