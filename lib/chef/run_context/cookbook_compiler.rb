@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -152,21 +152,19 @@ class Chef
       private
 
       def load_attributes_from_cookbook(cookbook_name)
-        list_of_attr_files = files_in_cookbook_by_segment(cookbook_name, :attributes).dup
-        if default_file = list_of_attr_files.find {|path| File.basename(path, File.extname(path)) == "default" }
-          list_of_attr_files.delete(default_file)
-          load_attribute_file(cookbook_name.to_s, default_file)
+        attr_files = cookbook_collection[cookbook_name].segment_filenames_by_name(:attributes).dup
+        if default_file = attr_files.delete('default')
+          load_attribute_file(cookbook_name.to_s, 'default', default_file)
         end
 
-        list_of_attr_files.each do |filename|
-          load_attribute_file(cookbook_name.to_s, filename)
+        attr_files.sort.each do |basename, filename|
+          load_attribute_file(cookbook_name.to_s, basename, filename)
         end
       end
 
-      def load_attribute_file(cookbook_name, filename)
+      def load_attribute_file(cookbook_name, basename, filename)
         Chef::Log.debug("Node #{node.name} loading cookbook #{cookbook_name}'s attribute file #{filename}")
-        attr_file_basename = ::File.basename(filename, File.extname(filename))
-        node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
+        node.include_attribute("#{cookbook_name}::#{basename}")
       rescue Exception => e
         @events.attribute_file_load_failed(filename, e)
         raise
@@ -259,7 +257,7 @@ class Chef
         cookbook_collection[cookbook].segment_filenames(segment).sort
       end
 
-      # Yields the name, as a symbol, of each cookbook depended on by 
+      # Yields the name, as a symbol, of each cookbook depended on by
       # +cookbook_name+ in lexical sort order.
       def each_cookbook_dep(cookbook_name, &block)
         cookbook = cookbook_collection[cookbook_name]

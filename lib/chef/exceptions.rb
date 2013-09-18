@@ -297,6 +297,7 @@ class Chef
     class InvalidRedirect < StandardError; end
 
     class DialectNotFound < ArgumentError; end
+    class CookbookFileCollision < RuntimeError; end
 
   end
 end

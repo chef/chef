@@ -41,6 +41,13 @@ class Chef
     include Comparable
 
     COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ]
+    # Mapping from segment name to root shortcut basename
+    # If you update this, also update the mapping in cookbook_version_loader.rb
+    ROOT_SHORTCUTS = {
+      :recipes => 'recipe',
+      :attributes => 'attributes',
+      :libraries => 'library',
+    }
 
     attr_accessor :root_dir
     attr_accessor :definition_filenames
@@ -62,9 +69,6 @@ class Chef
     # recipe_filenames also has a setter that has non-default
     # functionality.
     attr_reader :recipe_filenames
-
-    attr_reader :recipe_filenames_by_name
-    attr_reader :attribute_filenames_by_short_filename
 
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
@@ -91,13 +95,13 @@ class Chef
       @template_filenames = Array.new
       @file_filenames = Array.new
       @recipe_filenames = Array.new
-      @recipe_filenames_by_name = Hash.new
       @library_filenames = Array.new
       @resource_filenames = Array.new
       @provider_filenames = Array.new
       @metadata_filenames = Array.new
       @root_dir = nil
       @root_filenames = Array.new
+      @segment_filenames_by_name = Hash.new
       @status = :ready
       @manifest = nil
       @file_vendor = nil
@@ -193,7 +197,7 @@ class Chef
 
     def attribute_filenames=(*filenames)
       @attribute_filenames = filenames.flatten
-      @attribute_filenames_by_short_filename = filenames_by_name(attribute_filenames)
+      @segment_filenames_by_name.delete(:attributes)
       attribute_filenames
     end
 
@@ -204,7 +208,7 @@ class Chef
     # Return recipe names in the form of cookbook_name::recipe_name
     def fully_qualified_recipe_names
       results = Array.new
-      recipe_filenames_by_name.each_key do |rname|
+      segment_filenames_by_name(:recipes).each_key do |rname|
         results << "#{name}::#{rname}"
       end
       results
@@ -212,7 +216,7 @@ class Chef
 
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
-      @recipe_filenames_by_name = filenames_by_name(recipe_filenames)
+      @segment_filenames_by_name.delete(:recipes)
       recipe_filenames
     end
 
@@ -222,13 +226,13 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.has_key?(recipe_name)
+      unless segment_filenames_by_name(:recipes).has_key?(recipe_name)
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
 
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{name}")
       recipe = Chef::Recipe.new(name, recipe_name, run_context)
-      recipe_filename = recipe_filenames_by_name[recipe_name]
+      recipe_filename = segment_filenames_by_name(:recipes)[recipe_name]
 
       unless recipe_filename
         raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
@@ -268,6 +272,10 @@ class Chef
       when :root_files
         @root_filenames
       end
+    end
+
+    def segment_filenames_by_name(segment)
+      @segment_filenames_by_name[segment] ||= filenames_by_name(segment_filenames(segment), ROOT_SHORTCUTS[segment])
     end
 
     # Query whether a template file +template_filename+ is available. File
@@ -590,8 +598,19 @@ class Chef
 
     # For each filename, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
-    def filenames_by_name(filenames)
-      filenames.inject({}){|memo, filename| memo[File.basename(filename, File.extname(filename))] = filename ; memo }
+    def filenames_by_name(filenames, root_default = nil)
+      root_regexp = /#{Regexp.escape(root_dir)}\/(.+?)(\..*)?$/
+      filenames.inject({}) do |memo, filename|
+        relname = filename[root_regexp, 1]
+        basename = if relname == root_default
+          'default'
+        else
+          File.basename(filename, File.extname(filename))
+        end
+        raise Chef::Exceptions::CookbookFileCollision, "Duplicate files for #{basename}: #{filename}, #{memo[basename]}" if memo[basename]
+        memo[basename] = filename
+        memo
+      end
     end
 
     # See #manifest for a description of the manifest return value.
