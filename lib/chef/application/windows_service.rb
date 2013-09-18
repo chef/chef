@@ -173,8 +173,6 @@ class Chef
           config_params += " -L #{Chef::Config[:log_location].path}" unless Chef::Config[:log_location] == STDOUT
           # Starts a new process and waits till the process exits
           result = shell_out("chef-client #{config_params}")
-          # Once process exits, we log the following messages
-          Chef::Log.info "Child process successfully reaped (pid: #{Process.pid})"
           # stdout is the std output of the child process
           Chef::Log.debug "#{result.stdout}"
           # stderr is the error from the output process
@@ -183,6 +181,9 @@ class Chef
           Chef::Log.warn "Not able to start chef-client in new process (#{e})"
         rescue => e
           Chef::Log.error e
+        ensure
+          # Once process exits, we log the current process' pid
+          Chef::Log.info "Child process exited (pid: #{Process.pid})"
         end
       end
 

@@ -42,17 +42,13 @@ describe "Chef::Application::WindowsService", :windows_only do
   it "passes config params to new process" do
     Chef::Config[:config_file] = "test_config_file"
     Chef::Config[:log_location] = tempfile.path
-    Chef::Config[:log_level] = :debug
-    Chef::Config[:chef_server_url] = "chef_server_url"
-    Chef::Config[:force_logger] = true
-    Chef::Config[:force_formatter] = true
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.stub(:running?).and_return(true, false)
     instance.instance_variable_get(:@service_signal).stub(:wait)
     instance.stub(:state).and_return(4)
     instance.should_receive(:run_chef_client).and_call_original
-    instance.should_receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path} -l debug -S chef_server_url --force-formatter --force-logger").and_return(shell_out_result)
+    instance.should_receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}").and_return(shell_out_result)
     instance.service_main
     tempfile.unlink
   end
