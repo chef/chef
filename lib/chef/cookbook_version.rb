@@ -664,9 +664,9 @@ class Chef
           rs = Mash.new({
             :name => file_name,
             :path => path,
-            :checksum => csum
+            :checksum => csum,
+            :specificity => specificity,
           })
-          rs[:specificity] = specificity
 
           manifest[segment] << rs
         end
