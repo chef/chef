@@ -197,6 +197,7 @@ class Chef
 
     def attribute_filenames=(*filenames)
       @attribute_filenames = filenames.flatten
+      # Clear the cached value if any to preserve earlier semantics
       @segment_filenames_by_name.delete(:attributes)
       attribute_filenames
     end
@@ -216,6 +217,7 @@ class Chef
 
     def recipe_filenames=(*filenames)
       @recipe_filenames = filenames.flatten
+      # Clear the cached value if any to preserve earlier semantics
       @segment_filenames_by_name.delete(:recipes)
       recipe_filenames
     end
