@@ -15,6 +15,14 @@
 # limitations under the License.
 #
 
-require 'chef/dialect/ruby'
-require 'chef/dialect/json'
-require 'chef/dialect/yaml'
+require 'chef/dialect/declarative_base'
+
+class Chef::Dialect::Ruby < Chef::Dialect::DeclarativeBase
+  register_dialect :attributes, '.json', 'application/json'
+
+  private
+
+  def parse_data(data, filename)
+    Chef::JSONCompat.from_json(data, :create_additions => false)
+  end
+end

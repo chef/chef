@@ -15,6 +15,15 @@
 # limitations under the License.
 #
 
-require 'chef/dialect/ruby'
-require 'chef/dialect/json'
-require 'chef/dialect/yaml'
+require 'chef/dialect/declarative_base'
+
+class Chef::Dialect::Yaml < Chef::Dialect::DeclarativeBase
+  register_dialect :attributes, '.yaml', 'text/yaml'
+  register_dialect :attributes, '.yml', 'text/yaml'
+
+  private
+
+  def parse_data(data, filename)
+    Psych.load(data, filename)
+  end
+end
