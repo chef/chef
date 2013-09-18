@@ -37,8 +37,7 @@ describe Chef::CookbookVersion do
   end
 
   def cookbook_files(*names)
-    root_dir = File.join(@cookbook_repo, 'openldap')
-    names.map{|name| File.join(root_dir, name)}
+    names.map{|name| File.join(@cookbook.root_dir, name)}
   end
 
   it "should allow you to set the list of attribute files and create the mapping from short names to paths" do
@@ -120,6 +119,29 @@ describe Chef::CookbookVersion do
 
   it "should raise an ArgumentException if you try to load a bad recipe name" do
     lambda { @cookbook.load_recipe("doesnt_exist", @node) }.should raise_error(ArgumentError)
+  end
+
+  context 'when the cookbook has root shortcuts' do
+    before(:each) do
+      @cookbook = @cookbook_collection[:root_shortcuts]
+    end
+
+    it "should generate a list of recipes by fully-qualified name" do
+      @cookbook.fully_qualified_recipe_names.sort.should == ['root_shortcuts::default', 'root_shortcuts::two']
+    end
+
+    it "should locate attribute files from a root shortcut" do
+      @cookbook.segment_filenames(:attributes).should == cookbook_files('attributes.rb')
+    end
+
+    it "should locate recipe files from a root shortcut" do
+      @cookbook.segment_filenames(:recipes).sort.should == cookbook_files('recipe.rb', 'recipes/two.rb')
+    end
+
+    it "should locate library files from a root shortcut" do
+      @cookbook.segment_filenames(:libraries).should == cookbook_files('library.rb')
+    end
+
   end
 
 end
