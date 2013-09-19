@@ -130,6 +130,7 @@ describe Chef::CookbookVersion do
       @cookbook_version.provider_filenames   = @cookbook[:provider_filenames]
       @cookbook_version.root_filenames       = @cookbook[:root_filenames]
       @cookbook_version.metadata_filenames   = @cookbook[:metadata_filenames]
+      @cookbook_version.root_dir             = cookbook_root
 
       # Used to test file-specificity related file lookups
       @node = Chef::Node.new
