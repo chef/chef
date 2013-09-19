@@ -47,6 +47,7 @@ class Chef
         @resource_name = :log
         @level = :info
         @action = :write
+        @allowed_actions.push(:write)
         @message = name
       end
 

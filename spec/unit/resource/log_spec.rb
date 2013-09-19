@@ -27,9 +27,13 @@ describe Chef::Resource::Log do
   end
 
   it "should create a new Chef::Resource::Log" do
-      @resource.should be_a_kind_of(Chef::Resource)
-      @resource.should be_a_kind_of(Chef::Resource::Log)
-    end
+    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::Log)
+  end
+
+  it "supports the :write actions" do
+    @resource.allowed_actions.should include(:write)
+  end
 
   it "should have a name of log" do
     @resource.resource_name.should == :log
