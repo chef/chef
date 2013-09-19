@@ -312,6 +312,7 @@ class Chef
         if segment == :files || segment == :templates
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
           error_locations = [
+            "  #{segment}/host-#{node[:fqdn]}/#{filename}",
             "  #{segment}/#{node[:platform]}-#{node[:platform_version]}/#{filename}",
             "  #{segment}/#{node[:platform]}/#{filename}",
             "  #{segment}/default/#{filename}",
