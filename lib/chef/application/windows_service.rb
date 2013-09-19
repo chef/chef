@@ -170,7 +170,7 @@ class Chef
           # Pass config params to the new process
           config_params = " --no-fork"
           config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
-          config_params += " -L #{Chef::Config[:log_location].path}" unless Chef::Config[:log_location] == STDOUT
+          config_params += " -L #{Chef::Config[:log_location]}" unless Chef::Config[:log_location] == STDOUT
           # Starts a new process and waits till the process exits
           result = shell_out("chef-client #{config_params}")
           # stdout is the std output of the child process
