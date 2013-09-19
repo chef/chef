@@ -97,23 +97,24 @@ describe Chef::CookbookVersion do
   end
 
   describe "after the cookbook has been loaded" do
+    let(:cookbook) { 'tatft' }
     MD5 = /[0-9a-f]{32}/
 
     before do
       # Currently the cookbook loader finds all the files then tells CookbookVersion
       # where they are.
-      @cookbook_version = Chef::CookbookVersion.new("tatft")
+      @cookbook_version = Chef::CookbookVersion.new(cookbook)
 
       @cookbook = Hash.new { |hash, key| hash[key] = [] }
 
-      cookbook_root = File.join(CHEF_SPEC_DATA, 'cb_version_cookbooks', 'tatft')
+      cookbook_root = File.join(CHEF_SPEC_DATA, 'cb_version_cookbooks', cookbook)
 
       # Dunno if the paths here are representitive of what is set by CookbookLoader...
-      @cookbook[:attribute_filenames]   = Dir[File.join(cookbook_root, 'attributes', '**', '*.rb')]
+      @cookbook[:attribute_filenames]   = Dir[File.join(cookbook_root, 'attributes', '**', '*.*')]
       @cookbook[:definition_filenames]  = Dir[File.join(cookbook_root, 'definitions', '**', '*.rb')]
-      @cookbook[:file_filenames]        = Dir[File.join(cookbook_root, 'files', '**', '*.tgz')]
-      @cookbook[:recipe_filenames]      = Dir[File.join(cookbook_root, 'recipes', '**', '*.rb')]
-      @cookbook[:template_filenames]    = Dir[File.join(cookbook_root, 'templates', '**', '*.erb')]
+      @cookbook[:file_filenames]        = Dir[File.join(cookbook_root, 'files', '**', '*.*')]
+      @cookbook[:recipe_filenames]      = Dir[File.join(cookbook_root, 'recipes', '**', '*.*')]
+      @cookbook[:template_filenames]    = Dir[File.join(cookbook_root, 'templates', '**', '*.*')]
       @cookbook[:library_filenames]     = Dir[File.join(cookbook_root, 'libraries', '**', '*.rb')]
       @cookbook[:resource_filenames]    = Dir[File.join(cookbook_root, 'resources', '**', '*.rb')]
       @cookbook[:provider_filenames]    = Dir[File.join(cookbook_root, 'providers', '**', '*.rb')]
@@ -248,6 +249,35 @@ describe Chef::CookbookVersion do
         useful_explanation = Regexp.new(Regexp.escape("files/default/no-such-thing.txt"))
         @attempt_to_load_file.should raise_error(Chef::Exceptions::FileNotFound, useful_explanation)
       end
+    end
+
+    context 'when the cookbook has un-scoped files/templates' do
+      let(:cookbook) { 'cookbook2' }
+
+      it "should see a template" do
+        @cookbook_version.should have_template_for_node(@node, "test.erb")
+      end
+
+      it "should see a template using an array lookup" do
+        @cookbook_version.should have_template_for_node(@node, ["test.erb"])
+      end
+
+      it "should see a template using an array lookup with non-existant elements" do
+        @cookbook_version.should have_template_for_node(@node, ["missing.txt", "test.erb"])
+      end
+
+      it "should see a file" do
+        @cookbook_version.should have_cookbook_file_for_node(@node, "test.txt")
+      end
+
+      it "should see a file using an array lookup" do
+        @cookbook_version.should have_cookbook_file_for_node(@node, ["test.txt"])
+      end
+
+      it "should see a file using an array lookup with non-existant elements" do
+        @cookbook_version.should have_cookbook_file_for_node(@node, ["missing.txt", "test.txt"])
+      end
+
     end
 
   end
