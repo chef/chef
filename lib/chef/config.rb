@@ -384,6 +384,11 @@ class Chef
       default :hints, {}
     end
 
+    # HTTP Proxy settings
+    default :http_proxy, nil
+    default :https_proxy, nil
+    default :no_proxy, nil
+
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
     if RUBY_PLATFORM =~ /mswin|mingw|windows/

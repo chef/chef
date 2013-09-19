@@ -196,6 +196,18 @@ describe Chef::Config do
       Chef::Config[:ssl_ca_file].should be_nil
     end
 
+    it "Chef::Config[:http_proxy] defaults to nil" do
+      Chef::Config[:http_proxy].should be_nil
+    end
+
+    it "Chef::Config[:https_proxy] defaults to nil" do
+      Chef::Config[:https_proxy].should be_nil
+    end
+
+    it "Chef::Config[:no_proxy] defaults to nil" do
+      Chef::Config[:no_proxy].should be_nil
+    end
+
     it "Chef::Config[:data_bag_path] defaults to /var/chef/data_bags" do
       data_bag_path =
         Chef::Config.platform_specific_path("/var/chef/data_bags")
