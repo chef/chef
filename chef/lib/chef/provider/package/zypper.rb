@@ -87,15 +87,15 @@ class Chef
         def install_package(name, version)
           if zypper_version < 1.0
             run_command(
-              :command => "zypper install -y #{name}"
+              :command => "zypper install -y#{expand_options(@new_resource.options)} #{name}"
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l  #{name}=#{version}"
+              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)} #{name}=#{version} "
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l  #{name}"
+              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)} #{name}"
             )
           end
         end
@@ -103,15 +103,15 @@ class Chef
         def upgrade_package(name, version)
           if zypper_version < 1.0
             run_command(
-              :command => "zypper install -y #{name}"
+              :command => "zypper install -y#{expand_options(@new_resource.options)} #{name}"
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l #{name}=#{version}"
+              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)} #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l #{name}"
+              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)} #{name}"
             )
           end
         end
@@ -119,15 +119,15 @@ class Chef
         def remove_package(name, version)
           if zypper_version < 1.0
             run_command(
-              :command => "zypper remove -y #{name}"
+              :command => "zypper remove -y#{expand_options(@new_resource.options)} #{name}"
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks remove  #{name}=#{version}"
+              :command => "zypper -n --no-gpg-checks remove #{expand_options(@new_resource.options)} #{name}=#{version}"
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks remove  #{name}"
+              :command => "zypper -n --no-gpg-checks remove #{expand_options(@new_resource.options)} #{name}"
             )
           end
             
