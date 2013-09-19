@@ -241,50 +241,14 @@ EOM
       file 'nodes/x.json', {}
 
       it 'knife raw /roles/x should retrieve the role' do
-        knife('raw /nodes/x').should_succeed <<EOM
-{
-  "name": "x",
-  "json_class": "Chef::Node",
-  "chef_type": "node",
-  "chef_environment": "_default",
-  "override": {
-  },
-  "normal": {
-  },
-  "default": {
-  },
-  "automatic": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
+        knife('raw /nodes/x').should_succeed /"name": "x"/
       end
 
       context 'And chef_zero.port is 9999' do
         before(:each) { Chef::Config.chef_zero.port = 9999 }
  
         it 'knife raw /roles/x should retrieve the role' do
-          knife('raw /nodes/x').should_succeed <<EOM
-{
-  "name": "x",
-  "json_class": "Chef::Node",
-  "chef_type": "node",
-  "chef_environment": "_default",
-  "override": {
-  },
-  "normal": {
-  },
-  "default": {
-  },
-  "automatic": {
-  },
-  "run_list": [
-
-  ]
-}
-EOM
+          knife('raw /nodes/x').should_succeed /"name": "x"/
           Chef::Config.chef_server_url.should == 'http://127.0.0.1:9999'
         end
       end
