@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'digest/md5'
 require 'chef/provider/package'
 require 'chef/mixin/shell_out'
 require 'chef/resource/package'
@@ -98,15 +99,18 @@ class Chef
             remove_package(name, version)
         end
 
-        @@updated = false
+        @@updated = Hash.new
         private
         def update_indexes()
-            if @@updated
+            Chef::Log.debug("#{@new_resource} call update indexes #{expand_options(@new_resource.options)}")
+			checksum = Digest::MD5.hexdigest(@new_resource.options || '').to_s
+
+            if @@updated[checksum]
                 return
             end
-            Chef::Log.debug("#{@new_resource} updating package indexes")
+            Chef::Log.info("#{@new_resource} updating package indexes: #{expand_options(@new_resource.options)}")
             shell_out!("poldek --up #{expand_options(@new_resource.options)}", :env => nil)
-            @@updated = true
+            @@updated[checksum] = true
         end
       end
     end
