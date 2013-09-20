@@ -1,4 +1,3 @@
-#
 # Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: William Albenzi (<walbenzi@gmail.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
@@ -35,34 +34,37 @@ class Chef
         :long  => "--after ITEM",
         :description => "Place the ENTRY in the run list after ITEM"
 
-      def add_to_env_run_list(role, entries, after=nil)
+      def add_to_env_run_list(role, environment, entries, after=nil)
         if after
           nlist = []
-          role.env_run_list.each do |entry| 
+          role.run_list_for(environment).each do |entry| 
             nlist << entry
             if entry == after
               entries.each { |e| nlist << e }
             end
           end
-          role.env_run_list.reset!(nlist)
+          #role.run_list_for(environment).reset!(nlist)
         else
-          entries.each { |e| role.env_run_list << e }
+          role.run_list(environment)
+          entries.each { |e| role.run_list_for(environment) << e }
         end
       end
 
       def run
         role = Chef::Role.load(@name_args[0])
+        environment = @name_args[1]
+
         if @name_args.size > 2
           # Check for nested lists and create a single plain one
-          entries = @name_args[1..-1].map do |entry|
+          entries = @name_args[2..-1].map do |entry|
             entry.split(',').map { |e| e.strip }
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(',').map { |e| e.strip }
+          entries = @name_args[2].split(',').map { |e| e.strip }
         end
 
-        add_to_env_run_list(role, entries, config[:after])
+        add_to_env_run_list(role, environment, entries, config[:after])
         role.save
         config[:env_run_list] = true
         output(format_for_display(role))

@@ -90,7 +90,7 @@ class Chef
     # Per environment run lists
     def env_run_lists(env_run_lists=nil)
       if (!env_run_lists.nil?)
-        unless env_run_lists.key?("_default")
+        unless @env_run_lists.key?("_default")
           msg = "_default key is required in env_run_lists.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
           raise Chef::Exceptions::InvalidEnvironmentRunListSpecification, msg

@@ -27,7 +27,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
     @knife.config = {
       :after => nil
     }
-    @knife.name_args = [ "test", "role[monkey]" ]
+    @knife.name_args = [ "websimian", "QA", "role[monkey]" ]
     @knife.stub!(:output).and_return(true)
     @role = Chef::Role.new() 
     @role.stub!(:save).and_return(true)
@@ -36,50 +36,43 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
   describe "run" do
 
-    it "should load the role with a QA environment" do
-      Chef::Role.should_receive(:load).with("adam")
-      @knife.run  #Now this fails as below
-        # Failures:
-        # 
-        #   1) Chef::Knife::RoleEnvRunListAdd run should load the role with a QA environment
-        #      Failure/Error: @knife.run
-        #      NoMethodError:
-        #        undefined method `<<' for {"_default"=>}:Hash
-        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:49:in `block in add_to_env_run_list'
-        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:49:in `each'
-        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:49:in `add_to_env_run_list'
-        #      # /Users/walbenzi/work/sandbox/chef/lib/chef/knife/role_env_run_list_add.rb:65:in `run'
-        #      # /Users/walbenzi/work/sandbox/chef/spec/unit/knife/role_env_run_list_add_spec.rb:41:in `block (3 levels) in <top (required)>'
-        # 
-
+    it "should load the role named websimian" do
+      Chef::Role.should_receive(:load).with("websimian")
+      @knife.run
     end
 
-#    it "should add to the run list" do
-#      @knife.run
-#      @node.run_list[0].should == 'role[monkey]'
-#    end
-#
-#    it "should save the node" do
-#      @node.should_receive(:save)
-#      @knife.run
-#    end
-#
-#    it "should print the run list" do
-#      @knife.should_receive(:output).and_return(true)
-#      @knife.run
-#    end
-#
-#    describe "with -a or --after specified" do
-#      it "should add to the run list after the specified entry" do
-#        @node.run_list << "role[acorns]"
-#        @node.run_list << "role[barn]"
-#        @knife.config[:after] = "role[acorns]"
-#        @knife.run
-#        @node.run_list[0].should == "role[acorns]"
-#        @node.run_list[1].should == "role[monkey]"
-#        @node.run_list[2].should == "role[barn]"
-#      end
-#    end
+    it "should be able to add an environment specific run list" do
+      @knife.run
+      @role.active_run_list_for("QA").should == 'role[monkey]'
+    end
+
+    it "should save the role" do
+      @role.should_receive(:save)
+      @knife.run
+    end
+
+    it "should have a QA environment" do
+      @knife.run
+      @role.to_json.should == 'something'
+    end
+
+    it "should print the run list" do
+      @knife.should_receive(:output).and_return(true)
+      @knife.run
+    end
+
+     describe "with -a or --after specified" do
+      it "should add to the run list after the specified entry" do
+        @role.run_list_for("QA") << "role[acorns]"
+        @role.run_list_for("QA") << "role[barn]"
+        @knife.config[:after] = "role[acorns]"
+        @knife.run
+        @role.active_run_list_for("QA").should == "role[acorns]"
+#        @role.active_run_list_for("QA")[0].should == "role[acorns]"
+#        @role.active_run_list_for("QA")[1].should == "role[monkey]"
+#        @role.active_run_list_for("QA")[2].should == "role[barn]"
+      end
+    end
 #
 #    describe "with more than one role or recipe" do
 #      it "should add to the run list all the entries" do
