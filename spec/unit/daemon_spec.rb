@@ -148,11 +148,26 @@ describe Chef::Daemon do
 
     end
 
-    describe "when the pid file exists and the process is forked" do
+    describe "when the pid file exists and is not running" do
 
       before do
         File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-        Chef::Daemon.stub!(:forked?) { true }
+        Chef::Daemon.stub!(:running?) { false }
+      end
+
+      it "should remove the file" do
+        FileUtils.should_receive(:rm)
+        Chef::Daemon.remove_pid_file
+      end
+
+    end
+
+    describe "when the pid file exists, is running and the process id does not match" do
+
+      before do
+        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
+        Chef::Daemon.stub!(:running?) { true }
+        Chef::Daemon.stub!(:pid_from_file) { Process.pid - 1 }
       end
 
       it "should not remove the file" do
@@ -162,16 +177,18 @@ describe Chef::Daemon do
 
     end
 
-    describe "when the pid file exists and the process is not forked" do
+    describe "when the pid file exists and the process id match" do
+
       before do
         File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-        Chef::Daemon.stub!(:forked?) { false }
+        Chef::Daemon.stub!(:pid_from_file) { Process.pid }
       end
 
       it "should remove the file" do
         FileUtils.should_receive(:rm)
         Chef::Daemon.remove_pid_file
       end
+
     end
 
     describe "when the pid file does not exist" do
