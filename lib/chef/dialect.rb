@@ -16,6 +16,7 @@
 #
 
 require 'chef/exceptions'
+require 'chef/resource/chef_gem'
 
 class Chef
   class Dialect
@@ -27,29 +28,53 @@ class Chef
       end
 
       def register_dialect(flavor, extension, mime_type, quality=1)
-        Chef::Dialect.dialects << {:extension => extension, :mime_type => mime_type, :quality => quality, :flavor => flavor, :dialect => self.new}
+        Chef::Dialect.dialects << {:extension => extension, :mime_type => mime_type, :quality => quality, :flavor => flavor, :dialect => self}
       end
 
-      def find_by_extension(flavor, extension)
+      def find_by_extension(run_context, flavor, extension)
         # Allow passing in a full file path for ease-of-use
         extension = File.basename(extension)
         extname = File.extname(extension)
         extension = extname if extname != ''
-        find {|d| d[:flavor] == flavor && d[:extension] == extension}
+        find(run_context) {|d| d[:flavor] == flavor && d[:extension] == extension}
       end
 
-      def find_by_mime_type(flavor, mime_type)
-        find {|d| d[:flavor] == flavor && d[:mime_type] == mime_type}
+      def find_by_mime_type(run_context, flavor, mime_type)
+        find(run_context) {|d| d[:flavor] == flavor && d[:mime_type] == mime_type}
       end
 
       private
 
-      def find(&block)
+      def find(run_context, &block)
         candidates = dialects.select(&block)
         raise Chef::Exceptions::DialectNotFound.new("No matching dialect found") if candidates.empty?
-        candidates.max_by{|d| d[:quality]}[:dialect]
+        data = candidates.max_by{|d| d[:quality]}
+        unless data[:dialect_instance] && data[:dialect_instance].run_context === run_context
+          data[:dialect_instance] ||= data[:dialect].new(run_context)
+        end
+        data[:dialect_instance]
       end
     end
+
+    def initialize(run_context)
+      @run_context = run_context
+    end
+
+    def install_gem(name, version = nil)
+      # Create a mini-converge to install a single gem into the Chef Ruby env
+      res = Chef::Resource::ChefGem.new(name, @run_context)
+      res.version(version) if version
+      res.after_created
+    end
+
+    def compile_recipe(recipe, filename)
+      raise NotImplementedError
+    end
+
+    def compile_attributes(node, filename)
+      raise NotImplementedError
+    end
+
   end
 end
 

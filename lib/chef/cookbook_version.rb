@@ -241,7 +241,7 @@ class Chef
       end
 
       begin
-        dialect = Chef::Dialect.find_by_extension(:recipe, recipe_filename)
+        dialect = Chef::Dialect.find_by_extension(run_context, :recipe, recipe_filename)
       rescue Chef::Exceptions::DialectNotFound
         raise Chef::Exceptions::DialectNotFound, "could not find a recipe dialect for #{recipe_filename}"
       end

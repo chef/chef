@@ -38,7 +38,7 @@ class Chef
             attr_file_path = run_context.resolve_attribute(cookbook_name, attr_file)
 
             begin
-              dialect = Chef::Dialect.find_by_extension(:attributes, attr_file_path)
+              dialect = Chef::Dialect.find_by_extension(run_context, :attributes, attr_file_path)
             rescue Chef::Exceptions::DialectNotFound
               raise Chef::Exceptions::DialectNotFound, "could not find an attributes dialect for #{attr_file_path}"
             end
