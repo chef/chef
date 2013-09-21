@@ -379,6 +379,9 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
+      Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+      Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
+
       # Expand a relative path from the config directory. Config from command
       # line should already be expanded, and absolute paths will be unchanged.
       if Chef::Config[:client_key] && config[:config_file]
