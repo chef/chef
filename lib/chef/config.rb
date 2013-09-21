@@ -305,7 +305,9 @@ class Chef
     #
     # The chef-server will look up the public key for the client using the
     # `node_name` of the client.
-    default(:client_key) { platform_specific_path("/etc/chef/client.pem") }
+    #
+    # If chef-zero is enabled, this defaults to nil (no authentication).
+    default(:client_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/client.pem") }
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
@@ -341,7 +343,9 @@ class Chef
     # chef-client will not be able to authenticate to the server.
     #
     # The `validation_key` is never used if the `client_key` exists.
-    default(:validation_key) { platform_specific_path("/etc/chef/validation.pem") }
+    #
+    # If chef-zero is enabled, this defaults to nil (no authentication).
+    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
     default :validation_client_name, "chef-validator"
 
     # Zypper package provider gpg checks. Set to true to enable package

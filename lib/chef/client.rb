@@ -368,7 +368,10 @@ class Chef
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
-      if File.exists?(config[:client_key])
+      if !config[:client_key]
+        @events.skipping_registration(client_name, config)
+        Chef::Log.debug("Client key is unspecified - skipping registration")
+      elsif File.exists?(config[:client_key])
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else

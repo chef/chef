@@ -30,7 +30,6 @@ describe 'knife common options' do
         ChefZero::RSpec.server.stop
         ChefZero::RSpec.server = nil
       end
-      Chef::Config.client_key = nil
     end
 
     context 'When chef_zero.enabled is true' do
