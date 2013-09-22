@@ -40,6 +40,7 @@ class Chef
         end
 
         def create_child(name, file_contents = nil)
+          @children = nil
           write_dir.create_child(name, file_contents)
         end
       end

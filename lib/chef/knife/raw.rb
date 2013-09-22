@@ -47,7 +47,13 @@ class Chef
         end
         chef_rest = Chef::REST.new(Chef::Config[:chef_server_url])
         begin
-          output Chef::ChefFS::RawRequest.api_request(chef_rest, config[:method].to_sym, chef_rest.create_url(name_args[0]), {}, data)
+          method = config[:method].to_sym
+          url = chef_rest.create_url(name_args[0])
+          result = Chef::ChefFS::RawRequest.api_request(chef_rest, method, url, {}, data, :parse_json => config[:pretty])
+          if result.is_a?(Hash) || result.is_a?(Array)
+            result = Chef::JSONCompat.to_json_pretty(result)
+          end
+          output result
         rescue Timeout::Error => e
           ui.error "Server timeout"
           exit 1

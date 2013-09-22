@@ -21,21 +21,17 @@ describe Chef::Application::Client, "reconfigure" do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    @original_config = Chef::Config.configuration.dup
 
     @app = Chef::Application::Client.new
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config[:json_attribs] = nil
     Chef::Config[:interval] = 10
-    Chef::Config[:splay] = nil
 
     Chef::Config[:once] = false
   end
 
   after do
-    Chef::Config.configuration.replace(@original_config)
     ARGV.replace(@original_argv)
   end
 

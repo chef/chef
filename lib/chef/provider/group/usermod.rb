@@ -47,7 +47,7 @@ class Chef
           case node[:platform]
           when "openbsd", "netbsd", "aix", "solaris2", "smartos"
             append_flags = "-G"
-          when "solaris", "suse"
+          when "solaris", "suse", "opensuse"
             append_flags = "-a -G"
           end
 

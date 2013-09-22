@@ -398,6 +398,19 @@ class Chef
         )
       end
 
+      # FIXME The Deploy resource may be passed to an SCM provider as its
+      # resource.  The SCM provider knows that SCM resources can specify a
+      # timeout for SCM operations. The deploy resource must therefore support
+      # a timeout method, but the timeout it describes is for SCM operations,
+      # not the overall deployment. This is potentially confusing.
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => Integer
+        )
+      end
+
     end
   end
 end

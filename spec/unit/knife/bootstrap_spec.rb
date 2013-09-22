@@ -22,16 +22,6 @@ Chef::Knife::Bootstrap.load_deps
 require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do
-  before(:all) do
-    @original_config = Chef::Config.hash_dup
-    @original_knife_config = Chef::Config[:knife].dup
-  end
-
-  after(:all) do
-    Chef::Config.configuration = @original_config
-    Chef::Config[:knife] = @original_knife_config
-  end
-
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
     @knife = Chef::Knife::Bootstrap.new
@@ -182,7 +172,6 @@ describe Chef::Knife::Bootstrap do
       it "renders the client.rb with an encrypted_data_bag_secret entry" do
         rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
       end
-      after(:each) { Chef::Config.configuration = @original_config }
     end
   end
 

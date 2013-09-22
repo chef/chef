@@ -4,8 +4,6 @@ describe Chef::Knife::Configure do
   before do
     Chef::Log.logger = Logger.new(StringIO.new)
 
-    @original_config = Chef::Config.configuration.dup
-
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::Configure.new
     @rest_client = mock("null rest client", :post_rest => { :result => :true })
@@ -22,10 +20,6 @@ describe Chef::Knife::Configure do
     @knife.ui.stub!(:stderr).and_return(@err)
 
     Ohai::System.stub!(:new).and_return(ohai)
-  end
-
-  after do
-    Chef::Config.configuration.replace(@original_config)
   end
 
 

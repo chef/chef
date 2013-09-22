@@ -29,6 +29,8 @@ class Chef
 
     extend Mixlib::Config
 
+    config_strict_mode false
+
     # Manages the chef secret session key
     # === Returns
     # <newkey>:: A new or retrieved session key
@@ -50,6 +52,14 @@ class Chef
       configuration.inspect
     end
 
+    def self.platform_path_separator
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        File::ALT_SEPARATOR || '\\'
+      else
+        File::SEPARATOR
+      end
+    end
+
     def self.platform_specific_path(path)
       if RUBY_PLATFORM =~ /mswin|mingw|windows/
         # turns /etc/chef/client.rb into C:/chef/client.rb
@@ -65,32 +75,20 @@ class Chef
       formatters << [name, file_path]
     end
 
-    def self.formatters
-      @formatters ||= []
-    end
+    default :formatters, []
 
     # Override the config dispatch to set the value of multiple server options simultaneously
     #
     # === Parameters
     # url<String>:: String to be set for all of the chef-server-api URL's
     #
-    config_attr_writer :chef_server_url do |url|
-      url = url.strip
-      configure do |c|
-        c[:chef_server_url] = url
-      end
-      url
-    end
+    configurable(:chef_server_url).writes_value { |url| url.strip }
 
     # When you are using ActiveSupport, they monkey-patch 'daemonize' into Kernel.
     # So while this is basically identical to what method_missing would do, we pull
     # it up here and get a real method written so that things get dispatched
     # properly.
-    config_attr_writer :daemonize do |v|
-      configure do |c|
-        c[:daemonize] = v
-      end
-    end
+    configurable(:daemonize).writes_value { |v| v }
 
     # Override the config dispatch to set the value of log_location configuration option
     #
@@ -108,50 +106,122 @@ class Chef
         rescue Errno::ENOENT
           raise Chef::Exceptions::ConfigurationError, "Failed to open or create log file at #{location.to_str}"
         end
-          f
+        f
       end
     end
 
+    # The root where all local chef object data is stored.  cookbooks, data bags,
+    # environments are all assumed to be in separate directories under this.
+    # chef-solo uses these directories for input data.  knife commands
+    # that upload or download files (such as knife upload, knife role from file,
+    # etc.) work.
+    default :chef_repo_path do
+      if self.configuration[:cookbook_path]
+        if self.configuration[:cookbook_path].kind_of?(String)
+          File.expand_path('..', self.configuration[:cookbook_path])
+        else
+          self.configuration[:cookbook_path].map do |path|
+            File.expand_path('..', path)
+          end
+        end
+      else
+        platform_specific_path("/var/chef")
+      end
+    end
+
+    def self.derive_path_from_chef_repo_path(child_path)
+      if chef_repo_path.kind_of?(String)
+        "#{chef_repo_path}#{platform_path_separator}#{child_path}"
+      else
+        chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
+      end
+    end
+
+    # Location of acls on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/acls.
+    # Only applies to Enterprise Chef commands.
+    default(:acl_path) { derive_path_from_chef_repo_path('acls') }
+
+    # Location of clients on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/acls.
+    default(:client_path) { derive_path_from_chef_repo_path('clients') }
+
+    # Location of cookbooks on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
+    # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
+    default(:cookbook_path) do
+      if self.configuration[:chef_repo_path]
+        derive_path_from_chef_repo_path('cookbooks')
+      else
+        Array(derive_path_from_chef_repo_path('cookbooks')).flatten + 
+          Array(derive_path_from_chef_repo_path('site-cookbooks')).flatten
+      end
+    end
+
+    # Location of containers on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/containers.
+    # Only applies to Enterprise Chef commands.
+    default(:container_path) { derive_path_from_chef_repo_path('containers') }
+
+    # Location of data bags on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/data_bags.
+    default(:data_bag_path) { derive_path_from_chef_repo_path('data_bags') }
+
+    # Location of environments on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/environments.
+    default(:environment_path) { derive_path_from_chef_repo_path('environments') }
+
+    # Location of groups on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/groups.
+    # Only applies to Enterprise Chef commands.
+    default(:group_path) { derive_path_from_chef_repo_path('groups') }
+
+    # Location of nodes on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/nodes.
+    default(:node_path) { derive_path_from_chef_repo_path('nodes') }
+
+    # Location of roles on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/roles.
+    default(:role_path) { derive_path_from_chef_repo_path('roles') }
+
+    # Location of users on disk. String or array of strings.
+    # Defaults to <chef_repo_path>/users.
+    # Does not apply to Enterprise Chef commands.
+    default(:user_path) { derive_path_from_chef_repo_path('users') }
+
     # Turn on "path sanity" by default. See also: http://wiki.opscode.com/display/chef/User+Environment+PATH+Sanity
-    enforce_path_sanity(true)
+    default :enforce_path_sanity, true
 
     # Formatted Chef Client output is a beta feature, disabled by default:
-    formatter "null"
+    default :formatter, "null"
 
     # The number of times the client should retry when registering with the server
-    client_registration_retries 5
-
-    # Where the cookbooks are located. Meaning is somewhat context dependent between
-    # knife, chef-client, and chef-solo.
-    cookbook_path [ platform_specific_path("/var/chef/cookbooks"),
-                    platform_specific_path("/var/chef/site-cookbooks") ]
+    default :client_registration_retries, 5
 
     # An array of paths to search for knife exec scripts if they aren't in the current directory
-    script_path []
+    default :script_path, []
 
     # Where cookbook files are stored on the server (by content checksum)
-    checksum_path "/var/chef/checksums"
+    default :checksum_path, '/var/chef/checksums'
 
     # Where chef's cache files should be stored
-    file_cache_path platform_specific_path("/var/chef/cache")
+    default(:file_cache_path) { platform_specific_path('/var/chef/cache') }
 
-    # By default, chef-client (or solo) creates a lockfile in
-    # `file_cache_path`/chef-client-running.pid
-    # If `lockfile` is explicitly set, this path will be used instead.
+    # Where backups of chef-managed files should go
+    default(:file_backup_path) { platform_specific_path('/var/chef/backup') }
+
+    # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    lockfile nil
-
-    # Where backups of chef-managed files should go
-    file_backup_path platform_specific_path("/var/chef/backup")
+    default(:lockfile) { "#{file_cache_path}#{platform_path_separator}chef-client-running.pid" }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
-    user nil
-    group nil
-    umask 0022
+    default :user, nil
+    default :group, nil
+    default :umask, 0022
 
     # Valid log_levels are:
     # * :debug
@@ -164,57 +234,51 @@ class Chef
     # in a console), the log level is set to :warn, and output formatters are
     # used as the primary mode of output. When a tty is not available, the
     # logger is the primary mode of output, and the log level is set to :info
-    log_level :auto
+    default :log_level, :auto
 
     # Using `force_formatter` causes chef to default to formatter output when STDOUT is not a tty
-    force_formatter false
+    default :force_formatter, false
 
     # Using `force_logger` causes chef to default to logger output when STDOUT is a tty
-    force_logger false
+    default :force_logger, false
 
-    http_retry_count 5
-    http_retry_delay 5
-    interval nil
-    json_attribs nil
-    log_location STDOUT
+    default :http_retry_count, 5
+    default :http_retry_delay, 5
+    default :interval, nil
+    default :once, nil
+    default :json_attribs, nil
+    default :log_location, STDOUT
     # toggle info level log items that can create a lot of output
-    verbose_logging true
-    node_name nil
-    diff_disabled           false
-    diff_filesize_threshold 10000000
-    diff_output_threshold   1000000
+    default :verbose_logging, true
+    default :node_name, nil
+    default :diff_disabled,           false
+    default :diff_filesize_threshold, 10000000
+    default :diff_output_threshold,   1000000
 
-    pid_file nil
+    default :pid_file, nil
 
-    chef_server_url   "https://localhost:443"
+    default :chef_server_url,   "https://localhost:443"
 
-    rest_timeout 300
-    yum_timeout 900
-    solo  false
-    splay nil
-    why_run false
-    color false
-    client_fork true
-    enable_reporting true
-    enable_reporting_url_fatals false
+    default :rest_timeout, 300
+    default :yum_timeout, 900
+    default :solo,  false
+    default :splay, nil
+    default :why_run, false
+    default :color, false
+    default :client_fork, true
+    default :enable_reporting, true
+    default :enable_reporting_url_fatals, false
 
     # Set these to enable SSL authentication / mutual-authentication
     # with the server
-    ssl_client_cert nil
-    ssl_client_key nil
-    ssl_verify_mode :verify_none
-    ssl_ca_path nil
-    ssl_ca_file nil
-
-    # Where should chef-solo look for role files?
-    role_path platform_specific_path("/var/chef/roles")
-
-    data_bag_path platform_specific_path("/var/chef/data_bags")
-
-    environment_path platform_specific_path("/var/chef/environments")
+    default :ssl_client_cert, nil
+    default :ssl_client_key, nil
+    default :ssl_verify_mode, :verify_none
+    default :ssl_ca_path, nil
+    default :ssl_ca_file, nil
 
     # Where should chef-solo download recipes from?
-    recipe_url nil
+    default :recipe_url, nil
 
     # Sets the version of the signed header authentication protocol to use (see
     # the 'mixlib-authorization' project for more detail). Currently, versions
@@ -230,7 +294,7 @@ class Chef
     #
     # In the future, this configuration option may be replaced with an
     # automatic negotiation scheme.
-    authentication_protocol_version "1.0"
+    default :authentication_protocol_version, "1.0"
 
     # This key will be used to sign requests to the Chef server. This location
     # must be writable by Chef during initial setup when generating a client
@@ -238,17 +302,19 @@ class Chef
     #
     # The chef-server will look up the public key for the client using the
     # `node_name` of the client.
-    client_key platform_specific_path("/etc/chef/client.pem")
+    default(:client_key) { platform_specific_path("/etc/chef/client.pem") }
 
     # This secret is used to decrypt encrypted data bag items.
-    encrypted_data_bag_secret platform_specific_path("/etc/chef/encrypted_data_bag_secret")
-
-    # We have to check for the existence of the default file before setting it
-    # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
-    # bootstrap templates to determine if the local secret should be uploaded to
-    # node being bootstrapped. This should be removed in Chef 12.
-    unless File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
-      encrypted_data_bag_secret(nil)
+    default(:encrypted_data_bag_secret) do
+      # We have to check for the existence of the default file before setting it
+      # since +Chef::Config[:encrypted_data_bag_secret]+ is read by older
+      # bootstrap templates to determine if the local secret should be uploaded to
+      # node being bootstrapped. This should be removed in Chef 12.
+      if File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
+        platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+      else
+        nil
+      end
     end
 
     # As of Chef 11.0, version "1" is the default encrypted data bag item
@@ -256,7 +322,7 @@ class Chef
     # To maintain compatibility, versions other than 1 must be opt-in.
     #
     # Set this to `2` if you have chef-client 11.6.0+ in your infrastructure:
-    data_bag_encrypt_version 1
+    default :data_bag_encrypt_version, 1
 
     # When reading data bag items, any supported version is accepted. However,
     # if all encrypted data bags have been generated with the version 2 format,
@@ -264,7 +330,7 @@ class Chef
     # security. For example, the version 2 format is identical to version 1
     # except for the addition of an HMAC, so an attacker with MITM capability
     # could downgrade an encrypted data bag to version 1 as part of an attack.
-    data_bag_decrypt_minimum_version 0
+    default :data_bag_decrypt_minimum_version, 0
 
     # If there is no file in the location given by `client_key`, chef-client
     # will temporarily use the "validator" identity to generate one. If the
@@ -272,43 +338,51 @@ class Chef
     # chef-client will not be able to authenticate to the server.
     #
     # The `validation_key` is never used if the `client_key` exists.
-    validation_key platform_specific_path("/etc/chef/validation.pem")
-    validation_client_name "chef-validator"
+    default(:validation_key) { platform_specific_path("/etc/chef/validation.pem") }
+    default :validation_client_name, "chef-validator"
 
     # Zypper package provider gpg checks. Set to true to enable package
     # gpg signature checking. This will be default in the
     # future. Setting to false disables the warnings.
     # Leaving this set to nil or false is a security hazard!
-    zypper_check_gpg nil
+    default :zypper_check_gpg, nil
 
     # Report Handlers
-    report_handlers []
+    default :report_handlers, []
 
     # Exception Handlers
-    exception_handlers []
+    default :exception_handlers, []
 
     # Start handlers
-    start_handlers []
+    default :start_handlers, []
 
     # Syntax Check Cache. Knife keeps track of files that is has already syntax
     # checked by storing files in this directory. `syntax_check_cache_path` is
     # the new (and preferred) configuration setting. If not set, knife will
-    # fall back to using cache_options[:path].
-    #
-    # Because many users will have knife configs with cache_options (generated
-    # by `knife configure`), the default for now is to *not* set
-    # syntax_check_cache_path, and thus fallback to cache_options[:path]. We
-    # leave that value to the same default as was previously set.
-    syntax_check_cache_path nil
+    # fall back to using cache_options[:path], which is deprecated but exists in
+    # many client configs generated by pre-Chef-11 bootstrappers.
+    default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    cache_options({ :path => platform_specific_path("/var/chef/cache/checksums") })
+    default(:cache_options) { { :path => platform_specific_path("/var/chef/cache/checksums") } }
 
     # Set to false to silence Chef 11 deprecation warnings:
-    chef11_deprecation_warnings true
+    default :chef11_deprecation_warnings, true
 
-    # Arbitrary knife configuration data
-    knife Hash.new
+    # knife configuration data
+    config_context :knife do
+      default :ssh_port, nil
+      default :ssh_user, nil
+      default :ssh_attribute, nil
+      default :ssh_gateway, nil
+      default :bootstrap_version, nil
+      default :bootstrap_proxy, nil
+      default :identity_file, nil
+      default :host_key_verify, nil
+      default :forward_agent, nil
+      default :sort_status_reverse, nil
+      default :hints, {}
+    end
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
@@ -316,31 +390,31 @@ class Chef
       # From http://technet.microsoft.com/en-us/library/cc776019(WS.10).aspx
 
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
-      user_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
-      group_valid_regex [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
+      default :user_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
+      default :group_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
 
-      fatal_windows_admin_check false
+      default :fatal_windows_admin_check, false
     else
-      user_valid_regex [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
-      group_valid_regex [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
+      default :user_valid_regex, [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      default :group_valid_regex, [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
     end
 
     # returns a platform specific path to the user home dir
     windows_home_path = ENV['SYSTEMDRIVE'] + ENV['HOMEPATH'] if ENV['SYSTEMDRIVE'] && ENV['HOMEPATH']
-    user_home(ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
+    default :user_home, (ENV['HOME'] || windows_home_path || ENV['USERPROFILE'])
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.
-    enable_selinux_file_permission_fixup true
+    default :enable_selinux_file_permission_fixup, true
 
     # Use atomic updates (i.e. move operation) while updating contents
     # of the files resources. When set to false copy operation is
     # used to update files.
-    file_atomic_update true
+    default :file_atomic_update, true
 
     # If false file staging is will be done via tempfiles that are
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
-    file_staging_uses_destdir false
+    default :file_staging_uses_destdir, false
   end
 end

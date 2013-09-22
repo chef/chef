@@ -229,6 +229,20 @@ describe Chef::Resource::Deploy do
     @resource.keep_releases.should == 1
   end
 
+  describe "when it has a timeout attribute" do
+    let(:ten_seconds) { 10 }
+    before { @resource.timeout(ten_seconds) }
+    it "stores this timeout" do
+      @resource.timeout.should == ten_seconds
+    end
+  end
+
+  describe "when it has no timeout attribute" do
+    it "should have no default timeout" do
+      @resource.timeout.should be_nil
+    end
+  end
+
   describe "when it has meta application root, revision, user, group,
             scm provider, repository cache, environment, simlinks and migrate" do
     before do 

@@ -21,14 +21,6 @@ require 'spec_helper'
 require 'tmpdir'
 
 describe Chef::Util::Diff, :uses_diff => true do
-  before(:all) do
-    @original_config = Chef::Config.hash_dup
-  end
-
-  after(:all) do
-    Chef::Config.configuration = @original_config if @original_config
-  end
-
   let!(:old_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:old_file) { old_tempfile.path }

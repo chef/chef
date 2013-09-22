@@ -74,7 +74,6 @@ describe Chef::Cookbook::SyntaxCheck do
 
     after do
       FileUtils.rm_rf(cache_path) if File.exist?(cache_path)
-      Chef::Config[:syntax_check_cache_path] = nil
     end
 
     describe "and the files have not been syntax checked previously" do

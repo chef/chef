@@ -289,7 +289,7 @@ class Chef
                   ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
                 end
               else
-                Chef::Log.info("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
               end
             end
 
@@ -407,7 +407,7 @@ class Chef
         parent = entry.parent
         if parent && !parent.exists?
           parent_path = format_path.call(parent) if ui
-          parent_parent = get_or_create_parent(entry.parent, options, ui, format_path)
+          parent_parent = get_or_create_parent(parent, options, ui, format_path)
           if options[:dry_run]
             ui.output "Would create #{parent_path}" if ui
           else

@@ -58,10 +58,10 @@ D\t/roles/x.json
 D\t/users/admin.json
 D\t/users/x.json
 EOM
-      end
+        end
 
-      it 'knife upload --purge deletes everything' do
-        knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
+        it 'knife upload --purge deletes everything' do
+          knife('upload --purge /').should_succeed(<<EOM, :stderr => "WARNING: /environments/_default.json cannot be deleted (default environment cannot be modified).\n")
 Deleted extra entry /clients/chef-validator.json (purge is on)
 Deleted extra entry /clients/chef-webui.json (purge is on)
 Deleted extra entry /clients/x.json (purge is on)
@@ -76,7 +76,7 @@ EOM
         knife('diff --name-status /').should_succeed <<EOM
 D\t/environments/_default.json
 EOM
-      end
+        end
       end
 
       when_the_repository 'has an identical copy of each thing' do
@@ -238,6 +238,13 @@ EOM
           knife('diff --name-status /data_bags').should_succeed <<EOM
 EOM
           JSON.parse(knife('raw /data/x/y').stdout, :create_additions => false).keys.sort.should == [ 'foo', 'id' ]
+        end
+
+        it 'knife upload /data_bags/x /data_bags/x/y.json uploads x once' do
+          knife('upload /data_bags/x /data_bags/x/y.json').should_succeed <<EOM
+Created /data_bags/x
+Created /data_bags/x/y.json
+EOM
         end
       end
 
