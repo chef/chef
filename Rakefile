@@ -93,7 +93,15 @@ namespace :docs do
     end
   end
 
-  if system('which ronn > /dev/null')
+  # we can have ronn in the path, but not in the bundle, require both
+  ronn_in_bundle = true
+  begin
+    require 'ronn'
+  rescue LoadError
+    ronn_in_bundle = false
+  end
+
+  if ronn_in_bundle && system('which ronn > /dev/null')
     ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
       Dir[dir].each do |mkd|
         basename = File.basename(mkd, '.mkd')
