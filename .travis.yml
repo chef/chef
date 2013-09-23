@@ -1,6 +1,12 @@
 rvm:
   - 1.8.7
-#  - 1.9.2
   - 1.9.3
   - 2.0.0
+
+branches:
+  only:
+    - master
+    - 10-stable
+    - 11-stable
+
 script: bundle exec rspec --color --format progress
