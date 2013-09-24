@@ -151,7 +151,7 @@ describe Chef::Resource::Scm do
   end
 
   describe "when it has repository, revision, user, and group" do
-    before do 
+    before do
       @resource.destination("hell")
       @resource.repository("apt")
       @resource.revision("1.2.3")

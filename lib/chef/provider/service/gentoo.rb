@@ -44,7 +44,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
   def define_resource_requirements
     requirements.assert(:all_actions) do |a|
-      a.assertion { ::File.exists?("/sbin/rc-update") } 
+      a.assertion { ::File.exists?("/sbin/rc-update") }
       a.failure_message Chef::Exceptions::Service, "/sbin/rc-update does not exist"
       # no whyrun recovery -t his is a core component whose presence is
       # unlikely to be affected by what we do in the course of a chef run
@@ -52,15 +52,15 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
 
     requirements.assert(:all_actions) do |a|
       a.assertion { @found_script }
-      # No failure, just informational output from whyrun 
+      # No failure, just informational output from whyrun
       a.whyrun "Could not find service #{@new_resource.service_name} under any runlevel"
     end
   end
-  
+
   def enable_service()
     run_command(:command => "/sbin/rc-update add #{@new_resource.service_name} default")
   end
-  
+
   def disable_service()
     run_command(:command => "/sbin/rc-update del #{@new_resource.service_name} default")
   end

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@ class Chef
   class Provider
     class Group
       class Groupadd < Chef::Provider::Group
-        
+
         def required_binaries
           [ "/usr/sbin/groupadd",
             "/usr/sbin/groupmod",
@@ -34,9 +34,9 @@ class Chef
         def define_resource_requirements
           super
           required_binaries.each do |required_binary|
-            requirements.assert(:all_actions) do |a| 
-              a.assertion { ::File.exists?(required_binary) } 
-              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}" 
+            requirements.assert(:all_actions) do |a|
+              a.assertion { ::File.exists?(required_binary) }
+              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}"
               # No whyrun alternative: this component should be available in the base install of any given system that uses it
             end
           end
@@ -48,9 +48,9 @@ class Chef
           command << set_options
           command << groupadd_options
           run_command(:command => command)
-          modify_group_members    
+          modify_group_members
         end
-        
+
         # Manage the group when it already exists
         def manage_group
           command = "groupmod"
@@ -58,12 +58,12 @@ class Chef
           run_command(:command => command)
           modify_group_members
         end
-        
+
         # Remove the group
         def remove_group
           run_command(:command => "groupdel #{@new_resource.group_name}")
         end
-        
+
         def modify_group_members
           raise Chef::Exceptions::Group, "you must override modify_group_members in #{self.to_s}"
         end

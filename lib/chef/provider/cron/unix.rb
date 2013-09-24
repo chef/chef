@@ -63,7 +63,7 @@ class Chef
             Chef::Log.debug(e.message)
             exit_status = 1
             error_message = e.message
-          end          
+          end
           tempcron.close!
           if exit_status > 0
             raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"

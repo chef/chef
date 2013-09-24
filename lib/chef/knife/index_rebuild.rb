@@ -40,7 +40,7 @@ class Chef
           nag
           output rest.post_rest("/search/reindex", {})
         end
-        
+
       end
 
       def grab_api_info
@@ -55,7 +55,7 @@ class Chef
         r = exception.response
         parse_api_info(r)
       end
-      
+
       # Only Chef 11+ servers will have version information in their
       # headers, and only those servers will lack an API endpoint for
       # index rebuilding.

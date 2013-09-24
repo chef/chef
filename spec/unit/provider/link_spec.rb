@@ -241,8 +241,8 @@ describe Chef::Resource::Link, :not_supported_on_win2k3 do
           result
         end
         it 'create does no work' do
-          provider.file_class.should_not_receive(:symlink) 
-          provider.file_class.should_not_receive(:link) 
+          provider.file_class.should_not_receive(:symlink)
+          provider.file_class.should_not_receive(:link)
           provider.access_controls.should_not_receive(:set_all)
           provider.run_action(:create)
         end

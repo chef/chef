@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -123,7 +123,7 @@ describe Chef::Resource::RemoteFile do
   end
 
   describe "when it has group, mode, owner, source, and checksum" do
-    before do 
+    before do
       if Chef::Platform.windows?
         @resource.path("C:/temp/origin/file.txt")
         @resource.rights(:read, "Everyone")
@@ -144,7 +144,7 @@ describe Chef::Resource::RemoteFile do
         puts state
         state[:rights].should == [{:permissions => :read, :principals => "Everyone"}]
         state[:deny_rights].should == [{:permissions => :full_control, :principals => "Clumsy_Sam"}]
-      else    
+      else
         state[:group].should == "pokemon"
         state[:mode].should == "0664"
         state[:owner].should == "root"

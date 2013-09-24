@@ -23,8 +23,8 @@ class Chef
   class Resource
     class Scm < Chef::Resource
 
-      identity_attr :destination 
-      
+      identity_attr :destination
+
       state_attrs :revision
 
       def initialize(name, run_context=nil)

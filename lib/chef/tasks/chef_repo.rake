@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ task :update do
       pull = true if line =~ /\[remote "origin"\]/
     end
     if pull
-      sh %{git pull} 
+      sh %{git pull}
     else
       puts "* Skipping git pull, no origin specified"
     end
@@ -86,14 +86,14 @@ end
 def create_cookbook(dir)
   raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
   puts "** Creating cookbook #{ENV["COOKBOOK"]}"
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "attributes")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "recipes")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "definitions")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "libraries")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "resources")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "providers")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "files", "default")}" 
-  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "templates", "default")}" 
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "attributes")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "recipes")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "definitions")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "libraries")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "resources")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "providers")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "files", "default")}"
+  sh "mkdir -p #{File.join(dir, ENV["COOKBOOK"], "templates", "default")}"
   unless File.exists?(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"))
     open(File.join(dir, ENV["COOKBOOK"], "recipes", "default.rb"), "w") do |file|
       file.puts <<-EOH
@@ -110,9 +110,9 @@ EOH
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -156,7 +156,7 @@ end
 def create_metadata(dir)
   raise "Must provide a COOKBOOK=" unless ENV["COOKBOOK"]
   puts "** Creating metadata for cookbook: #{ENV["COOKBOOK"]}"
-  
+
   case NEW_COOKBOOK_LICENSE
   when :apachev2
     license = "Apache 2.0"
@@ -288,7 +288,7 @@ namespace :databag do
         end
       end
     else
-      puts "ERROR: Could not find any databags, skipping it"  
+      puts "ERROR: Could not find any databags, skipping it"
     end
   end
 
@@ -327,7 +327,7 @@ EOH
       end
     else
       puts "ERROR: Could not find your databag (#{databag}), skipping it"
-    end   
+    end
   end
 
 end

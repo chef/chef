@@ -57,10 +57,10 @@ describe Chef::Provider::RemoteDirectory do
       @provider_second_run.run_action(:create)
     end
     it "identifies that the state has changed the after first run" do
-      @provider_second_run.new_resource.updated_by_last_action? == true 
+      @provider_second_run.new_resource.updated_by_last_action? == true
     end
     it "identifies that the state has not changed after the second run" do
-      @provider_second_run.new_resource.updated_by_last_action? == false 
+      @provider_second_run.new_resource.updated_by_last_action? == false
     end
   end
 
