@@ -20,7 +20,7 @@ require 'spec_helper'
 require 'chef/exceptions'
 
 describe Chef::Provider::Ifconfig::Aix do
-  
+
   before(:all) do
     @ifconfig_output = <<-IFCONFIG
 en1: flags=1e080863,480<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),CHAIN>
@@ -47,8 +47,8 @@ IFCONFIG
     @provider = Chef::Provider::Ifconfig::Aix.new(@new_resource, @run_context)
   end
 
-  describe "#load_current_resource" do 
-    before do 
+  describe "#load_current_resource" do
+    before do
       status = double("Status", :exitstatus => 0)
       @provider.should_receive(:popen4).with("ifconfig -a").and_yield(@pid,@stdin,StringIO.new(@ifconfig_output),@stderr).and_return(status)
       @new_resource.device "en0"

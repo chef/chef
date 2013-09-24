@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,14 +32,14 @@ class Chef
         include Chef::Mixin::GetSourceFromPackage
         def define_resource_requirements
           super
-          requirements.assert(:install) do |a| 
+          requirements.assert(:install) do |a|
             a.assertion{ not @new_resource.source.nil? }
             a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
           end
 
           # TODO this was originally written for any action in which .source is provided
           # but would it make more sense to only look at source if the action is :install?
-          requirements.assert(:all_actions) do |a| 
+          requirements.assert(:all_actions) do |a|
             a.assertion { @source_exists }
             a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             a.whyrun "Assuming it would have been previously downloaded."
@@ -53,7 +53,7 @@ class Chef
           @new_resource.version(nil)
 
           if @new_resource.source
-            @source_exists = ::File.exists?(@new_resource.source) 
+            @source_exists = ::File.exists?(@new_resource.source)
             if @source_exists
               # Get information from the package if supplied
               Chef::Log.debug("#{@new_resource} checking dpkg status")
@@ -71,7 +71,7 @@ class Chef
             end
 
           end
-          
+
           # Check to see if it is installed
           package_installed = nil
           Chef::Log.debug("#{@new_resource} checking install state")
@@ -92,10 +92,10 @@ class Chef
           unless status.exitstatus == 0 || status.exitstatus == 1
             raise Chef::Exceptions::Package, "dpkg failed - #{status.inspect}!"
           end
-          
+
           @current_resource
         end
-     
+
         def install_package(name, version)
           run_command_with_systems_locale(
             :command => "dpkg -i#{expand_options(@new_resource.options)} #{@new_resource.source}",
@@ -113,7 +113,7 @@ class Chef
             }
           )
         end
-      
+
         def purge_package(name, version)
           run_command_with_systems_locale(
             :command => "dpkg -P#{expand_options(@new_resource.options)} #{@new_resource.package_name}",

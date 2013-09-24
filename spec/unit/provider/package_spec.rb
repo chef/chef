@@ -286,7 +286,7 @@ describe Chef::Provider::Package do
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
       @new_resource.should_not be_updated_by_last_action
-    end 
+    end
 
     it "should debug log and not reconfigure the package if no response_file is given" do
       @current_resource.stub!(:version).and_return('1.0')

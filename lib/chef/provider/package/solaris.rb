@@ -33,12 +33,12 @@ class Chef
         # end
         def define_resource_requirements
           super
-          requirements.assert(:install) do |a| 
+          requirements.assert(:install) do |a|
             a.assertion { @new_resource.source }
             a.failure_message Chef::Exceptions::Package, "Source for package #{@new_resource.name} required for action install"
           end
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { !@new_resource.source || @package_source_found } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !@new_resource.source || @package_source_found }
             a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
             a.whyrun "would assume #{@new_resource.source} would be have previously been made available"
           end
@@ -51,7 +51,7 @@ class Chef
 
           if @new_resource.source
             @package_source_found = ::File.exists?(@new_resource.source)
-            if @package_source_found 
+            if @package_source_found
               Chef::Log.debug("#{@new_resource} checking pkg status")
               status = popen4("pkginfo -l -d #{@new_resource.source} #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
                 stdout.each do |line|

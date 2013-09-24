@@ -71,7 +71,7 @@ class Chef
           @candidate_version = version
           version
         end
-     
+
         def install_package(name, version)
           Chef::Log.debug("#{@new_resource} installing package #{name} version #{version}")
           package = "#{name}-#{version}"
@@ -84,7 +84,7 @@ class Chef
         end
 
         def remove_package(name, version)
-          Chef::Log.debug("#{@new_resource} removing package #{name} version #{version}") 
+          Chef::Log.debug("#{@new_resource} removing package #{name} version #{version}")
           package = "#{name}"
           out = shell_out!("/opt/local/bin/pkgin -y remove #{package}", :env => nil)
         end

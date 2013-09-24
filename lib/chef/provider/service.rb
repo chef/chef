@@ -35,7 +35,7 @@ class Chef
       end
 
      def load_new_resource_state
-        # If the user didn't specify a change in enabled state, 
+        # If the user didn't specify a change in enabled state,
         # it will be the same as the old resource
        if ( @new_resource.enabled.nil? )
          @new_resource.enabled(@current_resource.enabled)
@@ -54,7 +54,7 @@ class Chef
          a.failure_message Chef::Exceptions::UnsupportedAction, "#{self.to_s} does not support :reload"
          # if a service is not declared to support reload, that won't
          # typically change during the course of a run - so no whyrun
-         # alternative here. 
+         # alternative here.
        end
       end
 

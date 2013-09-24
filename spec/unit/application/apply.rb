@@ -60,7 +60,7 @@ describe Chef::Application::Apply do
   describe "temp_recipe_file" do
     before do
       @app.instance_variable_set(:@recipe_text, @recipe_text)
-      @app.temp_recipe_file      
+      @app.temp_recipe_file
       @recipe_fh = @app.instance_variable_get(:@recipe_fh)
     end
     it "should open a tempfile" do

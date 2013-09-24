@@ -27,8 +27,8 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource     = Chef::Resource::Package.new("varnish")
     @current_resource = Chef::Resource::Package.new("varnish")
-		
-	
+
+
 	  @status = mock("Status", :exitstatus => 0)
 		@provider = Chef::Provider::Package::SmartOS.new(@new_resource, @run_context)
 		Chef::Resource::Package.stub!(:new).and_return(@current_resource)
@@ -70,7 +70,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
 	end
 
 	describe "when manipulating a resource" do
-	
+
 		it "run pkgin and install the package" do
 			out = OpenStruct.new(:stdout => nil)
       @provider.should_receive(:shell_out!).with("/opt/local/sbin/pkg_info -E \"varnish*\"", {:env => nil, :returns=>[0,1]}).and_return(@shell_out)

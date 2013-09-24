@@ -163,18 +163,18 @@ describe Chef::Provider::Deploy do
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
     @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_not_receive(:rollback)
-    lambda { 
+    lambda {
       @provider.run_action(:deploy)
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
-  
+
   it "rollbacks to previous release if error happens on deploy" do
     @resource.rollback_on_error true
     @provider.stub!(:all_releases).and_return(['previous_release'])
     @provider.stub!(:deploy).and_return{ raise "Unexpected error" }
     @provider.stub!(:previous_release_path).and_return('previous_release')
     @provider.should_receive(:rollback)
-    lambda { 
+    lambda {
       @provider.run_action(:deploy)
     }.should raise_exception(RuntimeError, "Unexpected error")
   end
@@ -225,15 +225,15 @@ describe Chef::Provider::Deploy do
         #FileUtils.should_receive(:rm_rf).with("/my/deploy/dir/releases/20040815162342")
         #@provider.run_action(:rollback)
         #@provider.release_path.should eql(NIL) -- no check needed since assertions will fail
-        lambda { 
+        lambda {
           @provider.run_action(:rollback)
         }.should raise_exception(RuntimeError, "There is no release to rollback to!")
       end
-      
+
       it "an exception is raised when there are no releases" do
         all_releases = []
         Dir.stub!(:glob).with("/my/deploy/dir/releases/*").and_return(all_releases)
-        lambda { 
+        lambda {
           @provider.run_action(:rollback)
         }.should raise_exception(RuntimeError, "There is no release to rollback to!")
       end
@@ -433,7 +433,7 @@ describe Chef::Provider::Deploy do
       @provider.should_receive(:enforce_ownership)
       @provider.link_tempfiles_to_current_release
     end
-    
+
   end
 
   it "does nothing for restart if restart_command is empty" do

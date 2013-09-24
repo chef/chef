@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -125,7 +125,7 @@ RC_SAMPLE
       @provider.define_resource_requirements
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
-    
+
     describe "when executing assertions" do
       it "should verify that /etc/rc.conf exists" do
         ::File.should_receive(:exists?).with("/etc/rc.conf")
@@ -138,7 +138,7 @@ RC_SAMPLE
           it "should raise an exception when the action is #{action}" do
             ::File.stub!(:exists?).and_return(false)
             @provider.load_current_resource
-            @provider.define_resource_requirements 
+            @provider.define_resource_requirements
             @provider.instance_variable_get("@rcd_script_found").should be_false
             @provider.action = action
             lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
@@ -157,7 +157,7 @@ RC_SAMPLE
         ::File.should_receive(:exists?).with("/etc/rc.conf").and_return false
         @provider.load_current_resource
         @provider.instance_variable_get("@enabled_state_found").should be_false
-      end 
+      end
 
       it "update state when current resource enabled state could be determined" do
         ::File.stub!(:exist?).with("/usr/local/etc/rc.d/#{@new_resource.service_name}").and_return(true)
@@ -165,10 +165,10 @@ RC_SAMPLE
         @provider.load_current_resource
         @provider.instance_variable_get("@enabled_state_found").should be_false
         @provider.instance_variable_get("@rcd_script_found").should be_true
-        @provider.define_resource_requirements 
+        @provider.define_resource_requirements
         lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service,
           "Could not find the service name in /usr/local/etc/rc.d/#{@current_resource.service_name} and rcvar")
-      end 
+      end
 
       it "should throw an exception if service line is missing from rc.d script" do
           pending "not implemented" do
@@ -197,7 +197,7 @@ RC_SAMPLE
       it "should set running to true if the regex matches the output" do
         @stdout.stub!(:each_line).and_yield("555  ??  Ss     0:05.16 /usr/sbin/cron -s").
                                   and_yield(" 9881  ??  Ss     0:06.67 /usr/local/sbin/httpd -DNOHTTPACCEPT")
-        @provider.load_current_resource 
+        @provider.load_current_resource
         @current_resource.running.should be_true
       end
 

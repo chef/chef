@@ -5,9 +5,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,10 +27,10 @@ class Chef
       def run
         output(format_for_display(get_cookbook_data))
       end
-      
+
       def get_cookbook_data
         case @name_args.length
-        when 1 
+        when 1
           noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}")
         when 2
           noauth_rest.get_rest("http://cookbooks.opscode.com/api/v1/cookbooks/#{@name_args[0]}/versions/#{name_args[1].gsub('.', '_')}")
@@ -45,7 +45,7 @@ class Chef
         end
         new_start = start + cr["items"].length
         if new_start < cr["total"]
-          get_cookbook_list(items, new_start, cookbook_collection) 
+          get_cookbook_list(items, new_start, cookbook_collection)
         else
           cookbook_collection
         end

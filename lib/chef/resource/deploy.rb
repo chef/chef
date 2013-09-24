@@ -50,9 +50,9 @@ class Chef
     # release directory. Callback files can contain chef code (resources, etc.)
     #
     class Deploy < Chef::Resource
-      
+
       provider_base Chef::Provider::Deploy
-      
+
       identity_attr :repository
 
       state_attrs :deploy_to, :revision
@@ -389,7 +389,7 @@ class Chef
         arg ||= block
         set_or_return(:after_restart, arg, :kind_of => [Proc, String])
       end
-      
+
       def additional_remotes(arg=nil)
         set_or_return(
           :additional_remotes,

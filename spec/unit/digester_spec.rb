@@ -8,9 +8,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ describe Chef::Digester do
 
     it "computes a checksum of a file" do
       fixture_file = CHEF_SPEC_DATA + "/checksum/random.txt"
-      expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
+      expected = "dc6665c18676f5f30fdaa420343960edf1883790f83f51f437dbfa0ff678499d"
       @cache.checksum_for_file(fixture_file).should == expected
     end
 

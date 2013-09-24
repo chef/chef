@@ -45,8 +45,8 @@ class Chef
 
         def shared_resource_requirements
           super
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { @status_load_success } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @status_load_success }
             a.whyrun ["Service status not available. Assuming a prior action would have installed the service.", "Assuming status of not running."]
           end
         end
@@ -74,12 +74,12 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or 
-              (!ps_cmd.nil? and !ps_cmd.empty?) } 
+            a.assertion { @new_resource.status_command or @new_resource.supports[:status] or
+              (!ps_cmd.nil? and !ps_cmd.empty?) }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { !@ps_command_failed } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !@ps_command_failed }
             a.failure_message Chef::Exceptions::Service, "Command #{ps_cmd} failed to execute, cannot determine service current status"
           end
         end

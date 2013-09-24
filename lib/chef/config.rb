@@ -153,7 +153,7 @@ class Chef
       if self.configuration[:chef_repo_path]
         derive_path_from_chef_repo_path('cookbooks')
       else
-        Array(derive_path_from_chef_repo_path('cookbooks')).flatten + 
+        Array(derive_path_from_chef_repo_path('cookbooks')).flatten +
           Array(derive_path_from_chef_repo_path('site-cookbooks')).flatten
       end
     end
