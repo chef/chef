@@ -26,11 +26,11 @@ require 'erb'
 #
 #    int = {Hash with your network settings...}
 #
-#    ifconfig  int['ip'] do 
-#      ignore_failure  true 
-#      device  int['dev'] 
-#      mask    int['mask']  
-#      gateway int['gateway'] 
+#    ifconfig  int['ip'] do
+#      ignore_failure  true
+#      device  int['dev']
+#      mask    int['mask']
+#      gateway int['gateway']
 #      mtu     int['mtu']
 #    end
 
@@ -89,12 +89,12 @@ class Chef
         @current_resource
       end
 
-      def define_resource_requirements 
-        requirements.assert(:all_actions) do |a| 
+      def define_resource_requirements
+        requirements.assert(:all_actions) do |a|
           a.assertion { @status.exitstatus == 0 }
           a.failure_message Chef::Exceptions::Ifconfig, "ifconfig failed - #{@status.inspect}!"
           # no whyrun - if the base ifconfig used in load_current_resource fails
-          # there's no reasonable action that could have been taken in the course of 
+          # there's no reasonable action that could have been taken in the course of
           # a chef run to fix it.
         end
       end
@@ -215,7 +215,7 @@ class Chef
       def delete_command
         "ifconfig #{@new_resource.device} down"
       end
-  
+
       def loopback_device
         'lo'
       end

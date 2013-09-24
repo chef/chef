@@ -31,7 +31,7 @@ class Chef
           @init_command = "/usr/sbin/svcadm"
           @status_command = "/bin/svcs -l"
         end
-        
+
 
         def load_current_resource
           @current_resource = Chef::Resource::Service.new(@new_resource.name)

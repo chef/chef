@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -87,14 +87,14 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:all_actions) do |a|
-          a.assertion { @group_name_resolved } 
+          a.assertion { @group_name_resolved }
           a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
           a.whyrun "group name #{@new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
         end
         requirements.assert(:all_actions) do |a|
-          a.assertion { @shadow_lib_ok } 
+          a.assertion { @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
-          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." + 
+          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
                    "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|

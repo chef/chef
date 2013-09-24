@@ -66,7 +66,7 @@ describe Chef::Resource::Env do
   end
 
   describe "when it has key name and value" do
-    before do 
+    before do
       @resource.key_name("charmander")
       @resource.value("level7")
       @resource.delim("hi")

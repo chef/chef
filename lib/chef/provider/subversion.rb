@@ -17,7 +17,7 @@
 #
 
 
-#TODO subversion and git should both extend from a base SCM provider. 
+#TODO subversion and git should both extend from a base SCM provider.
 
 require 'chef/log'
 require 'chef/provider'
@@ -52,7 +52,7 @@ class Chef
           # for why run, print a message explaining the potential error.
           parent_directory = ::File.dirname(@new_resource.destination)
           a.assertion { ::File.directory?(parent_directory) }
-          a.failure_message(Chef::Exceptions::MissingParentDirectory, 
+          a.failure_message(Chef::Exceptions::MissingParentDirectory,
             "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{parent_directory} does not exist")
           a.whyrun("Directory #{parent_directory} does not exist, assuming it would have been created")
         end
@@ -91,13 +91,13 @@ class Chef
             converge_by("sync #{@new_resource.destination} from #{@new_resource.repository}") do
               run_command(run_options(:command => sync_command))
               Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
-            end 
+            end
           end
         else
           action_checkout
         end
       end
-      
+
       def sync_command
         c = scm :update, @new_resource.svn_arguments, verbose, authentication, "-r#{revision_int}", @new_resource.destination
         Chef::Log.debug "#{@new_resource} updated working copy #{@new_resource.destination} to revision #{@new_resource.revision}"
@@ -198,7 +198,7 @@ class Chef
       def scm(*args)
         ['svn', *args].compact.join(" ")
       end
-      
+
 
       def target_dir_non_existent_or_empty?
         !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == ['.','..']

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,7 @@ NOMOCKINGSTRINGSPLZ
     @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
     @provider.stub!(:shell_out!).and_return(@status)
   end
-  
+
   it "should create a current resource with the name of the new resource" do
     Chef::Resource::Service.should_receive(:new).and_return(@current_resource)
     @provider.load_current_resource
@@ -81,7 +81,7 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 NOMOCKINGSTRINGSPLZ
       @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
       @provider.stub!(:shell_out!).and_return(@status)
-      @provider.load_current_resource 
+      @provider.load_current_resource
       @current_resource.running.should be_true
     end
 
@@ -117,7 +117,7 @@ NOMOCKINGSTRINGSPLZ
       @provider.define_resource_requirements
       @provider.action = :start
       lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
-    end 
+    end
   end
 
   describe "when stopping a service" do
@@ -144,7 +144,7 @@ NOMOCKINGSTRINGSPLZ
     it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
       @provider.define_resource_requirements
       @provider.action = :restart
-      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service) 
+      lambda { @provider.process_resource_requirements }.should raise_error(Chef::Exceptions::Service)
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do

@@ -40,7 +40,7 @@ class Chef
       def whyrun_supported?
         true
       end
-      
+
       def load_current_resource
         crontab_lines = []
         @current_resource = Chef::Resource::Cron.new(@new_resource.name)
@@ -82,7 +82,7 @@ class Chef
 
         @current_resource
       end
-      
+
       def cron_different?
         CRON_ATTRIBUTES.any? do |cron_var|
           !@new_resource.send(cron_var).nil? && @new_resource.send(cron_var) != @current_resource.send(cron_var)
@@ -165,7 +165,7 @@ class Chef
             end
             crontab << line
           end
-          description = cron_found ? "remove #{@new_resource.name} from crontab" : 
+          description = cron_found ? "remove #{@new_resource.name} from crontab" :
             "save unmodified crontab"
           converge_by(description) do
             write_crontab crontab

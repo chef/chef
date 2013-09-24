@@ -73,7 +73,7 @@ describe Chef::Provider::Service::Upstart do
       @stdout = StringIO.new
       @stderr = StringIO.new
       @pid = mock("PID")
-      
+
       ::File.stub!(:exists?).and_return(true)
       ::File.stub!(:open).and_return(true)
     end
@@ -172,7 +172,7 @@ describe Chef::Provider::Service::Upstart do
         @provider.load_current_resource
       end
 
-      it "should track state when the user-provided status command fails" do 
+      it "should track state when the user-provided status command fails" do
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_raise(Chef::Exceptions::Exec)
         @provider.load_current_resource
         @provider.instance_variable_get("@command_success").should == false
@@ -190,7 +190,7 @@ describe Chef::Provider::Service::Upstart do
       @provider.load_current_resource
       @provider.instance_variable_get("@command_success").should == false
     end
-    
+
     it "should return the current resource" do
       @provider.load_current_resource.should eql(@current_resource)
     end

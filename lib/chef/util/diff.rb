@@ -104,7 +104,7 @@ class Chef
         begin
           Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
           diff_str = udiff(old_file, new_file)
-          
+
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that
           # an exception can be thrown even using shell_out instead of shell_out!
@@ -149,7 +149,7 @@ class Chef
 
         return diff_str if old_data.empty? && new_data.empty?
         return "No differences encountered\n" if diff_data.empty?
-        
+
         # write diff header (standard unified format)
         ft = File.stat(old_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
         diff_str << "--- #{old_file}\t#{ft}\n"
@@ -172,7 +172,7 @@ class Chef
         end
         diff_str << old_hunk.diff(:unified) << "\n"
         return diff_str
-      end   
+      end
 
       def encode_diff_for_json(diff_str)
         if Object.const_defined? :Encoding

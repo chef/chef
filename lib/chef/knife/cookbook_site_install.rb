@@ -151,11 +151,11 @@ class Chef
         ui.info("Removing pre-existing version.")
         FileUtils.rmtree(cookbook_path) if File.directory?(cookbook_path)
       end
-      
+
       def convert_path(upstream_file)
       	if ENV['MSYSTEM'] == 'MINGW32'
       	  return upstream_file.sub(/^([[:alpha:]]):/, '/\1')
-      	else 
+	      else
       	  return Shellwords.escape upstream_file
       	end
       end

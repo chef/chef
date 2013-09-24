@@ -176,11 +176,11 @@ describe Chef::CookbookSynchronizer do
           @cookbook_a_template_default_tempfile = mock("Tempfile for cookbook_a apache.conf.erb template",
                                                      :path => "/tmp/cookbook_a_template_default_tempfile")
         end
-  
+
         after do
           Chef::Config[:no_lazy_load] = false
         end
-  
+
         it "fetches templates and cookbook files" do
           @file_cache.should_receive(:has_key?).
             with("cookbooks/cookbook_a/files/default/megaman.conf").
@@ -206,7 +206,7 @@ describe Chef::CookbookSynchronizer do
           @file_cache.should_receive(:load).
             with("cookbooks/cookbook_a/templates/default/apache2.conf.erb", false).
             and_return("/file-cache/cookbooks/cookbook_a/templates/default/apache2.conf.erb")
-  
+
           @synchronizer.sync_cookbooks
         end
       end
