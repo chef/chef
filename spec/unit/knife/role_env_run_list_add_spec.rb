@@ -91,48 +91,48 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @role.run_list_for("QA")[2].should == "role[duck]"
       end
     end
-#
-#    describe "with more than one role or recipe with space between items" do
-#      it "should add to the run list all the entries" do
-#        @knife.name_args = [ "adam", "role[monkey], role[duck]" ]
-#        @node.run_list << "role[acorns]"
-#        @knife.run
-#        @node.run_list[0].should == "role[acorns]"
-#        @node.run_list[1].should == "role[monkey]"
-#        @node.run_list[2].should == "role[duck]"
-#      end
-#    end
-#
-#    describe "with more than one role or recipe as different arguments" do
-#      it "should add to the run list all the entries" do
-#        @knife.name_args = [ "adam", "role[monkey]", "role[duck]" ]
-#        @node.run_list << "role[acorns]"
-#        @knife.run
-#        @node.run_list[0].should == "role[acorns]"
-#        @node.run_list[1].should == "role[monkey]"
-#        @node.run_list[2].should == "role[duck]"
-#      end
-#    end
-#
-#    describe "with more than one role or recipe as different arguments and list separated by comas" do
-#      it "should add to the run list all the entries" do
-#        @knife.name_args = [ "adam", "role[monkey]", "role[duck],recipe[bird::fly]" ]
-#        @node.run_list << "role[acorns]"
-#        @knife.run
-#        @node.run_list[0].should == "role[acorns]"
-#        @node.run_list[1].should == "role[monkey]"
-#        @node.run_list[2].should == "role[duck]"
-#      end
-#    end
-#
-#    describe "with one role or recipe but with an extraneous comma" do
-#      it "should add to the run list one item" do
-#        @knife.name_args = [ "adam", "role[monkey]," ]
-#        @node.run_list << "role[acorns]"
-#        @knife.run
-#        @node.run_list[0].should == "role[acorns]"
-#        @node.run_list[1].should == "role[monkey]"
-#      end
-#    end
+
+    describe "with more than one role or recipe with space between items" do
+      it "should add to the run list all the entries" do
+        @knife.name_args = [ "will", "QA", "role[monkey], role[duck]" ]
+        @role.run_list_for("QA") << "role[acorns]"
+        @knife.run
+        @role.run_list_for("QA")[0].should == "role[acorns]"
+        @role.run_list_for("QA")[1].should == "role[monkey]"
+        @role.run_list_for("QA")[2].should == "role[duck]"
+      end
+    end
+
+    describe "with more than one role or recipe as different arguments" do
+      it "should add to the run list all the entries" do
+        @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck]" ]
+        @role.run_list_for("QA") << "role[acorns]"
+        @knife.run
+        @role.run_list_for("QA")[0].should == "role[acorns]"
+        @role.run_list_for("QA")[1].should == "role[monkey]"
+        @role.run_list_for("QA")[2].should == "role[duck]"
+      end
+    end
+
+    describe "with more than one role or recipe as different arguments and list separated by comas" do
+      it "should add to the run list all the entries" do
+        @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck],recipe[bird::fly]" ]
+        @role.run_list_for("QA") << "role[acorns]"
+        @knife.run
+        @role.run_list_for("QA")[0].should == "role[acorns]"
+        @role.run_list_for("QA")[1].should == "role[monkey]"
+        @role.run_list_for("QA")[2].should == "role[duck]"
+      end
+    end
+
+    describe "with one role or recipe but with an extraneous comma" do
+      it "should add to the run list one item" do
+        @knife.name_args = [ "adam", "QA", "role[monkey]," ]
+        @role.run_list_for("QA") << "role[acorns]"
+        @knife.run
+        @role.run_list_for("QA")[0].should == "role[acorns]"
+        @role.run_list_for("QA")[1].should == "role[monkey]"
+      end
+    end
   end
 end
