@@ -129,23 +129,9 @@ describe Chef::Daemon do
 
   end
 
-  describe ".remove_pid_file" do
+  describe ".remove_stale_pid_file" do
     before do
       Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
-    end
-
-    describe "when the pid file exists" do
-
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-      end
-
-      it "should remove the file" do
-        FileUtils.should_receive(:rm).with("/var/run/chef/chef-client.pid")
-        Chef::Daemon.remove_pid_file
-      end
-
-
     end
 
     describe "when the pid file exists and is not running" do
@@ -156,23 +142,57 @@ describe Chef::Daemon do
       end
 
       it "should remove the file" do
-        FileUtils.should_receive(:rm)
-        Chef::Daemon.remove_pid_file
+        FileUtils.should_receive(:rm).with("/var/run/chef/chef-client.pid")
+        Chef::Daemon.remove_stale_pid_file
       end
+
 
     end
 
-    describe "when the pid file exists, is running and the process id does not match" do
+    describe "when the pid file exists and is running" do
 
       before do
         File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
         Chef::Daemon.stub!(:running?) { true }
+      end
+
+      it "should remove the file" do
+        FileUtils.should_not_receive(:rm)
+        Chef::Daemon.remove_stale_pid_file
+      end
+
+    end
+
+    describe "when the pid file does not exist" do
+
+      before do
+        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(false)
+      end
+
+      it "should not remove the file" do
+        FileUtils.should_not_receive(:rm)
+        Chef::Daemon.remove_stale_pid_file
+      end
+
+    end
+
+  end
+
+  describe ".remove_my_pid_file" do
+    before do
+      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
+    end
+
+    describe "when the pid file exists and the process id does not match" do
+
+      before do
+        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
         Chef::Daemon.stub!(:pid_from_file) { Process.pid - 1 }
       end
 
       it "should not remove the file" do
         FileUtils.should_not_receive(:rm)
-        Chef::Daemon.remove_pid_file
+        Chef::Daemon.remove_my_pid_file
       end
 
     end
@@ -186,7 +206,7 @@ describe Chef::Daemon do
 
       it "should remove the file" do
         FileUtils.should_receive(:rm)
-        Chef::Daemon.remove_pid_file
+        Chef::Daemon.remove_my_pid_file
       end
 
     end
@@ -199,7 +219,7 @@ describe Chef::Daemon do
 
       it "should not remove the file" do
         FileUtils.should_not_receive(:rm)
-        Chef::Daemon.remove_pid_file
+        Chef::Daemon.remove_my_pid_file
       end
 
     end

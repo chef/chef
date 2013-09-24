@@ -34,7 +34,7 @@ class Chef
         @name = name
         pid = pid_from_file
         unless running?
-          remove_pid_file()
+          remove_stale_pid_file()
           Chef::Log.info("Daemonizing..")
           begin
             exit if fork
@@ -46,7 +46,7 @@ class Chef
             $stdout.reopen("/dev/null", "a")
             $stderr.reopen($stdout)
             save_pid_file
-            at_exit { remove_pid_file }
+            at_exit { remove_my_pid_file }
           rescue NotImplementedError => e
             Chef::Application.fatal!("There is no fork: #{e.message}")
           end
@@ -113,15 +113,17 @@ class Chef
         end
       end
 
-      # Delete the PID from the filesystem
-      # (only if it references myself or it is stale)
-      def remove_pid_file
-        if File.exists?(pid_file)
-          if not running?
-            Chef::Log.warn("Removing stale pid file at #{pid_file}: process #{pid_from_file} not running")
-          end
-          FileUtils.rm(pid_file) unless running? and Process.pid != pid_from_file
+      # Delete any stale (not running) pid_file
+      def remove_stale_pid_file
+        if File.exists?(pid_file) and not running?
+          Chef::Log.warn("Removing stale pid file at #{pid_file}: process #{pid_from_file} not running")
+          FileUtils.rm(pid_file)
         end
+      end
+
+      # Remove the pid file making sure it is mine by checking the pid in it
+      def remove_my_pid_file
+        FileUtils.rm(pid_file) if File.exists?(pid_file) and Process.pid == pid_from_file
       end
 
       # Change process user/group to those specified in Chef::Config
