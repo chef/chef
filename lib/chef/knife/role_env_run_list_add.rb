@@ -43,6 +43,8 @@ class Chef
               entries.each { |e| nlist << e }
             end
           end
+          role.env_run_lists_add(environment => nlist)
+          #role.env_run_lists_add(environment).reset!(nlist)
           #role.run_list_for(environment).reset!(nlist)
         else
           entries.each { |e| role.env_run_lists_add(environment => e)  }

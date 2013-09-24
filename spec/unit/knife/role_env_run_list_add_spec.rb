@@ -28,6 +28,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
       :after => nil
     }
     @knife.name_args = [ "will", "QA", "role[monkey]" ]
+    #@knife.name_args = [ "will", "QA", "role[monkey]", "role[acorns]" ]
     @knife.stub!(:output).and_return(true)
     @role = Chef::Role.new() 
     @role.stub!(:save).and_return(true)
@@ -67,18 +68,18 @@ describe Chef::Knife::RoleEnvRunListAdd do
       @knife.run
     end
 
-#     describe "with -a or --after specified" do
-#      it "should add to the run list after the specified entry" do
-#        @role.run_list_for("QA") << "role[acorns]"
-#        @role.run_list_for("QA") << "role[barn]"
-#        @knife.config[:after] = "role[acorns]"
-#        @knife.run
-#        @role.active_run_list_for("QA").should == "role[acorns]"
-#        @role.active_run_list_for("QA")[0].should == "role[acorns]"
-#        @role.active_run_list_for("QA")[1].should == "role[monkey]"
-#        @role.active_run_list_for("QA")[2].should == "role[barn]"
-#      end
-#    end
+     describe "with -a or --after specified" do
+      it "should add to the run list after the specified entry" do
+        @role.run_list_for("QA") << "role[acorns]"
+        @role.run_list_for("QA") << "role[barn]"
+        @knife.config[:after] = "role[acorns]"
+        @knife.run
+      #@role.to_json.should == 'show all the things'
+        @role.run_list_for("QA")[0].should == "role[acorns]"
+        @role.run_list_for("QA")[1].should == "role[monkey]"
+        @role.run_list_for("QA")[2].should == "role[barn]"
+      end
+    end
 #
 #    describe "with more than one role or recipe" do
 #      it "should add to the run list all the entries" do
