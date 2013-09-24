@@ -592,7 +592,7 @@ EOM
 
         context 'except the role file is textually different, but not ACTUALLY different' do
           file 'roles/x.json', <<EOM
-{  
+{
   "chef_type": "role" ,
   "default_attributes": {
   },
@@ -604,7 +604,7 @@ EOM
   "override_attributes": {
   },
   "run_list": [
-     
+
   ]
 }
 EOM

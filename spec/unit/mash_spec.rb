@@ -35,7 +35,7 @@ describe Mash do
     @copy = @orig.dup
     @copy.to_hash.should == Mash.new(data).to_hash
     @copy[:z] << 4
-    @orig[:z].should == [1,2,3] 
+    @orig[:z].should == [1,2,3]
   end
 
   it "should duplicate a nested mash to a new mash" do
@@ -44,7 +44,7 @@ describe Mash do
     @copy = @orig.dup
     @copy.to_hash.should == Mash.new(data).to_hash
     @copy[:z][:a] << 4
-    @orig[:z][:a].should == [1,2,3] 
+    @orig[:z][:a].should == [1,2,3]
   end
 
   # add more!

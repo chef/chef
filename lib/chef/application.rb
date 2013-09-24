@@ -175,7 +175,7 @@ class Chef::Application
   # Initializes Chef::Client instance and runs it
   def run_chef_client
     @chef_client = Chef::Client.new(
-      @chef_client_json, 
+      @chef_client_json,
       :override_runlist => config[:override_runlist]
     )
     @chef_client_json = nil

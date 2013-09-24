@@ -188,13 +188,13 @@ class Chef
       def resource_update_applied(resource, action, update)
         prefix = Chef::Config[:why_run] ? "Would " : ""
         Array(update).each do |line|
-          next if line.nil? 
+          next if line.nil?
           output_record line
           if line.kind_of? String
             @output.color "\n    - #{prefix}#{line}", :green
-          elsif line.kind_of? Array 
-            # Expanded output - delta 
-            # @todo should we have a resource_update_delta callback? 
+          elsif line.kind_of? Array
+            # Expanded output - delta
+            # @todo should we have a resource_update_delta callback?
             line.each do |detail|
               @output.color "\n        #{detail}", :white
             end
@@ -216,7 +216,7 @@ class Chef
 
       # Called when a provider makes an assumption after a failed assertion
       # in whyrun mode, in order to allow execution to continue
-      def whyrun_assumption(action, resource, message) 
+      def whyrun_assumption(action, resource, message)
         return unless message
         [ message ].flatten.each do |line|
           @output.color("\n    * #{line}", :yellow)

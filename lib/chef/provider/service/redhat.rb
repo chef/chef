@@ -48,7 +48,7 @@ class Chef
           requirements.assert(:start, :enable, :reload, :restart) do |a|
             a.assertion { !@service_missing }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the init.d script!"
-            a.whyrun "Assuming service would be disabled. The init script is not presently installed." 
+            a.whyrun "Assuming service would be disabled. The init script is not presently installed."
           end
         end
 
@@ -59,7 +59,7 @@ class Chef
             chkconfig = shell_out!("/sbin/chkconfig --list #{@current_resource.service_name}", :returns => [0,1])
             @current_resource.enabled(!!(chkconfig.stdout =~ CHKCONFIG_ON))
             @service_missing = !!(chkconfig.stderr =~ CHKCONFIG_MISSING)
-          end 
+          end
 
           @current_resource
         end

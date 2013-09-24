@@ -83,7 +83,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
       validation_cmd << " | grep #{options.join(',')} " unless options.nil? || options.empty?
       puts "validation_cmd = #{validation_cmd}"
       expect(shell_out(validation_cmd).exitstatus).to eq(0)
-    end        
+    end
   end
 
   def mount_should_not_exists(mount_point)
@@ -100,7 +100,7 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
     else
       mount_config = "/etc/fstab"
     end
-  end    
+  end
 
   def mount_should_be_enabled(mount_point, device)
     if windows?
@@ -108,10 +108,10 @@ describe Chef::Resource::Mount, :requires_root, :external => include_flag do
       case ohai[:platform]
       when 'aix'
         expect(shell_out("cat #{unix_mount_config_file} | grep \"#{mount_point}:\" ").exitstatus).to eq(0)
-      else      
+      else
         expect(shell_out("cat #{unix_mount_config_file} | grep \"#{mount_point}\" | grep \"#{device}\" ").exitstatus).to eq(0)
       end
-    end        
+    end
   end
 
   def mount_should_be_disabled(mount_point)

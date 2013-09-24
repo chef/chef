@@ -78,7 +78,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     it "should delete a crontab entry" do
       # Note that test cron is created by previous test
       new_resource.run_action(:delete)
-      
+
       cron_should_not_exists(new_resource.name)
     end
   end

@@ -8,7 +8,7 @@ end
 
 # String elements referenced with [] <= 1.8.6 return a Fixnum. Cheat to allow
 # for the simpler "test"[2].ord construct
-class Numeric 
+class Numeric
   def ord
     return self
   end

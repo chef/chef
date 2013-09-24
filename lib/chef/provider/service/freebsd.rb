@@ -38,13 +38,13 @@ class Chef
           elsif ::File.exists?("/usr/local/etc/rc.d/#{current_resource.service_name}")
             @init_command = "/usr/local/etc/rc.d/#{current_resource.service_name}"
           else
-            @rcd_script_found = false 
+            @rcd_script_found = false
             return
           end
           Chef::Log.debug("#{@current_resource} found at #{@init_command}")
           determine_current_status!
           # Default to disabled if the service doesn't currently exist
-          # at all 
+          # at all
           var_name = service_enable_variable_name
           if ::File.exists?("/etc/rc.conf") && var_name
             read_rc_conf.each do |line|
@@ -70,19 +70,19 @@ class Chef
         def define_resource_requirements
           shared_resource_requirements
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { @rcd_script_found } 
+            a.assertion { @rcd_script_found }
             a.failure_message Chef::Exceptions::Service, "#{@new_resource}: unable to locate the rc.d script"
           end
 
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { @enabled_state_found }  
-            # for consistentcy with original behavior, this will not fail in non-whyrun mode; 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { @enabled_state_found }
+            # for consistentcy with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
-            a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled." 
+            a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { @rcd_script_found && service_enable_variable_name != nil } 
+            a.assertion { @rcd_script_found && service_enable_variable_name != nil }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{@init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -133,7 +133,7 @@ class Chef
           # corresponding to this service
           # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
           # to set mysql_enable="YES" in /etc/rc.conf$
-          if @rcd_script_found   
+          if @rcd_script_found
             ::File.open(@init_command) do |rcscript|
               rcscript.each_line do |line|
                 if line =~ /^name="?(\w+)"?/

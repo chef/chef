@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
     @node_i386 = Chef::Node.new
     @node_x86_64 = Chef::Node.new
   end
-  
+
   it "returns true when valid architectures are passed to valid_windows_architecture?" do
     @valid_architectures.each do | architecture |
       valid_windows_architecture?(architecture).should == true
@@ -67,7 +67,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
   it "returns false for each unsupported desired architecture for all nodes with each valid architecture passed to node_supports_windows_architecture?" do
     enumerate_architecture_node_combinations(true)
   end
-  
+
   def enumerate_architecture_node_combinations(only_valid_combinations)
     @valid_architectures.each do | node_architecture |
       new_node = Chef::Node.new
@@ -76,7 +76,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
 
       @valid_architectures.each do | supported_architecture |
         node_supports_windows_architecture?(new_node, supported_architecture).should == true if only_valid_combinations && (supported_architecture != :x86_64 && node_architecture != :i386 )
-        node_supports_windows_architecture?(new_node, supported_architecture).should == false if ! only_valid_combinations && (supported_architecture == :x86_64 && node_architecture == :i386 )        
+        node_supports_windows_architecture?(new_node, supported_architecture).should == false if ! only_valid_combinations && (supported_architecture == :x86_64 && node_architecture == :i386 )
       end
     end
   end

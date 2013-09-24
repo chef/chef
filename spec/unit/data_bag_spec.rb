@@ -69,7 +69,7 @@ describe Chef::DataBag do
 
   end
 
-  describe "when saving" do 
+  describe "when saving" do
     before do
       @data_bag.name('piggly_wiggly')
       @rest = mock("Chef::REST")
@@ -77,16 +77,16 @@ describe Chef::DataBag do
     end
 
     it "should update the data bag when it already exists" do
-      @rest.should_receive(:put_rest).with("data/piggly_wiggly", @data_bag) 
+      @rest.should_receive(:put_rest).with("data/piggly_wiggly", @data_bag)
       @data_bag.save
     end
 
-    it "should create the data bag when it is not found" do 
+    it "should create the data bag when it is not found" do
       exception = mock("404 error", :code => "404")
       @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
       @rest.should_receive(:post_rest).with("data", @data_bag)
       @data_bag.save
-    end 
+    end
 
     describe "when whyrun mode is enabled" do
       before do

@@ -33,12 +33,12 @@ class Chef
 
         def define_resource_requirements
           super
-        
+
           requirements.assert(:all_actions) do |a|
             a.assertion { ! @candidate_version.nil? }
             a.failure_message Chef::Exceptions::Package, "Package #{@new_resource.package_name} not found"
             a.whyrun "Assuming package #{@new_resource.package_name} would have been made available."
-          end 
+          end
         end
 
         def load_current_resource
@@ -52,7 +52,7 @@ class Chef
           Chef::Log.debug("Checking package status for #{package}")
           installed = false
           depends = false
-          
+
           shell_out!("pkg info -r #{package}").stdout.each_line do |line|
             case line
             when /^\s+State: Installed/

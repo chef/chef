@@ -26,7 +26,7 @@ class Chef
     class Service
       class Upstart < Chef::Provider::Service::Simple
         UPSTART_STATE_FORMAT = /\w+ \(?(\w+)\)?[\/ ](\w+)/
-       
+
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
         # since we have top down dependencies. Which is to say we may follow witha resource next that requires
@@ -40,17 +40,17 @@ class Chef
           # TODO: re-evaluate if this is needed after integrating cookbook fix
           raise ArgumentError, "run_context cannot be nil" unless run_context
           super
-          
+
           run_context.node
-          
+
           @job = @new_resource.service_name
-          
+
           if @new_resource.parameters
             @new_resource.parameters.each do |key, value|
               @job << " #{key}=#{value}"
             end
           end
-          
+
           platform, version = Chef::Platform.find_platform_and_version(run_context.node)
           if platform == "ubuntu" && (8.04..9.04).include?(version.to_f)
             @upstart_job_dir = "/etc/event.d"
@@ -60,8 +60,8 @@ class Chef
             @upstart_conf_suffix = ".conf"
           end
 
-          @command_success = true # new_resource.status_command= false, means upstart used 
-          @config_file_found = true 
+          @command_success = true # new_resource.status_command= false, means upstart used
+          @config_file_found = true
           @upstart_command_success = true
         end
 
@@ -70,18 +70,18 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             if !@command_success
-              whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." : 
+              whyrun_msg = @new_resource.status_command ? "Provided status command #{@new_resource.status_command} failed." :
                 "Could not determine upstart state for service"
             end
             a.assertion { @command_success }
-            # no failure here, just document the assumptions made. 
-            a.whyrun "#{whyrun_msg} Assuming service installed and not running." 
+            # no failure here, just document the assumptions made.
+            a.whyrun "#{whyrun_msg} Assuming service installed and not running."
           end
 
-          requirements.assert(:all_actions) do |a| 
-            a.assertion  { @config_file_found } 
-            # no failure here, just document the assumptions made. 
-            a.whyrun "Could not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}. Assuming service is disabled." 
+          requirements.assert(:all_actions) do |a|
+            a.assertion  { @config_file_found }
+            # no failure here, just document the assumptions made.
+            a.whyrun "Could not find #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}. Assuming service is disabled."
           end
         end
 

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,20 +34,20 @@ class Chef
           run_command(:command => command)
           modify_password
         end
-        
+
         def manage_user
           command = "pw usermod"
           command << set_options
           run_command(:command => command)
           modify_password
         end
-        
+
         def remove_user
           command = "pw userdel #{@new_resource.username}"
           command << " -r" if @new_resource.supports[:manage_home]
           run_command(:command => command)
         end
-        
+
         def check_lock
           case @current_resource.password
           when /^\*LOCKED\*/
@@ -57,18 +57,18 @@ class Chef
           end
           @locked
         end
-        
+
         def lock_user
           run_command(:command => "pw lock #{@new_resource.username}")
         end
-        
+
         def unlock_user
           run_command(:command => "pw unlock #{@new_resource.username}")
         end
-        
+
         def set_options
           opts = " #{@new_resource.username}"
-          
+
           field_list = {
             'comment' => "-c",
             'home' => "-d",
@@ -91,7 +91,7 @@ class Chef
           end
           opts
         end
-      
+
         def modify_password
           if @current_resource.password != @new_resource.password
             Chef::Log.debug("#{new_resource} updating password")
@@ -99,7 +99,7 @@ class Chef
             status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
               stdin.puts "#{@new_resource.password}"
             end
-            
+
             unless status.exitstatus == 0
               raise Chef::Exceptions::User, "pw failed - #{status.inspect}!"
             end

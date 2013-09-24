@@ -47,7 +47,7 @@ class Chef
             end
           end
         end
- 
+
         def start_service
           if @new_resource.start_command
             super

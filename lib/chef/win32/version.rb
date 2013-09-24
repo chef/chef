@@ -30,13 +30,13 @@ class Chef
       # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
 
       private
-      
+
       def self.get_system_metrics(n_index)
         Win32API.new('user32', 'GetSystemMetrics', 'I', 'I').call(n_index)
       end
 
       public
-      
+
       WIN_VERSIONS = {
         "Windows 8" => {:major => 6, :minor => 2, :callable => lambda{ @product_type == VER_NT_WORKSTATION }},
         "Windows Server 2012" => {:major => 6, :minor => 2, :callable => lambda{ @product_type != VER_NT_WORKSTATION }},
@@ -68,7 +68,7 @@ class Chef
           # The get_product_info API is not supported on Win2k3,
           # use an alternative to identify datacenter skus
           @sku = get_datacenter_product_info_windows_server_2003(ver_info)
-        end        
+        end
       end
 
       marketing_names = Array.new

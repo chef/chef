@@ -50,7 +50,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def define_resource_requirements
     shared_resource_requirements
     requirements.assert(:all_actions) do |a|
-      a.assertion { @status_check_success } 
+      a.assertion { @status_check_success }
       # We won't stop in any case, but in whyrun warn and tell what we're doing.
       a.whyrun ["Failed to determine status of #{@new_resource}, using command #{@new_resource.status_command}.",
         "Assuming service would have been installed and is disabled"]
@@ -99,11 +99,11 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def enable_service
     run_command_with_systems_locale(:command => "/bin/systemctl enable #{@new_resource.service_name}")
-  end 
+  end
 
   def disable_service
     run_command_with_systems_locale(:command => "/bin/systemctl disable #{@new_resource.service_name}")
-  end 
+  end
 
   def is_active?
     run_command_with_systems_locale({:command => "/bin/systemctl is-active #{@new_resource.service_name}", :ignore_failure => true}) == 0
