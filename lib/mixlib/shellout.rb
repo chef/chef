@@ -49,8 +49,8 @@ module Mixlib
     # Working directory for the subprocess. Normally set via options to new
     attr_accessor :cwd
 
-    # An Array of acceptable exit codes. #error! uses this list to determine if
-    # the command was successful. Normally set via options to new
+    # An Array of acceptable exit codes. #error? (and #error!) use this list
+    # to determine if the command was successful. Normally set via options to new
     attr_accessor :valid_exit_codes
 
     # When live_stream is set, stdout of the subprocess will be copied to it as
@@ -227,17 +227,21 @@ module Mixlib
       super
     end
 
-    # Checks the +exitstatus+ against the set of +valid_exit_codes+. If
-    # +exitstatus+ is not in the list of +valid_exit_codes+, calls +invalid!+,
-    # which raises an Exception.
+    # Checks the +exitstatus+ against the set of +valid_exit_codes+.
+    # === Returns
+    # +true+ if +exitstatus+ is not in the list of +valid_exit_codes+, false
+    # otherwise.
+    def error?
+      !Array(valid_exit_codes).include?(exitstatus)
+    end
+
+    # If #error? is true, calls +invalid!+, which raises an Exception.
     # === Returns
     # nil::: always returns nil when it does not raise
     # === Raises
     # ::ShellCommandFailed::: via +invalid!+
     def error!
-      unless Array(valid_exit_codes).include?(exitstatus)
-        invalid!("Expected process to exit with #{valid_exit_codes.inspect}, but received '#{exitstatus}'")
-      end
+      invalid!("Expected process to exit with #{valid_exit_codes.inspect}, but received '#{exitstatus}'") if error?
     end
 
     # Raises a ShellCommandFailed exception, appending the

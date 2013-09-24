@@ -750,6 +750,24 @@ describe Mixlib::ShellOut do
           lambda { executed_cmd.invalid!("I expected this to exit 42, not 0") }.should raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
       end
+
+      describe "#error?" do
+        context 'when exiting with invalid code' do
+          let(:exit_code) { 2 }
+
+          it "should return true" do
+            executed_cmd.error?.should be_true
+          end
+        end
+
+        context 'when exiting with valid code' do
+          let(:exit_code) { 0 }
+
+          it "should return false" do
+            executed_cmd.error?.should be_false
+          end
+        end
+      end
     end
 
     context "when handling the subprocess" do
