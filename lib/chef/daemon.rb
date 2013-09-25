@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ class Chef
         @name = name
         pid = pid_from_file
         unless running?
-          remove_pid_file()
+          remove_stale_pid_file()
           Chef::Log.info("Daemonizing..")
           begin
             exit if fork
@@ -46,7 +46,7 @@ class Chef
             $stdout.reopen("/dev/null", "a")
             $stderr.reopen($stdout)
             save_pid_file
-            at_exit { remove_pid_file }
+            at_exit { remove_my_pid_file }
           rescue NotImplementedError => e
             Chef::Application.fatal!("There is no fork: #{e.message}")
           end
@@ -54,7 +54,7 @@ class Chef
           Chef::Application.fatal!("Chef is already running pid #{pid}")
         end
       end
-  
+
       # Check if Chef is running based on the pid_file
       # ==== Returns
       # Boolean::
@@ -73,25 +73,7 @@ class Chef
       rescue Errno::EACCES => e
         Chef::Application.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
       end
-      
-      # Check if this process if forked from a Chef daemon
-      # ==== Returns
-      # Boolean::
-      # True if this process is forked 
-      # False if this process is not forked
-      #
-      def forked?
-        if running? and Process.ppid == pid_from_file.to_i
-          # chef daemon is running and this process is a child of it
-          true
-        elsif not running? and Process.ppid == 1
-          # an orphaned fork, its parent becomes init, launchd, etc. after chef daemon dies
-          true
-        else
-          false
-        end
-      end
-      
+
       # Gets the pid file for @name
       # ==== Returns
       # String::
@@ -99,7 +81,7 @@ class Chef
       def pid_file
          Chef::Config[:pid_file] or "/tmp/#{@name}.pid"
       end
-      
+
       # Suck the pid out of pid_file
       # ==== Returns
       # Integer::
@@ -112,7 +94,7 @@ class Chef
       rescue Errno::ENOENT, Errno::EACCES
         nil
       end
-    
+
       # Store the PID on the filesystem
       # This uses the Chef::Config[:pid_file] option, or "/tmp/name.pid" otherwise
       #
@@ -123,20 +105,26 @@ class Chef
         rescue Errno::EACCES => e
           Chef::Application.fatal!("Failed store pid in #{File.dirname(file)}, permission denied: #{e.message}")
         end
-      
+
         begin
           File.open(file, "w") { |f| f.write(Process.pid.to_s) }
         rescue Errno::EACCES => e
           Chef::Application.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
         end
       end
-  
-      # Delete the PID from the filesystem
-      def remove_pid_file
-        if not forked? then
-          FileUtils.rm(pid_file) if File.exists?(pid_file)
+
+      # Delete any stale (not running) pid_file
+      def remove_stale_pid_file
+        if File.exists?(pid_file) and not running?
+          Chef::Log.warn("Removing stale pid file at #{pid_file}: process #{pid_from_file} not running")
+          FileUtils.rm(pid_file)
         end
-      end           
+      end
+
+      # Remove the pid file making sure it is mine by checking the pid in it
+      def remove_my_pid_file
+        FileUtils.rm(pid_file) if File.exists?(pid_file) and Process.pid == pid_from_file
+      end
 
       # Change process user/group to those specified in Chef::Config
       #
@@ -151,7 +139,7 @@ class Chef
           _change_privilege(Chef::Config[:user])
         end
       end
-    
+
       # Change privileges of the process to be the specified user and group
       #
       # ==== Parameters
@@ -170,14 +158,14 @@ class Chef
           Chef::Application.fatal!("Failed to get UID for user #{user}, does it exist? #{e.message}")
           return false
         end
-   
+
         begin
           target_gid = Etc.getgrnam(group).gid
         rescue ArgumentError => e
           Chef::Application.fatal!("Failed to get GID for group #{group}, does it exist? #{e.message}")
           return false
         end
-      
+
         if (uid != target_uid) or (gid != target_gid)
           Process.initgroups(user, target_gid)
           Process::GID.change_privilege(target_gid)
