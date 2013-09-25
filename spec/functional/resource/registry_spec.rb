@@ -104,8 +104,6 @@ describe Chef::Resource::RegistryKey, :windows_only do
     @new_resource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
     @registry = Chef::Win32::Registry.new(@run_context)
 
-    @current_whyrun = Chef::Config[:why_run]
-
     reset_registry
   end
 
@@ -259,11 +257,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
@@ -373,11 +368,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the keys do not exist but recursive is set to false" do
@@ -469,11 +461,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
     end
 
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
       it "does nothing if the action is delete" do
         @new_resource.key(reg_parent + '\OpscodeWhyRun')
@@ -549,11 +538,8 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report["total_res_count"].should == "1"
     end
     context "while running in whyrun mode" do
-      before (:all) do
+      before (:each) do
         Chef::Config[:why_run] = true
-      end
-      after (:all) do
-        Chef::Config[:why_run] = @current_whyrun
       end
 
       it "does not throw an exception if the key has subkeys but recursive is set to false" do
