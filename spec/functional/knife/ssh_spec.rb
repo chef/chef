@@ -211,7 +211,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway" do
-        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {})
+        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {:config => true})
         @knife.run
         @knife.config[:ssh_gateway].should == "user@ec2.public_hostname"
       end
@@ -224,7 +224,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "uses the ssh_gateway" do
-        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {})
+        @knife.session.should_receive(:via).with("ec2.public_hostname", "user", {:config => true})
         @knife.run
         @knife.config[:ssh_gateway].should == "user@ec2.public_hostname"
       end
@@ -242,6 +242,93 @@ describe Chef::Knife::Ssh do
       it "should prompt the user for a password" do
         @knife.ui.should_receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
         @knife.run
+      end
+    end
+  end
+
+  describe "ssh_config" do
+    context "when knife[:ssh_config] is set" do
+      before do
+        setup_knife(['-F /tmp/ssh_config', '*:*', 'uptime'])
+      end
+
+      it "uses the ssh_config" do
+        @knife.run
+        @knife.config[:ssh_config].should == '/tmp/ssh_config'
+      end
+    end
+
+    context "when knife[:ssh_config] is not provided]" do
+      before do
+        setup_knife(['*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_config] = nil
+      end
+
+      it "uses the default" do
+        @knife.run
+        @knife.config[:ssh_config].should == true
+      end
+    end
+
+    context "when -F false is provided" do
+      before do
+        setup_knife(['-F false', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_config] = false
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        @knife.config[:ssh_config].should == false
+      end
+
+      it "should override what is set in knife.rb" do
+        # This is the setting imported from knife.rb
+        Chef::Config[:knife][:ssh_config] = nil
+        setup_knife(['-F false', '*:*', 'uptime'])
+        @knife.run
+        @knife.config[:ssh_config].should == false
+      end
+    end
+
+    context "when -F true is provided" do
+      before do
+        setup_knife(['-F true', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_config] = true
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        @knife.config[:ssh_config].should == true
+      end
+
+      it "should override what is set in knife.rb" do
+        # This is the setting imported from knife.rb
+        Chef::Config[:knife][:ssh_config] = nil
+        # Then we run knife with the -a flag, which sets the above variable
+        setup_knife(['-F true', '*:*', 'uptime'])
+        @knife.run
+        @knife.config[:ssh_config].should == true
+      end
+    end
+
+    context "when -F ssh.config is provided" do
+      before do
+        setup_knife(['-F ssh.config', '*:*', 'uptime'])
+        Chef::Config[:knife][:ssh_config] = "ssh.config"
+      end
+
+      it "should use the value on the command line" do
+        @knife.run
+        @knife.config[:ssh_config].should == "ssh.config"
+      end
+
+      it "should override what is set in knife.rb" do
+        # This is the setting imported from knife.rb
+        Chef::Config[:knife][:ssh_config] = nil
+        # Then we run knife with the -a flag, which sets the above variable
+        setup_knife(['-F ssh.config', '*:*', 'uptime'])
+        @knife.run
+        @knife.config[:ssh_config].should == "ssh.config"
       end
     end
   end
