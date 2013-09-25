@@ -33,4 +33,6 @@ class Chef
   end
 end
 
-
+# Backwards compatability
+# @todo remove in Chef 12
+Chef::Resource::SmartOSPackage = Chef::Resource::SmartosPackage
