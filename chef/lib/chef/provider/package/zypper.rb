@@ -91,11 +91,11 @@ class Chef
             )
           elsif version
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)} #{name}=#{version} "
+              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)}  #{name}=#{version} "
             )
           else
             run_command(
-              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)} #{name}"
+              :command => "zypper -n --no-gpg-checks install -l#{expand_options(@new_resource.options)}  #{name}"
             )
           end
         end
