@@ -1,5 +1,5 @@
 #
-# Author:: 
+# Author::
 # Copyright:: Copyright (c) 2009 Opscode, Inc
 # License:: Apache License, Version 2.0
 #
@@ -38,7 +38,7 @@ class Chef
         def enabled?
           # Check to see if there is an entry in /etc/filesystems. Last entry for a volume wins. Using command "lsfs" to fetch entries.
           enabled = false
-          
+
           # lsfs o/p = #MountPoint:Device:Vfs:Nodename:Type:Size:Options:AutoMount:Acct
           # search only for current mount point
           shell_out("lsfs -c #{@new_resource.mount_point}").stdout.each_line do | line |
@@ -74,8 +74,8 @@ class Chef
               device_details = device_fstab.split(":")
               search_device = device_details[1]
             else
-              search_device = device_fstab_regex  
-            end    
+              search_device = device_fstab_regex
+            end
             case line
             when /#{search_device}\s+#{Regexp.escape(@new_resource.mount_point)}/
               mounted = true
@@ -140,7 +140,7 @@ class Chef
               fstab.puts("\tnodename\t\t= #{device_details[0]}")
             else
               fstab.puts("\tdev\t\t= #{device_fstab}")
-            end 
+            end
             fstab.puts("\tvfs\t\t= #{@new_resource.fstype}")
             fstab.puts("\tmount\t\t= false")
             fstab.puts "\toptions\t\t= #{@new_resource.options.join(',')}" unless @new_resource.options.nil? || @new_resource.options.empty?
@@ -164,7 +164,7 @@ class Chef
               if !found_device
                 contents << line
               end
-            end          
+            end
             ::File.open("/etc/filesystems", "w") do |fstab|
               contents.each { |line| fstab.puts line}
             end

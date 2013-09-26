@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@
 class Chef
   class Resource
     class Log < Chef::Resource
-    
+
       identity_attr :message
 
       # Sends a string from a recipe to a log provider
@@ -27,16 +27,16 @@ class Chef
       # log "some string to log" do
       #   level :info  # (default)  also supports :warn, :debug, and :error
       # end
-      #    
-      # === Example
-      # log "your string to log" 
       #
-      # or 
+      # === Example
+      # log "your string to log"
+      #
+      # or
       #
       # log "a debug string" { level :debug }
       #
-  
-      # Initialize log resource with a name as the string to log 
+
+      # Initialize log resource with a name as the string to log
       #
       # === Parameters
       # name<String>:: Message to log
@@ -57,7 +57,7 @@ class Chef
           :kind_of => String
         )
       end
-      
+
       # <Symbol> Log level, one of :debug, :info, :warn, :error or :fatal
       def level(arg=nil)
         set_or_return(
@@ -66,9 +66,9 @@ class Chef
           :equal_to => [ :debug, :info, :warn, :error, :fatal ]
         )
       end
-    
+
     end
-  end  
+  end
 end
 
 

@@ -160,7 +160,7 @@ class Chef
       json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
       raw_http_request(method, url, headers, json_body)
     end
-    
+
     # Runs an HTTP request to a JSON API with raw body. File Download not supported.
     def raw_http_request(method, url, headers, body)
       headers = build_headers(method, url, headers, body)

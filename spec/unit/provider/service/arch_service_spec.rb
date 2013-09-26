@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,7 +61,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
       @provider.should_receive(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 0))
       @provider.load_current_resource
     end
-  
+
     it "should set running to true if the status command returns 0" do
       @provider.stub!(:shell_out).with("/etc/rc.d/chef status").and_return(OpenStruct.new(:exitstatus => 0))
       @provider.load_current_resource
@@ -92,7 +92,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
       @provider.should_receive(:shell_out).with("/etc/rc.d/chefhasmonkeypants status").and_return(OpenStruct.new(:exitstatus => 0))
       @provider.load_current_resource
     end
-    
+
   end
 
   it "should raise error if the node has a nil ps attribute and no other means to get status" do
@@ -129,7 +129,7 @@ aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
 DEFAULT_PS
       @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
       @provider.stub!(:shell_out!).and_return(@status)
-      
+
       @node.automatic_attrs[:command] = {:ps => "ps -ef"}
     end
 
@@ -139,7 +139,7 @@ aj        7842  5057  0 21:26 pts/2    00:00:06 chef
 aj        7842  5057  0 21:26 pts/2    00:00:06 poos
 RUNNING_PS
       @status.stub!(:stdout).and_return(@stdout)
-      @provider.load_current_resource 
+      @provider.load_current_resource
       @provider.current_resource.running.should be_true
     end
 
@@ -162,13 +162,13 @@ RUNNING_PS
     ::File.stub!(:read).with("/etc/rc.conf").and_return("DAEMONS=(network !apache ssh)")
     @provider.daemons.should == ['network', '!apache', 'ssh']
   end
-  
+
   context "when the current service status is known" do
     before do
       @current_resource = Chef::Resource::Service.new("chef")
       @provider.current_resource = @current_resource
     end
-    
+
     describe Chef::Provider::Service::Arch, "enable_service" do
       # before(:each) do
       #   @new_resource = mock("Chef::Resource::Service",
@@ -178,7 +178,7 @@ RUNNING_PS
       #     :running => false
       #   )
       #   @new_resource.stub!(:start_command).and_return(false)
-      # 
+      #
       #   @provider = Chef::Provider::Service::Arch.new(@node, @new_resource)
       #   Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       # end
@@ -199,7 +199,7 @@ RUNNING_PS
       #     :running => false
       #   )
       #   @new_resource.stub!(:start_command).and_return(false)
-      # 
+      #
       #   @provider = Chef::Provider::Service::Arch.new(@node, @new_resource)
       #   Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       # end
@@ -221,11 +221,11 @@ RUNNING_PS
       #     :running => false
       #   )
       #   @new_resource.stub!(:start_command).and_return(false)
-      # 
+      #
       #   @provider = Chef::Provider::Service::Arch.new(@node, @new_resource)
       #   Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       # end
-  
+
       it "should call the start command if one is specified" do
         @new_resource.stub!(:start_command).and_return("/etc/rc.d/chef startyousillysally")
         @provider.should_receive(:shell_out!).with("/etc/rc.d/chef startyousillysally")
@@ -235,7 +235,7 @@ RUNNING_PS
       it "should call '/etc/rc.d/service_name start' if no start command is specified" do
         @provider.should_receive(:shell_out!).with("/etc/rc.d/#{@new_resource.service_name} start")
         @provider.start_service()
-      end 
+      end
     end
 
     describe Chef::Provider::Service::Arch, "stop_service" do
@@ -247,7 +247,7 @@ RUNNING_PS
       #     :running => false
       #   )
       #   @new_resource.stub!(:stop_command).and_return(false)
-      # 
+      #
       #   @provider = Chef::Provider::Service::Arch.new(@node, @new_resource)
       #   Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       # end
@@ -274,7 +274,7 @@ RUNNING_PS
       #   )
       #   @new_resource.stub!(:restart_command).and_return(false)
       #   @new_resource.stub!(:supports).and_return({:restart => false})
-      # 
+      #
       #   @provider = Chef::Provider::Service::Arch.new(@node, @new_resource)
       #   Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       # end
@@ -309,7 +309,7 @@ RUNNING_PS
       #   )
       #   @new_resource.stub!(:reload_command).and_return(false)
       #   @new_resource.stub!(:supports).and_return({:reload => false})
-      # 
+      #
       #   @provider = Chef::Provider::Service::Arch.new(@node, @new_resource)
       #   Chef::Resource::Service.stub!(:new).and_return(@current_resource)
       # end

@@ -29,7 +29,7 @@ describe Chef::Provider::Group::Groupmod do
       @new_resource.append false
       @provider = Chef::Provider::Group::Groupmod.new(@new_resource, @run_context)
     end
-  
+
   describe "manage_group" do
     describe "when determining the current group state" do
       it "should raise an error if the required binary /usr/sbin/group doesn't exist" do
@@ -41,25 +41,25 @@ describe Chef::Provider::Group::Groupmod do
         File.should_receive(:exists?).with("/usr/sbin/user").and_return(false)
         lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Group)
       end
-  
+
       it "shouldn't raise an error if the required binaries exist" do
         File.stub!(:exists?).and_return(true)
         lambda { @provider.load_current_resource }.should_not raise_error(Chef::Exceptions::Group)
       end
     end
-  
+
     describe "after the group's current state is known" do
       before do
         @current_resource = @new_resource.dup
         @provider.current_resource = @current_resource
       end
-  
+
       describe "when no group members are specified and append is not set" do
         before do
           @new_resource.append(false)
           @new_resource.members([])
         end
-  
+
         it "logs a message and sets group's members to 'none', then removes existing group members" do
           Chef::Log.should_receive(:debug).with("group[wheel] setting group members to: none")
           Chef::Log.should_receive(:debug).with("group[wheel] removing members lobster, rage, fist")
@@ -69,26 +69,26 @@ describe Chef::Provider::Group::Groupmod do
           @provider.manage_group
         end
       end
-  
+
       describe "when no group members are specified and append is set" do
         before do
           @new_resource.append(true)
           @new_resource.members([])
         end
-   
+
         it "logs a message and does not modify group membership" do
           Chef::Log.should_receive(:debug).with("group[wheel] not changing group members, the group has no members to add")
           @provider.should_not_receive(:shell_out!)
           @provider.manage_group
         end
       end
-  
+
       describe "when removing some group members" do
         before do
           @new_resource.append(false)
           @new_resource.members(%w{ lobster })
         end
-  
+
         it "updates group membership correctly" do
           Chef::Log.stub!(:debug)
           @provider.should_receive(:shell_out!).with("group mod -n wheel_bak wheel")
@@ -100,14 +100,14 @@ describe Chef::Provider::Group::Groupmod do
       end
     end
   end
-  
+
   describe "create_group" do
     describe "when creating a new group" do
       before do
         @current_resource = Chef::Resource::Group.new("wheel")
         @provider.current_resource = @current_resource
       end
-  
+
       it "should run a group add command and some user mod commands" do
         @provider.should_receive(:shell_out!).with("group add -g '123' wheel")
         @provider.should_receive(:shell_out!).with("user mod -G wheel lobster")
@@ -117,14 +117,14 @@ describe Chef::Provider::Group::Groupmod do
       end
     end
   end
-  
+
   describe "remove_group" do
     describe "when removing an existing group" do
       before do
         @current_resource = @new_resource.dup
         @provider.current_resource = @current_resource
       end
-  
+
       it "should run a group del command" do
         @provider.should_receive(:shell_out!).with("group del wheel")
         @provider.remove_group

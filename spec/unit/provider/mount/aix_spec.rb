@@ -217,7 +217,7 @@ ENABLED
   mount   = true
   options   = rw
 ETCFILESYSTEMS
-  
+
       filesystems = StringIO.new
       ::File.stub!(:open).with("/etc/filesystems", "w").and_yield(filesystems)
 

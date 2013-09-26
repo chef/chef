@@ -44,7 +44,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       # The name from WMI is actually what we want in Win2k8R2+.
       # So this expectation sould continue to hold without modification
       # as new versions of Windows are released.
-      @current_os_version = host.caption      
+      @current_os_version = host.caption
     end
 
     @version = Chef::ReservedNames::Win32::Version.new
@@ -55,10 +55,10 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       @current_os_version.should include(@version.marketing_name)
     end
   end
- 
+
   def is_windows_server_2008?(wmi_host)
     is_win2k8 = false
-    
+
     os_version = wmi_host.send('Version')
 
     # The operating system version is a string in the following form

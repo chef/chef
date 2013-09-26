@@ -68,7 +68,7 @@ describe Chef::Resource::ErlCall do
   end
 
   describe "when it has cookie and node_name" do
-    before do 
+    before do
       @resource.code("erl-call:function()")
       @resource.cookie("cookie")
       @resource.node_name("raster")

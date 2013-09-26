@@ -97,7 +97,7 @@ describe Chef::Resource::Link do
   end
 
   describe "when it has to, link_type, owner, and group" do
-    before do 
+    before do
       @resource.target_file("/var/target.tar")
       @resource.to("/to/dir/file.tar")
       @resource.link_type(:symbolic)

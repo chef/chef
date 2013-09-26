@@ -95,7 +95,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
   end
 
   describe Chef::Provider::Service::Windows, "stop_service" do
-    
+
     before(:each) do
       Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
         mock("StatusStruct", :current_state => "running"),
@@ -143,9 +143,9 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     it "should stop then start the service if it is running" do
       Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
-        mock("StatusStruct", :current_state => "running"), 
-        mock("StatusStruct", :current_state => "stopped"), 
-        mock("StatusStruct", :current_state => "stopped"), 
+        mock("StatusStruct", :current_state => "running"),
+        mock("StatusStruct", :current_state => "stopped"),
+        mock("StatusStruct", :current_state => "stopped"),
         mock("StatusStruct", :current_state => "running"))
       Win32::Service.should_receive(:stop).with(@new_resource.service_name)
       Win32::Service.should_receive(:start).with(@new_resource.service_name)
@@ -155,8 +155,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     it "should just start the service if it is stopped" do
       Win32::Service.stub!(:status).with(@new_resource.service_name).and_return(
-        mock("StatusStruct", :current_state => "stopped"), 
-        mock("StatusStruct", :current_state => "stopped"), 
+        mock("StatusStruct", :current_state => "stopped"),
+        mock("StatusStruct", :current_state => "stopped"),
         mock("StatusStruct", :current_state => "running"))
       Win32::Service.should_receive(:start).with(@new_resource.service_name)
       @provider.restart_service
@@ -201,7 +201,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       @new_resource.updated_by_last_action?.should be_false
     end
   end
-  
+
   describe Chef::Provider::Service::Windows, "disable_service" do
 
     before(:each) do

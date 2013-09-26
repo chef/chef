@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ class Chef
     class WindowsScript < Chef::Provider::Script
 
       protected
-      
+
       include Chef::Mixin::WindowsArchitectureHelper
 
       def initialize( new_resource, run_context, script_extension='')
@@ -43,14 +43,14 @@ class Chef
       end
 
       public
-      
+
       def action_run
         wow64_redirection_state = nil
 
         if @is_wow64
           wow64_redirection_state = disable_wow64_file_redirection(@run_context.node)
         end
-        
+
         begin
           super
         rescue
@@ -61,11 +61,11 @@ class Chef
           end
         end
       end
-        
+
       def script_file
         base_script_name = "chef-script"
         temp_file_arguments = [ base_script_name, @script_extension ]
-        
+
         @script_file ||= Tempfile.open(temp_file_arguments)
       end
     end

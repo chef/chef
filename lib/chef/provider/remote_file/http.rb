@@ -68,7 +68,7 @@ class Chef
               raise e
             end
           end
-          
+
           tempfile
         end
 

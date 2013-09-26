@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,8 +32,8 @@ class Chef
 
         def define_resource_requirements
           super
-          requirements.assert(:all_actions) do |a| 
-            a.assertion { ::File.exists?("/usr/sbin/groupmod") } 
+          requirements.assert(:all_actions) do |a|
+            a.assertion { ::File.exists?("/usr/sbin/groupmod") }
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/sbin/groupmod for #{@new_resource.name}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
