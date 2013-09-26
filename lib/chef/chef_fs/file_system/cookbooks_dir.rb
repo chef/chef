@@ -22,6 +22,7 @@ require 'chef/chef_fs/raw_request'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/cookbook_frozen_error'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbook_dir'
+require 'chef/mixin/file_class'
 
 require 'tmpdir'
 
@@ -29,6 +30,9 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbooksDir < RestListDir
+
+        include Chef::Mixin::FileClass
+
         def initialize(parent)
           super("cookbooks", parent)
         end
@@ -93,7 +97,7 @@ class Chef
             proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
 
             # Make a symlink
-            File.symlink other.file_path, proxy_cookbook_path
+            file_class.symlink(Chef::Platform.windows? ? other.file_path.gsub('/', '\\') : other.file_path, proxy_cookbook_path)
 
             # Instantiate a proxy loader using the temporary symlink
             proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.parent.chefignore)
