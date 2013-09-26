@@ -34,7 +34,7 @@ describe Chef::Mixin::Checksum do
   end
 
   it "gets the checksum of a file" do
-    @checksum_user.checksum(@file).should == "dc6665c18676f5f30fdaa420343960edf1883790f83f51f437dbfa0ff678499d"
+    @checksum_user.checksum(@file).should == "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
   end
 
 end
