@@ -34,7 +34,7 @@ describe Chef::Digester do
 
     it "computes a checksum of a file" do
       fixture_file = CHEF_SPEC_DATA + "/checksum/random.txt"
-      expected = "dc6665c18676f5f30fdaa420343960edf1883790f83f51f437dbfa0ff678499d"
+      expected = "09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394"
       @cache.checksum_for_file(fixture_file).should == expected
     end
 
