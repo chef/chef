@@ -19,34 +19,84 @@ exists()
   fi
 }
 
+# SmartOS builds in /opt/local instead
+is_smartos()
+{
+  uname -v | grep "^joyent" 2>&1 >/dev/null
+}
+
+if is_smartos; then
+    PREFIX="/opt/local"
+else
+    PREFIX="/usr"
+fi
+
 # remove the chef package / clobber the files
 if exists dpkg;
 then
     sudo dpkg -P chef || true
-    sudo rm -rf /opt/chef/*
 elif exists rpm;
 then
     sudo rpm -ev chef || true
-    sudo rm -rf /opt/chef/*
 elif exists pkgadd;
 then
     cat <<EOF > /tmp/nocheck
 conflict=nocheck
 action=nocheck
 EOF
-    sudo pkgrm -a /tmp/nocheck -n chef || true
-    # BUGBUG: we have to do this twice because the postrm fails the first time
-    sudo pkgrm -a /tmp/nocheck -n chef || true
-    sudo rm -rf /opt/chef/*
+    if ! sudo pkgrm -a /tmp/nocheck -n chef; then
+      echo "WARNING WARNING WARNING WARNING WARNING WARNING WARNING"
+      echo "The postrm script from the *prior* installation has broken on Solaris."
+      echo "Removing that script so that subsequent pkgadd's will succeed."
+      echo "The fact that you can run this again and it does not break does not necessarily"
+      echo "mean that you can ignore this warning.  This test will flap red and green even"
+      echo "though the postremove script is always broken.  Investigate the postremove script"
+      echo "and determine WHY it failed, and make sure you use 20th century /bin/sh to test it."
+      echo "WARNING WARNING WARNING WARNING WARNING WARNING WARNING"
+      sudo rm -f /var/sadm/pkg/chef/install/postremove || true
+      exit 1
+    fi
 else # makeself installer
-    sudo rm  -rf /opt/chef/*
+  :
 fi
+
+sudo rm  -rf /opt/chef/*
+
+# ensure symlinks are gone, so that failures to recreate them get caught
+sudo rm -f $PREFIX/bin/chef-client || true
+sudo rm -f $PREFIX/bin/chef-solo || true
+sudo rm -f $PREFIX/bin/chef-apply || true
+sudo rm -f $PREFIX/bin/chef-shell || true
+sudo rm -f $PREFIX/bin/knife || true
+sudo rm -f $PREFIX/bin/shef || true
+sudo rm -f $PREFIX/bin/ohai || true
 
 if exists curl;
 then
    curl -L "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
 else
    wget -qO- "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
+fi
+
+# sanity check that we're getting symlinks from the pre-install script
+if [ ! -e "/usr/bin/chef-client" ]; then
+  echo "/usr/bin/chef-client symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -e "/usr/bin/knife" ]; then
+  echo "/usr/bin/knife symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -e "/usr/bin/chef-solo" ]; then
+  echo "/usr/bin/chef-solo symlink was not installed by pre-install script!"
+  exit 1
+fi
+
+if [ ! -e "/usr/bin/ohai" ]; then
+  echo "/usr/bin/ohai symlink was not installed by pre-install script!"
+  exit 1
 fi
 
 chef-client --version
