@@ -102,7 +102,7 @@ build do
 
   rake "gem"
 
-  gem ["install pkg/chef*.gem",
+  gem ["install pkg/chef*mingw32.gem",
        "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" ")
 
@@ -127,7 +127,13 @@ GOTO :EOF
 EOBATCH
 
     gem_executables = []
-    %w{chef ohai}.each do |gem|
+    %w{chef}.each do |gem|
+      gem_file = Dir["C:/opscode/chef/embedded/**/cache/#{gem}*mingw32.gem"].first
+      gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
+    end
+
+    # XXX: need to fix ohai to use own gemspec as well and eliminate copypasta
+    %w{ohai}.each do |gem|
       gem_file = Dir["C:/opscode/chef/embedded/**/cache/#{gem}*.gem"].first
       gem_executables << Gem::Format.from_file_by_path(gem_file).spec.executables
     end
