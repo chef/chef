@@ -29,7 +29,6 @@ describe Chef::Provider::Mdadm do
     @new_resource = Chef::Resource::Mdadm.new('/dev/md1')
     @new_resource.devices ["/dev/sdz1","/dev/sdz2"]
     @new_resource.level   1
-    @new_resource.chunk   256
 
     @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context)
   end
@@ -60,7 +59,6 @@ describe Chef::Provider::Mdadm do
       @current_resource = Chef::Resource::Mdadm.new('/dev/md1')
       @current_resource.devices ["/dev/sdz1","/dev/sdz2"]
       @current_resource.level   1
-      @current_resource.chunk   256
       @provider.stub!(:load_current_resource).and_return(true)
       @provider.current_resource = @current_resource
     end
@@ -68,7 +66,7 @@ describe Chef::Provider::Mdadm do
     describe "when creating the metadevice" do
       it "should create the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
       end
@@ -76,7 +74,7 @@ describe Chef::Provider::Mdadm do
       it "should specify a bitmap only if set" do
         @current_resource.exists(false)
         @new_resource.bitmap('grow')
-        expected_command = "yes | mdadm --create /dev/md1 --chunk=256 --level 1 --metadata=0.90 --bitmap=grow --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --bitmap=grow --raid-devices 2 /dev/sdz1 /dev/sdz2"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
