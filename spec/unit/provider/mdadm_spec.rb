@@ -25,11 +25,8 @@ describe Chef::Provider::Mdadm do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-
     @new_resource = Chef::Resource::Mdadm.new('/dev/md1')
-    @new_resource.devices ["/dev/sdz1","/dev/sdz2"]
-    @new_resource.level   1
-
+    @new_resource.devices ["/dev/sdz1","/dev/sdz2","/dev/sdz3"]
     @provider = Chef::Provider::Mdadm.new(@new_resource, @run_context)
   end
 
@@ -57,8 +54,7 @@ describe Chef::Provider::Mdadm do
   describe "after the metadevice status is known" do
     before(:each) do
       @current_resource = Chef::Resource::Mdadm.new('/dev/md1')
-      @current_resource.devices ["/dev/sdz1","/dev/sdz2"]
-      @current_resource.level   1
+      @new_resource.level 5
       @provider.stub!(:load_current_resource).and_return(true)
       @provider.current_resource = @current_resource
     end
@@ -66,7 +62,7 @@ describe Chef::Provider::Mdadm do
     describe "when creating the metadevice" do
       it "should create the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
       end
@@ -74,7 +70,16 @@ describe Chef::Provider::Mdadm do
       it "should specify a bitmap only if set" do
         @current_resource.exists(false)
         @new_resource.bitmap('grow')
-        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --bitmap=grow --raid-devices 2 /dev/sdz1 /dev/sdz2"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --bitmap=grow --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        @provider.should_receive(:shell_out!).with(expected_command)
+        @provider.run_action(:create)
+        @new_resource.should be_updated_by_last_action
+      end
+
+      it "should not specify a chunksize if raid level 1" do
+        @current_resource.exists(false)
+        @new_resource.level 1
+        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         @provider.should_receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
         @new_resource.should be_updated_by_last_action
@@ -91,7 +96,7 @@ describe Chef::Provider::Mdadm do
     describe "when asembling the metadevice" do
       it "should assemble the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_mdadm_cmd = "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2"
+        expected_mdadm_cmd = "yes | mdadm --assemble /dev/md1 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         @provider.should_receive(:shell_out!).with(expected_mdadm_cmd)
         @provider.run_action(:assemble)
         @new_resource.should be_updated_by_last_action
