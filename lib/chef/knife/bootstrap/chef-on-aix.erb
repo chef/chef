@@ -1,0 +1,49 @@
+#!/bin/ksh
+<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+if ! [[ -e /usr/bin/chef-client ]] ; then
+  <% if @chef_config[:aix_package] -%>
+    # Read the download URL/location from knife.rb with option aix_package
+    # For now just install from local, TODO - fetch from download URL
+    # perl -e 'use LWP::Simple; getprint($ARGV[0]);' package_url > /tmp/chef-install_file
+    installp -aYF -d  <%= @chef_config[:aix_package] %> chef
+  <% else -%>
+     echo ":aix_package location is not set in knife.rb"
+     exit
+  <% end -%>
+fi
+
+mkdir -p /etc/chef
+
+awk NF > /etc/chef/validation.pem <<'EOP'
+<%= validation_key %>
+EOP
+chmod 0600 /etc/chef/validation.pem
+
+<% if @chef_config[:encrypted_data_bag_secret] -%>
+awk NF > /etc/chef/encrypted_data_bag_secret <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+chmod 0600 /etc/chef/encrypted_data_bag_secret
+<% end -%>
+
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir -p /etc/chef/ohai/hints
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+<%= hash.to_json %>
+EOP
+<% end -%>
+<% end -%>
+
+cat > /etc/chef/client.rb <<'EOP'
+<%= config_content %>
+EOP
+
+cat > /etc/chef/first-boot.json <<'EOP'
+<%= first_boot.to_json %>
+EOP
+
+<%= start_chef %>
