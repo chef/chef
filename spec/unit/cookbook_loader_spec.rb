@@ -141,7 +141,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should load the metadata for the cookbook" do
-        @cookbook_loader.metadata[:openldap].name.should == :openldap
+        @cookbook_loader.metadata[:openldap].name.to_s.should == "openldap"
         @cookbook_loader.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
       end
 
@@ -171,6 +171,22 @@ describe Chef::CookbookLoader do
         seen[cookbook_name] = true
       end
       seen.should have_key("openldap")
+    end
+
+    it "should not duplicate keys when serialized to JSON" do
+      # Chef JSON serialization will generate duplicate keys if given
+      # a Hash containing matching string and symbol keys. See CHEF-4571.
+      aa = @cookbook_loader["openldap"]
+      aa.to_hash["metadata"].recipes.keys.should_not include(:openldap)
+      aa.to_hash["metadata"].recipes.keys.should include("openldap")
+      expected_desc = "Main Open LDAP configuration"
+      aa.to_hash["metadata"].recipes["openldap"].should == expected_desc
+      raw = aa.to_hash["metadata"].recipes.to_json
+      search_str = "\"openldap\":\""
+      key_idx = raw.index(search_str)
+      key_idx.should be > 0
+      dup_idx = raw[(key_idx + 1)..-1].index(search_str)
+      dup_idx.should be_nil
     end
 
     it "should not load the cookbook again when accessed" do
