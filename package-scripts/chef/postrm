@@ -1,8 +1,9 @@
 #!/bin/bash
+# ^^^^^^^^^ this is ignored on solaris 9 and run under /bin/sh
 
 is_smartos()
 {
-  uname -v | grep ^joyent 2>&1>/dev/null
+  uname -v | grep "^joyent" 2>&1 >/dev/null
 }
 
 if is_smartos; then
@@ -13,9 +14,11 @@ fi
 
 # Clean up binary symlinks if they exist
 # see: http://tickets.opscode.com/browse/CHEF-3022
-if [ ! -e /etc/redhat-release -o "x$1" == "x0" ]; then
+if [ ! -f /etc/redhat-release -o "x$1" = "x0" ]; then
   rm -f $PREFIX/bin/chef-client
   rm -f $PREFIX/bin/chef-solo
+  rm -f $PREFIX/bin/chef-apply
+  rm -f $PREFIX/bin/chef-shell
   rm -f $PREFIX/bin/shef
   rm -f $PREFIX/bin/knife
   rm -f $PREFIX/bin/ohai
