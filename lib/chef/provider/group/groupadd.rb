@@ -87,6 +87,7 @@ class Chef
         def groupadd_options
           opts = ''
           opts << " -r" if @new_resource.system
+          opts << " -o" if new_resource.non_unique || new_resource.supports[:non_unique]
           opts
         end
 

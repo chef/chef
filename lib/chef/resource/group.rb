@@ -33,6 +33,10 @@ class Chef
         @members = []
         @action = :create
         @append = false
+        @non_unique = false
+        @supports = {
+          :non_unique => false
+        }
         @allowed_actions.push(:create, :remove, :modify, :manage)
       end
 
@@ -74,6 +78,14 @@ class Chef
       def system(arg=nil)
         set_or_return(
           :system,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ]
+        )
+      end
+
+      def non_unique(arg=nil)
+        set_or_return(
+          :non_unique,
           arg,
           :kind_of => [ TrueClass, FalseClass ]
         )
