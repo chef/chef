@@ -18,14 +18,14 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Resource::SmartOSPackage, "initialize" do
+describe Chef::Resource::SmartosPackage, "initialize" do
 
   before(:each) do
-    @resource = Chef::Resource::SmartOSPackage.new("foo")
+    @resource = Chef::Resource::SmartosPackage.new("foo")
   end
 
-  it "should return a Chef::Resource::SmartOSPackage" do
-    @resource.should be_a_kind_of(Chef::Resource::SmartOSPackage)
+  it "should return a Chef::Resource::SmartosPackage" do
+    @resource.should be_a_kind_of(Chef::Resource::SmartosPackage)
   end
 
   it "should set the resource_name to :smartos_package" do
