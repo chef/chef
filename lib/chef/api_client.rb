@@ -36,6 +36,7 @@ class Chef
       @public_key = nil
       @private_key = nil
       @admin = false
+      @validator = false
     end
 
     # Gets or sets the client name.
@@ -74,6 +75,19 @@ class Chef
       )
     end
 
+    # Gets or sets whether this client is a validator.
+    #
+    # @params [Boolean] whether or not the client is a validator.  If
+    #   `nil`, retrieves the already-set value.
+    # @return [Boolean] The current value
+    def validator(arg=nil)
+      set_or_return(
+        :validator,
+        arg,
+        :kind_of => [TrueClass, FalseClass]
+      )
+    end
+
     # Gets or sets the private key.
     #
     # @params [Optional String] The string representation of the private key.
@@ -94,6 +108,7 @@ class Chef
       result = {
         "name" => @name,
         "public_key" => @public_key,
+        "validator" => @validator,
         "admin" => @admin,
         'json_class' => self.class.name,
         "chef_type" => "client"
@@ -115,6 +130,7 @@ class Chef
       client.private_key(o["private_key"]) if o.key?("private_key")
       client.public_key(o["public_key"])
       client.admin(o["admin"])
+      client.validator(o["validator"])
       client
     end
 
@@ -160,11 +176,11 @@ class Chef
     # Save this client via the REST API, returns a hash including the private key
     def save
       begin
-        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin})
+        http_api.put("clients/#{name}", { :name => self.name, :admin => self.admin, :validator => self.validator})
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
         if e.response.code == "404"
-          http_api.post("clients", {:name => self.name, :admin => self.admin })
+          http_api.post("clients", {:name => self.name, :admin => self.admin, :validator => self.validator })
         else
           raise e
         end
@@ -172,7 +188,7 @@ class Chef
     end
 
     def reregister
-      reregistered_self = http_api.put("clients/#{name}", { :name => name, :admin => admin, :private_key => true })
+      reregistered_self = http_api.put("clients/#{name}", { :name => name, :admin => admin, :validator => validator, :private_key => true })
       if reregistered_self.respond_to?(:[])
         private_key(reregistered_self["private_key"])
       else
@@ -192,7 +208,7 @@ class Chef
     end
 
     def inspect
-      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' " +
+      "Chef::ApiClient name:'#{name}' admin:'#{admin.inspect}' validator:'#{validator}' " +
       "public_key:'#{public_key}' private_key:'#{private_key}'"
     end
 
@@ -202,4 +218,3 @@ class Chef
 
   end
 end
-

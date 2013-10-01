@@ -53,6 +53,19 @@ describe Chef::ApiClient do
     lambda { @client.admin(Hash.new) }.should raise_error(ArgumentError)
   end
 
+  it "has a 'validator' flag attribute" do
+    @client.validator(true)
+    @client.validator.should be_true
+  end
+
+  it "defaults to non-validator" do
+    @client.validator.should be_false
+  end
+
+  it "allows only boolean values for the 'validator' flag" do
+    lambda { @client.validator(false) }.should_not raise_error
+    lambda { @client.validator(Hash.new) }.should raise_error(ArgumentError)
+  end
 
   it "has a public key attribute" do
     @client.public_key("super public")
@@ -98,6 +111,10 @@ describe Chef::ApiClient do
       @json.should include(%q{"admin":false})
     end
 
+    it "includes the 'validator' flag" do
+      @json.should include(%q{"validator":false})
+    end
+
     it "includes the private key when present" do
       @client.private_key("monkeypants")
       @client.to_json.should include(%q{"private_key":"monkeypants"})
@@ -115,6 +132,7 @@ describe Chef::ApiClient do
       "public_key" => "crowes",
       "private_key" => "monkeypants",
       "admin" => true,
+      "validator" => true,
       "json_class" => "Chef::ApiClient"
       }
       @client = Chef::JSONCompat.from_json(client.to_json)
@@ -134,6 +152,10 @@ describe Chef::ApiClient do
 
     it "preserves the admin status" do
       @client.admin.should be_true
+    end
+
+    it "preserves the 'validator' status" do
+      @client.validator.should be_true
     end
 
     it "includes the private key if present" do
@@ -198,7 +220,7 @@ describe Chef::ApiClient do
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
           @http_client.should_receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :private_key => true).
+            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)
         end
 
@@ -216,7 +238,7 @@ describe Chef::ApiClient do
         before do
           @api_client_with_key = {"name" => "lost-my-key", "private_key" => "the new private key"}
           @http_client.should_receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :private_key => true).
+            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
             and_return(@api_client_with_key)
         end
 
@@ -227,6 +249,7 @@ describe Chef::ApiClient do
           response.private_key.should == "the new private key"
           response.name.should == "lost-my-key"
           response.admin.should be_false
+          response.validator.should be_false
         end
       end
 
