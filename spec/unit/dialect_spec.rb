@@ -39,49 +39,49 @@ end
 describe Chef::Dialect do
   describe 'find_by_extension' do
     it 'should find a registered extension' do
-      Chef::Dialect.find_by_extension(:recipe, '.test1').should be_an_instance_of(TestDialect1)
+      Chef::Dialect.find_by_extension(nil, :recipe, '.test1').should be_an_instance_of(TestDialect1)
     end
 
     it 'should raise an exception on unregistered extension' do
-      lambda { Chef::Dialect.find_by_extension(:recipe, '.notfound') }.should raise_error(Chef::Exceptions::DialectNotFound)
+      lambda { Chef::Dialect.find_by_extension(nil, :recipe, '.notfound') }.should raise_error(Chef::Exceptions::DialectNotFound)
     end
 
     it 'should allow higher quality to take priority' do
-      Chef::Dialect.find_by_extension(:recipe, '.test2').should be_an_instance_of(TestDialect2Plus)
+      Chef::Dialect.find_by_extension(nil, :recipe, '.test2').should be_an_instance_of(TestDialect2Plus)
     end
 
     it 'should allow passing in an absolute path' do
-      Chef::Dialect.find_by_extension(:recipe, '/etc/foo.test1').should be_an_instance_of(TestDialect1)
+      Chef::Dialect.find_by_extension(nil, :recipe, '/etc/foo.test1').should be_an_instance_of(TestDialect1)
     end
 
     it 'should allow passing in a relative path' do
-      Chef::Dialect.find_by_extension(:recipe, 'etc/foo.test1').should be_an_instance_of(TestDialect1)
+      Chef::Dialect.find_by_extension(nil, :recipe, 'etc/foo.test1').should be_an_instance_of(TestDialect1)
     end
 
     it 'should allow passing in a simple filename' do
-      Chef::Dialect.find_by_extension(:recipe, 'foo.test1').should be_an_instance_of(TestDialect1)
+      Chef::Dialect.find_by_extension(nil, :recipe, 'foo.test1').should be_an_instance_of(TestDialect1)
     end
 
     it 'should allow passing in a filename with no extension' do
-      Chef::Dialect.find_by_extension(:recipe, 'test3').should be_an_instance_of(TestDialect3)
+      Chef::Dialect.find_by_extension(nil, :recipe, 'test3').should be_an_instance_of(TestDialect3)
     end
 
     it 'should allow passing in a path with no extension' do
-      Chef::Dialect.find_by_extension(:recipe, 'foo/test3').should be_an_instance_of(TestDialect3)
+      Chef::Dialect.find_by_extension(nil, :recipe, 'foo/test3').should be_an_instance_of(TestDialect3)
     end
   end
 
   describe 'find_by_mime_type' do
     it 'should find a registered MIME type' do
-      Chef::Dialect.find_by_mime_type(:recipe, 'test/one').should be_an_instance_of(TestDialect1)
+      Chef::Dialect.find_by_mime_type(nil, :recipe, 'test/one').should be_an_instance_of(TestDialect1)
     end
 
     it 'should raise an exception on unregistered MIME type' do
-      lambda { Chef::Dialect.find_by_mime_type(:recipe, '404/notfound') }.should raise_error(Chef::Exceptions::DialectNotFound)
+      lambda { Chef::Dialect.find_by_mime_type(nil, :recipe, '404/notfound') }.should raise_error(Chef::Exceptions::DialectNotFound)
     end
 
     it 'should allow higher quality to take priority' do
-      Chef::Dialect.find_by_mime_type(:recipe, 'test/two').should be_an_instance_of(TestDialect2Plus)
+      Chef::Dialect.find_by_mime_type(nil, :recipe, 'test/two').should be_an_instance_of(TestDialect2Plus)
     end
   end
 end
