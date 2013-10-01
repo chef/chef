@@ -41,7 +41,7 @@ describe "Chef::Application::WindowsService", :windows_only do
   end
   it "passes config params to new process" do
     Chef::Config[:config_file] = "test_config_file"
-    #Chef::Config[:log_location] = tempfile.path
+    Chef::Config[:log_location] = STDOUT
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.stub(:running?).and_return(true, false)

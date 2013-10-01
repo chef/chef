@@ -32,6 +32,7 @@ describe "Chef::Application::WindowsService", :windows_only do
   let (:instance) {Chef::Application::WindowsService.new}
 
   it "runs chef-client in new process" do
+    pending
     tempfilename = Tempfile.new("log")
     Chef::Config[:log_location] = tempfilename.path
     Chef::Config[:log_level] = :info
@@ -46,6 +47,8 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.service_main
     result1 = shell_out("grep 'Chef-client pid:' #{tempfilename.path}")
     result2 = shell_out("grep 'Child process exited' #{tempfilename.path}")
+    result1.stdout.should_not == ""
+    result2.stdout.should_not == ""
     pid_child = get_pid(result1.stdout)
     pid_parent = get_pid(result2.stdout)
     tempfilename.unlink
