@@ -1,5 +1,4 @@
-#!/bin/bash
-# ^^^^^^^^^ this is ignored on solaris 9 and run under /bin/sh
+#!/bin/sh
 
 is_smartos()
 {
