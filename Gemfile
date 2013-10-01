@@ -1,5 +1,6 @@
 source "https://rubygems.org"
-gemspec :name => "chef"
+
+gemspec
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
 
@@ -27,7 +28,7 @@ platforms :mswin, :mingw do
   gem "win32-dir", "0.4.1"
   gem "win32-event", "0.6.0"
   gem "win32-mutex", "0.4.0"
-  gem "win32-process", "0.6.5"
+  gem "win32-process", "0.7.3"
   gem "win32-service", "0.7.2"
 end
 

@@ -40,15 +40,14 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.service_main
   end
   it "passes config params to new process" do
-    Chef::Config[:config_file] = "test_config_file"
-    Chef::Config[:log_location] = STDOUT
+    Chef::Config.merge!({:log_location => tempfile.path, :config_file => "test_config_file", :log_level => :info})
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.stub(:running?).and_return(true, false)
     instance.instance_variable_get(:@service_signal).stub(:wait)
     instance.stub(:state).and_return(4)
     instance.should_receive(:run_chef_client).and_call_original
-    instance.should_receive(:shell_out).with("chef-client  --no-fork -c test_config_file").and_return(shell_out_result)
+    instance.should_receive(:shell_out).with("chef-client  --no-fork -c test_config_file -L #{tempfile.path}").and_return(shell_out_result)
     instance.service_main
     tempfile.unlink
   end

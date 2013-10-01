@@ -26,12 +26,13 @@ require './tasks/rspec.rb'
 
 GEM_NAME = "chef"
 
+spec = eval(File.read("chef.gemspec"))
+
 # This has to be here or else the docs get generated *after* the gem is created
 task :gem => 'docs:all'
 
-Dir[File.expand_path("../*gemspec", __FILE__)].reverse.each do |gemspec_path|
-  gemspec = eval(IO.read(gemspec_path))
-  Gem::PackageTask.new(gemspec).define
+Gem::PackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
 end
 
 begin
@@ -59,15 +60,6 @@ task :uninstall do
   sh %{gem uninstall #{GEM_NAME} -x -v #{Chef::VERSION} }
 end
 
-desc "Build it, tag it and ship it"
-task :ship => :gem do
-  sh("git tag #{Chef::VERSION}")
-  sh("git push opscode --tags")
-  Dir[File.expand_path("../pkg/*.gem", __FILE__)].reverse.each do |built_gem|
-    sh("gem push #{built_gem}")
-  end
-end
-
 RONN_OPTS = "--manual='Chef Manual' --organization='Chef #{Chef::VERSION}' --date='#{Time.new.strftime('%Y-%m-%d')}'"
 
 namespace :docs do
@@ -93,15 +85,7 @@ namespace :docs do
     end
   end
 
-  # we can have ronn in the path, but not in the bundle, require both
-  ronn_in_bundle = true
-  begin
-    require 'ronn'
-  rescue LoadError
-    ronn_in_bundle = false
-  end
-
-  if ronn_in_bundle && system('which ronn > /dev/null')
+  if system('which ronn > /dev/null')
     ['distro/common/markdown/man1/*.mkd', 'distro/common/markdown/man8/*.mkd'].each do |dir|
       Dir[dir].each do |mkd|
         basename = File.basename(mkd, '.mkd')
