@@ -17,7 +17,6 @@
 #
 
 require 'spec_helper'
-require 'functional/resource/batch_spec.rb'
 
 describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
