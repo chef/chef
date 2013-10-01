@@ -48,7 +48,8 @@ class Chef
       def action_create
         unless @current_resource.exists
           converge_by("create RAID device #{new_resource.raid_device}") do
-            command = "yes | mdadm --create #{@new_resource.raid_device} --chunk=#{@new_resource.chunk} --level #{@new_resource.level}"
+            command = "yes | mdadm --create #{@new_resource.raid_device} --level #{@new_resource.level}"
+            command << " --chunk=#{@new_resource.chunk}" unless @new_resource.level == 1
             command << " --metadata=#{@new_resource.metadata}"
             command << " --bitmap=#{@new_resource.bitmap}" if @new_resource.bitmap
             command << " --raid-devices #{@new_resource.devices.length} #{@new_resource.devices.join(" ")}"
