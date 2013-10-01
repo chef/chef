@@ -107,15 +107,15 @@ describe Chef::Util::Backup do
   describe "backup_filename" do
     it "should return a timestamped path" do
       @backup.should_receive(:path).and_return('/a/b/c.txt')
-      @backup.send(:backup_filename).should =~ %r|^/a/b/c.txt.chef-\d{14}$|
+      @backup.send(:backup_filename).should =~ %r|^/a/b/c.txt.chef-\d{14}.\d{6}$|
     end
     it "should strip the drive letter off for windows" do
       @backup.should_receive(:path).and_return('c:\a\b\c.txt')
-      @backup.send(:backup_filename).should =~ %r|^\\a\\b\\c.txt.chef-\d{14}$|
+      @backup.send(:backup_filename).should =~ %r|^\\a\\b\\c.txt.chef-\d{14}.\d{6}$|
     end
     it "should strip the drive letter off for windows (with forwardslashes)" do
       @backup.should_receive(:path).and_return('c:/a/b/c.txt')
-      @backup.send(:backup_filename).should =~ %r|^/a/b/c.txt.chef-\d{14}$|
+      @backup.send(:backup_filename).should =~ %r|^/a/b/c.txt.chef-\d{14}.\d{6}$|
     end
   end
 
@@ -123,19 +123,19 @@ describe Chef::Util::Backup do
     it "uses the file's directory when Chef::Config[:file_backup_path] is nil" do
       @backup.should_receive(:path).and_return('/a/b/c.txt')
       Chef::Config[:file_backup_path] = nil
-      @backup.send(:backup_path).should =~ %r|^/a/b/c.txt.chef-\d{14}$|
+      @backup.send(:backup_path).should =~ %r|^/a/b/c.txt.chef-\d{14}.\d{6}$|
     end
 
     it "uses the configured Chef::Config[:file_backup_path]" do
       @backup.should_receive(:path).and_return('/a/b/c.txt')
       Chef::Config[:file_backup_path] = '/backupdir'
-      @backup.send(:backup_path).should =~ %r|^/backupdir[\\/]+a/b/c.txt.chef-\d{14}$|
+      @backup.send(:backup_path).should =~ %r|^/backupdir[\\/]+a/b/c.txt.chef-\d{14}.\d{6}$|
     end
 
     it "uses the configured Chef::Config[:file_backup_path] and strips the drive on windows" do
       @backup.should_receive(:path).and_return('c:\\a\\b\\c.txt')
       Chef::Config[:file_backup_path] = 'c:\backupdir'
-      @backup.send(:backup_path).should =~ %r|^c:\\backupdir[\\/]+a\\b\\c.txt.chef-\d{14}$|
+      @backup.send(:backup_path).should =~ %r|^c:\\backupdir[\\/]+a\\b\\c.txt.chef-\d{14}.\d{6}$|
     end
   end
 
