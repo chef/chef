@@ -69,6 +69,12 @@ describe Chef::Dialect do
     it 'should allow passing in a path with no extension' do
       Chef::Dialect.find_by_extension(nil, :recipe, 'foo/test3').should be_an_instance_of(TestDialect3)
     end
+
+    it 'should return the same dialect instance for all uses of the same dialect' do
+      d1 = Chef::Dialect.find_by_extension(nil, :recipe, '.test1')
+      d2 = Chef::Dialect.find_by_extension(nil, :attributes, '.test1')
+      d1.should be(d2)
+    end
   end
 
   describe 'find_by_mime_type' do

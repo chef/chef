@@ -45,16 +45,23 @@ class Chef
 
       private
 
+      def dialect_instances
+        @dialect_instances ||= {}
+      end
+
       def find(run_context, &block)
         candidates = dialects.select(&block)
         raise Chef::Exceptions::DialectNotFound.new("No matching dialect found") if candidates.empty?
         data = candidates.max_by{|d| d[:quality]}
-        unless data[:dialect_instance] && data[:dialect_instance].run_context === run_context
-          data[:dialect_instance] ||= data[:dialect].new(run_context)
+        dialect = data[:dialect]
+        unless dialect_instances[dialect] && dialect_instances[dialect].run_context === run_context
+          dialect_instances[dialect] = dialect.new(run_context)
         end
-        data[:dialect_instance]
+        dialect_instances[dialect]
       end
     end
+
+    attr_reader :run_context
 
     def initialize(run_context)
       @run_context = run_context
