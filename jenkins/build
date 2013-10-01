@@ -9,7 +9,7 @@ set -x
 # Check whether a command exists - returns 0 if it does, 1 if it does not
 exists()
 {
-  if command -v $1 &>/dev/null
+  if command -v $1 >/dev/null 2>&1
   then
     return 0
   else
@@ -48,7 +48,9 @@ fi
 
 mkdir -p jenkins/chef-solo/cache
 
-export PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
+PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
+export PATH
+
 if ! exists chef-solo;
 then
   sudo gem install chef --no-ri --no-rdoc
@@ -91,12 +93,14 @@ fi
 cp omnibus.rb.example omnibus.rb
 
 # Aaand.. new ruby
-export PATH=/usr/local/bin:$PATH
+PATH=/usr/local/bin:$PATH
+export PATH
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
 if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep 'Solaris 9')" ]; then
   # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
-  export CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
+  CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
+  export CONFIGURE_ARGS
 fi
 
 # docs do not install on solaris 9
