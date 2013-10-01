@@ -33,7 +33,7 @@ describe "Chef::Application::WindowsService", :windows_only do
     instance.should_receive(:configure_chef).twice
     instance.service_init
     instance.should_receive(:run_chef_client).and_call_original
-    instance.should_receive(:shell_out)
+    instance.should_receive(:shell_out).and_return(shell_out_result)
     instance.stub(:running?).and_return(true, false)
     instance.instance_variable_get(:@service_signal).stub(:wait)
     instance.stub(:state).and_return(4)
