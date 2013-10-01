@@ -43,6 +43,11 @@ class Chef
         find(run_context) {|d| d[:flavor] == flavor && d[:mime_type] == mime_type}
       end
 
+      def cleanup
+        dialect_instances.each_value {|instance| instance.cleanup}
+        dialect_instances.clear
+      end
+
       private
 
       def dialect_instances
@@ -72,6 +77,10 @@ class Chef
       res = Chef::Resource::ChefGem.new(name, @run_context)
       res.version(version) if version
       res.after_created
+    end
+
+    def cleanup
+      # Override for any per-run cleanup logic
     end
 
     def compile_recipe(recipe, filename)

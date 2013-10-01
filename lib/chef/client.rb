@@ -262,6 +262,10 @@ class Chef
       end
     end
 
+    def cleanup_dialects
+      Chef::Dialect.cleanup
+    end
+
     def run_ohai
       ohai.all_plugins
     end
@@ -494,6 +498,8 @@ class Chef
         converge(run_context)
 
         save_updated_node
+
+        cleanup_dialects
 
         run_status.stop_clock
         Chef::Log.info("Chef Run complete in #{run_status.elapsed_time} seconds")

@@ -90,4 +90,20 @@ describe Chef::Dialect do
       Chef::Dialect.find_by_mime_type(nil, :recipe, 'test/two').should be_an_instance_of(TestDialect2Plus)
     end
   end
+
+  describe 'cleanup' do
+    it 'should call cleanup on all active dialect instances' do
+      TestDialect1.any_instance.should_receive(:cleanup).once
+      Chef::Dialect.find_by_extension(nil, :recipe, '.test1')
+      Chef::Dialect.cleanup
+    end
+
+    it 'should remove all dialect instances' do
+      d1 = Chef::Dialect.find_by_extension(nil, :recipe, '.test1')
+      Chef::Dialect.cleanup
+      d2 = Chef::Dialect.find_by_extension(nil, :recipe, '.test1')
+      d1.should_not be(d2)
+    end
+  end
+
 end
