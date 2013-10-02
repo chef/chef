@@ -15,7 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# chef/shell_out has been deprecated in favor of mixlib/shellout
+# chef/shell_out is still required here to ensure backward compatibility
 require 'chef/shell_out'
+
+require 'mixlib/shellout'
 require 'chef/config'
 
 class Chef
