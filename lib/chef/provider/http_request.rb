@@ -17,6 +17,7 @@
 #
 
 require 'tempfile'
+require 'uri'
 
 class Chef
   class Provider
@@ -37,74 +38,88 @@ class Chef
         message = check_message(@new_resource.message)
         # returns true from Chef::REST if returns 2XX (Net::HTTPSuccess)
         modified = @rest.head(
-          "#{@new_resource.url}?message=#{message}",
+          url(:message => message),
           @new_resource.headers
         )
-        Chef::Log.info("#{@new_resource} HEAD to #{@new_resource.url} successful")
+        Chef::Log.info("#{@new_resource} HEAD to #{url} successful")
         Chef::Log.debug("#{@new_resource} HEAD request response: #{modified}")
         # :head is usually used to trigger notifications, which converge_by now does
         if modified
-          converge_by("#{@new_resource} HEAD to #{@new_resource.url} returned modified, trigger notifications") {}
+          converge_by("#{@new_resource} HEAD to #{url} returned modified, trigger notifications") {}
         end
       end
 
       # Send a GET request to @new_resource.url, with ?message=@new_resource.message
       def action_get
-        converge_by("#{@new_resource} GET to #{@new_resource.url}") do
+        converge_by("#{@new_resource} GET to #{url}") do
 
           message = check_message(@new_resource.message)
           body = @rest.get(
-            "#{@new_resource.url}?message=#{message}",
+            url(:message => message),
             false,
             @new_resource.headers
           )
-          Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
+          Chef::Log.info("#{@new_resource} GET to #{url} successful")
           Chef::Log.debug("#{@new_resource} GET request response: #{body}")
         end
       end
 
       # Send a PUT request to @new_resource.url, with the message as the payload
       def action_put
-        converge_by("#{@new_resource} PUT to #{@new_resource.url}") do
+        converge_by("#{@new_resource} PUT to #{url}") do
           message = check_message(@new_resource.message)
           body = @rest.put(
-            "#{@new_resource.url}",
+            url,
             message,
             @new_resource.headers
           )
-          Chef::Log.info("#{@new_resource} PUT to #{@new_resource.url} successful")
+          Chef::Log.info("#{@new_resource} PUT to #{url} successful")
           Chef::Log.debug("#{@new_resource} PUT request response: #{body}")
         end
       end
 
       # Send a POST request to @new_resource.url, with the message as the payload
       def action_post
-        converge_by("#{@new_resource} POST to #{@new_resource.url}") do
+        converge_by("#{@new_resource} POST to #{url}") do
           message = check_message(@new_resource.message)
           body = @rest.post(
-            "#{@new_resource.url}",
+            url,
             message,
             @new_resource.headers
           )
-          Chef::Log.info("#{@new_resource} POST to #{@new_resource.url} message: #{message.inspect} successful")
+          Chef::Log.info("#{@new_resource} POST to #{url} message: #{message.inspect} successful")
           Chef::Log.debug("#{@new_resource} POST request response: #{body}")
         end
       end
 
       # Send a DELETE request to @new_resource.url
       def action_delete
-        converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
+        converge_by("#{@new_resource} DELETE to #{url}") do
           body = @rest.delete(
-            "#{@new_resource.url}",
+            url,
             @new_resource.headers
           )
           @new_resource.updated_by_last_action(true)
-          Chef::Log.info("#{@new_resource} DELETE to #{@new_resource.url} successful")
+          Chef::Log.info("#{@new_resource} DELETE to #{url} successful")
           Chef::Log.debug("#{@new_resource} DELETE request response: #{body}")
         end
       end
 
       private
+
+        def url(query_params = {})
+          uri = URI.parse @new_resource.url
+          query_params.merge! parse_query_string(uri.query) if uri.query
+          uri.query = query_params.map{|k,v| "#{k}=#{URI.escape(v)}"}.join("&")
+          URI.unescape uri.to_s.tap {|q| q.chop! if q.end_with?("?") }
+        end
+
+        def parse_query_string(query_string)
+          query_string.split("&").map{|kv| kv.split("=")}.inject({}) do |h, (k,v)|
+            h[k] = v
+            h
+          end
+        end
 
         def check_message(message)
           if message.kind_of?(Proc)
