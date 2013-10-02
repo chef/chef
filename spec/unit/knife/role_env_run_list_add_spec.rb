@@ -134,5 +134,23 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @role.run_list_for("QA")[1].should == "role[monkey]"
       end
     end
+    
+    describe "with more than one environment" do
+      it "should add to the run list a second environment specific run list" do
+        @knife.name_args = [ "adam", "QA", "role[monkey]," ]
+        @role.run_list_for("QA") << "role[acorns]"
+        @knife.run
+        @knife.name_args = [ "adam", "PRD", "role[ball]," ]
+        @role.run_list_for("PRD") << "role[pen]"
+        @knife.run
+        @role.run_list_for("QA")[0].should == "role[acorns]"
+        @role.run_list_for("QA")[1].should == "role[monkey]"
+
+      @role.to_json.should == 'show all the things'
+        @role.run_list_for("PRD")[0].should == "role[ball]"
+        @role.run_list_for("PRD")[1].should == "role[pen]"
+      end
+    end
+
   end
 end
