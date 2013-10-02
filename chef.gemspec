@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = "adam@opscode.com"
   s.homepage = "http://wiki.opscode.com/display/chef"
 
-  s.add_dependency "mixlib-config", ">= 1.1.2"
+  s.add_dependency "mixlib-config", ">= 1.1.2", "~> 1.1"
   s.add_dependency "mixlib-cli", "~> 1.3.0"
   s.add_dependency "mixlib-log", ">= 1.3.0"
   s.add_dependency "mixlib-authentication", ">= 1.3.0"
