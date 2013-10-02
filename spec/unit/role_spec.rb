@@ -276,7 +276,6 @@ EOR
   describe "when loading from disk and role_path is an array" do
 
     before(:all) do
-      @old_config = Chef::Config[:role_path]
       Chef::Config[:role_path] = ['/path1', '/path/path2']
     end
 
@@ -322,11 +321,6 @@ EOR
       File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.json')).exactly(1).times.and_return(false)
       File.should_receive(:exists?).with(File.join('/path/path2', 'lolcat.rb')).exactly(1).times.and_return(false)
       lambda {@role.class.from_disk("lolcat")}.should raise_error(Chef::Exceptions::RoleNotFound)
-    end
-
-
-    after(:all) do
-      Chef::Config[:role_path] = @old_config
     end
 
   end

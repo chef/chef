@@ -233,8 +233,7 @@ class Chef
     # Load a role from disk - prefers to load the JSON, but will happily load
     # the raw rb files as well.
     def self.from_disk(name, force=nil)
-      paths = Chef::Config[:role_path]
-      paths = [paths] if paths.is_a? String
+      paths = Array(Chef::Config[:role_path])
 
       paths.each do |p|
         js_file = File.join(p, "#{name}.json")
