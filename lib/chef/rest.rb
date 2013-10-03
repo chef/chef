@@ -39,39 +39,106 @@ class Chef
   # authentication.
   class REST
 
+    class Authenticator
+
+      attr_reader :signing_key_filename
+      attr_reader :raw_key
+      attr_reader :attr_names
+      attr_reader :auth_credentials
+
+      attr_accessor :sign_request
+
+      def initialize(opts={})
+        @raw_key = nil
+        @sign_request = true
+        @signing_key_filename = opts[:signing_key_filename]
+        @key = load_signing_key(opts[:signing_key_filename], opts[:raw_key])
+        @auth_credentials = AuthCredentials.new(opts[:client_name], @key)
+      end
+
+      def handle_request(method, url, headers={}, data=false)
+        headers.merge!(authentication_headers(method, url, data)) if sign_requests?
+        [method, url, headers, data]
+      end
+
+      def handle_response(http_response, rest_request, return_value)
+        [http_response, rest_request, return_value]
+      end
+
+      def sign_requests?
+        auth_credentials.sign_requests? && @sign_request
+      end
+
+      def client_name
+        @auth_credentials.client_name
+      end
+
+      def load_signing_key(key_file, raw_key = nil)
+        if (!!key_file)
+          @raw_key = IO.read(key_file).strip
+        elsif (!!raw_key)
+          @raw_key = raw_key.strip
+        else
+          return nil
+        end
+        @key = OpenSSL::PKey::RSA.new(@raw_key)
+      rescue SystemCallError, IOError => e
+        Chef::Log.warn "Failed to read the private key #{key_file}: #{e.inspect}"
+        raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
+      rescue OpenSSL::PKey::RSAError
+        msg = "The file #{key_file} or :raw_key option does not contain a correctly formatted private key.\n"
+        msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
+        raise Chef::Exceptions::InvalidPrivateKey, msg
+      end
+
+      def authentication_headers(method, url, json_body=nil)
+        request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
+        request_params[:body] ||= ""
+        auth_credentials.signature_headers(request_params)
+      end
+
+
+    end
+
 
     attr_reader :auth_credentials
     attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
+
+    attr_reader :authenticator
 
     # Create a REST client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get_rest+ with 'nodes' will make an
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, client_name=Chef::Config[:node_name], signing_key_filename=Chef::Config[:client_key], options={})
+      options[:client_name] = client_name
+      options[:signing_key_filename] = signing_key_filename
       @url = url
       @cookies = CookieJar.instance
       @default_headers = options[:headers] || {}
-      @signing_key_filename = signing_key_filename
-      @key = load_signing_key(@signing_key_filename, options[:raw_key])
-      @auth_credentials = AuthCredentials.new(client_name, @key)
-      @sign_on_redirect, @sign_request = true, true
+      @sign_on_redirect = true
       @redirects_followed = 0
       @redirect_limit = 10
 
       @chef_json_inflater = JSONToModelInflater.new(options)
       @decompressor = Decompressor.new(options)
+      @authenticator = Authenticator.new(options)
     end
 
     def signing_key_filename
-      @signing_key_filename
+      authenticator.signing_key_filename
     end
 
     def client_name
-      @auth_credentials.client_name
+      authenticator.client_name
     end
 
     def signing_key
-      @raw_key
+      authenticator.raw_key
+    end
+
+    def sign_requests?
+      authenticator.sign_requests?
     end
 
     def last_response
@@ -138,17 +205,15 @@ class Chef
       end
     end
 
-    def sign_requests?
-      auth_credentials.sign_requests? && @sign_request
-    end
-
     # Runs an HTTP request to a JSON API with JSON body. File Download not supported.
     def api_request(method, url, headers={}, data=false)
 
       method, url, headers, data = @chef_json_inflater.handle_request(method, url, headers, data)
       method, url, headers, data = @decompressor.handle_request(method, url, headers, data)
+      method, url, headers, data = @authenticator.handle_request(method, url, headers, data)
 
       response, rest_request, return_value = raw_http_request(method, url, headers, data)
+      response, rest_request, return_value = @authenticator.handle_response(response, rest_request, return_value)
       response, rest_request, return_value = @decompressor.handle_response(response, rest_request, return_value)
       response, rest_request, return_value = @chef_json_inflater.handle_response(response, rest_request, return_value)
       response.error! unless success_response?(response)
@@ -288,12 +353,6 @@ class Chef
       end
     end
 
-    def authentication_headers(method, url, json_body=nil)
-      request_params = {:http_method => method, :path => url.path, :body => json_body, :host => "#{url.host}:#{url.port}"}
-      request_params[:body] ||= ""
-      auth_credentials.signature_headers(request_params)
-    end
-
     def http_retry_delay
       config[:http_retry_delay]
     end
@@ -313,12 +372,12 @@ class Chef
       if @sign_on_redirect
         yield
       else
-        @sign_request = false
+        @authenticator.sign_request = false
         yield
       end
     ensure
       @redirects_followed = 0
-      @sign_request = true
+      @authenticator.sign_request = true
     end
 
     private
@@ -333,7 +392,6 @@ class Chef
     def build_headers(method, url, headers={}, json_body=false, raw=false)
       headers                 = @default_headers.merge(headers)
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
-      headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end
@@ -359,24 +417,6 @@ class Chef
       raise
     end
 
-    def load_signing_key(key_file, raw_key = nil)
-      if (!!key_file)
-        @raw_key = IO.read(key_file).strip
-      elsif (!!raw_key)
-        @raw_key = raw_key.strip
-      else
-        return nil
-      end
-      @key = OpenSSL::PKey::RSA.new(@raw_key)
-    rescue SystemCallError, IOError => e
-      Chef::Log.warn "Failed to read the private key #{key_file}: #{e.inspect}"
-      raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key_file}, which you told me to use to sign requests!"
-    rescue OpenSSL::PKey::RSAError
-      msg = "The file #{key_file} or :raw_key option does not contain a correctly formatted private key.\n"
-      msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
-      raise Chef::Exceptions::InvalidPrivateKey, msg
-    end
-
     public
 
     ############################################################################
@@ -385,6 +425,10 @@ class Chef
 
     def decompress_body(body)
       @decompressor.decompress_body(body)
+    end
+
+    def authentication_headers(method, url, json_body=nil)
+      authenticator.authentication_headers(method, url, json_body)
     end
 
   end
