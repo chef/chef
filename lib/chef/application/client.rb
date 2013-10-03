@@ -197,6 +197,16 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
+  option :chef_zero_enabled,
+    :short        => "-z",
+    :long         => "--zero",
+    :description  => "Start a chef-zero instance pointed at local cookbooks",
+    :boolean      => true
+
+  option :chef_zero_port,
+    :long         => "--chef-zero-port PORT",
+    :description  => "Port to start chef-zero on"
+
   if Chef::Platform.windows?
     option :fatal_windows_admin_check,
       :short        => "-A",
@@ -218,6 +228,9 @@ class Chef::Application::Client < Chef::Application
     super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
+
+    Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+    Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800

@@ -8,7 +8,7 @@ You can find the answers to additional frequently asked questions [on the wiki](
 
 *   Create an account on our [bug tracker](http://tickets.opscode.com)
 *   Sign our contributor agreement (CLA) [
-online](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)  
+online](https://secure.echosign.com/public/hostedForm?formid=PJIF5694K6L)
     (keep reading if you're contributing on behalf of your employer)
 * Create a ticket for your change on the [bug tracker](http://tickets.opscode.com)
 * Link to your patch as a rebased git branch or pull request from the ticket
@@ -19,7 +19,7 @@ We regularly review contributions and will get back to you if we have any sugges
 ## The Apache License and the CLA/CCLA
 
 Licensing is very important to open source projects, it helps ensure the software continues to be available under the terms that the author desired.
-Chef uses the Apache 2.0 license to strike a balance between open contribution and allowing you to use the software however you would like to. 
+Chef uses the Apache 2.0 license to strike a balance between open contribution and allowing you to use the software however you would like to.
 
 The license tells you what rights you have that are provided by the copyright holder. It is important that the contributor fully understands what rights
 they are licensing and agrees to them. Sometimes the copyright holder isn't the contributor, most often when the contributor is doing work for a company.
@@ -43,26 +43,26 @@ such as:
 * Discussion regarding the design and merits of features
 * Error output to aid in finding similar bugs
 
-Each ticket should aim to fix one bug or add one feature. 
+Each ticket should aim to fix one bug or add one feature.
 
 ## Using git
 
-You can get a quick copy of the chef repository by running `git clone git://github.com/opscode/chef.git`. 
+You can get a quick copy of the chef repository by running `git clone git://github.com/opscode/chef.git`.
 
-For collaboration purposes, it is best if you create a Github account and fork the repository to your own account. 
+For collaboration purposes, it is best if you create a Github account and fork the repository to your own account.
 Once you do this you will be able to push your changes to your Github repository for others to see and use.
 
 ### Branches and Commits
 
 You should submit your patch as a git branch named after the ticket, such as CHEF-1337.
-This is called a _topic branch_ and allows users to associate a branch of code with the ticket. 
+This is called a _topic branch_ and allows users to associate a branch of code with the ticket.
 
 It is a best practice to have your commit message have a _summary line_ that includes the ticket number,
 followed by an empty line and then a brief description of the commit. This also helps other contributors
 understand the purpose of changes to the code.
 
     CHEF-3435: Create deploy dirs before calling scm_provider
-        
+
     The SCM providers have an assertation that requires the deploy directory to
     exist. The deploy provider will create missing directories, we don't converge
     the actions before we call run_action against the SCM provider, so it is not
@@ -76,7 +76,7 @@ helpful to be clear about your use case and change so they can understand it eve
 
 All of Opscode's open source projects are available on [Github](http://www.github.com/opscode).
 
-We don't require you to use Github, and we will even take patch diffs attached to tickets on the tracker. 
+We don't require you to use Github, and we will even take patch diffs attached to tickets on the tracker.
 However Github has a lot of convenient features, such as being able to see a diff of changes between a
 pull request and the main repository quickly without downloading the branch.
 
@@ -92,14 +92,14 @@ Additional help with git is available on the [Working with Git](http://wiki.opsc
 
 There are rspec unit tests in the 'spec' directory. If you don't have rspec already installed, you can use the 'bundler'
 gem to help you get the necessary prerequisites by running `sudo gem install bundler` and then `bundle install` from
-the chef respository. You can run the chef client spec tests by running `rspec spec/*` or `rake spec` from the chef 
+the chef respository. You can run the chef client spec tests by running `rspec spec/*` or `rake spec` from the chef
 directory of the chef repository.
 
-These tests should pass successfully on Ruby 1.8 and 1.9 on all of the platforms that Chef runs on. It is good to run the tests 
+These tests should pass successfully on Ruby 1.8 and 1.9 on all of the platforms that Chef runs on. It is good to run the tests
 once on your system before you get started to ensure they all pass so you have a valid baseline. After you write your patch,
 run the tests again to see if they all pass.
 
-If any don't pass, investigate them before submitting your patch. 
+If any don't pass, investigate them before submitting your patch.
 
 These tests don't modify your system, and sometimes tests fail because a command that would be run has changed because of your
 patch. This should be a simple fix. Other times the failure can show you that an important feature no longer works because of
@@ -136,7 +136,7 @@ The versioning for the Chef project is X.Y.Z.
 
 Major releases and have historically been once a year. Minor releases for Chef average every two months and patch releases come as needed.
 
-There are usually beta releases and release candidates (RC) of major and minor releases announced on 
+There are usually beta releases and release candidates (RC) of major and minor releases announced on
 the [chef-dev mailing list](http://lists.opscode.com/sympa/info/chef-dev). Once an RC is released, we wait at least three
 days to allow for testing for regressions before the final release. If a blocking regression is found then another RC is made containing
 the fix and the timer is reset.

@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ describe Chef::Resource::Mount do
   before(:each) do
     @resource = Chef::Resource::Mount.new("filesystem")
   end
-  
+
   it "should create a new Chef::Resource::Mount" do
     @resource.should be_a_kind_of(Chef::Resource)
     @resource.should be_a_kind_of(Chef::Resource::Mount)
@@ -36,18 +36,18 @@ describe Chef::Resource::Mount do
   it "should set mount_point to the name" do
     @resource.mount_point.should eql("filesystem")
   end
-  
+
   it "should have a default action of mount" do
     @resource.action.should eql(:mount)
   end
-  
+
   it "should accept mount, umount and remount as actions" do
     lambda { @resource.action :mount }.should_not raise_error(ArgumentError)
     lambda { @resource.action :umount }.should_not raise_error(ArgumentError)
     lambda { @resource.action :remount }.should_not raise_error(ArgumentError)
     lambda { @resource.action :brooklyn }.should raise_error(ArgumentError)
   end
-  
+
   it "should allow you to set the device attribute" do
     @resource.device "/dev/sdb3"
     @resource.device.should eql("/dev/sdb3")
@@ -76,19 +76,19 @@ describe Chef::Resource::Mount do
     @resource.options "rw,noexec"
     @resource.options.should be_a_kind_of(Array)
   end
-  
+
   it "should allow options attribute as an array" do
     @resource.options ["ro", "nosuid"]
     @resource.options.should be_a_kind_of(Array)
   end
 
   it "should accept true for mounted" do
-    @resource.mounted(true) 
+    @resource.mounted(true)
     @resource.mounted.should eql(true)
   end
 
   it "should accept false for mounted" do
-    @resource.mounted(false) 
+    @resource.mounted(false)
     @resource.mounted.should eql(false)
   end
 
@@ -101,12 +101,12 @@ describe Chef::Resource::Mount do
   end
 
   it "should accept true for enabled" do
-    @resource.enabled(true) 
+    @resource.enabled(true)
     @resource.enabled.should eql(true)
   end
 
   it "should accept false for enabled" do
-    @resource.enabled(false) 
+    @resource.enabled(false)
     @resource.enabled.should eql(false)
   end
 
@@ -152,7 +152,7 @@ describe Chef::Resource::Mount do
   end
 
   describe "when it has mount point, device type, and fstype" do
-    before do 
+    before do
       @resource.device("charmander")
       @resource.mount_point("123.456")
       @resource.device_type(:device)
@@ -172,7 +172,7 @@ describe Chef::Resource::Mount do
   end
 
   describe "when it has username, password and domain" do
-    before do 
+    before do
       @resource.mount_point("T:")
       @resource.device("charmander")
       @resource.username("Administrator")

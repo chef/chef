@@ -80,13 +80,13 @@ describe Chef::Resource::Mdadm do
   end
 
   describe "when it has devices, level, and chunk" do
-    before do 
+    before do
       @resource.raid_device("raider")
       @resource.devices(["device1", "device2"])
       @resource.level(1)
       @resource.chunk(42)
     end
-    
+
     it "describes its state" do
       state = @resource.state
       state[:devices].should eql(["device1", "device2"])
@@ -98,5 +98,5 @@ describe Chef::Resource::Mdadm do
       @resource.identity.should == "raider"
     end
   end
-  
+
 end

@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -129,7 +129,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
         @inspector.recipe_snippet.should match(/^# In \/home\/btm/)
       end
-      
+
       context "when the recipe file does not exist" do
         before do
           File.stub!(:exists?).and_return(false)
@@ -141,7 +141,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
           @inspector.recipe_snippet.should be_nil
         end
-  
+
         it "does not raise an exception trying to load a non-existant file (CHEF-3411)" do
           @resource.source_line = "/somewhere/in/space"
           @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)

@@ -49,13 +49,13 @@ describe Chef::Knife::EnvironmentFromFile do
         @env_apple.name("apple")
         @knife.loader.stub!(:load_from).with("apple.rb").and_return @env_apple
       end
-  
+
       it "loads multiple environments if given" do
         @knife.name_args = [ "spec.rb", "apple.rb" ]
         @environment.should_receive(:save).twice
         @knife.run
       end
-  
+
       it "loads all environments with -a" do
         File.stub!(:expand_path).with("./environments/*.{json,rb}").and_return("/tmp/environments")
         Dir.stub!(:glob).with("/tmp/environments").and_return(["spec.rb", "apple.rb"])

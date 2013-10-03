@@ -71,7 +71,7 @@ describe Chef::CookbookLoader do
         seen[5].should == "openldap"
       end
     end
-  
+
     describe "load_cookbooks" do
       it "should find all the cookbooks in the cookbook path" do
         Chef::Config.cookbook_path << File.expand_path(File.join(CHEF_SPEC_DATA, "hidden-cookbooks"))
@@ -79,7 +79,7 @@ describe Chef::CookbookLoader do
         @cookbook_loader.should have_key(:openldap)
         @cookbook_loader.should have_key(:apache2)
       end
-  
+
       it "should allow you to override an attribute file via cookbook_path" do
         @cookbook_loader[:openldap].attribute_filenames.detect { |f|
           f =~ /cookbooks\/openldap\/attributes\/default.rb/
@@ -88,13 +88,13 @@ describe Chef::CookbookLoader do
           f =~ /kitchen\/openldap\/attributes\/default.rb/
         }.should eql(nil)
       end
-  
+
       it "should load different attribute files from deeper paths" do
         @cookbook_loader[:openldap].attribute_filenames.detect { |f|
           f =~ /kitchen\/openldap\/attributes\/robinson.rb/
         }.should_not eql(nil)
       end
-  
+
       it "should allow you to override a definition file via cookbook_path" do
         @cookbook_loader[:openldap].definition_filenames.detect { |f|
           f =~ /cookbooks\/openldap\/definitions\/client.rb/
@@ -103,13 +103,13 @@ describe Chef::CookbookLoader do
           f =~ /kitchen\/openldap\/definitions\/client.rb/
         }.should eql(nil)
       end
-  
+
       it "should load definition files from deeper paths" do
         @cookbook_loader[:openldap].definition_filenames.detect { |f|
           f =~ /kitchen\/openldap\/definitions\/drewbarrymore.rb/
         }.should_not eql(nil)
       end
-  
+
       it "should allow you to override a recipe file via cookbook_path" do
         @cookbook_loader[:openldap].recipe_filenames.detect { |f|
           f =~ /cookbooks\/openldap\/recipes\/gigantor.rb/
@@ -118,19 +118,19 @@ describe Chef::CookbookLoader do
           f =~ /kitchen\/openldap\/recipes\/gigantor.rb/
         }.should eql(nil)
       end
-  
+
       it "should load recipe files from deeper paths" do
         @cookbook_loader[:openldap].recipe_filenames.detect { |f|
           f =~ /kitchen\/openldap\/recipes\/woot.rb/
         }.should_not eql(nil)
       end
-  
+
       it "should allow you to have an 'ignore' file, which skips loading files in later cookbooks" do
         @cookbook_loader[:openldap].recipe_filenames.detect { |f|
           f =~ /kitchen\/openldap\/recipes\/ignoreme.rb/
         }.should eql(nil)
       end
-  
+
       it "should find files that start with a ." do
         @cookbook_loader[:openldap].file_filenames.detect { |f|
           f =~ /\.dotfile$/
@@ -139,7 +139,7 @@ describe Chef::CookbookLoader do
           f =~ /\.ssh\/id_rsa$/
         }.should =~ /\.ssh\/id_rsa$/
       end
-  
+
       it "should load the metadata for the cookbook" do
         @cookbook_loader.metadata[:openldap].name.should == :openldap
         @cookbook_loader.metadata[:openldap].should be_a_kind_of(Chef::Cookbook::Metadata)
@@ -202,7 +202,7 @@ describe Chef::CookbookLoader do
         end
         seen.should have_key("openldap")
         seen.should have_key("apache2")
-      end   
+      end
     end
   end # loading only one cookbook
 end

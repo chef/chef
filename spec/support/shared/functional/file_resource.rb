@@ -877,6 +877,43 @@ shared_examples_for "a configured file resource" do
     end
   end
 
+  # Regression test for http://tickets.opscode.com/browse/CHEF-4419
+  context "when the path starts with '/' and target file exists", :windows_only do
+    let(:path) do
+      File.join(test_file_dir[2..test_file_dir.length], make_tmpname(file_base))
+    end
+
+    before do
+      File.open(path, "wb") { |f| f.print expected_content }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
+      @expected_mtime = File.stat(path).mtime
+      @expected_checksum = sha256_checksum(path)
+    end
+
+    describe ":create action should run without any updates" do
+      before do
+        # Assert starting state is as expected
+        File.should exist(path)
+        sha256_checksum(path).should == @expected_checksum
+        resource.run_action(:create)
+      end
+
+      it "does not overwrite the original when the :create action is run" do
+        sha256_checksum(path).should == @expected_checksum
+      end
+
+      it "does not update the mtime of the file when the :create action is run" do
+        File.stat(path).mtime.should == @expected_mtime
+      end
+
+      it "is not marked as updated by last action" do
+        resource.should_not be_updated_by_last_action
+      end
+    end
+  end
+
 end
 
 shared_context Chef::Resource::File  do

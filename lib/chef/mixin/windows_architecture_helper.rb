@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,7 @@
 #
 
 
-require 'chef/exceptions' 
+require 'chef/exceptions'
 require 'win32/api' if Chef::Platform.windows?
 
 class Chef
@@ -32,7 +32,7 @@ class Chef
         is_i386_windows_process? &&
           node_windows_architecture(node) == :x86_64 &&
           desired_architecture == :x86_64
-      end          
+      end
 
       def node_supports_windows_architecture?(node, desired_architecture)
         assert_valid_windows_architecture!(desired_architecture)
@@ -85,7 +85,7 @@ class Chef
           end
         end
       end
-      
+
     end
   end
 end

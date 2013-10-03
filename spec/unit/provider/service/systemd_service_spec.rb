@@ -79,19 +79,19 @@ describe Chef::Provider::Service::Systemd do
         @provider.load_current_resource
         @provider.instance_variable_get("@status_check_success").should be_true
       end
-      
+
       it "should set running to false if it catches a Chef::Exceptions::Exec when using a status command" do
         @provider.stub!(:run_command_with_systems_locale).and_raise(Chef::Exceptions::Exec)
         @current_resource.should_receive(:running).with(false)
         @provider.load_current_resource
       end
-    
+
       it "should update state to indicate status check failed when an exception is thrown using a status command" do
         @provider.stub!(:run_command_with_systems_locale).and_raise(Chef::Exceptions::Exec)
         @provider.load_current_resource
         @provider.instance_variable_get("@status_check_success").should be_false
       end
-    end 
+    end
 
     it "should check if the service is enabled" do
       @provider.should_receive(:is_enabled?)

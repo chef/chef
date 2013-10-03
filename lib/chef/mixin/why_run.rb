@@ -178,7 +178,7 @@ class Chef
           # when the requirement is not met and Chef is executing in why run
           # mode
           #
-          # If no failure_message is provided (above), then execution 
+          # If no failure_message is provided (above), then execution
           # will be allowed to continue in both whyrun an dnon-whyrun
           # mode
           #
@@ -196,16 +196,16 @@ class Chef
             @resource_modifier = resource_modifier
           end
 
-          # Prevents associated actions from being invoked in whyrun mode. 
-          # This will also stop further processing of assertions for a given action. 
-          # 
-          # An example from the template provider: if the source template doesn't exist 
-          # we can't parse it in the action_create block of template - something that we do 
-          # even in whyrun mode.  Because the soruce template may have been created in an earlier 
+          # Prevents associated actions from being invoked in whyrun mode.
+          # This will also stop further processing of assertions for a given action.
+          #
+          # An example from the template provider: if the source template doesn't exist
+          # we can't parse it in the action_create block of template - something that we do
+          # even in whyrun mode.  Because the soruce template may have been created in an earlier
           # step, we still want to keep going in whyrun mode.
-          # 
+          #
           # assert(:create, :create_if_missing) do |a|
-          #   a.assertion { File::exists?(@new_resource.source) } 
+          #   a.assertion { File::exists?(@new_resource.source) }
           #   a.whyrun "Template source file does not exist, assuming it would have been created."
           #   a.block_action!
           # end
@@ -214,7 +214,7 @@ class Chef
             @block_action = true
           end
 
-          def block_action? 
+          def block_action?
             @block_action
           end
 
@@ -258,7 +258,7 @@ class Chef
         # Check to see if a given action is blocked by a failed assertion
         #
         # Takes the action name to be verified.
-        def action_blocked?(action) 
+        def action_blocked?(action)
           @blocked_actions.include?(action)
         end
 
@@ -296,9 +296,9 @@ class Chef
         #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
         #   end
         #
-        # A Template provider that will prevent action execution but continue the run in 
+        # A Template provider that will prevent action execution but continue the run in
         # whyrun mode if the template source is not available.
-        #   assert(:create, :create_if_missing) do |a| 
+        #   assert(:create, :create_if_missing) do |a|
         #     a.assertion { File::exist?(@new_resource.source) }
         #     a.failure_message Chef::Exceptions::TemplateError, "Template #{@new_resource.source} could not be found exist."
         #     a.whyrun "Template source #{@new_resource.source} does not exist. Assuming it would have been created."
@@ -318,9 +318,9 @@ class Chef
 
         # Run the assertion and assumption logic.
         def run(action)
-          @assertions[action.to_sym].each do |a| 
+          @assertions[action.to_sym].each do |a|
             a.run(action, events, @resource)
-            if a.assertion_failed? and a.block_action? 
+            if a.assertion_failed? and a.block_action?
               @blocked_actions << action
               return
             end

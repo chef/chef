@@ -205,7 +205,7 @@ describe Chef::Knife::Bootstrap do
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '4001'
       end
-  
+
       it "configures the ssh agent forwarding" do
         @knife_ssh.config[:forward_agent].should == true
       end
@@ -265,7 +265,7 @@ describe Chef::Knife::Bootstrap do
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '2430'
       end
-  
+
       it "configures the ssh agent forwarding" do
         @knife_ssh.config[:forward_agent].should == true
       end

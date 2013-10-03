@@ -29,6 +29,7 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbooksDir < RestListDir
+
         def initialize(parent)
           super("cookbooks", parent)
         end
@@ -92,10 +93,11 @@ class Chef
           Dir.mktmpdir do |temp_cookbooks_path|
             proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
 
-            # Make a symlink
-            File.symlink other.file_path, proxy_cookbook_path
+            # symlinking fails on windows, so cp_r the whole directory
 
-            # Instantiate a proxy loader using the temporary symlink
+            FileUtils.cp_r(other.file_path, proxy_cookbook_path);
+
+            # Instantiate a proxy loader using the temporary directory
             proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.parent.chefignore)
             proxy_loader.load_cookbooks
 

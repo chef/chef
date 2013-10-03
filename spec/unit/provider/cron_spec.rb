@@ -181,7 +181,7 @@ CRONTAB
       before :each do
         @provider.stub!(:read_crontab).and_return(<<-CRONTAB)
 0 2 * * * /some/other/command
-      
+
 # Chef Name: cronhole some stuff
 * 5 * Jan Mon /bin/true param1 param2
 # Chef Name: something else
@@ -196,7 +196,7 @@ CRONTAB
         @provider.cron_exists.should == true
         @provider.cron_empty.should == false
       end
-        
+
       it "should pull the details out of the cron line" do
         cron = @provider.load_current_resource
         cron.minute.should == '*'
@@ -581,7 +581,7 @@ CRONTAB
       end
 
       it "should log nothing changed" do
-        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'") 
+        Chef::Log.should_receive(:debug).with("Found cron '#{@new_resource.name}'")
         Chef::Log.should_receive(:debug).with("Skipping existing cron entry '#{@new_resource.name}'")
         @provider.run_action(:create)
       end

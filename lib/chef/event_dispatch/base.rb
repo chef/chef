@@ -295,7 +295,7 @@ class Chef
 
       # Called when a provider makes an assumption after a failed assertion
       # in whyrun mode, in order to allow execution to continue
-      def whyrun_assumption(action, resource, message) 
+      def whyrun_assumption(action, resource, message)
       end
 
       ## TODO: deprecation warning. this way we can queue them up and present

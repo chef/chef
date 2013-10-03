@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ class Chef
     class PowershellScript < Chef::Provider::WindowsScript
 
       protected
-      
+
       EXIT_STATUS_NORMALIZATION_SCRIPT = "\nif ($? -eq $true) {exit 0} elseif ( $LASTEXITCODE -ne 0) {exit $LASTEXITCODE} else { exit 1 }"
       EXIT_STATUS_RESET_SCRIPT = "$LASTEXITCODE=0\n"
 
@@ -41,12 +41,12 @@ class Chef
       end
 
       public
-      
+
       def initialize (new_resource, run_context)
         super(new_resource, run_context, '.ps1')
         NormalizeScriptExitStatus(new_resource.code)
       end
-      
+
       def flags
         default_flags = [
           "-NoLogo",
@@ -60,8 +60,8 @@ class Chef
           # file created by the base class that contains the script
           # code -- otherwise, powershell.exe does not propagate the
           # error status of a failed Windows process that ran at the
-          # end of the script, it gets changed to '1'.                         
-          "-File"                         
+          # end of the script, it gets changed to '1'.
+          "-File"
         ]
 
         interpreter_flags = default_flags.join(' ')

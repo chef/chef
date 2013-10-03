@@ -27,7 +27,7 @@ class Chef
         super
         @code = @new_resource.code
       end
-      
+
       def action_run
         script_file.puts(@code)
         script_file.close
