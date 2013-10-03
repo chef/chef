@@ -43,15 +43,23 @@ class Chef
               entries.each { |e| nlist << e }
             end
           end
-          #role.run_list_for(environment).reset!(nlist)
+          role.env_run_lists_add(environment => nlist)
         else
-          role.run_list(environment)
-          entries.each { |e| role.run_list_for(environment) << e }
+          nlist = []
+          unless role.env_run_lists.key?(environment)
+            role.env_run_lists_add(environment => nlist)
+          end
+          role.run_list_for(environment).each do |entry|
+            nlist << entry
+          end
+          entries.each { |e| nlist << e }
+          role.env_run_lists_add(environment => nlist)
         end
       end
 
       def run
         role = Chef::Role.load(@name_args[0])
+        role.name(@name_args[0])
         environment = @name_args[1]
 
         if @name_args.size > 2

@@ -103,6 +103,16 @@ class Chef
 
     alias :env_run_list :env_run_lists
 
+    def env_run_lists_add(env_run_lists=nil)
+      if (!env_run_lists.nil?)
+        env_run_lists.each { |k,v| @env_run_lists[k] = Chef::RunList.new(*Array(v))}
+      end
+      @env_run_lists
+    end
+
+    alias :env_run_list_add :env_run_lists_add
+
+
     def default_attributes(arg=nil)
       set_or_return(
         :default_attributes,

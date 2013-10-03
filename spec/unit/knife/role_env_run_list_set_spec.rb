@@ -19,18 +19,18 @@
 
 require 'spec_helper'
 
-describe Chef::Knife::RoleEnvRunListRemove do
+describe Chef::Knife::RoleEnvRunListSet do
   before(:each) do
     Chef::Config[:role_name]  = "will"
     Chef::Config[:env_name]  = "QA"
     @setup = Chef::Knife::RoleEnvRunListAdd.new
     @setup.name_args = [ "will", "QA", "role[monkey]", "role[person]" ]
 
-    @knife = Chef::Knife::RoleEnvRunListRemove.new
+    @knife = Chef::Knife::RoleEnvRunListSet.new
     @knife.config = {
       :print_after => nil
     }
-    @knife.name_args = [ "will", "QA", "role[monkey]" ]
+    @knife.name_args = [ "will", "QA", "role[owen]", "role[mauntel]" ]
     @knife.stub!(:output).and_return(true)
 
     @role = Chef::Role.new()
@@ -57,42 +57,38 @@ describe Chef::Knife::RoleEnvRunListRemove do
       @knife.run
     end
 
-     it "should remove the item from the run list" do
-       @setup.run
-       @knife.run
-       @role.run_list_for('QA')[0].should_not == 'role[monkey]'
-       @role.run_list[0].should be_nil
-     end
+    it "should remove the item from the run list" do
+      @setup.run
+      @knife.run
+      @role.run_list_for('QA')[0].should == "role[owen]" 
+      @role.run_list_for('QA')[1].should == "role[mauntel]" 
+      @role.run_list[0].should be_nil
+    end
 
-     it "should save the node" do
-       @role.should_receive(:save).and_return(true)
-       @knife.run
-     end
+    it "should save the node" do
+      @role.should_receive(:save).and_return(true)
+      @knife.run
+    end
 
-     it "should print the run list" do
-       @knife.should_receive(:output).and_return(true)
-       @knife.config[:print_after] = true
-       @setup.run
-       @knife.run
-     end
+    it "should print the run list" do
+      @knife.should_receive(:output).and_return(true)
+      @knife.config[:print_after] = true
+      @setup.run
+      @knife.run
+    end
 
-     describe "run with a list of roles and recipes" do
-       it "should remove the items from the run list" do
-         @setup.name_args = [ "will", "QA", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
-         @setup.run
-         @setup.name_args = [ "will", "PRD", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
-         @setup.run
-         @knife.name_args = [ 'adam', 'QA', 'role[monkey]' ]
-         @knife.run
-         @knife.name_args = [ 'adam', 'QA', 'recipe[duck::type]' ]
-         @knife.run
-         @role.run_list_for('QA').should_not include('role[monkey]')
-         @role.run_list_for('QA').should_not include('recipe[duck::type]')
-         @role.run_list_for('PRD')[1].should == 'role[monkey]'
-       end
-     end
+    describe "should clear an environmental run list of roles and recipes" do
+      it "should remove the items from the run list" do
+        @setup.name_args = [ "will", "QA", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
+        @setup.run
+        @setup.name_args = [ "will", "PRD", "recipe[orange::chicken]", "role[monkey]", "recipe[duck::type]", "role[person]", "role[bird]", "role[town]" ]
+        @setup.run
+        @knife.name_args = [ "will", "QA", "role[coke]", "role[pepsi]" ]
+        @knife.run
+        @role.run_list_for('QA')[0].should == "role[coke]"
+        @role.run_list_for('QA')[1].should == "role[pepsi]"
+        @role.run_list_for('PRD')[1].should == 'role[monkey]'
+      end
+    end
   end
 end
-
-
-

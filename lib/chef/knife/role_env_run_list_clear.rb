@@ -28,17 +28,23 @@ class Chef
         require 'chef/json_compat'
       end
 
-      banner "knife role run_list clear ROLE ENVIRONMENT"
+      banner "knife role env_run_list clear ROLE ENVIRONMENT"
+      def clear_env_run_list(role, environment)
+        nlist = []
+        role.env_run_lists_add(environment => nlist)
+      end
 
       def run
-        if @name_args.size > 3
+        if @name_args.size > 2
           ui.fatal "You must not supply an environment run list."
           show_usage
           exit 1
         end
         role = Chef::Role.load(@name_args[0])
+        role.name(@name_args[0])
+        environment = @name_args[1]
 
-        role.clear_env_run_list
+        clear_env_run_list(role, environment)
         role.save
         config[:env_run_list] = true
         output(format_for_display(role))
