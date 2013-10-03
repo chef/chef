@@ -30,36 +30,39 @@ class Chef
 
       banner "knife role run_list set ROLE ENVIRONMENT ENTRIES (options)"
 
+      # Clears out any existing env_run_list_items and sets them to the
+      # specified entries
+      def set_env_run_list(role, environment, entries)
+        nlist = []
+        unless role.env_run_lists.key?(environment)
+          role.env_run_lists_add(environment => nlist)
+        end
+        entries.each { |e| nlist << e }
+        role.env_run_lists_add(environment => nlist)
+      end
+
       def run
+        role = Chef::Role.load(@name_args[0])
+        role.name(@name_args[0])
+        environment = @name_args[1]
         if @name_args.size < 2
           ui.fatal "You must supply both a role name and an environment run list."
           show_usage
           exit 1
         elsif @name_args.size > 2
           # Check for nested lists and create a single plain one
-          entries = @name_args[1..-1].map do |entry|
+          entries = @name_args[2..-1].map do |entry|
             entry.split(',').map { |e| e.strip }
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(',').map { |e| e.strip }
+          entries = @name_args[2].split(',').map { |e| e.strip }
         end
-        role = Chef::Role.load(@name_args[0])
 
-        set_env_run_list(role, entries)
-
+        set_env_run_list(role, environment, entries )
         role.save
-
         config[:env_run_list] = true
-
         output(format_for_display(role))
-      end
-
-      # Clears out any existing env_run_list_items and sets them to the
-      # specified entries
-      def set_env_run_list(role, entries)
-        role.env_run_list.env_run_list_items.clear
-        entries.each { |e| role.env_run_list << e }
       end
 
     end
