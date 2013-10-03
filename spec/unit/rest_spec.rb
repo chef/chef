@@ -57,7 +57,7 @@ describe Chef::REST do
     @log_stringio = StringIO.new
     Chef::Log.init(@log_stringio)
 
-    Chef::REST::CookieJar.stub!(:instance).and_return({})
+    Chef::REST::CookieJar.stub(:instance).and_return({})
     @base_url   = "http://chef.example.com:4000"
     @monkey_uri = URI.parse("http://chef.example.com:4000/monkey")
     @rest = Chef::REST.new(@base_url, nil, nil)
@@ -156,13 +156,13 @@ describe Chef::REST do
       @url = URI.parse("https://one:80/?foo=bar")
 
       @http_response = Net::HTTPSuccess.new("1.1", "200", "successful rest req")
-      @http_response.stub!(:read_body)
-      @http_response.stub!(:body).and_return("ninja")
+      @http_response.stub(:read_body)
+      @http_response.stub(:body).and_return("ninja")
       @http_response.add_field("Content-Length", "5")
 
       @http_client = Net::HTTP.new(@url.host, @url.port)
-      Net::HTTP.stub!(:new).and_return(@http_client)
-      @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
+      Net::HTTP.stub(:new).and_return(@http_client)
+      @http_client.stub(:request).and_yield(@http_response).and_return(@http_response)
 
       @base_headers = { 'Accept' => 'application/json',
                         'X-Chef-Version' => Chef::VERSION,
@@ -172,19 +172,14 @@ describe Chef::REST do
 
     describe "streaming downloads to a tempfile" do
       before do
-        @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
-        Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
-        Tempfile.stub!(:open).and_return(@tempfile)
+        @tempfile = StringIO.new
+        @tempfile.stub(:close!)
+        @tempfile.stub(:path).and_return("/a-temporary-file")
+        Tempfile.stub(:new).with("chef-rest").and_return(@tempfile)
+        Tempfile.stub(:open).and_return(@tempfile)
 
         @request_mock = {}
-        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
-
-        @http_response_mock = mock("Net::HTTP Response mock")
-      end
-
-      after do
-        @tempfile.rspec_reset
-        @tempfile.close!
+        Net::HTTP::Get.stub(:new).and_return(@request_mock)
       end
 
       it "should build a new HTTP GET request without the application/json accept header" do
@@ -203,9 +198,9 @@ describe Chef::REST do
       end
 
       it "should populate the tempfile with the value of the raw request" do
-        @http_response_mock.stub!(:read_body).and_yield("ninja")
-        @tempfile.should_receive(:write).with("ninja").once.and_return(true)
+        @http_response.should_receive(:read_body).and_yield("ninja")
         @rest.streaming_request(@url, {})
+        #@tempfile.string.should include("ninja")
       end
 
       it "should close the tempfile if we're doing a raw request" do
@@ -214,15 +209,15 @@ describe Chef::REST do
       end
 
       it "should not raise a divide by zero exception if the size is 0" do
-        @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "5" })
-        @http_response_mock.stub!(:read_body).and_yield('')
-        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
+        @http_response.stub(:header).and_return({ 'Content-Length' => "5" })
+        @http_response.stub(:read_body).and_yield('')
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error
       end
 
       it "should not raise a divide by zero exception if the Content-Length is 0" do
-        @http_response_mock.stub!(:header).and_return({ 'Content-Length' => "0" })
-        @http_response_mock.stub!(:read_body).and_yield("ninja")
-        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
+        @http_response.stub(:header).and_return({ 'Content-Length' => "0" })
+        @http_response.stub(:read_body).and_yield("ninja")
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error
       end
 
     end
@@ -230,7 +225,7 @@ describe Chef::REST do
     describe "as JSON API requests" do
       before do
         @request_mock = {}
-        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+        Net::HTTP::Get.stub(:new).and_return(@request_mock)
 
         @base_headers = {"Accept" => "application/json",
           "X-Chef-Version" => Chef::VERSION,
@@ -247,7 +242,7 @@ describe Chef::REST do
         # must reset to default b/c knife changes the UA
         Chef::REST::RESTRequest.user_agent = Chef::REST::RESTRequest::DEFAULT_UA
         @rest.api_request(:GET, @url, {})
-        @request_mock['User-Agent'].should match /^Chef Client\/#{Chef::VERSION}/
+        @request_mock['User-Agent'].should match(/^Chef Client\/#{Chef::VERSION}/)
       end
 
       # CHEF-3140
@@ -332,7 +327,7 @@ describe Chef::REST do
 
       it "should inflate the body as to an object if JSON is returned" do
         @http_response.add_field('content-type', "application/json")
-        @http_response.stub!(:body).and_return('{"ohai2u":"json_api"}')
+        @http_response.stub(:body).and_return('{"ohai2u":"json_api"}')
         @rest.api_request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
       end
 
@@ -342,9 +337,9 @@ describe Chef::REST do
           resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
           http_response = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
           http_response.add_field("location", @url.path)
-          http_response.stub!(:read_body)
+          http_response.stub(:read_body)
 
-          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
           lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
 
@@ -356,9 +351,9 @@ describe Chef::REST do
 
       it "should return `false` when response is 304 NotModified" do
         http_response = Net::HTTPNotModified.new("1.1", "304", "it's the same as when you asked 5 minutes ago")
-        http_response.stub!(:read_body)
+        http_response.stub(:read_body)
 
-        @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+        @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
         @rest.api_request(:GET, @url).should be_false
       end
@@ -376,10 +371,10 @@ describe Chef::REST do
         it "should show the JSON error message on an unsuccessful request" do
           http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
           http_response.add_field("content-type", "application/json")
-          http_response.stub!(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
-          http_response.stub!(:read_body)
-          @rest.stub!(:sleep)
-          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          http_response.stub(:body).and_return('{ "error":[ "Ears get sore!", "Not even four" ] }')
+          http_response.stub(:read_body)
+          @rest.stub(:sleep)
+          @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
           lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
           @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
@@ -393,11 +388,11 @@ describe Chef::REST do
           gzipped_body = Zlib::Deflate.deflate(unzipped_body)
           gzipped_body.force_encoding(Encoding::BINARY) if "strings".respond_to?(:force_encoding)
 
-          http_response.stub!(:body).and_return gzipped_body
-          http_response.stub!(:read_body)
-          @rest.stub!(:sleep)
-          @rest.stub!(:http_retry_count).and_return(0)
-          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          http_response.stub(:body).and_return gzipped_body
+          http_response.stub(:read_body)
+          @rest.stub(:sleep)
+          @rest.stub(:http_retry_count).and_return(0)
+          @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
           lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
           @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
@@ -405,10 +400,10 @@ describe Chef::REST do
 
         it "should raise an exception on an unsuccessful request" do
           http_response = Net::HTTPServerError.new("1.1", "500", "drooling from inside of mouth")
-          http_response.stub!(:body)
-          http_response.stub!(:read_body)
-          @rest.stub!(:sleep)
-          @http_client.stub!(:request).and_yield(http_response).and_return(http_response)
+          http_response.stub(:body)
+          http_response.stub(:read_body)
+          @rest.stub(:sleep)
+          @http_client.stub(:request).and_yield(http_response).and_return(http_response)
           lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
         end
       end
@@ -419,17 +414,16 @@ describe Chef::REST do
     context "when streaming downloads to a tempfile" do
       before do
         @tempfile = Tempfile.open("chef-rspec-rest_spec-line-#{__LINE__}--")
-        Tempfile.stub!(:new).with("chef-rest").and_return(@tempfile)
+        Tempfile.stub(:new).with("chef-rest").and_return(@tempfile)
         @request_mock = {}
-        Net::HTTP::Get.stub!(:new).and_return(@request_mock)
+        Net::HTTP::Get.stub(:new).and_return(@request_mock)
 
         @http_response = Net::HTTPSuccess.new("1.1",200, "it-works")
-        @http_response.stub!(:read_body)
-        @http_client.stub!(:request).and_yield(@http_response).and_return(@http_response)
+        @http_response.stub(:read_body)
+        @http_client.stub(:request).and_yield(@http_response).and_return(@http_response)
       end
 
       after do
-        @tempfile.rspec_reset
         @tempfile.close!
       end
 
@@ -444,7 +438,7 @@ describe Chef::REST do
       end
 
       it "writes the response body to a tempfile" do
-        @http_response.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         @rest.streaming_request(@url, {})
         IO.read(@tempfile.path).chomp.should == "realultimatepower"
       end
@@ -455,7 +449,7 @@ describe Chef::REST do
       end
 
       it "yields the tempfile containing the streamed response body and then unlinks it when given a block" do
-        @http_response.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         tempfile_path = nil
         @rest.streaming_request(@url, {}) do |tempfile|
           tempfile_path = tempfile.path
@@ -467,18 +461,18 @@ describe Chef::REST do
 
       it "does not raise a divide by zero exception if the content's actual size is 0" do
         @http_response.add_field('Content-Length', "5")
-        @http_response.stub!(:read_body).and_yield('')
-        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
+        @http_response.stub(:read_body).and_yield('')
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error
       end
 
       it "does not raise a divide by zero exception when the Content-Length is 0" do
         @http_response.add_field('Content-Length', "0")
-        @http_response.stub!(:read_body).and_yield("ninja")
-        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error(ZeroDivisionError)
+        @http_response.stub(:read_body).and_yield("ninja")
+        lambda { @rest.streaming_request(@url, {}) }.should_not raise_error
       end
 
       it "fetches a file and yields the tempfile it is streamed to" do
-        @http_response.stub!(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
+        @http_response.stub(:read_body).and_yield("real").and_yield("ultimate").and_yield("power")
         tempfile_path = nil
         @rest.fetch("cookbooks/a_cookbook") do |tempfile|
           tempfile_path = tempfile.path
@@ -490,34 +484,31 @@ describe Chef::REST do
       it "closes and unlinks the tempfile if there is an error while streaming the content to the tempfile" do
         path = @tempfile.path
         path.should_not be_nil
-        @tempfile.stub!(:write).and_raise(IOError)
+        @tempfile.stub(:write).and_raise(IOError)
         @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
         File.exists?(path).should be_false
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
-        Tempfile.rspec_reset
-        tempfile = mock("die", :path => "/tmp/ragefist", :close => true, :binmode => true)
+        tempfile = double("die", :path => "/tmp/ragefist", :close => true, :binmode => true)
         tempfile.should_receive(:close!).at_least(2).times
-        Tempfile.stub!(:new).with("chef-rest").and_return(tempfile)
+        Tempfile.stub(:new).with("chef-rest").and_return(tempfile)
 
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location", @url.path)
-        http_response.stub!(:read_body)
+        http_response.stub(:read_body)
 
-        @http_client.stub!(:request).and_yield(http_response).and_yield(@http_response).and_return(http_response, @http_response)
+        @http_client.stub(:request).and_yield(http_response).and_yield(@http_response).and_return(http_response, @http_response)
         @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
       end
 
       it "passes the original block to the redirected request" do
-        Tempfile.rspec_reset
-
         http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
         http_response.add_field("location","/that-thing-is-here-now")
-        http_response.stub!(:read_body)
+        http_response.stub(:read_body)
 
         block_called = false
-        @http_client.stub!(:request).and_yield(@http_response).and_return(http_response, @http_response)
+        @http_client.stub(:request).and_yield(@http_response).and_return(http_response, @http_response)
         @rest.fetch("cookbooks/a_cookbook") do |tmpfile|
           block_called = true
         end
@@ -546,9 +537,9 @@ describe Chef::REST do
           redirected.call unless total_redirects >= 9
         end
       end
-      lambda {redirected.call}.should_not raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      lambda {redirected.call}.should_not raise_error
       total_redirects = 0
-      lambda {redirected.call}.should_not raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      lambda {redirected.call}.should_not raise_error
     end
 
     it "does not sign the redirected request when sign_on_redirect is false" do
@@ -572,7 +563,7 @@ describe Chef::REST do
           redirected.call unless total_redirects >= 9
         end
       end
-      lambda {redirected.call}.should_not raise_error(Chef::Exceptions::RedirectLimitExceeded)
+      lambda {redirected.call}.should_not raise_error
 
       total_redirects = 0
       @rest.redirect_limit = 3
