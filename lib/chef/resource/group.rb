@@ -34,9 +34,6 @@ class Chef
         @action = :create
         @append = false
         @non_unique = false
-        @supports = {
-          :non_unique => false
-        }
         @allowed_actions.push(:create, :remove, :modify, :manage)
       end
 
