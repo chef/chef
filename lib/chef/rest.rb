@@ -52,23 +52,15 @@ class Chef
         [method, url, headers, json_body]
       end
 
-      def handle_response(http_response, return_value)
+      def handle_response(http_response, rest_request, return_value)
         # temporary hack, skip processing if return_value is false
         # needed to keep conditional get stuff working correctly.
         return [http_response, return_value] if return_value == false
-        unless http_response['content-type'] =~ /json/
-          Chef::Log.warn("Expected JSON response, but got content-type '#{http_response['content-type']}'")
-          return [http_response, http_response.body.to_s]
-        end
-
-        if http_response.kind_of?(Net::HTTPSuccess)
-          [http_response, Chef::JSONCompat.from_json(http_response.body.chomp)]
+        if http_response['content-type'] =~ /json/
+          [http_response, rest_request, Chef::JSONCompat.from_json(http_response.body.chomp)]
         else
-          exception = Chef::JSONCompat.from_json(http_response.body)
-          error_message = "HTTP Request Returned #{http_response.code} #{http_response.message}: "
-          error_message << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-          Chef::Log.info(msg)
-          [http_response, error_message]
+          Chef::Log.warn("Expected JSON response, but got content-type '#{http_response['content-type']}'")
+          return [http_response, rest_request, http_response.body.to_s]
         end
       end
 
@@ -192,57 +184,59 @@ class Chef
     def api_request(method, url, headers={}, data=false)
 
       method, url, headers, data = @chef_json_inflater.handle_request(method, url, headers, data)
-      response, return_value = raw_http_request(method, url, headers, data)
-      response, return_value = @chef_json_inflater.handle_response(response, return_value)
+      response, rest_request, return_value = raw_http_request(method, url, headers, data)
+      response, rest_request, return_value = @chef_json_inflater.handle_response(response, rest_request, return_value)
+      response.error! unless success_response?(response)
       return_value
+    rescue Exception => exception
+      log_failed_request(response, return_value) unless response.nil?
+
+      if exception.respond_to?(:chef_rest_request=)
+        exception.chef_rest_request = rest_request
+      end
+      raise
+    end
+
+    def log_failed_request(response, return_value)
+      error_message = "HTTP Request Returned #{response.code} #{response.message}: "
+      error_message << (return_value["error"].respond_to?(:join) ? return_value["error"].join(", ") : return_value["error"].to_s)
+      Chef::Log.info(error_message)
+    end
+
+    def success_response?(response)
+      response.kind_of?(Net::HTTPSuccess) || response.kind_of?(Net::HTTPRedirection)
     end
 
     # Runs an HTTP request to a JSON API with raw body. File Download not supported.
     def raw_http_request(method, url, headers, body)
       headers = build_headers(method, url, headers, body)
       retriable_rest_request(method, url, body, headers) do |rest_request|
-        begin
-          response = rest_request.call {|r| r.read_body}
-          @last_response = response
+        response = rest_request.call {|r| r.read_body}
+        @last_response = response
 
-          Chef::Log.debug("---- HTTP Status and Header Data: ----")
-          Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
+        Chef::Log.debug("---- HTTP Status and Header Data: ----")
+        Chef::Log.debug("HTTP #{response.http_version} #{response.code} #{response.msg}")
 
-          response.each do |header, value|
-            Chef::Log.debug("#{header}: #{value}")
-          end
-          Chef::Log.debug("---- End HTTP Status/Header Data ----")
+        response.each do |header, value|
+          Chef::Log.debug("#{header}: #{value}")
+        end
+        Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
-          response_body = decompress_body(response)
-          response.body.replace(response_body) if response.body.respond_to?(:replace)
+        response_body = decompress_body(response)
+        response.body.replace(response_body) if response.body.respond_to?(:replace)
 
-          if response.kind_of?(Net::HTTPSuccess)
-            [response, nil]
-          elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
-            [response, false]
-          elsif redirect_location = redirected_to(response)
-            if [:GET, :HEAD].include?(method)
-              follow_redirect {api_request(method, create_url(redirect_location))}
-            else
-              raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
-            end
+        if response.kind_of?(Net::HTTPSuccess)
+          [response, rest_request, nil]
+        elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
+          [response, rest_request, false]
+        elsif redirect_location = redirected_to(response)
+          if [:GET, :HEAD].include?(method)
+            follow_redirect {api_request(method, create_url(redirect_location))}
           else
-            # have to decompress the body before making an exception for it. But the body could be nil.
-            response.body.replace(response_body) if response.body.respond_to?(:replace)
-
-            if response['content-type'] =~ /json/
-              exception = Chef::JSONCompat.from_json(response_body)
-              msg = "HTTP Request Returned #{response.code} #{response.message}: "
-              msg << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
-              Chef::Log.info(msg)
-            end
-            response.error!
+            raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
           end
-        rescue Exception => e
-          if e.respond_to?(:chef_rest_request=)
-            e.chef_rest_request = rest_request
-          end
-          raise
+        else
+          [response, rest_request, nil]
         end
       end
     end
