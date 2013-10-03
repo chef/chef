@@ -379,6 +379,9 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
+      Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+      Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
+
       # Expand a relative path from the config directory. Config from command
       # line should already be expanded, and absolute paths will be unchanged.
       if Chef::Config[:client_key] && config[:config_file]
@@ -458,14 +461,19 @@ class Chef
       stdout.puts("USAGE: " + self.opt_parser.to_s)
     end
 
-    def run_with_pretty_exceptions
+    def run_with_pretty_exceptions(raise_exception = false)
       unless self.respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
       enforce_path_sanity
-      run
+      Chef::Application.setup_server_connectivity
+      begin
+        run
+      ensure
+        Chef::Application.destroy_server_connectivity
+      end
     rescue Exception => e
-      raise if Chef::Config[:verbosity] == 2
+      raise if raise_exception || Chef::Config[:verbosity] == 2
       humanize_exception(e)
       exit 100
     end

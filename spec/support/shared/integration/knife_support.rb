@@ -83,7 +83,7 @@ module KnifeSupport
         Chef::Log.level = ( DEBUG ? :debug : :warn )
         Chef::Log::Formatter.show_time = false
 
-        instance.run
+        instance.run_with_pretty_exceptions(true)
 
         exit_code = 0
 
