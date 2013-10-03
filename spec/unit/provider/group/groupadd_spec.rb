@@ -27,10 +27,12 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
     @new_resource.gid(50)
     @new_resource.members(["root", "aj"])
     @new_resource.system false
+    @new_resource.non_unique false
     @current_resource = Chef::Resource::Group.new("aj")
     @current_resource.gid(50)
     @current_resource.members(["root", "aj"])
     @current_resource.system false
+    @current_resource.non_unique false
     @provider = Chef::Provider::Group::Groupadd.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
   end
@@ -70,6 +72,18 @@ describe Chef::Provider::Group::Groupadd, "set_options" do
     it "should set groupadd -r if system is true" do
       @new_resource.system(true)
       @provider.groupadd_options.should == " -r"
+    end
+  end
+
+  describe "when we want to create a non_unique gid group" do
+    it "should not set groupadd_options '-o' when non_unique is false" do
+      @new_resource.non_unique(false)
+      @provider.groupadd_options.should_not =~ /-o/
+    end
+
+    it "should set groupadd -o if non_unique is true" do
+      @new_resource.non_unique(true)
+      @provider.groupadd_options.should == " -o"
     end
   end
 end
