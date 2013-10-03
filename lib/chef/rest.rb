@@ -39,6 +39,41 @@ class Chef
   # authentication.
   class REST
 
+    class ChefJSONInflater
+
+      def handle_request(method, url, headers={}, data=false)
+        headers['Accept']       = "application/json"
+        headers["Content-Type"] = 'application/json' if data
+        json_body = data ? Chef::JSONCompat.to_json(data) : nil
+        # Force encoding to binary to fix SSL related EOFErrors
+        # cf. http://tickets.opscode.com/browse/CHEF-2363
+        # http://redmine.ruby-lang.org/issues/5233
+        json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
+        [method, url, headers, json_body]
+      end
+
+      def handle_response(http_response, return_value)
+        # temporary hack, skip processing if return_value is false
+        # needed to keep conditional get stuff working correctly.
+        return [http_response, return_value] if return_value == false
+        unless http_response['content-type'] =~ /json/
+          Chef::Log.warn("Expected JSON response, but got content-type '#{http_response['content-type']}'")
+          return [http_response, http_response.body.to_s]
+        end
+
+        if http_response.kind_of?(Net::HTTPSuccess)
+          [http_response, Chef::JSONCompat.from_json(http_response.body.chomp)]
+        else
+          exception = Chef::JSONCompat.from_json(http_response.body)
+          error_message = "HTTP Request Returned #{http_response.code} #{http_response.message}: "
+          error_message << (exception["error"].respond_to?(:join) ? exception["error"].join(", ") : exception["error"].to_s)
+          Chef::Log.info(msg)
+          [http_response, error_message]
+        end
+      end
+
+    end
+
     class NoopInflater
       def inflate(chunk)
         chunk
@@ -68,6 +103,8 @@ class Chef
       @redirects_followed = 0
       @redirect_limit = 10
       @disable_gzip = false
+
+      @chef_json_inflater = ChefJSONInflater.new
       handle_options(options)
     end
 
@@ -153,12 +190,11 @@ class Chef
 
     # Runs an HTTP request to a JSON API with JSON body. File Download not supported.
     def api_request(method, url, headers={}, data=false)
-      json_body = data ? Chef::JSONCompat.to_json(data) : nil
-      # Force encoding to binary to fix SSL related EOFErrors
-      # cf. http://tickets.opscode.com/browse/CHEF-2363
-      # http://redmine.ruby-lang.org/issues/5233
-      json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
-      raw_http_request(method, url, headers, json_body)
+
+      method, url, headers, data = @chef_json_inflater.handle_request(method, url, headers, data)
+      response, return_value = raw_http_request(method, url, headers, data)
+      response, return_value = @chef_json_inflater.handle_response(response, return_value)
+      return_value
     end
 
     # Runs an HTTP request to a JSON API with raw body. File Download not supported.
@@ -178,16 +214,12 @@ class Chef
           Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
           response_body = decompress_body(response)
+          response.body.replace(response_body) if response.body.respond_to?(:replace)
 
           if response.kind_of?(Net::HTTPSuccess)
-            if response['content-type'] =~ /json/
-              Chef::JSONCompat.from_json(response_body.chomp)
-            else
-              Chef::Log.warn("Expected JSON response, but got content-type '#{response['content-type']}'")
-              response_body.to_s
-            end
+            [response, nil]
           elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
-            false
+            [response, false]
           elsif redirect_location = redirected_to(response)
             if [:GET, :HEAD].include?(method)
               follow_redirect {api_request(method, create_url(redirect_location))}
@@ -360,9 +392,6 @@ class Chef
 
     def build_headers(method, url, headers={}, json_body=false, raw=false)
       headers                 = @default_headers.merge(headers)
-      #headers['Accept']       = "application/json" unless raw
-      headers['Accept']       = "application/json" unless raw
-      headers["Content-Type"] = 'application/json' if json_body
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
       headers.merge!(authentication_headers(method, url, json_body)) if sign_requests?
