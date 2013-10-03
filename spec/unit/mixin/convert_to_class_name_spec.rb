@@ -47,4 +47,8 @@ describe Chef::Mixin::ConvertToClassName do
   it "interprets non-alphanumeric characters in snake case as word boundaries" do
     @convert.convert_to_class_name("now_camelized_without-hyphen").should == "NowCamelizedWithoutHyphen"
   end
+
+  it "interprets underscore" do
+    @convert.convert_to_class_name("_remove_leading_underscore").should == "RemoveLeadingUnderscore"
+  end
 end
