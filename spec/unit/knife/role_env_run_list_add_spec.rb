@@ -89,11 +89,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
     describe "with more than one role or recipe" do
       it "should add to the run list all the entries" do
         @knife.name_args = [ "will", "QA", "role[monkey],role[duck]" ]
-        @role.run_list_for("QA") << "role[acorns]"
+        @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[acorns]"
-        @role.run_list_for("QA")[1].should == "role[monkey]"
-        @role.run_list_for("QA")[2].should == "role[duck]"
+        @role.run_list_for("QA")[0].should == "role[monkey]"
+        @role.run_list_for("QA")[1].should == "role[duck]"
         @role.run_list[0].should == "role[acorns]"
         @role.run_list[1].should be_nil
       end
@@ -102,11 +101,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
     describe "with more than one role or recipe with space between items" do
       it "should add to the run list all the entries" do
         @knife.name_args = [ "will", "QA", "role[monkey], role[duck]" ]
-        @role.run_list_for("QA") << "role[acorns]"
+        @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[acorns]"
-        @role.run_list_for("QA")[1].should == "role[monkey]"
-        @role.run_list_for("QA")[2].should == "role[duck]"
+        @role.run_list_for("QA")[0].should == "role[monkey]"
+        @role.run_list_for("QA")[1].should == "role[duck]"
         @role.run_list[0].should == "role[acorns]"
         @role.run_list[1].should be_nil
       end
@@ -115,11 +113,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
     describe "with more than one role or recipe as different arguments" do
       it "should add to the run list all the entries" do
         @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck]" ]
-        @role.run_list_for("QA") << "role[acorns]"
+        @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[acorns]"
-        @role.run_list_for("QA")[1].should == "role[monkey]"
-        @role.run_list_for("QA")[2].should == "role[duck]"
+        @role.run_list_for("QA")[0].should == "role[monkey]"
+        @role.run_list_for("QA")[1].should == "role[duck]"
         @role.run_list[0].should == "role[acorns]"
         @role.run_list[1].should be_nil
       end
@@ -128,12 +125,11 @@ describe Chef::Knife::RoleEnvRunListAdd do
     describe "with more than one role or recipe as different arguments and list separated by comas" do
       it "should add to the run list all the entries" do
         @knife.name_args = [ "will", "QA", "role[monkey]", "role[duck],recipe[bird::fly]" ]
-        @role.run_list_for("QA") << "role[acorns]"
+        @role.run_list_for("_default") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[acorns]"
-        @role.run_list_for("QA")[1].should == "role[monkey]"
-        @role.run_list_for("QA")[2].should == "role[duck]"
-        @role.run_list_for("QA")[3].should == "recipe[bird::fly]"
+        @role.run_list_for("QA")[0].should == "role[monkey]"
+        @role.run_list_for("QA")[1].should == "role[duck]"
+        @role.run_list_for("QA")[2].should == "recipe[bird::fly]"
         @role.run_list[0].should == "role[acorns]"
         @role.run_list[1].should be_nil
       end
@@ -141,17 +137,26 @@ describe Chef::Knife::RoleEnvRunListAdd do
 
     describe "with one role or recipe but with an extraneous comma" do
       it "should add to the run list one item" do
+        @role.run_list_for("_default") << "role[acorns]"
         @knife.name_args = [ "adam", "QA", "role[monkey]," ]
-        @role.run_list_for("QA") << "role[acorns]"
         @knife.run
-        @role.run_list_for("QA")[0].should == "role[acorns]"
-        @role.run_list_for("QA")[1].should == "role[monkey]"
+        @role.run_list_for("QA")[0].should == "role[monkey]"
+        @role.run_list_for("QA")[1].should be_nil
         @role.run_list[0].should == "role[acorns]"
         @role.run_list[1].should be_nil
       end
     end
     
-    describe "with more than one command"
+    describe "with more than one command" do
+      it "should be able to the environment run list by running multiple knife commands" do
+        @knife.name_args = [ "will", "QA", "role[blue]," ]
+        @knife.run
+        @knife.name_args = [ "will", "QA", "role[black]," ]
+        @knife.run
+        @role.run_list_for("QA")[0].should == "role[blue]"
+        @role.run_list_for("QA")[1].should == "role[black]"
+      end
+    end
 
     describe "with more than one environment" do
       it "should add to the run list a second environment in the specific run list" do
@@ -164,12 +169,10 @@ describe Chef::Knife::RoleEnvRunListAdd do
         @knife.run
         @role.run_list_for("PRD") << "role[pen]"
 
-        @role.run_list_for("QA")[0].should == "role[acorns]"
-        @role.run_list_for("PRD")[0].should == "role[acorns]"
-        @role.run_list_for("QA")[1].should == "role[blue]"
-        @role.run_list_for("PRD")[1].should == "role[ball]"
-        @role.run_list_for("QA")[2].should == "role[walnuts]"
-        @role.run_list_for("PRD")[2].should == "role[pen]"
+        @role.run_list_for("QA")[0].should == "role[blue]"
+        @role.run_list_for("PRD")[0].should == "role[ball]"
+        @role.run_list_for("QA")[1].should == "role[walnuts]"
+        @role.run_list_for("PRD")[1].should == "role[pen]"
         @role.run_list[0].should == "role[acorns]"
         @role.run_list[1].should be_nil
       end

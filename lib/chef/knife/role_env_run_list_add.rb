@@ -46,8 +46,10 @@ class Chef
           role.env_run_lists_add(environment => nlist)
         else
           nlist = []
-          role.env_run_lists_add(environment => nlist)
-          role.run_list_for(entries).each do |entry|
+          unless role.env_run_lists.key?(environment)
+            role.env_run_lists_add(environment => nlist)
+          end
+          role.run_list_for(environment).each do |entry|
             nlist << entry
           end
           entries.each { |e| nlist << e }
