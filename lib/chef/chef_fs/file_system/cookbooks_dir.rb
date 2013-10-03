@@ -22,6 +22,7 @@ require 'chef/chef_fs/raw_request'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/cookbook_frozen_error'
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbook_dir'
+require 'chef/mixin/file_class'
 
 require 'tmpdir'
 
@@ -29,6 +30,8 @@ class Chef
   module ChefFS
     module FileSystem
       class CookbooksDir < RestListDir
+
+        include Chef::Mixin::FileClass
 
         def initialize(parent)
           super("cookbooks", parent)
@@ -93,11 +96,10 @@ class Chef
           Dir.mktmpdir do |temp_cookbooks_path|
             proxy_cookbook_path = "#{temp_cookbooks_path}/#{cookbook_name}"
 
-            # symlinking fails on windows, so cp_r the whole directory
+            # Make a symlink
+            file_class.symlink other.file_path, proxy_cookbook_path
 
-            FileUtils.cp_r(other.file_path, proxy_cookbook_path);
-
-            # Instantiate a proxy loader using the temporary directory
+            # Instantiate a proxy loader using the temporary symlink
             proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.parent.chefignore)
             proxy_loader.load_cookbooks
 
@@ -109,6 +111,17 @@ class Chef
 
             with_actual_cookbooks_dir(temp_cookbooks_path) do
               upload_cookbook!(uploader)
+            end
+
+            #
+            # When the temporary directory is being deleted on
+            # windows, the contents of the symlink under that
+            # directory is also deleted. So explicitly remove
+            # the symlink without removing the original contents if we
+            # are running on windows
+            #
+            if Chef::Platform.windows?
+              Dir.rmdir proxy_cookbook_path
             end
           end
         end
