@@ -29,17 +29,26 @@ class Chef
 
       banner "knife role env_run_list remove [ROLE] [ENVIRONMENT] [ENTRIES] (options)"
 
+      def remove_from_env_run_list(role, environment, item_to_remove)
+          nlist = []
+          role.run_list_for(environment).each do |entry|
+            nlist << entry unless entry == item_to_remove
+            #unless entry == @name_args[2]
+            #  nlist << entry
+            #end
+          end
+          role.env_run_lists_add(environment => nlist)
+      end
+
       def run
         role = Chef::Role.load(@name_args[0])
-        environment= Chef::Environment.load(@name_args[1])
-        entries = @name_args[2].split(',')
+        role.name(@name_args[0])
+        environment = @name_args[1]
+        item_to_remove = @name_args[2]
 
-        entries.each { |e| role.env_run_list.remove(e) }
-
-        node.save
-
+        remove_from_env_run_list(role, environment, item_to_remove)
+        role.save
         config[:env_run_list] = true
-
         output(format_for_display(role))
       end
 

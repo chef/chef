@@ -37,7 +37,7 @@ class Chef
       def add_to_env_run_list(role, environment, entries, after=nil)
         if after
           nlist = []
-          role.run_list_for(entries).each do |entry| 
+          role.run_list_for(environment).each do |entry| 
             nlist << entry
             if entry == after
               entries.each { |e| nlist << e }
