@@ -20,12 +20,12 @@
 # limitations under the License.
 #
 
-require 'zlib'
 require 'net/https'
 require 'uri'
-require 'chef/json_compat'
 require 'tempfile'
 require 'chef/rest/auth_credentials'
+require 'chef/rest/decompressor'
+require 'chef/rest/json_to_model_inflater'
 require 'chef/rest/rest_request'
 require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
@@ -38,130 +38,6 @@ class Chef
   # Chef's custom REST client with built-in JSON support and RSA signed header
   # authentication.
   class REST
-
-    class ChefJSONInflater
-
-      def initialize(opts={})
-      end
-
-      def handle_request(method, url, headers={}, data=false)
-        headers['Accept']       = "application/json"
-        headers["Content-Type"] = 'application/json' if data
-        json_body = data ? Chef::JSONCompat.to_json(data) : nil
-        # Force encoding to binary to fix SSL related EOFErrors
-        # cf. http://tickets.opscode.com/browse/CHEF-2363
-        # http://redmine.ruby-lang.org/issues/5233
-        json_body.force_encoding(Encoding::BINARY) if json_body.respond_to?(:force_encoding)
-        [method, url, headers, json_body]
-      end
-
-      def handle_response(http_response, rest_request, return_value)
-        # temporary hack, skip processing if return_value is false
-        # needed to keep conditional get stuff working correctly.
-        return [http_response, rest_request, return_value] if return_value == false
-        if http_response['content-type'] =~ /json/
-          [http_response, rest_request, Chef::JSONCompat.from_json(http_response.body.chomp)]
-        else
-          Chef::Log.warn("Expected JSON response, but got content-type '#{http_response['content-type']}'")
-          return [http_response, rest_request, http_response.body.to_s]
-        end
-      end
-
-    end
-
-    class Decompressor
-      class NoopInflater
-        def inflate(chunk)
-          chunk
-        end
-      end
-
-      CONTENT_ENCODING  = "content-encoding".freeze
-      GZIP              = "gzip".freeze
-      DEFLATE           = "deflate".freeze
-      IDENTITY          = "identity".freeze
-
-      def initialize(opts={})
-        @disable_gzip = false
-        handle_options(opts)
-      end
-
-      def handle_request(method, url, headers={}, data=false)
-        headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
-        [method, url, headers, data]
-      end
-
-      def handle_response(http_response, rest_request, return_value)
-        # temporary hack, skip processing if return_value is false
-        # needed to keep conditional get stuff working correctly.
-        return [http_response, rest_request, return_value] if return_value == false
-        response_body = decompress_body(http_response)
-        http_response.body.replace(response_body) if http_response.body.respond_to?(:replace)
-        [http_response, rest_request, return_value]
-      end
-
-      def decompress_body(response)
-        if gzip_disabled? || response.body.nil?
-          response.body
-        else
-          case response[CONTENT_ENCODING]
-          when GZIP
-            Chef::Log.debug "decompressing gzip response"
-            Zlib::Inflate.new(Zlib::MAX_WBITS + 16).inflate(response.body)
-          when DEFLATE
-            Chef::Log.debug "decompressing deflate response"
-            Zlib::Inflate.inflate(response.body)
-          else
-            response.body
-          end
-        end
-      end
-
-      # This isn't used when this class is used as middleware; it returns an
-      # object you can use to unzip/inflate a streaming response.
-      def stream_decompressor_for(response)
-        if gzip_disabled?
-          NoopInflater.new
-        else
-          case response[CONTENT_ENCODING]
-          when GZIP
-            Chef::Log.debug "decompressing gzip stream"
-            Zlib::Inflate.new(Zlib::MAX_WBITS + 16)
-          when DEFLATE
-            Chef::Log.debug "decompressing inflate stream"
-            Zlib::Inflate.new
-          else
-            NoopInflater.new
-          end
-        end
-      end
-
-
-      # gzip is disabled using the disable_gzip => true option in the
-      # constructor. When gzip is disabled, no 'Accept-Encoding' header will be
-      # set, and the response will not be decompressed, no matter what the
-      # Content-Encoding header of the response is. The intended use case for
-      # this is to work around situations where you request +file.tar.gz+, but
-      # the server responds with a content type of tar and a content encoding of
-      # gzip, tricking the client into decompressing the response so you end up
-      # with a tar archive (no gzip) named file.tar.gz
-      def gzip_disabled?
-        @disable_gzip
-      end
-
-      private
-
-      def handle_options(opts)
-        opts.each do |name, value|
-          case name.to_s
-          when 'disable_gzip'
-            @disable_gzip = value
-          end
-        end
-      end
-
-
-    end
 
 
     attr_reader :auth_credentials
@@ -182,7 +58,7 @@ class Chef
       @redirects_followed = 0
       @redirect_limit = 10
 
-      @chef_json_inflater = ChefJSONInflater.new(options)
+      @chef_json_inflater = JSONToModelInflater.new(options)
       @decompressor = Decompressor.new(options)
     end
 
@@ -499,6 +375,16 @@ class Chef
       msg = "The file #{key_file} or :raw_key option does not contain a correctly formatted private key.\n"
       msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
       raise Chef::Exceptions::InvalidPrivateKey, msg
+    end
+
+    public
+
+    ############################################################################
+    # DEPRECATED
+    ############################################################################
+
+    def decompress_body(body)
+      @decompressor.decompress_body(body)
     end
 
   end
