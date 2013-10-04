@@ -133,10 +133,7 @@ class Chef
 
       def build_headers(headers)
         @headers = headers.dup
-        # TODO: need to set accept somewhere else
-        # headers.merge!('Accept' => "application/json") unless raw
         @headers['X-Chef-Version'] = ::Chef::VERSION
-        @headers[ACCEPT_ENCODING] = ENCODING_GZIP_DEFLATE
 
         if @cookies.has_key?("#{host}:#{port}")
           @headers['Cookie'] = @cookies["#{host}:#{port}"]
