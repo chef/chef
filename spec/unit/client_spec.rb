@@ -450,6 +450,7 @@ shared_examples_for Chef::Client do
 end
 
 describe Chef::Client do
+  Chef::Config[:client_fork] = false
   it_behaves_like Chef::Client
 end
 

@@ -27,11 +27,13 @@ require 'chef/rest'
 require 'mixlib/cli'
 require 'socket'
 require 'win32/daemon'
+require 'chef/mixin/shell_out'
 
 class Chef
   class Application
     class WindowsService < ::Win32::Daemon
       include Mixlib::CLI
+      include Chef::Mixin::ShellOut
 
       option :config_file,
         :short => "-c CONFIG",
@@ -160,16 +162,28 @@ class Chef
 
       # Initializes Chef::Client instance and runs it
       def run_chef_client
-        @chef_client = Chef::Client.new(
-          @chef_client_json,
-          :override_runlist => config[:override_runlist]
-        )
-        @chef_client_json = nil
-
-        @chef_client.run
-        @chef_client = nil
+        # The chef client will be started in a new process. We have used shell_out to start the chef-client.
+        # The log_location and config_file of the parent process is passed to the new chef-client process.
+        # We need to add the --no-fork, as by default it is set to fork=true.
+        begin
+          Chef::Log.info "Starting chef-client in a new process"
+          # Pass config params to the new process
+          config_params = " --no-fork"
+          config_params += " -c #{Chef::Config[:config_file]}" unless  Chef::Config[:config_file].nil?
+          config_params += " -L #{Chef::Config[:log_location]}" unless Chef::Config[:log_location] == STDOUT
+          # Starts a new process and waits till the process exits
+          result = shell_out("chef-client #{config_params}")
+          Chef::Log.debug "#{result.stdout}"
+          Chef::Log.debug "#{result.stderr}"
+        rescue Mixlib::ShellOut::ShellCommandFailed => e
+          Chef::Log.warn "Not able to start chef-client in new process (#{e})"
+        rescue => e
+          Chef::Log.error e
+        ensure
+          # Once process exits, we log the current process' pid
+          Chef::Log.info "Child process exited (pid: #{Process.pid})"
+        end
       end
-
 
       def apply_config(config_file_path)
         Chef::Config.from_file(config_file_path)

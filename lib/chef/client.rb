@@ -478,6 +478,7 @@ class Chef
         run_context = nil
         @events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        Chef::Log.info "Chef-client pid: #{Process.pid}"
         enforce_path_sanity
         run_ohai
         @events.ohai_completed(node)
