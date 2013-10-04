@@ -138,7 +138,7 @@ describe Chef::Knife::RoleEnvRunListAdd do
     describe "with one role or recipe but with an extraneous comma" do
       it "should add to the run list one item" do
         @role.run_list_for("_default") << "role[acorns]"
-        @knife.name_args = [ "adam", "QA", "role[monkey]," ]
+        @knife.name_args = [ "will", "QA", "role[monkey]," ]
         @knife.run
         @role.run_list_for("QA")[0].should == "role[monkey]"
         @role.run_list_for("QA")[1].should be_nil
@@ -161,11 +161,11 @@ describe Chef::Knife::RoleEnvRunListAdd do
     describe "with more than one environment" do
       it "should add to the run list a second environment in the specific run list" do
         @role.run_list_for("_default") << "role[acorns]"
-        @knife.name_args = [ "adam", "QA", "role[blue]," ]
+        @knife.name_args = [ "will", "QA", "role[blue]," ]
         @knife.run
         @role.run_list_for("QA") << "role[walnuts]"
 
-        @knife.name_args = [ "adam", "PRD", "role[ball]," ]
+        @knife.name_args = [ "will", "PRD", "role[ball]," ]
         @knife.run
         @role.run_list_for("PRD") << "role[pen]"
 
