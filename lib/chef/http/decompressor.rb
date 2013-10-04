@@ -17,10 +17,10 @@
 #
 
 require 'zlib'
-require 'chef/rest/rest_request'
+require 'chef/http/http_request'
 
 class Chef
-  class REST
+  class HTTP
 
     # Middleware-esque class for handling compression in HTTP responses.
     class Decompressor
@@ -41,7 +41,7 @@ class Chef
       end
 
       def handle_request(method, url, headers={}, data=false)
-        headers[RESTRequest::ACCEPT_ENCODING] = RESTRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
+        headers[HTTPRequest::ACCEPT_ENCODING] = HTTPRequest::ENCODING_GZIP_DEFLATE unless gzip_disabled?
         [method, url, headers, data]
       end
 

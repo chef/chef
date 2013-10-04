@@ -22,7 +22,7 @@
 #
 require 'uri'
 require 'net/http'
-require 'chef/rest/cookie_jar'
+require 'chef/http/cookie_jar'
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -36,8 +36,8 @@ end
 require 'chef/version'
 
 class Chef
-  class REST
-    class RESTRequest
+  class HTTP
+    class HTTPRequest
 
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
 

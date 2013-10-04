@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-require 'chef/rest/auth_credentials'
+require 'chef/http/auth_credentials'
 require 'chef/exceptions'
 require 'openssl'
 
 class Chef
-  class REST
+  class HTTP
     class Authenticator
 
       attr_reader :signing_key_filename

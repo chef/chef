@@ -20,18 +20,16 @@
 # limitations under the License.
 #
 
+require 'tempfile'
+require 'chef/http'
 class Chef
-  # :nodoc:
-  # Ensure that we initialiaze Chef::REST with the right superclass.
   class HTTP; end
   class REST < HTTP; end
 end
 
-require 'tempfile'
-require 'chef/rest/http'
-require 'chef/rest/authenticator'
-require 'chef/rest/decompressor'
-require 'chef/rest/json_to_model_inflater'
+require 'chef/http/authenticator'
+require 'chef/http/decompressor'
+require 'chef/http/json_to_model_inflater'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
@@ -41,6 +39,10 @@ class Chef
   # Chef's custom REST client with built-in JSON support and RSA signed header
   # authentication.
   class REST < HTTP
+
+    # Backwards compatibility for things that use
+    # Chef::REST::RESTRequest or its constants
+    RESTRequest = HTTP::HTTPRequest
 
     attr_accessor :url, :cookies, :sign_on_redirect, :redirect_limit
 

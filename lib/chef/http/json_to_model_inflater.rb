@@ -18,7 +18,7 @@
 
 require 'chef/json_compat'
 class Chef
-  class REST
+  class HTTP
 
     # A Middleware-ish thing that takes an HTTP response, parses it as JSON if
     # possible, and converts it into an appropriate model object if it contains

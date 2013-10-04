@@ -23,7 +23,7 @@
 require 'singleton'
 
 class Chef
-  class REST
+  class HTTP
     class CookieJar < Hash
       include Singleton
     end

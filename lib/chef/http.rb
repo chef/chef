@@ -23,7 +23,7 @@
 
 require 'net/https'
 require 'uri'
-require 'chef/rest/rest_request'
+require 'chef/http/http_request'
 require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
@@ -55,7 +55,7 @@ class Chef
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, options={})
       @url = url
-      @cookies = REST::CookieJar.instance
+      @cookies = HTTP::CookieJar.instance
       @default_headers = options[:headers] || {}
       @sign_on_redirect = true
       @redirects_followed = 0
@@ -188,7 +188,7 @@ class Chef
     end
 
     def retriable_http_request(method, url, req_body, headers)
-      rest_request = Chef::REST::RESTRequest.new(method, url, req_body, headers)
+      rest_request = Chef::HTTP::HTTPRequest.new(method, url, req_body, headers)
 
       Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
 
