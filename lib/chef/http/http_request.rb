@@ -22,7 +22,6 @@
 #
 require 'uri'
 require 'net/http'
-require 'chef/http/cookie_jar'
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -72,7 +71,6 @@ class Chef
       def initialize(method, url, req_body, base_headers={})
         @method, @url = method, url
         @request_body = nil
-        @cookies = CookieJar.instance
         configure_http_client
         build_headers(base_headers)
         configure_http_request(req_body)
@@ -97,7 +95,6 @@ class Chef
       def call
         hide_net_http_bug do
           http_client.request(http_request) do |response|
-            store_cookie(response)
             yield response if block_given?
             response
           end
@@ -125,19 +122,10 @@ class Chef
         end
       end
 
-      def store_cookie(response)
-        if response['set-cookie']
-          @cookies["#{host}:#{port}"] = response['set-cookie']
-        end
-      end
-
       def build_headers(headers)
         @headers = headers.dup
         @headers['X-Chef-Version'] = ::Chef::VERSION
-
-        if @cookies.has_key?("#{host}:#{port}")
-          @headers['Cookie'] = @cookies["#{host}:#{port}"]
-        end
+        @headers
       end
 
       #adapted from buildr/lib/buildr/core/transports.rb
@@ -222,6 +210,8 @@ class Chef
           password = URI.unescape(url.password) if url.password
           @http_request.basic_auth(user, password)
         end
+
+        # Overwrite default UA
         @http_request[USER_AGENT] = self.class.user_agent
       end
 

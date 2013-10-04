@@ -30,6 +30,7 @@ end
 require 'chef/http/authenticator'
 require 'chef/http/decompressor'
 require 'chef/http/json_to_model_inflater'
+require 'chef/http/cookie_manager'
 require 'chef/config'
 require 'chef/exceptions'
 require 'chef/platform/query_helpers'
@@ -58,6 +59,7 @@ class Chef
       super(url, options)
 
       @chef_json_inflater = JSONToModelInflater.new(options)
+      @cookie_manager = CookieManager.new(options)
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
     end
@@ -134,7 +136,7 @@ class Chef
 
     # Chef::REST doesn't define middleware in the normal way for backcompat reasons, so it's hardcoded here.
     def middlewares
-      [@chef_json_inflater, @decompressor, @authenticator]
+      [@chef_json_inflater, @cookie_manager, @decompressor, @authenticator]
     end
 
     alias :api_request :request
