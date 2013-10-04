@@ -145,14 +145,10 @@ class Chef
     # Runs an HTTP request to a JSON API with JSON body. File Download not supported.
     def api_request(method, url, headers={}, data=false)
 
-      method, url, headers, data = @chef_json_inflater.handle_request(method, url, headers, data)
-      method, url, headers, data = @decompressor.handle_request(method, url, headers, data)
-      method, url, headers, data = @authenticator.handle_request(method, url, headers, data)
+      method, url, headers, data = apply_request_middleware(method, url, headers, data)
 
       response, rest_request, return_value = raw_http_request(method, url, headers, data)
-      response, rest_request, return_value = @authenticator.handle_response(response, rest_request, return_value)
-      response, rest_request, return_value = @decompressor.handle_response(response, rest_request, return_value)
-      response, rest_request, return_value = @chef_json_inflater.handle_response(response, rest_request, return_value)
+      response, rest_request, return_value = apply_response_middleware(response, rest_request, return_value)
       response.error! unless success_response?(response)
       return_value
     rescue Exception => exception
@@ -162,6 +158,22 @@ class Chef
         exception.chef_rest_request = rest_request
       end
       raise
+    end
+
+    def middlewares
+      [@chef_json_inflater, @decompressor, @authenticator]
+    end
+
+    def apply_request_middleware(method, url, headers, data)
+      middlewares.inject([method, url, headers, data]) do |req_data, middleware|
+        middleware.handle_request(*req_data)
+      end
+    end
+
+    def apply_response_middleware(response, rest_request, return_value)
+      middlewares.reverse.inject([response, rest_request, return_value]) do |res_data, middleware|
+        middleware.handle_response(*res_data)
+      end
     end
 
     def log_failed_request(response, return_value)
