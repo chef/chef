@@ -30,6 +30,7 @@ require 'chef/config'
 require 'chef/exceptions'
 
 class Chef
+
   # == Chef::HTTP
   # Basic HTTP client, with support for adding features via middleware
   class HTTP
@@ -43,7 +44,6 @@ class Chef
     end
 
     attr_reader :url
-    attr_reader :cookies
     attr_reader :sign_on_redirect
     attr_reader :redirect_limit
 
@@ -55,7 +55,6 @@ class Chef
     # HTTP GET request to http://localhost:4000/nodes
     def initialize(url, options={})
       @url = url
-      @cookies = HTTP::CookieJar.instance
       @default_headers = options[:headers] || {}
       @sign_on_redirect = true
       @redirects_followed = 0
