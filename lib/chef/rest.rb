@@ -82,10 +82,6 @@ class Chef
       authenticator.sign_requests?
     end
 
-    def last_response
-      @last_response
-    end
-
     # Send an HTTP GET request to the path
     #
     # Using this method to +fetch+ a file is considered deprecated.
@@ -218,8 +214,11 @@ class Chef
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
     def streaming_request(url, headers, &block)
-      headers = build_headers(:GET, url, headers, nil, true)
-      retriable_rest_request(:GET, url, nil, headers) do |rest_request|
+      method, url, headers, data = [@decompressor, @authenticator].inject([:GET, url, headers, nil]) do |req_data, middleware|
+        middleware.handle_request(*req_data)
+      end
+      headers = build_headers(method, url, headers, data)
+      retriable_rest_request(method, url, data, headers) do |rest_request|
         begin
           tempfile = nil
           response = rest_request.call do |r|
@@ -330,7 +329,7 @@ class Chef
       response['location']
     end
 
-    def build_headers(method, url, headers={}, json_body=false, raw=false)
+    def build_headers(method, url, headers={}, json_body=false)
       headers                 = @default_headers.merge(headers)
       headers['Content-Length'] = json_body.bytesize.to_s if json_body
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
@@ -363,6 +362,13 @@ class Chef
     ############################################################################
     # DEPRECATED
     ############################################################################
+
+    # This is only kept around to provide access to cache control data in
+    # lib/chef/provider/remote_file/http.rb
+    # Find a better API.
+    def last_response
+      @last_response
+    end
 
     def decompress_body(body)
       @decompressor.decompress_body(body)
