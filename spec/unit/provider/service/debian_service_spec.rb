@@ -36,9 +36,7 @@ describe Chef::Provider::Service::Debian do
 
   describe "load_current_resource" do
     it "ensures /usr/sbin/update-rc.d is available" do
-      File.should_receive(:exists?)
-          .with("/usr/sbin/update-rc.d")
-          .and_return(false)
+      File.should_receive(:exists?).with("/usr/sbin/update-rc.d") .and_return(false)
 
       @provider.define_resource_requirements
       lambda {
@@ -65,14 +63,11 @@ describe Chef::Provider::Service::Debian do
         @stderr = StringIO.new
         @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
         @provider.stub!(:shell_out!).and_return(@status)
-        @provider.stub!(:popen4)
-                 .and_yield(@pid, @stdin, @stdout, @stderr)
-                 .and_return(@status)
+        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
 
       it "says the service is enabled" do
-        @provider.service_currently_enabled?(@provider.get_priority)
-                 .should be_true
+        @provider.service_currently_enabled?(@provider.get_priority).should be_true
       end
 
       it "stores the 'enabled' state" do
@@ -91,14 +86,11 @@ describe Chef::Provider::Service::Debian do
         @stderr = StringIO.new
         @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
         @provider.stub!(:shell_out!).and_return(@status)
-        @provider.stub!(:popen4)
-                 .and_yield(@pid, @stdin, @stdout, @stderr)
-                 .and_return(@status)
+        @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
       end
 
       it "says the service is disabled" do
-        @provider.service_currently_enabled?(@provider.get_priority)
-                 .should be_false
+        @provider.service_currently_enabled?(@provider.get_priority).should be_false
       end
 
       it "stores the 'disabled' state" do
@@ -171,14 +163,11 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
             @stderr = StringIO.new(streams["linked"]["stderr"])
             @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
             @provider.stub!(:shell_out!).and_return(@status)
-            @provider.stub!(:popen4)
-                     .and_yield(@pid, @stdin, @stdout, @stderr)
-                     .and_return(@status)
+            @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
 
           it "says the service is enabled" do
-            @provider.service_currently_enabled?(@provider.get_priority)
-                     .should be_true
+            @provider.service_currently_enabled?(@provider.get_priority).should be_true
           end
 
           it "stores the 'enabled' state" do
@@ -207,14 +196,11 @@ insserv: remove service /etc/init.d/../rc0.d/K20chef-client
             @stderr = StringIO.new(streams["not linked"]["stderr"])
             @status = mock("Status", :exitstatus => 0, :stdout => @stdout)
             @provider.stub!(:shell_out!).and_return(@status)
-            @provider.stub!(:popen4)
-                     .and_yield(@pid, @stdin, @stdout, @stderr)
-                     .and_return(@status)
+            @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(@status)
           end
 
           it "says the service is disabled" do
-            @provider.service_currently_enabled?(@provider.get_priority)
-                     .should be_false
+            @provider.service_currently_enabled?(@provider.get_priority).should be_false
           end
 
           it "stores the 'disabled' state" do
