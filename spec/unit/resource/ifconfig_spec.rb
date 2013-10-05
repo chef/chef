@@ -28,7 +28,7 @@ describe Chef::Resource::Ifconfig do
   end
 
   describe "when it has target, hardware address, inet address, and a mask" do
-    before do 
+    before do
       @resource.device("charmander")
       @resource.target("team_rocket")
       @resource.hwaddr("11.2223.223")

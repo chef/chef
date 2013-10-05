@@ -204,6 +204,20 @@ class Chef
       @loaded_attributes["#{cookbook}::#{attribute_file}"] = true
     end
 
+    ##
+    # Cookbook File Introspection
+
+    def has_template_in_cookbook?(cookbook, template_name)
+      cookbook = cookbook_collection[cookbook]
+      cookbook.has_template_for_node?(node, template_name)
+    end
+
+    def has_cookbook_file_in_cookbook?(cookbook, cb_file_name)
+      cookbook = cookbook_collection[cookbook]
+      cookbook.has_cookbook_file_for_node?(node, cb_file_name)
+    end
+
+
     private
 
     def loaded_recipe(cookbook, recipe)

@@ -243,7 +243,7 @@ class Chef
        end
 
        # Clears merged_attributes, which will cause it to be recomputed on the
-       # next access. 
+       # next access.
        def reset_cache
          @merged_attributes = nil
          @combined_default  = nil

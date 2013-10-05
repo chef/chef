@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Service
       class Invokercd < Chef::Provider::Service::Init
-        
+
         def initialize(new_resource, run_context)
           super
           @init_command = "/usr/sbin/invoke-rc.d #{@new_resource.service_name}"

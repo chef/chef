@@ -74,23 +74,13 @@ shared_examples_for Chef::Client do
   end
 
   describe "configuring output formatters" do
-    before do
-      @original_config = Chef::Config.configuration
-    end
-
-    after do
-      Chef::Config.configuration.replace(@original_config)
-    end
     context "when no formatter has been configured" do
       before do
-        Chef::Config.formatters.clear
         @client = Chef::Client.new
       end
 
       context "and STDOUT is a TTY" do
         before do
-          Chef::Config[:force_formatter] = false
-          Chef::Config[:force_logger] = false
           STDOUT.stub!(:tty?).and_return(true)
         end
 
@@ -114,7 +104,6 @@ shared_examples_for Chef::Client do
 
       context "and STDOUT is not a TTY" do
         before do
-          Chef::Config[:force_formatter] = false
           STDOUT.stub!(:tty?).and_return(false)
         end
 
@@ -137,7 +126,6 @@ shared_examples_for Chef::Client do
     context "when a formatter is configured" do
       context "with no output path" do
         before do
-          Chef::Config.formatters.clear
           @client = Chef::Client.new
           Chef::Config.add_formatter(:min)
         end
@@ -156,7 +144,6 @@ shared_examples_for Chef::Client do
 
       context "with an output path" do
         before do
-          Chef::Config.formatters.clear
           @client = Chef::Client.new
           @tmpout = Tempfile.open("rspec-for-client-formatter-selection-#{Process.pid}")
           Chef::Config.add_formatter(:min, @tmpout.path)
@@ -463,17 +450,13 @@ shared_examples_for Chef::Client do
 end
 
 describe Chef::Client do
+  Chef::Config[:client_fork] = false
   it_behaves_like Chef::Client
 end
 
 describe "Chef::Client Forked" do
   before do
-    @original_config = Chef::Config.configuration
     Chef::Config[:client_fork] = true
-  end
-
-  after do
-    Chef::Config.configuration.replace(@original_config)
   end
 
   it_behaves_like Chef::Client

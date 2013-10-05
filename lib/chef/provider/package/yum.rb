@@ -667,7 +667,7 @@ class Chef
 
             @allow_multi_install = []
 
-            @extra_repo_control = nil 
+            @extra_repo_control = nil
 
             # these are for subsequent runs if we are on an interval
             Chef::Client.when_run_starts do
@@ -947,6 +947,7 @@ class Chef
         end # YumCache
 
         include Chef::Mixin::GetSourceFromPackage
+        include Chef::Mixin::ShellOut
 
         def initialize(new_resource, run_context)
           super
@@ -1045,7 +1046,7 @@ class Chef
           end
 
           # At this point package_name could be:
-          # 
+          #
           # 1) a package name, eg: "foo"
           # 2) a package name.arch, eg: "foo.i386"
           # 3) or a dependency, eg: "foo >= 1.1"
@@ -1153,7 +1154,7 @@ class Chef
         # Hacky - better overall solution? Custom compare in Package provider?
         def action_upgrade
           # Could be uninstalled or have no candidate
-          if @current_resource.version.nil? || candidate_version.nil? 
+          if @current_resource.version.nil? || candidate_version.nil?
             super
           # Ensure the candidate is newer
           elsif RPMVersion.parse(candidate_version) > RPMVersion.parse(@current_resource.version)

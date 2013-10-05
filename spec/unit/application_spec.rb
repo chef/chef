@@ -20,7 +20,8 @@ require 'spec_helper'
 
 describe Chef::Application do
   before do
-    @original_conf = Chef::Config.configuration
+    @original_argv = ARGV.dup
+    ARGV.clear
     Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
     Dir.stub!(:chdir).and_return(0)
@@ -28,7 +29,7 @@ describe Chef::Application do
   end
 
   after do
-    Chef::Config.configuration.replace(@original_conf)
+    ARGV.replace(@original_argv)
   end
 
   describe "reconfigure" do
@@ -95,8 +96,6 @@ describe Chef::Application do
 
     describe "when a config_file is present" do
       before do
-        Chef::Config.configuration.delete('rspec_ran')
-
         @config_file = Tempfile.new("rspec-chef-config")
         @config_file.puts("rspec_ran('true')")
         @config_file.close
@@ -146,8 +145,6 @@ describe Chef::Application do
 
     describe "when the config_file is an URL" do
       before do
-        Chef::Config.configuration.delete('rspec_ran')
-
         @app.config[:config_file] = "http://example.com/foo.rb"
 
         @config_file = Tempfile.new("rspec-chef-config")
@@ -189,17 +186,8 @@ describe Chef::Application do
       @app.configure_logging
     end
 
-    it "should initialise the chef logger level" do
-      Chef::Log.should_receive(:level=).with(Chef::Config[:log_level]).and_return(true)
-      @app.configure_logging
-    end
-
-    context "and log_level is :auto" do
-      before do
-        Chef::Config[:log_level] = :auto
-      end
-
-      context "and STDOUT is to a tty" do
+    shared_examples_for "log_level_is_auto" do
+      context "when STDOUT is to a tty" do
         before do
           STDOUT.stub!(:tty?).and_return(true)
         end
@@ -209,7 +197,7 @@ describe Chef::Application do
           Chef::Log.level.should == :warn
         end
 
-        context "and force_logger is configured" do
+        context "when force_logger is configured" do
           before do
             Chef::Config[:force_logger] = true
           end
@@ -221,7 +209,7 @@ describe Chef::Application do
         end
       end
 
-      context "and STDOUT is not to a tty" do
+      context "when STDOUT is not to a tty" do
         before do
           STDOUT.stub!(:tty?).and_return(false)
         end
@@ -231,7 +219,7 @@ describe Chef::Application do
           Chef::Log.level.should == :info
         end
 
-        context "and force_formatter is configured" do
+        context "when force_formatter is configured" do
           before do
             Chef::Config[:force_formatter] = true
           end
@@ -241,7 +229,18 @@ describe Chef::Application do
           end
         end
       end
+    end
 
+    context "when log_level is not set" do
+      it_behaves_like "log_level_is_auto"
+    end
+
+    context "when log_level is :auto" do
+      before do
+        Chef::Config[:log_level] = :auto
+      end
+
+      it_behaves_like "log_level_is_auto"
     end
   end
 

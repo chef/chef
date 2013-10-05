@@ -62,7 +62,7 @@ class Chef
         ui.info("Updated Environment #{updated.name}")
       end
 
-        
+
       def run
         if config[:all] == true
           load_all_environments
@@ -72,7 +72,7 @@ class Chef
             ui.fatal("You must specify a file to load")
             exit 1
           end
-  
+
           @name_args.each do |arg|
             load_environment(arg)
           end

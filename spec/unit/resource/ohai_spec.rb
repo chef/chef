@@ -43,7 +43,7 @@ describe Chef::Resource::Ohai do
   end
 
   describe "when it has a plugin value" do
-    before do 
+    before do
       @resource.name("test")
       @resource.plugin("passwd")
     end

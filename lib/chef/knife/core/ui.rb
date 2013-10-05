@@ -167,7 +167,7 @@ class Chef
         if (!config[:disable_editing])
           filename = "knife-edit-"
           0.upto(20) { filename += rand(9).to_s }
-          filename << ".js"
+          filename << ".json"
           filename = File.join(Dir.tmpdir, filename)
           tf = File.open(filename, "w")
           tf.sync = true

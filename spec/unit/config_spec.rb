@@ -22,7 +22,6 @@ require 'chef/exceptions'
 
 describe Chef::Config do
   before(:all) do
-    @original_config = Chef::Config.hash_dup
     @original_env = { 'HOME' => ENV['HOME'], 'SYSTEMDRIVE' => ENV['SYSTEMDRIVE'], 'HOMEPATH' => ENV['HOMEPATH'], 'USERPROFILE' => ENV['USERPROFILE'] }
   end
 
@@ -82,22 +81,18 @@ describe Chef::Config do
       #   log_level = info or defualt
       # end
       #
-    before do
-      @config_class = Class.new(Chef::Config)
-    end
-
     it "has an empty list of formatters by default" do
-      @config_class.formatters.should == []
+      Chef::Config.formatters.should == []
     end
 
     it "configures a formatter with a short name" do
-      @config_class.add_formatter(:doc)
-      @config_class.formatters.should == [[:doc, nil]]
+      Chef::Config.add_formatter(:doc)
+      Chef::Config.formatters.should == [[:doc, nil]]
     end
 
     it "configures a formatter with a file output" do
-      @config_class.add_formatter(:doc, "/var/log/formatter.log")
-      @config_class.formatters.should == [[:doc, "/var/log/formatter.log"]]
+      Chef::Config.add_formatter(:doc, "/var/log/formatter.log")
+      Chef::Config.formatters.should == [[:doc, "/var/log/formatter.log"]]
     end
 
   end
@@ -140,10 +135,6 @@ describe Chef::Config do
         File.should_receive(:new).
           with("/var/log/chef/client.log", "a").
           and_return(@mockfile)
-      end
-
-      after do
-        Chef::Config.log_location = STDOUT
       end
 
       it "should configure itself to use a File object based upon the String" do
@@ -277,9 +268,5 @@ describe Chef::Config do
       missing_path = "/tmp/non-existing-dir/file"
       expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
-  end
-
-  after(:each) do
-    Chef::Config.configuration = @original_config
   end
 end

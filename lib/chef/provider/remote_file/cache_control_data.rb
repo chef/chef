@@ -87,11 +87,12 @@ class Chef
         end
 
         def load
-          previous_cc_data = load_data
-          apply(previous_cc_data)
-          self
-        rescue Chef::Exceptions::FileNotFound
-          false
+          if previous_cc_data = load_data
+            apply(previous_cc_data)
+            self
+          else
+            false
+          end
         end
 
         def validate!(current_copy_checksum)
@@ -139,6 +140,8 @@ class Chef
 
         def load_data
           Chef::JSONCompat.from_json(load_json_data)
+        rescue Chef::Exceptions::FileNotFound, Yajl::ParseError
+          false
         end
 
         def load_json_data

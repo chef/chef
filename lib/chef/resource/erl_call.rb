@@ -24,7 +24,7 @@ class Chef
     class ErlCall < Chef::Resource
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
-      
+
       identity_attr :code
 
       def initialize(name, run_context=nil)

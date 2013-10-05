@@ -258,6 +258,15 @@ EOM
 D\t/data_bags/x/z.json
 EOM
         end
+
+        it 'knife download /data_bags/x /data_bags/x/y.json downloads x once' do
+          knife('download /data_bags/x /data_bags/x/y.json').should_succeed <<EOM
+Created /data_bags
+Created /data_bags/x
+Created /data_bags/x/y.json
+Created /data_bags/x/z.json
+EOM
+        end
       end
     end
 
@@ -583,7 +592,7 @@ EOM
 
         context 'except the role file is textually different, but not ACTUALLY different' do
           file 'roles/x.json', <<EOM
-{  
+{
   "chef_type": "role" ,
   "default_attributes": {
   },
@@ -595,7 +604,7 @@ EOM
   "override_attributes": {
   },
   "run_list": [
-     
+
   ]
 }
 EOM

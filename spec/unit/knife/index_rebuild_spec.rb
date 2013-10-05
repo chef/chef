@@ -91,7 +91,7 @@ describe Chef::Knife::IndexRebuild do
 
     context "against a Chef 11 server" do
       let(:api_info) do
-        {"flavor" => "osc", 
+        {"flavor" => "osc",
           "version" => "11.0.0",
           "erchef" => "1.2.3"
         }

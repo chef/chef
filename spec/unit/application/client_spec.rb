@@ -19,21 +19,20 @@ require 'spec_helper'
 
 describe Chef::Application::Client, "reconfigure" do
   before do
-    @original_config = Chef::Config.configuration.dup
+    @original_argv = ARGV.dup
+    ARGV.clear
 
     @app = Chef::Application::Client.new
     @app.stub!(:configure_opt_parser).and_return(true)
     @app.stub!(:configure_chef).and_return(true)
     @app.stub!(:configure_logging).and_return(true)
-    Chef::Config[:json_attribs] = nil
     Chef::Config[:interval] = 10
-    Chef::Config[:splay] = nil
 
     Chef::Config[:once] = false
   end
 
   after do
-    Chef::Config.configuration.replace(@original_config)
+    ARGV.replace(@original_argv)
   end
 
   describe "when in daemonized mode and no interval has been set" do
@@ -137,8 +136,14 @@ end
 
 describe Chef::Application::Client, "configure_chef" do
   before do
+    @original_argv = ARGV.dup
+    ARGV.clear
     @app = Chef::Application::Client.new
     @app.configure_chef
+  end
+
+  after do
+    ARGV.replace(@original_argv)
   end
 
   it "should set the colored output to false by default on windows and true otherwise" do

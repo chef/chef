@@ -21,14 +21,6 @@ require 'spec_helper'
 require 'tmpdir'
 
 describe Chef::Util::Diff, :uses_diff => true do
-  before(:all) do
-    @original_config = Chef::Config.hash_dup
-  end
-
-  after(:all) do
-    Chef::Config.configuration = @original_config if @original_config
-  end
-
   let!(:old_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec") }
   let!(:old_file) { old_tempfile.path }
@@ -390,37 +382,6 @@ describe Chef::Util::Diff, :uses_diff => true do
       it "calling for_reporting should be nil" do
         expect(differ.for_reporting).to be_nil
       end
-    end
-  end
-
-  describe "when errors are thrown from shell_out" do
-    before do
-      differ.stub!(:shell_out).and_raise('boom')
-      differ.diff(old_file, new_file)
-    end
-
-    it "calling for_output should return the error message" do
-      expect(differ.for_output).to eql(["Could not determine diff. Error: boom"])
-    end
-
-    it "calling for_reporting should be nil" do
-      expect(differ.for_reporting).to be_nil
-    end
-  end
-
-  describe "when shell_out returns stderr output" do
-    before do
-      @result = mock('result', :stdout => "", :stderr => "boom")
-      differ.stub!(:shell_out).and_return(@result)
-      differ.diff(old_file, new_file)
-    end
-
-    it "calling for_output should return the error message" do
-      expect(differ.for_output).to eql(["Could not determine diff. Error: boom"])
-    end
-
-    it "calling for_reporting should be nil" do
-      expect(differ.for_reporting).to be_nil
     end
   end
 

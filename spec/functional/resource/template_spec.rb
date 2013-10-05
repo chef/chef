@@ -189,54 +189,21 @@ describe Chef::Resource::Template do
   end
 
   describe "when template source contains windows style line endings" do
-
     include_context "diff disabled"
 
-    let(:expected_content) {
-      "Template rendering libraries\r\nshould support\r\ndifferent line endings\r\n\r\n"
-    }
-
-    context "for all lines" do
-      let(:resource) do
-        r = create_resource
-        r.source "all_windows_line_endings.erb"
-        r
-      end
-
-      it "output should contain windows line endings" do
-        resource.run_action(:create)
-        binread(path).each_line do |line|
-          line.should end_with("\r\n")
+    ["all", "some", "no"].each do |test_case|
+      context "for #{test_case} lines" do
+        let(:resource) do
+          r = create_resource
+          r.source "#{test_case}_windows_line_endings.erb"
+          r
         end
-      end
-    end
 
-    context "for some lines" do
-      let(:resource) do
-        r = create_resource
-        r.source "some_windows_line_endings.erb"
-        r
-      end
-
-      it "output should contain windows line endings" do
-        resource.run_action(:create)
-        binread(path).each_line do |line|
-          line.should end_with("\r\n")
-        end
-      end
-    end
-
-    context "for no lines" do
-      let(:resource) do
-        r = create_resource
-        r.source "no_windows_line_endings.erb"
-        r
-      end
-
-      it "output should not contain windows line endings" do
-        resource.run_action(:create)
-        IO.read(path).each_line do |line|
-          line.should_not end_with("\r\n")
+        it "output should contain platform's line endings" do
+          resource.run_action(:create)
+          binread(path).each_line do |line|
+            line.should end_with(Chef::Platform.windows? ? "\r\n" : "\n")
+          end
         end
       end
     end

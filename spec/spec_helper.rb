@@ -67,6 +67,8 @@ require 'chef/applications'
 require 'chef/shell'
 require 'chef/util/file_edit'
 
+require 'chef/config'
+
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
 require 'spec/support/local_gems.rb' if File.exists?(File.join(File.dirname(__FILE__), 'support', 'local_gems.rb'))
@@ -82,6 +84,13 @@ Dir["spec/support/**/*.rb"].
   map { |f| f.gsub(%r{.rb$}, '') }.
   map { |f| f.gsub(%r[spec/], '')}.
   each { |f| require f }
+
+
+OHAI_SYSTEM = Ohai::System.new
+OHAI_SYSTEM.require_plugin("os")
+OHAI_SYSTEM.require_plugin("platform")
+TEST_PLATFORM = OHAI_SYSTEM["platform"].dup.freeze
+TEST_PLATFORM_VERSION = OHAI_SYSTEM["platform_version"].dup.freeze
 
 RSpec.configure do |config|
   config.include(Matchers)
@@ -100,6 +109,8 @@ RSpec.configure do |config|
   config.filter_run_excluding :windows32_only => true unless windows32?
   config.filter_run_excluding :system_windows_service_gem_only => true unless system_windows_service_gem?
   config.filter_run_excluding :unix_only => true unless unix?
+  # Remove this filter once these issues are fixed: OC-9764, OC-9765, OC-9766, OC-9767
+  config.filter_run_excluding :unsupported_group_provider_platform => true if (os_x? or solaris? or freebsd? or suse?)
   config.filter_run_excluding :supports_cloexec => true unless supports_cloexec?
   config.filter_run_excluding :selinux_only => true unless selinux_enabled?
   config.filter_run_excluding :ruby_18_only => true unless ruby_18?
@@ -107,10 +118,37 @@ RSpec.configure do |config|
   config.filter_run_excluding :ruby_gte_19_only => true unless ruby_gte_19?
   config.filter_run_excluding :ruby_20_only => true unless ruby_20?
   config.filter_run_excluding :ruby_gte_20_only => true unless ruby_gte_20?
-  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root'
+  config.filter_run_excluding :requires_root => true unless ENV['USER'] == 'root' || ENV['LOGIN'] == 'root'
+  config.filter_run_excluding :requires_root_or_running_windows => true unless (ENV['USER'] == 'root' or windows?)
   config.filter_run_excluding :requires_unprivileged_user => true if ENV['USER'] == 'root'
   config.filter_run_excluding :uses_diff => true unless has_diff?
 
+  running_platform_arch = `uname -m`.strip
+
+  config.filter_run_excluding :arch => lambda {|target_arch|
+    running_platform_arch != target_arch
+  }
+
+  # Functional Resource tests that are provider-specific:
+  # context "on platforms that use useradd", :provider => {:user => Chef::Provider::User::Useradd}} do #...
+  config.filter_run_excluding :provider => lambda {|criteria|
+    type, target_provider = criteria.first
+
+    platform = TEST_PLATFORM.dup
+    platform_version = TEST_PLATFORM_VERSION.dup
+
+    begin
+      provider_for_running_platform = Chef::Platform.find_provider(platform, platform_version, type)
+      provider_for_running_platform != target_provider
+    rescue ArgumentError # no provider for platform
+      true
+    end
+  }
+
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
+
+  config.before(:each) do
+    Chef::Config.reset
+  end
 end

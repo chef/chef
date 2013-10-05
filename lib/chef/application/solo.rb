@@ -31,7 +31,7 @@ class Chef::Application::Solo < Chef::Application
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specfic_path('/etc/chef/solo.rb'),
+    :default => Chef::Config.platform_specific_path('/etc/chef/solo.rb'),
     :description => "The configuration file to use"
 
   option :formatter,
@@ -160,6 +160,11 @@ class Chef::Application::Solo < Chef::Application
     :description  => 'Enable whyrun mode',
     :boolean      => true
 
+  option :environment,
+    :short        => '-E ENVIRONMENT',
+    :long         => '--environment ENVIRONMENT',
+    :description  => 'Set the Chef Environment on the node'
+
   attr_reader :chef_solo_json
 
   def initialize
@@ -253,7 +258,6 @@ class Chef::Application::Solo < Chef::Application
           sleep Chef::Config[:interval]
           retry
         else
-          Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       end

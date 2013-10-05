@@ -22,6 +22,11 @@ class Chef
   module Mixin
     module ShellOut
 
+      # shell_out! runs a command on the system and will raise an error if the command fails, which is what you want
+      # for debugging, shell_out and shell_out! both will display command output to the tty when the log level is debug
+      # Generally speaking, 'extend Chef::Mixin::ShellOut' in your recipes and include 'Chef::Mixin::ShellOut' in your LWRPs
+      # You can also call Mixlib::Shellout.new directly, but you lose all of the above functionality
+
       def shell_out(*command_args)
         cmd = Mixlib::ShellOut.new(*run_command_compatible_options(command_args))
         if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.debug?

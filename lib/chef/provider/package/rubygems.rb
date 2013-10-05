@@ -72,7 +72,7 @@ class Chef
             raise NotImplementedError
           end
 
-          ## 
+          ##
           # A rubygems specification object containing the list of gemspecs for all
           # available gems in the gem installation.
           # Implemented by subclasses

@@ -39,7 +39,7 @@ class Chef
           mounted?
           enabled?
         end
-        
+
         def mountable?
           # only check for existence of non-remote devices
           if (device_should_exist? && !::File.exists?(device_real) )
@@ -49,7 +49,7 @@ class Chef
           end
           return true
         end
-        
+
         def enabled?
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           enabled = false
@@ -72,7 +72,7 @@ class Chef
           end
           @current_resource.enabled(enabled)
         end
-        
+
         def mounted?
           mounted = false
           shell_out!("mount").stdout.each_line do |line|
@@ -118,9 +118,13 @@ class Chef
           end
         end
 
+        def remount_command
+           return "mount -o remount #{@new_resource.mount_point}"
+        end
+
         def remount_fs
           if @current_resource.mounted and @new_resource.supports[:remount]
-            shell_out!("mount -o remount #{@new_resource.mount_point}")
+            shell_out!(remount_command)
             @new_resource.updated_by_last_action(true)
             Chef::Log.debug("#{@new_resource} is remounted at #{@new_resource.mount_point}")
           elsif @current_resource.mounted
@@ -137,7 +141,7 @@ class Chef
             Chef::Log.debug("#{@new_resource} is already enabled - nothing to do")
             return nil
           end
-          
+
           if @current_resource.enabled
             # The current options don't match what we have, so
             # disable, then enable.
@@ -152,7 +156,7 @@ class Chef
         def disable_fs
           if @current_resource.enabled
             contents = []
-            
+
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}/
@@ -163,7 +167,7 @@ class Chef
                 contents << line
               end
             end
-            
+
             ::File.open("/etc/fstab", "w") do |fstab|
               contents.reverse_each { |line| fstab.puts line}
             end
@@ -177,7 +181,7 @@ class Chef
         end
 
         def device_should_exist?
-          ( @new_resource.device != "none" ) && 
+          ( @new_resource.device != "none" ) &&
             ( not network_device? ) &&
             ( not %w[ tmpfs fuse ].include? @new_resource.fstype )
         end
@@ -196,7 +200,7 @@ class Chef
         end
 
         def device_real
-          if @real_device == nil 
+          if @real_device == nil
             if @new_resource.device_type == :device
               @real_device = @new_resource.device
             else
@@ -243,14 +247,14 @@ class Chef
             device_fstab
           end
         end
-        
+
         def mount_options_unchanged?
           @current_resource.fstype == @new_resource.fstype and
           @current_resource.options == @new_resource.options and
           @current_resource.dump == @new_resource.dump and
           @current_resource.pass == @new_resource.pass
         end
-        
+
       end
     end
   end

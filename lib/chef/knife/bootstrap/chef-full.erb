@@ -1,5 +1,13 @@
 bash -c '
-<%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+<%= "export https_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+
+distro=`uname -s`
+
+if [ "X$distro" == "XSunOS" ]; then
+  if [ -e "/usr/sfw/bin" ]; then
+    export PATH=/usr/sfw/bin:$PATH
+  fi
+fi
 
 exists() {
   if command -v $1 &>/dev/null

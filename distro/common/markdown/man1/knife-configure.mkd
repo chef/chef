@@ -35,17 +35,17 @@ the specified _directory_.
     field blank to accept the default value. On most systems, the
     default values are acceptable.
 
-    user@host$ knife configure -i  
-    Please enter the chef server URL: [http://localhost:4000]  
-    Please enter a clientname for the new client: [username]  
-    Please enter the existing admin clientname: [chef-webui]  
-    Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]  
-    Please enter the validation clientname: [chef-validator]  
-    Please enter the location of the validation key: [/etc/chef/validation.pem]  
-    Please enter the path to a chef repository (or leave blank):  
-    Creating initial API user...  
-    Created (or updated) client[username]  
-    Configuration file written to /home/username/.chef/knife.rb  
+    user@host$ knife configure -i
+    Please enter the chef server URL: [http://localhost:4000]
+    Please enter a clientname for the new client: [username]
+    Please enter the existing admin clientname: [chef-webui]
+    Please enter the location of the existing admin client's private key: [/etc/chef/webui.pem]
+    Please enter the validation clientname: [chef-validator]
+    Please enter the location of the validation key: [/etc/chef/validation.pem]
+    Please enter the path to a chef repository (or leave blank):
+    Creating initial API user...
+    Created (or updated) client[username]
+    Configuration file written to /home/username/.chef/knife.rb
 
     This creates a new administrator client named _username_, writes
     a configuration file to _/home/username/.chef/knife.rb_, and the

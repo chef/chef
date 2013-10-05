@@ -60,6 +60,10 @@ def freebsd?
   !!(RUBY_PLATFORM =~ /freebsd/)
 end
 
+def aix?
+  !!(RUBY_PLATFORM =~ /aix/)
+end
+
 def supports_cloexec?
   Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
 end
@@ -86,4 +90,8 @@ def selinux_enabled?
     # installed.
     return false
   end
+end
+
+def suse?
+  File.exists?("/etc/SuSE-release")
 end

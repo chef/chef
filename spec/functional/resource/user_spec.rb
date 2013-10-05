@@ -20,14 +20,14 @@
 require 'spec_helper'
 require 'chef/mixin/shell_out'
 
-describe Chef::Resource::User, :unix_only, :requires_root do
+metadata = { :unix_only => true,
+  :requires_root => true,
+  :provider => {:user => Chef::Provider::User::Useradd}
+}
+
+describe Chef::Resource::User, metadata do
 
   include Chef::Mixin::ShellOut
-
-  # User provider is platform-dependent, we need platform ohai data:
-  OHAI_SYSTEM = Ohai::System.new
-  OHAI_SYSTEM.require_plugin("os")
-  OHAI_SYSTEM.require_plugin("platform")
 
 
   # Utility code for /etc/passwd interaction, avoid any caching of user records:
@@ -54,16 +54,9 @@ describe Chef::Resource::User, :unix_only, :requires_root do
   end
 
   before do
+    pending "porting implementation for user provider in aix" if OHAI_SYSTEM[:platform] == 'aix'
     # Silence shell_out live stream
     Chef::Log.level = :warn
-
-    # Tests only implemented for a subset of platforms currently.
-    user_provider = Chef::Platform.find_provider(OHAI_SYSTEM["platform"],
-                                                 OHAI_SYSTEM["platform_version"],
-                                                 :user)
-    unless user_provider == Chef::Provider::User::Useradd
-      pending "Only the useradd provider is supported at this time"
-    end
   end
 
   after do
@@ -505,7 +498,7 @@ describe Chef::Resource::User, :unix_only, :requires_root do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if OHAI_SYSTEM["platform_family"] == "suse"
+        if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
           # suse gets this right:
           it "errors out trying to unlock the user" do
             @error.should be_a(Mixlib::ShellOut::ShellCommandFailed)

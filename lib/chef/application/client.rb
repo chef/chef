@@ -197,6 +197,16 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
+  option :chef_zero_enabled,
+    :short        => "-z",
+    :long         => "--zero",
+    :description  => "Start a chef-zero instance pointed at local cookbooks",
+    :boolean      => true
+
+  option :chef_zero_port,
+    :long         => "--chef-zero-port PORT",
+    :description  => "Port to start chef-zero on"
+
   if Chef::Platform.windows?
     option :fatal_windows_admin_check,
       :short        => "-A",
@@ -218,6 +228,9 @@ class Chef::Application::Client < Chef::Application
     super
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
+
+    Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+    Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
@@ -316,7 +329,6 @@ class Chef::Application::Client < Chef::Application
       rescue Exception => e
         if Chef::Config[:interval]
           Chef::Log.error("#{e.class}: #{e}")
-          Chef::Application.debug_stacktrace(e)
           Chef::Log.error("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
           unless SELF_PIPE.empty?
             client_sleep Chef::Config[:interval]
@@ -326,7 +338,6 @@ class Chef::Application::Client < Chef::Application
           end
           retry
         else
-          Chef::Application.debug_stacktrace(e)
           Chef::Application.fatal!("#{e.class}: #{e.message}", 1)
         end
       end

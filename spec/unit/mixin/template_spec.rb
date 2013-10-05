@@ -33,6 +33,40 @@ describe Chef::Mixin::Template, "render_template" do
     output.should == "bar"
   end
 
+  template_contents = [ "Fancy\r\nTemplate\r\n\r\n",
+                        "Fancy\nTemplate\n\n",
+                        "Fancy\r\nTemplate\n\r\n"]
+
+  describe "when running on windows" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(true)
+    end
+
+    it "should render the templates with windows line endings" do
+      template_contents.each do |template_content|
+        output = @context.render_template_from_string(template_content)
+        output.each_line do |line|
+          line.should end_with("\r\n")
+        end
+      end
+    end
+  end
+
+  describe "when running on unix" do
+    before do
+      Chef::Platform.stub!(:windows?).and_return(false)
+    end
+
+    it "should render the templates with unix line endings" do
+      template_contents.each do |template_content|
+        output = @context.render_template_from_string(template_content)
+        output.each_line do |line|
+          line.should end_with("\n")
+        end
+      end
+    end
+  end
+
   it "should provide a node method to access @node" do
     @context[:node] = "tehShizzle"
     output = @context.render_template_from_string("<%= @node %>")

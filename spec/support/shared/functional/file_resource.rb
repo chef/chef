@@ -18,45 +18,29 @@
 
 shared_context "deploying with move" do
   before do
-    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = true
-  end
-
-  after do
-    Chef::Config[:file_atomic_update] = @original_atomic_update
   end
 end
 
 shared_context "deploying with copy" do
   before do
-    @original_atomic_update = Chef::Config[:file_atomic_update]
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
     Chef::Config[:file_atomic_update] = false
-  end
-
-  after do
-    Chef::Config[:file_atomic_update] = @original_atomic_update
   end
 end
 
 shared_context "deploying via tmpdir" do
   before do
-    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
     Chef::Config[:file_staging_uses_destdir] = false
-  end
-
-  after do
-    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 end
 
 shared_context "deploying via destdir" do
   before do
-    @original_stage_via = Chef::Config[:file_staging_uses_destdir]
     Chef::Config[:file_staging_uses_destdir] = true
-  end
-
-  after do
-    Chef::Config[:file_staging_uses_destdir] = @original_stage_via
+    Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
   end
 end
 
@@ -75,7 +59,6 @@ shared_examples_for "a file with the wrong content" do
   context "when running action :create" do
     context "with backups enabled" do
       before do
-        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
         resource.run_action(:create)
       end
 
@@ -99,7 +82,6 @@ shared_examples_for "a file with the wrong content" do
 
     context "with backups disabled" do
       before do
-        Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
         resource.backup(0)
         resource.run_action(:create)
       end
@@ -892,6 +874,43 @@ shared_examples_for "a configured file resource" do
       it_behaves_like "a file with the correct content"
 
       it_behaves_like "a securable resource with existing target"
+    end
+  end
+
+  # Regression test for http://tickets.opscode.com/browse/CHEF-4419
+  context "when the path starts with '/' and target file exists", :windows_only do
+    let(:path) do
+      File.join(test_file_dir[2..test_file_dir.length], make_tmpname(file_base))
+    end
+
+    before do
+      File.open(path, "wb") { |f| f.print expected_content }
+      now = Time.now.to_i
+      File.utime(now - 9000, now - 9000, path)
+
+      @expected_mtime = File.stat(path).mtime
+      @expected_checksum = sha256_checksum(path)
+    end
+
+    describe ":create action should run without any updates" do
+      before do
+        # Assert starting state is as expected
+        File.should exist(path)
+        sha256_checksum(path).should == @expected_checksum
+        resource.run_action(:create)
+      end
+
+      it "does not overwrite the original when the :create action is run" do
+        sha256_checksum(path).should == @expected_checksum
+      end
+
+      it "does not update the mtime of the file when the :create action is run" do
+        File.stat(path).mtime.should == @expected_mtime
+      end
+
+      it "is not marked as updated by last action" do
+        resource.should_not be_updated_by_last_action
+      end
     end
   end
 

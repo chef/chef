@@ -220,7 +220,7 @@ class Chef
         flags = 0
 
         #
-        # Configure child inheritence only if the the resource is some
+        # Configure child inheritence only if the resource is some
         # type of a directory.
         #
         if resource.is_a? Chef::Resource::Directory

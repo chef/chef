@@ -44,7 +44,7 @@ class Chef
         def install_package(name, version)
           unless @current_resource.version == version
             command = "port#{expand_options(@new_resource.options)} install #{name}"
-            command << " @#{version}" if version and !version.empty? 
+            command << " @#{version}" if version and !version.empty?
             run_command_with_systems_locale(
               :command => command
             )

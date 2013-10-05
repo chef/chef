@@ -121,17 +121,6 @@ class Chef
         ###
 
         def _render_template(template, context)
-          # CHEF-2991
-          # Erubis always emits unix line endings during template
-          # rendering. This results in automatic conversion of windows
-          # line endings to linux line endings if the original template
-          # contains windows line endings. In order to fix this we
-          # determine the line ending style of the template before
-          # rendering and convert the line endings of the output if needed
-          # If template contains any windows line endings we emit
-          # the template result with windows line endings.
-          windows_line_endings = template.include? "\r\n"
-
           begin
             eruby = Erubis::Eruby.new(template)
             output = eruby.evaluate(context)
@@ -139,11 +128,19 @@ class Chef
             raise TemplateError.new(e, template, context)
           end
 
-          if windows_line_endings
-            # Convert line endings from "\n" -> "\r\n". Also converts
-            # "\r\n" -> "\r\n".
-            # This makes the regex match on all of "\r\n", so we don't
-            # accidentally convert "\r\n" -> "\r\r\n".
+          # CHEF-4399
+          # Erubis always emits unix line endings during template
+          # rendering. Chef used to convert line endings to the
+          # original line endings in the template. However this
+          # created problems in cases when cookbook developer is
+          # coding the cookbook on windows but using it on non-windows
+          # platforms.
+          # The safest solution is to make sure that native to the
+          # platform we are running on is used in order to minimize
+          # potential issues for the applications that will consume
+          # this template.
+
+          if Chef::Platform.windows?
             output = output.gsub(/\r?\n/,"\r\n")
           end
 
