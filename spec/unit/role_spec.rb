@@ -275,7 +275,7 @@ EOR
 
   describe "when loading from disk and role_path is an array" do
 
-    before(:all) do
+    before(:each) do
       Chef::Config[:role_path] = ['/path1', '/path/path2']
     end
 
