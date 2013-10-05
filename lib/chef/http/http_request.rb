@@ -22,7 +22,6 @@
 #
 require 'uri'
 require 'net/http'
-require 'chef/http/basic_client'
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -72,7 +71,6 @@ class Chef
       def initialize(method, url, req_body, base_headers={})
         @method, @url = method, url
         @request_body = nil
-        @http_client = BasicClient.new(url).http_client
         build_headers(base_headers)
         configure_http_request(req_body)
       end
@@ -93,6 +91,7 @@ class Chef
         @url.path.empty? ? SLASH : @url.path
       end
 
+      # DEPRECATED. Call request on an HTTP client object instead.
       def call
         hide_net_http_bug do
           http_client.request(http_request) do |response|
@@ -104,6 +103,11 @@ class Chef
 
       def config
         Chef::Config
+      end
+
+      # DEPRECATED. Call request on an HTTP client object instead.
+      def http_client
+        @http_client ||= BasicClient.new(url).http_client
       end
 
       private

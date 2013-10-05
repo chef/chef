@@ -23,7 +23,7 @@
 
 require 'net/https'
 require 'uri'
-require 'chef/http/http_request'
+require 'chef/http/basic_client'
 require 'chef/monkey_patches/string'
 require 'chef/monkey_patches/net_http'
 require 'chef/config'
@@ -154,12 +154,18 @@ class Chef
       response.kind_of?(Net::HTTPSuccess) || response.kind_of?(Net::HTTPRedirection)
     end
 
+    def http_client
+      @http_client ||= BasicClient.new(create_url(url))
+    end
+
     # Runs a synchronous HTTP request, with no middleware applied (use #request
     # to have the middleware applied). The entire response will be loaded into memory.
     def send_http_request(method, url, headers, body)
       headers = build_headers(method, url, headers, body)
-      retriable_http_request(method, url, body, headers) do |rest_request|
-        response = rest_request.call {|r| r.read_body}
+
+      retrying_http_errors(url) do
+
+        request, response = http_client.request(method, url, body, headers) {|r| r.read_body }
         @last_response = response
 
         Chef::Log.debug("---- HTTP Status and Header Data: ----")
@@ -171,9 +177,9 @@ class Chef
         Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
         if response.kind_of?(Net::HTTPSuccess)
-          [response, rest_request, nil]
+          [response, request, nil]
         elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
-          [response, rest_request, false]
+          [response, request, false]
         elsif redirect_location = redirected_to(response)
           if [:GET, :HEAD].include?(method)
             follow_redirect {api_request(method, create_url(redirect_location))}
@@ -181,40 +187,38 @@ class Chef
             raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
           end
         else
-          [response, rest_request, nil]
+          [response, request, nil]
         end
       end
     end
 
-    def retriable_http_request(method, url, req_body, headers)
-      rest_request = Chef::HTTP::HTTPRequest.new(method, url, req_body, headers)
-
-      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
-
+    # Wraps an HTTP request with retry logic.
+    # === Arguments
+    # url:: URL of the request, used for error messages
+    def retrying_http_errors(url)
       http_attempts = 0
-
       begin
         http_attempts += 1
 
-        yield rest_request
+        yield
 
       rescue SocketError, Errno::ETIMEDOUT => e
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts + 1 > 0
-          Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.error("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
-        raise Errno::ECONNREFUSED, "Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
+        raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
       rescue Timeout::Error
         if http_retry_count - http_attempts + 1 > 0
-          Chef::Log.error("Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.error("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
-        raise Timeout::Error, "Timeout connecting to #{url.host}:#{url.port} for #{rest_request.path}, giving up"
+        raise Timeout::Error, "Timeout connecting to #{url}, giving up"
       rescue Net::HTTPFatalError => e
         if http_retry_count - http_attempts + 1 > 0
           sleep_time = 1 + (2 ** http_attempts) + rand(2 ** http_attempts)

@@ -143,6 +143,20 @@ class Chef
 
     alias :raw_http_request :send_http_request
 
+    # Deprecated:
+    # Responsibilities of this method have been split up. The #http_client is
+    # now responsible for making individual requests, while
+    # #retrying_http_errors handles error/retry logic.
+    def retriable_http_request(method, url, req_body, headers)
+      rest_request = Chef::HTTP::HTTPRequest.new(method, url, req_body, headers)
+
+      Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
+
+      retrying_http_errors(url) do
+        yield rest_request
+      end
+    end
+
     alias :retriable_rest_request :retriable_http_request
 
     # Makes a streaming download request. <b>Doesn't speak JSON.</b>
@@ -200,6 +214,11 @@ class Chef
     ensure
       @authenticator.sign_request = true
     end
+
+    def http_client
+      BasicClient.new(create_url(url))
+    end
+
     private
 
     def stream_to_tempfile(url, response)

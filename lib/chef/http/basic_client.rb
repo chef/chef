@@ -22,6 +22,7 @@
 #
 require 'uri'
 require 'net/http'
+require 'chef/http/http_request'
 
 class Chef
   class HTTP
@@ -30,9 +31,11 @@ class Chef
       HTTPS = "https".freeze
 
       attr_reader :url
+      attr_reader :http_client
 
       def initialize(url)
         @url = url
+        @http_client = build_http_client
       end
 
       def host
@@ -41,6 +44,16 @@ class Chef
 
       def port
         @url.port
+      end
+
+      def request(method, url, req_body, base_headers={})
+        http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
+        http_client.request(http_request) do |response|
+          yield response if block_given?
+          # http_client.request may not have the return signature we want, so
+          # force the issue:
+          return [http_request, response]
+        end
       end
 
       #adapted from buildr/lib/buildr/core/transports.rb
@@ -52,57 +65,65 @@ class Chef
         return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
       end
 
-      def http_client
-        http_proxy = proxy_uri
-        if http_proxy.nil?
-          @http_client = Net::HTTP.new(host, port)
-        else
-          Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
-          user = Chef::Config["#{url.scheme}_proxy_user"]
-          pass = Chef::Config["#{url.scheme}_proxy_pass"]
-          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
-        end
+      def build_http_client
+        http_client = http_client_builder.new(host, port)
+
         if url.scheme == HTTPS
-          @http_client.use_ssl = true
-          if config[:ssl_verify_mode] == :verify_none
-            @http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          elsif config[:ssl_verify_mode] == :verify_peer
-            @http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
-          end
-          if config[:ssl_ca_path]
-            unless ::File.exist?(config[:ssl_ca_path])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
-            end
-            @http_client.ca_path = config[:ssl_ca_path]
-          elsif config[:ssl_ca_file]
-            unless ::File.exist?(config[:ssl_ca_file])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
-            end
-            @http_client.ca_file = config[:ssl_ca_file]
-          end
-          if (config[:ssl_client_cert] || config[:ssl_client_key])
-            unless (config[:ssl_client_cert] && config[:ssl_client_key])
-              raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
-            end
-            unless ::File.exists?(config[:ssl_client_cert])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
-            end
-            unless ::File.exists?(config[:ssl_client_key])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
-            end
-            @http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
-            @http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
-          end
+          configure_ssl(http_client)
         end
 
-        @http_client.read_timeout = config[:rest_timeout]
-        @http_client
+        http_client.read_timeout = config[:rest_timeout]
+        http_client
       end
 
       def config
         Chef::Config
       end
 
+      def http_client_builder
+        http_proxy = proxy_uri
+        if http_proxy.nil?
+          Net::HTTP
+        else
+          Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
+          user = Chef::Config["#{url.scheme}_proxy_user"]
+          pass = Chef::Config["#{url.scheme}_proxy_pass"]
+          Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass)
+        end
+      end
+
+      def configure_ssl(http_client)
+        http_client.use_ssl = true
+        if config[:ssl_verify_mode] == :verify_none
+          http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        elsif config[:ssl_verify_mode] == :verify_peer
+          http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+        if config[:ssl_ca_path]
+          unless ::File.exist?(config[:ssl_ca_path])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
+          end
+          http_client.ca_path = config[:ssl_ca_path]
+        elsif config[:ssl_ca_file]
+          unless ::File.exist?(config[:ssl_ca_file])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
+          end
+          http_client.ca_file = config[:ssl_ca_file]
+        end
+        if (config[:ssl_client_cert] || config[:ssl_client_key])
+          unless (config[:ssl_client_cert] && config[:ssl_client_key])
+            raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
+          end
+          unless ::File.exists?(config[:ssl_client_cert])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
+          end
+          unless ::File.exists?(config[:ssl_client_key])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
+          end
+          http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
+          http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
+        end
+      end
 
     end
   end
