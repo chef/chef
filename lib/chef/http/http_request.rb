@@ -125,6 +125,8 @@ class Chef
 
       def build_headers(headers)
         @headers = headers.dup
+        # No response compression unless we asked for it explicitly:
+        @headers[HTTPRequest::ACCEPT_ENCODING] ||= "identity"
         @headers['X-Chef-Version'] = ::Chef::VERSION
         @headers
       end
