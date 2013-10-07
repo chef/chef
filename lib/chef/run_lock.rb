@@ -35,8 +35,11 @@ class Chef
     # Create a new instance of RunLock
     # === Arguments
     # * :lockfile::: the full path to the lockfile.
-    def initialize(lockfile)
+    # * :wait::: should wait for the release of the lock if it can't
+    #            be acquired
+    def initialize(lockfile, wait = true)
       @runlock_file = lockfile
+      @wait = wait
       @runlock = nil
     end
 
@@ -57,16 +60,21 @@ class Chef
       end
       unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
         # Another chef client running...
-        runpid = runlock.read.strip.chomp
-        Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
-        runlock.flock(File::LOCK_EX)
+        if @wait
+          runpid = runlock.read.strip.chomp
+          Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
+          runlock.flock(File::LOCK_EX)
+        end
       end
-      # We grabbed the run lock.  Save the pid.
+    end
+
+    def save_pid
       runlock.truncate(0)
       runlock.rewind # truncate doesn't reset position to 0.
       runlock.write(Process.pid.to_s)
+      runlock.flush # flush the file
     end
-
+    
     # Release the system-wide lock.
     def release
       if runlock

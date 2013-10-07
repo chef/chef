@@ -213,6 +213,7 @@ shared_examples_for Chef::Client do
       mock_chef_rest_for_node_save.should_receive(:put_rest).with("nodes/#{@fqdn}", @node).and_return(true)
 
       Chef::RunLock.any_instance.should_receive(:acquire)
+      Chef::RunLock.any_instance.should_receive(:save_pid)
       Chef::RunLock.any_instance.should_receive(:release)
 
       # Post conditions: check that node has been filled in correctly
