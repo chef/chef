@@ -84,10 +84,6 @@ class Chef
       authenticator.sign_requests?
     end
 
-    def head(path, headers={})
-      api_request(:HEAD, create_url(path), headers)
-    end
-
     # Send an HTTP GET request to the path
     #
     # Using this method to +fetch+ a file is considered deprecated.
@@ -109,11 +105,6 @@ class Chef
     alias :delete_rest :delete
 
     alias :post_rest :post
-
-    # Send an HTTP PUT request to the path
-    def put(path, json, headers={})
-      api_request(:PUT, create_url(path), headers, json)
-    end
 
     alias :put_rest :put
 
