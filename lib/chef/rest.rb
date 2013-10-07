@@ -192,6 +192,14 @@ class Chef
       end
     end
 
+    def follow_redirect
+      unless @sign_on_redirect
+        @authenticator.sign_request = false
+      end
+      super
+    ensure
+      @authenticator.sign_request = true
+    end
     private
 
     def stream_to_tempfile(url, response)

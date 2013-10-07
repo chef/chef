@@ -242,12 +242,8 @@ class Chef
       raise Chef::Exceptions::RedirectLimitExceeded if @redirects_followed >= redirect_limit
       @redirects_followed += 1
       Chef::Log.debug("Following redirect #{@redirects_followed}/#{redirect_limit}")
-      if @sign_on_redirect
-        yield
-      else
-        @authenticator.sign_request = false
-        yield
-      end
+
+      yield
     ensure
       @redirects_followed = 0
       @authenticator.sign_request = true
