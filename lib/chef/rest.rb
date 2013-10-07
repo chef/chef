@@ -68,6 +68,7 @@ class Chef
       @redirects_followed = 0
       @redirect_limit = 10
       @disable_gzip = false
+      @fallback_attempted
       handle_options(options)
     end
 
@@ -276,7 +277,23 @@ class Chef
       end
     end
 
-    def retriable_rest_request(method, url, req_body, headers)
+    def secondary_chef_server_available?
+      ! config[:fallback_chef_server_url].nil?
+    end
+
+    def attempt_fallback(method, url, req_body, headers)
+      if secondary_chef_server_available?
+        Chef::Log.warn("Primary chef server refusing to connect")
+        Chef::Log.info("Secondary chef server available, attempting using #{config[:fallback_chef_server_url]}")
+        fallback_url = URI.parse(config[:fallback_chef_server_url])
+        fallback_url.path = url.path
+        rest_request = Chef::REST::RESTRequest.new(method, fallback_url, req_body, headers)
+      else
+        Chef::Log.warn("No secondary chef server available")
+      end
+    end
+
+    def retriable_rest_request(method, url, req_body, headers, &block)
       rest_request = Chef::REST::RESTRequest.new(method, url, req_body, headers)
 
       Chef::Log.debug("Sending HTTP Request via #{method} to #{url.host}:#{url.port}#{rest_request.path}")
@@ -286,11 +303,16 @@ class Chef
       begin
         http_attempts += 1
 
-        yield rest_request
+        block.call(rest_request)
 
       rescue SocketError, Errno::ETIMEDOUT => e
         e.message.replace "Error connecting to #{url} - #{e.message}"
-        raise e
+        if secondary_chef_server_available? and (not @fallback_attempted)
+          @fallback_attempted = true
+          block.call(attempt_fallback(method, url, req_body, headers))
+        else
+          raise e
+        end
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts + 1 > 0
           Chef::Log.error("Connection refused connecting to #{url.host}:#{url.port} for #{rest_request.path}, retry #{http_attempts}/#{http_retry_count}")
