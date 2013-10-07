@@ -490,15 +490,16 @@ describe Chef::REST do
       end
 
       it "closes and unlinks the tempfile when the response is a redirect" do
-        tempfile = double("die", :path => "/tmp/ragefist", :close => true, :binmode => true)
-        tempfile.should_receive(:close!).at_least(2).times
+        tempfile = double("A tempfile", :path => "/tmp/ragefist", :close => true, :binmode => true)
+        tempfile.should_receive(:close!).at_least(1).times
         Tempfile.stub(:new).with("chef-rest").and_return(tempfile)
 
-        http_response = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
-        http_response.add_field("location", @url.path)
-        http_response.stub(:read_body)
+        redirect = Net::HTTPFound.new("1.1", "302", "bob is taking care of that one for me today")
+        redirect.add_field("location", @url.path)
+        redirect.stub(:read_body)
 
-        @http_client.stub(:request).and_yield(http_response).and_yield(@http_response).and_return(http_response, @http_response)
+        @http_client.should_receive(:request).and_yield(redirect).and_return(redirect)
+        @http_client.should_receive(:request).and_yield(@http_response).and_return(@http_response)
         @rest.fetch("cookbooks/a_cookbook") {|tmpfile| "shouldn't get here"}
       end
 
