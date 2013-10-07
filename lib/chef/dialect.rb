@@ -75,6 +75,8 @@ class Chef
     end
 
     def install_gem(name, version = nil)
+      # This is a no-op for non-run situations like in knife
+      return unless @run_context
       # Create a mini-converge to install a single gem into the Chef Ruby env
       res = Chef::Resource::ChefGem.new(name, @run_context)
       res.version(version) if version
