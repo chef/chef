@@ -155,17 +155,20 @@ class Chef
     end
 
     def http_client
-      @http_client ||= BasicClient.new(create_url(url))
+      BasicClient.new(create_url(url))
     end
 
     # Runs a synchronous HTTP request, with no middleware applied (use #request
     # to have the middleware applied). The entire response will be loaded into memory.
-    def send_http_request(method, url, headers, body)
+    def send_http_request(method, url, headers, body, &response_handler)
       headers = build_headers(method, url, headers, body)
 
       retrying_http_errors(url) do
-
-        request, response = http_client.request(method, url, body, headers) {|r| r.read_body }
+        if block_given?
+          request, response = http_client.request(method, url, body, headers, &response_handler)
+        else
+          request, response = http_client.request(method, url, body, headers) {|r| r.read_body }
+        end
         @last_response = response
 
         Chef::Log.debug("---- HTTP Status and Header Data: ----")
@@ -182,7 +185,9 @@ class Chef
           [response, request, false]
         elsif redirect_location = redirected_to(response)
           if [:GET, :HEAD].include?(method)
-            follow_redirect {api_request(method, create_url(redirect_location))}
+            follow_redirect do
+              send_http_request(method, create_url(redirect_location), headers, body, &response_handler)
+            end
           else
             raise Exceptions::InvalidRedirect, "#{method} request was redirected from #{url} to #{redirect_location}. Only GET and HEAD support redirects."
           end

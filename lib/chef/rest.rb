@@ -158,43 +158,35 @@ class Chef
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
     def streaming_request(url, headers, &block)
+      rest_request = nil # ensure this is defined, it's referenced in rescue clause
+
+      # Manually apply middleware to avoid specifying an Accept
+      # application/json content type preference:
       method, url, headers, data = [@decompressor, @authenticator].inject([:GET, url, headers, nil]) do |req_data, middleware|
         middleware.handle_request(*req_data)
       end
-      headers = build_headers(method, url, headers, data)
-      retriable_rest_request(method, url, data, headers) do |rest_request|
-        begin
-          tempfile = nil
-          response = rest_request.call do |r|
-            if block_given? && r.kind_of?(Net::HTTPSuccess)
-              begin
-                tempfile = stream_to_tempfile(url, r, &block)
-                yield tempfile
-              ensure
-                tempfile.close!
-              end
-            else
-              tempfile = stream_to_tempfile(url, r)
+      response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
+        @last_response = http_response
+        if http_response.kind_of?(Net::HTTPSuccess)
+          tempfile = stream_to_tempfile(url, http_response)
+          if block_given?
+            begin
+              yield tempfile
+            ensure
+              tempfile && tempfile.close!
             end
           end
-          @last_response = response
-          if response.kind_of?(Net::HTTPSuccess)
-            tempfile
-          elsif redirect_location = redirected_to(response)
-            # TODO: test tempfile unlinked when following redirects.
-            tempfile && tempfile.close!
-            follow_redirect {streaming_request(create_url(redirect_location), {}, &block)}
-          else
-            tempfile && tempfile.close!
-            response.error!
-          end
-        rescue Exception => e
-          if e.respond_to?(:chef_rest_request=)
-            e.chef_rest_request = rest_request
-          end
-          raise
+          return tempfile
         end
       end
+      unless response.kind_of?(Net::HTTPSuccess) or response.kind_of?(Net::HTTPRedirection)
+        response.error!
+      end
+    rescue Exception => e
+      if e.respond_to?(:chef_rest_request=)
+        e.chef_rest_request = rest_request
+      end
+      raise
     end
 
     def follow_redirect
