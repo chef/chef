@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: eaa1c650c383c8a1204e15f03a04e4f0fa7ccc9c
+  revision: 5152170fbc64ec84b2171045c253594e5f565617
   branch: lcg/solaris-pkgmk-fixes
   specs:
     omnibus (1.2.0)
