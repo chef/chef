@@ -18,6 +18,7 @@
 require 'chef/dialect/declarative_base'
 
 class Chef::Dialect::JSON < Chef::Dialect::DeclarativeBase
+  register_dialect :role, '.json', 'application/json'
 
   private
 

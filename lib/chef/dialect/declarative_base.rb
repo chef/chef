@@ -30,6 +30,10 @@ class Chef::Dialect::DeclarativeBase < Chef::Dialect
     node.default.update(attributes)
   end
 
+  def compile_role(klass, filename)
+    klass.json_create(parse_file(filename))
+  end
+
   private
 
   def parse_file(filename)

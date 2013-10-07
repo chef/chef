@@ -18,6 +18,8 @@
 require 'chef/dialect/declarative_base'
 
 class Chef::Dialect::Yaml < Chef::Dialect::DeclarativeBase
+  register_dialect :role, '.yaml', 'text/yaml'
+  register_dialect :role, '.yml', 'text/yaml'
 
   private
 

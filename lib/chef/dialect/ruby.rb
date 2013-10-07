@@ -20,6 +20,7 @@ require 'chef/dialect'
 class Chef::Dialect::Ruby < Chef::Dialect
   register_dialect :recipe, '.rb', 'text/ruby'
   register_dialect :attributes, '.rb', 'text/ruby'
+  register_dialect :role, '.rb', 'text/ruby'
 
   def compile_recipe(recipe, filename)
     recipe.from_file(filename)
@@ -27,5 +28,11 @@ class Chef::Dialect::Ruby < Chef::Dialect
 
   def compile_attributes(node, filename)
     node.from_file(filename)
+  end
+
+  def compile_role(klass, filename)
+    r = klass.new
+    r.from_file(filename)
+    r
   end
 end

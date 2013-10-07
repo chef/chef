@@ -25,6 +25,7 @@ require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
 require 'chef/knife/core/ui'
 require 'chef/rest'
+require 'chef/dialects'
 require 'pp'
 
 class Chef

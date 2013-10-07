@@ -36,10 +36,12 @@ class Chef
         extension = File.basename(extension)
         extname = File.extname(extension)
         extension = extname if extname != ''
+        flavor = flavor.to_sym
         find(run_context) {|d| d[:flavor] == flavor && d[:extension] == extension}
       end
 
       def find_by_mime_type(run_context, flavor, mime_type)
+        flavor = flavor.to_sym
         find(run_context) {|d| d[:flavor] == flavor && d[:mime_type] == mime_type}
       end
 
