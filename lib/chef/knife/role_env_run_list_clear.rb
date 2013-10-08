@@ -21,14 +21,14 @@ require 'chef/knife'
 
 class Chef
   class Knife
-    class RoleClearEnvRunList < Knife
+    class RoleEnvRunListClear < Knife
 
       deps do
         require 'chef/role'
         require 'chef/json_compat'
       end
 
-      banner "knife role env_run_list clear ROLE ENVIRONMENT"
+      banner "knife role env_run_list clear [ROLE] [ENVIRONMENT]"
       def clear_env_run_list(role, environment)
         nlist = []
         role.env_run_lists_add(environment => nlist)

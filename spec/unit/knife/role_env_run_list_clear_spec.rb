@@ -19,14 +19,14 @@
 
 require 'spec_helper'
 
-describe Chef::Knife::RoleClearEnvRunList do
+describe Chef::Knife::RoleEnvRunListClear do
   before(:each) do
     Chef::Config[:role_name]  = "will"
     Chef::Config[:env_name]  = "QA"
     @setup = Chef::Knife::RoleEnvRunListAdd.new
     @setup.name_args = [ "will", "QA", "role[monkey]", "role[person]" ]
 
-    @knife = Chef::Knife::RoleClearEnvRunList.new
+    @knife = Chef::Knife::RoleEnvRunListClear.new
     @knife.config = {
       :print_after => nil
     }
