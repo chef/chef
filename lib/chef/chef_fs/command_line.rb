@@ -19,8 +19,7 @@
 require 'chef/chef_fs/file_system'
 require 'chef/chef_fs/file_system/operation_failed_error'
 require 'chef/chef_fs/file_system/operation_not_allowed_error'
-require 'diff/lcs'
-require 'diff/lcs/hunk'
+require 'chef/util/diff'
 
 class Chef
   module ChefFS
@@ -237,43 +236,6 @@ class Chef
         return [ [ :error, old_entry, new_entry, nil, nil, e ] ]
       end
 
-      # @todo: abstract out udiff. Same code for udiff is exist in 'chef/util/diff'
-      # produces a unified-output-format diff with 3 lines of context
-      def self.udiff(old_file, new_file)
-        diff_str = ""
-        file_length_difference = 0
-
-        old_data = IO.readlines(old_file).map { |e| e.chomp }
-        new_data = IO.readlines(new_file).map { |e| e.chomp }
-        diff_data = ::Diff::LCS.diff(old_data, new_data)
-
-        return diff_str if old_data.empty? && new_data.empty?
-        return "No differences encountered\n" if diff_data.empty?
-
-        # write diff header (standard unified format)
-        ft = File.stat(old_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
-        diff_str << "--- #{old_file}\t#{ft}\n"
-        ft = File.stat(new_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
-        diff_str << "+++ #{new_file}\t#{ft}\n"
-
-        # loop over diff hunks. if a hunk overlaps with the last hunk,
-        # join them. otherwise, print out the old one.
-        old_hunk = hunk = nil
-        diff_data.each do |piece|
-          begin
-            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
-            file_length_difference = hunk.file_length_difference
-            next unless old_hunk
-            next if hunk.merge(old_hunk)
-            diff_str << old_hunk.diff(:unified) << "\n"
-          ensure
-            old_hunk = hunk
-          end
-        end
-        diff_str << old_hunk.diff(:unified) << "\n"
-        return diff_str
-      end
-
       private
 
       def self.sort_keys(json_object)
@@ -307,7 +269,7 @@ class Chef
             old_tempfile.write(old_value)
             old_tempfile.close
 
-            result = udiff(old_tempfile.path, new_tempfile.path)
+            result = Chef::Util::Diff.new.udiff(old_tempfile.path, new_tempfile.path)
             result = result.gsub(/^--- #{old_tempfile.path}/, "--- #{old_path}")
             result = result.gsub(/^\+\+\+ #{new_tempfile.path}/, "+++ #{new_path}")
             result
