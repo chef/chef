@@ -24,7 +24,7 @@ describe Chef::Knife::RoleEnvRunListSet do
     Chef::Config[:role_name]  = "will"
     Chef::Config[:env_name]  = "QA"
     @setup = Chef::Knife::RoleEnvRunListAdd.new
-    @setup.name_args = [ "will", "QA", "role[monkey]", "role[person]" ]
+    @setup.name_args = [ "will", "QA", "role[monkey]", "role[person]", "role[bucket]" ]
 
     @knife = Chef::Knife::RoleEnvRunListSet.new
     @knife.config = {
@@ -57,11 +57,12 @@ describe Chef::Knife::RoleEnvRunListSet do
       @knife.run
     end
 
-    it "should remove the item from the run list" do
+    it "should replace all the items in the runlist with what is specified" do
       @setup.run
       @knife.run
       @role.run_list_for('QA')[0].should == "role[owen]" 
       @role.run_list_for('QA')[1].should == "role[mauntel]" 
+      @role.run_list_for('QA')[2].should be_nil
       @role.run_list[0].should be_nil
     end
 
@@ -87,7 +88,14 @@ describe Chef::Knife::RoleEnvRunListSet do
         @knife.run
         @role.run_list_for('QA')[0].should == "role[coke]"
         @role.run_list_for('QA')[1].should == "role[pepsi]"
+        @role.run_list_for('QA')[2].should be_nil
+        @role.run_list_for('PRD')[0].should == 'recipe[orange::chicken]'
         @role.run_list_for('PRD')[1].should == 'role[monkey]'
+        @role.run_list_for('PRD')[2].should == 'recipe[duck::type]'
+        @role.run_list_for('PRD')[3].should == 'role[person]'
+        @role.run_list_for('PRD')[4].should == 'role[bird]'
+        @role.run_list_for('PRD')[5].should == 'role[town]'
+        @role.run_list[0].should be_nil
       end
     end
   end
