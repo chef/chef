@@ -155,7 +155,7 @@ describe Chef::Provider::RemoteFile::HTTP do
   describe "when fetching the uri" do
 
     let(:expected_http_opts) { {} }
-    let(:expected_http_args) { [uri, nil, nil, expected_http_opts] }
+    let(:expected_http_args) { [uri, expected_http_opts] }
 
     let(:tempfile_path) { "/tmp/chef-mock-tempfile-abc123" }
 
@@ -164,7 +164,7 @@ describe Chef::Provider::RemoteFile::HTTP do
     let(:last_response) { {} }
 
     let(:rest) do
-      rest = mock(Chef::REST)
+      rest = mock(Chef::HTTP::Simple)
       rest.stub!(:streaming_request).and_return(tempfile)
       rest.stub!(:last_response).and_return(last_response)
       rest
@@ -175,7 +175,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       new_resource.use_last_modified(false)
       Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
 
-      Chef::REST.should_receive(:new).with(*expected_http_args).and_return(rest)
+      Chef::HTTP::Simple.should_receive(:new).with(*expected_http_args).and_return(rest)
     end
 
 
@@ -188,7 +188,7 @@ describe Chef::Provider::RemoteFile::HTTP do
         lambda { fetcher.fetch }.should raise_error(Net::HTTPServerException)
       end
 
-      it "should return HTTPRetriableError when Chef::REST returns a 301" do
+      it "should return HTTPRetriableError when Chef::HTTP::Simple returns a 301" do
         r = Net::HTTPMovedPermanently.new("one", "two", "three")
         e = Net::HTTPRetriableError.new("301", r)
         rest.stub!(:streaming_request).and_raise(e)
@@ -290,21 +290,21 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         # CHEF-3140
         # Some servers return tarballs as content type tar and encoding gzip, which
-        # is totally wrong. When this happens and gzip isn't disabled, Chef::REST
+        # is totally wrong. When this happens and gzip isn't disabled, Chef::HTTP::Simple
         # will decompress the file for you, which is not at all what you expected
         # to happen (you end up with an uncomressed tar archive instead of the
         # gzipped tar archive you expected). To work around this behavior, we
         # detect when users are fetching gzipped files and turn off gzip in
-        # Chef::REST.
+        # Chef::HTTP::Simple.
 
         it "should disable gzip compression in the client" do
           # Before block in the parent context has set an expectation on
-          # Chef::REST.new() being called with expected arguments. Here we fufil
+          # Chef::HTTP::Simple.new() being called with expected arguments. Here we fufil
           # that expectation, so that we can explicitly set it for this test.
           # This is intended to provide insurance that refactoring of the parent
           # context does not negate the value of this particular example.
-          Chef::REST.new(*expected_http_args)
-          Chef::REST.should_receive(:new).once.with(*expected_http_args).and_return(rest)
+          Chef::HTTP::Simple.new(*expected_http_args)
+          Chef::HTTP::Simple.should_receive(:new).once.with(*expected_http_args).and_return(rest)
           fetcher.fetch
           cache_control_data.etag.should be_nil
           cache_control_data.mtime.should be_nil
