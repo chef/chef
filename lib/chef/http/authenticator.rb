@@ -48,6 +48,10 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
+      def stream_response_handler(response)
+        nil
+      end
+
       def sign_requests?
         auth_credentials.sign_requests? && @sign_request
       end

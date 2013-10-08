@@ -194,6 +194,24 @@ class Chef
       BasicClient.new(create_url(url))
     end
 
+    class StreamHandler
+      def initialize(middlewares, response)
+        middlewares = middlewares.flatten
+        @stream_handlers = []
+        middlewares.each do |middleware|
+          stream_handler = middleware.stream_response_handler(response)
+          @stream_handlers << stream_handler unless stream_handler.nil?
+        end
+      end
+
+      def handle_chunk(next_chunk)
+        @stream_handlers.inject(next_chunk) do |chunk, handler|
+          handler.handle_chunk(chunk)
+        end
+      end
+
+    end
+
     private
 
     def stream_to_tempfile(url, response)
@@ -205,10 +223,10 @@ class Chef
       # Stolen from http://www.ruby-forum.com/topic/166423
       # Kudos to _why!
 
-      inflater = @decompressor.stream_decompressor_for(response)
+      stream_handler = StreamHandler.new(middlewares, response)
 
       response.read_body do |chunk|
-        tf.write(inflater.inflate(chunk))
+        tf.write(stream_handler.handle_chunk(chunk))
       end
       tf.close
       tf

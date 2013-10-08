@@ -46,6 +46,11 @@ class Chef
         [http_response, rest_request, return_value]
       end
 
+      def stream_response_handler(response)
+        nil
+      end
+
+
     end
   end
 end

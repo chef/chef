@@ -28,6 +28,21 @@ class Chef
         def inflate(chunk)
           chunk
         end
+        alias :handle_chunk :inflate
+      end
+
+      class GzipInflater < Zlib::Inflate
+        def initialize
+          super(Zlib::MAX_WBITS + 16)
+        end
+        alias :handle_chunk :inflate
+      end
+
+      class DeflateInflater < Zlib::Inflate
+        def initialize
+          super
+        end
+        alias :handle_chunk :inflate
       end
 
       CONTENT_ENCODING  = "content-encoding".freeze
@@ -73,17 +88,17 @@ class Chef
 
       # This isn't used when this class is used as middleware; it returns an
       # object you can use to unzip/inflate a streaming response.
-      def stream_decompressor_for(response)
+      def stream_response_handler(response)
         if gzip_disabled?
           NoopInflater.new
         else
           case response[CONTENT_ENCODING]
           when GZIP
             Chef::Log.debug "decompressing gzip stream"
-            Zlib::Inflate.new(Zlib::MAX_WBITS + 16)
+            GzipInflater.new
           when DEFLATE
             Chef::Log.debug "decompressing inflate stream"
-            Zlib::Inflate.new
+            DeflateInflater.new
           else
             NoopInflater.new
           end

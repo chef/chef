@@ -51,6 +51,10 @@ class Chef
         end
       end
 
+      def stream_response_handler(response)
+        nil
+      end
+
     end
   end
 end
