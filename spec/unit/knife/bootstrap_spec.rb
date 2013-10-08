@@ -123,6 +123,34 @@ describe Chef::Knife::Bootstrap do
     @knife.name_args.first.should == "barf"
   end
 
+  describe "specifying no_proxy with various entries" do
+    subject(:knife) { described_class.new }
+    let(:options){ ["--bootstrap-no-proxy", setting] }
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
+    let(:rendered_template) do
+      knife.instance_variable_set("@template_file", template_file)
+      knife.parse_options(options)
+      template_string = knife.read_template
+      knife.render_template(template_string)
+    end
+
+    context "via --bootstrap-no-proxy" do
+      let(:setting) { "api.opscode.com" }
+
+      it "renders the client.rb with a single FQDN no_proxy entry" do
+        rendered_template.should match(%r{.*no_proxy\s*"api.opscode.com".*})
+      end
+    end
+
+    context "via --bootstrap-no-proxy multiple" do
+      let(:setting) { "api.opscode.com,172.16.10.*" }
+
+      it "renders the client.rb with comma-separated FQDN and wildcard IP address no_proxy entries" do
+        rendered_template.should match(%r{.*no_proxy\s*"api.opscode.com,172.16.10.\*".*})
+      end
+    end
+  end
+
   describe "specifying the encrypted data bag secret key" do
     subject(:knife) { described_class.new }
     let(:secret) { "supersekret" }
