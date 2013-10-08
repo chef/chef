@@ -117,14 +117,6 @@ class Chef
       streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
     end
 
-    def create_url(path)
-      if path =~ /^(http|https):\/\//
-        URI.parse(path)
-      else
-        URI.parse("#{@url}/#{path}")
-      end
-    end
-
     # Chef::REST doesn't define middleware in the normal way for backcompat reasons, so it's hardcoded here.
     def middlewares
       [@chef_json_inflater, @cookie_manager, @decompressor, @authenticator]
