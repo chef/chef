@@ -49,12 +49,15 @@ echo.Set objXMLHTTP = Nothing
 rem # remove the chef package / clobber the files
 rmdir /S /Q C:\opscode
 
-rem # remove the old installer
+rem # remove the old installer, if it exists, ignore errors
 del /F /Q %TMP%\install.msi
 
 rem # download the new chef installer
 rem # right now we have one build, fake the platform resulution crap
 cscript /nologo wget.vbs /url:"http://%OMNITRUCK_BASE_URL%/chef/download?p=windows&pv=2008r2&m=x86_64&v=%INSTALL_CHEF_VERSION%" /path:%TMP%\install.msi
+
+rem # XXX: uninstall any left over version, ignore errors
+call call msiexec /qb /x %TMP%\install.msi
 
 call msiexec INSTALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
 
