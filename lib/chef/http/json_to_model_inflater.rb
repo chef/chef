@@ -29,7 +29,10 @@ class Chef
       end
 
       def handle_request(method, url, headers={}, data=false)
-        headers['Accept']       = "application/json"
+        # Ideally this should always set Accept to application/json, but
+        # Chef::REST is sometimes used to make non-JSON requests, so it sets
+        # Accept to the desired value before middlewares get called.
+        headers['Accept']       ||= "application/json"
         headers["Content-Type"] = 'application/json' if data
         json_body = data ? Chef::JSONCompat.to_json(data) : nil
         # Force encoding to binary to fix SSL related EOFErrors

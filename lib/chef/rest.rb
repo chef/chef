@@ -140,46 +140,14 @@ class Chef
       end
     end
 
-    alias :retriable_rest_request :retriable_http_request
-
-    # Makes a streaming download request. <b>Doesn't speak JSON.</b>
-    # Streams the response body to a tempfile. If a block is given, it's
-    # passed to Tempfile.open(), which means that the tempfile will automatically
-    # be unlinked after the block is executed.
-    #
-    # If no block is given, the tempfile is returned, which means it's up to
-    # you to unlink the tempfile when you're done with it.
+    # Customized streaming behavior; sets the accepted content type to "*/*"
+    # if not otherwise specified for compatibility purposes
     def streaming_request(url, headers, &block)
-      rest_request = nil # ensure this is defined, it's referenced in rescue clause
-
-      # Manually apply middleware to avoid specifying an Accept
-      # application/json content type preference:
-      method, url, headers, data = [@decompressor, @authenticator].inject([:GET, url, headers, nil]) do |req_data, middleware|
-        middleware.handle_request(*req_data)
-      end
-      response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
-        @last_response = http_response
-        if http_response.kind_of?(Net::HTTPSuccess)
-          tempfile = stream_to_tempfile(url, http_response)
-          if block_given?
-            begin
-              yield tempfile
-            ensure
-              tempfile && tempfile.close!
-            end
-          end
-          return tempfile
-        end
-      end
-      unless response.kind_of?(Net::HTTPSuccess) or response.kind_of?(Net::HTTPRedirection)
-        response.error!
-      end
-    rescue Exception => e
-      if e.respond_to?(:chef_rest_request=)
-        e.chef_rest_request = rest_request
-      end
-      raise
+      headers["Accept"] ||= "*/*"
+      super
     end
+
+    alias :retriable_rest_request :retriable_http_request
 
     def follow_redirect
       unless @sign_on_redirect
@@ -190,63 +158,11 @@ class Chef
       @authenticator.sign_request = true
     end
 
-    def http_client
-      BasicClient.new(create_url(url))
-    end
-
-    class StreamHandler
-      def initialize(middlewares, response)
-        middlewares = middlewares.flatten
-        @stream_handlers = []
-        middlewares.each do |middleware|
-          stream_handler = middleware.stream_response_handler(response)
-          @stream_handlers << stream_handler unless stream_handler.nil?
-        end
-      end
-
-      def handle_chunk(next_chunk)
-        @stream_handlers.inject(next_chunk) do |chunk, handler|
-          handler.handle_chunk(chunk)
-        end
-      end
-
-    end
-
-    private
-
-    def stream_to_tempfile(url, response)
-      tf = Tempfile.open("chef-rest")
-      if Chef::Platform.windows?
-        tf.binmode # required for binary files on Windows platforms
-      end
-      Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
-      # Stolen from http://www.ruby-forum.com/topic/166423
-      # Kudos to _why!
-
-      stream_handler = StreamHandler.new(middlewares, response)
-
-      response.read_body do |chunk|
-        tf.write(stream_handler.handle_chunk(chunk))
-      end
-      tf.close
-      tf
-    rescue Exception
-      tf.close!
-      raise
-    end
-
-    public
+    public :create_url
 
     ############################################################################
     # DEPRECATED
     ############################################################################
-
-    # This is only kept around to provide access to cache control data in
-    # lib/chef/provider/remote_file/http.rb
-    # Find a better API.
-    def last_response
-      @last_response
-    end
 
     def decompress_body(body)
       @decompressor.decompress_body(body)

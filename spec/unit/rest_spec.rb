@@ -183,7 +183,7 @@ describe Chef::REST do
       end
 
       it "should build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        expected_headers = {'Accept' => "*/*", 'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end
@@ -428,7 +428,7 @@ describe Chef::REST do
       end
 
       it " build a new HTTP GET request without the application/json accept header" do
-        expected_headers = {'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
+        expected_headers = {'Accept' => "*/*", 'X-Chef-Version' => Chef::VERSION, 'Accept-Encoding' => Chef::REST::RESTRequest::ENCODING_GZIP_DEFLATE}
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", expected_headers).and_return(@request_mock)
         @rest.streaming_request(@url, {})
       end

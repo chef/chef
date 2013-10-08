@@ -35,6 +35,29 @@ class Chef
   # Basic HTTP client, with support for adding features via middleware
   class HTTP
 
+    # Class for applying middleware behaviors to streaming
+    # responses. Collects stream handlers (if any) from each
+    # middleware. When #handle_chunk is called, the chunk gets
+    # passed to all handlers in turn for processing.
+    class StreamHandler
+      def initialize(middlewares, response)
+        middlewares = middlewares.flatten
+        @stream_handlers = []
+        middlewares.each do |middleware|
+          stream_handler = middleware.stream_response_handler(response)
+          @stream_handlers << stream_handler unless stream_handler.nil?
+        end
+      end
+
+      def handle_chunk(next_chunk)
+        @stream_handlers.inject(next_chunk) do |chunk, handler|
+          handler.handle_chunk(chunk)
+        end
+      end
+
+    end
+
+
     def self.middlewares
       @middlewares ||= []
     end
@@ -106,14 +129,8 @@ class Chef
       api_request(:DELETE, create_url(path), headers)
     end
 
-    def create_url(path)
-      if path =~ /^(http|https):\/\//
-        URI.parse(path)
-      else
-        URI.parse("#{@url}/#{path}")
-      end
-    end
-
+    # Makes an HTTP request to +url+ with the given +method+, +headers+, and
+    # +data+ (if applicable).
     def request(method, url, headers={}, data=false)
 
       method, url, headers, data = apply_request_middleware(method, url, headers, data)
@@ -129,6 +146,57 @@ class Chef
         exception.chef_rest_request = rest_request
       end
       raise
+    end
+
+    # Makes a streaming download request, streaming the response body to a
+    # tempfile. If a block is given, the tempfile is passed to the block and
+    # the tempfile will automatically be unlinked after the block is executed.
+    #
+    # If no block is given, the tempfile is returned, which means it's up to
+    # you to unlink the tempfile when you're done with it.
+    def streaming_request(url, headers, &block)
+      response, rest_request, return_value = nil, nil, nil
+      tempfile = nil
+
+      method = :GET
+      method, url, headers, data = apply_request_middleware(method, url, headers, data)
+
+      response, rest_request, return_value = send_http_request(method, url, headers, data) do |http_response|
+        if http_response.kind_of?(Net::HTTPSuccess)
+          tempfile = stream_to_tempfile(url, http_response)
+          if block_given?
+            begin
+              yield tempfile
+            ensure
+              tempfile && tempfile.close!
+            end
+          end
+        end
+      end
+      unless response.kind_of?(Net::HTTPSuccess) or response.kind_of?(Net::HTTPRedirection)
+        response.error!
+      end
+      tempfile
+    rescue Exception => e
+      log_failed_request(response, return_value) unless response.nil?
+      if e.respond_to?(:chef_rest_request=)
+        e.chef_rest_request = rest_request
+      end
+      raise
+    end
+
+    def http_client
+      BasicClient.new(create_url(url))
+    end
+
+    protected
+
+    def create_url(path)
+      if path =~ /^(http|https):\/\//
+        URI.parse(path)
+      else
+        URI.parse("#{@url}/#{path}")
+      end
     end
 
     def apply_request_middleware(method, url, headers, data)
@@ -152,10 +220,6 @@ class Chef
 
     def success_response?(response)
       response.kind_of?(Net::HTTPSuccess) || response.kind_of?(Net::HTTPRedirection)
-    end
-
-    def http_client
-      BasicClient.new(create_url(url))
     end
 
     # Runs a synchronous HTTP request, with no middleware applied (use #request
@@ -196,6 +260,7 @@ class Chef
         end
       end
     end
+
 
     # Wraps an HTTP request with retry logic.
     # === Arguments
@@ -273,6 +338,28 @@ class Chef
       headers.merge!(Chef::Config[:custom_http_headers]) if Chef::Config[:custom_http_headers]
       headers
     end
+
+    def stream_to_tempfile(url, response)
+      tf = Tempfile.open("chef-rest")
+      if Chef::Platform.windows?
+        tf.binmode # required for binary files on Windows platforms
+      end
+      Chef::Log.debug("Streaming download from #{url.to_s} to tempfile #{tf.path}")
+      # Stolen from http://www.ruby-forum.com/topic/166423
+      # Kudos to _why!
+
+      stream_handler = StreamHandler.new(middlewares, response)
+
+      response.read_body do |chunk|
+        tf.write(stream_handler.handle_chunk(chunk))
+      end
+      tf.close
+      tf
+    rescue Exception
+      tf.close!
+      raise
+    end
+
 
     public
 
