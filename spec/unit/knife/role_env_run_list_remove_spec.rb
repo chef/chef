@@ -61,6 +61,7 @@ describe Chef::Knife::RoleEnvRunListRemove do
        @setup.run
        @knife.run
        @role.run_list_for('QA')[0].should_not == 'role[monkey]'
+       @role.run_list_for('QA')[0].should == 'role[person]'
        @role.run_list[0].should be_nil
      end
 
@@ -88,7 +89,16 @@ describe Chef::Knife::RoleEnvRunListRemove do
          @knife.run
          @role.run_list_for('QA').should_not include('role[monkey]')
          @role.run_list_for('QA').should_not include('recipe[duck::type]')
+         @role.run_list_for('QA')[0].should == 'recipe[orange::chicken]'
+         @role.run_list_for('QA')[1].should == 'role[person]'
+         @role.run_list_for('QA')[2].should == 'role[bird]'
+         @role.run_list_for('QA')[3].should == 'role[town]'
+         @role.run_list_for('PRD')[0].should == 'recipe[orange::chicken]'
          @role.run_list_for('PRD')[1].should == 'role[monkey]'
+         @role.run_list_for('PRD')[2].should == 'recipe[duck::type]'
+         @role.run_list_for('PRD')[3].should == 'role[person]'
+         @role.run_list_for('PRD')[4].should == 'role[bird]'
+         @role.run_list_for('PRD')[5].should == 'role[town]'
        end
      end
   end
