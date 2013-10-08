@@ -82,6 +82,42 @@ class Chef
           end
         end
       end
+      
+      # produces a unified-output-format diff with 3 lines of context
+      def udiff(old_file, new_file)
+        diff_str = ""
+        file_length_difference = 0
+
+        old_data = IO.readlines(old_file).map { |e| e.chomp }
+        new_data = IO.readlines(new_file).map { |e| e.chomp }
+        diff_data = ::Diff::LCS.diff(old_data, new_data)
+
+        return diff_str if old_data.empty? && new_data.empty?
+        return "No differences encountered\n" if diff_data.empty?
+
+        # write diff header (standard unified format)
+        ft = File.stat(old_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
+        diff_str << "--- #{old_file}\t#{ft}\n"
+        ft = File.stat(new_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
+        diff_str << "+++ #{new_file}\t#{ft}\n"
+
+        # loop over diff hunks. if a hunk overlaps with the last hunk,
+        # join them. otherwise, print out the old one.
+        old_hunk = hunk = nil
+        diff_data.each do |piece|
+          begin
+            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
+            file_length_difference = hunk.file_length_difference
+            next unless old_hunk
+            next if hunk.merge(old_hunk)
+            diff_str << old_hunk.diff(:unified) << "\n"
+          ensure
+            old_hunk = hunk
+          end
+        end
+        diff_str << old_hunk.diff(:unified) << "\n"
+        return diff_str
+      end
 
       private
 
@@ -136,42 +172,6 @@ class Chef
             raise
           end
         end
-      end
-
-      # produces a unified-output-format diff with 3 lines of context
-      def udiff(old_file, new_file)
-        diff_str = ""
-        file_length_difference = 0
-
-        old_data = IO.readlines(old_file).map { |e| e.chomp }
-        new_data = IO.readlines(new_file).map { |e| e.chomp }
-        diff_data = ::Diff::LCS.diff(old_data, new_data)
-
-        return diff_str if old_data.empty? && new_data.empty?
-        return "No differences encountered\n" if diff_data.empty?
-
-        # write diff header (standard unified format)
-        ft = File.stat(old_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
-        diff_str << "--- #{old_file}\t#{ft}\n"
-        ft = File.stat(new_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
-        diff_str << "+++ #{new_file}\t#{ft}\n"
-
-        # loop over diff hunks. if a hunk overlaps with the last hunk,
-        # join them. otherwise, print out the old one.
-        old_hunk = hunk = nil
-        diff_data.each do |piece|
-          begin
-            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
-            file_length_difference = hunk.file_length_difference
-            next unless old_hunk
-            next if hunk.merge(old_hunk)
-            diff_str << old_hunk.diff(:unified) << "\n"
-          ensure
-            old_hunk = hunk
-          end
-        end
-        diff_str << old_hunk.diff(:unified) << "\n"
-        return diff_str
       end
 
       def encode_diff_for_json(diff_str)
