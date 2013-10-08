@@ -232,7 +232,7 @@ describe Chef::REST::RESTRequest do
 
         it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
           Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+          lambda {new_request.http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
         end
 
         it "should set the CA path if that is set in the configuration" do
@@ -242,7 +242,7 @@ describe Chef::REST::RESTRequest do
 
         it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
           Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+          lambda {new_request.http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
         end
 
         it "should set the CA file if that is set in the configuration" do
@@ -268,19 +268,19 @@ describe Chef::REST::RESTRequest do
         it "raises ConfigurationError if the certificate file doesn't exist" do
           Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
           Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+          lambda {new_request.http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
         end
 
         it "raises ConfigurationError if the certificate file doesn't exist" do
           Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
           Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+          lambda {new_request.http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
         end
 
         it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
           Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
           Chef::Config[:ssl_client_key]  = nil
-          lambda {new_request}.should raise_error(Chef::Exceptions::ConfigurationError)
+          lambda {new_request.http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
         end
 
         it "configures the HTTP client's cert and private key" do
