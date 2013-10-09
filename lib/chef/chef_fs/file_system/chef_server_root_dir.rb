@@ -60,8 +60,8 @@ class Chef
           Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key, :raw_output => true)
         end
 
-        def rest_json
-          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key)
+        def get_json(path)
+          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key).get(path)
         end
 
         def chef_rest

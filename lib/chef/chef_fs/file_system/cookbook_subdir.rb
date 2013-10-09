@@ -48,10 +48,6 @@ class Chef
         def rest
           parent.rest
         end
-
-        def rest_json
-          parent.rest_json
-        end
       end
     end
   end

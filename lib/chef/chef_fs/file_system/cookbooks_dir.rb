@@ -53,13 +53,13 @@ class Chef
           @children ||= begin
             if Chef::Config[:versioned_cookbooks]
               result = []
-              rest_json.get("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
+              root.get_json("#{api_path}/?num_versions=all").each_pair do |cookbook_name, cookbooks|
                 cookbooks['versions'].each do |cookbook_version|
                   result << CookbookDir.new("#{cookbook_name}-#{cookbook_version['version']}", self, :exists => true)
                 end
               end
             else
-              result = rest_json.get(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
+              result = root.get_json(api_path).keys.map { |cookbook_name| CookbookDir.new(cookbook_name, self, :exists => true) }
             end
             result.sort_by(&:name)
           end

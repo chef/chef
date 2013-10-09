@@ -45,7 +45,7 @@ class Chef
 
         def children
           begin
-            @children ||= rest_json.get(api_path).keys.sort.map do |key|
+            @children ||= root.get_json(api_path).keys.sort.map do |key|
               _make_child_entry("#{key}.json", true)
             end
           rescue Timeout::Error => e
@@ -104,10 +104,6 @@ class Chef
 
         def rest
           parent.rest
-        end
-
-        def rest_json
-          parent.rest_json
         end
 
         def _make_child_entry(name, exists = nil)

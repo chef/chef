@@ -56,10 +56,6 @@ class Chef
           parent.rest
         end
 
-        def rest_json
-          parent.rest_json
-        end
-
         def compare_to(other)
           other_value = nil
           if other.respond_to?(:checksum)

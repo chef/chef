@@ -86,7 +86,7 @@ class Chef
         def _read_hash
           begin
             # Minimize the value (get rid of defaults) so the results don't look terrible
-            minimize_value(rest_json.get(api_path))
+            minimize_value(root.get_json(api_path))
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading: #{e}"
           rescue Net::HTTPServerException => e
@@ -141,10 +141,6 @@ class Chef
 
         def rest
           parent.rest
-        end
-
-        def rest_json
-          parent.rest_json
         end
 
         def write(file_contents)
