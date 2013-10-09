@@ -106,10 +106,10 @@ class Chef::Application::Knife < Chef::Application
     :description => "Which format to use for output",
     :default => "summary"
 
-  option :chef_zero_enabled,
-    :short        => "-z",
-    :long         => "--zero",
-    :description  => "Start a chef-zero instance pointed at local cookbooks",
+  option :local_mode,
+    :short        => "-.",
+    :long         => "--local-mode",
+    :description  => "Point knife commands at local repository instead of server",
     :boolean      => true
 
   option :chef_zero_port,

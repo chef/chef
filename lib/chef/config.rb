@@ -127,6 +127,23 @@ class Chef
       end
     end
 
+    def self.find_chef_repo_path(cwd)
+      # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
+      # This allows us to run config-free.
+      path = cwd
+      until File.directory?("#{path}#{platform_path_separator}cookbooks")
+        new_path = File.expand_path('..', path)
+        if new_path == path
+          Chef::Log.warn("WARNING: no cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
+          path = Dir.pwd
+          break
+        end
+        path = new_path
+      end
+      Chef::Log.info("Auto-discovered chef repository at #{path}")
+      path
+    end
+
     def self.derive_path_from_chef_repo_path(child_path)
       if chef_repo_path.kind_of?(String)
         "#{chef_repo_path}#{platform_path_separator}#{child_path}"
@@ -199,14 +216,16 @@ class Chef
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     default :script_path, []
 
+    default(:cache_path) { local_mode ? "#{chef_repo_path}#{platform_path_separator}.cache" : platform_specific_path("/var/chef") }
+
     # Where cookbook files are stored on the server (by content checksum)
-    default :checksum_path, '/var/chef/checksums'
+    default(:checksum_path) { "#{cache_path}#{platform_path_separator}checksums" }
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { platform_specific_path('/var/chef/cache') }
+    default(:file_cache_path) { "#{cache_path}#{platform_path_separator}cache" }
 
     # Where backups of chef-managed files should go
-    default(:file_backup_path) { platform_specific_path('/var/chef/backup') }
+    default(:file_backup_path) { "#{cache_path}#{platform_path_separator}backup" }
 
     # The chef-client (or solo) lockfile.
     #
@@ -252,12 +271,13 @@ class Chef
     default :diff_disabled,           false
     default :diff_filesize_threshold, 10000000
     default :diff_output_threshold,   1000000
+    default :local_mode, false
 
     default :pid_file, nil
 
     config_context :chef_zero do
       config_strict_mode true
-      default :enabled, false
+      default(:enabled) { Chef::Config.local_mode }
       default :port, 8889
     end
     default :chef_server_url,   "https://localhost:443"
@@ -371,7 +391,7 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => platform_specific_path("/var/chef/cache/checksums") } }
+    default(:cache_options) { { :path => "#{file_cache_path}#{platform_path_separator}checksums" } }
 
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true

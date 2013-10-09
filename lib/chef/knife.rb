@@ -379,7 +379,10 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
-      Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+      end
       Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
       # Expand a relative path from the config directory. Config from command

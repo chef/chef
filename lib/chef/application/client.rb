@@ -197,10 +197,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
-  option :chef_zero_enabled,
-    :short        => "-z",
-    :long         => "--zero",
-    :description  => "Start a chef-zero instance pointed at local cookbooks",
+  option :local_mode,
+    :short        => "-.",
+    :long         => "--local-mode",
+    :description  => "Point chef-client at local repository",
     :boolean      => true
 
   option :chef_zero_port,
@@ -229,7 +229,10 @@ class Chef::Application::Client < Chef::Application
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
-    Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+    if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+    end
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]
