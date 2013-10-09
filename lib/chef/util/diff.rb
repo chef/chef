@@ -84,6 +84,7 @@ class Chef
       end
       
       # produces a unified-output-format diff with 3 lines of context
+      # ChefFS uses udiff() directly
       def udiff(old_file, new_file)
         diff_str = ""
         file_length_difference = 0
