@@ -32,16 +32,16 @@ class Chef
       end
 
       def handle_request(method, url, headers={}, data=false)
-        host, port = url.host, url.port
-        if @cookies.has_key?("#{host}:#{port}")
-          headers['Cookie'] = @cookies["#{host}:#{port}"]
+        @host, @port = url.host, url.port
+        if @cookies.has_key?("#{@host}:#{@port}")
+          headers['Cookie'] = @cookies["#{@host}:#{@port}"]
         end
         [method, url, headers, data]
       end
 
       def handle_response(http_response, rest_request, return_value)
         if http_response['set-cookie']
-          @cookies["#{host}:#{port}"] = http_response['set-cookie']
+          @cookies["#{@host}:#{@port}"] = http_response['set-cookie']
         end
         [http_response, rest_request, return_value]
       end

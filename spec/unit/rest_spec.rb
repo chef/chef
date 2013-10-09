@@ -76,7 +76,7 @@ describe Chef::REST do
     end
 
     it "makes a :GET request with the composed url object" do
-      @rest.should_receive(:api_request).with(:GET, @monkey_uri, {})
+      @rest.should_receive(:request).with(:GET, @monkey_uri, {})
       @rest.get_rest("monkey")
     end
 
@@ -86,17 +86,17 @@ describe Chef::REST do
     end
 
     it "makes a :DELETE  request with the composed url object" do
-      @rest.should_receive(:api_request).with(:DELETE, @monkey_uri, {})
+      @rest.should_receive(:request).with(:DELETE, @monkey_uri, {})
       @rest.delete_rest("monkey")
     end
 
     it "makes a :POST request with the composed url object and data" do
-      @rest.should_receive(:api_request).with(:POST, @monkey_uri, {}, "data")
+      @rest.should_receive(:request).with(:POST, @monkey_uri, {}, "data")
       @rest.post_rest("monkey", "data")
     end
 
     it "makes a :PUT request with the composed url object and data" do
-      @rest.should_receive(:api_request).with(:PUT, @monkey_uri, {}, "data")
+      @rest.should_receive(:request).with(:PUT, @monkey_uri, {}, "data")
       @rest.put_rest("monkey", "data")
     end
   end
@@ -235,13 +235,13 @@ describe Chef::REST do
 
       it "should always include the X-Chef-Version header" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers).and_return(@request_mock)
-        @rest.api_request(:GET, @url, {})
+        @rest.request(:GET, @url, {})
       end
 
       it "sets the user agent to chef-client" do
         # must reset to default b/c knife changes the UA
         Chef::REST::RESTRequest.user_agent = Chef::REST::RESTRequest::DEFAULT_UA
-        @rest.api_request(:GET, @url, {})
+        @rest.request(:GET, @url, {})
         @request_mock['User-Agent'].should match(/^Chef Client\/#{Chef::VERSION}/)
       end
 
@@ -260,7 +260,7 @@ describe Chef::REST do
           request = Net::HTTP::Get.new(@url.path)
           Net::HTTP::Get.should_receive(:new).and_return(request)
           # will raise a Zlib error if incorrect
-          @rest.api_request(:GET, @url, {}).should == "ninja"
+          @rest.request(:GET, @url, {}).should == "ninja"
         end
       end
       context "when configured with custom http headers" do
@@ -280,19 +280,19 @@ describe Chef::REST do
           url_string = an_instance_of(String)
           header_hash = hash_including(@custom_headers)
           Net::HTTP::Get.should_receive(:new).with(url_string, header_hash)
-          @rest.api_request(:GET, @url, {})
+          @rest.request(:GET, @url, {})
         end
       end
 
       it "should set the cookie for this request if one exists for the given host:port" do
         Chef::REST::CookieJar.instance["#{@url.host}:#{@url.port}"] = "cookie monster"
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers.merge('Cookie' => "cookie monster")).and_return(@request_mock)
-        @rest.api_request(:GET, @url, {})
+        @rest.request(:GET, @url, {})
       end
 
       it "should build a new HTTP GET request" do
         Net::HTTP::Get.should_receive(:new).with("/?foo=bar", @base_headers).and_return(@request_mock)
-        @rest.api_request(:GET, @url, {})
+        @rest.request(:GET, @url, {})
       end
 
       it "should build a new HTTP POST request" do
@@ -300,7 +300,7 @@ describe Chef::REST do
         expected_headers = @base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
 
         Net::HTTP::Post.should_receive(:new).with("/?foo=bar", expected_headers).and_return(request)
-        @rest.api_request(:POST, @url, {}, {:one=>:two})
+        @rest.request(:POST, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
       end
 
@@ -308,31 +308,31 @@ describe Chef::REST do
         request = Net::HTTP::Put.new(@url.path)
         expected_headers = @base_headers.merge("Content-Type" => 'application/json', 'Content-Length' => '13')
         Net::HTTP::Put.should_receive(:new).with("/?foo=bar",expected_headers).and_return(request)
-        @rest.api_request(:PUT, @url, {}, {:one=>:two})
+        @rest.request(:PUT, @url, {}, {:one=>:two})
         request.body.should == '{"one":"two"}'
       end
 
       it "should build a new HTTP DELETE request" do
         Net::HTTP::Delete.should_receive(:new).with("/?foo=bar", @base_headers).and_return(@request_mock)
-        @rest.api_request(:DELETE, @url)
+        @rest.request(:DELETE, @url)
       end
 
       it "should raise an error if the method is not GET/PUT/POST/DELETE" do
-        lambda { @rest.api_request(:MONKEY, @url) }.should raise_error(ArgumentError)
+        lambda { @rest.request(:MONKEY, @url) }.should raise_error(ArgumentError)
       end
 
       it "returns nil when the response is successful but content-type is not JSON" do
-        @rest.api_request(:GET, @url).should == "ninja"
+        @rest.request(:GET, @url).should == "ninja"
       end
 
       it "should inflate the body as to an object if JSON is returned" do
         @http_response.add_field('content-type', "application/json")
         @http_response.stub(:body).and_return('{"ohai2u":"json_api"}')
-        @rest.api_request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
+        @rest.request(:GET, @url, {}).should == {"ohai2u"=>"json_api"}
       end
 
       %w[ HTTPFound HTTPMovedPermanently HTTPSeeOther HTTPUseProxy HTTPTemporaryRedirect HTTPMultipleChoice ].each do |resp_name|
-        it "should call api_request again on a #{resp_name} response" do
+        it "should call request again on a #{resp_name} response" do
           resp_cls  = Net.const_get(resp_name)
           resp_code = Net::HTTPResponse::CODE_TO_OBJ.keys.detect { |k| Net::HTTPResponse::CODE_TO_OBJ[k] == resp_cls }
           http_response = Net::HTTPFound.new("1.1", resp_code, "bob is somewhere else again")
@@ -341,10 +341,10 @@ describe Chef::REST do
 
           @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
-          lambda { @rest.api_request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
+          lambda { @rest.request(:GET, @url) }.should raise_error(Chef::Exceptions::RedirectLimitExceeded)
 
           [:PUT, :POST, :DELETE].each do |method|
-            lambda { @rest.api_request(method, @url) }.should raise_error(Chef::Exceptions::InvalidRedirect)
+            lambda { @rest.request(method, @url) }.should raise_error(Chef::Exceptions::InvalidRedirect)
           end
         end
       end
@@ -355,7 +355,7 @@ describe Chef::REST do
 
         @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
-        @rest.api_request(:GET, @url).should be_false
+        @rest.request(:GET, @url).should be_false
       end
 
       describe "when the request fails" do
@@ -376,7 +376,7 @@ describe Chef::REST do
           @rest.stub(:sleep)
           @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
-          lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+          lambda {@rest.request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
           @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
         end
 
@@ -394,7 +394,7 @@ describe Chef::REST do
           @rest.stub(:http_retry_count).and_return(0)
           @http_client.stub(:request).and_yield(http_response).and_return(http_response)
 
-          lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+          lambda {@rest.request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
           @log_stringio.string.should match(Regexp.escape('INFO: HTTP Request Returned 500 drooling from inside of mouth: Ears get sore!, Not even four'))
         end
 
@@ -404,7 +404,7 @@ describe Chef::REST do
           http_response.stub(:read_body)
           @rest.stub(:sleep)
           @http_client.stub(:request).and_yield(http_response).and_return(http_response)
-          lambda {@rest.api_request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
+          lambda {@rest.request(:GET, @url)}.should raise_error(Net::HTTPFatalError)
         end
       end
 

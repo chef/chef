@@ -94,7 +94,7 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def head(path, headers={})
-      api_request(:HEAD, create_url(path), headers)
+      request(:HEAD, create_url(path), headers)
     end
 
     # Send an HTTP GET request to the path
@@ -102,7 +102,7 @@ class Chef
     # === Parameters
     # path:: The path to GET
     def get(path, headers={})
-      api_request(:GET, create_url(path), headers)
+      request(:GET, create_url(path), headers)
     end
 
     # Send an HTTP PUT request to the path
@@ -110,7 +110,7 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def put(path, json, headers={})
-      api_request(:PUT, create_url(path), headers, json)
+      request(:PUT, create_url(path), headers, json)
     end
 
     # Send an HTTP POST request to the path
@@ -118,7 +118,7 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def post(path, json, headers={})
-      api_request(:POST, create_url(path), headers, json)
+      request(:POST, create_url(path), headers, json)
     end
 
     # Send an HTTP DELETE request to the path
@@ -126,13 +126,12 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def delete(path, headers={})
-      api_request(:DELETE, create_url(path), headers)
+      request(:DELETE, create_url(path), headers)
     end
 
     # Makes an HTTP request to +url+ with the given +method+, +headers+, and
     # +data+ (if applicable).
     def request(method, url, headers={}, data=false)
-
       method, url, headers, data = apply_request_middleware(method, url, headers, data)
 
       response, rest_request, return_value = send_http_request(method, url, headers, data)
@@ -185,8 +184,9 @@ class Chef
       raise
     end
 
-    def http_client
-      BasicClient.new(create_url(url))
+    def http_client(base_url=nil)
+      base_url ||= url
+      BasicClient.new(base_url)
     end
 
     protected
@@ -228,10 +228,11 @@ class Chef
       headers = build_headers(method, url, headers, body)
 
       retrying_http_errors(url) do
+        client = http_client(url)
         if block_given?
-          request, response = http_client.request(method, url, body, headers, &response_handler)
+          request, response = client.request(method, url, body, headers, &response_handler)
         else
-          request, response = http_client.request(method, url, body, headers) {|r| r.read_body }
+          request, response = client.request(method, url, body, headers) {|r| r.read_body }
         end
         @last_response = response
 
@@ -320,7 +321,6 @@ class Chef
       yield
     ensure
       @redirects_followed = 0
-      @authenticator.sign_request = true
     end
 
     private

@@ -96,7 +96,7 @@ class Chef
       if raw
         streaming_request(create_url(path), headers)
       else
-        api_request(:GET, create_url(path), headers)
+        request(:GET, create_url(path), headers)
       end
     end
 
