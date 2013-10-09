@@ -58,10 +58,13 @@ class Chef
       options[:signing_key_filename] = signing_key_filename
       super(url, options)
 
-      @chef_json_inflater = JSONToModelInflater.new(options)
-      @cookie_manager = CookieManager.new(options)
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
+
+      @middlewares << JSONToModelInflater.new(options)
+      @middlewares << CookieManager.new(options)
+      @middlewares << @decompressor
+      @middlewares << @authenticator
     end
 
     def signing_key_filename
@@ -115,11 +118,6 @@ class Chef
     # stream it until you run out of disk space.
     def fetch(path, headers={})
       streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
-    end
-
-    # Chef::REST doesn't define middleware in the normal way for backcompat reasons, so it's hardcoded here.
-    def middlewares
-      [@chef_json_inflater, @cookie_manager, @decompressor, @authenticator]
     end
 
     alias :api_request :request

@@ -26,6 +26,9 @@ class Chef
     class JSONToModelInflater
 
       def initialize(opts={})
+        @raw_input = opts[:raw_input]
+        @raw_output = opts[:raw_output]
+        @inflate_json_class = opts.has_key?(:inflate_json_class) ? opts[:inflate_json_class] : true
       end
 
       def handle_request(method, url, headers={}, data=false)
@@ -34,7 +37,11 @@ class Chef
         # Accept to the desired value before middlewares get called.
         headers['Accept']       ||= "application/json"
         headers["Content-Type"] = 'application/json' if data
-        json_body = data ? Chef::JSONCompat.to_json(data) : nil
+        if @raw_input
+          json_body = data || nil
+        else
+          json_body = data ? Chef::JSONCompat.to_json(data) : nil
+        end
         # Force encoding to binary to fix SSL related EOFErrors
         # cf. http://tickets.opscode.com/browse/CHEF-2363
         # http://redmine.ruby-lang.org/issues/5233
@@ -47,7 +54,16 @@ class Chef
         # needed to keep conditional get stuff working correctly.
         return [http_response, rest_request, return_value] if return_value == false
         if http_response['content-type'] =~ /json/
-          [http_response, rest_request, Chef::JSONCompat.from_json(http_response.body.chomp)]
+          if @raw_output
+            return_value = http_response.body.to_s
+          else
+            if @inflate_json_class
+              return_value = Chef::JSONCompat.from_json(http_response.body.chomp)
+            else
+              return_value = Chef::JSONCompat.from_json(http_response.body.chomp, :create_additions => false)
+            end
+          end
+          [http_response, rest_request, return_value]
         else
           Chef::Log.warn("Expected JSON response, but got content-type '#{http_response['content-type']}'")
           return [http_response, rest_request, http_response.body.to_s]

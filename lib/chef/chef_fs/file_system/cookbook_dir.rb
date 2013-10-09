@@ -172,6 +172,10 @@ class Chef
           parent.rest
         end
 
+        def rest_json
+          parent.rest_json
+        end
+
         def chef_object
           # We cheat and cache here, because it seems like a good idea to keep
           # the cookbook view consistent with the directory structure.
@@ -191,7 +195,7 @@ class Chef
             old_retry_count = Chef::Config[:http_retry_count]
             begin
               Chef::Config[:http_retry_count] = 0
-              @chef_object ||= Chef::CookbookVersion.json_create(Chef::ChefFS::RawRequest.raw_json(rest, api_path))
+              @chef_object ||= Chef::CookbookVersion.json_create(rest_json.get(api_path))
             ensure
               Chef::Config[:http_retry_count] = old_retry_count
             end

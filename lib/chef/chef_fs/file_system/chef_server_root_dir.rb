@@ -57,6 +57,14 @@ class Chef
         end
 
         def rest
+          Chef::REST.new(chef_server_url, chef_username, chef_private_key, { :raw_output => true })
+        end
+
+        def rest_json
+          Chef::REST.new(chef_server_url, chef_username, chef_private_key, { :inflate_json_class => false })
+        end
+
+        def rest_normal
           Chef::REST.new(chef_server_url, chef_username, chef_private_key)
         end
 

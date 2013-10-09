@@ -34,7 +34,7 @@ class Chef
 
         def children
           begin
-            @children ||= Chef::ChefFS::RawRequest.raw_json(rest, api_path).keys.sort.map do |entry|
+            @children ||= rest_json.get(api_path).keys.sort.map do |entry|
               DataBagDir.new(entry, self, true)
             end
           rescue Timeout::Error => e

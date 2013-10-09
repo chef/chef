@@ -9,7 +9,6 @@ class Chef
         require 'json'
         require 'chef/rest'
         require 'chef/config'
-        require 'chef/chef_fs/raw_request'
       end
 
       option :method,
@@ -45,13 +44,19 @@ class Chef
         if config[:input]
           data = IO.read(config[:input])
         end
-        chef_rest = Chef::REST.new(Chef::Config[:chef_server_url])
         begin
           method = config[:method].to_sym
-          url = chef_rest.create_url(name_args[0])
-          result = Chef::ChefFS::RawRequest.api_request(chef_rest, method, url, {}, data, :parse_json => config[:pretty])
-          if result.is_a?(Hash) || result.is_a?(Array)
-            result = Chef::JSONCompat.to_json_pretty(result)
+          if config[:pretty]
+            chef_rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key], :raw_input => true, :inflate_json_class => false)
+            url = chef_rest.create_url(name_args[0])
+            result = chef_rest.request(method, url, {}, data)
+            unless result.is_a?(String)
+              result = Chef::JSONCompat.to_json_pretty(result)
+            end
+          else
+            chef_rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:node_name], Chef::Config[:client_key], :raw_input => true, :raw_output => true)
+            url = chef_rest.create_url(name_args[0])
+            result = chef_rest.request(method, url, {}, data)
           end
           output result
         rescue Timeout::Error => e
