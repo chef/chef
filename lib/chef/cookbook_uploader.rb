@@ -1,6 +1,7 @@
 
 require 'set'
 require 'rest_client'
+require 'thread'
 require 'chef/exceptions'
 require 'chef/knife/cookbook_metadata'
 require 'chef/digester'
