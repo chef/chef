@@ -126,7 +126,7 @@ class Chef
         def delete(recurse)
           if recurse
             begin
-              rest.delete_rest(api_path)
+              rest.delete(api_path)
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
             rescue Net::HTTPServerException

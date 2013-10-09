@@ -67,7 +67,7 @@ class Chef
 
         def delete(recurse)
           begin
-            rest.delete_rest(api_path)
+            rest.delete(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
           rescue Net::HTTPServerException => e
@@ -162,7 +162,7 @@ class Chef
           end
 
           begin
-            rest.put_rest(api_path, object)
+            rest.put(api_path, object)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e), "Timeout writing: #{e}"
           rescue Net::HTTPServerException => e

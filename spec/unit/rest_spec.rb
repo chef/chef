@@ -76,27 +76,46 @@ describe Chef::REST do
     end
 
     it "makes a :GET request with the composed url object" do
-      @rest.should_receive(:request).with(:GET, @monkey_uri, {})
+      @rest.should_receive(:send_http_request).
+        with(:GET, @monkey_uri, STANDARD_READ_HEADERS, false).
+        and_return([1,2,3])
+      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
       @rest.get_rest("monkey")
     end
 
     it "makes a :GET reqest for a streaming download with the composed url" do
-      @rest.should_receive(:streaming_request).with(@monkey_uri, {})
+      @rest.should_receive(:streaming_request).with('monkey', {})
       @rest.get_rest("monkey", true)
     end
 
-    it "makes a :DELETE  request with the composed url object" do
-      @rest.should_receive(:request).with(:DELETE, @monkey_uri, {})
+    STANDARD_READ_HEADERS = {"Accept"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
+    STANDARD_WRITE_HEADERS = {"Accept"=>"application/json", "Content-Type"=>"application/json", "Accept"=>"application/json", "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3"}
+
+    it "makes a :DELETE request with the composed url object" do
+      @rest.should_receive(:send_http_request).
+        with(:DELETE, @monkey_uri, STANDARD_READ_HEADERS, false).
+        and_return([1,2,3])
+      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
       @rest.delete_rest("monkey")
     end
 
     it "makes a :POST request with the composed url object and data" do
-      @rest.should_receive(:request).with(:POST, @monkey_uri, {}, "data")
+      @rest.should_receive(:send_http_request).
+        with(:POST, @monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
+        and_return([1,2,3])
+      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
       @rest.post_rest("monkey", "data")
     end
 
     it "makes a :PUT request with the composed url object and data" do
-      @rest.should_receive(:request).with(:PUT, @monkey_uri, {}, "data")
+      @rest.should_receive(:send_http_request).
+        with(:PUT, @monkey_uri, STANDARD_WRITE_HEADERS, "\"data\"").
+        and_return([1,2,3])
+      @rest.should_receive(:apply_response_middleware).with(1,2,3).and_return([1,2,3])
+      @rest.should_receive('success_response?'.to_sym).with(1).and_return(true)
       @rest.put_rest("monkey", "data")
     end
   end

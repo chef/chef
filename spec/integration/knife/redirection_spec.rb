@@ -50,9 +50,7 @@ describe 'redirection' do
       end
 
       it 'knife list /roles returns the role' do
-        pending 'merge of api-code-path branch' do
-          knife('list /roles').should_succeed "/roles/x.json\n"
-        end
+        knife('list /roles').should_succeed "/roles/x.json\n"
       end
     end
   end

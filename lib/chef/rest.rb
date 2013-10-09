@@ -29,7 +29,8 @@ end
 
 require 'chef/http/authenticator'
 require 'chef/http/decompressor'
-require 'chef/http/json_to_model_inflater'
+require 'chef/http/json_input'
+require 'chef/http/json_to_model_output'
 require 'chef/http/cookie_manager'
 require 'chef/config'
 require 'chef/exceptions'
@@ -61,7 +62,8 @@ class Chef
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
 
-      @middlewares << JSONToModelInflater.new(options)
+      @middlewares << JSONInput.new(options)
+      @middlewares << JSONToModelOutput.new(options)
       @middlewares << CookieManager.new(options)
       @middlewares << @decompressor
       @middlewares << @authenticator
@@ -97,9 +99,9 @@ class Chef
     #   to JSON inflated.
     def get(path, raw=false, headers={})
       if raw
-        streaming_request(create_url(path), headers)
+        streaming_request(path, headers)
       else
-        request(:GET, create_url(path), headers)
+        request(:GET, path, headers)
       end
     end
 

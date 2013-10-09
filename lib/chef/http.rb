@@ -94,7 +94,7 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def head(path, headers={})
-      request(:HEAD, create_url(path), headers)
+      request(:HEAD, path, headers)
     end
 
     # Send an HTTP GET request to the path
@@ -102,7 +102,7 @@ class Chef
     # === Parameters
     # path:: The path to GET
     def get(path, headers={})
-      request(:GET, create_url(path), headers)
+      request(:GET, path, headers)
     end
 
     # Send an HTTP PUT request to the path
@@ -110,7 +110,7 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def put(path, json, headers={})
-      request(:PUT, create_url(path), headers, json)
+      request(:PUT, path, headers, json)
     end
 
     # Send an HTTP POST request to the path
@@ -118,7 +118,7 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def post(path, json, headers={})
-      request(:POST, create_url(path), headers, json)
+      request(:POST, path, headers, json)
     end
 
     # Send an HTTP DELETE request to the path
@@ -126,12 +126,13 @@ class Chef
     # === Parameters
     # path:: path part of the request URL
     def delete(path, headers={})
-      request(:DELETE, create_url(path), headers)
+      request(:DELETE, path, headers)
     end
 
-    # Makes an HTTP request to +url+ with the given +method+, +headers+, and
+    # Makes an HTTP request to +path+ with the given +method+, +headers+, and
     # +data+ (if applicable).
-    def request(method, url, headers={}, data=false)
+    def request(method, path, headers={}, data=false)
+      url = create_url(path)
       method, url, headers, data = apply_request_middleware(method, url, headers, data)
 
       response, rest_request, return_value = send_http_request(method, url, headers, data)
@@ -153,7 +154,8 @@ class Chef
     #
     # If no block is given, the tempfile is returned, which means it's up to
     # you to unlink the tempfile when you're done with it.
-    def streaming_request(url, headers, &block)
+    def streaming_request(path, headers={}, &block)
+      url = create_url(path)
       response, rest_request, return_value = nil, nil, nil
       tempfile = nil
 
@@ -192,6 +194,7 @@ class Chef
     protected
 
     def create_url(path)
+      return path if path.is_a?(URI)
       if path =~ /^(http|https):\/\//
         URI.parse(path)
       else

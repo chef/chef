@@ -76,7 +76,7 @@ class Chef
           end
 
           begin
-            rest.post_rest(api_path, object)
+            rest.post(api_path, object)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Timeout creating '#{name}': #{e}"
           rescue Net::HTTPServerException => e
