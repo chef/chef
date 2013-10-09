@@ -58,7 +58,7 @@ describe Shell do
         sleep 0.01
       end
       exitstatus[1]
-    end
+    end 
 
     def run_chef_shell_with(options)
       case ohai[:platform]
