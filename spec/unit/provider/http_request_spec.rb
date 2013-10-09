@@ -35,7 +35,7 @@ describe Chef::Provider::HttpRequest do
   describe "load_current_resource" do
 
     it "should set up a Chef::REST client, with no authentication" do
-      Chef::REST.should_receive(:new).with(@new_resource.url, nil, nil)
+      Chef::HTTP::Simple.should_receive(:new).with(@new_resource.url)
       @provider.load_current_resource
     end
   end
@@ -45,21 +45,21 @@ describe Chef::Provider::HttpRequest do
       # run_action(x) forces load_current_resource to run;
       # that would overwrite our supplied mock Chef::Rest # object
       @provider.stub!(:load_current_resource).and_return(true)
-      @rest = mock("Chef::REST")
-      @provider.rest = @rest
+      @http = mock("Chef::REST")
+      @provider.http = @http
     end
 
     describe "action_get" do
 
       it "should inflate a message block at runtime" do
         @new_resource.message { "return" }
-        @rest.should_receive(:get).with("http://www.opscode.com/?message=return", false, {})
+        @http.should_receive(:get).with("http://www.opscode.com/?message=return", {})
         @provider.run_action(:get)
         @new_resource.should be_updated
       end
 
       it "should run a GET request" do
-        @rest.should_receive(:get).with("http://www.opscode.com/?message=is cool", false, {})
+        @http.should_receive(:get).with("http://www.opscode.com/?message=is cool", {})
         @provider.run_action(:get)
         @new_resource.should be_updated
       end
@@ -67,14 +67,14 @@ describe Chef::Provider::HttpRequest do
 
     describe "action_put" do
       it "should run a PUT request with the message as the payload" do
-        @rest.should_receive(:put).with("http://www.opscode.com/", @new_resource.message, {})
+        @http.should_receive(:put).with("http://www.opscode.com/", @new_resource.message, {})
         @provider.run_action(:put)
         @new_resource.should be_updated
       end
 
       it "should inflate a message block at runtime" do
         @new_resource.stub!(:message).and_return(lambda { "return" })
-        @rest.should_receive(:put).with("http://www.opscode.com/", "return", {})
+        @http.should_receive(:put).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:put)
         @new_resource.should be_updated
       end
@@ -82,14 +82,14 @@ describe Chef::Provider::HttpRequest do
 
     describe "action_post" do
       it "should run a PUT request with the message as the payload" do
-        @rest.should_receive(:post).with("http://www.opscode.com/", @new_resource.message, {})
+        @http.should_receive(:post).with("http://www.opscode.com/", @new_resource.message, {})
         @provider.run_action(:post)
         @new_resource.should be_updated
       end
 
       it "should inflate a message block at runtime" do
         @new_resource.message { "return" }
-        @rest.should_receive(:post).with("http://www.opscode.com/", "return", {})
+        @http.should_receive(:post).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:post)
         @new_resource.should be_updated
       end
@@ -97,7 +97,7 @@ describe Chef::Provider::HttpRequest do
 
     describe "action_delete" do
       it "should run a DELETE request" do
-        @rest.should_receive(:delete).with("http://www.opscode.com/", {})
+        @http.should_receive(:delete).with("http://www.opscode.com/", {})
         @provider.run_action(:delete)
         @new_resource.should be_updated
       end
@@ -105,30 +105,30 @@ describe Chef::Provider::HttpRequest do
 
     describe "action_head" do
       before do
-        @provider.rest = @rest
+        @provider.http = @http
       end
 
       it "should inflate a message block at runtime" do
         @new_resource.message { "return" }
-        @rest.should_receive(:head).with("http://www.opscode.com/?message=return", {}).and_return("")
+        @http.should_receive(:head).with("http://www.opscode.com/?message=return", {}).and_return("")
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
 
       it "should run a HEAD request" do
-        @rest.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return("")
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", {}).and_return("")
         @provider.run_action(:head)
         @new_resource.should be_updated
       end
 
       it "should run a HEAD request with If-Modified-Since header" do
         @new_resource.headers "If-Modified-Since" => File.mtime(__FILE__).httpdate
-        @rest.should_receive(:head).with("http://www.opscode.com/?message=is cool", @new_resource.headers)
+        @http.should_receive(:head).with("http://www.opscode.com/?message=is cool", @new_resource.headers)
         @provider.run_action(:head)
       end
 
       it "doesn't call converge_by if HEAD does not return modified" do
-        @rest.should_receive(:head).and_return(false)
+        @http.should_receive(:head).and_return(false)
         @provider.should_not_receive(:converge_by)
         @provider.run_action(:head)
       end
