@@ -26,19 +26,16 @@ class Chef
     class JSONInput
 
       def initialize(opts={})
-        @raw_input = opts[:raw_input]
       end
 
       def handle_request(method, url, headers={}, data=false)
         if data
           headers["Content-Type"] = 'application/json'
-          if !@raw_input
-            data = Chef::JSONCompat.to_json(data)
-            # Force encoding to binary to fix SSL related EOFErrors
-            # cf. http://tickets.opscode.com/browse/CHEF-2363
-            # http://redmine.ruby-lang.org/issues/5233
-            data.force_encoding(Encoding::BINARY) if data.respond_to?(:force_encoding)
-          end
+          data = Chef::JSONCompat.to_json(data)
+          # Force encoding to binary to fix SSL related EOFErrors
+          # cf. http://tickets.opscode.com/browse/CHEF-2363
+          # http://redmine.ruby-lang.org/issues/5233
+          data.force_encoding(Encoding::BINARY) if data.respond_to?(:force_encoding)
         end
         [method, url, headers, data]
       end
