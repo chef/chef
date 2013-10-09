@@ -35,11 +35,8 @@ class Chef
     # Create a new instance of RunLock
     # === Arguments
     # * :lockfile::: the full path to the lockfile.
-    # * :wait::: should wait for the release of the lock if it can't
-    #            be acquired
-    def initialize(lockfile, wait = true)
+    def initialize(lockfile)
       @runlock_file = lockfile
-      @wait = wait
       @runlock = nil
     end
 
@@ -50,31 +47,49 @@ class Chef
     #
     # The implementation is based on File#flock (see also: flock(2)).
     def acquire
+      wait unless test
+    end
+
+    #
+    # Tests and if successful acquires the system-wide lock.
+    # Returns true if the lock is acquired, false otherwise.
+    #
+    def test
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
-      @runlock = File.open(runlock_file,'w+')
+      @runlock = File.open(runlock_file,'a+')
       # if we support FD_CLOEXEC (linux, !windows), then use it.
       # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not ruby-1.8.7/1.9.3
       if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
         runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
       end
-      unless runlock.flock(File::LOCK_EX|File::LOCK_NB)
-        # Another chef client running...
-        if @wait
-          runpid = runlock.read.strip.chomp
-          Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
-          runlock.flock(File::LOCK_EX)
-        end
+      # Flock will return 0 if it can acquire the lock otherwise it
+      # will return false
+      if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
+        true
+      else
+        false
       end
+    end
+
+    #
+    # Waits until acquiring the system-wide lock.
+    #
+    def wait
+      runpid = runlock.read.strip.chomp
+      Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
+      runlock.flock(File::LOCK_EX)
     end
 
     def save_pid
       runlock.truncate(0)
       runlock.rewind # truncate doesn't reset position to 0.
       runlock.write(Process.pid.to_s)
-      runlock.flush # flush the file
+      # flush the file fsync flushes the system buffers
+      # in addition to ruby buffers
+      runlock.fsync
     end
-    
+
     # Release the system-wide lock.
     def release
       if runlock

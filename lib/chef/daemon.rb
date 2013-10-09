@@ -18,6 +18,7 @@
 # I love you Merb (lib/merb-core/server.rb)
 
 require 'chef/config'
+require 'chef/run_lock'
 require 'etc'
 
 class Chef
@@ -32,9 +33,9 @@ class Chef
       #
       def daemonize(name)
         @name = name
-        pid = pid_from_file
-        unless running?
-          remove_pid_file()
+        runlock = RunLock.new(pid_file)
+        if runlock.test
+          # We've acquired the daemon lock. Now daemonize.
           Chef::Log.info("Daemonizing..")
           begin
             exit if fork
@@ -45,50 +46,12 @@ class Chef
             $stdin.reopen("/dev/null")
             $stdout.reopen("/dev/null", "a")
             $stderr.reopen($stdout)
-            save_pid_file
-            at_exit { remove_pid_file }
+            runlock.save_pid
           rescue NotImplementedError => e
             Chef::Application.fatal!("There is no fork: #{e.message}")
           end
         else
-          Chef::Application.fatal!("Chef is already running pid #{pid}")
-        end
-      end
-
-      # Check if Chef is running based on the pid_file
-      # ==== Returns
-      # Boolean::
-      # True if Chef is running
-      # False if Chef is not running
-      #
-      def running?
-        if pid_from_file.nil?
-          false
-        else
-          Process.kill(0, pid_from_file)
-          true
-        end
-      rescue Errno::ESRCH, Errno::ENOENT
-        false
-      rescue Errno::EACCES => e
-        Chef::Application.fatal!("You don't have access to the PID file at #{pid_file}: #{e.message}")
-      end
-
-      # Check if this process if forked from a Chef daemon
-      # ==== Returns
-      # Boolean::
-      # True if this process is forked
-      # False if this process is not forked
-      #
-      def forked?
-        if running? and Process.ppid == pid_from_file.to_i
-          # chef daemon is running and this process is a child of it
-          true
-        elsif not running? and Process.ppid == 1
-          # an orphaned fork, its parent becomes init, launchd, etc. after chef daemon dies
-          true
-        else
-          false
+          Chef::Application.fatal!("Chef is already running pid #{pid_from_file}")
         end
       end
 
@@ -111,31 +74,6 @@ class Chef
         File.read(pid_file).chomp.to_i
       rescue Errno::ENOENT, Errno::EACCES
         nil
-      end
-
-      # Store the PID on the filesystem
-      # This uses the Chef::Config[:pid_file] option, or "/tmp/name.pid" otherwise
-      #
-      def save_pid_file
-        file = pid_file
-        begin
-          FileUtils.mkdir_p(File.dirname(file))
-        rescue Errno::EACCES => e
-          Chef::Application.fatal!("Failed store pid in #{File.dirname(file)}, permission denied: #{e.message}")
-        end
-
-        begin
-          File.open(file, "w") { |f| f.write(Process.pid.to_s) }
-        rescue Errno::EACCES => e
-          Chef::Application.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
-        end
-      end
-
-      # Delete the PID from the filesystem
-      def remove_pid_file
-        if not forked? then
-          FileUtils.rm(pid_file) if File.exists?(pid_file)
-        end
       end
 
       # Change process user/group to those specified in Chef::Config
