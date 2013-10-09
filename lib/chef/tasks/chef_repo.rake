@@ -188,8 +188,8 @@ task :ssl_cert do
   fqdn =~ /^(.+?)\.(.+)$/
   hostname = $1
   domain = $2
-  keyfile = fqdn.gsub("*", "wildcard")
   raise "Must provide FQDN!" unless fqdn && hostname && domain
+  keyfile = fqdn.gsub("*", "wildcard")
   puts "** Creating self signed SSL Certificate for #{fqdn}"
   sh("(cd #{CADIR} && openssl genrsa 2048 > #{keyfile}.key)")
   sh("(cd #{CADIR} && chmod 644 #{keyfile}.key)")
