@@ -48,6 +48,7 @@ class Chef
 
       def request(method, url, req_body, base_headers={})
         http_request = HTTPRequest.new(method, url, req_body, base_headers).http_request
+        Chef::Log.debug("Initiating #{method} to #{url}")
         http_client.request(http_request) do |response|
           yield response if block_given?
           # http_client.request may not have the return signature we want, so

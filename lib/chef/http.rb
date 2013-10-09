@@ -232,10 +232,12 @@ class Chef
 
       retrying_http_errors(url) do
         client = http_client(url)
+        return_value = nil
         if block_given?
           request, response = client.request(method, url, body, headers, &response_handler)
         else
           request, response = client.request(method, url, body, headers) {|r| r.read_body }
+          return_value = response.read_body
         end
         @last_response = response
 
@@ -248,7 +250,7 @@ class Chef
         Chef::Log.debug("---- End HTTP Status/Header Data ----")
 
         if response.kind_of?(Net::HTTPSuccess)
-          [response, request, nil]
+          [response, request, return_value]
         elsif response.kind_of?(Net::HTTPNotModified) # Must be tested before Net::HTTPRedirection because it's subclass.
           [response, request, false]
         elsif redirect_location = redirected_to(response)
