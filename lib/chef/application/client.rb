@@ -34,7 +34,6 @@ class Chef::Application::Client < Chef::Application
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specific_path("/etc/chef/client.rb"),
     :description => "The configuration file to use"
 
   option :formatter,
@@ -270,6 +269,18 @@ class Chef::Application::Client < Chef::Application
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
     end
+  end
+
+  def load_config_file
+    if !config.has_key?(:config_file)
+      if config[:local_mode]
+        require 'chef/knife'
+        config[:config_file] = Chef::Knife.locate_config_file
+      else
+        config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+      end
+    end
+    super
   end
 
   def configure_logging

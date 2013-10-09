@@ -37,6 +37,13 @@ EOM
       result.exitstatus.should == 1
     end
 
+    it 'should load .chef/knife.rb when -. is specified' do
+      file '.chef/knife.rb', 'xxx.xxx'
+      chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
+      result = shell_out("#{chef_dir}/chef-client -. -o 'x::default'", :cwd => path_to(''))
+      result.exitstatus.should == 2
+    end
+
     it "should complete with success" do
       file 'config/client.rb', <<EOM
 local_mode true

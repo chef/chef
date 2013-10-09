@@ -134,9 +134,8 @@ class Chef
       until File.directory?("#{path}#{platform_path_separator}cookbooks")
         new_path = File.expand_path('..', path)
         if new_path == path
-          Chef::Log.warn("WARNING: no cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
-          path = Dir.pwd
-          break
+          Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
+          return Dir.pwd
         end
         path = new_path
       end
