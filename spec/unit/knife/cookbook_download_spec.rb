@@ -37,6 +37,7 @@ describe Chef::Knife::CookbookDownload do
       @knife.name_args = ['foobar', nil]
       @knife.should_receive(:determine_version).and_return(nil)
       @knife.ui.should_receive(:fatal).with('No such cookbook found')
+      @knife.ui.should_receive(:fatal).with(/versions found for cookbook/)
       lambda { @knife.run }.should raise_error(SystemExit)
     end
 
