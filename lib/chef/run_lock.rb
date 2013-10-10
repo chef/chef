@@ -17,6 +17,9 @@
 
 require 'chef/mixin/create_path'
 require 'fcntl'
+if Chef::Platform.windows?
+  require 'chef/win32/mutex'
+end
 
 class Chef
 
@@ -30,6 +33,7 @@ class Chef
     include Chef::Mixin::CreatePath
 
     attr_reader :runlock
+    attr_reader :mutex
     attr_reader :runlock_file
 
     # Create a new instance of RunLock
@@ -38,6 +42,7 @@ class Chef
     def initialize(lockfile)
       @runlock_file = lockfile
       @runlock = nil
+      @mutex = nil
     end
 
     # Acquire the system-wide lock. Will block indefinitely if another process
@@ -58,17 +63,32 @@ class Chef
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
       @runlock = File.open(runlock_file,'a+')
-      # if we support FD_CLOEXEC (linux, !windows), then use it.
-      # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not ruby-1.8.7/1.9.3
-      if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
-        runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
-      end
-      # Flock will return 0 if it can acquire the lock otherwise it
-      # will return false
-      if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
-        true
+
+      if Chef::Platform.windows?
+        # Since flock mechanism doesn't exist on windows we are using
+        # platform Mutex.
+        # We are creating a "Global" mutex here so that non-admin
+        # users can not DoS chef-client by creating the same named
+        # mutex we are using locally.
+        # Mutex name is case-sensitive contrary to other things in
+        # windows. "\" is the only invalid character.
+        # @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\serdar:/_-running.pid")
+        @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, "/").downcase}")
+        mutex.test
       else
-        false
+        # If we support FD_CLOEXEC, then use it.
+        # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not
+        # ruby-1.8.7/1.9.3
+        if Fcntl.const_defined?('F_SETFD') && Fcntl.const_defined?('FD_CLOEXEC')
+          runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
+        end
+        # Flock will return 0 if it can acquire the lock otherwise it
+        # will return false
+        if runlock.flock(File::LOCK_NB|File::LOCK_EX) == 0
+          true
+        else
+          false
+        end
       end
     end
 
@@ -78,7 +98,11 @@ class Chef
     def wait
       runpid = runlock.read.strip.chomp
       Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
-      runlock.flock(File::LOCK_EX)
+      if Chef::Platform.windows?
+        mutex.wait
+      else
+        runlock.flock(File::LOCK_EX)
+      end
     end
 
     def save_pid
@@ -93,7 +117,11 @@ class Chef
     # Release the system-wide lock.
     def release
       if runlock
-        runlock.flock(File::LOCK_UN)
+        if Chef::Platform.windows?
+          mutex.release
+        else
+          runlock.flock(File::LOCK_UN)
+        end
         runlock.close
         # Don't unlink the pid file, if another chef-client was waiting, it
         # won't be recreated. Better to leave a "dead" pid file than not have
@@ -106,6 +134,7 @@ class Chef
 
     def reset
       @runlock = nil
+      @mutex = nil
     end
 
   end
