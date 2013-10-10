@@ -10,11 +10,44 @@ describe "chef-client" do
 
     it "should complete with success" do
       file 'config/client.rb', <<EOM
-chef_zero.enabled true
+local_mode true
 cookbook_path "#{path_to('cookbooks')}"
-checksum_path "#{path_to('config/checksums')}"
-file_cache_path "#{path_to('config/cache')}"
-file_backup_path "#{path_to('config/backup')}"
+EOM
+
+      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
+      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default'", :cwd => chef_dir)
+      result.error!
+    end
+
+    it 'should complete with success when cwd is just above cookbooks and paths are not specified' do
+      chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
+      result = shell_out("#{chef_dir}/chef-client -z -o 'x::default'", :cwd => path_to(''))
+      result.error!
+    end
+
+    it 'should complete with success when cwd is below cookbooks and paths are not specified' do
+      chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
+      result = shell_out("#{chef_dir}/chef-client -z -o 'x::default'", :cwd => path_to('cookbooks/x'))
+      result.error!
+    end
+
+    it 'should fail when cwd is below high above and paths are not specified' do
+      chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
+      result = shell_out("#{chef_dir}/chef-client -z -o 'x::default'", :cwd => File.expand_path('..', path_to('')))
+      result.exitstatus.should == 1
+    end
+
+    it 'should load .chef/knife.rb when -z is specified' do
+      file '.chef/knife.rb', 'xxx.xxx'
+      chef_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "bin"))
+      result = shell_out("#{chef_dir}/chef-client -z -o 'x::default'", :cwd => path_to(''))
+      result.exitstatus.should == 2
+    end
+
+    it "should complete with success" do
+      file 'config/client.rb', <<EOM
+local_mode true
+cookbook_path "#{path_to('cookbooks')}"
 EOM
 
       chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
@@ -55,12 +88,9 @@ EOM
 
       it "should complete with success even with a client key" do
         file 'config/client.rb', <<EOM
-chef_zero.enabled true
+local_mode true
 client_key "#{path_to('mykey.pem')}"
 cookbook_path "#{path_to('cookbooks')}"
-checksum_path "#{path_to('config/checksums')}"
-file_cache_path "#{path_to('config/cache')}"
-file_backup_path "#{path_to('config/backup')}"
 EOM
 
         chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
@@ -73,9 +103,6 @@ EOM
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
-checksum_path "#{path_to('config/checksums')}"
-file_cache_path "#{path_to('config/cache')}"
-file_backup_path "#{path_to('config/backup')}"
 EOM
 
       chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
@@ -83,17 +110,14 @@ EOM
       result.error!
     end
 
-    it "should complete with success when passed the --zero flag" do
+    it "should complete with success when passed the --local-mode flag" do
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
-checksum_path "#{path_to('config/checksums')}"
-file_cache_path "#{path_to('config/cache')}"
-file_backup_path "#{path_to('config/backup')}"
 EOM
 
       chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default' --zero", :cwd => chef_dir)
+      result = shell_out("chef-client -c \"#{path_to('config/client.rb')}\" -o 'x::default' --local-mode", :cwd => chef_dir)
       result.error!
     end
 
@@ -101,9 +125,6 @@ EOM
       file 'config/client.rb', <<EOM
 chef_server_url 'http://omg.com/blah'
 cookbook_path "#{path_to('cookbooks')}"
-checksum_path "#{path_to('config/checksums')}"
-file_cache_path "#{path_to('config/cache')}"
-file_backup_path "#{path_to('config/backup')}"
 EOM
 
       chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
