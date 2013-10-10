@@ -66,9 +66,18 @@ class Chef::Application
     run_application
   end
 
-  # Parse the configuration file
+  # Parse configuration (options and config file)
   def configure_chef
     parse_options
+    load_config_file
+  end
+
+  # Parse the config file
+  def load_config_file
+    if !config[:config_file]
+      Chef::Log.warn("No config file found or specified on command line, not loading.")
+      return
+    end
 
     begin
       case config[:config_file]
@@ -90,7 +99,6 @@ class Chef::Application
     rescue Exception => error
       Chef::Application.fatal!("Unknown error processing config file #{config[:config_file]} with error #{error.message}", 2)
     end
-
   end
 
   # Initialize and configure the logger.

@@ -126,9 +126,9 @@ describe Chef::Application do
         @app.config[:config_file] = nil
       end
 
-      it "should raise a fatal" do
+      it "should emit a warning" do
         Chef::Config.should_not_receive(:from_file).with("/etc/chef/default.rb")
-        Chef::Application.should_receive(:fatal!)
+        Chef::Log.should_receive(:warn).with("No config file found or specified on command line, not loading.")
         @app.configure_chef
       end
     end
