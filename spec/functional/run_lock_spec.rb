@@ -224,7 +224,6 @@ E
       Process.kill(:KILL, p1)
       Process.waitpid2(p1)
 
-
       p2 = fork do
         run_lock.acquire
         record "p2 has lock"
@@ -236,7 +235,52 @@ E
 
       results.should =~ /p2 has lock\Z/
     end
-  end
 
+    it "test returns true and acquires the lock" do
+      p1 = fork do
+        run_lock.test.should == true
+        sleep 2
+        exit! 1
+      end
+
+      wait_on_lock
+
+      p2 = fork do
+        run_lock.test.should == false
+        exit! 0
+      end
+
+      Process.waitpid2(p2)
+      Process.waitpid2(p1)
+    end
+
+    it "test returns without waiting when the lock is acquired" do
+      p1 = fork do
+        run_lock.acquire
+        sleep 2
+        exit! 1
+      end
+
+      wait_on_lock
+
+      run_lock.test.should == false
+      Process.waitpid2(p1)
+    end
+
+    it "doesn't truncate the lock file so that contents can be read" do
+      p1 = fork do
+        run_lock.acquire
+        run_lock.save_pid
+        sleep 2
+        exit! 1
+      end
+
+      wait_on_lock
+      File.read(lockfile).should == p1.to_s
+
+      Process.waitpid2(p1)
+    end
+
+  end
 end
 
