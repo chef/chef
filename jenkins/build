@@ -77,7 +77,7 @@ else
   dna=$(pwd)/jenkins/dna.json
 fi
 # Omnibus build server prep tasks, including build ruby
-sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
+#sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
