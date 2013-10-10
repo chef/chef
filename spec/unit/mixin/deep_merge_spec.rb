@@ -236,6 +236,20 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     @dm.deep_merge!(hash_src, hash_dst)
     hash_dst.should == {"item" => "orange"}
   end
+
+  it 'should overwrite hashes with nil' do
+    hash_src = {"item" => { "1" => "2"}, "other" => true }
+    hash_dst = {"item" => nil }
+    @dm.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"item" => nil, "other" => true }
+  end
+
+  it 'should overwrite strings with nil' do
+    hash_src = {"item" => "to_overwrite", "other" => false }
+    hash_dst = {"item" => nil }
+    @dm.deep_merge!(hash_src, hash_dst)
+    hash_dst.should == {"item" => nil, "other" => false }
+  end
 end # deep_merge!
 
 # Chef specific
