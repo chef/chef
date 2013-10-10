@@ -21,7 +21,7 @@ MAINPID=/var/run/chef/server.main.pid
 NAME=chef-server
 DESC=chef-server
 
-test -x $DAEMON || exit 0
+test -x $DAEMON || exit 1
 
 . /lib/lsb/init-functions
 

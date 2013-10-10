@@ -24,7 +24,7 @@ require 'chef/log'
 require 'mixlib/authentication/signedheaderauth'
 
 class Chef
-  class REST
+  class HTTP
     class AuthCredentials
       attr_reader :client_name, :key
 

@@ -21,7 +21,7 @@ NAME=chef-solr
 DESC=chef-solr
 PIDFILE=/var/run/chef/solr.pid
 
-test -x $DAEMON || exit 0
+test -x $DAEMON || exit 1
 
 . /lib/lsb/init-functions
 
