@@ -25,6 +25,7 @@ class Chef
   class Daemon
     class << self
       attr_accessor :name
+      attr_accessor :runlock
 
       # Daemonize the current process, managing pidfiles and process uid/gid
       #
@@ -33,7 +34,7 @@ class Chef
       #
       def daemonize(name)
         @name = name
-        runlock = RunLock.new(pid_file)
+        @runlock = RunLock.new(pid_file)
         if runlock.test
           # We've acquired the daemon lock. Now daemonize.
           Chef::Log.info("Daemonizing..")
