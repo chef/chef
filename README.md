@@ -1,4 +1,4 @@
-# Chef
+# Chef [![Code Climate](https://codeclimate.com/github/opscode/chef.png)](https://codeclimate.com/github/opscode/chef)
 
 * Documentation: [http://docs.opscode.com](http://docs.opscode.com)
 * Source: [http://github.com/opscode/chef/tree/master](http://github.com/opscode/chef/tree/master)
