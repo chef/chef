@@ -197,7 +197,7 @@ class Chef::Application::Client < Chef::Application
     :boolean      => true
 
   option :local_mode,
-    :short        => "-.",
+    :short        => "-z",
     :long         => "--local-mode",
     :description  => "Point chef-client at local repository",
     :boolean      => true

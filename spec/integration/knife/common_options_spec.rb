@@ -87,16 +87,16 @@ EOM
       end
     end
 
-    it 'knife raw -. /nodes/x retrieves the role' do
-      knife('raw -. /nodes/x').should_succeed /"name": "x"/
+    it 'knife raw -z /nodes/x retrieves the role' do
+      knife('raw -z /nodes/x').should_succeed /"name": "x"/
     end
 
     it 'knife raw --local-mode /nodes/x retrieves the role' do
       knife('raw --local-mode /nodes/x').should_succeed /"name": "x"/
     end
 
-    it 'knife raw -. --chef-zero-port=9999 /nodes/x retrieves the role' do
-      knife('raw -. --chef-zero-port=9999 /nodes/x').should_succeed /"name": "x"/
+    it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the role' do
+      knife('raw -z --chef-zero-port=9999 /nodes/x').should_succeed /"name": "x"/
       Chef::Config.chef_server_url.should == 'http://127.0.0.1:9999'
     end
   end

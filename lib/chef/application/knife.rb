@@ -107,7 +107,7 @@ class Chef::Application::Knife < Chef::Application
     :default => "summary"
 
   option :local_mode,
-    :short        => "-.",
+    :short        => "-z",
     :long         => "--local-mode",
     :description  => "Point knife commands at local repository instead of server",
     :boolean      => true
