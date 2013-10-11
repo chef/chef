@@ -223,5 +223,109 @@ EOM
         knife('list --local /users').should_succeed "/users/z.json\n"
       end
     end
+
+    it 'knife list -z -R returns nothing' do
+      knife('list -z -Rfp /').should_succeed <<EOM
+/clients/
+/cookbooks/
+/data_bags/
+/environments/
+/nodes/
+/roles/
+/users/
+EOM
+    end
+
+    context 'DELETE /TYPE/NAME' do
+      it 'knife delete -z /clients/x.json fails with an error' do
+        knife('delete -z /clients/x.json').should_fail "ERROR: /clients/x.json: No such file or directory\n"
+      end
+
+      it 'knife delete -z -r /cookbooks/x fails with an error' do
+        knife('delete -z -r /cookbooks/x').should_fail "ERROR: /cookbooks/x: No such file or directory\n"
+      end
+
+      it 'knife delete -z -r /data_bags/x fails with an error' do
+        knife('delete -z -r /data_bags/x').should_fail "ERROR: /data_bags/x: No such file or directory\n"
+      end
+
+      it 'knife delete -z /data_bags/x/y.json fails with an error' do
+        knife('delete -z /data_bags/x/y.json').should_fail "ERROR: /data_bags/x/y.json: No such file or directory\n"
+      end
+
+      it 'knife delete -z /environments/x.json fails with an error' do
+        knife('delete -z /environments/x.json').should_fail "ERROR: /environments/x.json: No such file or directory\n"
+      end
+
+      it 'knife delete -z /nodes/x.json fails with an error' do
+        knife('delete -z /nodes/x.json').should_fail "ERROR: /nodes/x.json: No such file or directory\n"
+      end
+
+      it 'knife delete -z /roles/x.json fails with an error' do
+        knife('delete -z /roles/x.json').should_fail "ERROR: /roles/x.json: No such file or directory\n"
+      end
+
+      it 'knife delete -z /users/x.json fails with an error' do
+        knife('delete -z /users/x.json').should_fail "ERROR: /users/x.json: No such file or directory\n"
+      end
+    end
+
+    context 'GET /TYPE/NAME' do
+      it 'knife show -z /clients/x.json fails with an error' do
+        knife('show -z /clients/x.json').should_fail "ERROR: /clients/x.json: No such file or directory\n"
+      end
+
+      it 'knife show -z /cookbooks/x/metadata.rb fails with an error' do
+        knife('show -z /cookbooks/x/metadata.rb').should_fail "ERROR: /cookbooks/x/metadata.rb: No such file or directory\n"
+      end
+
+      it 'knife show -z /data_bags/x/y.json fails with an error' do
+        knife('show -z /data_bags/x/y.json').should_fail "ERROR: /data_bags/x/y.json: No such file or directory\n"
+      end
+
+      it 'knife show -z /environments/x.json fails with an error' do
+        knife('show -z /environments/x.json').should_fail "ERROR: /environments/x.json: No such file or directory\n"
+      end
+
+      it 'knife show -z /nodes/x.json fails with an error' do
+        knife('show -z /nodes/x.json').should_fail "ERROR: /nodes/x.json: No such file or directory\n"
+      end
+
+      it 'knife show -z /roles/x.json fails with an error' do
+        knife('show -z /roles/x.json').should_fail "ERROR: /roles/x.json: No such file or directory\n"
+      end
+
+      it 'knife show -z /users/x.json fails with an error' do
+        knife('show -z /users/x.json').should_fail "ERROR: /users/x.json: No such file or directory\n"
+      end
+    end
+
+    context 'PUT /TYPE/NAME' do
+      file 'empty.json', {}
+
+      it 'knife raw -z -i empty.json -m PUT /clients/x fails with 404' do
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /clients/x").should_fail /404/
+      end
+
+      it 'knife raw -z -i empty.json -m PUT /data/x/y fails with 404' do
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /data/x/y").should_fail /404/
+      end
+
+      it 'knife raw -z -i empty.json -m PUT /environments/x fails with 404' do
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /environments/x").should_fail /404/
+      end
+
+      it 'knife raw -z -i empty.json -m PUT /nodes/x fails with 404' do
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /nodes/x").should_fail /404/
+      end
+
+      it 'knife raw -z -i empty.json -m PUT /roles/x fails with 404' do
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /roles/x").should_fail /404/
+      end
+
+      it 'knife raw -z -i empty.json -m PUT /users/x fails with 404' do
+        knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_fail /404/
+      end
+    end
   end
 end
