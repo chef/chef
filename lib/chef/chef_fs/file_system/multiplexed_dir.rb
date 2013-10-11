@@ -17,7 +17,7 @@ class Chef
         end
 
         def children
-          @children ||= begin
+          begin
             result = []
             seen = {}
             # If multiple things have the same name, the first one wins.

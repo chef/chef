@@ -137,15 +137,17 @@ class Chef
         timestamp = Time.now.utc.iso8601
         file_contents = File.open(file, "rb") {|f| f.read}
         # TODO - 5/28/2010, cw: make signing and sending the request streaming
-        sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
-                                                                           :http_method => :put,
-                                                                           :path        => URI.parse(url).path,
-                                                                           :body        => file_contents,
-                                                                           :timestamp   => timestamp,
-                                                                           :user_id     => rest.client_name
-                                                                           )
         headers = { 'content-type' => 'application/x-binary', 'content-md5' => checksum64, :accept => 'application/json' }
-        headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
+        if rest.signing_key
+          sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(
+                                                                             :http_method => :put,
+                                                                             :path        => URI.parse(url).path,
+                                                                             :body        => file_contents,
+                                                                             :timestamp   => timestamp,
+                                                                             :user_id     => rest.client_name
+                                                                             )
+          headers.merge!(sign_obj.sign(OpenSSL::PKey::RSA.new(rest.signing_key)))
+        end
 
         begin
           RestClient::Resource.new(url, :headers=>headers, :timeout=>1800, :open_timeout=>1800).put(file_contents)
