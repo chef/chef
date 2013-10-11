@@ -98,10 +98,14 @@ if [ -d "/opt/freeware/bin" ]; then
 fi
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
-if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep 'Solaris 9'`" ]; then
-  # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
-  CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
-  export CONFIGURE_ARGS
+if [ -f "/etc/release" ]; then
+  # sol9 /bin/sh is buggy, this logic is deliberately not-optimized..
+  release=`cat /etc/release | grep 'Solaris 9'`
+  if [ "x$release" != "x" ]; then
+    # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
+    CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
+    export CONFIGURE_ARGS
+  fi
 fi
 
 # docs do not install on solaris 9
