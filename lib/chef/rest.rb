@@ -29,7 +29,8 @@ end
 
 require 'chef/http/authenticator'
 require 'chef/http/decompressor'
-require 'chef/http/json_to_model_inflater'
+require 'chef/http/json_input'
+require 'chef/http/json_to_model_output'
 require 'chef/http/cookie_manager'
 require 'chef/config'
 require 'chef/exceptions'
@@ -58,10 +59,14 @@ class Chef
       options[:signing_key_filename] = signing_key_filename
       super(url, options)
 
-      @chef_json_inflater = JSONToModelInflater.new(options)
-      @cookie_manager = CookieManager.new(options)
       @decompressor = Decompressor.new(options)
       @authenticator = Authenticator.new(options)
+
+      @middlewares << JSONInput.new(options)
+      @middlewares << JSONToModelOutput.new(options)
+      @middlewares << CookieManager.new(options)
+      @middlewares << @decompressor
+      @middlewares << @authenticator
     end
 
     def signing_key_filename
@@ -94,9 +99,9 @@ class Chef
     #   to JSON inflated.
     def get(path, raw=false, headers={})
       if raw
-        streaming_request(create_url(path), headers)
+        streaming_request(path, headers)
       else
-        api_request(:GET, create_url(path), headers)
+        request(:GET, path, headers)
       end
     end
 
@@ -115,11 +120,6 @@ class Chef
     # stream it until you run out of disk space.
     def fetch(path, headers={})
       streaming_request(create_url(path), headers) {|tmp_file| yield tmp_file }
-    end
-
-    # Chef::REST doesn't define middleware in the normal way for backcompat reasons, so it's hardcoded here.
-    def middlewares
-      [@chef_json_inflater, @cookie_manager, @decompressor, @authenticator]
     end
 
     alias :api_request :request

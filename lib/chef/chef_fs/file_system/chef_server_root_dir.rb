@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/server_api'
 require 'chef/chef_fs/file_system/acls_dir'
 require 'chef/chef_fs/file_system/base_fs_dir'
 require 'chef/chef_fs/file_system/rest_list_dir'
@@ -23,7 +24,6 @@ require 'chef/chef_fs/file_system/cookbooks_dir'
 require 'chef/chef_fs/file_system/data_bags_dir'
 require 'chef/chef_fs/file_system/nodes_dir'
 require 'chef/chef_fs/file_system/environments_dir'
-require 'chef/rest'
 require 'chef/chef_fs/data_handler/client_data_handler'
 require 'chef/chef_fs/data_handler/role_data_handler'
 require 'chef/chef_fs/data_handler/user_data_handler'
@@ -57,6 +57,14 @@ class Chef
         end
 
         def rest
+          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key, :raw_output => true)
+        end
+
+        def get_json(path)
+          Chef::ServerAPI.new(chef_server_url, :client_name => chef_username, :signing_key_filename => chef_private_key).get(path)
+        end
+
+        def chef_rest
           Chef::REST.new(chef_server_url, chef_username, chef_private_key)
         end
 

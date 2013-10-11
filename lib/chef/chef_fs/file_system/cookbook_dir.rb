@@ -126,7 +126,7 @@ class Chef
         def delete(recurse)
           if recurse
             begin
-              rest.delete_rest(api_path)
+              rest.delete(api_path)
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
             rescue Net::HTTPServerException
@@ -191,7 +191,7 @@ class Chef
             old_retry_count = Chef::Config[:http_retry_count]
             begin
               Chef::Config[:http_retry_count] = 0
-              @chef_object ||= Chef::CookbookVersion.json_create(Chef::ChefFS::RawRequest.raw_json(rest, api_path))
+              @chef_object ||= Chef::CookbookVersion.json_create(root.get_json(api_path))
             ensure
               Chef::Config[:http_retry_count] = old_retry_count
             end
