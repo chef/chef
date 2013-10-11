@@ -475,6 +475,7 @@ class Chef
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin
+        runlock.save_pid
         run_context = nil
         @events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
