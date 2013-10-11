@@ -171,6 +171,19 @@ describe Chef::Knife::Ssh do
     end
   end
 
+  describe "#get_password" do
+    before do
+      @knife.stub!(:prompt_for_password).and_return { "prompted_password" }
+    end
+    it "should prompt for the sudo password if none was provided" do
+      @knife.get_password.should == "prompted_password"
+    end
+    it "should use the sudo password provided by --sudo-password without prompting the user" do
+      @knife.config[:sudo_password] = "option_provided_password"
+      @knife.get_password.should == "option_provided_password"
+    end
+  end
+
   describe "#session_from_list" do
     before :each do
       @knife.instance_variable_set(:@longest, 0)

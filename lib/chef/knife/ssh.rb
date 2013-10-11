@@ -99,7 +99,7 @@ class Chef
         :default => true
 
       option :sudo_password,
-        :long => "--sudo-password PASSWORD"
+        :long => "--sudo-password PASSWORD",
         :description => "The password to use for 'sudo' commands. WARNING: using this option has limited security issues"
 
       def session
