@@ -314,7 +314,7 @@ class Chef
       config_file_settings
     end
 
-    def locate_config_file
+    def self.locate_config_file
       candidate_configs = []
 
       # Look for $KNIFE_HOME/knife.rb (allow multiple knives config on same machine)
@@ -326,8 +326,8 @@ class Chef
         candidate_configs << File.join(Dir.pwd, 'knife.rb')
       end
       # Look for $UPWARD/.chef/knife.rb
-      if self.class.chef_config_dir
-        candidate_configs << File.join(self.class.chef_config_dir, 'knife.rb')
+      if chef_config_dir
+        candidate_configs << File.join(chef_config_dir, 'knife.rb')
       end
       # Look for $HOME/.chef/knife.rb
       if ENV['HOME']
@@ -337,10 +337,10 @@ class Chef
       candidate_configs.each do | candidate_config |
         candidate_config = File.expand_path(candidate_config)
         if File.exist?(candidate_config)
-          config[:config_file] = candidate_config
-          break
+          return candidate_config
         end
       end
+      return nil
     end
 
     # Apply Config in this order:
@@ -379,7 +379,10 @@ class Chef
       Chef::Config[:chef_server_url]   = config[:chef_server_url] if config[:chef_server_url]
       Chef::Config[:environment]       = config[:environment]     if config[:environment]
 
-      Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+      Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+      if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+        Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+      end
       Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
       # Expand a relative path from the config directory. Config from command
@@ -401,7 +404,8 @@ class Chef
 
     def configure_chef
       unless config[:config_file]
-        locate_config_file
+        located_config_file = self.class.locate_config_file
+        config[:config_file] = located_config_file if located_config_file
       end
 
       # Don't try to load a knife.rb if it doesn't exist.

@@ -34,7 +34,6 @@ class Chef::Application::Client < Chef::Application
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specific_path("/etc/chef/client.rb"),
     :description => "The configuration file to use"
 
   option :formatter,
@@ -197,10 +196,10 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
-  option :chef_zero_enabled,
+  option :local_mode,
     :short        => "-z",
-    :long         => "--zero",
-    :description  => "Start a chef-zero instance pointed at local cookbooks",
+    :long         => "--local-mode",
+    :description  => "Point chef-client at local repository",
     :boolean      => true
 
   option :chef_zero_port,
@@ -229,7 +228,10 @@ class Chef::Application::Client < Chef::Application
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
-    Chef::Config.chef_zero.enabled = true if config[:chef_zero_enabled]
+    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+    if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+    end
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if Chef::Config[:daemonize]
@@ -267,6 +269,18 @@ class Chef::Application::Client < Chef::Application
         Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
       end
     end
+  end
+
+  def load_config_file
+    if !config.has_key?(:config_file)
+      if config[:local_mode]
+        require 'chef/knife'
+        config[:config_file] = Chef::Knife.locate_config_file
+      else
+        config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
+      end
+    end
+    super
   end
 
   def configure_logging

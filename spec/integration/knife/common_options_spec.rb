@@ -91,8 +91,8 @@ EOM
       knife('raw -z /nodes/x').should_succeed /"name": "x"/
     end
 
-    it 'knife raw --zero /nodes/x retrieves the role' do
-      knife('raw --zero /nodes/x').should_succeed /"name": "x"/
+    it 'knife raw --local-mode /nodes/x retrieves the role' do
+      knife('raw --local-mode /nodes/x').should_succeed /"name": "x"/
     end
 
     it 'knife raw -z --chef-zero-port=9999 /nodes/x retrieves the role' do
