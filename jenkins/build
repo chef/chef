@@ -24,8 +24,7 @@ usage()
 }
 
 # Get command line arguments
-while getopts :p: opt
-do
+while getopts :p: opt; do
   echo $opt
   case "$opt" in
     p)  project_name="$OPTARG";;
@@ -33,15 +32,13 @@ do
   esac
 done
 
-if [ -z $project_name ]
-then
+if [ -z $project_name ]; then
   usage
   exit 1
 fi
 
 # create the build timestamp file for fingerprinting if it doesn't exist (manual build execution)
-if [ ! -f build_timestamp ]
-then
+if [ ! -f build_timestamp ]; then
   date > build_timestamp
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
@@ -51,14 +48,12 @@ mkdir -p jenkins/chef-solo/cache
 PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
 export PATH
 
-if ! exists chef-solo;
-then
+if ! exists chef-solo; then
   sudo gem install chef --no-ri --no-rdoc
 fi
 
 # ensure bundler is installed
-if ! exists bundle;
-then
+if ! exists bundle; then
   sudo gem install bundler --no-ri --no-rdoc
 fi
 
@@ -96,6 +91,12 @@ cp omnibus.rb.example omnibus.rb
 PATH=/usr/local/bin:$PATH
 export PATH
 
+# AIX needs /opt/freeware/bin
+if [ -d "/opt/freeware/bin" ]; then
+  PATH=/opt/freeware/bin:$PATH
+  export PATH
+fi
+
 # horrible hack for solaris 9 to get ffi to compile in the bundle
 if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep 'Solaris 9'`" ]; then
   # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
@@ -113,8 +114,7 @@ else
 fi
 
 # Sign the package on some platforms:
-if exists rpm;
-then
+if exists rpm; then
   sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
 fi
 
