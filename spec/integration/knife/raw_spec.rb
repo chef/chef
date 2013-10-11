@@ -214,13 +214,13 @@ EOM
       end
 
       it 'knife raw /blah returns the raw text' do
-        knife('raw /blah').should_succeed <<EOM
+        knife('raw /blah').should_succeed(<<EOM, :stderr => "WARN: Expected JSON response, but got content-type 'text'\n")
 { "x": "y", "a": "b" }
 EOM
       end
 
       it 'knife raw --no-pretty /blah returns the raw text' do
-        knife('raw --no-pretty /blah').should_succeed <<EOM
+        knife('raw --no-pretty /blah').should_succeed(<<EOM, :stderr => "WARN: Expected JSON response, but got content-type 'text'\n")
 { "x": "y", "a": "b" }
 EOM
       end

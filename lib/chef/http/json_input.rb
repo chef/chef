@@ -1,5 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@opscode.com>)
+# Author:: John Keiser (<jkeiser@opscode.com>)
 # Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,40 +17,36 @@
 # limitations under the License.
 #
 
-require 'chef/http/cookie_jar'
+require 'chef/json_compat'
 
 class Chef
   class HTTP
 
-    # An HTTP middleware to manage storing/sending cookies in HTTP requests.
-    # Most HTTP communication in Chef does not need cookies, it was originally
-    # implemented to support OpenID, but it's not known who might be relying on
-    # it, so it's included with Chef::REST
-    class CookieManager
+    # Middleware that takes json input and turns it into raw text
+    class JSONInput
 
-      def initialize(options={})
-        @cookies = CookieJar.instance
+      def initialize(opts={})
       end
 
       def handle_request(method, url, headers={}, data=false)
-        @host, @port = url.host, url.port
-        if @cookies.has_key?("#{@host}:#{@port}")
-          headers['Cookie'] = @cookies["#{@host}:#{@port}"]
+        if data
+          headers["Content-Type"] = 'application/json'
+          data = Chef::JSONCompat.to_json(data)
+          # Force encoding to binary to fix SSL related EOFErrors
+          # cf. http://tickets.opscode.com/browse/CHEF-2363
+          # http://redmine.ruby-lang.org/issues/5233
+          data.force_encoding(Encoding::BINARY) if data.respond_to?(:force_encoding)
         end
         [method, url, headers, data]
       end
 
       def handle_response(http_response, rest_request, return_value)
-        if http_response['set-cookie']
-          @cookies["#{@host}:#{@port}"] = http_response['set-cookie']
-        end
         [http_response, rest_request, return_value]
       end
 
       def stream_response_handler(response)
         nil
       end
-
 
     end
   end

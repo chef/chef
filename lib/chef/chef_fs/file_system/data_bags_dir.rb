@@ -34,7 +34,7 @@ class Chef
 
         def children
           begin
-            @children ||= Chef::ChefFS::RawRequest.raw_json(rest, api_path).keys.sort.map do |entry|
+            @children ||= root.get_json(api_path).keys.sort.map do |entry|
               DataBagDir.new(entry, self, true)
             end
           rescue Timeout::Error => e
@@ -54,7 +54,7 @@ class Chef
 
         def create_child(name, file_contents)
           begin
-            rest.post_rest(api_path, { 'name' => name })
+            rest.post(api_path, { 'name' => name })
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e), "Timeout creating child '#{name}': #{e}"
           rescue Net::HTTPServerException => e

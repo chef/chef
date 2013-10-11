@@ -1064,4 +1064,13 @@ EOM
     end
   end # with versioned cookbooks
 
+  when_the_chef_server 'has a user' do
+    user 'x', {}
+    when_the_repository 'has the same user with json_class in it' do
+      file 'users/x.json', { 'admin' => true, 'json_class' => 'Chef::WebUIUser' }
+      it 'knife upload /users/x.json succeeds' do
+        knife('upload /users/x.json').should_succeed "Updated /users/x.json\n"
+      end
+    end
+  end
 end

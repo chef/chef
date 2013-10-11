@@ -52,7 +52,7 @@ class Chef
             raise MustDeleteRecursivelyError.new(self), "#{path_for_printing} must be deleted recursively"
           end
           begin
-            rest.delete_rest(api_path)
+            rest.delete(api_path)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e), "Timeout deleting: #{e}"
           rescue Net::HTTPServerException => e

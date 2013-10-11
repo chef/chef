@@ -17,26 +17,27 @@
 #
 
 require 'tempfile'
+require 'chef/http/simple'
 
 class Chef
   class Provider
     class HttpRequest < Chef::Provider
 
-      attr_accessor :rest
+      attr_accessor :http
 
       def whyrun_supported?
         true
       end
 
       def load_current_resource
-        @rest = Chef::REST.new(@new_resource.url, nil, nil)
+        @http = Chef::HTTP::Simple.new(@new_resource.url)
       end
 
       # Send a HEAD request to @new_resource.url, with ?message=@new_resource.message
       def action_head
         message = check_message(@new_resource.message)
         # returns true from Chef::REST if returns 2XX (Net::HTTPSuccess)
-        modified = @rest.head(
+        modified = @http.head(
           "#{@new_resource.url}?message=#{message}",
           @new_resource.headers
         )
@@ -53,9 +54,8 @@ class Chef
         converge_by("#{@new_resource} GET to #{@new_resource.url}") do
 
           message = check_message(@new_resource.message)
-          body = @rest.get(
+          body = @http.get(
             "#{@new_resource.url}?message=#{message}",
-            false,
             @new_resource.headers
           )
           Chef::Log.info("#{@new_resource} GET to #{@new_resource.url} successful")
@@ -67,7 +67,7 @@ class Chef
       def action_put
         converge_by("#{@new_resource} PUT to #{@new_resource.url}") do
           message = check_message(@new_resource.message)
-          body = @rest.put(
+          body = @http.put(
             "#{@new_resource.url}",
             message,
             @new_resource.headers
@@ -81,7 +81,7 @@ class Chef
       def action_post
         converge_by("#{@new_resource} POST to #{@new_resource.url}") do
           message = check_message(@new_resource.message)
-          body = @rest.post(
+          body = @http.post(
             "#{@new_resource.url}",
             message,
             @new_resource.headers
@@ -94,7 +94,7 @@ class Chef
       # Send a DELETE request to @new_resource.url
       def action_delete
         converge_by("#{@new_resource} DELETE to #{@new_resource.url}") do
-          body = @rest.delete(
+          body = @http.delete(
             "#{@new_resource.url}",
             @new_resource.headers
           )
