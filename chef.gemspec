@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
 
-  s.add_dependency "chef-zero", "~> 1.6"
+  s.add_dependency "chef-zero", "~> 1.6", ">= 1.6.2"
   s.add_dependency "puma", "~> 1.6"
   
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }

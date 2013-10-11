@@ -18,6 +18,7 @@
 #
 
 require 'chef/chef_fs/file_system/file_system_entry'
+require 'chef/chef_fs/file_system/not_found_error'
 
 class Chef
   module ChefFS
@@ -49,9 +50,13 @@ class Chef
 
         def children
           # Except cookbooks and data bag dirs, all things must be json files
-          Dir.entries(file_path).sort.
-              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-              map { |child_name| ChefRepositoryFileSystemEntry.new(child_name, self) }
+          begin
+            Dir.entries(file_path).sort.
+                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+                map { |child_name| ChefRepositoryFileSystemEntry.new(child_name, self) }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          end
         end
 
       end
