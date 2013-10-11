@@ -13,6 +13,8 @@
 set -e
 set -x
 
+os=`uname -s`
+
 # Check whether a command exists - returns 0 if it does, 1 if it does not
 exists() {
   if command -v $1 >/dev/null 2>&1
@@ -27,6 +29,11 @@ usage() {
   echo >&2 \
   "usage: $0 [-p project_name]"
 }
+
+if [ "x$os" = "xAIX" ]; then
+  # need to unset LIBPATH on AIX (like LD_LIBRARY_PATH on Solaris, Jenkins sets this (wrongly) on AIX)
+  unset LIBPATH
+fi
 
 # Get command line arguments
 while getopts :p: opt; do
@@ -95,10 +102,12 @@ cp omnibus.rb.example omnibus.rb
 PATH=/usr/local/bin:$PATH
 export PATH
 
-# AIX needs /opt/freeware/bin
-if [ -d "/opt/freeware/bin" ]; then
-  PATH=/opt/freeware/bin:$PATH
-  export PATH
+if [ "x$os" = "xAIX" ]; then
+  # AIX needs /opt/freeware/bin
+  if [ -d "/opt/freeware/bin" ]; then
+    PATH=/opt/freeware/bin:$PATH
+    export PATH
+  fi
 fi
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
