@@ -52,6 +52,28 @@ describe 'chef_repo_path tests' do
         file 'users/user3.json', {}
       end
 
+      it 'knife list --local -Rfp --chef-repo-path chef_repo2 / grabs chef_repo2 stuff' do
+        Chef::Config.delete(:chef_repo_path)
+        knife("list --local -Rfp --chef-repo-path #{path_to('chef_repo2')} /").should_succeed <<EOM
+/clients/
+/clients/client3.json
+/cookbooks/
+/cookbooks/cookbook3/
+/cookbooks/cookbook3/metadata.rb
+/data_bags/
+/data_bags/bag3/
+/data_bags/bag3/item3.json
+/environments/
+/environments/env3.json
+/nodes/
+/nodes/node3.json
+/roles/
+/roles/role3.json
+/users/
+/users/user3.json
+EOM
+      end
+
       context 'when all _paths are set to alternates' do
         before :each do
           %w(client cookbook data_bag environment node role user).each do |object_name|
@@ -59,6 +81,27 @@ describe 'chef_repo_path tests' do
           end
           Chef::Config.chef_repo_path = File.join(Chef::Config.chef_repo_path, 'chef_repo2')
         end
+
+        it 'knife list --local -Rfp --chef-repo-path chef_repo2 / grabs chef_repo2 stuff' do
+          knife("list --local -Rfp --chef-repo-path #{path_to('chef_repo2')} /").should_succeed <<EOM
+/clients/
+/clients/client3.json
+/cookbooks/
+/cookbooks/cookbook3/
+/cookbooks/cookbook3/metadata.rb
+/data_bags/
+/data_bags/bag3/
+/data_bags/bag3/item3.json
+/environments/
+/environments/env3.json
+/nodes/
+/nodes/node3.json
+/roles/
+/roles/role3.json
+/users/
+/users/user3.json
+EOM
+        end        
 
         context 'when cwd is at the top level' do
           cwd '.'
