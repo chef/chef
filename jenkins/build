@@ -71,10 +71,10 @@ fi
 # install omnibus cookbook and dependencies
 #berks install --path=vendor/cookbooks
 
-if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep -i solaris)" ]; then
-  dna=$(pwd)/jenkins/dna-solaris2.json
+if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep -i solaris`" ]; then
+  dna=`pwd`/jenkins/dna-solaris2.json
 else
-  dna=$(pwd)/jenkins/dna.json
+  dna=`pwd`/jenkins/dna.json
 fi
 # Omnibus build server prep tasks, including build ruby
 #sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
@@ -97,7 +97,7 @@ PATH=/usr/local/bin:$PATH
 export PATH
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
-if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep 'Solaris 9')" ]; then
+if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep 'Solaris 9'`" ]; then
   # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
   CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
   export CONFIGURE_ARGS
@@ -115,7 +115,7 @@ fi
 # Sign the package on some platforms:
 if exists rpm;
 then
-  sudo -i $(pwd)/jenkins/sign-rpm "foo" $(pwd)/pkg/*rpm
+  sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
 fi
 
 # Dump the build-generated version so the Omnitruck release script uses the
