@@ -7,8 +7,7 @@ set -e
 set -x
 
 # Check whether a command exists - returns 0 if it does, 1 if it does not
-exists()
-{
+exists() {
   if command -v $1 >/dev/null 2>&1
   then
     return 0
@@ -17,8 +16,7 @@ exists()
   fi
 }
 
-usage()
-{
+usage() {
   echo >&2 \
   "usage: $0 [-p project_name]"
 }
@@ -48,18 +46,17 @@ mkdir -p jenkins/chef-solo/cache
 PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
 export PATH
 
-if ! exists chef-solo; then
+if exists chef-solo == 1; then
   sudo gem install chef --no-ri --no-rdoc
 fi
 
 # ensure bundler is installed
-if ! exists bundle; then
+if exists bundle == 1; then
   sudo gem install bundler --no-ri --no-rdoc
 fi
 
 # ensure berkshelf is installed
-#if ! exists berks;
-#then
+#if exists berks == 1; then
 #  sudo gem install berkshelf --no-ri --no-rdoc
 #fi
 
