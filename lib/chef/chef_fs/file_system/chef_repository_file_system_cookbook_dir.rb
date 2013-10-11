@@ -18,6 +18,7 @@
 
 require 'chef/chef_fs/file_system/chef_repository_file_system_cookbook_entry'
 require 'chef/chef_fs/file_system/cookbook_dir'
+require 'chef/chef_fs/file_system/not_found_error'
 require 'chef/cookbook/chefignore'
 require 'chef/cookbook/cookbook_version_loader'
 
@@ -51,13 +52,17 @@ class Chef
         end
 
         def children
-          Dir.entries(file_path).sort.
-              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-              map do |child_name|
-                segment_info = CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
-                ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
-              end.
-              select { |entry| !(entry.dir? && entry.children.size == 0) }
+          begin
+            Dir.entries(file_path).sort.
+                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+                map do |child_name|
+                  segment_info = CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
+                  ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
+                end.
+                select { |entry| !(entry.dir? && entry.children.size == 0) }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          end
         end
 
         def can_have_child?(name, is_dir)

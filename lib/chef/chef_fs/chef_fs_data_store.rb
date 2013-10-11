@@ -135,7 +135,7 @@ class Chef
             if path[0] == 'cookbooks' && path.length >= 3
               entry.delete(true)
             else
-              entry.delete
+              entry.delete(false)
             end
           end
         end
