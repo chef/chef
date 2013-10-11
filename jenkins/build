@@ -103,8 +103,8 @@ fi
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
 if [ -f "/etc/release" ]; then
-  # sol9 /bin/sh is buggy, this logic is deliberately not-optimized..
-  release=`cat /etc/release | grep 'Solaris 9'`
+  # solaris /bin/sh needs the stupid || true or set -x bombs here
+  release=`cat /etc/release | grep 'Solaris 9' || true`
   if [ "x$release" != "x" ]; then
     # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
     CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
