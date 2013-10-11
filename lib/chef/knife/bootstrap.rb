@@ -143,11 +143,6 @@ class Chef
           name, path = h.split("=")
           Chef::Config[:knife][:hints][name] = path ? JSON.parse(::File.read(path)) : Hash.new  }
 
-      option :secret,
-        :short => "-s SECRET",
-        :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values"
-
       option :secret_file,
         :long => "--secret-file SECRET_FILE",
         :description => "A file containing the secret key to use to encrypt data bag item values"
@@ -267,7 +262,7 @@ machines by adding the following to your 'knife.rb' file:
   knife[:secret_file] = "/path/to/your/secret"
 
 If you would like to selectively distribute a secret key during bootstrap
-please use the '--secret' or '--secret-file' options of this command instead.
+please use the '--secret-file' options of this command instead.
 
 #{ui.color('IMPORTANT:', :red, :bold)} In a future version of Chef, this
 behavior will be removed and any 'encrypted_data_bag_secret' entries in
