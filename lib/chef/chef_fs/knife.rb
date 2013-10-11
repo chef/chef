@@ -60,11 +60,11 @@ class Chef
         Chef::Config[:repo_mode] = config[:repo_mode] if config[:repo_mode]
         Chef::Config[:concurrency] = config[:concurrency].to_i if config[:concurrency]
 
-        # --chef-repo-path overrides all other paths
+        # --chef-repo-path forcibly overrides all other paths
         if config[:chef_repo_path]
           Chef::Config[:chef_repo_path] = config[:chef_repo_path]
-          Chef::Config::PATH_VARIABLES.each do |variable_name|
-            Chef::Config[variable_name.to_sym] = chef_repo_paths.map { |path| File.join(path, "#{variable_name[0..-6]}s") }
+          %w(acl client cookbook container data_bag environment group node role user).each do |variable_name|
+            Chef::Config.delete("#{variable_name}_path".to_sym)
           end
         end
 
