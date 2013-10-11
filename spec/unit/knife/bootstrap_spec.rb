@@ -153,7 +153,6 @@ describe Chef::Knife::Bootstrap do
 
   describe "specifying the encrypted data bag secret key" do
     subject(:knife) { described_class.new }
-    let(:secret) { "supersekret" }
     let(:secret_file) { File.join(CHEF_SPEC_DATA, 'bootstrap', 'encrypted_data_bag_secret') }
     let(:options) { [] }
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "secret.erb")) }
@@ -162,18 +161,6 @@ describe Chef::Knife::Bootstrap do
       knife.parse_options(options)
       template_string = knife.read_template
       knife.render_template(template_string)
-    end
-
-    context "via --secret" do
-      let(:options){ ["--secret", secret] }
-
-      it "creates a secret file" do
-        rendered_template.should match(%r{#{secret}})
-      end
-
-      it "renders the client.rb with an encrypted_data_bag_secret entry" do
-        rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
-      end
     end
 
     context "via --secret-file" do
