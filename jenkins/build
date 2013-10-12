@@ -103,6 +103,8 @@ PATH=/usr/local/bin:$PATH
 export PATH
 
 if [ "x$os" = "xAIX" ]; then
+  # deinstall the bff if it got installed, can't build if it is installed
+  sudo installp -u chef || true
   # AIX needs /opt/freeware/bin and /usr/sbin
   if [ -d "/opt/freeware/bin" ]; then
     PATH=/opt/freeware/bin:$PATH:/usr/sbin
