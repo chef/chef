@@ -88,7 +88,8 @@ fi
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}"
-  sudo chown jenkins-node "/opt/${project_name}" || sudo chown jenkins "/opt/${project_name}"
+  sudo chown -R jenkins-node "/opt/${project_name}" || sudo chown -R jenkins "/opt/${project_name}"
+  sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
   sudo rm -rf /var/cache/omnibus/pkg/* || true
   sudo rm -rf /var/cache/omnibus/src/* || true
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
@@ -103,6 +104,8 @@ PATH=/usr/local/bin:$PATH
 export PATH
 
 if [ "x$os" = "xAIX" ]; then
+  sudo mkdir /.info || true
+  sudo chown -R jenkins /.info || true
   # deinstall the bff if it got installed, can't build if it is installed
   sudo installp -u chef || true
   # AIX needs /opt/freeware/bin and /usr/sbin
