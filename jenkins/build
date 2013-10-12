@@ -103,9 +103,9 @@ PATH=/usr/local/bin:$PATH
 export PATH
 
 if [ "x$os" = "xAIX" ]; then
-  # AIX needs /opt/freeware/bin
+  # AIX needs /opt/freeware/bin and /usr/sbin
   if [ -d "/opt/freeware/bin" ]; then
-    PATH=/opt/freeware/bin:$PATH
+    PATH=/opt/freeware/bin:$PATH:/usr/sbin
     export PATH
   fi
 fi
