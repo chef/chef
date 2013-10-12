@@ -106,6 +106,7 @@ export PATH
 if [ "x$os" = "xAIX" ]; then
   sudo mkdir /.info || true
   sudo chown -R jenkins /.info || true
+  sudo rm -rf /tmp/bff || true
   # deinstall the bff if it got installed, can't build if it is installed
   sudo installp -u chef || true
   # AIX needs /opt/freeware/bin and /usr/sbin
