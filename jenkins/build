@@ -138,7 +138,7 @@ else
 fi
 
 # Sign the package on some platforms:
-if [ "x$os" = "xAIX" ]; then
+if [ "x$os" != "xAIX" ]; then
   if exists rpm == 1; then
     sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
   fi
