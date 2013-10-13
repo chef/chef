@@ -138,8 +138,10 @@ else
 fi
 
 # Sign the package on some platforms:
-if exists rpm; then
-  sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
+if [ "x$os" = "xAIX" ]; then
+  if exists rpm == 1; then
+    sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
+  fi
 fi
 
 # Dump the build-generated version so the Omnitruck release script uses the
