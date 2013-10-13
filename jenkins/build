@@ -104,8 +104,9 @@ PATH=/usr/local/bin:$PATH
 export PATH
 
 if [ "x$os" = "xAIX" ]; then
+  sudo rm -rf /.info || true
   sudo mkdir /.info || true
-  sudo chown -R jenkins /.info || true
+  sudo chown jenkins /.info || true
   sudo rm -rf /tmp/bff || true
   # deinstall the bff if it got installed, can't build if it is installed
   sudo installp -u chef || true
