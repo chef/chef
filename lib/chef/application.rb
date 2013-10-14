@@ -217,11 +217,10 @@ class Chef::Application
 
   def apply_config(config_content, config_file_path)
     Chef::Config.from_string(config_content, config_file_path)
-    Chef::Config.merge!(config)
   rescue Chef::Exceptions::ConfigurationError => error
-    Chef::Application.fatal!("Error processing config file #{config[:config_file]} with error #{error.message}", 2)
+    Chef::Application.fatal!("Error processing config file #{config_file_path} with error #{error.message}", 2)
   rescue Exception => error
-    Chef::Application.fatal!("Unknown error processing config file #{config[:config_file]} with error #{error.message}", 2)
+    Chef::Application.fatal!("Unknown error processing config file #{config_file_path} with error #{error.message}", 2)
   end
 
   class << self
