@@ -24,6 +24,7 @@ require 'chef'
 require 'chef/version'
 require 'chef/client'
 require 'chef/config'
+require 'chef/config_fetcher'
 
 require 'chef/shell/shell_session'
 require 'chef/shell/ext'
@@ -151,26 +152,9 @@ module Shell
   end
 
   def self.parse_json
-    # HACK: copied verbatim from chef/application/client, because it's not
-    # reusable as written there :(
     if Chef::Config[:json_attribs]
-      begin
-        json_io = open(Chef::Config[:json_attribs])
-      rescue SocketError => error
-        fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::ENOENT => error
-        fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::EACCES => error
-        fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
-      rescue Exception => error
-        fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
-      end
-
-      begin
-        @json_attribs = Chef::JSONCompat.from_json(json_io.read)
-      rescue JSON::ParserError => error
-        fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
-      end
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @json_attribs = config_fetcher.fetch_json
     end
   end
 
