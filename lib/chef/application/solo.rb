@@ -23,7 +23,7 @@ require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
 require 'chef/rest'
-require 'open-uri'
+require 'chef/config_fetcher'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
@@ -181,36 +181,13 @@ class Chef::Application::Solo < Chef::Application
     end
 
     if Chef::Config[:json_attribs]
-      begin
-        json_io = case Chef::Config[:json_attribs]
-                  when /^(http|https):\/\//
-                    @rest = Chef::REST.new(Chef::Config[:json_attribs], nil, nil)
-                    @rest.get_rest(Chef::Config[:json_attribs], true).open
-                  else
-                    open(Chef::Config[:json_attribs])
-                  end
-      rescue SocketError => error
-        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::ENOENT => error
-        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::EACCES => error
-        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
-      rescue Exception => error
-        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
-      end
-
-      begin
-        @chef_client_json = Chef::JSONCompat.from_json(json_io.read)
-        json_io.close unless json_io.closed?
-      rescue JSON::ParserError => error
-        Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
-      end
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @chef_solo_json = config_fetcher.fetch_json
     end
 
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
-      target_file = File.join(recipes_path, 'recipes.tgz')
 
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p recipes_path
