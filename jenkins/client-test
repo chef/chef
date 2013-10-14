@@ -54,14 +54,16 @@ case "$filetype" in
     sudo rpm -ev chef || true
     ;;
   "solaris")
-    if ! sudo pkgrm -a /tmp/nocheck -n chef; then
+    if sudo pkgrm -a /tmp/nocheck -n chef; then
+      :
+    else
       echo "WARNING: CLEANING UP BROKEN POSTRM FROM PRIOR INSTALLATION!!!!!!!!!!!!!!!!!!!!!!"
       sudo rm -f /var/sadm/pkg/chef/install/postremove || true
       sudo pkgrm -a /tmp/nocheck -n chef || true
     fi
     ;;
   "bff")
-    installp -u chef || true
+    sudo installp -u chef || true
     ;;
   "sh")
     # intentionally left blank
@@ -85,7 +87,7 @@ case "$filetype" in
   "deb") sudo dpkg -i pkg/chef*.deb ;;
   "rpm") sudo rpm -Uvh pkg/chef*.rpm ;;
   "solaris") sudo pkgadd -n -d pkg/chef*.solaris -a /tmp/nocheck chef ;;
-  "bff") installp -a -d pkg/chef*.bff ;;
+  "bff") sudo installp -a -d pkg/chef*.bff ;;
   "sh") sudo ./pkg/chef*.sh ;;
 esac
 
@@ -136,7 +138,7 @@ case "$filetype" in
     sudo pkgrm -a /tmp/nocheck -n chef
     ;;
   "bff")
-    installp -u chef
+    sudo installp -u chef
     ;;
   "sh")
     # intentionally left blank
