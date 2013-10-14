@@ -69,45 +69,19 @@ describe Chef::Application::Client, "reconfigure" do
 
   describe "when the json_attribs configuration option is specified" do
 
-    describe "and the json_attribs matches a HTTP regex" do
-      before do
-        @json = {:a=>"b"}.to_json
-        @http = double("Chef::HTTP::Simple", :get => @json)
+    let(:json_attribs) { {"a" => "b"} }
+    let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+    let(:json_source) { "https://foo.com/foo.json" }
 
-        Chef::Config[:json_attribs] = "https://foo.com/foo.json"
-        Chef::HTTP::Simple.should_receive(:new).with("https://foo.com/foo.json").and_return(@http)
-      end
-
-      it "should perform a RESTful GET on the supplied URL" do
-        @app.reconfigure
-        @app.chef_client_json.should == {"a" => "b"}
-      end
+    before do
+      Chef::Config[:json_attribs] = json_source
+      Chef::ConfigFetcher.should_receive(:new).with(json_source).
+        and_return(config_fetcher)
     end
 
-    describe "and the json_attribs does not match the HTTP regex" do
-      before do
-        Chef::Config[:json_attribs] = "/etc/chef/dna.json"
-        @json = {:a=>"b"}.to_json
-        ::File.should_receive(:read).with("/etc/chef/dna.json").and_return(@json)
-      end
-
-      it "should parse the json out of the file" do
-        @app.reconfigure
-        @app.chef_client_json.should == {"a" => "b"}
-      end
-    end
-
-    describe "when parsing fails" do
-      before do
-        Chef::Config[:json_attribs] = "/etc/chef/dna.json"
-        @json = %q[{"syntax-error": "missing quote}]
-        ::File.should_receive(:read).with("/etc/chef/dna.json").and_return(@json)
-      end
-
-      it "should hard fail the application" do
-        Chef::Application.should_receive(:fatal!).with(%r[Could not parse the provided JSON file \(/etc/chef/dna.json\)], 2)
-        @app.reconfigure
-      end
+    it "reads the JSON attributes from the specified source" do
+      @app.reconfigure
+      @app.chef_client_json.should == json_attribs
     end
   end
 end
