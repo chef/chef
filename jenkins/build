@@ -15,13 +15,13 @@ set -x
 
 os=`uname -s`
 
-# Check whether a command exists - returns 0 if it does, 1 if it does not
-exists() {
-  if command -v $1 >/dev/null 2>&1
-  then
-    return 0
-  else
+# Return truthy (which is zero) if a command does not exist
+# (this is deliberately inverted because /bin/sh on Solaris does not support "if ! exists" syntax)
+not_exists() {
+  if command -v $1 >/dev/null 2>&1; then
     return 1
+  else
+    return 0
   fi
 }
 
@@ -60,17 +60,17 @@ mkdir -p jenkins/chef-solo/cache
 PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
 export PATH
 
-if exists chef-solo == 1; then
+if not_exists chef-solo; then
   sudo gem install chef --no-ri --no-rdoc
 fi
 
 # ensure bundler is installed
-if exists bundle == 1; then
+if not_exists bundle; then
   sudo gem install bundler --no-ri --no-rdoc
 fi
 
 # ensure berkshelf is installed
-#if exists berks == 1; then
+#if not_exists berks; then
 #  sudo gem install berkshelf --no-ri --no-rdoc
 #fi
 
@@ -88,13 +88,15 @@ fi
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}"
-  sudo chown -R jenkins-node "/opt/${project_name}" || sudo chown -R jenkins "/opt/${project_name}"
-  sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
   sudo rm -rf /var/cache/omnibus/pkg/* || true
   sudo rm -rf /var/cache/omnibus/src/* || true
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
   sudo rm -f pkg/* || true
 fi
+
+# always fix up permissions
+sudo chown -R jenkins-node "/opt/${project_name}" || sudo chown -R jenkins "/opt/${project_name}"
+sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
 
 # copy config into place
 cp omnibus.rb.example omnibus.rb
@@ -139,7 +141,7 @@ fi
 
 # Sign the package on some platforms:
 if [ "x$os" != "xAIX" ]; then
-  if exists rpm == 1; then
+  if not_exists rpm; then
     sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
   fi
 fi
