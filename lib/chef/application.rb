@@ -76,66 +76,18 @@ class Chef::Application
 
   # Parse the config file
   def load_config_file
-    if !config[:config_file]
+    config_fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
+    if config[:config_file].nil?
       Chef::Log.warn("No config file found or specified on command line, using command line options.")
-      Chef::Config.merge!(config)
-      return
-    end
-
-    if !Chef::Application.config_file_exists?(config[:config_file])
+    elsif config_fetcher.config_missing?
       Chef::Log.warn("*****************************************")
-      if !File.exists?(config[:config_file])
-        Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
-      else
-        Chef::Log.warn("Config file #{config[:config_file]} not inside the jail #{Chef::Config.config_file_jail}, using command line options.", 2)
-      end
+      Chef::Log.warn("Did not find config file: #{config[:config_file]}, using command line options.")
       Chef::Log.warn("*****************************************")
-
-      Chef::Config.merge!(config)
-      return
+    else
+      config_content = config_fetcher.read_config
+      apply_config(config_content, config[:config_file])
     end
-
-    begin
-      case config[:config_file]
-      when /^(http|https):\/\//
-        Chef::REST.new("", nil, nil).fetch(config[:config_file]) { |f| apply_config(f.path) }
-      else
-        ::File::open(config[:config_file]) { |f| apply_config(f.path) }
-      end
-    rescue SocketError => error
-      Chef::Application.fatal!("Error getting config file #{config[:config_file]}", 2)
-    rescue Chef::Exceptions::ConfigurationError => error
-      Chef::Application.fatal!("Error processing config file #{config[:config_file]} with error #{error.message}", 2)
-    rescue Exception => error
-      Chef::Application.fatal!("Unknown error processing config file #{config[:config_file]} with error #{error.message}", 2)
-    end
-  end
-
-  # Determines whether a config file exists, taking into account file existence
-  # as well as Chef::Config.config_file_jail (if they are not under the jail,
-  # this method will return false).  Takes symlinks and relative paths into
-  # account.
-  def self.config_file_exists?(config_file)
-    if config_file =~ /^(http|https):\/\//
-      return true
-    end
-
-    begin
-      real_config_file = Pathname.new(config_file).realpath.to_s
-    rescue Errno::ENOENT
-      return false
-    end
-
-    return true if !Chef::Config.config_file_jail
-
-    begin
-      jail = Pathname.new(Chef::Config.config_file_jail).realpath.to_s
-    rescue Errno::ENOENT
-      Chef::Log.warn("Config file jail #{Chef::Config.config_file_jail} does not exist: will not load any config file.")
-      return false
-    end
-
-    Chef::ChefFS::PathUtils.descendant_of?(real_config_file, jail)
+    Chef::Config.merge!(config)
   end
 
   # Initialize and configure the logger.
@@ -260,9 +212,13 @@ class Chef::Application
 
   private
 
-  def apply_config(config_file_path)
-    Chef::Config.from_file(config_file_path)
+  def apply_config(config_content, config_file_path)
+    Chef::Config.from_string(config_content, config_file_path)
     Chef::Config.merge!(config)
+  rescue Chef::Exceptions::ConfigurationError => error
+    Chef::Application.fatal!("Error processing config file #{config[:config_file]} with error #{error.message}", 2)
+  rescue Exception => error
+    Chef::Application.fatal!("Unknown error processing config file #{config[:config_file]} with error #{error.message}", 2)
   end
 
   class << self
