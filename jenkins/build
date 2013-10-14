@@ -25,6 +25,14 @@ not_exists() {
   fi
 }
 
+exists() {
+  if command -v $1 >/dev/null 2>&1; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 usage() {
   echo >&2 \
   "usage: $0 [-p project_name]"
@@ -106,6 +114,7 @@ PATH=/usr/local/bin:$PATH
 export PATH
 
 if [ "x$os" = "xAIX" ]; then
+  # AIX is hateful and requires a bunch of root stuff to build BFF packages
   sudo rm -rf /.info || true
   sudo mkdir /.info || true
   sudo chown jenkins /.info || true
@@ -141,7 +150,7 @@ fi
 
 # Sign the package on some platforms:
 if [ "x$os" != "xAIX" ]; then
-  if not_exists rpm; then
+  if exists rpm; then
     sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
   fi
 fi
