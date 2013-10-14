@@ -29,6 +29,13 @@ class Chef
 
     extend Mixlib::Config
 
+    # Evaluates the given string as config.
+    #
+    # +filename+ is used for context in stacktraces, but doesn't need to be the name of an actual file.
+    def self.from_string(string, filename)
+      self.instance_eval(string, filename, 1)
+    end
+
     # Manages the chef secret session key
     # === Returns
     # <newkey>:: A new or retrieved session key
