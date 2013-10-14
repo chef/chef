@@ -13,7 +13,7 @@ class Chef
       begin
         Chef::JSONCompat.from_json(config_data)
       rescue JSON::ParserError => error
-        Chef::Application.fatal!("Could not parse the provided JSON file (#{config_location})!: " + error.message, 2)
+        Chef::Application.fatal!("Could not parse the provided JSON file (#{config_location}): " + error.message, 2)
       end
     end
 
@@ -26,7 +26,6 @@ class Chef
     end
 
     def fetch_remote_config
-      http = Chef::HTTP::Simple.new(config_location)
       http.get("")
     rescue SocketError, SystemCallError => error
       Chef::Application.fatal!("Cannot fetch config '#{config_location}': '#{error.class}: #{error.message}", 2)
@@ -35,7 +34,7 @@ class Chef
     def read_local_config
       ::File.read(config_location)
     rescue Errno::ENOENT => error
-      Chef::Application.fatal!("I cannot find #{config_location}", 2)
+      Chef::Application.fatal!("Cannot load configuration from #{config_location}", 2)
     rescue Errno::EACCES => error
       Chef::Application.fatal!("Permissions are incorrect on #{config_location}. Please chmod a+r #{config_location}", 2)
     end
