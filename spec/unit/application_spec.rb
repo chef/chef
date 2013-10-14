@@ -26,6 +26,7 @@ describe Chef::Application do
     @app = Chef::Application.new
     Dir.stub!(:chdir).and_return(0)
     @app.stub!(:reconfigure)
+    Chef::Log.init(STDERR)
   end
 
   after do
@@ -95,28 +96,24 @@ describe Chef::Application do
     end
 
     describe "when a config_file is present" do
+      let(:config_content) { "rspec_ran('true')" }
+      let(:config_location) { "/etc/chef/default.rb" }
+
       before do
-        @config_file = Tempfile.new("rspec-chef-config")
-        @config_file.puts("rspec_ran('true')")
-        @config_file.close
-
-        @app.config[:config_file] = "/etc/chef/default.rb"
-      end
-
-      after do
-        @config_file.unlink
+        @app.config[:config_file] = config_location
+        File.stub(:exist?).with(config_location).and_return(true)
+        File.should_receive(:read).
+          with(config_location).
+          and_return(config_content)
       end
 
       it "should configure chef::config from a file" do
-        Chef::Application.should_receive(:config_file_exists?).with('/etc/chef/default.rb').and_return(true)
-        File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
-        Chef::Config.should_receive(:from_file).with(@config_file.path)
+        Chef::Config.should_receive(:from_string).with(config_content, config_location)
         @app.configure_chef
       end
 
       it "should merge the local config hash into chef::config" do
-        Chef::Application.should_receive(:config_file_exists?).with('/etc/chef/default.rb').and_return(true)
-        File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
+        #File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
         @app.configure_chef
         Chef::Config.rspec_ran.should == "true"
       end
@@ -143,8 +140,8 @@ describe Chef::Application do
         Chef::Config.should_receive(:merge!)
         @app.configure_chef
       end
-    end
 
+<<<<<<< HEAD
     describe "when the config_file is an URL" do
       before do
         @app.config[:config_file] = "http://example.com/foo.rb"
@@ -172,6 +169,8 @@ describe Chef::Application do
         @app.configure_chef
         Chef::Config.rspec_ran.should == "true"
       end
+=======
+>>>>>>> Load client/solo config via ConfigFetcher
     end
   end
 
@@ -295,34 +294,25 @@ describe Chef::Application do
     end
   end
 
+  context "when the config file is not available" do
+    it "should warn for bad config file path" do
+      @app.config[:config_file] = "/tmp/non-existing-dir/file"
+      config_file_regexp = Regexp.new @app.config[:config_file]
+      Chef::Log.should_receive(:warn).at_least(:once).with(config_file_regexp).and_return(true)
+      Chef::Log.should_receive(:warn).any_number_of_times.and_return(true)
+      @app.configure_chef
+    end
+  end
+
   describe "configuration errors" do
     before do
-      Process.stub!(:exit).and_return(true)
+      Process.should_receive(:exit)
     end
 
     def raises_informative_fatals_on_configure_chef
       config_file_regexp = Regexp.new @app.config[:config_file]
       Chef::Log.should_receive(:fatal).with(config_file_regexp).and_return(true)
       @app.configure_chef
-    end
-
-    def warns_informatively_on_configure_chef
-      config_file_regexp = Regexp.new @app.config[:config_file]
-      Chef::Log.should_receive(:warn).at_least(:once).with(config_file_regexp).and_return(true)
-      Chef::Log.should_receive(:warn).any_number_of_times.and_return(true)
-      @app.configure_chef
-    end
-
-    it "should warn for bad config file path" do
-      @app.config[:config_file] = "/tmp/non-existing-dir/file"
-      warns_informatively_on_configure_chef
-    end
-
-    it "should raise informative fatals for bad config file url" do
-      non_existing_url = "http://its-stubbed.com/foo.rb"
-      @app.config[:config_file] = non_existing_url
-      Chef::REST.any_instance.stub(:fetch).with(non_existing_url).and_raise(SocketError)
-      raises_informative_fatals_on_configure_chef
     end
 
     describe "when config file exists but contains errors" do
