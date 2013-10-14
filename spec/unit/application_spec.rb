@@ -311,7 +311,11 @@ describe Chef::Application do
 
     def raises_informative_fatals_on_configure_chef
       config_file_regexp = Regexp.new @app.config[:config_file]
-      Chef::Log.should_receive(:fatal).with(config_file_regexp).and_return(true)
+      Chef::Log.should_receive(:fatal).
+        with(/Configuration error/)
+      Chef::Log.should_receive(:fatal).
+        with(config_file_regexp).
+        at_least(1).times
       @app.configure_chef
     end
 
