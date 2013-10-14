@@ -217,10 +217,11 @@ class Chef::Application
 
   def apply_config(config_content, config_file_path)
     Chef::Config.from_string(config_content, config_file_path)
-  rescue Chef::Exceptions::ConfigurationError => error
-    Chef::Application.fatal!("Error processing config file #{config_file_path} with error #{error.message}", 2)
   rescue Exception => error
-    Chef::Application.fatal!("Unknown error processing config file #{config_file_path} with error #{error.message}", 2)
+    Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
+    filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
+    filtered_trace.each {|line| Chef::Log.fatal("  " + line + "\n")}
+    Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
   end
 
   class << self
