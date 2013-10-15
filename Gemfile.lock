@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/opscode/omnibus-ruby.git
-  revision: 616ac7869b697e3011dde873d1fa41a17579cf01
-  branch: lcg/solaris-pkgmk-fixes
+  revision: b80fed9cbbaeba3c8c51fde9b735efd62775e94b
+  branch: master
   specs:
     omnibus (1.2.0)
       fpm (~> 0.4.33)
@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: git://github.com/opscode/omnibus-software.git
-  revision: 868b321f46be4b072a32aca3d5c75458ae8737bf
+  revision: ade8df6f4c722b6bcc609a68c953684236c1c6c2
   branch: master
   specs:
     omnibus-software (0.0.1)
@@ -25,7 +25,7 @@ GEM
     addressable (2.3.5)
     arr-pm (0.0.8)
       cabin (> 0)
-    backports (3.3.4)
+    backports (3.3.5)
     cabin (0.6.1)
     childprocess (0.3.9)
       ffi (~> 1.0, >= 1.0.11)

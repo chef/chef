@@ -12,7 +12,9 @@ rmdir /S /Q C:\opscode
 FOR %%i IN (pkg\chef*.msi) DO SET omnibus_package=%%i
 SET omnibus_package=%WORKSPACE%\%BUILD_NUMBER%\%omnibus_package%
 
-call msiexec INSTALLLOCATION=C:\opscode /qb /i %omnibus_package% || GOTO :error
+call copy /Y %omnibus_package% %TMP%\install.msi || GOTO :error
+
+call msiexec INSTALLLOCATION=C:\opscode /qb /i %TMP%\install.msi || GOTO :error
 
 rem # use rspec and gems from omnibus
 set PATH=C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;%PATH%
@@ -26,7 +28,7 @@ rem # we do not bundle exec here in order to test against the gems in the omnibu
 call rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
 
 rem # uninstall chef
-call msiexec /qb /x %omnibus_package% || GOTO :error
+call msiexec /qb /x %TMP%\install.msi || GOTO :error
 
 rem # clean up the workspace to save disk space
 cd %WORKSPACE%
@@ -41,7 +43,7 @@ SET ERR_LEV=%errorlevel%
 ECHO Failed with error level %ERR_LEV%
 
 rem # uninstall chef
-call msiexec /qb /x %omnibus_package%
+call msiexec /qb /x %TMP%\install.msi
 
 EXIT /B %ERR_LEV%
 

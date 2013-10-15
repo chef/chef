@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/bin/sh
+# WARNING: REQUIRES /bin/sh
+#
+# - must run on /bin/sh on solaris 9
+# - must run on /bin/sh on AIX 6.x
+# - if you think you are a bash wizard, you probably do not understand
+#   this programming language.  do not touch.
+# - if you are under 40, get peer review from your elders.
 #
 # Build you some jenkins
 #
@@ -6,26 +13,38 @@
 set -e
 set -x
 
-# Check whether a command exists - returns 0 if it does, 1 if it does not
-exists()
-{
-  if command -v $1 &>/dev/null
-  then
+os=`uname -s`
+
+# Return truthy (which is zero) if a command does not exist
+# (this is deliberately inverted because /bin/sh on Solaris does not support "if ! exists" syntax)
+not_exists() {
+  if command -v $1 >/dev/null 2>&1; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+exists() {
+  if command -v $1 >/dev/null 2>&1; then
     return 0
   else
     return 1
   fi
 }
 
-usage()
-{
+usage() {
   echo >&2 \
   "usage: $0 [-p project_name]"
 }
 
+if [ "x$os" = "xAIX" ]; then
+  # need to unset LIBPATH on AIX (like LD_LIBRARY_PATH on Solaris, Jenkins sets this (wrongly) on AIX)
+  unset LIBPATH
+fi
+
 # Get command line arguments
-while getopts :p: opt
-do
+while getopts :p: opt; do
   echo $opt
   case "$opt" in
     p)  project_name="$OPTARG";;
@@ -33,70 +52,94 @@ do
   esac
 done
 
-if [ -z $project_name ]
-then
+if [ -z $project_name ]; then
   usage
   exit 1
 fi
 
 # create the build timestamp file for fingerprinting if it doesn't exist (manual build execution)
-if [ ! -f build_timestamp ]
-then
+if [ ! -f build_timestamp ]; then
   date > build_timestamp
   echo "$BUILD_TAG / $BUILD_ID" > build_timestamp
 fi
 
 mkdir -p jenkins/chef-solo/cache
 
-export PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
-if ! exists chef-solo;
-then
+PATH=/opt/ruby1.9/bin:/usr/local/bin:$PATH
+export PATH
+
+if not_exists chef-solo; then
   sudo gem install chef --no-ri --no-rdoc
 fi
 
 # ensure bundler is installed
-if ! exists bundle;
-then
+if not_exists bundle; then
   sudo gem install bundler --no-ri --no-rdoc
 fi
 
-# ensure berkshelf is installed
-if ! exists berks;
-then
-  sudo gem install berkshelf --no-ri --no-rdoc
+# TEMPORARY: can't install berks on AIX
+if [ "x$os" != "xAIX" ]; then
+  # ensure berkshelf is installed
+  if not_exists berks; then
+    sudo gem install berkshelf --no-ri --no-rdoc
+  fi
+
+  # install omnibus cookbook and dependencies
+  berks install --path=vendor/cookbooks
+
+  if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep -i solaris`" ]; then
+    dna=`pwd`/jenkins/dna-solaris2.json
+  else
+    dna=`pwd`/jenkins/dna.json
+  fi
+  # Omnibus build server prep tasks, including build ruby
+  sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 fi
 
-# install omnibus cookbook and dependencies
-berks install --path=vendor/cookbooks
-
-if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep -i solaris)" ]; then
-  dna=$(pwd)/jenkins/dna-solaris2.json
-else
-  dna=$(pwd)/jenkins/dna.json
+if [ "x$os" = "xAIX" ]; then
+  # AIX is hateful and requires a bunch of root stuff to build BFF packages
+  sudo rm -rf /.info || true
+  sudo mkdir /.info || true
+  sudo chown jenkins /.info || true
+  sudo rm -rf /tmp/bff || true
+  # deinstall the bff if it got installed, can't build if it is installed
+  sudo installp -u chef || true
+  # AIX needs /opt/freeware/bin and /usr/sbin
+  if [ -d "/opt/freeware/bin" ]; then
+    PATH=/opt/freeware/bin:$PATH:/usr/sbin
+    export PATH
+  fi
 fi
-# Omnibus build server prep tasks, including build ruby
-sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}"
-  sudo chown jenkins-node "/opt/${project_name}" || sudo chown jenkins "/opt/${project_name}"
   sudo rm -rf /var/cache/omnibus/pkg/* || true
   sudo rm -rf /var/cache/omnibus/src/* || true
   sudo rm -f /var/cache/omnibus/build/*/*.manifest || true
   sudo rm -f pkg/* || true
 fi
 
+# always fix up permissions
+sudo chown -R jenkins-node "/opt/${project_name}" || sudo chown -R jenkins "/opt/${project_name}"
+sudo chown -R jenkins-node "/var/cache/omnibus" || sudo chown -R jenkins "/var/cache/omnibus"
+
 # copy config into place
 cp omnibus.rb.example omnibus.rb
 
 # Aaand.. new ruby
-export PATH=/usr/local/bin:$PATH
+PATH=/usr/local/bin:$PATH
+export PATH
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
-if [ -f "/etc/release" ] && [ -n "$(cat /etc/release | grep 'Solaris 9')" ]; then
-  # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
-  export CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
+if [ -f "/etc/release" ]; then
+  # solaris /bin/sh needs the stupid || true or set -x bombs here
+  release=`cat /etc/release | grep 'Solaris 9' || true`
+  if [ "x$release" != "x" ]; then
+    # magic CONFIGURE_ARGS to get CFLAGS through bundle/gem install
+    CONFIGURE_ARGS="--with-cflags='-U__STRICT_ANSI__'"
+    export CONFIGURE_ARGS
+  fi
 fi
 
 # docs do not install on solaris 9
@@ -109,9 +152,10 @@ else
 fi
 
 # Sign the package on some platforms:
-if exists rpm;
-then
-  sudo -i $(pwd)/jenkins/sign-rpm "foo" $(pwd)/pkg/*rpm
+if [ "x$os" != "xAIX" ]; then
+  if exists rpm; then
+    sudo -i `pwd`/jenkins/sign-rpm "foo" `pwd`/pkg/*rpm
+  fi
 fi
 
 # Dump the build-generated version so the Omnitruck release script uses the
