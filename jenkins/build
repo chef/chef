@@ -93,6 +93,21 @@ fi
 # Omnibus build server prep tasks, including build ruby
 #sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 
+if [ "x$os" = "xAIX" ]; then
+  # AIX is hateful and requires a bunch of root stuff to build BFF packages
+  sudo rm -rf /.info || true
+  sudo mkdir /.info || true
+  sudo chown jenkins /.info || true
+  sudo rm -rf /tmp/bff || true
+  # deinstall the bff if it got installed, can't build if it is installed
+  sudo installp -u chef || true
+  # AIX needs /opt/freeware/bin and /usr/sbin
+  if [ -d "/opt/freeware/bin" ]; then
+    PATH=/opt/freeware/bin:$PATH:/usr/sbin
+    export PATH
+  fi
+fi
+
 if [ "$CLEAN" = "true" ]; then
   sudo rm -rf "/opt/${project_name}" || true
   sudo mkdir -p "/opt/${project_name}"
@@ -112,21 +127,6 @@ cp omnibus.rb.example omnibus.rb
 # Aaand.. new ruby
 PATH=/usr/local/bin:$PATH
 export PATH
-
-if [ "x$os" = "xAIX" ]; then
-  # AIX is hateful and requires a bunch of root stuff to build BFF packages
-  sudo rm -rf /.info || true
-  sudo mkdir /.info || true
-  sudo chown jenkins /.info || true
-  sudo rm -rf /tmp/bff || true
-  # deinstall the bff if it got installed, can't build if it is installed
-  sudo installp -u chef || true
-  # AIX needs /opt/freeware/bin and /usr/sbin
-  if [ -d "/opt/freeware/bin" ]; then
-    PATH=/opt/freeware/bin:$PATH:/usr/sbin
-    export PATH
-  fi
-fi
 
 # horrible hack for solaris 9 to get ffi to compile in the bundle
 if [ -f "/etc/release" ]; then
