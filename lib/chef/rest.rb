@@ -160,6 +160,11 @@ class Chef
 
     public :create_url
 
+    def http_client(base_url=nil)
+      base_url ||= url
+      BasicClient.new(base_url, :ssl_policy => Chef::HTTP::APISSLPolicy)
+    end
+
     ############################################################################
     # DEPRECATED
     ############################################################################
