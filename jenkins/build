@@ -77,21 +77,24 @@ if not_exists bundle; then
   sudo gem install bundler --no-ri --no-rdoc
 fi
 
-# ensure berkshelf is installed
-#if not_exists berks; then
-#  sudo gem install berkshelf --no-ri --no-rdoc
-#fi
+# TEMPORARY: can't install berks on AIX
+if [ "x$os" != "xAIX" ]; then
+  # ensure berkshelf is installed
+  if not_exists berks; then
+    sudo gem install berkshelf --no-ri --no-rdoc
+  fi
 
-# install omnibus cookbook and dependencies
-#berks install --path=vendor/cookbooks
+  # install omnibus cookbook and dependencies
+  berks install --path=vendor/cookbooks
 
-if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep -i solaris`" ]; then
-  dna=`pwd`/jenkins/dna-solaris2.json
-else
-  dna=`pwd`/jenkins/dna.json
+  if [ -f "/etc/release" ] && [ -n "`cat /etc/release | grep -i solaris`" ]; then
+    dna=`pwd`/jenkins/dna-solaris2.json
+  else
+    dna=`pwd`/jenkins/dna.json
+  fi
+  # Omnibus build server prep tasks, including build ruby
+  sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 fi
-# Omnibus build server prep tasks, including build ruby
-#sudo -i env PATH=$PATH chef-solo -c $(pwd)/jenkins/solo.rb -j $dna -l debug
 
 if [ "x$os" = "xAIX" ]; then
   # AIX is hateful and requires a bunch of root stuff to build BFF packages
