@@ -215,7 +215,13 @@ class Chef
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     default :script_path, []
 
-    default(:cache_path) { local_mode ? "#{chef_repo_path}#{platform_path_separator}.cache" : platform_specific_path("/var/chef") }
+    default(:cache_path) do
+      if local_mode
+        "#{user_home}#{platform_path_separator}.chef#{platform_path_separator}local-mode-cache"
+      else
+        platform_specific_path("/var/chef")
+      end
+    end
 
     # Where cookbook files are stored on the server (by content checksum)
     default(:checksum_path) { "#{cache_path}#{platform_path_separator}checksums" }
