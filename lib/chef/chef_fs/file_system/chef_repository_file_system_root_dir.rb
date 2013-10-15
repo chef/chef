@@ -51,7 +51,10 @@ class Chef
 
         def create_child(name, file_contents = nil)
           child_paths[name].each do |path|
-            Dir.mkdir(path)
+            begin
+              Dir.mkdir(path)
+            rescue Errno::EEXIST
+            end
           end
           child = make_child_entry(name)
           @children = nil
