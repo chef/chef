@@ -29,10 +29,10 @@ cd $BUILD_NUMBER
 
 # determine install method via the package suffix
 if test -n "`ls pkg/chef*.deb 2>/dev/null`"; then
-  package_file=`ls pkg/bar*.deb`
+  package_file=`ls pkg/chef*.deb`
   filetype="deb"
 elif test -n "`ls pkg/chef*.rpm 2>/dev/null`"; then
-  package_file=`ls pkg/bar*.rpm`
+  package_file=`ls pkg/chef*.rpm`
   filetype="rpm"
 elif test -n "`ls pkg/chef*.solaris 2>/dev/null`"; then
   package_file=`ls pkg/chef*.solaris`
