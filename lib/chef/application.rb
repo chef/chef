@@ -220,7 +220,7 @@ class Chef::Application
   rescue Exception => error
     Chef::Log.fatal("Configuration error #{error.class}: #{error.message}")
     filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
-    filtered_trace.each {|line| Chef::Log.fatal("  " + line + "\n")}
+    filtered_trace.each {|line| Chef::Log.fatal("  " + line )}
     Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", 2)
   end
 
