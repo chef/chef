@@ -5,6 +5,8 @@ class Chef
     class Deps < Chef::ChefFS::Knife
       banner "knife deps PATTERN1 [PATTERNn]"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/file_system'
         require 'chef/run_list'
