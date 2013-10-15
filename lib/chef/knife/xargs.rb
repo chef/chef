@@ -5,6 +5,8 @@ class Chef
     class Xargs < Chef::ChefFS::Knife
       banner "knife xargs [COMMAND]"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/file_system'
         require 'chef/chef_fs/file_system/not_found_error'
