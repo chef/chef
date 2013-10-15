@@ -51,6 +51,9 @@ class Chef
     # Each call to acquire should have a corresponding call to #release.
     #
     # The implementation is based on File#flock (see also: flock(2)).
+    #
+    # Either acquire() or test() methods should be called in order to
+    # get the ownership of run_lock.
     def acquire
       wait unless test
     end
@@ -59,22 +62,15 @@ class Chef
     # Tests and if successful acquires the system-wide lock.
     # Returns true if the lock is acquired, false otherwise.
     #
+    # Either acquire() or test() methods should be called in order to
+    # get the ownership of run_lock.
     def test
       # ensure the runlock_file path exists
       create_path(File.dirname(runlock_file))
       @runlock = File.open(runlock_file,'a+')
 
       if Chef::Platform.windows?
-        # Since flock mechanism doesn't exist on windows we are using
-        # platform Mutex.
-        # We are creating a "Global" mutex here so that non-admin
-        # users can not DoS chef-client by creating the same named
-        # mutex we are using locally.
-        # Mutex name is case-sensitive contrary to other things in
-        # windows. "\" is the only invalid character.
-        # @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\serdar:/_-running.pid")
-        @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, "/").downcase}")
-        mutex.test
+        acquire_win32_mutex
       else
         # If we support FD_CLOEXEC, then use it.
         # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not
@@ -137,6 +133,17 @@ class Chef
       @mutex = nil
     end
 
+    # Since flock mechanism doesn't exist on windows we are using
+    # platform Mutex.
+    # We are creating a "Global" mutex here so that non-admin
+    # users can not DoS chef-client by creating the same named
+    # mutex we are using locally.
+    # Mutex name is case-sensitive contrary to other things in
+    # windows. "\" is the only invalid character.
+    def acquire_win32_mutex
+      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, "/").downcase}")
+      mutex.test
+    end
   end
 end
 
