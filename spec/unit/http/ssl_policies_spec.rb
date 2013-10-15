@@ -1,0 +1,112 @@
+#--
+# Author:: Daniel DeLeo (<dan@opscode.com>)
+# Copyright:: Copyright (c) 2009, 2010, 2013 Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require 'spec_helper'
+require 'chef/http/ssl_policies'
+
+describe Chef::HTTP::DefaultSSLPolicy do
+
+  before do
+    Chef::Config[:ssl_client_cert] = nil
+    Chef::Config[:ssl_client_key]  = nil
+    Chef::Config[:ssl_ca_path]     = nil
+    Chef::Config[:ssl_ca_file]     = nil
+  end
+
+  let(:unconfigured_http_client) { Net::HTTP.new("example.com", 443) }
+  let(:ssl_policy) { Chef::HTTP::DefaultSSLPolicy.new(unconfigured_http_client) }
+  let(:http_client) do
+    unconfigured_http_client.use_ssl = true
+    ssl_policy.apply
+    unconfigured_http_client
+  end
+
+  describe "when configured with :ssl_verify_mode set to :verify peer" do
+    before do
+      Chef::Config[:ssl_verify_mode] = :verify_peer
+    end
+
+    it "configures the HTTP client to use SSL when given a URL with the https protocol" do
+      http_client.use_ssl?.should be_true
+    end
+
+    it "sets the OpenSSL verify mode to verify_peer" do
+      http_client.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+    end
+
+    it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
+      Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
+      lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "should set the CA path if that is set in the configuration" do
+      Chef::Config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
+      http_client.ca_path.should == File.join(CHEF_SPEC_DATA, "ssl")
+    end
+
+    it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
+      Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
+      lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "should set the CA file if that is set in the configuration" do
+      Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + '/ssl/5e707473.0'
+      http_client.ca_file.should == CHEF_SPEC_DATA + '/ssl/5e707473.0'
+    end
+  end
+
+  describe "when configured with :ssl_verify_mode set to :verify peer" do
+    before do
+      @url = URI.parse("https://chef.example.com:4443/")
+      Chef::Config[:ssl_verify_mode] = :verify_none
+    end
+
+    it "sets the OpenSSL verify mode to :verify_none" do
+      http_client.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+    end
+  end
+
+  describe "when configured with a client certificate" do
+    before {@url = URI.parse("https://chef.example.com:4443/")}
+
+    it "raises ConfigurationError if the certificate file doesn't exist" do
+      Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
+      Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
+      lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "raises ConfigurationError if the certificate file doesn't exist" do
+      Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+      Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
+      lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
+      Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
+      Chef::Config[:ssl_client_key]  = nil
+      lambda {http_client}.should raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "configures the HTTP client's cert and private key" do
+      Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + '/ssl/chef-rspec.cert'
+      Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + '/ssl/chef-rspec.key'
+      http_client.cert.to_s.should == OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.cert')).to_s
+      http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
+    end
+  end
+end
