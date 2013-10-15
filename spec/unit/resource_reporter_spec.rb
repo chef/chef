@@ -464,6 +464,33 @@ describe Chef::ResourceReporter do
       end
     end
 
+    context "when including a resource that overrides Resource#state" do
+      before do
+        @current_state_resource = Chef::Resource::WithState.new("Stateful", @run_context)
+        @current_state_resource.state = nil
+
+        @new_state_resource = Chef::Resource::WithState.new("Stateful", @run_context)
+        @new_state_resource.state = "Running"
+        @resource_reporter.resource_action_start(@new_state_resource, :create)
+        @resource_reporter.resource_current_state_loaded(@new_state_resource, :create, @current_state_resource)
+        @resource_reporter.resource_updated(@new_state_resource, :create)
+        @resource_reporter.resource_completed(@new_state_resource)
+        @run_status.stop_clock
+        @report = @resource_reporter.prepare_run_data
+        @first_update_report = @report["resources"].first
+      end
+
+      it "sets before to {} instead of nil" do
+        @first_update_report.should have_key("before")
+        @first_update_report['before'].should eq({})
+      end
+
+      it "sets after to {} instead of 'Running'" do
+        @first_update_report.should have_key("after")
+        @first_update_report['after'].should eq({})
+      end
+    end
+
   end
 
   describe "when updating resource history on the server" do
