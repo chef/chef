@@ -90,5 +90,17 @@ class Chef
       end
 
     end
+
+    class APISSLPolicy < DefaultSSLPolicy
+
+      def set_verify_mode
+        if config[:ssl_verify_mode] == :verify_peer or config[:verify_api_cert]
+          http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        elsif config[:ssl_verify_mode] == :verify_none
+          http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+      end
+    end
+
   end
 end
