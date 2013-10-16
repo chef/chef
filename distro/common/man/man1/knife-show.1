@@ -1,6 +1,6 @@
-.TH "KNIFE-TAG" "1" "Chef 11.8" "" "knife tag"
+.TH "KNIFE-SHOW" "1" "Chef 11.8" "" "knife show"
 .SH NAME
-knife-tag \- The man page for the knife tag subcommand.
+knife-show \- The man page for the knife show subcommand.
 .
 .nr rst2man-indent-level 0
 .
@@ -31,18 +31,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructuredText.
 .
 .sp
-A tag is a custom description that is applied to a node. A tag, once applied, can be helpful when managing nodes using Knife or when building recipes by providing alternate methods of grouping similar types of information.
+The \fBknife show\fP subcommand is used to view the details of one (or more) objects on the server. This subcommand works similar to \fBknife cookbook show\fP, \fBknife data bag show\fP, \fBknife environment show\fP, \fBknife node show\fP, and \fBknife role show\fP, but with a single verb (and a single action).
 .sp
-The \fBknife tag\fP subcommand is used to apply tags to nodes on a server.
-.sp
-This subcommand has the following syntax:
-.sp
-.nf
-.ft C
-$ knife tag [ARGUMENT]
-.ft P
-.fi
-.SH COMMON OPTIONS
+\fBCommon Options\fP
 .sp
 The following options can be run with all Knife sub\-commands and plug\-ins:
 .INDENT 0.0
@@ -101,9 +92,6 @@ Set for more verbose outputs. Use \fB\-VV\fP for maximum verbosity.
 .B \fB\-y\fP, \fB\-\-yes\fP
 Indicates that the response to all confirmation prompts will be "Yes" (and that Knife will not ask for confirmation).
 .UNINDENT
-.SH CREATE
-.sp
-The \fBcreate\fP argument is used to add one or more tags to a node.
 .sp
 \fBSyntax\fP
 .sp
@@ -111,7 +99,7 @@ This argument has the following syntax:
 .sp
 .nf
 .ft C
-$ knife tag create NODE_NAME [TAG...]
+$ knife show [PATTERN...] (options)
 .ft P
 .fi
 .sp
@@ -121,59 +109,29 @@ This command does not have any specific options.
 .sp
 \fBExamples\fP
 .sp
-To create tags named "seattle", "portland", and "vancouver", enter:
+To show all cookbooks in the \fBcookbooks/\fP directory:
 .sp
 .nf
 .ft C
-$ knife tag create node seattle portland vancouver
+$ knife show cookbooks/
 .ft P
 .fi
-.SH DELETE
 .sp
-The \fBdelete\fP argument is used to delete one or more tags from a node.
-.sp
-\fBSyntax\fP
-.sp
-This argument has the following syntax:
+or, (if already in the \fBcookbooks/\fP directory in the local chef\-repo):
 .sp
 .nf
 .ft C
-$ knife tag delete NODE_NAME [TAG...]
+$ knife show
 .ft P
 .fi
 .sp
-\fBOptions\fP
-.sp
-This command does not have any specific options.
-.sp
-\fBExamples\fP
-.sp
-To delete tags named "denver" and "phoenix", enter:
+To show roles and environments:
 .sp
 .nf
 .ft C
-$ knife tag delete node denver phoenix
+$ knife show roles/ environments/
 .ft P
 .fi
-.sp
-Type \fBY\fP to confirm a deletion.
-.SH LIST
-.sp
-The \fBlist\fP argument is used to list all of the tags that have been applied to a node.
-.sp
-\fBSyntax\fP
-.sp
-This argument has the following syntax:
-.sp
-.nf
-.ft C
-$ knife tag list [NODE_NAME...]
-.ft P
-.fi
-.sp
-\fBOptions\fP
-.sp
-This command does not have any specific options.
 .SH AUTHOR
 Opscode
 .SH COPYRIGHT

@@ -1,6 +1,6 @@
-.TH "KNIFE-DIFF" "1" "Chef 11.8" "" "knife diff"
+.TH "KNIFE-UPLOAD" "1" "Chef 11.8" "" "knife upload"
 .SH NAME
-knife-diff \- The man page for the knife diff subcommand.
+knife-upload \- The man page for the knife upload subcommand.
 .
 .nr rst2man-indent-level 0
 .
@@ -31,7 +31,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" Man page generated from reStructuredText.
 .
 .sp
-The \fBknife diff\fP subcommand is used to compare the differences between files and directories on the server and in the chef\-repo. For example, to compare files on the server prior to an uploading or downloading files using the \fBknife download\fP and \fBknife upload\fP subcommands, or to ensure that certain files in multiple production environments are the same. This subcommand is similar to the \fBgit diff\fP command that can be used to diff what is in the chef\-repo with what is synced to a git repository.
+The \fBknife upload\fP subcommand is used to upload roles, cookbooks, environments, and data bags to the server from the current working directory in the chef\-repo. This subcommand is often used in conjunction with \fBknife diff\fP, which can be used to see exactly what changes will be uploaded, and then \fBknife download\fP, which does the opposite of \fBknife upload\fP.
 .sp
 \fBCommon Options\fP
 .sp
@@ -99,7 +99,7 @@ This argument has the following syntax:
 .sp
 .nf
 .ft C
-$ knife diff [PATTERN...] (options)
+$ knife upload [PATTERN...] (options)
 .ft P
 .fi
 .sp
@@ -114,96 +114,123 @@ The path to the chef\-repo. This setting will override the default path to the c
 .B \fB\-\-concurrency\fP
 The number of allowed concurrent connections. Default: \fB10\fP.
 .TP
-.B \fB\-\-diff\-filter=[(A|D|M|T)...[*]]\fP
-Indicates that files will be selected that have been added (\fBA\fP), deleted (\fBD\fP), modified (\fBM\fP), and/or have had their type changed (\fBT\fP). Any combination of filter characters may be used, including no filter characters. Use \fB*\fP to select all paths if a file matches other criteria in the comparison. Default value: \fBnil\fP.
+.B \fB\-\-[no\-]force\fP
+Use \fB\-\-force\fP to upload roles, cookbooks, etc. even if the file in the directory is identical (by default, no \fBPOST\fP or \fBPUT\fP is performed unless an actual change would be made). Default: \fB\-\-no\-force\fP.
 .TP
-.B \fB\-\-name\-only\fP
-Indicates that only the names of modified files will be shown.
+.B \fB\-n\fP, \fB\-\-dry\-run\fP
+Indicates that no action is taken and that results are only printed out. Default: \fBfalse\fP.
 .TP
-.B \fB\-\-name\-status\fP
-Indicates that only the names of files with a status of \fBAdded\fP, \fBDeleted\fP, \fBModified\fP, or \fBType Changed\fP will be shown.
+.B \fB\-\-[no\-]diff\fP
+Indicates that only new and modified files will be uploaded. Set to \fBfalse\fP to upload all files. Default: \fBtrue\fP.
 .TP
-.B \fB\-\-no\-recurse\fP
-Use \fB\-\-no\-recurse\fP to disable listing a directory recursively. Default: \fB\-\-recurse\fP.
+.B \fB\-\-[no\-]freeze\fP
+Indicates that a cookbook cannot be modified; any changes to this cookbook must be included as a new version. Only the \fB\-\-force\fP option can override this setting. Default: \fBfalse\fP.
+.TP
+.B \fB\-\-[no\-]purge\fP
+Use \fB\-\-purge\fP to delete roles, cookbooks, etc. from the server if their corresponding files do not exist in the chef\-repo. By default, such objects are left alone and NOT purged. Default: \fB\-\-no\-purge\fP.
+.TP
+.B \fB\-\-[no\-]recurse\fP
+Use \fB\-\-no\-recurse\fP to disable uploading a directory recursively. Default: \fB\-\-recurse\fP.
 .TP
 .B \fB\-\-repo\-mode MODE\fP
 The layout of the local chef\-repo. Possible values: \fBstatic\fP, \fBeverything\fP, or \fBhosted_everything\fP. Use \fBstatic\fP for just roles, environments, cookbooks, and data bags. By default, \fBeverything\fP and \fBhosted_everything\fP are dynamically selected depending on the server type. Default: \fBeverything\fP / \fBhosted_everything\fP.
 .UNINDENT
 .sp
-\fBknife.rb File Settings\fP
-.sp
-In addition to the default settings in a knife.rb file, there are other subcommand\-specific settings that can be added. When a subcommand is run, Knife will use:
-.INDENT 0.0
-.IP 1. 3
-A value passed via the command\-line
-.IP 2. 3
-A value contained in the knife.rb file
-.IP 3. 3
-The default value
-.UNINDENT
-.sp
-A value passed via the command line will override a value in the knife.rb file; a value in a knife.rb file will override a default value.
-.sp
-The following \fBknife diff\fP settings can be added to the knife.rb file:
-.INDENT 0.0
-.TP
-.B \fBknife[:chef_repo_path]\fP
-Use to add the \fB\-\-chef\-repo\-path\fP option.
-.TP
-.B \fBknife[:concurrency]\fP
-Use to add the \fB\-\-concurrency\fP option.
-.TP
-.B \fBknife[:name_only]\fP
-Use to add the \fB\-\-name\-only\fP option.
-.TP
-.B \fBknife[:name_status]\fP
-Use to add the \fB\-\-name\-status\fP option.
-.TP
-.B \fBknife[:recurse]\fP
-Use to add the \fB\-\-recurse\fP option.
-.TP
-.B \fBknife[:repo_mode]\fP
-Use to add the \fB\-\-repo\-mode\fP option.
-.UNINDENT
-.sp
 \fBExamples\fP
 .sp
-To compare the "base.json" role to a "webserver.json" role, enter:
+To upload the entire chef\-repo to the server, browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
-$ knife diff roles/base.json roles/webserver.json
+$ knife upload
 .ft P
 .fi
 .sp
-To compare the differences between the local chef\-repo and the files that are on the server, enter:
+or from anywhere in the chef\-repo, enter:
 .sp
 .nf
 .ft C
-$ knife diff
+$ knife upload /
 .ft P
 .fi
 .sp
-To diff a node named \fBnode\-lb\fP and then only return files that have been added, deleted, modified, or changed, enter:
+To upload the \fBcookbooks/\fP directory to the server, browse to the top level of the chef\-repo and enter:
 .sp
 .nf
 .ft C
-$ knife diff \-\-name\-status node\-lb
+$ knife upload cookbooks
 .ft P
 .fi
 .sp
-to return something like:
+or from anywhere in the chef\-repo, enter:
 .sp
 .nf
 .ft C
-node\-lb/recipes/eip.rb
-node\-lb/recipes/heartbeat\-int.rb
-node\-lb/templates/default/corpsite.conf.erb
-node\-lb/files/default/wildcard.node.com.crt
-node\-lb/files/default/wildcard.node.com.crt\-2009
-node\-lb/files/default/wildcard.node.com.key
-node\-lb/.gitignore
-node\-lb/Rakefile
+$ knife upload /cookbooks
+.ft P
+.fi
+.sp
+To upload the \fBenvironments/\fP directory to the server, browse to the top level of the chef\-repo and enter:
+.sp
+.nf
+.ft C
+$ knife upload environments
+.ft P
+.fi
+.sp
+or from anywhere in the chef\-repo, enter:
+.sp
+.nf
+.ft C
+$ knife upload /environments
+.ft P
+.fi
+.sp
+To upload an environment named "production" to the server, browse to the top level of the chef\-repo and enter:
+.sp
+.nf
+.ft C
+$ knife upload environments/production.json
+.ft P
+.fi
+.sp
+or from the \fBenvironments/\fP directory, enter:
+.sp
+.nf
+.ft C
+$ knife upload production.json
+.ft P
+.fi
+.sp
+To upload the \fBroles/\fP directory to the server, browse to the top level of the chef\-repo and enter:
+.sp
+.nf
+.ft C
+$ knife upload roles
+.ft P
+.fi
+.sp
+or from anywhere in the chef\-repo, enter:
+.sp
+.nf
+.ft C
+$ knife upload /roles
+.ft P
+.fi
+.sp
+To upload all cookbooks that start with "apache" and belong to the "webserver" role, browse to the top level of the chef\-repo and enter:
+.sp
+.nf
+.ft C
+$ knife upload cookbooks/apache\e* roles/webserver.json
+.ft P
+.fi
+.sp
+Use the output of \fBknife deps\fP to pass a command to \fBknife upload\fP. For example:
+.sp
+.nf
+.ft C
+$ knife upload \(gaknife deps nodes/*.json\(ga
 .ft P
 .fi
 .SH AUTHOR
