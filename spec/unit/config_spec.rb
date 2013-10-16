@@ -269,4 +269,13 @@ describe Chef::Config do
       expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
   end
+
+  describe "Chef::Config[:user_valid_regex]" do
+    context "on a platform that is not Windows" do
+      it "allows one letter usernames" do
+        any_match = Chef::Config[:user_valid_regex].any? { |regex| regex.match('a') }
+        expect(any_match).to be_true
+      end
+    end
+  end
 end
