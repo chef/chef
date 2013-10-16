@@ -968,4 +968,31 @@ EOM
       end
     end
   end # with versioned cookbooks
+
+  when_the_chef_server 'has a cookbook' do
+    cookbook 'x', '1.0.0', { 'metadata.rb' => 'version "1.0.0"' }
+
+    when_the_repository 'is empty' do
+      it 'knife download /cookbooks/x signs all requests' do
+
+        # Check that BasicClient.request() always gets called with X-OPS-USERID
+        original_new = Chef::HTTP::BasicClient.method(:new)
+        Chef::HTTP::BasicClient.should_receive(:new) do |args|
+          new_result = original_new.call(*args)
+          original_request = new_result.method(:request)
+          new_result.should_receive(:request) do |method, url, body, headers, &response_handler|
+            headers['X-OPS-USERID'].should_not be_nil
+            original_request.call(method, url, body, headers, &response_handler)
+          end.at_least(:once)
+          new_result
+        end.at_least(:once)
+
+        knife('download /cookbooks/x').should_succeed <<EOM
+Created /cookbooks
+Created /cookbooks/x
+Created /cookbooks/x/metadata.rb
+EOM
+      end
+    end
+  end
 end

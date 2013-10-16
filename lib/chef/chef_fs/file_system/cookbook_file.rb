@@ -37,7 +37,7 @@ class Chef
 
         def read
           begin
-            tmpfile = Chef::HTTP::Simple.new(file[:url]).streaming_request(file[:url])
+            tmpfile = rest.streaming_request(file[:url])
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e), "Timeout reading #{file[:url]}: #{e}"
           rescue Net::HTTPServerException => e
