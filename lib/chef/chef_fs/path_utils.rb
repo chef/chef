@@ -82,6 +82,11 @@ class Chef
         end
       end
 
+      def self.descendant_of?(path, ancestor)
+        path[0,ancestor.length] == ancestor &&
+          (ancestor.length == path.length || path[ancestor.length,1] =~ /#{PathUtils.regexp_path_separator}/)
+      end
+
       def self.is_absolute?(path)
         path =~ /^#{regexp_path_separator}/
       end
