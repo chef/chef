@@ -25,8 +25,6 @@ require 'chef/platform'
 require 'mixlib/cli'
 require 'tmpdir'
 require 'rbconfig'
-require 'pathname'
-require 'chef/chef_fs/path_utils'
 
 class Chef::Application
   include Mixlib::CLI
