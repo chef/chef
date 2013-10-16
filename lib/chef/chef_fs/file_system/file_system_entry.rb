@@ -51,7 +51,10 @@ class Chef
           if file_contents
             child.write(file_contents)
           else
-            Dir.mkdir(child.file_path)
+            begin
+              Dir.mkdir(child.file_path)
+            rescue Errno::EEXIST
+            end
           end
           @children = nil
           child
