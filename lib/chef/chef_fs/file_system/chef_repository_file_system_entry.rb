@@ -31,6 +31,10 @@ class Chef
           @data_handler = data_handler
         end
 
+        def write_pretty_json
+          root.write_pretty_json
+        end
+
         def data_handler
           @data_handler || parent.data_handler
         end
@@ -48,17 +52,36 @@ class Chef
           !is_dir && name[-5..-1] == '.json'
         end
 
+        def write(file_contents)
+          if file_contents && write_pretty_json && name[-5..-1] == '.json'
+            file_contents = minimize(file_contents, self)
+          end
+          super(file_contents)
+        end
+
+        def minimize(file_contents, entry)
+          object = JSONCompat.from_json(file_contents, :create_additions => false)
+          object = data_handler.normalize(object, entry)
+          object = data_handler.minimize(object, entry)
+          JSONCompat.to_json_pretty(object)
+        end
+
         def children
           # Except cookbooks and data bag dirs, all things must be json files
           begin
             Dir.entries(file_path).sort.
                 select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map { |child_name| ChefRepositoryFileSystemEntry.new(child_name, self) }
+                map { |child_name| make_child(child_name) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 
+        protected
+
+        def make_child(child_name)
+          ChefRepositoryFileSystemEntry.new(child_name, self)
+        end
       end
     end
   end
