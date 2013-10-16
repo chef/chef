@@ -497,7 +497,7 @@ class Chef
 
       default :fatal_windows_admin_check, false
     else
-      default :user_valid_regex, [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]+)$/, /^\d+$/ ]
+      default :user_valid_regex, [ /^([-a-zA-Z0-9_.]+[\\@]?[-a-zA-Z0-9_.]*)$/, /^\d+$/ ]
       default :group_valid_regex, [ /^([-a-zA-Z0-9_.\\@^ ]+)$/, /^\d+$/ ]
     end
 
