@@ -206,6 +206,10 @@ class Chef::Application::Client < Chef::Application
     :long         => "--chef-zero-port PORT",
     :description  => "Port to start chef-zero on"
 
+  option :config_file_jail,
+    :long         => "--config-file-jail PATH",
+    :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
+
   if Chef::Platform.windows?
     option :fatal_windows_admin_check,
       :short        => "-A",
@@ -272,6 +276,7 @@ class Chef::Application::Client < Chef::Application
   end
 
   def load_config_file
+    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
     if !config.has_key?(:config_file)
       if config[:local_mode]
         require 'chef/knife'
