@@ -39,6 +39,8 @@ class Chef
           @child_paths = child_paths
         end
 
+        attr_accessor :write_pretty_json
+
         attr_reader :child_paths
 
         def children

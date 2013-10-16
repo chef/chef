@@ -40,14 +40,14 @@ class Chef
 
         def children
           begin
-            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| FileSystemEntry.new(entry, self) }
+            Dir.entries(file_path).sort.select { |entry| entry != '.' && entry != '..' }.map { |entry| make_child(entry) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
         end
 
         def create_child(child_name, file_contents=nil)
-          child = FileSystemEntry.new(child_name, self)
+          child = make_child(child_name)
           if file_contents
             child.write(file_contents)
           else
@@ -87,6 +87,12 @@ class Chef
           File.open(file_path, 'wb') do |file|
             file.write(content)
           end
+        end
+
+        protected
+
+        def make_child(child_name)
+          FileSystemEntry.new(child_name, self)
         end
       end
     end
