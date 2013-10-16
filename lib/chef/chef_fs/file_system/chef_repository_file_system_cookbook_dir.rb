@@ -55,10 +55,7 @@ class Chef
           begin
             Dir.entries(file_path).sort.
                 select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-                map do |child_name|
-                  segment_info = CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
-                  ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
-                end.
+                map { |child_name| make_child(child_name) }.
                 select { |entry| !(entry.dir? && entry.children.size == 0) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
@@ -70,7 +67,6 @@ class Chef
             # Only the given directories will be uploaded.
             return CookbookDir::COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) && name != 'root_files'
           end
-
           super(name, is_dir)
         end
 
@@ -83,6 +79,13 @@ class Chef
 
         def canonical_cookbook_name(entry_name)
           self.class.canonical_cookbook_name(entry_name)
+        end
+
+        protected
+
+        def make_child(child_name)
+          segment_info = CookbookDir::COOKBOOK_SEGMENT_INFO[child_name.to_sym] || {}
+          ChefRepositoryFileSystemCookbookEntry.new(child_name, self, nil, segment_info[:ruby_only], segment_info[:recursive])
         end
       end
     end

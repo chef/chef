@@ -187,8 +187,11 @@ class Chef::Application
       require 'chef_zero/server'
       require 'chef/chef_fs/chef_fs_data_store'
       require 'chef/chef_fs/config'
+
+      chef_fs = Chef::ChefFS::Config.new.local_fs
+      chef_fs.write_pretty_json = true
       server_options = {}
-      server_options[:data_store] = Chef::ChefFS::ChefFSDataStore.new(Chef::ChefFS::Config.new.local_fs)
+      server_options[:data_store] = Chef::ChefFS::ChefFSDataStore.new(chef_fs)
       server_options[:log_level] = Chef::Log.level
       server_options[:port] = Chef::Config.chef_zero.port
       Chef::Log.info("Starting chef-zero on port #{Chef::Config.chef_zero.port} with repository at #{server_options[:data_store].chef_fs.fs_description}")

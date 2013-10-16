@@ -132,6 +132,7 @@ EOM
 
     context 'PUT /TYPE/NAME' do
       file 'empty.json', {}
+      file 'rolestuff.json', '{"description":"hi there","name":"x"}'
       file 'cookbooks_to_upload/x/metadata.rb', "version '1.0.0'\n\n"
 
       it 'knife raw -z -i empty.json -m PUT /clients/x' do
@@ -171,6 +172,16 @@ EOM
         knife("raw -z -i #{path_to('empty.json')} -m PUT /users/x").should_succeed /"x"/
         knife('list --local /users').should_succeed "/users/x.json\n"
       end
+
+      it 'After knife raw -z -i rolestuff.json -m PUT /roles/x, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+        knife("raw -z -i #{path_to('rolestuff.json')} -m PUT /roles/x").should_succeed /"x"/
+        IO.read(path_to('roles/x.json')).should == <<EOM.strip
+{
+  "name": "x",
+  "description": "hi there"
+}
+EOM
+      end
     end
   end
 
@@ -178,6 +189,7 @@ EOM
     context 'POST /TYPE/NAME' do
       file 'empty.json', { 'name' => 'z' }
       file 'empty_id.json', { 'id' => 'z' }
+      file 'rolestuff.json', '{"description":"hi there","name":"x"}'
       file 'cookbooks_to_upload/z/metadata.rb', "version '1.0.0'"
 
       it 'knife raw -z -i empty.json -m POST /clients' do
@@ -221,6 +233,16 @@ EOM
       it 'knife raw -z -i empty.json -m POST /users' do
         knife("raw -z -i #{path_to('empty.json')} -m POST /users").should_succeed /uri/
         knife('list --local /users').should_succeed "/users/z.json\n"
+      end
+
+      it 'After knife raw -z -i rolestuff.json -m POST /roles, the output is pretty', :pending => (RUBY_VERSION < "1.9") do
+        knife("raw -z -i #{path_to('rolestuff.json')} -m POST /roles").should_succeed /uri/
+        IO.read(path_to('roles/x.json')).should == <<EOM.strip
+{
+  "name": "x",
+  "description": "hi there"
+}
+EOM
       end
     end
 
