@@ -360,6 +360,7 @@ describe Chef::Config do
       expect{Chef::Config.log_location = missing_path}.to raise_error Chef::Exceptions::ConfigurationError
     end
   end
+
   describe "Chef::Config[:event_handlers]" do
     it "sets a event_handlers to an empty array by default" do
       Chef::Config[:event_handlers].should eq([])
@@ -368,6 +369,15 @@ describe Chef::Config do
       o = Object.new
       Chef::Config[:event_handlers] << o
       Chef::Config[:event_handlers].should be_include(o)
+    end
+  end
+
+  describe "Chef::Config[:user_valid_regex]" do
+    context "on a platform that is not Windows" do
+      it "allows one letter usernames" do
+        any_match = Chef::Config[:user_valid_regex].any? { |regex| regex.match('a') }
+        expect(any_match).to be_true
+      end
     end
   end
 end
