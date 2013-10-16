@@ -20,7 +20,7 @@ require 'chef/client'
 
 describe Chef::RunLock do
 
-  # This behavior is believed to work on windows, but the tests use UNIX APIs.
+  # This behavior works on windows, but the tests use fork :(
   describe "when locking the chef-client run", :unix_only => true do
 
     ##
