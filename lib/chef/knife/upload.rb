@@ -5,6 +5,8 @@ class Chef
     class Upload < Chef::ChefFS::Knife
       banner "knife upload PATTERNS"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/command_line'
       end

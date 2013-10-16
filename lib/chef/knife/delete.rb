@@ -5,6 +5,8 @@ class Chef
     class Delete < Chef::ChefFS::Knife
       banner "knife delete [PATTERN1 ... PATTERNn]"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/file_system'
       end

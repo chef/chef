@@ -5,6 +5,8 @@ class Chef
     class Download < Chef::ChefFS::Knife
       banner "knife download PATTERNS"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/command_line'
       end

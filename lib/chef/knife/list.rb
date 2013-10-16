@@ -5,6 +5,8 @@ class Chef
     class List < Chef::ChefFS::Knife
       banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn]"
 
+      category "path-based"
+
       deps do
         require 'chef/chef_fs/file_system'
         require 'highline'
