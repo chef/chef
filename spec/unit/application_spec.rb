@@ -108,12 +108,14 @@ describe Chef::Application do
       end
 
       it "should configure chef::config from a file" do
+        Chef::Application.should_receive(:config_file_exists?).with('/etc/chef/default.rb').and_return(true)
         File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
         Chef::Config.should_receive(:from_file).with(@config_file.path)
         @app.configure_chef
       end
 
       it "should merge the local config hash into chef::config" do
+        Chef::Application.should_receive(:config_file_exists?).with('/etc/chef/default.rb').and_return(true)
         File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
         @app.configure_chef
         Chef::Config.rspec_ran.should == "true"
@@ -128,7 +130,7 @@ describe Chef::Application do
 
       it "should emit a warning" do
         Chef::Config.should_not_receive(:from_file).with("/etc/chef/default.rb")
-        Chef::Log.should_receive(:warn).with("No config file found or specified on command line, not loading.")
+        Chef::Log.should_receive(:warn).with("No config file found or specified on command line, using command line options.")
         @app.configure_chef
       end
     end
@@ -164,6 +166,7 @@ describe Chef::Application do
       after {@config_file.unlink}
 
       it "should configure chef::config from an URL" do
+        Chef::Application.should_receive(:config_file_exists?).with('http://example.com/foo.rb').and_call_original
         Chef::REST.should_receive(:new).with("", nil, nil).at_least(1).times.and_return(@rest)
         @rest.should_receive(:fetch).with("http://example.com/foo.rb").and_yield(@config_file)
         @app.configure_chef

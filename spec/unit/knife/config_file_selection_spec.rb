@@ -38,6 +38,7 @@ describe Chef::Knife do
     env_config = File.expand_path(File.join(Dir.tmpdir, 'knife.rb'))
     File.stub!(:exist?).and_return(false)
     File.stub!(:exist?).with(env_config).and_return(true)
+    Chef::Application.stub(:config_file_exists?) { |arg| arg == env_config }
 
     ENV['KNIFE_HOME'] = Dir.tmpdir
     @knife = Chef::Knife.new
@@ -47,9 +48,7 @@ describe Chef::Knife do
 
    it "configure knife from PWD" do
     pwd_config = "#{Dir.pwd}/knife.rb"
-    File.stub!(:exist?).and_return do | arg |
-      [ pwd_config ].include? arg
-    end
+    Chef::Application.stub(:config_file_exists?) { |arg| arg == pwd_config }
 
     @knife = Chef::Knife.new
     @knife.configure_chef
@@ -59,9 +58,7 @@ describe Chef::Knife do
   it "configure knife from UPWARD" do
     upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
-    File.stub!(:exist?).and_return do | arg |
-      [ upward_config ].include? arg
-    end
+    Chef::Application.stub(:config_file_exists?) { |arg| arg == upward_config }
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
 
     @knife = Chef::Knife.new
@@ -71,9 +68,7 @@ describe Chef::Knife do
 
   it "configure knife from HOME" do
     home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
-    File.stub!(:exist?).and_return do | arg |
-      [ home_config ].include? arg
-    end
+    Chef::Application.stub(:config_file_exists?) { |arg| arg == home_config }
 
     @knife = Chef::Knife.new
     @knife.configure_chef
@@ -95,9 +90,7 @@ describe Chef::Knife do
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
     home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
     configs = [ env_config, pwd_config, upward_config, home_config ]
-    File.stub!(:exist?).and_return do | arg |
-      configs.include? arg
-    end
+    Chef::Application.stub(:config_file_exists?) { |arg| configs.include?(arg) }
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
     ENV['KNIFE_HOME'] = Dir.tmpdir
 

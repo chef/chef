@@ -335,8 +335,7 @@ class Chef
       end
 
       candidate_configs.each do | candidate_config |
-        candidate_config = File.expand_path(candidate_config)
-        if File.exist?(candidate_config)
+        if Chef::Application.config_file_exists?(candidate_config)
           return candidate_config
         end
       end
@@ -403,12 +402,17 @@ class Chef
     end
 
     def configure_chef
-      unless config[:config_file]
+      if config[:config_file]
+        if !Chef::Application.config_file_exists?(config[:config_file])
+          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
+          exit 1
+        end
+      else
         located_config_file = self.class.locate_config_file
         config[:config_file] = located_config_file if located_config_file
       end
 
-      # Don't try to load a knife.rb if it doesn't exist.
+      # Don't try to load a knife.rb if it wasn't specified.
       if config[:config_file]
         Chef::Log.debug("Using configuration from #{config[:config_file]}")
         read_config_file(config[:config_file])

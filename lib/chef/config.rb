@@ -73,6 +73,13 @@ class Chef
       formatters << [name, file_path]
     end
 
+    # Config file to load (client.rb, knife.rb, etc. defaults set differently in knife, chef-client, etc.)
+    configurable(:config_file)
+
+    # No config file (client.rb / knife.rb / etc.) will be loaded outside this path.
+    # Major use case is tests, where we don't want to load the user's config files.
+    configurable(:config_file_jail)
+
     default :formatters, []
 
     # Override the config dispatch to set the value of multiple server options simultaneously
@@ -215,6 +222,8 @@ class Chef
     # An array of paths to search for knife exec scripts if they aren't in the current directory
     default :script_path, []
 
+    # The root of all caches (checksums, cache and backup).  If local mode is on,
+    # this is under the user's home directory.
     default(:cache_path) do
       if local_mode
         "#{user_home}#{platform_path_separator}.chef#{platform_path_separator}local-mode-cache"
