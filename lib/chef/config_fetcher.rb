@@ -46,26 +46,26 @@ class Chef
     end
 
     def config_missing?
-      return true if remote_config?
+      return false if remote_config?
 
       # Check if the config file exists, and check if it is underneath the config file jail
       begin
-        real_config_file = Pathname.new(config_file).realpath.to_s
+        real_config_file = Pathname.new(config_location).realpath.to_s
       rescue Errno::ENOENT
-        return false
+        return true
       end
 
       # If realpath succeeded, the file exists
-      return true if !config_file_jail
+      return false if !config_file_jail
 
       begin
         real_jail = Pathname.new(config_file_jail).realpath.to_s
       rescue Errno::ENOENT
         Chef::Log.warn("Config file jail #{config_file_jail} does not exist: will not load any config file.")
-        return false
+        return true
       end
 
-      Chef::ChefFS::PathUtils.descendant_of?(real_config_file, real_jail)
+      !Chef::ChefFS::PathUtils.descendant_of?(real_config_file, real_jail)
     end
 
     def http
