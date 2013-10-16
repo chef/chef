@@ -107,6 +107,55 @@ $ knife search INDEX SEARCH_QUERY
 .sp
 where \fBINDEX\fP is one of \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or the name of a data bag and \fBSEARCH_QUERY\fP is the search query syntax for the query that will be executed.
 .sp
+\fBINDEX\fP is implied if omitted, and will default to \fBnode\fP. For example:
+.sp
+.nf
+.ft C
+$ knife search \(aq*:*\(aq \-i
+.ft P
+.fi
+.sp
+will return something similar to:
+.sp
+.nf
+.ft C
+8 items found
+
+centos\-62\-dev
+opensuse\-1203
+ubuntu\-1304\-dev
+ubuntu\-1304\-orgtest
+ubuntu\-1204\-ohai\-test
+ubuntu\-1304\-ifcfg\-test
+ohai\-test
+win2k8\-dev
+.ft P
+.fi
+.sp
+and is the same search as:
+.sp
+.nf
+.ft C
+$ knife node search \(aq*:*" \-i
+.ft P
+.fi
+.sp
+If the \fBSEARCH_QUERY\fP does not contain a colon character (\fB:\fP), then the default query pattern is \fBtags:*#{@query}* OR roles:*#{@query}* OR fqdn:*#{@query}* OR addresses:*#{@query}*\fP, which means the following two search queries are effectively the same:
+.sp
+.nf
+.ft C
+$ knife search ubuntu
+.ft P
+.fi
+.sp
+or:
+.sp
+.nf
+.ft C
+$ knife search node "tags:*ubuntu* OR roles:*ubuntu* OR fqdn:*ubuntu* (etc.)"
+.ft P
+.fi
+.sp
 \fBOptions\fP
 .sp
 This sub\-command has the following options:
@@ -122,7 +171,7 @@ The row at which return results will begin.
 Indicates that only matching object IDs will be shown.
 .TP
 .B \fBINDEX\fP
-The name of the index to be queried: \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or \fBDATA_BAG_NAME\fP.
+The name of the index to be queried: \fBclient\fP, \fBenvironment\fP, \fBnode\fP, \fBrole\fP, or \fBDATA_BAG_NAME\fP. Default index: \fBnode\fP.
 .TP
 .B \fB\-l\fP, \fB\-\-long\fP
 Display long output when searching nodes while using the default summary format.
