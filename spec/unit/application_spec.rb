@@ -26,6 +26,7 @@ describe Chef::Application do
     @app = Chef::Application.new
     Dir.stub!(:chdir).and_return(0)
     @app.stub!(:reconfigure)
+    Chef::Log.init(STDERR)
   end
 
   after do
@@ -95,28 +96,30 @@ describe Chef::Application do
     end
 
     describe "when a config_file is present" do
-      before do
-        @config_file = Tempfile.new("rspec-chef-config")
-        @config_file.puts("rspec_ran('true')")
-        @config_file.close
+      let(:config_content) { "rspec_ran('true')" }
+      let(:config_location) { "/etc/chef/default.rb" }
 
-        @app.config[:config_file] = "/etc/chef/default.rb"
+      let(:config_location_pathname) do
+        p = Pathname.new(config_location)
+        p.stub(:realpath).and_return(config_location)
+        p
       end
 
-      after do
-        @config_file.unlink
+      before do
+        @app.config[:config_file] = config_location
+        Pathname.stub(:new).with(config_location).and_return(config_location_pathname)
+        File.should_receive(:read).
+          with(config_location).
+          and_return(config_content)
       end
 
       it "should configure chef::config from a file" do
-        Chef::Application.should_receive(:config_file_exists?).with('/etc/chef/default.rb').and_return(true)
-        File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
-        Chef::Config.should_receive(:from_file).with(@config_file.path)
+        Chef::Config.should_receive(:from_string).with(config_content, config_location)
         @app.configure_chef
       end
 
       it "should merge the local config hash into chef::config" do
-        Chef::Application.should_receive(:config_file_exists?).with('/etc/chef/default.rb').and_return(true)
-        File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
+        #File.should_receive(:open).with("/etc/chef/default.rb").and_yield(@config_file)
         @app.configure_chef
         Chef::Config.rspec_ran.should == "true"
       end
@@ -142,35 +145,6 @@ describe Chef::Application do
       it "should use the passed in command line options and defaults" do
         Chef::Config.should_receive(:merge!)
         @app.configure_chef
-      end
-    end
-
-    describe "when the config_file is an URL" do
-      before do
-        @app.config[:config_file] = "http://example.com/foo.rb"
-
-        @config_file = Tempfile.new("rspec-chef-config")
-        @config_file.puts("rspec_ran('true')")
-        @config_file.close
-
-
-        @cf = mock("cf")
-        #@cf.stub!(:path).and_return("/tmp/some/path")
-        #@cf.stub!(:nil?).and_return(false)
-        @rest = mock("rest")
-        #@rest.stub!(:get_rest).and_return(@rest)
-        #@rest.stub!(:open).and_yield(@cf)
-        Chef::REST.stub!(:new).and_return(@rest)
-      end
-
-      after {@config_file.unlink}
-
-      it "should configure chef::config from an URL" do
-        Chef::Application.should_receive(:config_file_exists?).with('http://example.com/foo.rb').and_call_original
-        Chef::REST.should_receive(:new).with("", nil, nil).at_least(1).times.and_return(@rest)
-        @rest.should_receive(:fetch).with("http://example.com/foo.rb").and_yield(@config_file)
-        @app.configure_chef
-        Chef::Config.rspec_ran.should == "true"
       end
     end
   end
@@ -295,34 +269,29 @@ describe Chef::Application do
     end
   end
 
-  describe "configuration errors" do
-    before do
-      Process.stub!(:exit).and_return(true)
-    end
-
-    def raises_informative_fatals_on_configure_chef
-      config_file_regexp = Regexp.new @app.config[:config_file]
-      Chef::Log.should_receive(:fatal).with(config_file_regexp).and_return(true)
-      @app.configure_chef
-    end
-
-    def warns_informatively_on_configure_chef
+  context "when the config file is not available" do
+    it "should warn for bad config file path" do
+      @app.config[:config_file] = "/tmp/non-existing-dir/file"
       config_file_regexp = Regexp.new @app.config[:config_file]
       Chef::Log.should_receive(:warn).at_least(:once).with(config_file_regexp).and_return(true)
       Chef::Log.should_receive(:warn).any_number_of_times.and_return(true)
       @app.configure_chef
     end
+  end
 
-    it "should warn for bad config file path" do
-      @app.config[:config_file] = "/tmp/non-existing-dir/file"
-      warns_informatively_on_configure_chef
+  describe "configuration errors" do
+    before do
+      Process.should_receive(:exit)
     end
 
-    it "should raise informative fatals for bad config file url" do
-      non_existing_url = "http://its-stubbed.com/foo.rb"
-      @app.config[:config_file] = non_existing_url
-      Chef::REST.any_instance.stub(:fetch).with(non_existing_url).and_raise(SocketError)
-      raises_informative_fatals_on_configure_chef
+    def raises_informative_fatals_on_configure_chef
+      config_file_regexp = Regexp.new @app.config[:config_file]
+      Chef::Log.should_receive(:fatal).
+        with(/Configuration error/)
+      Chef::Log.should_receive(:fatal).
+        with(config_file_regexp).
+        at_least(1).times
+      @app.configure_chef
     end
 
     describe "when config file exists but contains errors" do

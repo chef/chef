@@ -20,6 +20,20 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require 'tmpdir'
 
 describe Chef::Knife do
+
+  let(:missing_config_fetcher) do
+    double(Chef::ConfigFetcher, :config_missing? => true)
+  end
+
+  let(:available_config_fetcher) do
+    double(Chef::ConfigFetcher, :config_missing? => false,
+                                :read_config => "")
+  end
+
+  def have_config_file(path)
+    Chef::ConfigFetcher.should_receive(:new).at_least(1).times.with(path, nil).and_return(available_config_fetcher)
+  end
+
   before do
     # Make sure tests can run when HOME is not set...
     @original_home = ENV["HOME"]
@@ -32,13 +46,12 @@ describe Chef::Knife do
 
   before :each do
     Chef::Config.stub!(:from_file).and_return(true)
+    Chef::ConfigFetcher.stub(:new).and_return(missing_config_fetcher)
   end
 
   it "configure knife from KNIFE_HOME env variable" do
     env_config = File.expand_path(File.join(Dir.tmpdir, 'knife.rb'))
-    File.stub!(:exist?).and_return(false)
-    File.stub!(:exist?).with(env_config).and_return(true)
-    Chef::Application.stub(:config_file_exists?) { |arg| arg == env_config }
+    have_config_file(env_config)
 
     ENV['KNIFE_HOME'] = Dir.tmpdir
     @knife = Chef::Knife.new
@@ -48,7 +61,7 @@ describe Chef::Knife do
 
    it "configure knife from PWD" do
     pwd_config = "#{Dir.pwd}/knife.rb"
-    Chef::Application.stub(:config_file_exists?) { |arg| arg == pwd_config }
+    have_config_file(pwd_config)
 
     @knife = Chef::Knife.new
     @knife.configure_chef
@@ -58,7 +71,7 @@ describe Chef::Knife do
   it "configure knife from UPWARD" do
     upward_dir = File.expand_path "#{Dir.pwd}/.chef"
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
-    Chef::Application.stub(:config_file_exists?) { |arg| arg == upward_config }
+    have_config_file(upward_config)
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
 
     @knife = Chef::Knife.new
@@ -68,7 +81,7 @@ describe Chef::Knife do
 
   it "configure knife from HOME" do
     home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
-    Chef::Application.stub(:config_file_exists?) { |arg| arg == home_config }
+    have_config_file(home_config)
 
     @knife = Chef::Knife.new
     @knife.configure_chef
@@ -90,32 +103,33 @@ describe Chef::Knife do
     upward_config = File.expand_path "#{upward_dir}/knife.rb"
     home_config = File.expand_path(File.join("#{ENV['HOME']}", "/.chef/knife.rb"))
     configs = [ env_config, pwd_config, upward_config, home_config ]
-    Chef::Application.stub(:config_file_exists?) { |arg| configs.include?(arg) }
+
     Chef::Knife.stub!(:chef_config_dir).and_return(upward_dir)
     ENV['KNIFE_HOME'] = Dir.tmpdir
 
     @knife = Chef::Knife.new
-    @knife.configure_chef
-    @knife.config[:config_file].should == env_config
 
-    configs.delete env_config
-    @knife.config.delete :config_file
     @knife.configure_chef
-    @knife.config[:config_file].should == pwd_config
+    @knife.config[:config_file].should be_nil
 
-    configs.delete pwd_config
-    @knife.config.delete :config_file
-    @knife.configure_chef
-    @knife.config[:config_file].should == upward_config
-
-    configs.delete upward_config
-    @knife.config.delete :config_file
+    have_config_file(home_config)
+    @knife = Chef::Knife.new
     @knife.configure_chef
     @knife.config[:config_file].should == home_config
 
-    configs.delete home_config
-    @knife.config.delete :config_file
+    have_config_file(upward_config)
+    @knife = Chef::Knife.new
     @knife.configure_chef
-    @knife.config[:config_file].should be_nil
+    @knife.config[:config_file].should == upward_config
+
+    have_config_file(pwd_config)
+    @knife = Chef::Knife.new
+    @knife.configure_chef
+    @knife.config[:config_file].should == pwd_config
+
+    have_config_file(env_config)
+    @knife = Chef::Knife.new
+    @knife.configure_chef
+    @knife.config[:config_file].should == env_config
   end
 end

@@ -20,6 +20,7 @@
 require 'forwardable'
 require 'chef/version'
 require 'mixlib/cli'
+require 'chef/config_fetcher'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/path_sanity'
 require 'chef/knife/core/subcommand_loader'
@@ -314,6 +315,10 @@ class Chef
       config_file_settings
     end
 
+    def self.config_fetcher(candidate_config)
+      Chef::ConfigFetcher.new(candidate_config, Chef::Config.config_file_jail)
+    end
+
     def self.locate_config_file
       candidate_configs = []
 
@@ -335,7 +340,8 @@ class Chef
       end
 
       candidate_configs.each do | candidate_config |
-        if Chef::Application.config_file_exists?(candidate_config)
+        fetcher = config_fetcher(candidate_config)
+        if !fetcher.config_missing?
           return candidate_config
         end
       end
@@ -402,20 +408,20 @@ class Chef
     end
 
     def configure_chef
-      if config[:config_file]
-        if !Chef::Application.config_file_exists?(config[:config_file])
-          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
-          exit 1
-        end
-      else
+      if !config[:config_file]
         located_config_file = self.class.locate_config_file
         config[:config_file] = located_config_file if located_config_file
       end
 
       # Don't try to load a knife.rb if it wasn't specified.
       if config[:config_file]
+        fetcher = Chef::ConfigFetcher.new(config[:config_file], Chef::Config.config_file_jail)
+        if fetcher.config_missing?
+          ui.error("Specified config file #{config[:config_file]} does not exist#{Chef::Config.config_file_jail ? " or is not under config file jail #{Chef::Config.config_file_jail}" : ""}!")
+          exit 1
+        end
         Chef::Log.debug("Using configuration from #{config[:config_file]}")
-        read_config_file(config[:config_file])
+        read_config(fetcher.read_config, config[:config_file])
       else
         # ...but do log a message if no config was found.
         Chef::Config[:color] = config[:color]
@@ -426,24 +432,24 @@ class Chef
       apply_computed_config
     end
 
-    def read_config_file(file)
-      Chef::Config.from_file(file)
+    def read_config(config_content, config_file_path)
+      Chef::Config.from_string(config_content, config_file_path)
     rescue SyntaxError => e
-      ui.error "You have invalid ruby syntax in your config file #{file}"
+      ui.error "You have invalid ruby syntax in your config file #{config_file_path}"
       ui.info(ui.color(e.message, :red))
-      if file_line = e.message[/#{Regexp.escape(file)}:[\d]+/]
+      if file_line = e.message[/#{Regexp.escape(config_file_path)}:[\d]+/]
         line = file_line[/:([\d]+)$/, 1].to_i
-        highlight_config_error(file, line)
+        highlight_config_error(config_file_path, line)
       end
       exit 1
     rescue Exception => e
-      ui.error "You have an error in your config file #{file}"
+      ui.error "You have an error in your config file #{config_file_path}"
       ui.info "#{e.class.name}: #{e.message}"
-      filtered_trace = e.backtrace.grep(/#{Regexp.escape(file)}/)
+      filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each {|line| ui.msg("  " + ui.color(line, :red))}
       if !filtered_trace.empty?
-        line_nr = filtered_trace.first[/#{Regexp.escape(file)}:([\d]+)/, 1]
-        highlight_config_error(file, line_nr.to_i)
+        line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
+        highlight_config_error(config_file_path, line_nr.to_i)
       end
 
       exit 1
