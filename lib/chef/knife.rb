@@ -315,6 +315,10 @@ class Chef
       config_file_settings
     end
 
+    def self.config_fetcher(candidate_config)
+      Chef::ConfigFetcher.new(candidate_config, Chef::Config.config_file_jail)
+    end
+
     def self.locate_config_file
       candidate_configs = []
 
@@ -336,7 +340,7 @@ class Chef
       end
 
       candidate_configs.each do | candidate_config |
-        fetcher = Chef::ConfigFetcher.new(candidate_config, Chef::Config::config_file_jail)
+        fetcher = config_fetcher(candidate_config)
         if !fetcher.config_missing?
           return candidate_config
         end

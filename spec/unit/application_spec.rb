@@ -99,9 +99,15 @@ describe Chef::Application do
       let(:config_content) { "rspec_ran('true')" }
       let(:config_location) { "/etc/chef/default.rb" }
 
+      let(:config_location_pathname) do
+        p = Pathname.new(config_location)
+        p.stub(:realpath).and_return(config_location)
+        p
+      end
+
       before do
         @app.config[:config_file] = config_location
-        File.stub(:exist?).with(config_location).and_return(true)
+        Pathname.stub(:new).with(config_location).and_return(config_location_pathname)
         File.should_receive(:read).
           with(config_location).
           and_return(config_content)
@@ -140,37 +146,6 @@ describe Chef::Application do
         Chef::Config.should_receive(:merge!)
         @app.configure_chef
       end
-
-<<<<<<< HEAD
-    describe "when the config_file is an URL" do
-      before do
-        @app.config[:config_file] = "http://example.com/foo.rb"
-
-        @config_file = Tempfile.new("rspec-chef-config")
-        @config_file.puts("rspec_ran('true')")
-        @config_file.close
-
-
-        @cf = mock("cf")
-        #@cf.stub!(:path).and_return("/tmp/some/path")
-        #@cf.stub!(:nil?).and_return(false)
-        @rest = mock("rest")
-        #@rest.stub!(:get_rest).and_return(@rest)
-        #@rest.stub!(:open).and_yield(@cf)
-        Chef::REST.stub!(:new).and_return(@rest)
-      end
-
-      after {@config_file.unlink}
-
-      it "should configure chef::config from an URL" do
-        Chef::Application.should_receive(:config_file_exists?).with('http://example.com/foo.rb').and_call_original
-        Chef::REST.should_receive(:new).with("", nil, nil).at_least(1).times.and_return(@rest)
-        @rest.should_receive(:fetch).with("http://example.com/foo.rb").and_yield(@config_file)
-        @app.configure_chef
-        Chef::Config.rspec_ran.should == "true"
-      end
-=======
->>>>>>> Load client/solo config via ConfigFetcher
     end
   end
 
