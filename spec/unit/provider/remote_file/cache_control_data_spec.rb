@@ -19,6 +19,15 @@
 require 'spec_helper'
 require 'uri'
 
+CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH = 64
+CACHE_FILE_MD5_HEX_LENGTH = 32
+CACHE_FILE_JSON_FILE_EXTENSION_LENGTH = 5
+CACHE_FILE_PATH_LIMIT =
+  CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH +
+  1 +
+  CACHE_FILE_MD5_HEX_LENGTH +
+  CACHE_FILE_JSON_FILE_EXTENSION_LENGTH # {friendly}-{md5hex}.json == 102
+
 describe Chef::Provider::RemoteFile::CacheControlData do
 
   let(:uri) { URI.parse("http://www.google.com/robots.txt") }
@@ -164,6 +173,38 @@ describe Chef::Provider::RemoteFile::CacheControlData do
         cache_control_data.save
       end
     end
+
+    # Cover the very long remote file path case -- see CHEF-4422 where
+    # local cache file names generated from the long uri exceeded
+    # local file system path limits resulting in exceptions from
+    # file system API's on both Windows and Unix systems.
+    context "and the URI results in a file cache path that exceeds #{CACHE_FILE_PATH_LIMIT} characters in length" do
+      let(:long_remote_path) { "http://www.bing.com/" +  ('0' * (CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH * 2 )) }
+      let(:uri) { URI.parse(long_remote_path) }
+      let(:truncated_remote_uri) { URI.parse(long_remote_path[0...CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH]) }
+      let(:truncated_file_cache_path) do
+        cache_control_data_truncated = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(truncated_remote_uri, current_file_checksum)
+        cache_control_data_truncated.send('sanitized_cache_file_basename')[0...CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH]
+      end
+
+      it "truncates the file cache path to 102 characters" do
+        normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
+
+        Chef::FileCache.should_receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)              
+
+        cache_control_data.save
+
+        normalized_cache_path.length.should == CACHE_FILE_PATH_LIMIT
+      end
+
+      it "uses a file cache path that starts with the first #{CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH} characters of the URI" do
+        normalized_cache_path = cache_control_data.send('sanitized_cache_file_basename')
+
+        truncated_file_cache_path.length.should == CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH
+        normalized_cache_path.start_with?(truncated_file_cache_path).should == true
+      end
+    end
+
   end
 
 end
