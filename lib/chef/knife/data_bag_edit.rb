@@ -32,13 +32,15 @@ class Chef
       category "data bag"
 
       option :secret,
-      :short => "-s SECRET",
-      :long  => "--secret ",
-      :description => "The secret key to use to encrypt data bag item values"
+        :short => "-s SECRET",
+        :long  => "--secret ",
+        :description => "The secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
-      :long => "--secret-file SECRET_FILE",
-      :description => "A file containing the secret key to use to encrypt data bag item values"
+        :long => "--secret-file SECRET_FILE",
+        :description => "A file containing the secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def read_secret
         if config[:secret]
