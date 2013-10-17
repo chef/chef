@@ -95,15 +95,6 @@ metadata = { :unix_only => true,
 describe Chef::Resource::Package, metadata do
   include Chef::Mixin::ShellOut
 
-  def chef_test_dpkg_installed?
-    shell_out("dpkg -l chef-integration-test").status.success?
-  end
-
-  def dpkg_should_be_installed(pkg_name)
-    shell_out!("dpkg -l #{pkg_name}")
-  end
-
-
   context "with a remote package source" do
 
     include AptServer
@@ -166,11 +157,6 @@ describe Chef::Resource::Package, metadata do
       base_resource
     end
 
-    # it "results in a usable apt server" do
-    #   shell_out!("apt-get install -q -y --force-yes chef-integration-test ", :env => { "DEBIAN_FRONTEND" => "noninteractive" })
-    #   shell_out!("dpkg -l chef-integration-test")
-    # end
-
     context "when the package is not yet installed" do
       it "installs the package with action :install" do
         package_resource.run_action(:install)
@@ -206,7 +192,7 @@ describe Chef::Resource::Package, metadata do
         it "raises a reasonable error for action :install" do
           expect do
             package_resource.run_action(:install)
-          end.to raise_error(Chef::Exceptions::Exec)
+          end.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
         end
 
       end
@@ -216,7 +202,6 @@ describe Chef::Resource::Package, metadata do
         let(:file_cache_path) { Dir.mktmpdir }
 
         before do
-          @old_config = Chef::Config.configuration.dup
           Chef::Config[:file_cache_path] = file_cache_path
           debconf_reset = 'chef-integration-test chef-integration-test/sample-var string "INVALID"'
           shell_out!("echo #{debconf_reset} |debconf-set-selections")
@@ -224,7 +209,6 @@ describe Chef::Resource::Package, metadata do
 
         after do
           FileUtils.rm_rf(file_cache_path)
-          Chef::Config.configuration = @old_config
         end
 
         context "with a preseed file" do
@@ -267,6 +251,10 @@ describe Chef::Resource::Package, metadata do
 
         context "with a preseed template" do
 
+          # NOTE: in the fixtures, there is also a cookbook_file named
+          # "preseed-template.seed". This implicitly tests that templates are
+          # preferred over cookbook_files when both are present.
+
           let(:package_resource) do
             r = base_resource
             r.cookbook_name = "preseed"
@@ -286,8 +274,98 @@ describe Chef::Resource::Package, metadata do
           end
 
         end
+      end # installing w/ preseed
+    end # when package not installed
 
+    context "and the desired version of the package is installed" do
+
+      before do
+        v_1_1_package = File.expand_path("apt/chef-integration-test_1.1-1_amd64.deb", CHEF_SPEC_DATA)
+        shell_out!("dpkg -i #{v_1_1_package}")
       end
+
+      it "does nothing for action :install" do
+        package_resource.run_action(:install)
+        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        package_resource.should_not be_updated_by_last_action
+      end
+
+      it "does nothing for action :upgrade" do
+        package_resource.run_action(:upgrade)
+        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        package_resource.should_not be_updated_by_last_action
+      end
+
+      # Verify that the package is removed by running `dpkg -l PACKAGE`
+      # On Ubuntu 12.10 and newer, the command exits 1.
+      #
+      # On Ubuntu 12.04 and older, the `dpkg -l` command will exit 0 and
+      # display a package status message like this:
+      #
+      # Desired=Unknown/Install/Remove/Purge/Hold
+      # | Status=Not/Inst/Cfg-files/Unpacked/Failed-cfg/Half-inst/trig-aWait/Trig-pend
+      # |/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+      # ||/ Name                              Version                                   Description
+      # +++-=================================-=========================================-============================================
+      # un  chef-integration-test             <none>                                    (no description available)
+      def pkg_should_be_removed
+        # will raise if exit code != 0,1
+        pkg_check = shell_out!("dpkg -l chef-integration-test", :returns => [0,1])
+
+        if pkg_check.exitstatus == 0
+          pkg_check.stdout.should =~ /un[\s]+chef-integration-test/
+        end
+      end
+
+
+      it "removes the package for action :remove" do
+        package_resource.run_action(:remove)
+        pkg_should_be_removed
+        package_resource.should be_updated_by_last_action
+      end
+
+      it "removes the package for action :purge" do
+        package_resource.run_action(:purge)
+        pkg_should_be_removed
+        package_resource.should be_updated_by_last_action
+      end
+
+    end
+
+    context "and an older version of the package is installed" do
+      before do
+        v_1_0_package = File.expand_path("apt/chef-integration-test_1.0-1_amd64.deb", CHEF_SPEC_DATA)
+        shell_out!("dpkg -i #{v_1_0_package}")
+      end
+
+      it "does nothing for action :install" do
+        package_resource.run_action(:install)
+        shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        package_resource.should_not be_updated_by_last_action
+      end
+
+      it "upgrades the package for action :upgrade" do
+        package_resource.run_action(:upgrade)
+        dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
+        dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
+        package_resource.should be_updated_by_last_action
+      end
+
+      context "and the resource specifies the new version" do
+        let(:package_resource) do
+          r = base_resource
+          r.version("1.1-1")
+          r
+        end
+
+        it "upgrades the package for action :install" do
+          package_resource.run_action(:install)
+          dpkg_l = shell_out!("dpkg -l chef-integration-test", :returns => [0])
+          dpkg_l.stdout.should =~ /chef\-integration\-test[\s]+1\.1\-1/
+          package_resource.should be_updated_by_last_action
+        end
+      end
+
     end
 
   end

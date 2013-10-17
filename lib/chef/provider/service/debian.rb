@@ -41,17 +41,17 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             update_rcd = "/usr/sbin/update-rc.d"
-            a.assertion { ::File.exists? update_rcd } 
+            a.assertion { ::File.exists? update_rcd }
             a.failure_message Chef::Exceptions::Service, "#{update_rcd} does not exist!"
             # no whyrun recovery - this is a base system component of debian
-            # distros and must be present 
-          end 
+            # distros and must be present
+          end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { @priority_success } 
+            a.assertion { @priority_success }
             a.failure_message  Chef::Exceptions::Service, "/usr/sbin/update-rc.d -n -f #{@current_resource.service_name} failed - #{@rcd_status.inspect}"
-            # This can happen if the service is not yet installed,so we'll fake it. 
-            a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.", 
+            # This can happen if the service is not yet installed,so we'll fake it.
+            a.whyrun ["Unable to determine priority of service, assuming service would have been correctly installed earlier in the run.",
                       "Assigning temporary priorities to continue.",
                       "If this service is not properly installed prior to this point, this will fail."] do
               temp_priorities = {"6"=>[:stop, "20"],
@@ -74,7 +74,7 @@ class Chef
             [stdout, stderr].each do |iop|
               iop.each_line do |line|
                 if UPDATE_RC_D_PRIORITIES =~ line
-                  # priority[runlevel] = [ S|K, priority ] 
+                  # priority[runlevel] = [ S|K, priority ]
                   # S = Start, K = Kill
                   # debian runlevels: 0 Halt, 1 Singleuser, 2 Multiuser, 3-5 == 2, 6 Reboot
                   priority[$1] = [($2 == "S" ? :start : :stop), $3]
@@ -84,6 +84,12 @@ class Chef
                 end
               end
             end
+          end
+
+          # Reduce existing priority back to an integer if appropriate, picking
+          # runlevel 2 as a baseline
+          if priority[2] && [2..5].all? { |runlevel| priority[runlevel] == priority[2] }
+            priority = priority[2].last
           end
 
           unless @rcd_status.exitstatus == 0
@@ -105,14 +111,28 @@ class Chef
           enabled
         end
 
-        def enable_service()
+        # Override method from parent to ensure priority is up-to-date
+        def action_enable
+          if @current_resource.enabled && @current_resource.priority == @new_resource.priority
+            Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
+          else
+            converge_by("enable service #{@new_resource}") do
+              enable_service
+              Chef::Log.info("#{@new_resource} enabled")
+            end
+          end
+          load_new_resource_state
+          @new_resource.enabled(true)
+        end
+
+        def enable_service
           if @new_resource.priority.is_a? Integer
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults #{@new_resource.priority} #{100 - @new_resource.priority}")
           elsif @new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling  
+            # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own start priorities
-            set_priority()
+            set_priority
           else # No priority, go with update-rc.d defaults
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d #{@new_resource.service_name} defaults")
@@ -120,23 +140,23 @@ class Chef
 
         end
 
-        def disable_service()
+        def disable_service
           if @new_resource.priority.is_a? Integer
             # Stop processes in reverse order of start using '100 - start_priority'
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .")
           elsif @new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling  
+            # we call the same command regardless of we're enabling or disabling
             # users passing a Hash are responsible for setting their own stop priorities
-            set_priority()
-          else 
+            set_priority
+          else
             # no priority, using '100 - 20 (update-rc.d default)' to stop in reverse order of start
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} remove")
             run_command(:command => "/usr/sbin/update-rc.d -f #{@new_resource.service_name} stop 80 2 3 4 5 .")
           end
         end
 
-        def set_priority()
+        def set_priority
           args = ""
           @new_resource.priority.each do |level, o|
             action = o[0]

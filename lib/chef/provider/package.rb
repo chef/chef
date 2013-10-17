@@ -50,7 +50,7 @@ class Chef
 
         requirements.assert(:upgrade) do |a|
           # Can't upgrade what we don't have
-          a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) } 
+          a.assertion  { !(@current_resource.version.nil? && candidate_version.nil?) }
           a.failure_message(Chef::Exceptions::Package, "No candidate version available for #{@new_resource.package_name}")
           a.whyrun("Assuming a repository that offers #{@new_resource.package_name} would have been configured")
         end
@@ -71,9 +71,9 @@ class Chef
         # We need to make sure we handle the preseed file
         if @new_resource.response_file
           if preseed_file = get_preseed_file(@new_resource.package_name, install_version)
-            converge_by("preseed package #{@new_resource.package_name}") do  
+            converge_by("preseed package #{@new_resource.package_name}") do
               preseed_package(preseed_file)
-            end 
+            end
           end
         end
         description = install_version ? "version #{install_version} of" : ""
@@ -92,7 +92,7 @@ class Chef
           @new_resource.version(candidate_version)
           orig_version = @current_resource.version || "uninstalled"
           converge_by("upgrade package #{@new_resource.package_name} from #{orig_version} to #{candidate_version}") do
-            status = upgrade_package(@new_resource.package_name, candidate_version)
+            upgrade_package(@new_resource.package_name, candidate_version)
             Chef::Log.info("#{@new_resource} upgraded from #{orig_version} to #{candidate_version}")
           end
         end
@@ -146,7 +146,7 @@ class Chef
         if preseed_file = get_preseed_file(@new_resource.package_name, @current_resource.version)
           converge_by("reconfigure package #{@new_resource.package_name}") do
             preseed_package(preseed_file)
-            status = reconfig_package(@new_resource.package_name, @current_resource.version)
+            reconfig_package(@new_resource.package_name, @current_resource.version)
             Chef::Log.info("#{@new_resource} reconfigured")
           end
         else
@@ -198,21 +198,21 @@ class Chef
 
         Chef::Log.debug("#{@new_resource} fetching preseed file to #{cache_seed_to}")
 
-        begin
+
+        if template_available?(@new_resource.response_file)
+          Chef::Log.debug("#{@new_resource} fetching preseed file via Template")
           remote_file = Chef::Resource::Template.new(cache_seed_to, run_context)
-          remote_file.cookbook_name = @new_resource.cookbook_name
-          remote_file.source(@new_resource.response_file)
-          remote_file.backup(false)
-          provider = Chef::Platform.provider_for_resource(remote_file, :create)
-          provider.template_location
-        rescue
-          Chef::Log.debug("#{@new_resource} fetching preseed file via Template resource failed, fallback to CookbookFile resource")
+        elsif cookbook_file_available?(@new_resource.response_file)
+          Chef::Log.debug("#{@new_resource} fetching preseed file via cookbook_file")
           remote_file = Chef::Resource::CookbookFile.new(cache_seed_to, run_context)
-          remote_file.cookbook_name = @new_resource.cookbook_name
-          remote_file.source(@new_resource.response_file)
-          remote_file.backup(false)
+        else
+          message = "No template or cookbook file found for response file #{@new_resource.response_file}"
+          raise Chef::Exceptions::FileNotFound, message
         end
 
+        remote_file.cookbook_name = @new_resource.cookbook_name
+        remote_file.source(@new_resource.response_file)
+        remote_file.backup(false)
         remote_file
       end
 
@@ -222,6 +222,16 @@ class Chef
 
       def target_version_already_installed?
         @new_resource.version == @current_resource.version
+      end
+
+      private
+
+      def template_available?(path)
+        run_context.has_template_in_cookbook?(@new_resource.cookbook_name, path)
+      end
+
+      def cookbook_file_available?(path)
+        run_context.has_cookbook_file_in_cookbook?(@new_resource.cookbook_name, path)
       end
 
     end

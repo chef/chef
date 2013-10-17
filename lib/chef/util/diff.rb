@@ -14,14 +14,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# Some portions of this file are derived from material in the diff-lcs
+# project licensed under the terms of the MIT license, provided below.
+#
+# Copyright:: Copyright (c) 2004-2013 Austin Ziegler
+# License:: MIT
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of this Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
+# SOFTWARE.
 
-require 'chef/mixin/shell_out'
+require 'diff/lcs'
+require 'diff/lcs/hunk'
 
 class Chef
   class Util
     class Diff
-      include Chef::Mixin::ShellOut
-
       # @todo: to_a, to_s, to_json, inspect defs, accessors for @diff and @error
       # @todo: move coercion to UTF-8 into to_json
       # @todo: replace shellout to diff -u with diff-lcs gem
@@ -58,6 +82,43 @@ class Chef
           end
         end
       end
+      
+      # produces a unified-output-format diff with 3 lines of context
+      # ChefFS uses udiff() directly
+      def udiff(old_file, new_file)
+        diff_str = ""
+        file_length_difference = 0
+
+        old_data = IO.readlines(old_file).map { |e| e.chomp }
+        new_data = IO.readlines(new_file).map { |e| e.chomp }
+        diff_data = ::Diff::LCS.diff(old_data, new_data)
+
+        return diff_str if old_data.empty? && new_data.empty?
+        return "No differences encountered\n" if diff_data.empty?
+
+        # write diff header (standard unified format)
+        ft = File.stat(old_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
+        diff_str << "--- #{old_file}\t#{ft}\n"
+        ft = File.stat(new_file).mtime.localtime.strftime('%Y-%m-%d %H:%M:%S.%N %z')
+        diff_str << "+++ #{new_file}\t#{ft}\n"
+
+        # loop over diff hunks. if a hunk overlaps with the last hunk,
+        # join them. otherwise, print out the old one.
+        old_hunk = hunk = nil
+        diff_data.each do |piece|
+          begin
+            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
+            file_length_difference = hunk.file_length_difference
+            next unless old_hunk
+            next if hunk.merge(old_hunk)
+            diff_str << old_hunk.diff(:unified) << "\n"
+          ensure
+            old_hunk = hunk
+          end
+        end
+        diff_str << old_hunk.diff(:unified) << "\n"
+        return diff_str
+      end
 
       private
 
@@ -78,13 +139,8 @@ class Chef
         return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
 
         begin
-          # -u: Unified diff format
-          # LC_ALL: in ruby 1.9 we want to set nil which is a magic option to mixlib-shellout to
-          #         pass through the LC_ALL locale.  in ruby 1.8 we force to 7-bit 'C' locale
-          #         (which is the mixlib-shellout default for all rubies all the time).
           Chef::Log.debug("running: diff -u #{old_file} #{new_file}")
-          locale = ( Object.const_defined? :Encoding ) ? nil : 'C'
-          result = shell_out("diff -u #{old_file} #{new_file}", :env => {'LC_ALL' => locale})
+          diff_str = udiff(old_file, new_file)
 
         rescue Exception => e
           # Should *not* receive this, but in some circumstances it seems that
@@ -92,34 +148,14 @@ class Chef
           return "Could not determine diff. Error: #{e.message}"
         end
 
-        # diff will set a non-zero return code even when there's
-        # valid stdout results, if it encounters something unexpected
-        # So as long as we have output, we'll show it.
-        #
-        # Also on some platforms (Solaris) diff outputs a single line
-        # when there are no differences found. Look for this line
-        # before analyzing diff output.
-        if !result.stdout.empty? && result.stdout != "No differences encountered\n"
-          if result.stdout.length > diff_output_threshold
+        if !diff_str.empty? && diff_str != "No differences encountered\n"
+          if diff_str.length > diff_output_threshold
             return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
-            diff_str = result.stdout
-            if  Object.const_defined? :Encoding  # ruby >= 1.9
-              if ( diff_str.encoding == Encoding::ASCII_8BIT &&
-                diff_str.encoding != Encoding.default_external &&
-                RUBY_VERSION.to_f < 2.0 )
-                # @todo mixlib-shellout under ruby 1.9 hands back an ASCII-8BIT encoded string, which needs to
-                # be fixed to the default external encoding -- this should be moved into mixlib-shellout
-                diff_str = diff_str.force_encoding(Encoding.default_external)
-              end
-              diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
-            end
+            diff_str = encode_diff_for_json(diff_str)
             @diff = diff_str.split("\n")
-            @diff.delete("\\ No newline at end of file")
             return "(diff available)"
           end
-        elsif !result.stderr.empty?
-          return "Could not determine diff. Error: #{result.stderr}"
         else
           return "(no diff)"
         end
@@ -137,6 +173,13 @@ class Chef
             raise
           end
         end
+      end
+
+      def encode_diff_for_json(diff_str)
+        if Object.const_defined? :Encoding
+          diff_str.encode!('UTF-8', :invalid => :replace, :undef => :replace, :replace => '?')
+        end
+        return diff_str
       end
 
     end

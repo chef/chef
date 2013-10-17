@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,19 +39,9 @@ class Chef
         attr_reader :cache_path
 
         # Create a new PersistentSet. Values in the set are persisted by
-        # creating a file in the +cache_path+ directory. If not given, the
-        # value of Chef::Config[:syntax_check_cache_path] is used; if that
-        # value is not configured, the value of
-        # Chef::Config[:cache_options][:path] is used.
-        #--
-        # history: prior to Chef 11, the cache implementation was based on
-        # moneta and configured via cache_options[:path]. Knife configs
-        # generated with Chef 11 will have `syntax_check_cache_path`, but older
-        # configs will have `cache_options[:path]`. `cache_options` is marked
-        # deprecated in chef/config.rb but doesn't currently trigger a warning.
-        # See also: CHEF-3715
-        def initialize(cache_path=nil)
-          @cache_path = cache_path || Chef::Config[:syntax_check_cache_path] || Chef::Config[:cache_options][:path]
+        # creating a file in the +cache_path+ directory.
+        def initialize(cache_path=Chef::Config[:syntax_check_cache_path])
+          @cache_path = cache_path
           @cache_path_created = false
         end
 
@@ -137,7 +127,7 @@ class Chef
       end
 
       def untested_template_files
-        template_files.reject do |file| 
+        template_files.reject do |file|
           if validated?(file)
             Chef::Log.debug("Template #{file} is unchanged, skipping syntax check")
             true

@@ -32,7 +32,7 @@ describe Chef::Cookbook::SyntaxCheck do
     @attr_files = %w{default.rb smokey.rb}.map { |f| File.join(cookbook_path, 'attributes', f) }
     @defn_files = %w{client.rb server.rb}.map { |f| File.join(cookbook_path, 'definitions', f)}
     @recipes = %w{default.rb gigantor.rb one.rb}.map { |f| File.join(cookbook_path, 'recipes', f) }
-    @ruby_files = @attr_files + @defn_files + @recipes
+    @ruby_files = @attr_files + @defn_files + @recipes + [File.join(cookbook_path, "metadata.rb")]
     basenames = %w{ helpers_via_partial_test.erb
                     helper_test.erb
                     openldap_stuff.conf.erb
@@ -74,7 +74,6 @@ describe Chef::Cookbook::SyntaxCheck do
 
     after do
       FileUtils.rm_rf(cache_path) if File.exist?(cache_path)
-      Chef::Config[:syntax_check_cache_path] = nil
     end
 
     describe "and the files have not been syntax checked previously" do

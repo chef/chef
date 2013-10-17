@@ -22,16 +22,6 @@ Chef::Knife::Bootstrap.load_deps
 require 'net/ssh'
 
 describe Chef::Knife::Bootstrap do
-  before(:all) do
-    @original_config = Chef::Config.hash_dup
-    @original_knife_config = Chef::Config[:knife].dup
-  end
-
-  after(:all) do
-    Chef::Config.configuration = @original_config
-    Chef::Config[:knife] = @original_knife_config
-  end
-
   before(:each) do
     Chef::Log.logger = Logger.new(StringIO.new)
     @knife = Chef::Knife::Bootstrap.new
@@ -133,6 +123,34 @@ describe Chef::Knife::Bootstrap do
     @knife.name_args.first.should == "barf"
   end
 
+  describe "specifying no_proxy with various entries" do
+    subject(:knife) { described_class.new }
+    let(:options){ ["--bootstrap-no-proxy", setting] }
+    let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
+    let(:rendered_template) do
+      knife.instance_variable_set("@template_file", template_file)
+      knife.parse_options(options)
+      template_string = knife.read_template
+      knife.render_template(template_string)
+    end
+
+    context "via --bootstrap-no-proxy" do
+      let(:setting) { "api.opscode.com" }
+
+      it "renders the client.rb with a single FQDN no_proxy entry" do
+        rendered_template.should match(%r{.*no_proxy\s*"api.opscode.com".*})
+      end
+    end
+
+    context "via --bootstrap-no-proxy multiple" do
+      let(:setting) { "api.opscode.com,172.16.10.*" }
+
+      it "renders the client.rb with comma-separated FQDN and wildcard IP address no_proxy entries" do
+        rendered_template.should match(%r{.*no_proxy\s*"api.opscode.com,172.16.10.\*".*})
+      end
+    end
+  end
+
   describe "specifying the encrypted data bag secret key" do
     subject(:knife) { described_class.new }
     let(:secret) { "supersekret" }
@@ -182,7 +200,6 @@ describe Chef::Knife::Bootstrap do
       it "renders the client.rb with an encrypted_data_bag_secret entry" do
         rendered_template.should match(%r{encrypted_data_bag_secret\s*"/etc/chef/encrypted_data_bag_secret"})
       end
-      after(:each) { Chef::Config.configuration = @original_config }
     end
   end
 
@@ -216,7 +233,7 @@ describe Chef::Knife::Bootstrap do
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '4001'
       end
-  
+
       it "configures the ssh agent forwarding" do
         @knife_ssh.config[:forward_agent].should == true
       end
@@ -241,7 +258,7 @@ describe Chef::Knife::Bootstrap do
       it "uses the password from --ssh-password for sudo when --use-sudo-password is set" do
         @knife.config[:use_sudo] = true
         @knife.config[:use_sudo_password] = true
-        @knife.ssh_command.should include("echo #{@knife.config[:ssh_password]} | sudo -S")
+        @knife.ssh_command.should include("echo \'#{@knife.config[:ssh_password]}\' | sudo -S")
       end
 
       it "should not honor --use-sudo-password when --use-sudo is not set" do
@@ -276,7 +293,7 @@ describe Chef::Knife::Bootstrap do
       it "configures the ssh port" do
         @knife_ssh.config[:ssh_port].should == '2430'
       end
-  
+
       it "configures the ssh agent forwarding" do
         @knife_ssh.config[:forward_agent].should == true
       end

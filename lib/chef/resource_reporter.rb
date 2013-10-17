@@ -52,8 +52,8 @@ class Chef
         as_hash["type"]   = new_resource.class.dsl_name
         as_hash["name"]   = new_resource.name
         as_hash["id"]     = new_resource.identity
-        as_hash["after"]  = new_resource.state
-        as_hash["before"] = current_resource ? current_resource.state : {}
+        as_hash["after"]  = state(new_resource)
+        as_hash["before"] = current_resource ? state(current_resource) : {}
         as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
         as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
         as_hash["delta"]  = "" if as_hash["delta"].nil?
@@ -80,6 +80,12 @@ class Chef
         !self.exception
       end
 
+      def state(r)
+        r.class.state_attrs.inject({}) do |state_attrs, attr_name|
+          state_attrs[attr_name] = r.send(attr_name)
+          state_attrs
+        end
+      end
     end # End class ResouceReport
 
     attr_reader :updated_resources

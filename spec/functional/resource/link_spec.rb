@@ -340,7 +340,7 @@ describe Chef::Resource::Link do
           it 'create errors out' do
             if windows?
               lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
-            elsif os_x? or solaris? or freebsd?
+            elsif os_x? or solaris? or freebsd? or aix?
               lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
             else
               lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
@@ -502,7 +502,7 @@ describe Chef::Resource::Link do
           it 'errors out' do
             if windows?
               lambda { resource.run_action(:create) }.should raise_error(Errno::EACCES)
-            elsif os_x? or solaris? or freebsd?
+            elsif os_x? or solaris? or freebsd? or aix?
               lambda { resource.run_action(:create) }.should raise_error(Errno::EPERM)
             else
               lambda { resource.run_action(:create) }.should raise_error(Errno::EISDIR)
@@ -554,7 +554,7 @@ describe Chef::Resource::Link do
               resource.run_action(:create)
               File.exists?(target_file).should be_true
               # OS X gets angry about this sort of link.  Bug in OS X, IMO.
-              pending('OS X/FreeBSD symlink? and readlink working on hard links to symlinks', :if => (os_x? or freebsd?)) do
+              pending('OS X/FreeBSD/AIX symlink? and readlink working on hard links to symlinks', :if => (os_x? or freebsd? or aix?)) do
                 symlink?(target_file).should be_true
                 readlink(target_file).should == canonicalize(@other_target)
               end
@@ -571,7 +571,7 @@ describe Chef::Resource::Link do
           end
           context 'and the link does not yet exist' do
             it 'links to the target file' do
-              pending('OS X/FreeBSD fails to create hardlinks to broken symlinks', :if => (os_x? or freebsd?)) do
+              pending('OS X/FreeBSD/AIX fails to create hardlinks to broken symlinks', :if => (os_x? or freebsd? or aix?)) do
                 resource.run_action(:create)
                 # Windows and Unix have different definitions of exists? here, and that's OK.
                 if windows?

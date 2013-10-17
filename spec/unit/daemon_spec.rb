@@ -20,7 +20,6 @@ require 'ostruct'
 
 describe Chef::Daemon do
   before do
-    @original_config = Chef::Config.configuration
     if windows?
       mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
       mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
@@ -33,52 +32,12 @@ describe Chef::Daemon do
     end
   end
 
-  after do
-    Chef::Config.configuration.replace(@original_config)
-  end
-
-  describe ".running?" do
-
-    before do
-      Chef::Daemon.name = "spec"
-    end
-
-    describe "when a pid file exists" do
-
-      before do
-        Chef::Daemon.stub!(:pid_from_file).and_return(1337)
-      end
-
-      it "should check that there is a process matching the pidfile" do
-        Process.should_receive(:kill).with(0, 1337)
-        Chef::Daemon.running?
-      end
-
-    end
-
-    describe "when the pid file is nonexistent" do
-
-      before do
-        Chef::Daemon.stub!(:pid_from_file).and_return(nil)
-      end
-
-      it "should return false" do
-        Chef::Daemon.running?.should be_false
-      end
-
-    end
-  end
-
   describe ".pid_file" do
 
     describe "when the pid_file option has been set" do
 
       before do
         Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
-      end
-
-      after do
-        Chef::Config.configuration.replace(@original_config)
       end
 
       it "should return the supplied value" do
@@ -89,7 +48,6 @@ describe Chef::Daemon do
     describe "without the pid_file option set" do
 
       before do
-        Chef::Config[:pid_file] = nil
         Chef::Daemon.name = "chef-client"
       end
 
@@ -109,92 +67,6 @@ describe Chef::Daemon do
     it "should suck the pid out of pid_file" do
       File.should_receive(:read).with("/var/run/chef/chef-client.pid").and_return("1337")
       Chef::Daemon.pid_from_file
-    end
-  end
-
-  describe ".save_pid_file" do
-
-    before do
-      Process.stub!(:pid).and_return(1337)
-      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
-      Chef::Application.stub!(:fatal!).and_return(true)
-      @f_mock = mock(File, { :print => true, :close => true, :write => true })
-      File.stub!(:open).with("/var/run/chef/chef-client.pid", "w").and_yield(@f_mock)
-    end
-
-    it "should try and create the parent directory" do
-      FileUtils.should_receive(:mkdir_p).with("/var/run/chef")
-      Chef::Daemon.save_pid_file
-    end
-
-    it "should open the pid file for writing" do
-      File.should_receive(:open).with("/var/run/chef/chef-client.pid", "w")
-      Chef::Daemon.save_pid_file
-    end
-
-    it "should write the pid, converted to string, to the pid file" do
-      @f_mock.should_receive(:write).with("1337").once.and_return(true)
-      Chef::Daemon.save_pid_file
-    end
-
-  end
-
-  describe ".remove_pid_file" do
-    before do
-      Chef::Config[:pid_file] = "/var/run/chef/chef-client.pid"
-    end
-
-    describe "when the pid file exists" do
-
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-      end
-
-      it "should remove the file" do
-        FileUtils.should_receive(:rm).with("/var/run/chef/chef-client.pid")
-        Chef::Daemon.remove_pid_file
-      end
-
-
-    end
-
-    describe "when the pid file exists and the process is forked" do
-
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-        Chef::Daemon.stub!(:forked?) { true }
-      end
-
-      it "should not remove the file" do
-        FileUtils.should_not_receive(:rm)
-        Chef::Daemon.remove_pid_file
-      end
-
-    end
-
-    describe "when the pid file exists and the process is not forked" do
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(true)
-        Chef::Daemon.stub!(:forked?) { false }
-      end
-
-      it "should remove the file" do
-        FileUtils.should_receive(:rm)
-        Chef::Daemon.remove_pid_file
-      end
-    end
-
-    describe "when the pid file does not exist" do
-
-      before do
-        File.stub!(:exists?).with("/var/run/chef/chef-client.pid").and_return(false)
-      end
-
-      it "should not remove the file" do
-        FileUtils.should_not_receive(:rm)
-        Chef::Daemon.remove_pid_file
-      end
-
     end
   end
 
@@ -230,10 +102,6 @@ describe Chef::Daemon do
     end
 
     describe "when just the user option is supplied" do
-      before do
-        Chef::Config[:group] = nil
-      end
-
       it "should log an appropriate info message" do
         Chef::Log.should_receive(:info).with("About to change privilege to aj")
         Chef::Daemon.change_privilege

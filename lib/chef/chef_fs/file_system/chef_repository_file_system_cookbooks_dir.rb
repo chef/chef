@@ -26,28 +26,43 @@ class Chef
       class ChefRepositoryFileSystemCookbooksDir < ChefRepositoryFileSystemEntry
         def initialize(name, parent, file_path)
           super(name, parent, file_path)
-          @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
+          begin
+            @chefignore = Chef::Cookbook::Chefignore.new(self.file_path)
+          rescue Errno::EISDIR
+          rescue Errno::EACCES
+            # Work around a bug in Chefignore when chefignore is a directory
+          end
         end
 
         attr_reader :chefignore
 
         def children
-          Dir.entries(file_path).sort.
-              select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
-              map { |child_name| ChefRepositoryFileSystemCookbookDir.new(child_name, self) }.
-              select do |entry|
-                # empty cookbooks and cookbook directories are ignored
-                if entry.children.size == 0
-                  Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
-                  false
-                else
-                  true
+          begin
+            Dir.entries(file_path).sort.
+                select { |child_name| can_have_child?(child_name, File.directory?(File.join(file_path, child_name))) }.
+                map { |child_name| make_child(child_name) }.
+                select do |entry|
+                  # empty cookbooks and cookbook directories are ignored
+                  if entry.children.size == 0
+                    Chef::Log.warn("Cookbook '#{entry.name}' is empty or entirely chefignored at #{entry.path_for_printing}")
+                    false
+                  else
+                    true
+                  end
                 end
-              end
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          end
         end
 
         def can_have_child?(name, is_dir)
           is_dir && !name.start_with?('.')
+        end
+
+        protected
+
+        def make_child(child_name)
+          ChefRepositoryFileSystemCookbookDir.new(child_name, self)
         end
       end
     end

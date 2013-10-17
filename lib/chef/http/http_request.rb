@@ -22,7 +22,6 @@
 #
 require 'uri'
 require 'net/http'
-require 'chef/rest/cookie_jar'
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -36,8 +35,8 @@ end
 require 'chef/version'
 
 class Chef
-  class REST
-    class RESTRequest
+  class HTTP
+    class HTTPRequest
 
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
 
@@ -72,8 +71,6 @@ class Chef
       def initialize(method, url, req_body, base_headers={})
         @method, @url = method, url
         @request_body = nil
-        @cookies = CookieJar.instance
-        configure_http_client
         build_headers(base_headers)
         configure_http_request(req_body)
       end
@@ -94,10 +91,10 @@ class Chef
         @url.path.empty? ? SLASH : @url.path
       end
 
+      # DEPRECATED. Call request on an HTTP client object instead.
       def call
         hide_net_http_bug do
           http_client.request(http_request) do |response|
-            store_cookie(response)
             yield response if block_given?
             response
           end
@@ -106,6 +103,11 @@ class Chef
 
       def config
         Chef::Config
+      end
+
+      # DEPRECATED. Call request on an HTTP client object instead.
+      def http_client
+        @http_client ||= BasicClient.new(url).http_client
       end
 
       private
@@ -125,77 +127,12 @@ class Chef
         end
       end
 
-      def store_cookie(response)
-        if response['set-cookie']
-          @cookies["#{host}:#{port}"] = response['set-cookie']
-        end
-      end
-
       def build_headers(headers)
         @headers = headers.dup
-        # TODO: need to set accept somewhere else
-        # headers.merge!('Accept' => "application/json") unless raw
+        # No response compression unless we asked for it explicitly:
+        @headers[HTTPRequest::ACCEPT_ENCODING] ||= "identity"
         @headers['X-Chef-Version'] = ::Chef::VERSION
-        @headers[ACCEPT_ENCODING] = ENCODING_GZIP_DEFLATE
-
-        if @cookies.has_key?("#{host}:#{port}")
-          @headers['Cookie'] = @cookies["#{host}:#{port}"]
-        end
-      end
-
-      #adapted from buildr/lib/buildr/core/transports.rb
-      def proxy_uri
-        proxy = Chef::Config["#{url.scheme}_proxy"]
-        proxy = URI.parse(proxy) if String === proxy
-        excludes = Chef::Config[:no_proxy].to_s.split(/\s*,\s*/).compact
-        excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
-        return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
-      end
-
-      def configure_http_client
-        http_proxy = proxy_uri
-        if http_proxy.nil?
-          @http_client = Net::HTTP.new(host, port)
-        else
-          Chef::Log.debug("Using #{http_proxy.host}:#{http_proxy.port} for proxy")
-          user = Chef::Config["#{url.scheme}_proxy_user"]
-          pass = Chef::Config["#{url.scheme}_proxy_pass"]
-          @http_client = Net::HTTP.Proxy(http_proxy.host, http_proxy.port, user, pass).new(host, port)
-        end
-        if url.scheme == HTTPS
-          @http_client.use_ssl = true
-          if config[:ssl_verify_mode] == :verify_none
-            @http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          elsif config[:ssl_verify_mode] == :verify_peer
-            @http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
-          end
-          if config[:ssl_ca_path]
-            unless ::File.exist?(config[:ssl_ca_path])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
-            end
-            @http_client.ca_path = config[:ssl_ca_path]
-          elsif config[:ssl_ca_file]
-            unless ::File.exist?(config[:ssl_ca_file])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
-            end
-            @http_client.ca_file = config[:ssl_ca_file]
-          end
-          if (config[:ssl_client_cert] || config[:ssl_client_key])
-            unless (config[:ssl_client_cert] && config[:ssl_client_key])
-              raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
-            end
-            unless ::File.exists?(config[:ssl_client_cert])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
-            end
-            unless ::File.exists?(config[:ssl_client_key])
-              raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
-            end
-            @http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
-            @http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
-          end
-        end
-
-        @http_client.read_timeout = config[:rest_timeout]
+        @headers
       end
 
 
@@ -225,6 +162,8 @@ class Chef
           password = URI.unescape(url.password) if url.password
           @http_request.basic_auth(user, password)
         end
+
+        # Overwrite default UA
         @http_request[USER_AGENT] = self.class.user_agent
       end
 

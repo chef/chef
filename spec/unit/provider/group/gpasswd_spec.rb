@@ -36,8 +36,8 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
       @provider.define_resource_requirements
     end
 
-    # Checking for required binaries is already done in the spec 
-    # for Chef::Provider::Group - no need to repeat it here.  We'll 
+    # Checking for required binaries is already done in the spec
+    # for Chef::Provider::Group - no need to repeat it here.  We'll
     # include only what's specific to this provider.
     it "should raise an error if the required binary /usr/bin/gpasswd doesn't exist" do
       File.stub!(:exists?).and_return(true)

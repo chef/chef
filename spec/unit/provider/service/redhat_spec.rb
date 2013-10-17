@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ describe "Chef::Provider::Service::Redhat" do
     @node.automatic_attrs[:command] = {:ps => 'foo'}
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
- 
+
     @new_resource = Chef::Resource::Service.new("chef")
 
     @current_resource = Chef::Resource::Service.new("chef")
@@ -73,7 +73,7 @@ describe "Chef::Provider::Service::Redhat" do
         @provider.load_current_resource
         @current_resource.enabled.should be_true
       end
-  
+
       it "sets the current enabled status to false if the regex does not match" do
         status = mock("Status", :exitstatus => 0, :stdout => "" , :stderr => "")
         @provider.should_receive(:shell_out).with("/sbin/service chef status").and_return(status)
@@ -84,10 +84,10 @@ describe "Chef::Provider::Service::Redhat" do
         @current_resource.enabled.should be_false
       end
     end
-  
+
     describe "define resource requirements" do
       it_should_behave_like "define_resource_requirements_common"
-    
+
       context "when the service does not exist" do
         before do
           status = mock("Status", :exitstatus => 1, :stdout => "", :stderr => "chef: unrecognized service")

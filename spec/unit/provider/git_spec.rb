@@ -165,15 +165,35 @@ SHAS
     @provider.should respond_to(:revision_slug)
   end
 
-  it "runs a clone command with default git options" do
-    @resource.user "deployNinja"
-    @resource.ssh_wrapper "do_it_this_way.sh"
-    expected_cmd = "git clone  \"git://github.com/opscode/chef.git\" \"/my/deploy/dir\""
-    @provider.should_receive(:shell_out!).with(expected_cmd, :user => "deployNinja",
-                                                :environment =>{"GIT_SSH"=>"do_it_this_way.sh"},
-                                                :log_tag => "git[web2.0 app]" )
-
-    @provider.clone
+  context "with an ssh wrapper" do
+    let(:deploy_user)  { "deployNinja" }
+    let(:wrapper)      { "do_it_this_way.sh" }
+    let(:expected_cmd) { 'git clone  "git://github.com/opscode/chef.git" "/my/deploy/dir"' }
+    let(:default_options) do
+      {
+        :user => deploy_user,
+        :environment => { "GIT_SSH" => wrapper },
+        :log_tag => "git[web2.0 app]"
+      }
+    end
+    before do
+      @resource.user deploy_user
+      @resource.ssh_wrapper wrapper
+    end
+    context "without a timeout set" do
+      it "clones a repo with default git options" do
+        @provider.should_receive(:shell_out!).with(expected_cmd, default_options)
+        @provider.clone
+      end
+    end
+    context "with a timeout set" do
+      let (:seconds) { 10 }
+      before { @resource.timeout(seconds) }
+      it "clones a repo with amended git options" do
+        @provider.should_receive(:shell_out!).with(expected_cmd, default_options.merge(:timeout => seconds))
+        @provider.clone
+      end
+    end
   end
 
   it "runs a clone command with escaped destination" do

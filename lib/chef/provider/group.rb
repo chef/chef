@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,11 +35,11 @@ class Chef
         super
         @group_exists = true
       end
-      
+
       def load_current_resource
         @current_resource = Chef::Resource::Group.new(@new_resource.name)
         @current_resource.group_name(@new_resource.group_name)
-        
+
         group_info = nil
         begin
           group_info = Etc.getgrnam(@new_resource.group_name)
@@ -47,26 +47,26 @@ class Chef
           @group_exists = false
           Chef::Log.debug("#{@new_resource} group does not exist")
         end
-        
+
         if group_info
           @new_resource.gid(group_info.gid) unless @new_resource.gid
           @current_resource.gid(group_info.gid)
           @current_resource.members(group_info.mem)
         end
-        
+
         @current_resource
       end
 
       def define_resource_requirements
-        requirements.assert(:modify) do |a| 
-          a.assertion { @group_exists } 
+        requirements.assert(:modify) do |a|
+          a.assertion { @group_exists }
           a.failure_message(Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!")
           a.whyrun("Group #{@new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
         end
       end
-      
-      # Check to see if a group needs any changes. Populate 
-      # @change_desc with a description of why a change must occur 
+
+      # Check to see if a group needs any changes. Populate
+      # @change_desc with a description of why a change must occur
       #
       # ==== Returns
       # <true>:: If a change is required
@@ -77,7 +77,7 @@ class Chef
           @change_desc = "change gid #{@current_resource.gid} to #{@new_resource.gid}"
           return true
         end
-        
+
         if(@new_resource.append)
           missing_members = []
           @new_resource.members.each do |member|
@@ -96,24 +96,24 @@ class Chef
         end
         return false
       end
-      
+
       def action_create
         case @group_exists
         when false
-          converge_by("create #{@new_resource}") do 
+          converge_by("create #{@new_resource}") do
             create_group
             Chef::Log.info("#{@new_resource} created")
           end
-        else 
+        else
           if compare_group
-            converge_by(["alter group #{@new_resource}", @change_desc ]) do 
+            converge_by(["alter group #{@new_resource}", @change_desc ]) do
               manage_group
               Chef::Log.info("#{@new_resource} altered")
             end
           end
         end
       end
-      
+
       def action_remove
         if @group_exists
           converge_by("remove group #{@new_resource}") do
@@ -122,16 +122,16 @@ class Chef
           end
         end
       end
-      
+
       def action_manage
         if @group_exists && compare_group
           converge_by(["manage group #{@new_resource}", @change_desc]) do
-            manage_group 
+            manage_group
             Chef::Log.info("#{@new_resource} managed")
           end
         end
       end
-      
+
       def action_modify
         if compare_group
           converge_by(["modify group #{@new_resource}", @change_desc]) do
@@ -140,7 +140,7 @@ class Chef
           end
         end
       end
-      
+
       def create_group
         raise NotImplementedError, "subclasses of Chef::Provider::Group should define #create_group"
       end

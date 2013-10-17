@@ -23,8 +23,8 @@ class Chef
   class Resource
     class Scm < Chef::Resource
 
-      identity_attr :destination 
-      
+      identity_attr :destination
+
       state_attrs :revision
 
       def initialize(name, run_context=nil)
@@ -143,6 +143,14 @@ class Chef
           :ssh_wrapper,
           arg,
           :kind_of => String
+        )
+      end
+
+      def timeout(arg=nil)
+        set_or_return(
+          :timeout,
+          arg,
+          :kind_of => Integer
         )
       end
 

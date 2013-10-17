@@ -1,11 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@opscode.com>)
-# Author:: Thom May (<thom@clearairturbulence.org>)
-# Author:: Nuo Yan (<nuo@opscode.com>)
-# Author:: Christopher Brown (<cb@opscode.com>)
-# Author:: Christopher Walters (<cw@opscode.com>)
-# Author:: Daniel DeLeo (<dan@opscode.com>)
-# Copyright:: Copyright (c) 2009, 2010 Opscode, Inc.
+# Copyright:: Copyright (c) 2008, 2010 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,12 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'singleton'
+
+require 'chef/knife'
+require 'chef/json_compat'
 
 class Chef
-  class REST
-    class CookieJar < Hash
-      include Singleton
+  class Resource
+    class WithState < Chef::Resource
+      attr_accessor :state
+
+      def initialize(name, run_context=nil)
+        @resource_name = :with_state
+        super
+      end
+
+      def state
+        @state
+      end
     end
   end
 end

@@ -22,7 +22,7 @@ require 'chef/client'
 require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
-require 'chef/rest'
+require 'chef/config_fetcher'
 require 'chef/handler/error_report'
 
 
@@ -34,7 +34,6 @@ class Chef::Application::Client < Chef::Application
   option :config_file,
     :short => "-c CONFIG",
     :long  => "--config CONFIG",
-    :default => Chef::Config.platform_specific_path("/etc/chef/client.rb"),
     :description => "The configuration file to use"
 
   option :formatter,
@@ -197,6 +196,20 @@ class Chef::Application::Client < Chef::Application
     :description  => "Enable reporting data collection for chef runs",
     :boolean      => true
 
+  option :local_mode,
+    :short        => "-z",
+    :long         => "--local-mode",
+    :description  => "Point chef-client at local repository",
+    :boolean      => true
+
+  option :chef_zero_port,
+    :long         => "--chef-zero-port PORT",
+    :description  => "Port to start chef-zero on"
+
+  option :config_file_jail,
+    :long         => "--config-file-jail PATH",
+    :description  => "Directory under which config files are allowed to be loaded (no client.rb or knife.rb outside this path will be loaded)."
+
   if Chef::Platform.windows?
     option :fatal_windows_admin_check,
       :short        => "-A",
@@ -219,6 +232,12 @@ class Chef::Application::Client < Chef::Application
 
     Chef::Config[:chef_server_url] = config[:chef_server_url] if config.has_key? :chef_server_url
 
+    Chef::Config.local_mode = config[:local_mode] if config.has_key?(:local_mode)
+    if Chef::Config.local_mode && !Chef::Config.has_key?(:cookbook_path) && !Chef::Config.has_key?(:chef_repo_path)
+      Chef::Config.chef_repo_path = Chef::Config.find_chef_repo_path(Dir.pwd)
+    end
+    Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
+
     if Chef::Config[:daemonize]
       Chef::Config[:interval] ||= 1800
     end
@@ -229,31 +248,22 @@ class Chef::Application::Client < Chef::Application
     end
 
     if Chef::Config[:json_attribs]
-      begin
-        json_io = case Chef::Config[:json_attribs]
-                  when /^(http|https):\/\//
-                    @rest = Chef::REST.new(Chef::Config[:json_attribs], nil, nil)
-                    @rest.get_rest(Chef::Config[:json_attribs], true).open
-                  else
-                    open(Chef::Config[:json_attribs])
-                  end
-      rescue SocketError => error
-        Chef::Application.fatal!("I cannot connect to #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::ENOENT => error
-        Chef::Application.fatal!("I cannot find #{Chef::Config[:json_attribs]}", 2)
-      rescue Errno::EACCES => error
-        Chef::Application.fatal!("Permissions are incorrect on #{Chef::Config[:json_attribs]}. Please chmod a+r #{Chef::Config[:json_attribs]}", 2)
-      rescue Exception => error
-        Chef::Application.fatal!("Got an unexpected error reading #{Chef::Config[:json_attribs]}: #{error.message}", 2)
-      end
+      config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
+      @chef_client_json = config_fetcher.fetch_json
+    end
+  end
 
-      begin
-        @chef_client_json = Chef::JSONCompat.from_json(json_io.read)
-        json_io.close unless json_io.closed?
-      rescue JSON::ParserError => error
-        Chef::Application.fatal!("Could not parse the provided JSON file (#{Chef::Config[:json_attribs]})!: " + error.message, 2)
+  def load_config_file
+    Chef::Config.config_file_jail = config[:config_file_jail] if config[:config_file_jail]
+    if !config.has_key?(:config_file)
+      if config[:local_mode]
+        require 'chef/knife'
+        config[:config_file] = Chef::Knife.locate_config_file
+      else
+        config[:config_file] = Chef::Config.platform_specific_path("/etc/chef/client.rb")
       end
     end
+    super
   end
 
   def configure_logging

@@ -286,7 +286,7 @@ describe Chef::Provider::Package do
       @provider.should_not_receive(:reconfig_package)
       @provider.run_action(:reconfig)
       @new_resource.should_not be_updated_by_last_action
-    end 
+    end
 
     it "should debug log and not reconfigure the package if no response_file is given" do
       @current_resource.stub!(:version).and_return('1.0')
@@ -345,7 +345,9 @@ describe Chef::Provider::Package do
       cl = Chef::CookbookLoader.new(@cookbook_repo)
       cl.load_cookbooks
       @cookbook_collection = Chef::CookbookCollection.new(cl)
+
       @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
+      @provider.run_context = @run_context
 
       @node.automatic_attrs[:platform] = 'PLATFORM: just testing'
       @node.automatic_attrs[:platform_version] = 'PLATFORM VERSION: just testing'
@@ -358,8 +360,8 @@ describe Chef::Provider::Package do
       before do
         Chef::FileCache.should_receive(:create_cache_path).with('preseed/java').and_return("/tmp/preseed/java")
       end
+
       it "sets the preseed resource's runcontext to its own run context" do
-        Chef::FileCache.rspec_reset
         Chef::FileCache.stub!(:create_cache_path).and_return("/tmp/preseed/java")
         @provider.preseed_resource('java', '6').run_context.should_not be_nil
         @provider.preseed_resource('java', '6').run_context.should equal(@provider.run_context)

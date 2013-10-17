@@ -61,7 +61,7 @@ describe Chef::Resource::Directory do
   end
 
   describe "when it has group, mode, and owner" do
-    before do 
+    before do
       @resource.path("/tmp/foo/bar/")
       @resource.group("wheel")
       @resource.mode("0664")

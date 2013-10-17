@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,8 +21,6 @@ require 'tiny_server'
 
 describe Chef::Knife::CookbookDelete do
   before(:all) do
-    @original_config = Chef::Config.hash_dup
-
     @server = TinyServer::Manager.new
     @server.start
   end
@@ -38,11 +36,10 @@ describe Chef::Knife::CookbookDelete do
   end
 
   after(:all) do
-    Chef::Config.configuration = @original_config
     @server.stop
   end
 
-  context "when the the cookbook doesn't exist" do
+  context "when the cookbook doesn't exist" do
     before do
       @log_output = StringIO.new
 
@@ -97,7 +94,7 @@ describe Chef::Knife::CookbookDelete do
       stdout.string.should match(/#{Regexp.escape('Are you sure you want to purge files')}/)
       stdout.string.should match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
       cb100_deleted.should be_true
-      
+
     end
 
   end

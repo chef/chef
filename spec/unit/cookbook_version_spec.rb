@@ -130,6 +130,12 @@ describe Chef::CookbookVersion do
       @cookbook_version.provider_filenames   = @cookbook[:provider_filenames]
       @cookbook_version.root_filenames       = @cookbook[:root_filenames]
       @cookbook_version.metadata_filenames   = @cookbook[:metadata_filenames]
+
+      # Used to test file-specificity related file lookups
+      @node = Chef::Node.new
+      @node.set[:platform] = "ubuntu"
+      @node.set[:platform_version] = "13.04"
+      @node.name("testing")
     end
 
     it "generates a manifest containing the cookbook's files" do
@@ -209,6 +215,16 @@ describe Chef::CookbookVersion do
       readme["path"].should == "README.rdoc"
       readme["checksum"].should match(MD5)
       readme["specificity"].should == "default"
+    end
+
+    it "determines whether a template is available for a given node" do
+      @cookbook_version.should have_template_for_node(@node, "configuration.erb")
+      @cookbook_version.should_not have_template_for_node(@node, "missing.erb")
+    end
+
+    it "determines whether a cookbook_file is available for a given node" do
+      @cookbook_version.should have_cookbook_file_for_node(@node, "giant_blob.tgz")
+      @cookbook_version.should_not have_cookbook_file_for_node(@node, "missing.txt")
     end
 
     describe "raises an error when attempting to load a missing cookbook_file and" do

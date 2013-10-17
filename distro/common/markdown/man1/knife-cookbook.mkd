@@ -117,11 +117,11 @@ __knife cookbook create cookbook__ _(options)_
     the directory where the cookbook will be created
   * `-r`, `--readme-format format`:
     format of the readme file md, mkd, txt, rdoc
-  * `-c`, `--copyright copyright`:
+  * `-C`, `--copyright copyright`:
     name of copyright holder
   * `-i`, `--license license`:
     license for cookbook, apachev2 or none
-  * `-e`, `--email email`:
+  * `-m`, `--email email`:
     email address of cookbook maintainer
 
 this is a helper command that creates a new cookbook directory in the
@@ -143,7 +143,7 @@ supported readme formats are 'md' (default), 'mkd', 'txt', 'rdoc'. the
 readme file will be written with the specified extension and a set of
 helpful starting headers.
 
-specify `-c` or `--copyright` with the name of the copyright holder as
+specify `-C` or `--copyright` with the name of the copyright holder as
 your name or your company/organization name in a quoted string. if this
 value is not specified an all-caps string `your_company_name` is used
 which can be easily changed with find/replace.
@@ -156,7 +156,7 @@ the cookbook and follow any restrictions they describe. when using
 are pre-filled. the `none` license will be treated as
 non-redistributable.
 
-specify `-e` or `--email` with the email address of the cookbook's
+specify `-m` or `--email` with the email address of the cookbook's
 maintainer. if this value is not specified, an all-caps string
 `your_email` is used which can easily be changed with find/replace.
 

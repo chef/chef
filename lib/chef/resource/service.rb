@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class Service < Chef::Resource
-      
+
       identity_attr :service_name
 
       state_attrs :enabled, :running
@@ -47,7 +47,7 @@ class Chef
         @supports = { :restart => false, :reload => false, :status => false }
         @allowed_actions.push(:enable, :disable, :start, :stop, :restart, :reload)
       end
-      
+
       def service_name(arg=nil)
         set_or_return(
           :service_name,
@@ -55,7 +55,7 @@ class Chef
           :kind_of => [ String ]
         )
       end
-      
+
       # regex for match against ps -ef when !supports[:has_status] && status == nil
       def pattern(arg=nil)
         set_or_return(

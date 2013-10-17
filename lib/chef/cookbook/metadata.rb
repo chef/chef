@@ -110,8 +110,8 @@ class Chef
         @version = Version.new "0.0.0"
         if cookbook
           @recipes = cookbook.fully_qualified_recipe_names.inject({}) do |r, e|
-            e = self.name if e =~ /::default$/
-            r[e] = ""
+            e = self.name.to_s if e =~ /::default$/
+            r[e] ||= ""
             self.provides e
             r
           end

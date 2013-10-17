@@ -4,27 +4,27 @@ class Chef
 
     # {
     #    "run_id" : "1000",
-    #    "resource" : { 
+    #    "resource" : {
     #         "type" : "file",
-    #         "name" : "/etc/passwd", 
+    #         "name" : "/etc/passwd",
     #         "start_time" : "2012-01-09T08:15:30-05:00",
     #         "end_time" : "2012-01-09T08:15:30-05:00",
     #         "status" : "modified",
-    #         "initial_state" : "exists", 
-    #         "final_state" : "modified", 
-    #         "before" : { 
-    #              "group" : "root", 
+    #         "initial_state" : "exists",
+    #         "final_state" : "modified",
+    #         "before" : {
+    #              "group" : "root",
     #              "owner" : "root",
     #              "checksum" : "xyz"
     #         },
-    #         "after" : { 
-    #              "group" : "root", 
+    #         "after" : {
+    #              "group" : "root",
     #              "owner" : "root",
     #              "checksum" : "abc"
     #         },
     #         "delta" : "escaped delta goes here"
     #    },
-    #    "event_data" : "" 
+    #    "event_data" : ""
     # }
 
     class ResourceUpdate

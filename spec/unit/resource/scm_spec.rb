@@ -137,8 +137,21 @@ describe Chef::Resource::Scm do
     @resource.ssh_wrapper.should be_nil
   end
 
+  describe "when it has a timeout attribute" do
+    let(:ten_seconds) { 10 }
+    before { @resource.timeout(ten_seconds) }
+    it "stores this timeout" do
+      @resource.timeout.should == ten_seconds
+    end
+  end
+  describe "when it has no timeout attribute" do
+    it "should have no default timeout" do
+      @resource.timeout.should be_nil
+    end
+  end
+
   describe "when it has repository, revision, user, and group" do
-    before do 
+    before do
       @resource.destination("hell")
       @resource.repository("apt")
       @resource.revision("1.2.3")

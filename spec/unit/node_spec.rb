@@ -204,6 +204,11 @@ describe Chef::Node do
         node.fuu.bahrr.baz.should == "qux"
       end
 
+      it "should let you use tag as a convience method for the tags attribute" do
+        node.normal['tags'] = ['one', 'two']
+        node.tag('three', 'four')
+        node['tags'].should == ['one', 'two', 'three', 'four']
+      end
     end
 
     describe "default attributes" do

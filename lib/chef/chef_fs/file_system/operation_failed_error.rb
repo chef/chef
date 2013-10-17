@@ -27,6 +27,14 @@ class Chef
           @operation = operation
         end
 
+        def message
+          if cause && cause.is_a?(Net::HTTPExceptions) && cause.response.code == "400"
+            "#{super} cause: #{cause.response.body}"
+          else
+            super
+          end
+        end
+
         attr_reader :operation
       end
     end

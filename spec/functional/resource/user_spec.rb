@@ -54,6 +54,7 @@ describe Chef::Resource::User, metadata do
   end
 
   before do
+    pending "porting implementation for user provider in aix" if OHAI_SYSTEM[:platform] == 'aix'
     # Silence shell_out live stream
     Chef::Log.level = :warn
   end
@@ -497,7 +498,7 @@ describe Chef::Resource::User, metadata do
       context "and has no password" do
 
         # TODO: platform_family should be setup in spec_helper w/ tags
-        if OHAI_SYSTEM["platform_family"] == "suse"
+        if %w[suse opensuse].include?(OHAI_SYSTEM["platform_family"])
           # suse gets this right:
           it "errors out trying to unlock the user" do
             @error.should be_a(Mixlib::ShellOut::ShellCommandFailed)

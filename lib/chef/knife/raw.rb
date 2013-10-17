@@ -6,10 +6,13 @@ class Chef
       banner "knife raw REQUEST_PATH"
 
       deps do
-        require 'json'
-        require 'chef/rest'
+        require 'chef/json_compat'
         require 'chef/config'
-        require 'chef/chef_fs/raw_request'
+        require 'chef/http'
+        require 'chef/http/authenticator'
+        require 'chef/http/cookie_manager'
+        require 'chef/http/decompressor'
+        require 'chef/http/json_output'
       end
 
       option :method,
@@ -29,6 +32,18 @@ class Chef
         :short => '-i FILE',
         :description => "Name of file to use for PUT or POST"
 
+      class RawInputServerAPI < Chef::HTTP
+        def initialize(options = {})
+          options[:client_name] ||= Chef::Config[:node_name]
+          options[:signing_key_filename] ||= Chef::Config[:client_key]
+          super(Chef::Config[:chef_server_url], options)
+        end
+        use Chef::HTTP::JSONOutput
+        use Chef::HTTP::CookieManager
+        use Chef::HTTP::Decompressor
+        use Chef::HTTP::Authenticator
+      end
+
       def run
         if name_args.length == 0
           show_usage
@@ -45,9 +60,20 @@ class Chef
         if config[:input]
           data = IO.read(config[:input])
         end
-        chef_rest = Chef::REST.new(Chef::Config[:chef_server_url])
         begin
-          output Chef::ChefFS::RawRequest.api_request(chef_rest, config[:method].to_sym, chef_rest.create_url(name_args[0]), {}, data)
+          method = config[:method].to_sym
+
+          if config[:pretty]
+            chef_rest = RawInputServerAPI.new
+            result = chef_rest.request(method, name_args[0], {'Content-Type' => 'application/json'}, data)
+            unless result.is_a?(String)
+              result = Chef::JSONCompat.to_json_pretty(result)
+            end
+          else
+            chef_rest = RawInputServerAPI.new(:raw_output => true)
+            result = chef_rest.request(method, name_args[0], {'Content-Type' => 'application/json'}, data)
+          end
+          output result
         rescue Timeout::Error => e
           ui.error "Server timeout"
           exit 1

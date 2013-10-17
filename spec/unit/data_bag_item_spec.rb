@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -130,7 +130,7 @@ describe Chef::DataBagItem do
   end
 
   describe "to_hash" do
-    before(:each) do 
+    before(:each) do
       @data_bag_item.data_bag("still_lost")
       @data_bag_item.raw_data = { "id" => "whoa", "i_know" => "kung_fu" }
       @to_hash = @data_bag_item.to_hash
@@ -197,7 +197,7 @@ describe Chef::DataBagItem do
     before do
       @rest = mock("Chef::REST")
       Chef::REST.stub!(:new).and_return(@rest)
-      @data_bag_item['id'] = "heart of darkness" 
+      @data_bag_item['id'] = "heart of darkness"
       raw_data = {"id" => "heart_of_darkness", "author" => "Conrad"}
       @data_bag_item.raw_data = raw_data
       @data_bag_item.data_bag("books")
@@ -207,7 +207,7 @@ describe Chef::DataBagItem do
       @data_bag_item.save
     end
 
-    it "should create if the item is not found" do 
+    it "should create if the item is not found" do
       exception = mock("404 error", :code => "404")
       @rest.should_receive(:put_rest).and_raise(Net::HTTPServerException.new("foo", exception))
       @rest.should_receive(:post_rest).with("data/books", @data_bag_item)
@@ -228,7 +228,7 @@ describe Chef::DataBagItem do
       end
     end
 
-    
+
   end
 
   describe "when loading" do

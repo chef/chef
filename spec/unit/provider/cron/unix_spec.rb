@@ -20,7 +20,7 @@
 
 require 'spec_helper'
 
-describe Chef::Provider::Cron::Solaris do
+describe Chef::Provider::Cron::Unix do
   before do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
@@ -30,7 +30,7 @@ describe Chef::Provider::Cron::Solaris do
     @new_resource.minute "30"
     @new_resource.command "/bin/true"
 
-    @provider = Chef::Provider::Cron::Solaris.new(@new_resource, @run_context)
+    @provider = Chef::Provider::Cron::Unix.new(@new_resource, @run_context)
   end
 
   it "should inherit from Chef::Provider:Cron" do
@@ -86,7 +86,7 @@ CRONTAB
   describe "write_crontab" do
     before :each do
       @status = mock("Status", :exitstatus => 0)
-      @provider.stub!(:run_command).and_return(@status)
+      @provider.stub!(:run_command_and_return_stdout_stderr).and_return(@status, String.new, String.new)
       @tempfile = mock("foo", :path => "/tmp/foo", :close => true)
       Tempfile.stub!(:new).and_return(@tempfile)
       @tempfile.should_receive(:flush)
@@ -95,13 +95,13 @@ CRONTAB
     end
 
     it "should call crontab for the user" do
-      @provider.should_receive(:run_command).with(hash_including(:user => @new_resource.user))
+      @provider.should_receive(:run_command_and_return_stdout_stderr).with(hash_including(:user => @new_resource.user))
       @tempfile.should_receive(:<<).with("Foo")
       @provider.send(:write_crontab, "Foo")
     end
 
     it "should call crontab with a file containing the crontab" do
-      @provider.should_receive(:run_command) do |args|
+      @provider.should_receive(:run_command_and_return_stdout_stderr) do |args|
         (args[:command] =~ %r{\A/usr/bin/crontab (/\S+)\z}).should be_true
         $1.should == "/tmp/foo"
         @status
@@ -115,7 +115,7 @@ CRONTAB
       @status.stub!(:exitstatus).and_return(1)
       lambda do
         @provider.send(:write_crontab, "Foo")
-      end.should raise_error(Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: 1")
+      end.should raise_error(Chef::Exceptions::Cron, /Error updating state of #{@new_resource.name}, exit: 1/)
     end
   end
 end

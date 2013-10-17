@@ -198,6 +198,7 @@ class Chef
             Chef::Log.debug "Forked instance now converging"
             do_run
           rescue Exception
+            Chef::Log.error $!
             exit 1
           else
             exit 0
@@ -206,7 +207,7 @@ class Chef
         Chef::Log.debug "Fork successful. Waiting for new chef pid: #{pid}"
         result = Process.waitpid2(pid)
         handle_child_exit(result)
-        Chef::Log.debug "Forked child successfully reaped (pid: #{pid})"
+        Chef::Log.debug "Forked instance successfully reaped (pid: #{pid})"
         true
       else
         do_run
@@ -367,7 +368,10 @@ class Chef
     # === Returns
     # rest<Chef::REST>:: returns Chef::REST connection object
     def register(client_name=node_name, config=Chef::Config)
-      if File.exists?(config[:client_key])
+      if !config[:client_key]
+        @events.skipping_registration(client_name, config)
+        Chef::Log.debug("Client key is unspecified - skipping registration")
+      elsif File.exists?(config[:client_key])
         @events.skipping_registration(client_name, config)
         Chef::Log.debug("Client key #{config[:client_key]} is present - skipping registration")
       else
@@ -467,13 +471,15 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
-      runlock = RunLock.new(Chef::Config)
+      runlock = RunLock.new(Chef::Config.lockfile)
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin
+        runlock.save_pid
         run_context = nil
         @events.run_start(Chef::VERSION)
         Chef::Log.info("*** Chef #{Chef::VERSION} ***")
+        Chef::Log.info "Chef-client pid: #{Process.pid}"
         enforce_path_sanity
         run_ohai
         @events.ohai_completed(node)

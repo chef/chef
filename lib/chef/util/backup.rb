@@ -47,7 +47,8 @@ class Chef
       def backup_filename
         @backup_filename ||= begin
           time = Time.now
-          savetime = time.strftime("%Y%m%d%H%M%S")
+          nanoseconds = sprintf("%6f", time.to_f).split('.')[1]
+          savetime = time.strftime("%Y%m%d%H%M%S.#{nanoseconds}")
           backup_filename = "#{path}.chef-#{savetime}"
           backup_filename = backup_filename.sub(/^([A-Za-z]:)/, "") #strip drive letter on Windows
         end

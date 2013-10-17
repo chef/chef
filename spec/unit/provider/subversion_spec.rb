@@ -247,7 +247,7 @@ describe Chef::Provider::Subversion do
     ::File.stub!(:directory?).with("/my/deploy").and_return(true)
     ::File.should_receive(:exist?).with("/my/deploy/dir/.svn").twice.and_return(false)
     @provider.should_receive(:action_checkout)
-    @provider.run_action(:sync) 
+    @provider.run_action(:sync)
   end
 
   it "runs the sync_command on action_sync if the deploy dir exists and isn't empty" do
