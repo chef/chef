@@ -22,6 +22,7 @@
 #
 require 'uri'
 require 'net/http'
+require 'chef/http/ssl_policies'
 require 'chef/http/http_request'
 
 class Chef
@@ -32,9 +33,16 @@ class Chef
 
       attr_reader :url
       attr_reader :http_client
+      attr_reader :ssl_policy
 
-      def initialize(url)
+      # Instantiate a BasicClient.
+      # === Arguments:
+      # url:: An URI for the remote server.
+      # === Options:
+      # ssl_policy:: The SSL Policy to use, defaults to DefaultSSLPolicy
+      def initialize(url, opts={})
         @url = url
+        @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
         @http_client = build_http_client
       end
 
@@ -95,35 +103,7 @@ class Chef
 
       def configure_ssl(http_client)
         http_client.use_ssl = true
-        if config[:ssl_verify_mode] == :verify_none
-          http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        elsif config[:ssl_verify_mode] == :verify_peer
-          http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        end
-        if config[:ssl_ca_path]
-          unless ::File.exist?(config[:ssl_ca_path])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
-          end
-          http_client.ca_path = config[:ssl_ca_path]
-        elsif config[:ssl_ca_file]
-          unless ::File.exist?(config[:ssl_ca_file])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
-          end
-          http_client.ca_file = config[:ssl_ca_file]
-        end
-        if (config[:ssl_client_cert] || config[:ssl_client_key])
-          unless (config[:ssl_client_cert] && config[:ssl_client_key])
-            raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
-          end
-          unless ::File.exists?(config[:ssl_client_cert])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
-          end
-          unless ::File.exists?(config[:ssl_client_key])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
-          end
-          http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
-          http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
-        end
+        ssl_policy.apply_to(http_client)
       end
 
     end
