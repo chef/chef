@@ -152,3 +152,14 @@ RSpec.configure do |config|
     Chef::Config.reset
   end
 end
+
+require 'webrick/utils'
+module WEBrick
+  module Utils
+    class TimeoutHandler
+      def initialize
+        @timeout_info = Hash.new
+      end
+    end
+  end
+end
