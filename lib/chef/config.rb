@@ -74,7 +74,7 @@ class Chef
     def self.path_join(*args)
       args = args.flatten
       args.inject do |joined_path, component|
-        unless joined_path[-1] == platform_path_separator
+        unless joined_path[-1,1] == platform_path_separator
           joined_path += platform_path_separator
         end
         joined_path += component
