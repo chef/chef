@@ -38,6 +38,7 @@ class Chef
           tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
           Chef::Log.debug("#{new_resource} staging #{uri.path} to #{tempfile.path}")
           FileUtils.cp(uri.path, tempfile.path)
+          tempfile.close if tempfile
           tempfile
         end
 

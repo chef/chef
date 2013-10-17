@@ -40,7 +40,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { mock("Tempfile", :path => "/tmp/foo/bar/nyan.png") }
+    let(:tempfile) { mock("Tempfile", :path => "/tmp/foo/bar/nyan.png", :close => nil) }
     let(:chef_tempfile) { mock("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
 
     before do
@@ -50,6 +50,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
     it "stages the local file to a temporary file" do
       Chef::FileContentManagement::Tempfile.should_receive(:new).with(new_resource).and_return(chef_tempfile)
       ::FileUtils.should_receive(:cp).with(uri.path, tempfile.path)
+      tempfile.should_receive(:close)            
 
       result = fetcher.fetch
       result.should == tempfile

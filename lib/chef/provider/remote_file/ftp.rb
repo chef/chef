@@ -143,6 +143,7 @@ class Chef
             ftp.voidcmd("TYPE #{typecode.upcase}")
           end
           ftp.getbinaryfile(filename, tempfile.path)
+          tempfile.close if tempfile
           tempfile
         end
 
