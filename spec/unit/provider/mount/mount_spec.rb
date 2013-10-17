@@ -36,6 +36,8 @@ describe Chef::Provider::Mount::Mount do
 
     ::File.stub!(:exists?).with("/dev/sdz1").and_return true
     ::File.stub!(:exists?).with("/tmp/foo").and_return true
+    ::File.stub!(:realpath).with("/dev/sdz1").and_return "/dev/sdz1"
+    ::File.stub!(:realpath).with("/tmp/foo").and_return "/tmp/foo"
   end
 
   describe "when discovering the current fs state" do
