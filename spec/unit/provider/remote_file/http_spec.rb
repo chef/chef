@@ -159,7 +159,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:tempfile_path) { "/tmp/chef-mock-tempfile-abc123" }
 
-    let(:tempfile) { mock(Tempfile, :path => tempfile_path) }
+    let(:tempfile) { mock(Tempfile, :path => tempfile_path, :close => nil) }
 
     let(:last_response) { {} }
 
