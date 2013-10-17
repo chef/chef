@@ -146,11 +146,13 @@ class Chef
       option :secret,
         :short => "-s SECRET",
         :long  => "--secret ",
-        :description => "The secret key to use to encrypt data bag item values"
+        :description => "The secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |s| Chef::Config[:knife][:secret] = s }
 
       option :secret_file,
         :long => "--secret-file SECRET_FILE",
-        :description => "A file containing the secret key to use to encrypt data bag item values"
+        :description => "A file containing the secret key to use to encrypt data bag item values",
+        :proc => Proc.new { |sf| Chef::Config[:knife][:secret_file] = sf }
 
       def find_template(template=nil)
         # Are we bootstrapping using an already shipped template?
