@@ -165,15 +165,6 @@ describe Chef::Config do
   end
 
   describe "default values" do
-    before(:each) do
-      # reload Chef::Config to ensure defaults are truely active
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "config.rb"))
-    end
-
-    after(:each) do
-      # reload spec helper to re-set any spec specific Chef::Config values
-      load File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper.rb"))
-    end
 
     it "Chef::Config[:file_backup_path] defaults to /var/chef/backup" do
       backup_path = if windows?
@@ -210,6 +201,70 @@ describe Chef::Config do
       end
 
       Chef::Config[:environment_path].should == environment_path
+    end
+
+    describe "joining platform specific paths" do
+
+      context "on UNIX" do
+        before do
+          Chef::Config.stub(:on_windows?).and_return(false)
+        end
+
+        it "joins components when some end with separators" do
+          Chef::Config.path_join("/foo/", "bar", "baz").should == "/foo/bar/baz"
+        end
+
+        it "joins components that don't end in separators" do
+          Chef::Config.path_join("/foo", "bar", "baz").should == "/foo/bar/baz"
+        end
+
+      end
+
+      context "on Windows" do
+        before do
+          Chef::Config.stub(:on_windows?).and_return(true)
+        end
+
+        it "joins components with the windows separator" do
+          Chef::Config.path_join('c:\\foo\\', 'bar', "baz").should == 'c:\\foo\\bar\\baz'
+        end
+      end
+    end
+
+    describe "setting the config dir" do
+
+      before do
+        Chef::Config.stub(:on_windows?).and_return(false)
+        Chef::Config.config_file = "/etc/chef/client.rb"
+      end
+
+      context "by default" do
+        it "is the parent dir of the config file" do
+          Chef::Config.config_dir.should == "/etc/chef"
+        end
+      end
+
+      context "when chef is running in local mode" do
+        before do
+          Chef::Config.local_mode = true
+          Chef::Config.user_home = "/home/charlie"
+        end
+
+        it "is in the user's home dir" do
+          Chef::Config.config_dir.should == "/home/charlie/.chef/"
+        end
+      end
+
+      context "when explicitly set" do
+        before do
+          Chef::Config.config_dir = "/other/config/dir/"
+        end
+
+        it "uses the explicit value" do
+          Chef::Config.config_dir.should == "/other/config/dir/"
+        end
+      end
+
     end
   end
 

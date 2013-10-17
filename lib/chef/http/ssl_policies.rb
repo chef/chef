@@ -44,6 +44,7 @@ class Chef
       def apply
         set_verify_mode
         set_ca_store
+        set_custom_certs
         set_client_credentials
       end
 
@@ -66,6 +67,20 @@ class Chef
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
           end
           http_client.ca_file = config[:ssl_ca_file]
+        end
+      end
+
+      def set_custom_certs
+        unless http_client.cert_store
+          http_client.cert_store = OpenSSL::X509::Store.new
+          http_client.cert_store.set_default_paths
+        end
+        if config.trusted_certs_dir
+          certs = Dir.glob(File.join(config.trusted_certs_dir, "*.{crt,pem}"))
+          certs.each do |cert_file|
+            cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
+            http_client.cert_store.add_cert(cert)
+          end
         end
       end
 
