@@ -57,16 +57,32 @@ class Chef
       configuration.inspect
     end
 
+    def self.on_windows?
+      RUBY_PLATFORM =~ /mswin|mingw|windows/
+    end
+
+    BACKSLASH = '\\'.freeze
+
     def self.platform_path_separator
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/
-        File::ALT_SEPARATOR || '\\'
+      if on_windows?
+        File::ALT_SEPARATOR || BACKSLASH
       else
         File::SEPARATOR
       end
     end
 
+    def self.path_join(*args)
+      args = args.flatten
+      args.inject do |joined_path, component|
+        unless joined_path[-1,1] == platform_path_separator
+          joined_path += platform_path_separator
+        end
+        joined_path += component
+      end
+    end
+
     def self.platform_specific_path(path)
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+      if on_windows?
         # turns /etc/chef/client.rb into C:/chef/client.rb
         system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ""
         path = File.join(system_drive, path.split('/')[2..-1])
@@ -82,6 +98,14 @@ class Chef
 
     # Config file to load (client.rb, knife.rb, etc. defaults set differently in knife, chef-client, etc.)
     configurable(:config_file)
+
+    default(:config_dir) do
+      if local_mode
+        path_join(user_home, ".chef#{platform_path_separator}")
+      else
+        config_file && ::File.dirname(config_file)
+      end
+    end
 
     # No config file (client.rb / knife.rb / etc.) will be loaded outside this path.
     # Major use case is tests, where we don't want to load the user's config files.
@@ -145,7 +169,7 @@ class Chef
       # In local mode, we auto-discover the repo root by looking for a path with "cookbooks" under it.
       # This allows us to run config-free.
       path = cwd
-      until File.directory?("#{path}#{platform_path_separator}cookbooks")
+      until File.directory?(path_join(path, "cookbooks"))
         new_path = File.expand_path('..', path)
         if new_path == path
           Chef::Log.warn("No cookbooks directory found at or above current directory.  Assuming #{Dir.pwd}.")
@@ -159,9 +183,9 @@ class Chef
 
     def self.derive_path_from_chef_repo_path(child_path)
       if chef_repo_path.kind_of?(String)
-        "#{chef_repo_path}#{platform_path_separator}#{child_path}"
+        path_join(chef_repo_path, child_path)
       else
-        chef_repo_path.map { |path| "#{path}#{platform_path_separator}#{child_path}"}
+        chef_repo_path.map { |path| path_join(path, child_path)}
       end
     end
 
@@ -233,27 +257,27 @@ class Chef
     # this is under the user's home directory.
     default(:cache_path) do
       if local_mode
-        "#{user_home}#{platform_path_separator}.chef#{platform_path_separator}local-mode-cache"
+        "#{config_dir}local-mode-cache"
       else
         platform_specific_path("/var/chef")
       end
     end
 
     # Where cookbook files are stored on the server (by content checksum)
-    default(:checksum_path) { "#{cache_path}#{platform_path_separator}checksums" }
+    default(:checksum_path) { path_join(cache_path, "checksums") }
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { "#{cache_path}#{platform_path_separator}cache" }
+    default(:file_cache_path) { path_join(cache_path, "cache") }
 
     # Where backups of chef-managed files should go
-    default(:file_backup_path) { "#{cache_path}#{platform_path_separator}backup" }
+    default(:file_backup_path) { path_join(cache_path, "backup") }
 
     # The chef-client (or solo) lockfile.
     #
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { "#{file_cache_path}#{platform_path_separator}chef-client-running.pid" }
+    default(:lockfile) { path_join(file_cache_path, "chef-client-running.pid") }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -330,8 +354,15 @@ class Chef
     # regardless of the :ssl_verify_mode setting.
     default :verify_api_cert, false
 
+    # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default :ssl_ca_file, nil
+
+    # A directory that contains additional SSL certificates to trust. Any
+    # certificates in this directory will be added to whatever CA bundle ruby
+    # is using. Use this to add self-signed certs for your Chef Server or local
+    # HTTP file servers.
+    default(:trusted_certs_dir) { config_dir && path_join(config_dir, "trusted_certs") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil
@@ -424,7 +455,7 @@ class Chef
     default(:syntax_check_cache_path) { cache_options[:path] }
 
     # Deprecated:
-    default(:cache_options) { { :path => "#{file_cache_path}#{platform_path_separator}checksums" } }
+    default(:cache_options) { { :path => path_join(file_cache_path, "checksums") } }
 
     # Set to false to silence Chef 11 deprecation warnings:
     default :chef11_deprecation_warnings, true
