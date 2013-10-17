@@ -154,6 +154,20 @@ RSpec.configure do |config|
 end
 
 require 'webrick/utils'
+
+#    Webrick uses a centralized/synchronized timeout manager. It works by
+#    starting a thread to check for timeouts on an interval. The timeout
+#    checker thread cannot be stopped or canceled in any easy way, and it
+#    makes calls to Time.new, which fail when rspec is in the process of
+#    creating a method stub for that method. Since our tests don't rely on
+#    any timeout behavior enforced by webrick, disable the timeout manager
+#    via a monkey patch.
+#
+#    Hopefully this fails loudly if the webrick code should change. As of this
+#    writing, the relevant code is in webrick/utils, which can be located on
+#    your system with:
+#
+#    $ gem which webrick/utils
 module WEBrick
   module Utils
     class TimeoutHandler
