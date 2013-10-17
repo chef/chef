@@ -103,7 +103,7 @@ class Chef
       if local_mode
         path_join(user_home, ".chef#{platform_path_separator}")
       else
-        ::File.dirname(config_file)
+        config_file && ::File.dirname(config_file)
       end
     end
 
@@ -354,8 +354,15 @@ class Chef
     # regardless of the :ssl_verify_mode setting.
     default :verify_api_cert, false
 
+    # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default :ssl_ca_file, nil
+
+    # A directory that contains additional SSL certificates to trust. Any
+    # certificates in this directory will be added to whatever CA bundle ruby
+    # is using. Use this to add self-signed certs for your Chef Server or local
+    # HTTP file servers.
+    default(:trusted_certs_dir) { config_dir && path_join(config_dir, "trusted_certs") }
 
     # Where should chef-solo download recipes from?
     default :recipe_url, nil

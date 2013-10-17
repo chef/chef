@@ -112,6 +112,34 @@ describe "HTTP SSL Policy" do
         http_client.key.to_s.should  == IO.read(CHEF_SPEC_DATA + '/ssl/chef-rspec.key')
       end
     end
+
+    context "when additional certs are located in the trusted_certs dir" do
+      let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt") }
+      let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
+
+      let(:additional_pem_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "opscode.pem") }
+      let(:additional_pem) { OpenSSL::X509::Certificate.new(File.read(additional_pem_path)) }
+
+      before do
+        Chef::Config.trusted_certs_dir = File.join(CHEF_SPEC_DATA, "trusted_certs")
+      end
+
+      it "enables verification of self-signed certificates" do
+        http_client.cert_store.verify(self_signed_crt).should be_true
+      end
+
+      it "enables verification of cert chains" do
+        # This cert is signed by DigiCert so it would be valid in normal SSL usage.
+        # The chain goes:
+        # trusted root -> intermediate -> opscode.pem
+        # In this test, the intermediate has to be loaded and trusted in order
+        # for verification to work correctly.
+        # If the machine running the test doesn't have ruby SSL configured correctly,
+        # then the root cert also has to be loaded for the test to succeed.
+        # The system under test **SHOULD** do both of these things.
+        http_client.cert_store.verify(additional_pem).should be_true
+      end
+    end
   end
 
   describe Chef::HTTP::APISSLPolicy do
