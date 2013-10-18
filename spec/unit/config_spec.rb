@@ -272,6 +272,8 @@ describe Chef::Config do
       let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
       let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
 
+      let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
+
       it "finds the embedded dir in the default location" do
         Chef::Config.stub(:_this_file).and_return(default_config_location)
         Chef::Config.embedded_dir.should == "c:/opscode/chef/embedded"
@@ -285,6 +287,13 @@ describe Chef::Config do
       it "doesn't error when not in an omnibus install" do
         Chef::Config.stub(:_this_file).and_return(non_omnibus_location)
         Chef::Config.embedded_dir.should be_nil
+      end
+
+      it "sets the ssl_ca_cert path if the cert file is available" do
+        Chef::Config.stub(:_this_file).and_return(default_config_location)
+        Chef::Config.stub(:on_windows?).and_return(true)
+        File.stub(:exist?).with(default_ca_file).and_return(true)
+        Chef::Config.ssl_ca_file.should == default_ca_file
       end
     end
   end

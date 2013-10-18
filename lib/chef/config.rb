@@ -356,7 +356,14 @@ class Chef
 
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
-    default :ssl_ca_file, nil
+    default(:ssl_ca_file) do
+      if on_windows? and embedded_path = embedded_dir
+        cacert_path = File.join(embedded_path, "ssl/certs/cacert.pem")
+        cacert_path if File.exist?(cacert_path)
+      else
+        nil
+      end
+    end
 
     # A directory that contains additional SSL certificates to trust. Any
     # certificates in this directory will be added to whatever CA bundle ruby
