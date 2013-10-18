@@ -79,7 +79,7 @@ class Chef
           certs = Dir.glob(File.join(config.trusted_certs_dir, "*.{crt,pem}"))
           certs.each do |cert_file|
             cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
-            http_client.cert_store.add_cert(cert)
+            add_trusted_cert(cert)
           end
         end
       end
@@ -102,6 +102,14 @@ class Chef
 
       def config
         Chef::Config
+      end
+
+      private
+
+      def add_trusted_cert(cert)
+        http_client.cert_store.add_cert(cert)
+      rescue OpenSSL::X509::StoreError => e
+        raise e unless e.message == 'cert already in hash table'
       end
 
     end
