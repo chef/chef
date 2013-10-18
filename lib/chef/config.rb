@@ -507,5 +507,27 @@ class Chef
     # created under ENV['TMP'] otherwise tempfiles will be created in
     # the directory that files are going to reside.
     default :file_staging_uses_destdir, false
+
+    # If installed via an omnibus installer, this gives the path to the
+    # "embedded" directory which contains all of the software packaged with
+    # omnibus. This is used to locate the cacert.pem file on windows.
+    def self.embedded_dir
+      find_embedded_dir_in(_this_file)
+    end
+
+    def self.find_embedded_dir_in(path)
+      if File.basename(path) == "embedded"
+        path
+      elsif File.basename(path) == path
+        nil
+      else
+        find_embedded_dir_in(File.dirname(path))
+      end
+    end
+
+    # Path to this file in the current install.
+    def self._this_file
+      File.expand_path(__FILE__)
+    end
   end
 end
