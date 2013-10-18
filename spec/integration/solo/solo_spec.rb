@@ -31,7 +31,7 @@ EOM
     file 'cookbooks/x/recipes/default.rb', <<EOM
 ruby_block "sleeping" do
   block do
-    sleep 3
+    sleep 5
   end
 end
 EOM
@@ -52,7 +52,7 @@ EOM
 -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
 
           # Give it some time to progress
-          sleep 3
+          sleep 1
 
           # Instantiate the second chef-solo run
           s2 = Process.spawn("chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
