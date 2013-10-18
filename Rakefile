@@ -71,14 +71,11 @@ end
 RONN_OPTS = "--manual='Chef Manual' --organization='Chef #{Chef::VERSION}' --date='#{Time.new.strftime('%Y-%m-%d')}'"
 
 namespace :docs do
-  desc "Regenerate manpages from markdown"
-  task :man
-
   desc "Regenerate HTML manual from markdown"
   task :html
 
   desc "Regenerate help topics from man pages"
-  task :list => :man do
+  task :list do
     topics = Array.new
 
     Dir['distro/common/man/man1/*.1'].each do |man|
@@ -106,30 +103,22 @@ namespace :docs do
       Dir[dir].each do |mkd|
         basename = File.basename(mkd, '.mkd')
         if dir =~ /man1/
-          manfile = "distro/common/man/man1/#{basename}.1"
           htmlfile = "distro/common/html/#{basename}.1.html"
         elsif dir =~ /man8/
-          manfile = "distro/common/man/man8/#{basename}.8"
           htmlfile = "distro/common/html/#{basename}.8.html"
         end
-
-        file(manfile => [mkd, 'lib/chef/version.rb']) do
-           sh "ronn -r #{RONN_OPTS} #{mkd} --pipe > #{manfile}"
-         end
-         task :man => manfile
 
          file(htmlfile => [mkd, 'lib/chef/version.rb']) do
            sh "ronn -5 #{RONN_OPTS} --style=toc #{mkd} --pipe > #{htmlfile}"
          end
          task :html => htmlfile
-
       end
     end
   else
     puts "get with the program and install ronn"
   end
 
-  task :all => [:man, :html]
+  task :all => [:list, :html]
 end
 
 task :docs => "docs:all"
