@@ -139,6 +139,15 @@ describe "HTTP SSL Policy" do
         # The system under test **SHOULD** do both of these things.
         http_client.cert_store.verify(additional_pem).should be_true
       end
+
+      context "and some certs are duplicates" do
+        it "skips duplicate certs" do
+          # For whatever reason, OpenSSL errors out when adding a
+          # cert you already have to the certificate store.
+          ssl_policy.set_custom_certs
+          ssl_policy.set_custom_certs #should not raise an error
+        end
+      end
     end
   end
 
