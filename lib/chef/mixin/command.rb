@@ -24,6 +24,26 @@ require 'etc'
 
 class Chef
   module Mixin
+
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # NOTE:
+    # The popen4 method upon which all the code here is based has a race
+    # condition where it may fail to read all of the data written to stdout and
+    # stderr after the child process exits. The tests for the code here
+    # occasionally fail because of this race condition, so they have been
+    # tagged "volatile".
+    #
+    # This code is considered deprecated, so it should not need to be modified
+    # frequently, if at all. HOWEVER, if you do modify the code here, you must
+    # explicitly enable volatile tests:
+    #
+    #   bundle exec rspec spec/unit/mixin/command_spec.rb -t volatile
+    #
+    # In addition, you should make a note that tests need to be run with
+    # volatile tests enabled on any pull request or bug report you submit with
+    # your patch.
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     module Command
       extend self
 
