@@ -33,7 +33,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-zero", "~> 1.6", ">= 1.6.2"
   s.add_dependency "puma", "~> 1.6"
-  
+
+  s.add_dependency "pry", "~> 0.9"
+
   %w(rdoc sdoc rake rack rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
   %w(rspec-core rspec-expectations rspec-mocks).each { |gem| s.add_development_dependency gem, "~> 2.13.0" }
 
