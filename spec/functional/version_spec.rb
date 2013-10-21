@@ -22,20 +22,14 @@ require 'ohai/version'
 
 describe "Chef Versions" do
   include Chef::Mixin::ShellOut
+  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..") }
 
-  it "chef-client version should be sane" do
-    shell_out("bundle exec chef-client -v").stdout.chomp.should == "Chef: #{Chef::VERSION}"
+  binaries = [ "chef-client", "chef-shell", "chef-apply", "knife", "chef-solo" ]
+
+  binaries.each do |binary|
+    it "#{binary} version should be sane" do
+      shell_out!("bundle exec #{binary} -v", :cwd => chef_dir).stdout.chomp.should == "Chef: #{Chef::VERSION}"
+    end
   end
 
-  it "chef-shell version should be sane" do
-    shell_out("bundle exec chef-shell -v").stdout.chomp.should == "Chef: #{Chef::VERSION}"
-  end
-
-  it "knife version should be sane" do
-    shell_out("bundle exec knife -v").stdout.chomp.should == "Chef: #{Chef::VERSION}"
-  end
-
-  it "ohai version should be sane" do
-    shell_out("bundle exec ohai -v").stdout.chomp.should == "Ohai: #{Ohai::VERSION}"
-  end
 end

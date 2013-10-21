@@ -18,8 +18,8 @@ describe "chef-solo" do
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
+      result = shell_out("bundle exec chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
       result.error!
     end
   end
@@ -45,17 +45,17 @@ EOM
       # run_lock gets stuck we can discover it.
       lambda {
         Timeout.timeout(120) do
-          chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
+          chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
 
           # Instantiate the first chef-solo run
-          s1 = Process.spawn("chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
+          s1 = Process.spawn("bundle exec chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
 -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
 
           # Give it some time to progress
           sleep 1
 
           # Instantiate the second chef-solo run
-          s2 = Process.spawn("chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
+          s2 = Process.spawn("bundle exec chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' \
 -l debug -L #{path_to('logs/runs.log')}", :chdir => chef_dir)
 
           Process.waitpid(s1)
