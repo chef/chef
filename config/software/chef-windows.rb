@@ -21,7 +21,6 @@ dependency "ruby-windows" #includes rubygems
 dependency "ruby-windows-devkit"
 dependency "bundler"
 dependency "cacerts"
-dependency "ohai" if ENV["OHAI_GIT_REV"]
 
 version ENV['CHEF_GIT_REV'] || "master"
 
