@@ -18,6 +18,7 @@
 
 require 'chef/json_compat'
 require 'chef/node'
+require 'tempfile'
 
 class Chef
   class Knife
@@ -109,20 +110,15 @@ class Chef
       end
 
       def tempfile_for(data)
-        # TODO: include useful info like the node name in the temp file
-        # name
-        basename = "knife-edit-" << rand(1_000_000_000_000_000).to_s.rjust(15, '0') << '.json'
-        filename = File.join(Dir.tmpdir, basename)
-        File.open(filename, "w+") do |f|
-          f.sync = true
-          f.puts data
+        Tempfile.new([ 'knife-edit-', '.json' ]) do |file|
+          file.sync = true
+          file.puts data
+          file.close
+
+          yield file.path
+
+          IO.read(file.path)
         end
-
-        yield filename
-
-        IO.read(filename)
-      ensure
-        File.unlink(filename)
       end
     end
   end
