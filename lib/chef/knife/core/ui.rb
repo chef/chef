@@ -166,11 +166,10 @@ class Chef
         output = Chef::JSONCompat.to_json_pretty(data)
 
         if (!config[:disable_editing])
-          Tempfile.new([ 'knife-edit-', '.json' ]) do |tf|
+          Tempfile.open([ 'knife-edit-', '.json' ]) do |tf|
             tf.sync = true
             tf.puts output
             tf.close
-
             raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}")
 
             output = IO.read(tf.path)

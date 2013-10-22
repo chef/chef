@@ -110,7 +110,8 @@ class Chef
       end
 
       def tempfile_for(data)
-        Tempfile.new([ 'knife-edit-', '.json' ]) do |file|
+        Tempfile.open([ 'knife-edit-', '.json' ]) do |file|
+
           file.sync = true
           file.puts data
           file.close
