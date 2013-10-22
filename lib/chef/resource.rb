@@ -625,7 +625,7 @@ F
         provider_for_action(action).run_action
       rescue Exception => e
         if ignore_failure
-          Chef::Log.error("#{self} (#{defined_at}) had an error: #{e.message}; ignore_failure is set, continuing")
+          Chef::Log.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
           events.resource_failed(self, action, e)
         elsif retries > 0
           events.resource_failed_retriable(self, action, retries, e)
@@ -660,8 +660,12 @@ F
       end
     end
 
+    def custom_exception_message(e)
+      "#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}"
+    end
+
     def customize_exception(e)
-      new_exception = e.exception("#{self} (#{defined_at}) had an error: #{e.class.name}: #{e.message}")
+      new_exception = e.exception(custom_exception_message(e))
       new_exception.set_backtrace(e.backtrace)
       new_exception
     end
