@@ -16,10 +16,8 @@ env
 sleep $SLEEP_TIME
 
 # Check whether a command exists - returns 0 if it does, 1 if it does not
-exists()
-{
-  if command -v $1 >/dev/null 2>&1
-  then
+exists() {
+  if command -v $1 >/dev/null 2>&1; then
     return 0
   else
     return 1
@@ -27,8 +25,7 @@ exists()
 }
 
 # SmartOS builds in /opt/local instead
-is_smartos()
-{
+is_smartos() {
   uname -v | grep "^joyent" 2>&1 >/dev/null
 }
 
@@ -39,29 +36,25 @@ else
 fi
 
 # remove the chef package / clobber the files
-if exists dpkg;
-then
+if exists dpkg; then
     sudo dpkg -P chef || true
-elif exists rpm;
-then
+elif exists rpm; then
     sudo rpm -ev chef || true
-elif exists pkgadd;
-then
+elif exists pkgadd; then
     cat <<EOF > /tmp/nocheck
 conflict=nocheck
 action=nocheck
 EOF
-    if ! sudo pkgrm -a /tmp/nocheck -n chef; then
-      echo "WARNING WARNING WARNING WARNING WARNING WARNING WARNING"
-      echo "The postrm script from the *prior* installation has broken on Solaris."
-      echo "Removing that script so that subsequent pkgadd's will succeed."
-      echo "The fact that you can run this again and it does not break does not necessarily"
-      echo "mean that you can ignore this warning.  This test will flap red and green even"
-      echo "though the postremove script is always broken.  Investigate the postremove script"
-      echo "and determine WHY it failed, and make sure you use 20th century /bin/sh to test it."
-      echo "WARNING WARNING WARNING WARNING WARNING WARNING WARNING"
+    if sudo pkgrm -a /tmp/nocheck -n chef; then
+      :
+    else
+      echo "WARNING: a 'no package to deinstall' error is normal here"
+      echo "WARNING: attempting to fix busted postremove anyway because I'm dumb..."
+      echo "WARNING: if this is really a busted postremove you should fix that..."
+      echo "WARNING: (but that should have been caught in the client-test script)"
       sudo rm -f /var/sadm/pkg/chef/install/postremove || true
-      exit 1
+      sudo pkgrm -a /tmp/nocheck -n chef || true
+      echo "WARNING: a 'no package to deinstall error' is normal here"
     fi
 else # makeself installer
   :
@@ -78,8 +71,7 @@ sudo rm -f $PREFIX/bin/knife || true
 sudo rm -f $PREFIX/bin/shef || true
 sudo rm -f $PREFIX/bin/ohai || true
 
-if exists curl;
-then
+if exists curl; then
    curl -L "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
 else
    wget -qO- "${OMNITRUCK_BASE_URL}/chef/install.sh" | sudo bash -s -- -v $INSTALL_CHEF_VERSION
