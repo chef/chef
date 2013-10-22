@@ -48,9 +48,13 @@ EOF
     if sudo pkgrm -a /tmp/nocheck -n chef; then
       :
     else
-      echo "WARNING: CLEANING UP BROKEN POSTRM FROM PRIOR INSTALLATION!!!!!!!!!!!!!!!!!!!!!!"
+      echo "WARNING: a 'no package to deinstall' error is normal here"
+      echo "WARNING: attempting to fix busted postremove anyway because I'm dumb..."
+      echo "WARNING: if this is really a busted postremove you should fix that..."
+      echo "WARNING: (but that should have been caught in the client-test script)"
       sudo rm -f /var/sadm/pkg/chef/install/postremove || true
       sudo pkgrm -a /tmp/nocheck -n chef || true
+      echo "WARNING: a 'no package to deinstall error' is normal here"
     fi
 else # makeself installer
   :
