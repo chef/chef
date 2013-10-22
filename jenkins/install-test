@@ -78,22 +78,22 @@ else
 fi
 
 # sanity check that we're getting symlinks from the pre-install script
-if [ ! -e "/usr/bin/chef-client" ]; then
+if [ ! -L "/usr/bin/chef-client" ]; then
   echo "/usr/bin/chef-client symlink was not installed by pre-install script!"
   exit 1
 fi
 
-if [ ! -e "/usr/bin/knife" ]; then
+if [ ! -L "/usr/bin/knife" ]; then
   echo "/usr/bin/knife symlink was not installed by pre-install script!"
   exit 1
 fi
 
-if [ ! -e "/usr/bin/chef-solo" ]; then
+if [ ! -L "/usr/bin/chef-solo" ]; then
   echo "/usr/bin/chef-solo symlink was not installed by pre-install script!"
   exit 1
 fi
 
-if [ ! -e "/usr/bin/ohai" ]; then
+if [ ! -L "/usr/bin/ohai" ]; then
   echo "/usr/bin/ohai symlink was not installed by pre-install script!"
   exit 1
 fi
