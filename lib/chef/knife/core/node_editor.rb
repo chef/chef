@@ -36,10 +36,23 @@ class Chef
         abort "You specified the --disable_editing option, nothing to edit" if config[:disable_editing]
         assert_editor_set!
 
-        updated_node_data = edit_data(view)
+        updated_node_data = @ui.edit_data(view)
         apply_updates(updated_node_data)
         @updated_node
       end
+
+      def updated?
+        pristine_copy = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(node), :create_additions => false)
+        updated_copy  = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@updated_node), :create_additions => false)
+        unless pristine_copy == updated_copy
+          updated_properties = %w{name normal chef_environment run_list default override automatic}.reject do |key|
+             pristine_copy[key] == updated_copy[key]
+          end
+        end
+        ( pristine_copy != updated_copy ) && updated_properties
+      end
+
+      private
 
       def view
         result = {}
@@ -53,12 +66,7 @@ class Chef
           result["override"]  = node.override_attrs
           result["automatic"] = node.automatic_attrs
         end
-        Chef::JSONCompat.to_json_pretty(result)
-      end
-
-      def edit_data(text)
-        edited_data = tempfile_for(text) {|filename| system("#{config[:editor]} #{filename}")}
-        Chef::JSONCompat.from_json(edited_data)
+        result
       end
 
       def apply_updates(updated_data)
@@ -85,19 +93,6 @@ class Chef
         end
       end
 
-      def updated?
-        pristine_copy = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(node), :create_additions => false)
-        updated_copy  = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json(@updated_node), :create_additions => false)
-        unless pristine_copy == updated_copy
-          updated_properties = %w{name normal chef_environment run_list default override automatic}.reject do |key|
-             pristine_copy[key] == updated_copy[key]
-          end
-        end
-        ( pristine_copy != updated_copy ) && updated_properties
-      end
-
-      private
-
       def abort(message)
         ui.error(message)
         exit 1
@@ -109,18 +104,6 @@ class Chef
         end
       end
 
-      def tempfile_for(data)
-        Tempfile.open([ 'knife-edit-', '.json' ]) do |file|
-
-          file.sync = true
-          file.puts data
-          file.close
-
-          yield file.path
-
-          IO.read(file.path)
-        end
-      end
     end
   end
 end
