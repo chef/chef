@@ -28,6 +28,80 @@ describe Chef::Knife::UI do
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
 
+  describe "edit" do
+    let(:subject) { @ui.edit_data({ 'foo' => 'bar' } , parse_output) }
+    let(:parse_output) { false }
+
+    context "when editing is disabled" do
+      before do
+        @ui.config[:disable_editing] = true
+        Tempfile.should_not_receive(:new)
+        Tempfile.should_not_receive(:open)
+      end
+      context "when parse_output is false" do
+        it "returns pretty json string" do
+          expect(subject).to eql("{\n  \"foo\": \"bar\"\n}")
+        end
+      end
+      context "when parse_output is true" do
+        let(:parse_output) { true }
+        it "returns a ruby object" do
+          expect(subject).to eql({ 'foo' => 'bar' })
+        end
+      end
+
+    end
+
+    context "when editing is enabled" do
+      before do
+        @ui.config[:disable_editing] = false
+        @ui.config[:editor] = "voo"
+        @mock = mock('Tempfile')
+        @mock.should_receive(:sync=).with(true)
+        @mock.should_receive(:puts).with("{\n  \"foo\": \"bar\"\n}")
+        @mock.should_receive(:close)
+        @mock.should_receive(:path).at_least(:once).and_return("/tmp/bar/baz")
+        Tempfile.should_receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@mock)
+      end
+      context "and the editor works" do
+        before do
+          @ui.should_receive(:system).with("voo /tmp/bar/baz").and_return(true)
+          IO.should_receive(:read).with("/tmp/bar/baz").and_return("{\n  \"bar\": \"foo\"\n}")
+        end
+
+        context "when parse_output is false" do
+          it "returns an edited pretty json string" do
+            expect(subject).to eql("{\n  \"bar\": \"foo\"\n}")
+          end
+        end
+        context "when parse_output is true" do
+          let(:parse_output) { true }
+          it "returns an edited ruby object" do
+            expect(subject).to eql({ 'bar' => 'foo' })
+          end
+        end
+      end
+      context "when running the editor fails with nil" do
+        before do
+          @ui.should_receive(:system).with("voo /tmp/bar/baz").and_return(nil)
+          IO.should_not_receive(:read)
+        end
+        it "throws an exception" do
+          expect{ subject }.to raise_error(RuntimeError)
+        end
+      end
+      context "when running the editor fails with false" do
+        before do
+          @ui.should_receive(:system).with("voo /tmp/bar/baz").and_return(false)
+          IO.should_not_receive(:read)
+        end
+        it "throws an exception" do
+          expect{ subject }.to raise_error(RuntimeError)
+        end
+      end
+    end
+  end
+
   describe "format_list_for_display" do
     it "should print the full hash if --with-uri is true" do
       @ui.config[:with_uri] = true
