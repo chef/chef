@@ -107,6 +107,44 @@ describe Chef::Knife::UI do
         end
       end
     end
+    context "when editing and not stubbing Tempfile (semi-functional test)" do
+      before do
+        @ui.config[:disable_editing] = false
+        @ui.config[:editor] = my_editor
+        @tempfile = Tempfile.new([ 'knife-edit-', '.json' ])
+        Tempfile.should_receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@tempfile)
+      end
+
+      context "and the editor works" do
+        before do
+          @ui.should_receive(:system).with("#{my_editor} #{@tempfile.path}").and_return(true)
+          IO.should_receive(:read).with(@tempfile.path).and_return(json_from_editor)
+        end
+
+        context "when parse_output is false" do
+          it "returns an edited pretty json string" do
+            expect(subject).to eql(json_from_editor)
+          end
+          it "the tempfile should have mode 0600" do
+            # XXX: this looks odd because we're really testing Tempfile.new here
+            expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
+            expect(subject).to eql(json_from_editor)
+          end
+        end
+
+        context "when parse_output is true" do
+          let(:parse_output) { true }
+          it "returns an edited ruby object" do
+            expect(subject).to eql(ruby_from_editor)
+          end
+          it "the tempfile should have mode 0600" do
+            # XXX: this looks odd because we're really testing Tempfile.new here
+            expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
+            expect(subject).to eql(ruby_from_editor)
+          end
+        end
+      end
+    end
   end
 
   describe "format_list_for_display" do
