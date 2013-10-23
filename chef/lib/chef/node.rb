@@ -391,7 +391,7 @@ class Chef
     def consume_attributes(attrs)
       normal_attrs_to_merge = consume_run_list(attrs)
       Chef::Log.debug("Applying attributes from json file")
-      @normal_attrs = Chef::Mixin::DeepMerge.merge(@normal_attrs,normal_attrs_to_merge)
+      @normal_attrs = Chef::Mixin::DeepMerge.horizontal_merge(@normal_attrs,normal_attrs_to_merge)
       self.tags # make sure they're defined
     end
 
@@ -450,11 +450,11 @@ class Chef
     def apply_expansion_attributes(expansion)
       load_chef_environment_object = (chef_environment == "_default" ? nil : Chef::Environment.load(chef_environment))
       environment_default_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.default_attributes
-      default_before_roles = Chef::Mixin::DeepMerge.merge(default_attrs, environment_default_attrs)
-      @default_attrs = Chef::Mixin::DeepMerge.merge(default_before_roles, expansion.default_attrs)
+      default_before_roles = Chef::Mixin::DeepMerge.horizontal_merge(default_attrs, environment_default_attrs)
+      @default_attrs = Chef::Mixin::DeepMerge.horizontal_merge(default_before_roles, expansion.default_attrs)
       environment_override_attrs = load_chef_environment_object.nil? ? {} : load_chef_environment_object.override_attributes
-      overrides_before_environments = Chef::Mixin::DeepMerge.merge(override_attrs, expansion.override_attrs)
-      @override_attrs = Chef::Mixin::DeepMerge.merge(overrides_before_environments, environment_override_attrs)
+      overrides_before_environments = Chef::Mixin::DeepMerge.horizontal_merge(override_attrs, expansion.override_attrs)
+      @override_attrs = Chef::Mixin::DeepMerge.horizontal_merge(overrides_before_environments, environment_override_attrs)
     end
 
     # Transform the node to a Hash
