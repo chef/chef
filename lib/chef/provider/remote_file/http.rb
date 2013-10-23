@@ -56,19 +56,12 @@ class Chef
         end
 
         def fetch
-          tempfile = nil
-          begin
-            http = Chef::HTTP::Simple.new(uri, http_client_opts)
-            tempfile = http.streaming_request(uri, headers)
+          http = Chef::HTTP::Simple.new(uri, http_client_opts)
+          tempfile = http.streaming_request(uri, headers)
+          if tempfile
             update_cache_control_data(tempfile, http.last_response)
-          rescue Net::HTTPRetriableError => e
-            if e.response.is_a? Net::HTTPNotModified
-              tempfile = nil
-            else
-              raise e
-            end
+            tempfile.close
           end
-          tempfile.close if tempfile
           tempfile
         end
 
