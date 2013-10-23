@@ -27,6 +27,16 @@ rem # run the tests -- exclude spec/stress on windows
 rem # we do not bundle exec here in order to test against the gems in the omnibus package
 call rspec -r rspec_junit_formatter -f RspecJunitFormatter -o %WORKSPACE%\test.xml -f documentation spec/functional spec/unit || GOTO :error
 
+rem # check presence of essential binaries in correct places
+
+cd c:\opscode\chef\bin
+
+IF NOT EXIST chef-client GOTO :error
+IF NOT EXIST chef-solo GOTO :error
+IF NOT EXIST knife GOTO :error
+IF NOT EXIST ohai GOTO :error
+IF NOT EXIST erubis GOTO :error
+
 rem # uninstall chef
 call msiexec /qb /x %TMP%\install.msi || GOTO :error
 
