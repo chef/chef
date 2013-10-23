@@ -181,26 +181,10 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     describe "and the request does not return new content" do
 
-      it "should propagate non-304 exceptions to the caller" do
-        r = Net::HTTPBadRequest.new("one", "two", "three")
-        e = Net::HTTPServerException.new("fake exception", r)
-        rest.stub!(:streaming_request).and_raise(e)
-        lambda { fetcher.fetch }.should raise_error(Net::HTTPServerException)
-      end
-
-      it "should return HTTPRetriableError when Chef::HTTP::Simple returns a 301" do
-        r = Net::HTTPMovedPermanently.new("one", "two", "three")
-        e = Net::HTTPRetriableError.new("301", r)
-        rest.stub!(:streaming_request).and_raise(e)
-        lambda { fetcher.fetch }.should raise_error(Net::HTTPRetriableError)
-      end
-
       it "should return a nil tempfile for a 304 HTTPNotModifed" do
-        r = Net::HTTPNotModified.new("one", "two", "three")
-        e = Net::HTTPRetriableError.new("304", r)
-        rest.stub!(:streaming_request).and_raise(e)
-        result = fetcher.fetch
-        result.should be_nil
+        # Streaming request returns nil for 304 errors
+        rest.stub(:streaming_request).and_return(nil)
+        fetcher.fetch.should be_nil
       end
 
     end

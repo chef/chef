@@ -83,6 +83,19 @@ describe Chef::Resource::RemoteFile do
       stop_tiny_server
     end
 
+    describe "when redownload isn't necessary" do
+      let(:source) { 'http://localhost:9000/seattle_capo.png' }
+
+      before do
+        @api.get("/seattle_capo.png", 304, "", { 'Etag' => 'abcdef' } )
+      end
+
+      it "does not fetch the file" do
+        resource.run_action(:create)
+      end
+
+    end
+
     context "when using normal encoding" do
       let(:source) { 'http://localhost:9000/nyan_cat.png' }
       let(:expected_content) do
@@ -112,6 +125,7 @@ describe Chef::Resource::RemoteFile do
 
       it_behaves_like "a securable resource with reporting"
     end
+
   end
 
   context "when fetching files over HTTPS" do
