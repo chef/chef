@@ -65,6 +65,13 @@ describe Chef::REST do
     Chef::REST::CookieJar.instance.clear
   end
 
+  describe "legacy API" do
+    it 'responds to raw_http_request as a public method' do
+      @rest.public_methods.map(&:to_s).should include("raw_http_request")
+    end
+
+  end
+
 
   describe "calling an HTTP verb on a path or absolute URL" do
     it "adds a relative URL to the base url it was initialized with" do
