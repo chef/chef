@@ -29,7 +29,14 @@ describe Chef::Knife::UI do
   end
 
   describe "edit" do
-    let(:subject) { @ui.edit_data({ 'foo' => 'bar' } , parse_output) }
+    ruby_for_json = { 'foo' => 'bar' }
+    json_from_ruby = "{\n  \"foo\": \"bar\"\n}"
+    json_from_editor = "{\n  \"bar\": \"foo\"\n}"
+    ruby_from_editor = { 'bar' => 'foo' }
+    my_editor = "veeeye"
+    temp_path = "/tmp/bar/baz"
+
+    let(:subject) { @ui.edit_data(ruby_for_json, parse_output) }
     let(:parse_output) { false }
 
     context "when editing is disabled" do
@@ -40,13 +47,13 @@ describe Chef::Knife::UI do
       end
       context "when parse_output is false" do
         it "returns pretty json string" do
-          expect(subject).to eql("{\n  \"foo\": \"bar\"\n}")
+          expect(subject).to eql(json_from_ruby)
         end
       end
       context "when parse_output is true" do
         let(:parse_output) { true }
         it "returns a ruby object" do
-          expect(subject).to eql({ 'foo' => 'bar' })
+          expect(subject).to eql(ruby_for_json)
         end
       end
 
@@ -55,35 +62,35 @@ describe Chef::Knife::UI do
     context "when editing is enabled" do
       before do
         @ui.config[:disable_editing] = false
-        @ui.config[:editor] = "voo"
+        @ui.config[:editor] = my_editor
         @mock = mock('Tempfile')
         @mock.should_receive(:sync=).with(true)
-        @mock.should_receive(:puts).with("{\n  \"foo\": \"bar\"\n}")
+        @mock.should_receive(:puts).with(json_from_ruby)
         @mock.should_receive(:close)
-        @mock.should_receive(:path).at_least(:once).and_return("/tmp/bar/baz")
+        @mock.should_receive(:path).at_least(:once).and_return(temp_path)
         Tempfile.should_receive(:open).with([ 'knife-edit-', '.json' ]).and_yield(@mock)
       end
       context "and the editor works" do
         before do
-          @ui.should_receive(:system).with("voo /tmp/bar/baz").and_return(true)
-          IO.should_receive(:read).with("/tmp/bar/baz").and_return("{\n  \"bar\": \"foo\"\n}")
+          @ui.should_receive(:system).with("#{my_editor} #{temp_path}").and_return(true)
+          IO.should_receive(:read).with(temp_path).and_return(json_from_editor)
         end
 
         context "when parse_output is false" do
           it "returns an edited pretty json string" do
-            expect(subject).to eql("{\n  \"bar\": \"foo\"\n}")
+            expect(subject).to eql(json_from_editor)
           end
         end
         context "when parse_output is true" do
           let(:parse_output) { true }
           it "returns an edited ruby object" do
-            expect(subject).to eql({ 'bar' => 'foo' })
+            expect(subject).to eql(ruby_from_editor)
           end
         end
       end
       context "when running the editor fails with nil" do
         before do
-          @ui.should_receive(:system).with("voo /tmp/bar/baz").and_return(nil)
+          @ui.should_receive(:system).with("#{my_editor} #{temp_path}").and_return(nil)
           IO.should_not_receive(:read)
         end
         it "throws an exception" do
@@ -92,7 +99,7 @@ describe Chef::Knife::UI do
       end
       context "when running the editor fails with false" do
         before do
-          @ui.should_receive(:system).with("voo /tmp/bar/baz").and_return(false)
+          @ui.should_receive(:system).with("#{my_editor} #{temp_path}").and_return(false)
           IO.should_not_receive(:read)
         end
         it "throws an exception" do
