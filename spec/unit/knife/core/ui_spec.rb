@@ -42,8 +42,7 @@ describe Chef::Knife::UI do
     context "when editing is disabled" do
       before do
         @ui.config[:disable_editing] = true
-        Tempfile.should_not_receive(:new)
-        Tempfile.should_not_receive(:open)
+        stub_const("Tempfile", double)  # Tempfiles should never be invoked
       end
       context "when parse_output is false" do
         it "returns pretty json string" do
