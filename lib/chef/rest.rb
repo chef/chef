@@ -126,6 +126,8 @@ class Chef
 
     alias :raw_http_request :send_http_request
 
+    public :raw_http_request
+
     # Deprecated:
     # Responsibilities of this method have been split up. The #http_client is
     # now responsible for making individual requests, while
