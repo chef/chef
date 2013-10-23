@@ -3,9 +3,10 @@ bash -c '
 
 distro=`uname -s`
 
-if [ "X$distro" == "XSunOS" ]; then
-  if [ -e "/usr/sfw/bin" ]; then
-    export PATH=/usr/sfw/bin:$PATH
+if test "x$distro" = "xSunOS"; then
+  if test -d "/usr/sfw/bin"; then
+    PATH=/usr/sfw/bin:$PATH
+    export PATH
   fi
 fi
 
