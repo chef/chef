@@ -9,7 +9,7 @@ class Chef
     attr_reader :config_location
     attr_reader :config_file_jail
 
-    def initialize(config_location, config_file_jail)
+    def initialize(config_location, config_file_jail=nil)
       @config_location = config_location
       @config_file_jail = config_file_jail
     end
