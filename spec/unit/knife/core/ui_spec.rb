@@ -124,7 +124,7 @@ describe Chef::Knife::UI do
           it "returns an edited pretty json string" do
             expect(subject).to eql(json_from_editor)
           end
-          it "the tempfile should have mode 0600" do
+          it "the tempfile should have mode 0600", :unix_only do
             # XXX: this looks odd because we're really testing Tempfile.new here
             expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
             expect(subject).to eql(json_from_editor)
@@ -136,7 +136,7 @@ describe Chef::Knife::UI do
           it "returns an edited ruby object" do
             expect(subject).to eql(ruby_from_editor)
           end
-          it "the tempfile should have mode 0600" do
+          it "the tempfile should have mode 0600", :unix_only do
             # XXX: this looks odd because we're really testing Tempfile.new here
             expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
             expect(subject).to eql(ruby_from_editor)
