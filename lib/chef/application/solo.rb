@@ -165,7 +165,7 @@ class Chef::Application::Solo < Chef::Application
     :long         => '--environment ENVIRONMENT',
     :description  => 'Set the Chef Environment on the node'
 
-  attr_reader :chef_solo_json
+  attr_reader :chef_client_json
 
   def initialize
     super
@@ -182,7 +182,7 @@ class Chef::Application::Solo < Chef::Application
 
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])
-      @chef_solo_json = config_fetcher.fetch_json
+      @chef_client_json = config_fetcher.fetch_json
     end
 
     if Chef::Config[:recipe_url]

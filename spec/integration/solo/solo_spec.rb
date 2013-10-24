@@ -9,19 +9,37 @@ describe "chef-solo" do
   extend IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  when_the_repository "has a cookbook with a no-op recipe" do
+  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..") }
+
+  when_the_repository "has a cookbook with a basic recipe" do
     file 'cookbooks/x/metadata.rb', 'version "1.0.0"'
-    file 'cookbooks/x/recipes/default.rb', ''
+    file 'cookbooks/x/recipes/default.rb', 'puts "ITWORKS"'
 
     it "should complete with success" do
       file 'config/solo.rb', <<EOM
 cookbook_path "#{path_to('cookbooks')}"
 file_cache_path "#{path_to('config/cache')}"
 EOM
-      chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..", "bin")
-      result = shell_out("chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
+      result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -o 'x::default' -l debug", :cwd => chef_dir)
       result.error!
+      result.stdout.should include("ITWORKS")
     end
+
+    it "should evaluate its node.json file" do
+      file 'config/solo.rb', <<EOM
+cookbook_path "#{path_to('cookbooks')}"
+file_cache_path "#{path_to('config/cache')}"
+EOM
+
+      file 'config/node.json',<<-E
+{"run_list":["x::default"]}
+E
+
+      result = shell_out("ruby bin/chef-solo -c \"#{path_to('config/solo.rb')}\" -j '#{path_to('config/node.json')}' -l debug", :cwd => chef_dir)
+      result.error!
+      result.stdout.should include("ITWORKS")
+    end
+
   end
 
   when_the_repository "has a cookbook with a recipe with sleep" do
