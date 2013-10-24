@@ -60,7 +60,7 @@ describe Chef::Application::Solo do
 
       it "reads the JSON attributes from the specified source" do
         @app.reconfigure
-        @app.chef_solo_json.should == json_attribs
+        @app.chef_client_json.should == json_attribs
       end
     end
 
