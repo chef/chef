@@ -51,10 +51,8 @@ class Chef
 
       def edit_text(text, extension)
         if (!config[:disable_editing])
-          file = Tempfile.new([ 'knife-edit-', extension ])
-          begin
+          Tempfile.open([ 'knife-edit-', extension ]) do |file|
             # Write the text to a temporary file
-            file.open
             file.write(text)
             file.close
 
@@ -63,12 +61,9 @@ class Chef
               raise "Please set EDITOR environment variable"
             end
 
-            file.open
-            result_text = file.read
-            return result_text if result_text != text
+            result_text = IO.read(file.path)
 
-          ensure
-            file.close!
+            return result_text if result_text != text
           end
         end
       end

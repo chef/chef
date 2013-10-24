@@ -20,6 +20,12 @@ require 'spec_helper'
 Chef::Knife::NodeEdit.load_deps
 
 describe Chef::Knife::NodeEdit do
+
+  # helper to convert the view from Chef objects into Ruby objects representing JSON
+  def deserialized_json_view
+    actual = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json_pretty(@knife.node_editor.send(:view)))
+  end
+
   before(:each) do
     Chef::Config[:node_name]  = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEdit.new
@@ -49,7 +55,7 @@ describe Chef::Knife::NodeEdit do
     end
 
     it "creates a view of the node without attributes from roles or ohai" do
-      actual = Chef::JSONCompat.from_json(@knife.node_editor.view)
+      actual = deserialized_json_view
       actual.should_not have_key("automatic")
       actual.should_not have_key("override")
       actual.should_not have_key("default")
@@ -61,7 +67,7 @@ describe Chef::Knife::NodeEdit do
     it "shows the extra attributes when given the --all option" do
       @knife.config[:all_attributes] = true
 
-      actual = Chef::JSONCompat.from_json(@knife.node_editor.view)
+      actual = deserialized_json_view
       actual["automatic"].should == {"go" => "away"}
       actual["override"].should == {"dont" => "show"}
       actual["default"].should == {"hide" => "me"}
@@ -71,18 +77,39 @@ describe Chef::Knife::NodeEdit do
     end
 
     it "does not consider unedited data updated" do
-      view = Chef::JSONCompat.from_json( @knife.node_editor.view )
-      @knife.node_editor.apply_updates(view)
+      view = deserialized_json_view
+      @knife.node_editor.send(:apply_updates, view)
       @knife.node_editor.should_not be_updated
     end
 
     it "considers edited data updated" do
-      view = Chef::JSONCompat.from_json( @knife.node_editor.view )
+      view = deserialized_json_view
       view["run_list"] << "role[fuuu]"
-      @knife.node_editor.apply_updates(view)
+      @knife.node_editor.send(:apply_updates, view)
       @knife.node_editor.should be_updated
     end
 
   end
+
+  describe "edit_node" do
+
+    before do
+      @knife.stub!(:node).and_return(@node)
+    end
+
+    let(:subject) { @knife.node_editor.edit_node }
+
+    it "raises an exception when editing is disabled" do
+      @knife.config[:disable_editing] = true
+      expect{ subject }.to raise_error(SystemExit)
+    end
+
+    it "raises an exception when the editor is not set" do
+      @knife.config[:editor] = nil
+      expect{ subject }.to raise_error(SystemExit)
+    end
+
+  end
+
 end
 
