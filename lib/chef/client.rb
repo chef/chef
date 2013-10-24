@@ -197,8 +197,8 @@ class Chef
           begin
             Chef::Log.debug "Forked instance now converging"
             do_run
-          rescue Exception
-            Chef::Log.error $!
+          rescue Exception => e
+            Chef::Log.error(e.to_s)
             exit 1
           else
             exit 0
