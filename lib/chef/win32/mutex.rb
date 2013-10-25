@@ -42,17 +42,27 @@ class Chef
       #####################################################
       # Attempts to grab the mutex and waits until it is acquired.
       def wait
-        wait_result = WaitForSingleObject(handle, INFINITE)
-        case wait_result
-        when WAIT_ABANDONED
-          # Previous owner of the mutex died before it can release the
-          # mutex. Log a warning and continue.
-          Chef::Log.debug "Existing owner of the mutex exited prematurely."
-        when WAIT_OBJECT_0
-          # Mutex is successfully acquired.
-        else
-          Chef::Log.error("Failed to acquire system mutex '#{name}'. Return code: #{wait_result}")
-          Chef::ReservedNames::Win32::Error.raise!
+        loop do
+          wait_result = WaitForSingleObject(handle, 1000)
+          case wait_result
+          when WAIT_TIMEOUT
+            # We are periodically waking up in order to give ruby a
+            # chance to process any signal it got while we were
+            # sleeping. This condition shouldn't contain any logic
+            # other than sleeping.
+            sleep 0.1
+          when WAIT_ABANDONED
+            # Previous owner of the mutex died before it can release the
+            # mutex. Log a warning and continue.
+            Chef::Log.debug "Existing owner of the mutex exited prematurely."
+            break
+          when WAIT_OBJECT_0
+            # Mutex is successfully acquired.
+            break
+          else
+            Chef::Log.error("Failed to acquire system mutex '#{name}'. Return code: #{wait_result}")
+            Chef::ReservedNames::Win32::Error.raise!
+          end
         end
       end
 
