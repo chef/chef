@@ -471,6 +471,10 @@ class Chef
     # === Returns
     # true:: Always returns true.
     def do_run
+      # Check for windows administrator rights incase they create an
+      # issue while trying to create / acquire run_lock.
+      do_windows_admin_check
+
       runlock = RunLock.new(Chef::Config.lockfile)
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
@@ -492,8 +496,6 @@ class Chef
         run_status.start_clock
         Chef::Log.info("Starting Chef Run for #{node.name}")
         run_started
-
-        do_windows_admin_check
 
         run_context = setup_run_context
 

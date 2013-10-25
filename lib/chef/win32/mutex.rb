@@ -22,25 +22,10 @@ class Chef
   module ReservedNames::Win32
     class Mutex
       include Chef::ReservedNames::Win32::API::Synchronization
-      extend Chef::ReservedNames::Win32::API::Synchronization
 
       def initialize(name)
         @name = name
-        # First check if there exists a mutex in the system with the
-        # given name.
-
-        # In the initial creation of the mutex initial_owner is set to
-        # false so that mutex will not be acquired until someone calls
-        # acquire.
-        # In order to call "*W" windows apis, strings needs to be
-        # encoded as wide strings.
-        @handle = CreateMutexW(nil, false, name.to_wstring)
-
-        # Fail early if we can't get a handle to the named mutex
-        if @handle == 0
-          Chef::Log.error("Failed to create system mutex with name'#{name}'")
-          Chef::ReservedNames::Win32::Error.raise!
-        end
+        create_system_mutex
       end
 
       attr_reader :handle
@@ -85,6 +70,34 @@ class Chef
           Chef::Log.error("Can not release mutex '#{name}'. This might cause issues \
 if the mutex is attempted to be acquired by other threads.")
           Chef::ReservedNames::Win32::Error.raise!
+        end
+      end
+
+      private
+
+      def create_system_mutex
+        # First check if there exists a mutex in the system with the
+        # given name. We need only synchronize rights if a mutex is
+        # already created.
+        # InheritHandle is set to true so that subprocesses can
+        # inherit the ownership of the mutex.
+        @handle = OpenMutexW(SYNCHRONIZE, true, name.to_wstring)
+
+        if @handle == 0
+          # Mutext doesn't exist so create one.
+          # In the initial creation of the mutex initial_owner is set to
+          # false so that mutex will not be acquired until someone calls
+          # acquire.
+          # In order to call "*W" windows apis, strings needs to be
+          # encoded as wide strings.
+          @handle = CreateMutexW(nil, false, name.to_wstring)
+
+          # Looks like we can't create the mutex for some reason.
+          # Fail early.
+          if @handle == 0
+            Chef::Log.error("Failed to create system mutex with name'#{name}'")
+            Chef::ReservedNames::Win32::Error.raise!
+          end
         end
       end
     end
