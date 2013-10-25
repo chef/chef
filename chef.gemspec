@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "json", ">= 1.4.4", "<=  1.7.7"
   s.add_dependency "yajl-ruby", "~> 1.1"
   s.add_dependency "net-ssh", "~> 2.6"
-  s.add_dependency "net-ssh-multi", "~> 1.2.0"
+  s.add_dependency "net-ssh-multi", "~> 1.1"
   # CHEF-3027: The knife-cloud plugins require newer features from highline, core chef should not.
   s.add_dependency "highline", "~> 1.6", ">= 1.6.9"
   s.add_dependency "erubis", "~> 2.7"
